@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<title>Alege piesele</title>
+<style>
+body { background: #F4A47A; font-family: Arial, sans-serif; padding: 20px; }
+h1 { color: #1a3a6b; text-align: center; margin-bottom: 20px; }
+.grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+.set { background: rgba(255,255,255,0.5); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; border: 3px solid transparent; width: 130px; }
+.set:hover { border-color: #1a3a6b; }
+.set img { width: 50px; height: 50px; }
+.set .name { font-weight: 700; color: #1a3a6b; margin-top: 8px; font-size: 0.9em; }
+.pieces { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<h1>Alege setul de piese</h1>
+<p style="text-align:center; color:#1a3a6b; margin-bottom:20px;">Click pe un set ca să îl copiezi în joc</p>
+<div class="grid" id="grid"></div>
+
+<script>
+const sets = ['cburnett','merida','alpha','pirouetti','reillycraig','tatiana','staunty','governor','dubrovny','icpieces','shapes','kiwenSitsogo','anarcandy','mpchess','horsey','maestro'];
+const pieces = ['wK','wQ','wR','bK','bQ','bR'];
+const grid = document.getElementById('grid');
+
+sets.forEach(set => {
+    const div = document.createElement('div');
+    div.className = 'set';
+    div.innerHTML = `<div class="pieces">${pieces.map(p => `<img src="https://lichess1.org/assets/piece/${set}/${p}.svg" onerror="this.style.display='none'">`).join('')}</div><div class="name">${set}</div>`;
+    div.onclick = () => { navigator.clipboard.writeText(set); alert('Copiat: ' + set); };
+    grid.appendChild(div);
+});
+</script>
+</body>
+</html>
