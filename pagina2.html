@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Șah Mat Animat – Scopul suprem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background: #F5A96E;
+            font-family: 'Nunito', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 40px;
+        }
+
+        .page {
+            max-width: 860px;
+            width: 100%;
+            padding: 40px 60px 50px;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Căluți colțuri */
+        .corner-piece {
+            position: absolute;
+            width: 85px;
+            height: 85px;
+        }
+        .corner-tl { top: 0; left: 0; }
+        .corner-tr { top: 0; right: 0; transform: scaleX(-1); }
+
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.6em;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            margin-bottom: 35px;
+            margin-top: 10px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
+        }
+
+        /* Lista cu bullet points */
+        ul {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 35px;
+        }
+
+        ul li {
+            font-size: 1.35em;
+            line-height: 1.75;
+            color: #1a1a1a;
+            margin-bottom: 18px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #1a3a6b;
+            font-size: 1.3em;
+            line-height: 1.4;
+        }
+
+        /* GIF centrat */
+        .gif-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .gif-container img {
+            max-width: 420px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            border: 3px solid rgba(26,58,107,0.2);
+        }
+
+        /* Navigare */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            display: inline-block;
+            background: #1a3a6b;
+            color: white;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3em;
+            padding: 13px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 5px 20px rgba(26,58,107,0.4);
+            letter-spacing: 1px;
+        }
+
+        .nav-btn:hover {
+            background: #2a5aab;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(26,58,107,0.5);
+        }
+
+        .nav-btn.back {
+            background: rgba(26,58,107,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+
+        <!-- Căluți colțuri -->
+        <img src="pieces/wN.svg" class="corner-piece corner-tl" alt="">
+        <img src="pieces/wN.svg" class="corner-piece corner-tr" alt="">
+
+        <h1>Șah-Mat!<br>Scopul Suprem al Jocului</h1>
+
+        <ul>
+            <li>Scopul principal al jocului este de a face mat regele advers. De aceea regii sunt principalele figuri de pe tabla de șah.</li>
+            <li>Ținta finală a atacului urmărește punerea regelui advers într-o poziție din care, atacat fiind, nu mai are unde să scape și nici nu mai poate fi salvat de soldații lui prin capturarea piesei care atacă sau prin interpunerea unui scut.</li>
+            <li>Atacul asupra altor piese și eliminarea lor de pe tablă prin schimburi sau câștiguri de piese sunt doar mijloace de înlăturare a apărătorilor regelui.</li>
+            <li>Jocul continuă independent de dispariția pieselor de pe tablă, cu excepția dispariției regelui care, dacă nu se mai poate apăra, depune armele, marcând sfârșitul partidei.</li>
+        </ul>
+
+        <!-- GIF -->
+        <div class="gif-container">
+            <img src="lichess_study_nowhereman77s-study_chapter-1_by_nowhereman77_2026.03.11.gif" alt="Exemplu șah mat">
+        </div>
+
+        <!-- Navigare -->
+        <div class="nav-buttons">
+            <a href="pagina1.html" class="nav-btn back">◀ Înapoi</a>
+            <a href="pagina3.html" class="nav-btn">Înainte ▶</a>
+        </div>
+
+    </div>
+</body>
+</html>
