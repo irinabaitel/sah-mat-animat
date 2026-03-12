@@ -241,9 +241,6 @@
             <div id="board1" class="chessboard"></div>
             <svg class="arrow-overlay" viewBox="0 0 320 320">
                 <defs>
-                    <marker id="h-orange" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                        <path d="M0,0 L6,3 L0,6 Z" fill="#e67e22"/>
-                    </marker>
                     <marker id="h-red1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
                         <path d="M0,0 L6,3 L0,6 Z" fill="#e74c3c"/>
                     </marker>
@@ -251,13 +248,7 @@
                         <path d="M0,0 L6,3 L0,6 Z" fill="#2980b9"/>
                     </marker>
                 </defs>
-                <!-- Orange: Cal e4→f6 (muta) -->
-                <line id="b1-orange" class="arr"
-                      x1="180" y1="180" x2="220" y2="100"
-                      stroke="#e67e22" stroke-width="8"
-                      stroke-dasharray="90" stroke-dashoffset="90"
-                      marker-end="url(#h-orange)"/>
-                <!-- Red: Cal f6 atacă regele e8 -->
+                <!-- Red: Cal f6 atacă regele negru e8 -->
                 <line id="b1-red" class="arr"
                       x1="220" y1="100" x2="185" y2="25"
                       stroke="#e74c3c" stroke-width="8"
@@ -287,9 +278,6 @@
             <div id="board2" class="chessboard"></div>
             <svg class="arrow-overlay" viewBox="0 0 320 320">
                 <defs>
-                    <marker id="h-orange2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                        <path d="M0,0 L6,3 L0,6 Z" fill="#e67e22"/>
-                    </marker>
                     <marker id="h-red2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
                         <path d="M0,0 L6,3 L0,6 Z" fill="#e74c3c"/>
                     </marker>
@@ -297,13 +285,7 @@
                         <path d="M0,0 L6,3 L0,6 Z" fill="#2980b9"/>
                     </marker>
                 </defs>
-                <!-- Orange: Cal d4→f3 (muta) -->
-                <line id="b2-orange" class="arr"
-                      x1="140" y1="180" x2="215" y2="215"
-                      stroke="#e67e22" stroke-width="8"
-                      stroke-dasharray="90" stroke-dashoffset="90"
-                      marker-end="url(#h-orange2)"/>
-                <!-- Red: Cal f3 atacă regele g1 -->
+                <!-- Red: Cal f3 atacă regele alb g1 -->
                 <line id="b2-red" class="arr"
                       x1="220" y1="220" x2="255" y2="295"
                       stroke="#e74c3c" stroke-width="8"
@@ -333,9 +315,6 @@
             <div id="board3" class="chessboard"></div>
             <svg class="arrow-overlay" viewBox="0 0 320 320">
                 <defs>
-                    <marker id="h-orange3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                        <path d="M0,0 L6,3 L0,6 Z" fill="#e67e22"/>
-                    </marker>
                     <marker id="h-red3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
                         <path d="M0,0 L6,3 L0,6 Z" fill="#e74c3c"/>
                     </marker>
@@ -343,13 +322,7 @@
                         <path d="M0,0 L6,3 L0,6 Z" fill="#2980b9"/>
                     </marker>
                 </defs>
-                <!-- Orange: Nebun h2→e5 (muta, capturează) -->
-                <line id="b3-orange" class="arr"
-                      x1="300" y1="260" x2="185" y2="145"
-                      stroke="#e67e22" stroke-width="8"
-                      stroke-dasharray="170" stroke-dashoffset="170"
-                      marker-end="url(#h-orange3)"/>
-                <!-- Red: Nebun e5 atacă regele h8 (diagonal) -->
+                <!-- Red: Nebun e5 atacă regele negru h8 (diagonal) -->
                 <line id="b3-red" class="arr"
                       x1="180" y1="140" x2="295" y2="25"
                       stroke="#e74c3c" stroke-width="8"
@@ -421,20 +394,19 @@
     });
 
     function showArrows(n) {
-        ['orange', 'red', 'blue'].forEach(color => {
+        ['red', 'blue'].forEach(color => {
             const el = document.getElementById('b' + n + '-' + color);
             if (!el) return;
             const dash = el.getAttribute('stroke-dasharray');
             el.setAttribute('stroke-dashoffset', dash);
             el.classList.remove('show');
-            // Force reflow
-            el.getBoundingClientRect();
+            el.getBoundingClientRect(); // force reflow
             el.classList.add('show');
         });
     }
 
     function hideArrows(n) {
-        ['orange', 'red', 'blue'].forEach(color => {
+        ['red', 'blue'].forEach(color => {
             const el = document.getElementById('b' + n + '-' + color);
             if (!el) return;
             el.classList.remove('show');
@@ -443,18 +415,20 @@
     }
 
     function doDoubleCheck(n) {
-        // Reset mai intai
+        // Reset si ascunde sagetile
         boards[n].position(START[n], false);
         hideArrows(n);
 
-        // Arata sagetile imediat
-        setTimeout(() => showArrows(n), 50);
-
-        // Actualizeaza tabla dupa 700ms
+        // Muta piesa pe tabla
         setTimeout(() => {
             boards[n].position(AFTER[n], true);
+        }, 300);
+
+        // Dupa mutare, arata sagetile catre rege
+        setTimeout(() => {
+            showArrows(n);
             document.getElementById('msg' + n).textContent = MESSAGES[n];
-        }, 700);
+        }, 1100);
     }
 
     function resetEx(n) {
