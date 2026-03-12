@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Șah Mat Animat – Apărarea regelui</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background: #F5A96E;
+            font-family: 'Nunito', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px;
+        }
+
+        .page {
+            max-width: 860px;
+            width: 100%;
+            padding: 40px 60px 50px;
+            position: relative;
+        }
+
+        .corner-piece {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+        }
+        .corner-tl { top: 0; left: 0; }
+        .corner-tr { top: 0; right: 0; transform: scaleX(-1); }
+
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.4em;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            margin-top: 10px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
+            text-align: center;
+        }
+
+        .text-block {
+            font-size: 1.3em;
+            line-height: 1.75;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        ul.defense-list {
+            list-style: none;
+            margin-bottom: 25px;
+            padding-left: 10px;
+        }
+
+        ul.defense-list li {
+            font-size: 1.3em;
+            line-height: 1.75;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        ul.defense-list li::before {
+            content: "○";
+            position: absolute;
+            left: 0;
+            color: #1a3a6b;
+        }
+
+        /* Layout tablă + butoane */
+        .board-section {
+            display: grid;
+            grid-template-columns: 380px 260px;
+            gap: 35px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        /* Board + SVG overlay */
+        .board-wrapper {
+            position: relative;
+            width: 380px;
+            height: 380px;
+        }
+
+        #board { width: 380px !important; height: 380px !important; }
+
+        #arrow-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 380px;
+            height: 380px;
+            pointer-events: none;
+        }
+
+        /* Săgeți SVG animate */
+        .arrow-path {
+            fill: none;
+            stroke-width: 7;
+            stroke-linecap: round;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .arrow-path.visible {
+            opacity: 0.85;
+            animation: drawArrow 0.5s ease-out forwards;
+        }
+
+        @keyframes drawArrow {
+            from { stroke-dashoffset: 300; }
+            to   { stroke-dashoffset: 0; }
+        }
+
+        .arrow-head {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .arrow-head.visible {
+            opacity: 0.85;
+            animation: fadeIn 0.3s 0.4s ease-out both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to   { opacity: 0.85; transform: scale(1); }
+        }
+
+        /* Butoane apărare */
+        .defense-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+            width: 260px;
+        }
+
+        .defense-buttons p {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #1a3a6b;
+            margin-bottom: 5px;
+        }
+
+        .btn-defense {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.15em;
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-defense:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+
+        .btn-red   { background: #e74c3c; color: white; }
+        .btn-green { background: #27ae60; color: white; }
+        .btn-blue  { background: #2980b9; color: white; }
+
+        .btn-reset {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1em;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 2px solid #1a3a6b;
+            background: transparent;
+            color: #1a3a6b;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 5px;
+        }
+
+        .btn-reset:hover { background: #1a3a6b; color: white; }
+
+        #move-message {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #1a3a6b;
+            background: rgba(255,255,255,0.5);
+            border-radius: 12px;
+            padding: 12px 16px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        /* Întrebare */
+        .question-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 35px;
+            margin-top: 10px;
+        }
+
+        .question-row img { width: 70px; height: 70px; }
+
+        .question-text {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.5em;
+            color: #1a3a6b;
+            font-style: italic;
+        }
+
+        /* Navigare */
+        .nav-buttons { display: flex; justify-content: space-between; gap: 20px; }
+
+        .nav-btn {
+            display: inline-block;
+            background: #1a3a6b;
+            color: white;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3em;
+            padding: 13px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 5px 20px rgba(26,58,107,0.4);
+        }
+
+        .nav-btn:hover { background: #2a5aab; transform: translateY(-3px); }
+        .nav-btn.back  { background: rgba(26,58,107,0.5); }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <img src="pieces/wN.svg" class="corner-piece corner-tl" alt="">
+    <img src="pieces/wN.svg" class="corner-piece corner-tr" alt="">
+
+    <h1>Cum își poate apăra regele viața?</h1>
+
+    <div class="text-block">
+        Se obișnuiește, dar nu este obligatoriu, ca atacul la rege să fie anunțat prin cuvântul <strong>șah</strong>.
+    </div>
+
+    <div class="text-block">Apărarea regelui aflat în șah se poate face în trei feluri:</div>
+
+    <ul class="defense-list">
+        <li>prin <strong>capturarea</strong> piesei care a dat șah</li>
+        <li>prin <strong>interpunerea</strong> unei piese între atacator și rege</li>
+        <li>prin <strong>mutarea regelui</strong> pe un câmp în afara bătăii unei piese adverse</li>
+    </ul>
+
+    <div class="board-section">
+        <div class="board-wrapper">
+            <div id="board"></div>
+
+            <!-- SVG arrows overlay -->
+            <svg id="arrow-overlay" viewBox="0 0 380 380">
+                <defs>
+                    <marker id="head-red" markerWidth="6" markerHeight="6"
+                            refX="3" refY="3" orient="auto">
+                        <path d="M0,0 L6,3 L0,6 Z" fill="#e74c3c"/>
+                    </marker>
+                    <marker id="head-green" markerWidth="6" markerHeight="6"
+                            refX="3" refY="3" orient="auto">
+                        <path d="M0,0 L6,3 L0,6 Z" fill="#27ae60"/>
+                    </marker>
+                    <marker id="head-blue" markerWidth="6" markerHeight="6"
+                            refX="3" refY="3" orient="auto">
+                        <path d="M0,0 L6,3 L0,6 Z" fill="#2980b9"/>
+                    </marker>
+                </defs>
+
+                <!-- b6 → c4 (red) — Knight captures bishop -->
+                <line id="arrow-red"
+                      x1="71" y1="119" x2="110" y2="206"
+                      stroke="#e74c3c" stroke-width="7" stroke-linecap="round"
+                      stroke-dasharray="120" stroke-dashoffset="120"
+                      marker-end="url(#head-red)"
+                      class="arrow-path" opacity="0"/>
+
+                <!-- e8 → f7 (green) — Bishop interposes -->
+                <line id="arrow-green"
+                      x1="214" y1="24" x2="262" y2="72"
+                      stroke="#27ae60" stroke-width="7" stroke-linecap="round"
+                      stroke-dasharray="80" stroke-dashoffset="80"
+                      marker-end="url(#head-green)"
+                      class="arrow-path" opacity="0"/>
+
+                <!-- g8 → h8 (blue) — King escapes -->
+                <line id="arrow-blue"
+                      x1="309" y1="24" x2="352" y2="24"
+                      stroke="#2980b9" stroke-width="7" stroke-linecap="round"
+                      stroke-dasharray="60" stroke-dashoffset="60"
+                      marker-end="url(#head-blue)"
+                      class="arrow-path" opacity="0"/>
+            </svg>
+        </div>
+
+        <div class="defense-buttons">
+            <p>Șahul poate fi apărat:</p>
+
+            <button class="btn-defense btn-red"
+                    onclick="showArrowAndMove('red', 'b6c4', this)">
+                ♞ Cxc4 — Calul capturează
+            </button>
+            <button class="btn-defense btn-green"
+                    onclick="showArrowAndMove('green', 'e8f7', this)">
+                ♝ Nf7 — Nebunul face un scut
+            </button>
+            <button class="btn-defense btn-blue"
+                    onclick="showArrowAndMove('blue', 'g8h8', this)">
+                ♚ Rh8 — Regele fuge
+            </button>
+
+            <button class="btn-reset" onclick="resetBoard()">↺ Resetează</button>
+
+            <div id="move-message">Alege o apărare! ☝️</div>
+        </div>
+    </div>
+
+    <!-- Întrebare -->
+    <div class="question-row">
+        <img src="pieces/wN.svg" alt="">
+        <div class="question-text">Voi ce mutare ați face?</div>
+        <img src="pieces/wN.svg" style="transform:scaleX(-1)" alt="">
+    </div>
+
+    <!-- Navigare -->
+    <div class="nav-buttons">
+        <a href="pagina2.html" class="nav-btn back">◀ Înapoi</a>
+        <a href="pagina4.html" class="nav-btn">Înainte ▶</a>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+    const START_FEN = '4b1k1/6pp/1n6/8/2B5/8/5PPP/K7 b - - 0 1';
+
+    const messages = {
+        'red':   '🔴 Calul capturează nebunul care dădea șah — șahul este eliminat prin capturare!',
+        'green': '🟢 Nebunul se interpune pe f7 — se plasează între nebunul alb (c4) și rege (g8), blocând atacul!',
+        'blue':  '🔵 Regele fuge la h8, ieșind din bătaia nebunului alb — regele este în siguranță!'
+    };
+
+    let chess = new Chess(START_FEN);
+    let board = Chessboard('board', {
+        position: START_FEN,
+        pieceTheme: 'pieces/{piece}.svg',
+        showNotation: true
+    });
+
+    function hideAllArrows() {
+        ['arrow-red', 'arrow-green', 'arrow-blue'].forEach(id => {
+            const el = document.getElementById(id);
+            el.style.opacity = '0';
+            el.style.animation = 'none';
+            // reset dashoffset
+            const dashArr = el.getAttribute('stroke-dasharray');
+            el.setAttribute('stroke-dashoffset', dashArr);
+        });
+    }
+
+    function showArrow(color) {
+        const el = document.getElementById('arrow-' + color);
+        const dashArr = el.getAttribute('stroke-dasharray');
+        el.setAttribute('stroke-dashoffset', dashArr);
+        el.style.opacity = '0.9';
+        el.style.animation = 'none';
+        // Force reflow
+        el.getBoundingClientRect();
+        el.style.animation = 'drawArrow 0.5s ease-out forwards';
+    }
+
+    function showArrowAndMove(color, moveStr, btn) {
+        // Reset board first
+        chess = new Chess(START_FEN);
+        board.position(START_FEN, false);
+        hideAllArrows();
+
+        // Show arrow immediately
+        showArrow(color);
+
+        // Make the move after a short delay
+        setTimeout(() => {
+            const from = moveStr.slice(0, 2);
+            const to   = moveStr.slice(2, 4);
+            chess.move({ from, to, promotion: 'q' });
+            board.position(chess.fen(), true);
+            hideAllArrows();
+            document.getElementById('move-message').textContent = messages[color];
+        }, 700);
+    }
+
+    function resetBoard() {
+        chess = new Chess(START_FEN);
+        board.position(START_FEN, true);
+        hideAllArrows();
+        document.getElementById('move-message').textContent = 'Alege o apărare! ☝️';
+    }
+
+</script>
+</body>
+</html>
