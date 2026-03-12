@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Șah Mat Animat – Matul</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background: #F5A96E;
+            font-family: 'Nunito', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px;
+        }
+
+        .page {
+            max-width: 860px;
+            width: 100%;
+            padding: 40px 60px 50px;
+            position: relative;
+        }
+
+        .corner-piece {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+        }
+        .corner-tl { top: 0; left: 0; }
+        .corner-tr { top: 0; right: 0; transform: scaleX(-1); }
+
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.4em;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            margin-top: 10px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
+            text-align: center;
+        }
+
+        .text-block {
+            font-size: 1.3em;
+            line-height: 1.75;
+            color: #1a1a1a;
+            margin-bottom: 22px;
+            text-align: justify;
+        }
+
+        .score-row {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 10px 0 28px;
+        }
+
+        .score-badge {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.4em;
+            background: #1a3a6b;
+            color: white;
+            padding: 8px 28px;
+            border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(26,58,107,0.35);
+        }
+
+        /* Navigare */
+        .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 10px; }
+
+        .nav-btn {
+            display: inline-block;
+            background: #1a3a6b;
+            color: white;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3em;
+            padding: 13px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 5px 20px rgba(26,58,107,0.4);
+        }
+
+        .nav-btn:hover { background: #2a5aab; transform: translateY(-3px); }
+        .nav-btn.back  { background: rgba(26,58,107,0.5); }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <img src="pieces/wN.svg" class="corner-piece corner-tl" alt="">
+    <img src="pieces/wN.svg" class="corner-piece corner-tr" alt="">
+
+    <h1>Matul</h1>
+
+    <div class="text-block">
+        Atunci când regele este atacat și nu are unde să fugă în siguranță, nicio piesă nu se poate interpune între
+        piesa care atacă și rege și piesa care îl atacă pe rege nu poate fi capturată, se spune că este <strong>șah mat</strong>,
+        adică regele este mort.
+    </div>
+
+    <div class="text-block">
+        Așa cum am mai spus, acesta este scopul jocului, de a-l face mat pe regele advers. Pentru aceasta trebuie
+        să ne antrenăm mintea să facem planuri bune și trebuie să ne antrenăm și privirea pentru a recunoaște
+        ceea ce se numește <strong>„Tipare de mat"</strong>! Vom vorbi despre acestea puțin mai târziu.
+    </div>
+
+    <div class="text-block">
+        De asemenea, trebuie înțeles că regele nu se capturează, nu se elimină de pe tablă. În momentul în care
+        este încoltit și nu mai are nicio cale de scăpare, partida de șah se încheie. Jucătorul a cărui armată a
+        fost înfrântă astfel își poate culca regele pe tablă cu un gest elegant, recunoscând astfel victoria adversarului.
+    </div>
+
+    <div class="text-block">
+        La victoria prin mat, jucătorul care câștigă primește un punct, iar cel care pierde, zero puncte:
+    </div>
+
+    <div class="score-row">
+        <div class="score-badge">Albul câștigă: 1-0</div>
+        <div class="score-badge">Negrul câștigă: 0-1</div>
+    </div>
+
+    <div class="text-block">
+        Prezentăm în continuare două situații simple de mat în finalul jocului:
+    </div>
+
+    <!-- Navigare -->
+    <div class="nav-buttons">
+        <a href="pagina4.html" class="nav-btn back">◀ Înapoi</a>
+        <a href="pagina6.html" class="nav-btn">Înainte ▶</a>
+    </div>
+
+</div>
+</body>
+</html>
