@@ -393,57 +393,6 @@ function buildMovesList() {
     });
 }
 
-function getBishopAttacks(fen) {
-    const chess = new Chess(fen);
-    const board = chess.board(); // board[0]=rank8 ... board[7]=rank1
-    const attacked = new Set();
-    for (let r = 0; r < 8; r++) {
-        for (let f = 0; f < 8; f++) {
-            const piece = board[r][f];
-            if (piece && piece.type === 'b' && piece.color === 'w') {
-                for (const [dr, df] of [[-1,-1],[-1,1],[1,-1],[1,1]]) {
-                    let cr = r + dr, cf = f + df;
-                    while (cr >= 0 && cr < 8 && cf >= 0 && cf < 8) {
-                        attacked.add(String.fromCharCode(97 + cf) + (8 - cr));
-                        if (board[cr][cf]) break;
-                        cr += dr; cf += df;
-                    }
-                }
-            }
-        }
-    }
-    return attacked;
-}
-
-function getBlackKingRank(fen) {
-    const chess = new Chess(fen);
-    const board = chess.board();
-    for (let r = 0; r < 8; r++)
-        for (let f = 0; f < 8; f++) {
-            const p = board[r][f];
-            if (p && p.type === 'k' && p.color === 'b') return 8 - r;
-        }
-    return 4;
-}
-
-function getWhiteKingAttacks(fen) {
-    const chess = new Chess(fen);
-    const board = chess.board();
-    const attacked = new Set();
-    for (let r = 0; r < 8; r++)
-        for (let f = 0; f < 8; f++) {
-            const piece = board[r][f];
-            if (piece && piece.type === 'k' && piece.color === 'w') {
-                for (const [dr, df] of [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]) {
-                    const cr = r + dr, cf = f + df;
-                    if (cr >= 0 && cr < 8 && cf >= 0 && cf < 8)
-                        attacked.add(String.fromCharCode(97 + cf) + (8 - cr));
-                }
-            }
-        }
-    return attacked;
-}
-
 function highlightBishopControl() {
     const boardEl = document.getElementById('board');
     boardEl.querySelectorAll('.sq-hl').forEach(el => el.remove());
@@ -460,47 +409,44 @@ function highlightBishopControl() {
             const p = bd[r][f];
             if (p && p.type === 'k' && p.color === 'b') { bkr = r; bkf = f; }
         }
+    if (bkr < 0) return;
 
-    const attacked = new Set();
-
+    // All squares attacked by white pieces
+    const whitePieceAttacks = new Set();
     for (let r = 0; r < 8; r++)
         for (let f = 0; f < 8; f++) {
             const piece = bd[r][f];
             if (!piece || piece.color !== 'w') continue;
-
             if (piece.type === 'b') {
                 for (const [dr, df] of [[-1,-1],[-1,1],[1,-1],[1,1]]) {
-                    const d0 = Math.max(Math.abs(bkr - r),      Math.abs(bkf - f));
-                    const d1 = Math.max(Math.abs(bkr - r - dr), Math.abs(bkf - f - df));
-                    if (d1 >= d0) continue;
                     let cr = r + dr, cf = f + df;
                     while (cr >= 0 && cr < 8 && cf >= 0 && cf < 8) {
-                        attacked.add(String.fromCharCode(97 + cf) + (8 - cr));
+                        whitePieceAttacks.add(cr * 8 + cf);
                         if (bd[cr][cf]) break;
                         cr += dr; cf += df;
                     }
                 }
-            } else if (piece.type === 'k' && currentChapter.highlightKing) {
+            } else if (piece.type === 'k') {
                 for (const [dr, df] of dirs8) {
                     const cr = r + dr, cf = f + df;
-                    if (cr < 0 || cr > 7 || cf < 0 || cf > 7) continue;
-                    if (Math.max(Math.abs(bkr - cr), Math.abs(bkf - cf)) <= 1)
-                        attacked.add(String.fromCharCode(97 + cf) + (8 - cr));
+                    if (cr >= 0 && cr < 8 && cf >= 0 && cf < 8)
+                        whitePieceAttacks.add(cr * 8 + cf);
                 }
             }
         }
 
-    const topHalf = (8 - bkr) >= 5;
-
-    attacked.forEach(sq => {
-        const sqRank = parseInt(sq[1]);
-        if (topHalf ? sqRank < 5 : sqRank > 4) return;
+    // Highlight only squares adjacent to black king that are attacked by white
+    for (const [dr, df] of dirs8) {
+        const cr = bkr + dr, cf = bkf + df;
+        if (cr < 0 || cr >= 8 || cf < 0 || cf >= 8) continue;
+        if (!whitePieceAttacks.has(cr * 8 + cf)) continue;
+        const sq = String.fromCharCode(97 + cf) + (8 - cr);
         const el = boardEl.querySelector('.square-' + sq);
-        if (!el) return;
+        if (!el) continue;
         const hl = document.createElement('div');
         hl.className = 'sq-hl';
         el.appendChild(hl);
-    });
+    }
 }
 
 function goToStep(s) {
