@@ -74,9 +74,9 @@
             align-items: flex-start;
         }
 
-        .board-section { flex: 0 0 auto; position: relative; }
+        .board-section { flex: 0 0 auto; }
         #board { width: 360px; }
-        #board-overlay { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 10; }
+        .sq-hl { position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(210,40,30,0.32);pointer-events:none;z-index:5; }
 
         .controls {
             display: flex;
@@ -226,7 +226,6 @@
     <div class="main-content">
         <div class="board-section">
             <div id="board"></div>
-            <svg id="board-overlay"></svg>
             <div class="controls">
                 <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima pozi&#539;ie">&#9198;</button>
                 <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="&#206;napoi">&#9664;</button>
@@ -446,20 +445,19 @@ function getWhiteKingAttacks(fen) {
 }
 
 function highlightBishopControl() {
-    const overlay = document.getElementById('board-overlay');
-    while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
+    const boardEl = document.getElementById('board');
+    boardEl.querySelectorAll('.sq-hl').forEach(el => el.remove());
 
     const from = currentChapter.highlightFrom || 0;
     if (currentStep < from) return;
 
-    const board = new Chess(positions[currentStep]).board();
+    const bd = new Chess(positions[currentStep]).board();
     const dirs8 = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
 
-    // find black king board coords (board[0]=rank8)
     let bkr = -1, bkf = -1;
     for (let r = 0; r < 8; r++)
         for (let f = 0; f < 8; f++) {
-            const p = board[r][f];
+            const p = bd[r][f];
             if (p && p.type === 'k' && p.color === 'b') { bkr = r; bkf = f; }
         }
 
@@ -467,11 +465,10 @@ function highlightBishopControl() {
 
     for (let r = 0; r < 8; r++)
         for (let f = 0; f < 8; f++) {
-            const piece = board[r][f];
+            const piece = bd[r][f];
             if (!piece || piece.color !== 'w') continue;
 
             if (piece.type === 'b') {
-                // only walk diagonal rays that reduce Chebyshev distance to black king
                 for (const [dr, df] of [[-1,-1],[-1,1],[1,-1],[1,1]]) {
                     const d0 = Math.max(Math.abs(bkr - r),      Math.abs(bkf - f));
                     const d1 = Math.max(Math.abs(bkr - r - dr), Math.abs(bkf - f - df));
@@ -479,17 +476,15 @@ function highlightBishopControl() {
                     let cr = r + dr, cf = f + df;
                     while (cr >= 0 && cr < 8 && cf >= 0 && cf < 8) {
                         attacked.add(String.fromCharCode(97 + cf) + (8 - cr));
-                        if (board[cr][cf]) break;
+                        if (bd[cr][cf]) break;
                         cr += dr; cf += df;
                     }
                 }
             } else if (piece.type === 'k' && currentChapter.highlightKing) {
-                // white king: only squares adjacent to BOTH kings
                 for (const [dr, df] of dirs8) {
                     const cr = r + dr, cf = f + df;
                     if (cr < 0 || cr > 7 || cf < 0 || cf > 7) continue;
-                    const distToBK = Math.max(Math.abs(bkr - cr), Math.abs(bkf - cf));
-                    if (distToBK <= 1)
+                    if (Math.max(Math.abs(bkr - cr), Math.abs(bkf - cf)) <= 1)
                         attacked.add(String.fromCharCode(97 + cf) + (8 - cr));
                 }
             }
@@ -497,29 +492,14 @@ function highlightBishopControl() {
 
     const topHalf = (8 - bkr) >= 5;
 
-    // align SVG using the a8 square (top-left) as anchor
-    const boardEl  = document.getElementById('board');
-    const sectionEl = boardEl.parentElement;
-    const a8El = boardEl.querySelector('.square-a8');
-    if (!a8El) return;
-    const a8r = a8El.getBoundingClientRect();
-    const sr  = sectionEl.getBoundingClientRect();
-    const sz  = a8El.offsetWidth;
-    overlay.style.left = (a8r.left - sr.left) + 'px';
-    overlay.style.top  = (a8r.top  - sr.top)  + 'px';
-    overlay.setAttribute('width',  sz * 8);
-    overlay.setAttribute('height', sz * 8);
-
     attacked.forEach(sq => {
         const sqRank = parseInt(sq[1]);
         if (topHalf ? sqRank < 5 : sqRank > 4) return;
-        const x = (sq.charCodeAt(0) - 97) * sz;
-        const y = (8 - sqRank) * sz;
-        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        rect.setAttribute('x', x); rect.setAttribute('y', y);
-        rect.setAttribute('width', sz); rect.setAttribute('height', sz);
-        rect.setAttribute('fill', 'rgba(210, 40, 30, 0.32)');
-        overlay.appendChild(rect);
+        const el = boardEl.querySelector('.square-' + sq);
+        if (!el) return;
+        const hl = document.createElement('div');
+        hl.className = 'sq-hl';
+        el.appendChild(hl);
     });
 }
 
