@@ -305,16 +305,19 @@ const chapters = [
     {
         title:    "Aten\u0163ie! Regele se apropie de turn",
         subtitle: "Cum reac\u0163ion\u0103m c\u00e2nd regele advers amenin\u0163\u0103 un turn",
-        startFen: "8/8/8/R7/1R6/3k4/8/6K1 b - - 0 1",
-        sanMoves: ["Kc3", "Ra3+", "Kd2", "Rb2+", "Kd1", "Ra1#"],
+        startFen: "8/5K2/8/R7/1R6/2k5/8/8 w - - 0 1",
+        sanMoves: ["Rh4", "Kb3", "Rg5", "Kc3", "Rg3+", "Kd2", "Rh2+", "Ke1", "Rg1#"],
         annotations: [
-            "Regele negru se afl\u0103 pe d3, aproape de turnul alb de pe b4. El se poate apropia pe diagonal\u0103 \u2014 turnul nu ap\u0103r\u0103 diagonalele! Urm\u0103re\u015fte cum albul reac\u0163ioneaz\u0103 la timp.",
-            "Regele negru se mut\u0103 pe c3 \u015fi amenin\u0163\u0103 s\u0103 captureze turnul de pe b4 la mutarea urm\u0103toare! Dac\u0103 albul nu reac\u0163ioneaz\u0103, pierde un turn. Cum se ap\u0103r\u0103?",
-            "Turnul de pe a5 se retrage pe a3 \u015fi d\u0103 \u015fah! Regele negru este for\u0163at s\u0103 se dep\u0103rteze. Reac\u0163ia corect\u0103: mut\u0103 piesa \u00een pericol \u015fi c\u00e2\u015ftig\u0103 un tempo cu \u015fahul!",
-            "Regele negru se retrage la d2. Pericolul a trecut \u2014 albul continu\u0103 lini\u015ftit sc\u0103ri\u0163a.",
-            "Turnul de pe b4 taie linia 2. Regele negru este din nou \u00een \u015fah!",
-            "Regele coboar\u0103 la d1 \u2014 ultima linie!",
-            "\u015eah mat! Linia 1 blocat\u0103, linia 2 blocat\u0103 \u2014 regele nu mai are nicio sc\u0103pare. Concluzie: c\u00e2nd regele advers se apropie de un turn pe diagonal\u0103, mut\u0103-l imediat \u015fi d\u0103 \u015fah dac\u0103 po\u0163i!"
+            "C\u00e2nd regele se apropie de turn trebuie s\u0103 fim aten\u0163i! Fugim cu turnul departe de rege, dar r\u0103m\u00e2nem pe aceea\u015fi linie.",
+            "Turnul de pe b4 sare la h4 \u2014 se \u00eendep\u0103rteaz\u0103 de rege, dar r\u0103m\u00e2ne pe linia 4!",
+            "Dac\u0103 regele advers ne \u00eempiedic\u0103 s\u0103 p\u0103\u015fim cu turnurile pe sc\u0103ri\u0163a noastr\u0103, mut\u0103m sc\u0103ri\u0163a \u00een siguran\u0163\u0103, departe de atacurile lui.",
+            "\u015ei cel\u0103lalt turn se mut\u0103 \u00een siguran\u0163\u0103 pe g5!",
+            "Acum continu\u0103m s\u0103 \u00eel for\u0163\u0103m pe rege s\u0103 ajung\u0103 la marginea tablei, a\u015fa cum ne-am propus de la \u00eenceput.",
+            "\u015eah! Sc\u0103ri\u0163a reintr\u0103 \u00een func\u0163iune.",
+            "Suntem \u00een siguran\u0163\u0103, urm\u0103m planul ini\u0163ial.",
+            "\u015eah...",
+            "\u015ei mat!",
+            "\u015eah mat! Linia 1 blocat\u0103, linia 2 blocat\u0103 \u2014 regele nu mai are nicio sc\u0103pare!"
         ]
     }
 ];
@@ -357,6 +360,7 @@ function loadChapter(idx) {
 function buildMovesList() {
     const container = document.getElementById('movesList');
     container.innerHTML = '';
+    const whiteFirst = currentChapter.startFen.split(' ')[1] === 'w';
     currentChapter.sanMoves.forEach((mv, i) => {
         if (i % 2 === 0) {
             const num = document.createElement('span');
@@ -364,8 +368,9 @@ function buildMovesList() {
             num.textContent = (Math.floor(i / 2) + 1) + '.';
             container.appendChild(num);
         }
+        const isWhite = whiteFirst ? (i % 2 === 0) : (i % 2 !== 0);
         const btn = document.createElement('button');
-        btn.className = 'move-token ' + (i % 2 === 0 ? 'black-move' : 'white-move');
+        btn.className = 'move-token ' + (isWhite ? 'white-move' : 'black-move');
         btn.textContent = toRo(mv);
         btn.dataset.step = i + 1;
         btn.onclick = () => goToStep(i + 1);
