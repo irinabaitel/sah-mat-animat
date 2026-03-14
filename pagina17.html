@@ -417,7 +417,8 @@ function updateUI() {
 
     const box  = document.getElementById('annotationBox');
     const text = currentChapter.annotations[currentStep] || '';
-    const isMat = currentStep === total;
+    const lastMove = currentChapter.sanMoves[currentChapter.sanMoves.length - 1] || '';
+    const isMat = currentStep === total && lastMove.includes('#');
 
     box.className = 'annotation-box' + (isMat ? ' checkmate' : '');
     box.innerHTML = isMat
