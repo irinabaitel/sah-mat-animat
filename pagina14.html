@@ -41,14 +41,14 @@
         .mindmap-wrap {
             position: relative;
             width: 740px;
-            height: 580px;
+            height: 700px;
             margin: 0 auto;
         }
 
         .mm-svg {
             position: absolute;
             top: 0; left: 0;
-            width: 740px; height: 580px;
+            width: 740px; height: 700px;
             pointer-events: none;
         }
 
@@ -117,7 +117,7 @@
             background: #7d3c98;
             border: 3px solid #5b2c6f;
             color: white;
-            top: 400px; left: 530px;
+            top: 360px; left: 530px;
         }
 
         /* ===== NAV ===== */
@@ -162,11 +162,11 @@
             Red   bot-left  left=20 top=390 h≈95         → center (115, 443)
             Purple bot-right left=530 top=400 h≈110      → center (625, 455)
         -->
-        <svg class="mm-svg" viewBox="0 0 740 580">
+        <svg class="mm-svg" viewBox="0 0 740 700">
             <line x1="370" y1="290" x2="210" y2="73"  stroke="#2471a3" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
             <line x1="370" y1="290" x2="530" y2="73"  stroke="#1e8449" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
             <line x1="370" y1="290" x2="210" y2="443" stroke="#b03a2e" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
-            <line x1="370" y1="290" x2="530" y2="455" stroke="#7d3c98" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
+            <line x1="370" y1="290" x2="530" y2="500" stroke="#7d3c98" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
         </svg>
 
         <!-- Center node -->
@@ -187,8 +187,8 @@
             <div class="bt">&#9820; Piesele</div>
             <ul>
                 <li>Dou&#259; turnuri alternez&#259; pe r&#226;nd</li>
-                <li>Unul taie o linie, cel&#259;lalt alta</li>
-                <li>Ca picioarele pe o scar&#259;</li>
+                <li>Un turn taie o linie, cel&#259;lalt pe urm&#259;toarea</li>
+                <li>Ca picioarele pe treptele unei sc&#259;ri</li>
             </ul>
         </div>
 
@@ -196,9 +196,8 @@
         <div class="node node-branch node-red">
             <div class="bt">&#128161; De re&#539;inut!</div>
             <ul>
-                <li>Aten&#539;ie la PAT!</li>
                 <li>Regele advers poate ataca un turn</li>
-                <li>Muta turnul atacat departe,<br>pe aceea&#351;i linie</li>
+                <li>Mut&#259; turnul atacat departe,<br>pe aceea&#351;i linie</li>
             </ul>
         </div>
 
@@ -206,10 +205,10 @@
         <div class="node node-branch node-purple">
             <div class="bt">&#128337; Etapele</div>
             <ul>
-                <li>1. For&#539;eaz&#259; regele spre margine</li>
-                <li>2. Dac&#259; regele atac&#259; un turn,<br>mut&#259;-l!</li>
-                <li>3. Aten&#539;ie la PAT!</li>
-                <li>4. Mat!</li>
+                <li>For&#539;eaz&#259; regele spre margine</li>
+                <li>Dac&#259; regele atac&#259; un turn, mut&#259;-l &#238;n siguran&#539;&#259; pe aceea&#351;i linie, c&#226;t mai departe de rege</li>
+                <li>Dac&#259; &#238;l atac&#259; &#351;i pe al doilea, mut&#259;-l &#351;i pe acesta departe, dar nu pe aceea&#351;i coloan&#259; cu primul</li>
+                <li>Mat!</li>
             </ul>
         </div>
 
