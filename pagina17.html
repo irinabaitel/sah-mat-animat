@@ -497,17 +497,18 @@ function highlightBishopControl() {
 
     const topHalf = (8 - bkr) >= 5;
 
-    // align SVG precisely with the inner chessboard div (accounts for chessboard.js border)
+    // align SVG using the a8 square (top-left) as anchor
     const boardEl  = document.getElementById('board');
-    const innerBoard = boardEl.firstElementChild;
-    const sectionEl  = boardEl.parentElement;
-    const ir = innerBoard.getBoundingClientRect();
-    const sr = sectionEl.getBoundingClientRect();
-    overlay.style.left = (ir.left - sr.left) + 'px';
-    overlay.style.top  = (ir.top  - sr.top)  + 'px';
-    const sz = ir.width / 8;
-    overlay.setAttribute('width',  ir.width);
-    overlay.setAttribute('height', ir.height);
+    const sectionEl = boardEl.parentElement;
+    const a8El = boardEl.querySelector('.square-a8');
+    if (!a8El) return;
+    const a8r = a8El.getBoundingClientRect();
+    const sr  = sectionEl.getBoundingClientRect();
+    const sz  = a8El.offsetWidth;
+    overlay.style.left = (a8r.left - sr.left) + 'px';
+    overlay.style.top  = (a8r.top  - sr.top)  + 'px';
+    overlay.setAttribute('width',  sz * 8);
+    overlay.setAttribute('height', sz * 8);
 
     attacked.forEach(sq => {
         const sqRank = parseInt(sq[1]);
