@@ -454,8 +454,27 @@ function highlightBishopControl() {
 
     const fen = positions[currentStep];
     const attacked = getBishopAttacks(fen);
-    if (currentChapter.highlightKing)
-        getWhiteKingAttacks(fen).forEach(sq => attacked.add(sq));
+    if (currentChapter.highlightKing) {
+        // find squares adjacent to the black king
+        const chess2 = new Chess(fen);
+        const b2 = chess2.board();
+        let bkr = -1, bkf = -1;
+        for (let r = 0; r < 8; r++)
+            for (let f = 0; f < 8; f++) {
+                const p = b2[r][f];
+                if (p && p.type === 'k' && p.color === 'b') { bkr = r; bkf = f; }
+            }
+        const blackKingNeighbors = new Set();
+        for (const [dr, df] of [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]) {
+            const cr = bkr + dr, cf = bkf + df;
+            if (cr >= 0 && cr < 8 && cf >= 0 && cf < 8)
+                blackKingNeighbors.add(String.fromCharCode(97 + cf) + (8 - cr));
+        }
+        // only add white king squares that neighbor the black king
+        getWhiteKingAttacks(fen).forEach(sq => {
+            if (blackKingNeighbors.has(sq)) attacked.add(sq);
+        });
+    }
 
     const kingRank = getBlackKingRank(fen);
     const topHalf = kingRank >= 5;
