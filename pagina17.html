@@ -74,8 +74,9 @@
             align-items: flex-start;
         }
 
-        .board-section { flex: 0 0 auto; }
+        .board-section { flex: 0 0 auto; position: relative; }
         #board { width: 360px; }
+        #board-overlay { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 10; }
 
         .controls {
             display: flex;
@@ -225,6 +226,7 @@
     <div class="main-content">
         <div class="board-section">
             <div id="board"></div>
+            <svg id="board-overlay"></svg>
             <div class="controls">
                 <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima pozi&#539;ie">&#9198;</button>
                 <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="&#206;napoi">&#9664;</button>
@@ -390,6 +392,65 @@ function buildMovesList() {
     });
 }
 
+function getBishopAttacks(fen) {
+    const chess = new Chess(fen);
+    const board = chess.board(); // board[0]=rank8 ... board[7]=rank1
+    const attacked = new Set();
+    for (let r = 0; r < 8; r++) {
+        for (let f = 0; f < 8; f++) {
+            const piece = board[r][f];
+            if (piece && piece.type === 'b' && piece.color === 'w') {
+                for (const [dr, df] of [[-1,-1],[-1,1],[1,-1],[1,1]]) {
+                    let cr = r + dr, cf = f + df;
+                    while (cr >= 0 && cr < 8 && cf >= 0 && cf < 8) {
+                        attacked.add(String.fromCharCode(97 + cf) + (8 - cr));
+                        if (board[cr][cf]) break;
+                        cr += dr; cf += df;
+                    }
+                }
+            }
+        }
+    }
+    return attacked;
+}
+
+function getBlackKingRank(fen) {
+    const chess = new Chess(fen);
+    const board = chess.board();
+    for (let r = 0; r < 8; r++)
+        for (let f = 0; f < 8; f++) {
+            const p = board[r][f];
+            if (p && p.type === 'k' && p.color === 'b') return 8 - r;
+        }
+    return 4;
+}
+
+function highlightBishopControl() {
+    const overlay = document.getElementById('board-overlay');
+    while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
+
+    const fen = positions[currentStep];
+    const attacked = getBishopAttacks(fen);
+    const kingRank = getBlackKingRank(fen);
+    const topHalf = kingRank >= 5;
+
+    const sz = document.getElementById('board').offsetWidth / 8;
+    overlay.setAttribute('width',  sz * 8);
+    overlay.setAttribute('height', sz * 8);
+
+    attacked.forEach(sq => {
+        const sqRank = parseInt(sq[1]);
+        if (topHalf ? sqRank < 5 : sqRank > 4) return;
+        const x = (sq.charCodeAt(0) - 97) * sz;
+        const y = (8 - sqRank) * sz;
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x); rect.setAttribute('y', y);
+        rect.setAttribute('width', sz); rect.setAttribute('height', sz);
+        rect.setAttribute('fill', 'rgba(255, 210, 0, 0.38)');
+        overlay.appendChild(rect);
+    });
+}
+
 function goToStep(s) {
     currentStep = s;
     board.position(positions[s], false);
@@ -424,6 +485,8 @@ function updateUI() {
     box.innerHTML = isMat
         ? '<span class="checkmate-badge">\u2713 \u015eAH MAT!</span><br>' + text
         : text;
+
+    highlightBishopControl();
 }
 
 document.addEventListener('keydown', e => {
