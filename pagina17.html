@@ -314,6 +314,7 @@ const chapters = [
         ]
     },
     {
+        highlightKing: true,
         title:    "4. Spre col\u0163 \u015fi mat",
         subtitle: "For\u0163\u0103m regele \u00een col\u0163 \u015fi d\u0103m mat",
         startFen: "2k5/8/2KB4/3B4/8/8/8/8 w - - 0 1",
@@ -426,6 +427,24 @@ function getBlackKingRank(fen) {
     return 4;
 }
 
+function getWhiteKingAttacks(fen) {
+    const chess = new Chess(fen);
+    const board = chess.board();
+    const attacked = new Set();
+    for (let r = 0; r < 8; r++)
+        for (let f = 0; f < 8; f++) {
+            const piece = board[r][f];
+            if (piece && piece.type === 'k' && piece.color === 'w') {
+                for (const [dr, df] of [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]) {
+                    const cr = r + dr, cf = f + df;
+                    if (cr >= 0 && cr < 8 && cf >= 0 && cf < 8)
+                        attacked.add(String.fromCharCode(97 + cf) + (8 - cr));
+                }
+            }
+        }
+    return attacked;
+}
+
 function highlightBishopControl() {
     const overlay = document.getElementById('board-overlay');
     while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
@@ -435,6 +454,9 @@ function highlightBishopControl() {
 
     const fen = positions[currentStep];
     const attacked = getBishopAttacks(fen);
+    if (currentChapter.highlightKing)
+        getWhiteKingAttacks(fen).forEach(sq => attacked.add(sq));
+
     const kingRank = getBlackKingRank(fen);
     const topHalf = kingRank >= 5;
 
