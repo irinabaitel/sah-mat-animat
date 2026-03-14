@@ -496,9 +496,18 @@ function highlightBishopControl() {
         }
 
     const topHalf = (8 - bkr) >= 5;
-    const sz = document.getElementById('board').offsetWidth / 8;
-    overlay.setAttribute('width',  sz * 8);
-    overlay.setAttribute('height', sz * 8);
+
+    // align SVG precisely with the inner chessboard div (accounts for chessboard.js border)
+    const boardEl  = document.getElementById('board');
+    const innerBoard = boardEl.firstElementChild;
+    const sectionEl  = boardEl.parentElement;
+    const ir = innerBoard.getBoundingClientRect();
+    const sr = sectionEl.getBoundingClientRect();
+    overlay.style.left = (ir.left - sr.left) + 'px';
+    overlay.style.top  = (ir.top  - sr.top)  + 'px';
+    const sz = ir.width / 8;
+    overlay.setAttribute('width',  ir.width);
+    overlay.setAttribute('height', ir.height);
 
     attacked.forEach(sq => {
         const sqRank = parseInt(sq[1]);
