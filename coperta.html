@@ -7,316 +7,401 @@
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
-            width: 100vw; height: 100vh;
-            overflow: hidden;
-            background: linear-gradient(180deg,
-                #6EC6F0 0%, #A8DCF5 40%,
-                #A8DCF5 58%, #8CC85A 70%, #6AAE38 100%);
+            width: 100vw; height: 100vh; overflow: hidden;
+            background: linear-gradient(180deg, #5BB8F5 0%, #8BCFF5 38%, #A8E0A0 62%, #5AAE35 85%, #3A8A20 100%);
         }
-
-        /* ── nori ── */
-        .cloud {
-            position: absolute;
-            background: rgba(255,255,255,0.82);
-            border-radius: 60px;
-            pointer-events: none;
-        }
-        .cloud::before, .cloud::after {
-            content: ''; position: absolute;
-            background: rgba(255,255,255,0.82);
-            border-radius: 50%;
-        }
-        .cloud::before { width:55%; height:160%; top:-45%; left:12%; }
-        .cloud::after  { width:38%; height:130%; top:-30%; right:12%; }
         @keyframes drift { from { left: -220px; } to { left: 110vw; } }
-
-        /* ── piese ── */
-        .pc {
-            position: absolute;
-            width: 72px; height: 84px;
-            pointer-events: none;
-            will-change: transform, left, top;
-        }
-
-        @keyframes wobble {
-            0%,100% { transform: rotate(-8deg) scaleY(0.94); }
-            50%      { transform: rotate( 8deg) scaleY(1.06); }
-        }
-        .pc.running { animation: wobble 0.28s ease-in-out infinite; }
-        .pc.it-piece { animation: wobble 0.38s ease-in-out infinite; }
-
-        @keyframes tag-pop {
-            0%   { transform: scale(1);   opacity: .8; }
-            100% { transform: scale(2.8); opacity: 0; }
-        }
-        .tag-ring {
-            position: absolute;
-            width: 72px; height: 72px;
-            border-radius: 50%;
-            border: 4px solid #ff4444;
-            animation: tag-pop 0.55s ease-out forwards;
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        /* ── titlu ── */
-        .title-wrap {
-            position: absolute;
-            top: 28px; left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            z-index: 30;
-            pointer-events: none;
-        }
-        .title-wrap h1 {
-            font-family: 'Baloo 2', cursive;
-            font-size: clamp(2em, 5vw, 3.8em);
-            color: #1a3a6b;
-            text-shadow: 3px 3px 0 rgba(255,255,255,0.65),
-                         6px 6px 0 rgba(26,58,107,0.12);
-            white-space: nowrap;
-            line-height: 1.1;
-        }
-        .title-wrap .sub {
-            font-family: 'Nunito', sans-serif;
-            font-size: 1.05em;
-            color: #1a3a6b;
-            opacity: .75;
-            font-style: italic;
-        }
-
-        /* ── buton ── */
-        .author {
-            position: absolute;
-            bottom: 108px; left: 50%;
-            transform: translateX(-50%);
-            z-index: 30;
-            color: #1a3a6b;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
-            font-size: .9em;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: 1px 1px 0 rgba(255,255,255,.6);
-            white-space: nowrap;
-        }
-        .btn-start {
-            position: absolute;
-            bottom: 40px; left: 50%;
-            transform: translateX(-50%);
-            z-index: 30;
-            background: #1a3a6b;
-            color: white;
-            font-family: 'Baloo 2', cursive;
-            font-size: 1.55em;
-            padding: 13px 52px;
-            border-radius: 50px;
-            text-decoration: none;
-            box-shadow: 0 6px 24px rgba(26,58,107,.45);
-            transition: all .2s;
-            letter-spacing: 1px;
-            white-space: nowrap;
-        }
-        .btn-start:hover {
-            background: #2a5aab;
-            transform: translateX(-50%) translateY(-4px);
-            box-shadow: 0 10px 30px rgba(26,58,107,.5);
-        }
+        .cloud { position: absolute; background: rgba(255,255,255,0.85); border-radius: 60px; pointer-events: none; }
+        .cloud::before, .cloud::after { content:''; position:absolute; background:rgba(255,255,255,0.85); border-radius:50%; }
+        .cloud::before { width:55%; height:165%; top:-48%; left:12%; }
+        .cloud::after  { width:38%; height:130%; top:-32%; right:12%; }
+        .pc { position:absolute; width:70px; height:108px; pointer-events:none; will-change:left,top; }
+        @keyframes bob { 0%,100%{transform:rotate(-5deg) scaleY(.96)} 50%{transform:rotate(5deg) scaleY(1.04)} }
+        .pc svg { animation: bob .35s ease-in-out infinite; }
+        @keyframes tag-pop { 0%{transform:scale(1);opacity:.9} 100%{transform:scale(3);opacity:0} }
+        .tag-ring { position:absolute; width:70px; height:70px; border-radius:50%; border:4px solid #ff3333; animation:tag-pop .5s ease-out forwards; pointer-events:none; z-index:5; }
+        .title-wrap { position:absolute; top:22px; left:50%; transform:translateX(-50%); text-align:center; z-index:30; pointer-events:none; }
+        .title-wrap h1 { font-family:'Baloo 2',cursive; font-size:clamp(1.8em,4.5vw,3.4em); color:#1a3a6b; text-shadow:3px 3px 0 rgba(255,255,255,.65),5px 5px 0 rgba(26,58,107,.1); white-space:nowrap; }
+        .title-wrap .sub { font-family:'Nunito',sans-serif; font-size:.95em; color:#1a3a6b; opacity:.7; font-style:italic; }
+        .author { position:absolute; bottom:106px; left:50%; transform:translateX(-50%); z-index:30; color:#1a3a6b; font-family:'Nunito',sans-serif; font-weight:700; font-size:.88em; letter-spacing:2px; text-transform:uppercase; text-shadow:1px 1px 0 rgba(255,255,255,.6); white-space:nowrap; }
+        .btn-start { position:absolute; bottom:38px; left:50%; transform:translateX(-50%); z-index:30; background:#1a3a6b; color:white; font-family:'Baloo 2',cursive; font-size:1.5em; padding:12px 50px; border-radius:50px; text-decoration:none; box-shadow:0 6px 24px rgba(26,58,107,.45); transition:all .2s; letter-spacing:1px; white-space:nowrap; }
+        .btn-start:hover { background:#2a5aab; transform:translateX(-50%) translateY(-4px); }
+        #tree-scene { position:absolute; right:10px; bottom:70px; width:290px; height:400px; z-index:2; }
     </style>
 </head>
 <body>
 
-<!-- Nori -->
-<div class="cloud" style="width:150px;height:48px;top:7%;animation:drift 32s linear -6s infinite;"></div>
-<div class="cloud" style="width:95px; height:32px;top:16%;animation:drift 44s linear -22s infinite;"></div>
-<div class="cloud" style="width:190px;height:58px;top:4%;animation:drift 38s linear -14s infinite;"></div>
-<div class="cloud" style="width:110px;height:36px;top:22%;animation:drift 50s linear -35s infinite;"></div>
+<div class="cloud" style="width:150px;height:46px;top:6%;animation:drift 32s linear -5s infinite;"></div>
+<div class="cloud" style="width:95px;height:30px;top:16%;animation:drift 44s linear -22s infinite;"></div>
+<div class="cloud" style="width:185px;height:56px;top:3%;animation:drift 38s linear -14s infinite;"></div>
 
-<!-- Titlu -->
 <div class="title-wrap">
     <h1>&#9822; &#350;ah Mat Animat</h1>
     <div class="sub">&#206;nva&#539;&#259; &#351;ahul juc&#226;ndu-te!</div>
 </div>
-
-<!-- Autor + Buton -->
 <div class="author">Irina-Mihaela B&#259;&#539;el</div>
 <a href="hub.html" class="btn-start">&#9654; &#206;ncepe!</a>
 
+<!-- TREE + ROYALS (static) -->
+<svg id="tree-scene" viewBox="0 0 290 400" xmlns="http://www.w3.org/2000/svg">
+    <!-- ground shadow -->
+    <ellipse cx="145" cy="385" rx="130" ry="16" fill="rgba(0,70,0,0.18)"/>
+    <!-- trunk -->
+    <rect x="121" y="162" width="48" height="220" rx="10" fill="#6B3A1F"/>
+    <rect x="131" y="162" width="12" height="220" rx="6" fill="rgba(255,255,255,0.11)"/>
+    <!-- roots -->
+    <path d="M121,360 Q98,372 78,382" stroke="#6B3A1F" stroke-width="13" fill="none" stroke-linecap="round"/>
+    <path d="M169,360 Q192,372 212,382" stroke="#6B3A1F" stroke-width="13" fill="none" stroke-linecap="round"/>
+    <!-- canopy layers (3D) -->
+    <ellipse cx="145" cy="122" rx="118" ry="88" fill="#1A6E2A"/>
+    <ellipse cx="132" cy="110" rx="108" ry="80" fill="#2B9040"/>
+    <ellipse cx="118" cy="96"  rx="85"  ry="64" fill="#3CB855"/>
+    <ellipse cx="105" cy="84"  rx="55"  ry="40" fill="rgba(90,210,90,0.28)"/>
+    <!-- apples -->
+    <circle cx="82"  cy="86"  r="9" fill="#E03030"/><circle cx="84"  cy="84"  r="3" fill="rgba(255,255,255,0.45)"/>
+    <circle cx="168" cy="78"  r="8" fill="#E03030"/><circle cx="170" cy="76"  r="2.5" fill="rgba(255,255,255,0.45)"/>
+    <circle cx="128" cy="65"  r="7" fill="#E8C030"/><circle cx="130" cy="63"  r="2"   fill="rgba(255,255,255,0.45)"/>
+    <circle cx="105" cy="114" r="6" fill="#E03030"/>
+    <!-- bench -->
+    <rect x="30"  y="302" width="230" height="12" rx="4" fill="#8B5E3C"/>
+    <rect x="30"  y="302" width="230" height="4"  rx="2" fill="rgba(255,255,255,0.15)"/>
+    <rect x="42"  y="314" width="14"  height="44" rx="4" fill="#6B4422"/>
+    <rect x="234" y="314" width="14"  height="44" rx="4" fill="#6B4422"/>
+    <!-- small table -->
+    <rect x="126" y="280" width="38" height="8"  rx="3" fill="#A07848"/>
+    <rect x="138" y="288" width="14" height="22" rx="3" fill="#8B6535"/>
+    <!-- teapot -->
+    <ellipse cx="145" cy="276" rx="17" ry="11" fill="#E8D5A0"/>
+    <ellipse cx="145" cy="272" rx="15" ry="9"  fill="#F5E5BC"/>
+    <path d="M162 272 Q172 270 170 278 Q167 283 162 280" stroke="#C8A870" stroke-width="2.5" fill="none"/>
+    <rect x="138" y="264" width="14" height="7" rx="3" fill="#C8A870"/>
+
+    <!-- KING (left) -->
+    <!-- body -->
+    <ellipse cx="76"  cy="288" rx="30" ry="18" fill="#F4C430"/>
+    <ellipse cx="88"  cy="285" rx="16" ry="10" fill="rgba(160,90,0,0.25)"/>
+    <ellipse cx="64"  cy="281" rx="13" ry="8"  fill="rgba(255,255,255,0.28)"/>
+    <!-- head -->
+    <circle  cx="76"  cy="256" r="26"  fill="#F4C430"/>
+    <ellipse cx="88"  cy="266" rx="18" ry="13" fill="rgba(160,90,0,0.22)"/>
+    <ellipse cx="63"  cy="246" rx="15" ry="9"  fill="rgba(255,255,255,0.32)"/>
+    <circle  cx="61"  cy="245" r="5"   fill="white" opacity=".35"/>
+    <!-- crown -->
+    <rect x="55" y="234" width="42" height="10" rx="2" fill="#DAA520"/>
+    <rect x="55" y="234" width="42" height="4"  rx="2" fill="rgba(255,255,255,0.28)"/>
+    <polygon points="58,234 64,220 70,234" fill="#DAA520"/>
+    <polygon points="70,234 76,218 82,234" fill="#FFD700"/>
+    <polygon points="82,234 88,220 94,234" fill="#DAA520"/>
+    <circle cx="64" cy="223" r="3.5" fill="#FF4444"/>
+    <circle cx="76" cy="220" r="3.5" fill="#4488FF"/>
+    <circle cx="88" cy="223" r="3.5" fill="#44CC44"/>
+    <!-- king face (satisfied) -->
+    <circle cx="67" cy="252" r="4"   fill="#B8860B"/>
+    <circle cx="85" cy="252" r="4"   fill="#B8860B"/>
+    <circle cx="68" cy="251" r="1.5" fill="white" opacity=".7"/>
+    <circle cx="86" cy="251" r="1.5" fill="white" opacity=".7"/>
+    <circle cx="65" cy="258" r="5.5" fill="rgba(255,150,100,0.42)"/>
+    <circle cx="87" cy="258" r="5.5" fill="rgba(255,150,100,0.42)"/>
+    <path d="M 65 261 Q 76 269 87 261" stroke="#B8860B" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <!-- king arm + teacup -->
+    <path d="M 94 284 Q 112 276 122 272" stroke="#F4C430" stroke-width="11" stroke-linecap="round" fill="none"/>
+    <ellipse cx="126" cy="270" rx="15" ry="9"  fill="#E8F0FF"/>
+    <ellipse cx="126" cy="266" rx="13" ry="7"  fill="#F5F8FF"/>
+    <path d="M 141 268 Q 148 266 147 274 Q 144 278 141 275" stroke="#AAB8CC" stroke-width="2" fill="none"/>
+    <path d="M 121 260 Q 118 252 121 246" stroke="rgba(210,210,210,0.7)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 128 258 Q 125 250 128 244" stroke="rgba(210,210,210,0.6)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- king speech bubble -->
+    <rect x="8"  y="204" width="80" height="28" rx="11" fill="rgba(255,255,255,0.88)"/>
+    <polygon points="42,232 52,244 52,232" fill="rgba(255,255,255,0.88)"/>
+    <text x="48" y="222" text-anchor="middle" font-size="11.5" font-family="Nunito,sans-serif" fill="#5A3A00">Relaxxx... &#9749;</text>
+
+    <!-- QUEEN (right) -->
+    <!-- body -->
+    <ellipse cx="214" cy="288" rx="30" ry="18" fill="#9B59B6"/>
+    <ellipse cx="226" cy="285" rx="16" ry="10" fill="rgba(50,0,90,0.25)"/>
+    <ellipse cx="202" cy="281" rx="13" ry="8"  fill="rgba(255,255,255,0.28)"/>
+    <!-- head -->
+    <circle  cx="214" cy="256" r="26"  fill="#9B59B6"/>
+    <ellipse cx="226" cy="266" rx="18" ry="13" fill="rgba(50,0,90,0.22)"/>
+    <ellipse cx="201" cy="246" rx="15" ry="9"  fill="rgba(255,255,255,0.32)"/>
+    <circle  cx="199" cy="245" r="5"   fill="white" opacity=".35"/>
+    <!-- tiara -->
+    <path d="M 196 238 Q 202 222 208 238 Q 214 220 220 238 Q 226 222 232 238 Z" fill="#FFD700" stroke="#DAA520" stroke-width="1.2"/>
+    <rect x="193" y="238" width="42" height="7" rx="2" fill="#DAA520"/>
+    <circle cx="208" cy="226" r="3.5" fill="#FF44AA"/>
+    <circle cx="214" cy="223" r="4"   fill="#CC44FF"/>
+    <circle cx="220" cy="226" r="3.5" fill="#FF44AA"/>
+    <!-- queen face -->
+    <path d="M 204 251 Q 207.5 246 211 251" stroke="#6C3483" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M 217 251 Q 220.5 246 224 251" stroke="#6C3483" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <!-- eyelashes -->
+    <path d="M 204 249 L 201 245" stroke="#6C3483" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 210 248 L 209 244" stroke="#6C3483" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 217 248 L 216 244" stroke="#6C3483" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 223 249 L 226 245" stroke="#6C3483" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="203" cy="258" r="5.5" fill="rgba(255,150,200,0.45)"/>
+    <circle cx="225" cy="258" r="5.5" fill="rgba(255,150,200,0.45)"/>
+    <path d="M 203 261 Q 214 269 225 261" stroke="#6C3483" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <!-- queen arm + teacup -->
+    <path d="M 196 284 Q 178 276 168 272" stroke="#9B59B6" stroke-width="11" stroke-linecap="round" fill="none"/>
+    <ellipse cx="164" cy="270" rx="15" ry="9"  fill="#FFE0F0"/>
+    <ellipse cx="164" cy="266" rx="13" ry="7"  fill="#FFF0F8"/>
+    <path d="M 149 268 Q 142 266 143 274 Q 146 278 149 275" stroke="#CCAABB" stroke-width="2" fill="none"/>
+    <path d="M 159 260 Q 162 252 159 246" stroke="rgba(210,210,210,0.7)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 166 258 Q 169 250 166 244" stroke="rgba(210,210,210,0.6)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- queen speech bubble -->
+    <rect x="202" y="204" width="84" height="28" rx="11" fill="rgba(255,255,255,0.88)"/>
+    <polygon points="228,232 238,244 238,232" fill="rgba(255,255,255,0.88)"/>
+    <text x="244" y="222" text-anchor="middle" font-size="11.5" font-family="Nunito,sans-serif" fill="#4A1070">Ceai? &#9749;</text>
+</svg>
+
 <script>
-/* ───────────────────────────────────────────────
-   Piesele ─ date vizuale
-─────────────────────────────────────────────── */
-const PIECE_DEF = [
-    { hat:'♔', name:'Regele',  fill:'#F4C430', stroke:'#B8860B' },
-    { hat:'♛', name:'Regina',  fill:'#A56ABD', stroke:'#6C3483' },
-    { hat:'♜', name:'Turnul',  fill:'#4A9FD4', stroke:'#1A5276' },
-    { hat:'♝', name:'Nebunul', fill:'#4ABD7A', stroke:'#1E8449' },
-    { hat:'♞', name:'Calul',   fill:'#E8734A', stroke:'#A93226' },
+/* ── Piece definitions ── */
+const PIECES = [
+    { type:'pawn',   fill:'#F5DEB3', sh:'#8B6914', hi:'#FFFAEE', lc:'#D4A860', name:'Pion 1'   },
+    { type:'pawn',   fill:'#EED5A0', sh:'#7A5810', hi:'#FFF5DC', lc:'#C89850', name:'Pion 2'   },
+    { type:'knight', fill:'#C4793F', sh:'#5C2E00', hi:'#E8A870', lc:'#A05828', name:'Calul'    },
+    { type:'bishop', fill:'#9B7FD4', sh:'#4A2880', hi:'#C0A8FF', lc:'#7B5FBF', name:'Nebunul'  },
+    { type:'rook',   fill:'#A0A8B8', sh:'#404858', hi:'#D8E0F0', lc:'#707888', name:'Turnul'   },
 ];
 
-const W = () => window.innerWidth;
-const H = () => window.innerHeight;
-const SIZE = 72;
-const TITLE_SAFE = 140;   // nu intră sub titlu
-const BOTTOM_SAFE = 160;  // nu intră pe buton
+/* ── SMIL legs helper ── */
+function legs(lc, sh, phase) {
+    const [a1, a2] = phase ? [22, -22] : [-22, 22];
+    const d = 0.42;
+    return `
+    <g><animateTransform attributeName="transform" type="rotate"
+        values="${a1} 22 76;${a2} 22 76;${a1} 22 76" dur="${d}s" repeatCount="indefinite"/>
+        <rect x="16" y="76" width="12" height="26" rx="6" fill="${lc}"/>
+        <rect x="22" y="76" width="5"  height="26" rx="3" fill="${sh}" opacity=".22"/>
+        <ellipse cx="27" cy="100" rx="9" ry="5" fill="${lc}"/>
+    </g>
+    <g><animateTransform attributeName="transform" type="rotate"
+        values="${a2} 48 76;${a1} 48 76;${a2} 48 76" dur="${d}s" repeatCount="indefinite"/>
+        <rect x="42" y="76" width="12" height="26" rx="6" fill="${lc}"/>
+        <rect x="42" y="76" width="5"  height="26" rx="3" fill="rgba(255,255,255,.18)"/>
+        <ellipse cx="43" cy="100" rx="9" ry="5" fill="${lc}"/>
+    </g>`;
+}
 
-/* ── generează SVG personaj ── */
-function makeSvg(pd, isIt) {
-    const f = pd.fill, s = pd.stroke;
-    return `<svg viewBox="0 0 72 86" xmlns="http://www.w3.org/2000/svg">
-        <!-- umbra -->
-        <ellipse cx="36" cy="82" rx="17" ry="5" fill="rgba(0,0,0,0.13)"/>
-        <!-- cerc IT -->
-        ${isIt ? `<circle cx="36" cy="44" r="35" fill="rgba(255,60,60,0.10)"
-            stroke="rgba(255,60,60,0.65)" stroke-width="2.5" stroke-dasharray="5,3"/>` : ''}
-        <!-- mâna stânga -->
-        <ellipse cx="9"  cy="54" rx="10" ry="6" fill="${f}" stroke="${s}" stroke-width="1.5"
-            transform="rotate(-35,9,54)"/>
-        <!-- mâna dreapta -->
-        <ellipse cx="63" cy="54" rx="10" ry="6" fill="${f}" stroke="${s}" stroke-width="1.5"
-            transform="rotate(35,63,54)"/>
-        <!-- corp -->
-        <ellipse cx="36" cy="59" rx="19" ry="15" fill="${f}" stroke="${s}" stroke-width="1.5"/>
-        <!-- gât -->
-        <rect x="29" y="41" width="14" height="9" rx="5" fill="${f}" stroke="${s}" stroke-width="1"/>
-        <!-- cap -->
-        <circle cx="36" cy="31" r="21" fill="${f}" stroke="${s}" stroke-width="1.8"/>
-        <!-- ochi fericiți (arcuri) -->
-        <path d="M 24 28 Q 27.5 23 31 28" stroke="${s}" stroke-width="2.8"
-            fill="none" stroke-linecap="round"/>
-        <path d="M 41 28 Q 44.5 23 48 28" stroke="${s}" stroke-width="2.8"
-            fill="none" stroke-linecap="round"/>
-        <!-- obrăjori -->
-        <circle cx="21" cy="34" r="5" fill="rgba(255,160,160,0.45)"/>
-        <circle cx="51" cy="34" r="5" fill="rgba(255,160,160,0.45)"/>
-        <!-- zâmbet -->
-        <path d="M 24 37 Q 36 47 48 37" stroke="${s}" stroke-width="2.2"
-            fill="none" stroke-linecap="round"/>
-        <!-- piesă (pălărie) -->
-        <text x="36" y="13" text-anchor="middle"
-            font-size="16" font-family="serif" fill="${s}">${pd.hat}</text>
-        <!-- badge IT! -->
-        ${isIt ? `<text x="55" y="10" font-size="12" font-weight="900"
-            font-family="'Nunito',sans-serif"
-            stroke="white" stroke-width="3" paint-order="stroke"
-            fill="#cc0000">IT!</text>` : ''}
+/* ── face helper ── */
+function face(cx, cy, r, sc) {
+    const lx = cx - r*.35, rx2 = cx + r*.35, ey = cy - r*.08, ea = r*.22;
+    return `
+    <path d="M${lx-ea} ${ey+2} Q${lx} ${ey-r*.22} ${lx+ea} ${ey+2}"
+        stroke="${sc}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M${rx2-ea} ${ey+2} Q${rx2} ${ey-r*.22} ${rx2+ea} ${ey+2}"
+        stroke="${sc}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <circle cx="${lx+1}"  cy="${ey+r*.22}" r="${r*.22}" fill="rgba(255,150,150,.45)"/>
+    <circle cx="${rx2-1}" cy="${ey+r*.22}" r="${r*.22}" fill="rgba(255,150,150,.45)"/>
+    <path d="M${cx-r*.38} ${cy+r*.16} Q${cx} ${cy+r*.48} ${cx+r*.38} ${cy+r*.16}"
+        stroke="${sc}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+}
+
+/* ── IT badge ── */
+function it(isIt) {
+    return isIt ? `<circle cx="35" cy="50" r="37" fill="rgba(255,50,50,.10)"
+        stroke="rgba(255,50,50,.60)" stroke-width="2.5" stroke-dasharray="5,3"/>
+    <text x="57" y="10" font-size="12" font-weight="900" font-family="Nunito,sans-serif"
+        stroke="white" stroke-width="3" paint-order="stroke" fill="#cc0000">IT!</text>` : '';
+}
+
+/* ── SVG: PAWN ── */
+function makePawn(pd, isIt, phase) {
+    const {fill:f, sh:s, hi:h, lc} = pd;
+    return `<svg viewBox="0 0 70 108" xmlns="http://www.w3.org/2000/svg">
+    ${it(isIt)}
+    ${legs(lc, s, phase)}
+    <ellipse cx="35" cy="80" rx="22" ry="7" fill="rgba(0,0,0,.10)"/>
+    <rect x="13" y="62" width="44" height="16" rx="6" fill="${f}"/>
+    <ellipse cx="35" cy="62" rx="22" ry="6" fill="${h}"/>
+    <ellipse cx="47" cy="70" rx="10" ry="7" fill="${s}" opacity=".22"/>
+    <ellipse cx="11" cy="62" rx="10" ry="6" fill="${f}" transform="rotate(-28,11,62)"/>
+    <ellipse cx="59" cy="62" rx="10" ry="6" fill="${f}" transform="rotate(28,59,62)"/>
+    <rect x="25" y="46" width="20" height="18" rx="6" fill="${f}"/>
+    <rect x="39" y="46" width="6"  height="18" rx="3" fill="${s}" opacity=".22"/>
+    <rect x="25" y="46" width="6"  height="18" rx="3" fill="${h}" opacity=".42"/>
+    <circle cx="35" cy="26" r="22" fill="${f}"/>
+    <ellipse cx="46" cy="36" rx="17" ry="13" fill="${s}" opacity=".24"/>
+    <ellipse cx="26" cy="17" rx="13" ry="9"  fill="${h}" opacity=".55"/>
+    <circle  cx="24" cy="16" r="4.5" fill="white" opacity=".42"/>
+    ${face(35, 26, 22, s)}
     </svg>`;
 }
 
-/* ── stare joc ── */
-let pieces = [];
-let itIdx  = 0;
-let cooldown = 0;      // frames cât nu poate eticheta
-let lastTagged = -1;   // piesa tocmai etichetată (imunitate)
+/* ── SVG: KNIGHT ── */
+function makeKnight(pd, isIt) {
+    const {fill:f, sh:s, hi:h, lc} = pd;
+    return `<svg viewBox="0 0 70 108" xmlns="http://www.w3.org/2000/svg">
+    ${it(isIt)}
+    ${legs(lc, s, true)}
+    <ellipse cx="35" cy="80" rx="20" ry="7" fill="rgba(0,0,0,.10)"/>
+    <rect x="15" y="62" width="40" height="16" rx="8" fill="${f}"/>
+    <ellipse cx="35" cy="62" rx="20" ry="6" fill="${h}"/>
+    <ellipse cx="10" cy="65" rx="10" ry="6" fill="${f}" transform="rotate(-22,10,65)"/>
+    <ellipse cx="60" cy="65" rx="10" ry="6" fill="${f}" transform="rotate(22,60,65)"/>
+    <path d="M26,62 Q22,46 28,31 Q34,18 46,14 Q54,12 56,20 Q58,28 52,36 Q46,44 40,52 Q34,58 35,62Z"
+        fill="${f}" stroke="${s}" stroke-width="1.5"/>
+    <path d="M30,58 Q26,48 30,37" stroke="${h}" stroke-width="4" fill="none" opacity=".45" stroke-linecap="round"/>
+    <path d="M46,48 Q52,40 52,30" stroke="${s}" stroke-width="3" fill="none" opacity=".18" stroke-linecap="round"/>
+    <path d="M28,32 Q22,26 24,18 Q26,12 31,15" fill="${s}" opacity=".4"/>
+    <path d="M30,40 Q24,35 26,28" stroke="${s}" stroke-width="4" fill="none" opacity=".35" stroke-linecap="round"/>
+    <circle cx="47" cy="22" r="5.5" fill="white"/>
+    <circle cx="48" cy="22" r="3.5" fill="${s}"/>
+    <circle cx="49" cy="21" r="1.5" fill="white" opacity=".85"/>
+    <ellipse cx="53" cy="32" rx="3" ry="2" fill="${s}" opacity=".5" transform="rotate(30,53,32)"/>
+    <circle cx="42" cy="28" r="5" fill="rgba(255,150,100,.35)"/>
+    <polygon points="32,16 27,7 37,12" fill="${f}" stroke="${s}" stroke-width="1"/>
+    <path d="M44,14 Q52,12 56,20" stroke="${hi}" stroke-width="2" fill="none" opacity=".3"/>
+    </svg>`.replace('${hi}', h);
+}
 
-function init() {
-    const cx = W() / 2, cy = (H() - TITLE_SAFE - BOTTOM_SAFE) / 2 + TITLE_SAFE;
-    PIECE_DEF.forEach((pd, i) => {
-        const angle = (i / PIECE_DEF.length) * Math.PI * 2;
-        const r = Math.min(W(), H()) * 0.28;
-        const el = document.createElement('div');
-        el.className = 'pc running';
-        el.id = 'pc' + i;
-        document.body.appendChild(el);
-        const speed = 1.6 + Math.random() * 0.6;
-        const va = angle + Math.PI; // pornesc cu viteza înspre interior
-        pieces.push({
-            el, pd,
-            x: cx + Math.cos(angle) * r - SIZE/2,
-            y: cy + Math.sin(angle) * r - SIZE/2,
-            vx: Math.cos(va) * speed,
-            vy: Math.sin(va) * speed,
-        });
-    });
-    itIdx = 0;
-    refresh();
-    loop();
+/* ── SVG: BISHOP ── */
+function makeBishop(pd, isIt) {
+    const {fill:f, sh:s, hi:h, lc} = pd;
+    return `<svg viewBox="0 0 70 108" xmlns="http://www.w3.org/2000/svg">
+    ${it(isIt)}
+    ${legs(lc, s, false)}
+    <ellipse cx="35" cy="80" rx="22" ry="7" fill="rgba(0,0,0,.10)"/>
+    <rect x="13" y="62" width="44" height="18" rx="6" fill="${f}"/>
+    <ellipse cx="35" cy="62" rx="22" ry="6" fill="${h}"/>
+    <ellipse cx="47" cy="70" rx="11" ry="7" fill="${s}" opacity=".2"/>
+    <ellipse cx="11" cy="67" rx="10" ry="6" fill="${f}" transform="rotate(-25,11,67)"/>
+    <ellipse cx="59" cy="67" rx="10" ry="6" fill="${f}" transform="rotate(25,59,67)"/>
+    <path d="M22,62 Q20,48 24,36 Q28,24 35,20 Q42,24 46,36 Q50,48 48,62Z"
+        fill="${f}" stroke="${s}" stroke-width="1.5"/>
+    <path d="M26,60 Q24,50 26,40" stroke="${h}" stroke-width="4" fill="none" opacity=".38" stroke-linecap="round"/>
+    <path d="M44,60 Q46,50 44,40" stroke="${s}" stroke-width="3" fill="none" opacity=".18" stroke-linecap="round"/>
+    <rect x="32" y="44" width="6" height="12" rx="2" fill="${s}" opacity=".45"/>
+    <rect x="28" y="48" width="14" height="5"  rx="2" fill="${s}" opacity=".45"/>
+    <circle cx="35" cy="30" r="14" fill="${f}"/>
+    <ellipse cx="42" cy="37" rx="10" ry="8" fill="${s}" opacity=".22"/>
+    <ellipse cx="28" cy="23" rx="9"  ry="6" fill="${h}" opacity=".55"/>
+    <path d="M23,26 Q26,11 35,5 Q44,11 47,26" fill="${f}" stroke="${s}" stroke-width="1.5"/>
+    <path d="M27,22 Q29,11 35,7" stroke="${h}" stroke-width="3" fill="none" opacity=".42" stroke-linecap="round"/>
+    <path d="M43,22 Q41,11 35,7" stroke="${s}" stroke-width="2" fill="none" opacity=".18" stroke-linecap="round"/>
+    <rect x="23" y="25" width="24" height="5" rx="2" fill="${s}" opacity=".38"/>
+    ${face(35, 30, 14, s)}
+    </svg>`;
+}
+
+/* ── SVG: ROOK ── */
+function makeRook(pd, isIt) {
+    const {fill:f, sh:s, hi:h, lc} = pd;
+    return `<svg viewBox="0 0 70 108" xmlns="http://www.w3.org/2000/svg">
+    ${it(isIt)}
+    ${legs(lc, s, true)}
+    <ellipse cx="35" cy="80" rx="22" ry="7" fill="rgba(0,0,0,.10)"/>
+    <rect x="13" y="64" width="44" height="16" rx="5" fill="${f}"/>
+    <ellipse cx="35" cy="64" rx="22" ry="6" fill="${h}"/>
+    <rect x="43" y="64" width="14" height="16" rx="4" fill="${s}" opacity=".18"/>
+    <ellipse cx="11" cy="68" rx="10" ry="6" fill="${f}" transform="rotate(-20,11,68)"/>
+    <ellipse cx="59" cy="68" rx="10" ry="6" fill="${f}" transform="rotate(20,59,68)"/>
+    <rect x="18" y="28" width="34" height="38" rx="4" fill="${f}" stroke="${s}" stroke-width="1.5"/>
+    <rect x="30" y="28" width="8"  height="38" fill="${h}" opacity=".22"/>
+    <rect x="42" y="28" width="10" height="38" rx="3" fill="${s}" opacity=".16"/>
+    <rect x="18" y="16" width="10" height="16" rx="2" fill="${f}" stroke="${s}" stroke-width="1.5"/>
+    <rect x="30" y="16" width="10" height="16" rx="2" fill="${f}" stroke="${s}" stroke-width="1.5"/>
+    <rect x="42" y="16" width="10" height="16" rx="2" fill="${f}" stroke="${s}" stroke-width="1.5"/>
+    <rect x="19" y="17" width="4" height="11" rx="1" fill="${h}" opacity=".38"/>
+    <rect x="31" y="17" width="4" height="11" rx="1" fill="${h}" opacity=".38"/>
+    <rect x="43" y="17" width="4" height="11" rx="1" fill="${h}" opacity=".38"/>
+    <rect x="22" y="37" width="26" height="20" rx="4" fill="rgba(50,80,160,.18)" stroke="${s}" stroke-width="1.2"/>
+    <circle cx="29" cy="45" r="4.5" fill="white"/>
+    <circle cx="41" cy="45" r="4.5" fill="white"/>
+    <circle cx="30" cy="45" r="2.8" fill="${s}"/>
+    <circle cx="42" cy="45" r="2.8" fill="${s}"/>
+    <circle cx="31" cy="44" r="1.1" fill="white" opacity=".85"/>
+    <circle cx="43" cy="44" r="1.1" fill="white" opacity=".85"/>
+    <circle cx="27" cy="51" r="4" fill="rgba(150,200,255,.4)"/>
+    <circle cx="43" cy="51" r="4" fill="rgba(150,200,255,.4)"/>
+    <path d="M27 53 Q35 60 43 53" stroke="${s}" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>`;
+}
+
+/* ── GAME ── */
+const SW = 70, SH = 108, MARGIN = 30;
+const TITLE_SAFE = 130, BOT_SAFE = 165, RIGHT_SAFE = 305;
+let pieces = [], itIdx = 0, cooldown = 0, lastTagged = -1;
+
+function makeSvg(pd, isIt, idx) {
+    const ph = idx % 2 === 0;
+    if (pd.type === 'pawn')   return makePawn(pd, isIt, ph);
+    if (pd.type === 'knight') return makeKnight(pd, isIt);
+    if (pd.type === 'bishop') return makeBishop(pd, isIt);
+    if (pd.type === 'rook')   return makeRook(pd, isIt);
+    return makePawn(pd, isIt, ph);
 }
 
 function refresh() {
-    pieces.forEach((p, i) => {
-        p.el.innerHTML = makeSvg(p.pd, i === itIdx);
-        p.el.className = 'pc ' + (i === itIdx ? 'it-piece' : 'running');
-    });
+    pieces.forEach((p, i) => p.el.innerHTML = makeSvg(p.pd, i === itIdx, i));
 }
 
-function dist(a, b) {
-    return Math.hypot(a.x - b.x, a.y - b.y);
+function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+function init() {
+    const pw = window.innerWidth - RIGHT_SAFE;
+    const ph2 = window.innerHeight - TITLE_SAFE - BOT_SAFE;
+    PIECES.forEach((pd, i) => {
+        const el = document.createElement('div');
+        el.className = 'pc';
+        document.body.appendChild(el);
+        const ang = (i / PIECES.length) * Math.PI * 2;
+        const r = Math.min(pw, ph2) * 0.28;
+        pieces.push({ el, pd, i,
+            x: pw/2 + Math.cos(ang)*r - SW/2,
+            y: TITLE_SAFE + ph2/2 + Math.sin(ang)*r - SH/2,
+            vx: Math.cos(ang + Math.PI) * 1.8,
+            vy: Math.sin(ang + Math.PI) * 1.8,
+        });
+    });
+    refresh();
+    requestAnimationFrame(loop);
 }
 
 function loop() {
-    const w = W(), h = H();
-    const maxX = w - SIZE - 10;
-    const minY = TITLE_SAFE + 10;
-    const maxY = h - BOTTOM_SAFE - SIZE;
-
+    const w = window.innerWidth, h = window.innerHeight;
+    const maxX = w - RIGHT_SAFE - SW - 5;
+    const minY = TITLE_SAFE + 5, maxY = h - BOT_SAFE - SH;
+    const IT_SPD = 2.0, FL_SPD = 2.8;
     if (cooldown > 0) cooldown--;
 
     const IT = pieces[itIdx];
-    const IT_SPD = 2.0, FLEE_SPD = 2.8;
-
-    /* IT aleargă spre cea mai apropiată piesă */
-    let nearest = null, nearestD = Infinity;
-    pieces.forEach((p, i) => {
-        if (i === itIdx) return;
-        const d = dist(IT, p);
-        if (d < nearestD) { nearestD = d; nearest = p; }
-    });
-    if (nearest) {
-        const dx = nearest.x - IT.x, dy = nearest.y - IT.y;
-        const d = Math.hypot(dx, dy) || 1;
-        IT.vx = IT.vx * 0.88 + dx / d * IT_SPD * 0.12;
-        IT.vy = IT.vy * 0.88 + dy / d * IT_SPD * 0.12;
-        const spd = Math.hypot(IT.vx, IT.vy);
-        if (spd > IT_SPD) { IT.vx = IT.vx/spd*IT_SPD; IT.vy = IT.vy/spd*IT_SPD; }
+    let near = null, nearD = Infinity;
+    pieces.forEach((p, i) => { if (i !== itIdx) { const d = dist(IT, p); if (d < nearD) { nearD = d; near = p; } } });
+    if (near) {
+        const dx = near.x - IT.x, dy = near.y - IT.y, d = Math.hypot(dx, dy) || 1;
+        IT.vx = IT.vx*.88 + dx/d*IT_SPD*.12; IT.vy = IT.vy*.88 + dy/d*IT_SPD*.12;
+        const sp = Math.hypot(IT.vx, IT.vy); if (sp > IT_SPD) { IT.vx = IT.vx/sp*IT_SPD; IT.vy = IT.vy/sp*IT_SPD; }
     }
-
-    /* celelalte piese fug */
     pieces.forEach((p, i) => {
         if (i === itIdx) return;
-        const dx = p.x - IT.x, dy = p.y - IT.y;
-        const d = Math.hypot(dx, dy) || 1;
-        const urgency = Math.max(0, (220 - d) / 220);
-        p.vx = p.vx * 0.9 + (dx/d * urgency * FLEE_SPD + (Math.random()-.5) * .12) * 0.10;
-        p.vy = p.vy * 0.9 + (dy/d * urgency * FLEE_SPD + (Math.random()-.5) * .12) * 0.10;
-        const spd = Math.hypot(p.vx, p.vy);
-        if (spd > FLEE_SPD) { p.vx = p.vx/spd*FLEE_SPD; p.vy = p.vy/spd*FLEE_SPD; }
+        const dx = p.x - IT.x, dy = p.y - IT.y, d = Math.hypot(dx, dy) || 1;
+        const u = Math.max(0, (220-d)/220);
+        p.vx = p.vx*.9 + (dx/d*u*FL_SPD + (Math.random()-.5)*.1)*.10;
+        p.vy = p.vy*.9 + (dy/d*u*FL_SPD + (Math.random()-.5)*.1)*.10;
+        const sp = Math.hypot(p.vx, p.vy); if (sp > FL_SPD) { p.vx = p.vx/sp*FL_SPD; p.vy = p.vy/sp*FL_SPD; }
     });
-
-    /* mișcă toate piesele + respinge de margini */
     pieces.forEach(p => {
         p.x += p.vx; p.y += p.vy;
-        if (p.x < 10)    { p.x = 10;    p.vx =  Math.abs(p.vx) + .5; }
-        if (p.x > maxX)  { p.x = maxX;  p.vx = -Math.abs(p.vx) - .5; }
-        if (p.y < minY)  { p.y = minY;  p.vy =  Math.abs(p.vy) + .5; }
-        if (p.y > maxY)  { p.y = maxY;  p.vy = -Math.abs(p.vy) - .5; }
-        p.el.style.left = p.x + 'px';
-        p.el.style.top  = p.y + 'px';
+        if (p.x < MARGIN) { p.x = MARGIN; p.vx = Math.abs(p.vx)+.5; }
+        if (p.x > maxX)   { p.x = maxX;   p.vx = -Math.abs(p.vx)-.5; }
+        if (p.y < minY)   { p.y = minY;   p.vy = Math.abs(p.vy)+.5; }
+        if (p.y > maxY)   { p.y = maxY;   p.vy = -Math.abs(p.vy)-.5; }
+        p.el.style.left = p.x + 'px'; p.el.style.top = p.y + 'px';
     });
-
-    /* verifică etichetare */
     if (cooldown === 0) {
         pieces.forEach((p, i) => {
             if (i === itIdx || i === lastTagged) return;
-            if (dist(IT, p) < SIZE * 0.75) {
-                /* efect vizual */
-                const ring = document.createElement('div');
-                ring.className = 'tag-ring';
-                ring.style.left = p.x + 'px';
-                ring.style.top  = p.y + 'px';
-                document.body.appendChild(ring);
-                setTimeout(() => ring.remove(), 600);
-                /* schimb IT */
-                lastTagged = itIdx;
-                itIdx = i;
-                cooldown = 90;
-                refresh();
+            if (dist(IT, p) < SW*.75) {
+                const r = document.createElement('div'); r.className = 'tag-ring';
+                r.style.left = p.x+'px'; r.style.top = p.y+'px';
+                document.body.appendChild(r); setTimeout(() => r.remove(), 550);
+                lastTagged = itIdx; itIdx = i; cooldown = 90; refresh();
             }
         });
     }
-
     requestAnimationFrame(loop);
 }
 
