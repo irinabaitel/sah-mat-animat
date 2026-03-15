@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calul și Margaretele</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Baloo 2', cursive, sans-serif;
+    background: #E8F5D0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 10px 40px;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #3A7A10;
+    text-align: center;
+    margin-bottom: 4px;
+    text-shadow: 1px 2px 0 rgba(255,255,255,0.7);
+    letter-spacing: -0.5px;
+  }
+
+  #levelLabel {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #5A6A20;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  #boardWrapper {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 6px 32px rgba(60,100,20,0.18), 0 2px 8px rgba(0,0,0,0.10);
+    padding: 18px 20px 20px 20px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Board + coordinates layout */
+  #boardArea {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  #boardOuter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* The actual board */
+  #board {
+    position: relative;
+    width: 480px;
+    height: 480px;
+    border: 3px solid #4a3010;
+    border-radius: 4px;
+    overflow: visible;
+    flex-shrink: 0;
+  }
+
+  .cell {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .cell.light { background: #EEEED2; }
+  .cell.dark  { background: #769656; }
+
+  /* destination */
+  .cell.destination {
+    animation: destPulse 1.2s ease-in-out infinite;
+  }
+
+  /* valid move overlay */
+  .valid-hint {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 220, 0, 0.55);
+    border: 2px solid rgba(200,160,0,0.7);
+    pointer-events: none;
+    animation: validHint 1s ease-in-out infinite;
+    z-index: 5;
+  }
+
+  /* bfs hint highlight */
+  .bfs-hint {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(80, 200, 80, 0.5);
+    border: 3px solid rgba(30,160,30,0.8);
+    pointer-events: none;
+    z-index: 6;
+  }
+
+  /* flowers */
+  .flower {
+    pointer-events: none;
+    transition: transform 0.15s;
+    z-index: 2;
+    position: relative;
+  }
+
+  .flower.popping {
+    animation: flowerPop 0.4s ease forwards;
+    z-index: 3;
+  }
+
+  /* destination marker */
+  .destination-marker {
+    font-size: 26px;
+    line-height: 1;
+    animation: starPulse 1.1s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 4;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 0 6px rgba(255,200,0,0.8));
+  }
+
+  /* knight wrapper — absolutely positioned over board */
+  #knightWrap {
+    position: absolute;
+    width: 50px;
+    height: 56px;
+    z-index: 10;
+    transition: left 0.22s cubic-bezier(0.4,0,0.2,1), top 0.22s cubic-bezier(0.4,0,0.2,1);
+    cursor: pointer;
+  }
+
+  #knightWrap.selected svg {
+    filter: drop-shadow(0 0 8px rgba(255,220,0,1)) drop-shadow(2px 3px 4px rgba(0,0,0,.4));
+  }
+
+  /* Coordinates */
+  #coordBottom {
+    display: flex;
+    flex-direction: row;
+    width: 480px;
+    margin-top: 3px;
+  }
+  .coord-letter {
+    width: 60px;
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #5a5a4a;
+  }
+  #coordRight {
+    display: flex;
+    flex-direction: column;
+    margin-left: 5px;
+  }
+  .coord-num {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #5a5a4a;
+  }
+
+  /* Stats bar */
+  #statsBar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #3a5020;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  #statsBar span {
+    background: #f0f7e0;
+    border: 2px solid #c5dfa0;
+    border-radius: 10px;
+    padding: 4px 14px;
+  }
+
+  /* Buttons */
+  #btnRow {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  button {
+    font-family: 'Baloo 2', cursive, sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.18); }
+  button:active { transform: translateY(0); }
+
+  #btnReset {
+    background: #e07030;
+    color: #fff;
+  }
+  #btnHint {
+    background: #f0c020;
+    color: #5a3000;
+  }
+  #btnHint:disabled {
+    background: #ccc;
+    color: #888;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Level dots */
+  #levelDots {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    justify-content: center;
+  }
+  .ldot {
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    background: #ccc;
+    border: 2px solid #aaa;
+    transition: background 0.3s;
+  }
+  .ldot.done { background: #5cb85c; border-color: #3a8a3a; }
+  .ldot.active { background: #f0c020; border-color: #b08000; }
+
+  /* OVERLAY PANEL */
+  #overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  #overlay.show { display: flex; }
+
+  #panel {
+    background: #fff;
+    border-radius: 22px;
+    padding: 32px 36px;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.3);
+    animation: victoryBounce 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+
+  #panel h2 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: #3A7A10;
+  }
+  #panel p {
+    font-size: 1.05rem;
+    color: #444;
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+
+  .panel-btn {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 11px 0;
+    border-radius: 14px;
+    font-size: 1.05rem;
+  }
+  .btn-orange { background: #e07030; color: #fff; }
+  .btn-green  { background: #5cb85c; color: #fff; }
+  .btn-blue   { background: #3070c0; color: #fff; }
+
+  /* LESSON PANEL */
+  #lessonPanel {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.62);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  #lessonPanel.show { display: flex; }
+
+  #lessonCard {
+    background: linear-gradient(135deg, #fffbe6 0%, #e8f5d0 100%);
+    border-radius: 24px;
+    padding: 30px 32px;
+    max-width: 440px;
+    width: 92%;
+    text-align: center;
+    box-shadow: 0 16px 56px rgba(0,0,0,0.32);
+    animation: victoryBounce 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .lesson-link-btn {
+    display: block;
+    background: #e07030;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 14px;
+    padding: 11px 18px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 10px 0 2px;
+    font-family: 'Baloo 2', cursive;
+    transition: transform .12s, box-shadow .12s;
+  }
+  .lesson-link-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+  .lesson-link-desc { font-size: .88rem; color: #666; margin-bottom: 8px; }
+
+  #lessonCard h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #3A7A10;
+    margin-bottom: 10px;
+  }
+  #lessonCard p {
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  /* L-shape diagram */
+  #lDiagram {
+    margin: 0 auto 16px;
+    position: relative;
+    width: 180px;
+    height: 180px;
+  }
+  #lDiagram svg {
+    width: 180px;
+    height: 180px;
+  }
+
+  /* ======= ANIMATIONS ======= */
+  @keyframes flowerPop {
+    0%   { transform: scale(1);   opacity: 1; }
+    50%  { transform: scale(1.5); opacity: 0.8; }
+    100% { transform: scale(0);   opacity: 0; }
+  }
+
+  @keyframes destPulse {
+    0%,100% { box-shadow: inset 0 0 0 3px rgba(255,200,0,0.7), 0 0 10px 3px rgba(255,200,0,0.5); }
+    50%     { box-shadow: inset 0 0 0 3px rgba(255,200,0,1.0), 0 0 20px 8px rgba(255,200,0,0.8); }
+  }
+
+  @keyframes validHint {
+    0%,100% { opacity: 0.5; transform: scale(0.85); }
+    50%     { opacity: 0.85; transform: scale(1.0); }
+  }
+
+  @keyframes starPulse {
+    0%,100% { transform: translate(-50%,-50%) scale(1);   filter: drop-shadow(0 0 4px rgba(255,200,0,0.7)); }
+    50%     { transform: translate(-50%,-50%) scale(1.15); filter: drop-shadow(0 0 10px rgba(255,200,0,1.0)); }
+  }
+
+  @keyframes victoryBounce {
+    0%   { transform: scale(0.5); opacity: 0; }
+    70%  { transform: scale(1.06); }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+
+  @keyframes arrowFade {
+    0%   { opacity: 0; stroke-dashoffset: 60; }
+    100% { opacity: 1; stroke-dashoffset: 0; }
+  }
+
+  /* Responsive */
+  @media (max-width: 560px) {
+    #board { width: 320px; height: 320px; }
+    .cell  { width: 40px; height: 40px; }
+    #coordBottom { width: 320px; }
+    .coord-letter { width: 40px; }
+    .coord-num { height: 40px; }
+    #knightWrap { width: 34px; height: 38px; }
+    .valid-hint { width: 24px; height: 24px; }
+    .bfs-hint   { width: 30px; height: 30px; }
+    .destination-marker { font-size: 18px; }
+    h1 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🌸 Calul și Margaretele 🌸</h1>
+<div id="levelLabel">Nivelul 1 - Ușor</div>
+
+<div id="boardWrapper">
+  <div id="boardArea">
+    <div id="boardOuter">
+      <div id="board">
+        <!-- cells, flowers, knight injected by JS -->
+      </div>
+      <div id="coordBottom"></div>
+    </div>
+    <div id="coordRight"></div>
+  </div>
+
+  <div id="statsBar">
+    <span>🌸 Flori călcate: <b id="statMoved">0</b></span>
+    <span>🎯 Minim necesar: <b id="statMin">?</b></span>
+  </div>
+
+  <div id="btnRow">
+    <button id="btnReset" onclick="resetLevel()">♻ Resetează</button>
+    <button id="btnHint" onclick="showHint()">💡 Hint (<span id="hintsLeft">3</span>)</button>
+  </div>
+
+  <div id="levelDots">
+    <div class="ldot active" id="dot0"></div>
+    <div class="ldot" id="dot1"></div>
+    <div class="ldot" id="dot2"></div>
+  </div>
+</div>
+
+<!-- Victory / Fail overlay -->
+<div id="overlay">
+  <div id="panel">
+    <h2 id="panelTitle"></h2>
+    <p  id="panelText"></p>
+    <button class="panel-btn btn-orange" id="panelBtn1" onclick="panelAction1()"></button>
+    <button class="panel-btn btn-green"  id="panelBtn2" onclick="panelAction2()" style="display:none"></button>
+  </div>
+</div>
+
+<!-- Lesson panel -->
+<div id="lessonPanel">
+  <div id="lessonCard">
+    <div id="lessonDynamic"></div>
+    <div id="lDiagram">
+      <svg id="lSvg" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <p style="font-size:.85rem;color:#666;margin-top:8px">Calul se mișcă în <b>L</b>: 2+1 pătrate. Singura piesă care sare peste altele!</p>
+  </div>
+</div>
+
+<script>
+// ─── CONSTANTS ─────────────────────────────────────────────────────────────
+const CELL  = 60; // px per cell (desktop)
+const LEVELS = [
+  { start:{col:7,row:0}, end:{col:4,row:4}, label:"Nivelul 1 - Ușor",
+    unlocks:[
+      { key:'pagina1', page:'pagina1.html', title:'Noțiuni de Bază',
+        desc:'Șahul mat, patul, apărarea regelui, șahul dublu.' }
+    ]
+  },
+  { start:{col:0,row:7}, end:{col:6,row:2}, label:"Nivelul 2 - Mediu",
+    unlocks:[
+      { key:'pagina10', page:'pagina10.html', title:'Damă + Turn vs. Rege',
+        desc:'Vânătorul și gardianul colaborează pentru a da mat.' },
+      { key:'pagina12', page:'pagina12.html', title:'Două Turnuri vs. Rege',
+        desc:'Matul clasic cu două turnuri — simplu și eficient.' }
+    ]
+  },
+  { start:{col:7,row:7}, end:{col:0,row:0}, label:"Nivelul 3 - Greu",
+    unlocks:[
+      { key:'pagina16', page:'pagina16.html', title:'Damă + Nebun vs. Rege',
+        desc:'Regina are putere, nebunul ajută cu precizie.' },
+      { key:'pagina19', page:'pagina19.html', title:'Doi Nebuni vs. Rege',
+        desc:'Doi nebuni care colaborează pentru a controla tabla.' }
+    ]
+  },
+];
+const KNIGHT_MOVES = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let knightCol, knightRow;
+let flowers;
+let moveCount;
+let minMoves;
+let currentLevel = 0;
+let selected = false;
+let hintsUsed = 0;
+let levelsDone = [];
+let gameOver = false;
+
+// ─── BFS ────────────────────────────────────────────────────────────────────
+function bfsMin(sc, sr, ec, er) {
+  const vis = Array.from({length:8}, ()=>Array(8).fill(false));
+  const q = [[sc, sr, 0]];
+  vis[sr][sc] = true;
+  while (q.length) {
+    const [c, r, d] = q.shift();
+    if (c===ec && r===er) return d;
+    for (const [dc,dr] of KNIGHT_MOVES) {
+      const nc=c+dc, nr=r+dr;
+      if (nc>=0&&nc<8&&nr>=0&&nr<8&&!vis[nr][nc]) {
+        vis[nr][nc]=true; q.push([nc,nr,d+1]);
+      }
+    }
+  }
+  return Infinity;
+}
+
+// BFS path — returns array of {col,row} steps from start (exclusive) to end (inclusive)
+function bfsPath(sc, sr, ec, er) {
+  const vis  = Array.from({length:8}, ()=>Array(8).fill(false));
+  const prev = Array.from({length:8}, ()=>Array(8).fill(null));
+  const q = [[sc, sr]];
+  vis[sr][sc] = true;
+  while (q.length) {
+    const [c, r] = q.shift();
+    if (c===ec && r===er) {
+      // reconstruct
+      const path = [];
+      let cur = {col:c, row:r};
+      while (prev[cur.row][cur.col]) {
+        path.unshift(cur);
+        cur = prev[cur.row][cur.col];
+      }
+      path.unshift(cur); // include current pos? no — we want moves only
+      // path[0] is start, rest are steps
+      return path.slice(1);
+    }
+    for (const [dc,dr] of KNIGHT_MOVES) {
+      const nc=c+dc, nr=r+dr;
+      if (nc>=0&&nc<8&&nr>=0&&nr<8&&!vis[nr][nc]) {
+        vis[nr][nc]=true;
+        prev[nr][nc]={col:c, row:r};
+        q.push([nc,nr]);
+      }
+    }
+  }
+  return [];
+}
+
+// ─── CELL SIZE (responsive) ──────────────────────────────────────────────────
+function cellSize() {
+  return window.innerWidth <= 560 ? 40 : 60;
+}
+
+// ─── BUILD BOARD ─────────────────────────────────────────────────────────────
+function buildBoard() {
+  const board = document.getElementById('board');
+  const cs = cellSize();
+  board.style.width  = (cs*8)+'px';
+  board.style.height = (cs*8)+'px';
+  board.innerHTML = '';
+
+  // Create 64 cells
+  for (let r=0; r<8; r++) {
+    for (let c=0; c<8; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell ' + ((r+c)%2===0 ? 'light' : 'dark');
+      cell.id = `cell-${c}-${r}`;
+      cell.style.left = (c*cs)+'px';
+      cell.style.top  = (r*cs)+'px';
+      cell.style.width  = cs+'px';
+      cell.style.height = cs+'px';
+      cell.addEventListener('click', ()=>onCellClick(c,r));
+      cell.addEventListener('touchstart', (e)=>{e.preventDefault(); onCellClick(c,r);}, {passive:false});
+      board.appendChild(cell);
+    }
+  }
+
+  // Coordinate labels — letters a-h below
+  const cb = document.getElementById('coordBottom');
+  cb.innerHTML = '';
+  cb.style.width = (cs*8)+'px';
+  for (let c=0; c<8; c++) {
+    const d = document.createElement('div');
+    d.className = 'coord-letter';
+    d.style.width = cs+'px';
+    d.textContent = String.fromCharCode(97+c);
+    cb.appendChild(d);
+  }
+
+  // Numbers 8→1 on right
+  const cr = document.getElementById('coordRight');
+  cr.innerHTML = '';
+  for (let r=0; r<8; r++) {
+    const d = document.createElement('div');
+    d.className = 'coord-num';
+    d.style.height = cs+'px';
+    d.textContent = (8-r);
+    cr.appendChild(d);
+  }
+}
+
+// ─── FLOWER SVG ──────────────────────────────────────────────────────────────
+function flowerSVG(small) {
+  const sz = small ? 26 : 34;
+  return `<svg width="${sz}" height="${sz}" viewBox="0 0 36 36" class="flower">
+    <ellipse cx="18" cy="8"  rx="4" ry="7" fill="white" opacity=".95" transform="rotate(0 18 18)"/>
+    <ellipse cx="18" cy="8"  rx="4" ry="7" fill="white" opacity=".90" transform="rotate(45 18 18)"/>
+    <ellipse cx="18" cy="8"  rx="4" ry="7" fill="white" opacity=".95" transform="rotate(90 18 18)"/>
+    <ellipse cx="18" cy="8"  rx="4" ry="7" fill="white" opacity=".90" transform="rotate(135 18 18)"/>
+    <ellipse cx="18" cy="8"  rx="4" ry="7" fill="white" opacity=".95" transform="rotate(180 18 18)"/>
+    <ellipse cx="18" cy="8"  rx="4" ry="7" fill="white" opacity=".90" transform="rotate(225 18 18)"/>
+    <ellipse cx="18" cy="8"  rx="4" ry="7" fill="white" opacity=".95" transform="rotate(270 18 18)"/>
+    <ellipse cx="18" cy="8"  rx="4" ry="7" fill="white" opacity=".90" transform="rotate(315 18 18)"/>
+    <circle cx="18" cy="18" r="7" fill="#FFD700" stroke="#E8A800" stroke-width="1.5"/>
+    <circle cx="18" cy="18" r="4" fill="#FFA000"/>
+  </svg>`;
+}
+
+// ─── KNIGHT SVG (profile, chess-piece style) ─────────────────────────────────
+function knightSVG() {
+  return `<svg width="54" height="66" viewBox="0 0 54 66" id="knightSvg" style="cursor:pointer;filter:drop-shadow(2px 3px 5px rgba(0,0,0,.45))">
+  <defs>
+    <radialGradient id="knG" cx="30%" cy="24%" r="74%">
+      <stop offset="0%"   stop-color="#FFF8D0"/>
+      <stop offset="42%"  stop-color="#D4A030"/>
+      <stop offset="100%" stop-color="#6A3A00"/>
+    </radialGradient>
+  </defs>
+  <!-- shadow -->
+  <ellipse cx="27" cy="63" rx="19" ry="4" fill="rgba(0,0,0,.28)"/>
+  <!-- BASE pedestal -->
+  <path d="M7,62 Q5,54 9,50 Q15,46 27,46 Q39,46 45,50 Q49,54 47,62Z" fill="url(#knG)" stroke="rgba(0,0,0,.28)" stroke-width="1.5"/>
+  <ellipse cx="17" cy="50" rx="8" ry="3" fill="rgba(255,255,255,.28)" transform="rotate(-8,17,50)"/>
+  <!-- NECK / body -->
+  <path d="M15,48 Q12,40 14,32 Q16,25 21,21 Q25,18 27,19 Q29,18 33,21 Q38,25 40,32 Q42,40 39,48Z" fill="url(#knG)" stroke="rgba(0,0,0,.22)" stroke-width="1.5"/>
+  <!-- body highlight -->
+  <ellipse cx="18" cy="36" rx="4" ry="10" fill="rgba(255,255,255,.18)" transform="rotate(-8,18,36)"/>
+  <!-- HORSE HEAD — profile facing right -->
+  <!-- skull -->
+  <ellipse cx="26" cy="16" rx="17" ry="15" fill="url(#knG)" stroke="rgba(0,0,0,.22)" stroke-width="1.5"/>
+  <!-- muzzle (profile, pointing right) -->
+  <path d="M26,20 Q32,22 40,20 Q47,16 47,10 Q47,5 42,3 Q36,1 30,4 Q26,6 24,12Z" fill="url(#knG)" stroke="rgba(0,0,0,.2)" stroke-width="1.5"/>
+  <!-- muzzle soft skin -->
+  <ellipse cx="42" cy="13" rx="6" ry="5" fill="rgba(255,210,150,.55)"/>
+  <!-- nostril -->
+  <ellipse cx="44" cy="15" rx="2.2" ry="1.8" fill="rgba(0,0,0,.28)"/>
+  <!-- mouth line -->
+  <path d="M38,19 Q43,18 46,16" stroke="rgba(0,0,0,.22)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <!-- EAR -->
+  <path d="M16,4 Q14,-4 22,-1 Q24,5 18,9Z" fill="url(#knG)" stroke="rgba(0,0,0,.2)" stroke-width="1.5"/>
+  <path d="M17,4 Q16,-2 21,0 Q22,5 18,8Z" fill="rgba(255,160,120,.52)"/>
+  <!-- head specular highlight -->
+  <ellipse cx="14" cy="9" rx="7" ry="5" fill="rgba(255,255,255,.34)" transform="rotate(-22,14,9)"/>
+  <!-- EYE -->
+  <circle cx="22" cy="14" r="5.5" fill="white" stroke="rgba(0,0,0,.28)" stroke-width="1.5"/>
+  <circle cx="23" cy="15" r="3.5" fill="#3A2800"/>
+  <circle cx="23" cy="15" r="1.8" fill="#111"/>
+  <circle cx="21.5" cy="13.5" r="1.3" fill="white"/>
+  <!-- MANE at back of head -->
+  <path d="M10,20 Q5,14 7,7 Q9,2 14,4 Q12,10 13,18Z" fill="#A06010" stroke="rgba(0,0,0,.2)" stroke-width="1" opacity=".85"/>
+  <path d="M11,21 Q7,16 9,10 Q11,5 15,7 Q13,13 14,20Z" fill="#C87820" opacity=".6"/>
+</svg>`;
+}
+
+// ─── BLACK KNIGHT SVG (destination marker) ───────────────────────────────────
+function blackKnightSVG() {
+  return `<svg width="46" height="56" viewBox="0 0 54 66" class="black-knight-dest" style="pointer-events:none;filter:drop-shadow(0 0 6px rgba(0,0,0,.7))">
+  <defs>
+    <radialGradient id="bkG" cx="30%" cy="24%" r="74%">
+      <stop offset="0%"   stop-color="#888"/>
+      <stop offset="42%"  stop-color="#2A2A2A"/>
+      <stop offset="100%" stop-color="#000"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="27" cy="63" rx="19" ry="4" fill="rgba(0,0,0,.4)"/>
+  <path d="M7,62 Q5,54 9,50 Q15,46 27,46 Q39,46 45,50 Q49,54 47,62Z" fill="url(#bkG)" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/>
+  <path d="M15,48 Q12,40 14,32 Q16,25 21,21 Q25,18 27,19 Q29,18 33,21 Q38,25 40,32 Q42,40 39,48Z" fill="url(#bkG)" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+  <ellipse cx="26" cy="16" rx="17" ry="15" fill="url(#bkG)" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+  <path d="M26,20 Q32,22 40,20 Q47,16 47,10 Q47,5 42,3 Q36,1 30,4 Q26,6 24,12Z" fill="url(#bkG)" stroke="rgba(255,255,255,.1)" stroke-width="1.5"/>
+  <ellipse cx="42" cy="13" rx="6" ry="5" fill="rgba(100,80,40,.45)"/>
+  <ellipse cx="44" cy="15" rx="2.2" ry="1.8" fill="rgba(0,0,0,.5)"/>
+  <path d="M16,4 Q14,-4 22,-1 Q24,5 18,9Z" fill="url(#bkG)" stroke="rgba(255,255,255,.1)" stroke-width="1.5"/>
+  <path d="M17,4 Q16,-2 21,0 Q22,5 18,8Z" fill="rgba(80,50,20,.4)"/>
+  <ellipse cx="14" cy="9" rx="7" ry="5" fill="rgba(255,255,255,.18)" transform="rotate(-22,14,9)"/>
+  <circle cx="22" cy="14" r="5.5" fill="#555" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/>
+  <circle cx="23" cy="15" r="3.5" fill="#111"/>
+  <circle cx="23" cy="15" r="1.8" fill="#000"/>
+  <circle cx="21.5" cy="13.5" r="1.3" fill="rgba(255,255,255,.6)"/>
+  <path d="M10,20 Q5,14 7,7 Q9,2 14,4 Q12,10 13,18Z" fill="#111" opacity=".9"/>
+</svg>`;
+}
+
+// ─── PLACE/UPDATE KNIGHT ELEMENT ─────────────────────────────────────────────
+function getKnightWrap() {
+  let kw = document.getElementById('knightWrap');
+  if (!kw) {
+    kw = document.createElement('div');
+    kw.id = 'knightWrap';
+    kw.innerHTML = blackKnightSVG();
+    kw.addEventListener('click', onKnightClick);
+    kw.addEventListener('touchstart', (e)=>{e.preventDefault(); onKnightClick();}, {passive:false});
+    document.getElementById('board').appendChild(kw);
+  }
+  return kw;
+}
+
+function placeKnight(col, row, animate) {
+  const cs = cellSize();
+  const kw = getKnightWrap();
+  const kwW = cs<=40 ? 34 : 50;
+  const kwH = cs<=40 ? 38 : 56;
+  kw.style.width  = kwW+'px';
+  kw.style.height = kwH+'px';
+  const offsetX = Math.round((cs - kwW)/2);
+  const offsetY = Math.round((cs - kwH)/2) + 2;
+  if (!animate) {
+    kw.style.transition = 'none';
+    requestAnimationFrame(()=>{
+      kw.style.left = (col*cs + offsetX)+'px';
+      kw.style.top  = (row*cs + offsetY)+'px';
+      requestAnimationFrame(()=>{ kw.style.transition = ''; });
+    });
+  } else {
+    kw.style.left = (col*cs + offsetX)+'px';
+    kw.style.top  = (row*cs + offsetY)+'px';
+  }
+}
+
+// ─── RENDER FLOWERS ──────────────────────────────────────────────────────────
+function renderFlowers() {
+  const cs = cellSize();
+  const small = cs <= 40;
+  for (let r=0; r<8; r++) {
+    for (let c=0; c<8; c++) {
+      const cell = document.getElementById(`cell-${c}-${r}`);
+      // remove existing flowers & markers but keep hints
+      const existing = cell.querySelectorAll('.flower, .destination-marker, svg.flower');
+      existing.forEach(e=>e.remove());
+      // destination
+      const lvl = LEVELS[currentLevel];
+      if (c===lvl.end.col && r===lvl.end.row) {
+        cell.classList.add('destination');
+        const marker = document.createElement('div');
+        marker.className = 'destination-marker';
+        marker.textContent = '⭐';
+        cell.appendChild(marker);
+      } else {
+        cell.classList.remove('destination');
+      }
+      // flower
+      if (flowers[r][c]) {
+        const wrapper = document.createElement('span');
+        wrapper.innerHTML = flowerSVG(small);
+        const svg = wrapper.firstChild;
+        cell.appendChild(svg);
+      }
+    }
+  }
+}
+
+// ─── CLEAR HINTS ─────────────────────────────────────────────────────────────
+function clearHints() {
+  document.querySelectorAll('.valid-hint, .bfs-hint').forEach(e=>e.remove());
+}
+
+// ─── SHOW VALID MOVES ────────────────────────────────────────────────────────
+function showValidMoves() {
+  clearHints();
+  const cs = cellSize();
+  for (const [dc,dr] of KNIGHT_MOVES) {
+    const nc = knightCol+dc, nr = knightRow+dr;
+    if (nc<0||nc>=8||nr<0||nr>=8) continue;
+    const cell = document.getElementById(`cell-${nc}-${nr}`);
+    const h = document.createElement('div');
+    h.className = 'valid-hint';
+    const hSize = cs<=40 ? 24 : 36;
+    h.style.width  = hSize+'px';
+    h.style.height = hSize+'px';
+    h.style.position = 'absolute';
+    h.style.left = Math.round((cs-hSize)/2)+'px';
+    h.style.top  = Math.round((cs-hSize)/2)+'px';
+    cell.appendChild(h);
+  }
+}
+
+// ─── CHECK VALID MOVE ────────────────────────────────────────────────────────
+function isValidMove(tc, tr) {
+  const dc = tc-knightCol, dr = tr-knightRow;
+  return KNIGHT_MOVES.some(([a,b])=>a===dc&&b===dr);
+}
+
+// ─── CLICK HANDLERS ──────────────────────────────────────────────────────────
+function onKnightClick() {
+  if (gameOver) return;
+  selected = true;
+  getKnightWrap().classList.add('selected');
+}
+
+function onCellClick(c, r) {
+  if (gameOver) return;
+  if (!selected) return;
+  if (!isValidMove(c, r)) return; // invalid move — stay selected, do nothing
+  moveKnight(c, r);
+  // knight stays selected after move
+}
+
+// ─── MOVE KNIGHT ─────────────────────────────────────────────────────────────
+function moveKnight(tc, tr) {
+  knightCol = tc;
+  knightRow = tr;
+  placeKnight(tc, tr, true);
+  moveCount++;
+
+  clearHints(); // clear any bfs hint
+  // Trample flower
+  if (flowers[tr][tc]) {
+    flowers[tr][tc] = false;
+    const cell = document.getElementById(`cell-${tc}-${tr}`);
+    const flowerEl = cell.querySelector('svg.flower');
+    if (flowerEl) {
+      flowerEl.classList.add('popping');
+      flowerEl.addEventListener('animationend', ()=>flowerEl.remove(), {once:true});
+    }
+  }
+
+  updateStats();
+
+  // Check win
+  const lvl = LEVELS[currentLevel];
+  if (tc===lvl.end.col && tr===lvl.end.row) {
+    setTimeout(()=>endLevel(), 280);
+  }
+}
+
+// ─── END LEVEL ───────────────────────────────────────────────────────────────
+function endLevel() {
+  gameOver = true;
+  const perfect = (moveCount <= minMoves);
+  if (perfect) {
+    showVictoryPanel(true);
+  } else {
+    showVictoryPanel(false);
+  }
+}
+
+// ─── VICTORY PANEL ───────────────────────────────────────────────────────────
+function showVictoryPanel(perfect) {
+  const overlay = document.getElementById('overlay');
+  const title   = document.getElementById('panelTitle');
+  const text    = document.getElementById('panelText');
+  const btn1    = document.getElementById('panelBtn1');
+  const btn2    = document.getElementById('panelBtn2');
+
+  // Reset animation
+  const panel = document.getElementById('panel');
+  panel.style.animation = 'none';
+  requestAnimationFrame(()=>{
+    panel.style.animation = '';
+  });
+
+  if (perfect) {
+    title.textContent = '🌟 Felicitări! 🌟';
+    text.innerHTML = `Ai călcat doar <b>${moveCount}</b> margarete — perfect!<br>Ai folosit numărul minim de mutări!`;
+    btn1.textContent = '📖 Lecție deblocată!';
+    btn1.className = 'panel-btn btn-orange';
+    btn1.style.display = 'block';
+
+    if (currentLevel < LEVELS.length - 1) {
+      btn2.textContent = 'Nivelul următor →';
+      btn2.className = 'panel-btn btn-green';
+      btn2.style.display = 'block';
+    } else {
+      btn2.textContent = '🏆 Ai terminat jocul!';
+      btn2.className = 'panel-btn btn-green';
+      btn2.style.display = 'block';
+    }
+  } else {
+    title.textContent = '🌸 Bravo! 🌸';
+    text.innerHTML = `Ai călcat <b>${moveCount}</b> flori.<br>Minimul era <b>${minMoves}</b>.<br>Încearcă din nou!`;
+    btn1.textContent = '↺ Încearcă din nou';
+    btn1.className = 'panel-btn btn-orange';
+    btn1.style.display = 'block';
+    btn2.style.display = 'none';
+  }
+
+  overlay.classList.add('show');
+}
+
+function panelAction1() {
+  const overlay = document.getElementById('overlay');
+  overlay.classList.remove('show');
+  const perfect = (moveCount <= minMoves);
+  if (perfect) {
+    unlockLessons(currentLevel);
+    markLevelDone(currentLevel);
+    showLesson();
+  } else {
+    resetLevel();
+  }
+}
+
+function panelAction2() {
+  const overlay = document.getElementById('overlay');
+  overlay.classList.remove('show');
+  markLevelDone(currentLevel);
+  if (currentLevel < LEVELS.length - 1) {
+    currentLevel++;
+    initLevel(currentLevel);
+  } else {
+    // all done
+    initLevel(0);
+    currentLevel = 0;
+  }
+}
+
+// ─── UNLOCK LESSONS (localStorage) ──────────────────────────────────────────
+function unlockLessons(levelIdx) {
+  const lvl = LEVELS[levelIdx];
+  lvl.unlocks.forEach(u => {
+    localStorage.setItem('sma_unlocked_' + u.key, '1');
+  });
+}
+
+// ─── LESSON ──────────────────────────────────────────────────────────────────
+function showLesson() {
+  const lp = document.getElementById('lessonPanel');
+  const card = document.getElementById('lessonCard');
+  const lvl = LEVELS[currentLevel];
+
+  // Build dynamic lesson content
+  let linksHtml = lvl.unlocks.map(u => `
+    <a href="${u.page}" class="lesson-link-btn">
+      📖 ${u.title} →
+    </a>
+    <p class="lesson-link-desc">${u.desc}</p>
+  `).join('');
+
+  card.querySelector('#lessonDynamic').innerHTML = `
+    <h2>🔓 Lecție deblocată!</h2>
+    ${linksHtml}
+    <button class="panel-btn btn-blue" onclick="closeLesson()" style="margin-top:14px">
+      ${currentLevel < LEVELS.length - 1 ? 'Nivelul următor ♞' : '🏆 Felicitări, ai terminat!'}
+    </button>
+  `;
+
+  buildLDiagram();
+  lp.classList.add('show');
+}
+
+function closeLesson() {
+  document.getElementById('lessonPanel').classList.remove('show');
+  if (currentLevel < LEVELS.length - 1) {
+    currentLevel++;
+    initLevel(currentLevel);
+  }
+}
+
+function buildLDiagram() {
+  const svg = document.getElementById('lSvg');
+  svg.innerHTML = '';
+
+  // Draw 5x5 mini grid
+  const GS = 32; // grid square size
+  const OX = 16, OY = 16; // offset
+  const CENTER = 2; // center cell index (0-based in 5x5)
+
+  // Grid background
+  for (let r=0; r<5; r++) {
+    for (let c=0; c<5; c++) {
+      const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      rect.setAttribute('x', OX + c*GS);
+      rect.setAttribute('y', OY + r*GS);
+      rect.setAttribute('width', GS);
+      rect.setAttribute('height', GS);
+      rect.setAttribute('fill', (r+c)%2===0 ? '#EEEED2' : '#769656');
+      rect.setAttribute('stroke', '#fff');
+      rect.setAttribute('stroke-width', '0.5');
+      svg.appendChild(rect);
+    }
+  }
+
+  // Center square highlight
+  const cr2 = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  cr2.setAttribute('x', OX + CENTER*GS + 2);
+  cr2.setAttribute('y', OY + CENTER*GS + 2);
+  cr2.setAttribute('width', GS-4);
+  cr2.setAttribute('height', GS-4);
+  cr2.setAttribute('rx', '4');
+  cr2.setAttribute('fill', 'rgba(255,200,0,0.6)');
+  svg.appendChild(cr2);
+
+  // Knight symbol in center
+  const kt = document.createElementNS('http://www.w3.org/2000/svg','text');
+  kt.setAttribute('x', OX + CENTER*GS + GS/2);
+  kt.setAttribute('y', OY + CENTER*GS + GS/2 + 7);
+  kt.setAttribute('text-anchor', 'middle');
+  kt.setAttribute('font-size', '20');
+  kt.textContent = '♞';
+  svg.appendChild(kt);
+
+  // L-move targets from (2,2) in 5x5
+  const lMoves = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+  const colors = ['#e74c3c','#e67e22','#27ae60','#2980b9','#8e44ad','#16a085','#c0392b','#d35400'];
+  let delay = 0;
+  for (let i=0; i<lMoves.length; i++) {
+    const [dc,dr] = lMoves[i];
+    const tc = CENTER+dc, tr = CENTER+dr;
+    if (tc<0||tc>=5||tr<0||tr>=5) continue;
+
+    // Arrow
+    const x1 = OX + CENTER*GS + GS/2;
+    const y1 = OY + CENTER*GS + GS/2;
+    const x2 = OX + tc*GS + GS/2;
+    const y2 = OY + tr*GS + GS/2;
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('stroke', colors[i%colors.length]);
+    line.setAttribute('stroke-width', '2.5');
+    line.setAttribute('stroke-dasharray', '60');
+    line.setAttribute('stroke-dashoffset', '60');
+    line.setAttribute('opacity', '0');
+    line.style.animation = `arrowFade 0.35s ${delay}s ease forwards`;
+    svg.appendChild(line);
+
+    // Target dot
+    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx', x2); dot.setAttribute('cy', y2);
+    dot.setAttribute('r', '6');
+    dot.setAttribute('fill', colors[i%colors.length]);
+    dot.setAttribute('opacity', '0');
+    dot.style.animation = `arrowFade 0.25s ${delay+0.3}s ease forwards`;
+    svg.appendChild(dot);
+
+    delay += 0.12;
+  }
+}
+
+// ─── MARK LEVEL DONE ─────────────────────────────────────────────────────────
+function markLevelDone(idx) {
+  if (!levelsDone.includes(idx)) levelsDone.push(idx);
+  updateDots();
+}
+
+function updateDots() {
+  for (let i=0; i<3; i++) {
+    const dot = document.getElementById(`dot${i}`);
+    if (levelsDone.includes(i)) {
+      dot.className = 'ldot done';
+    } else if (i===currentLevel) {
+      dot.className = 'ldot active';
+    } else {
+      dot.className = 'ldot';
+    }
+  }
+}
+
+// ─── STATS ───────────────────────────────────────────────────────────────────
+function updateStats() {
+  document.getElementById('statMoved').textContent = moveCount;
+  document.getElementById('statMin').textContent   = minMoves;
+  const hBtn = document.getElementById('btnHint');
+  const hLeft = 3 - hintsUsed;
+  document.getElementById('hintsLeft').textContent = hLeft;
+  hBtn.disabled = (hLeft <= 0 || gameOver);
+}
+
+// ─── HINT ────────────────────────────────────────────────────────────────────
+function showHint() {
+  if (hintsUsed >= 3 || gameOver) return;
+  hintsUsed++;
+  const lvl = LEVELS[currentLevel];
+  const path = bfsPath(knightCol, knightRow, lvl.end.col, lvl.end.row);
+  if (!path.length) return;
+  const next = path[0];
+  const cs = cellSize();
+  const cell = document.getElementById(`cell-${next.col}-${next.row}`);
+  const h = document.createElement('div');
+  h.className = 'bfs-hint';
+  const hSize = cs<=40 ? 30 : 44;
+  h.style.width  = hSize+'px';
+  h.style.height = hSize+'px';
+  h.style.position = 'absolute';
+  h.style.left = Math.round((cs-hSize)/2)+'px';
+  h.style.top  = Math.round((cs-hSize)/2)+'px';
+  cell.appendChild(h);
+  setTimeout(()=>h.remove(), 1600);
+  updateStats();
+}
+
+// ─── RESET LEVEL ─────────────────────────────────────────────────────────────
+function resetLevel() {
+  initLevel(currentLevel);
+}
+
+// ─── INIT LEVEL ──────────────────────────────────────────────────────────────
+function initLevel(idx) {
+  currentLevel = idx;
+  const lvl = LEVELS[idx];
+  knightCol = lvl.start.col;
+  knightRow = lvl.start.row;
+  flowers = Array.from({length:8}, ()=>Array(8).fill(true));
+  // Remove flower from start square
+  flowers[knightRow][knightCol] = false;
+  moveCount = 0;
+  hintsUsed = 0;
+  selected  = false;
+  gameOver  = false;
+  minMoves  = bfsMin(lvl.start.col, lvl.start.row, lvl.end.col, lvl.end.row);
+
+  document.getElementById('levelLabel').textContent = lvl.label;
+  document.getElementById('btnHint').disabled = false;
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('lessonPanel').classList.remove('show');
+
+  buildBoard();
+  renderFlowers();
+  placeKnight(knightCol, knightRow, false);
+  updateStats();
+  updateDots();
+
+  // Remove knight selection state
+  const kw = document.getElementById('knightWrap');
+  if (kw) kw.classList.remove('selected');
+  clearHints();
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+window.addEventListener('load', ()=>{
+  initLevel(0);
+});
+
+window.addEventListener('resize', ()=>{
+  buildBoard();
+  renderFlowers();
+  placeKnight(knightCol, knightRow, false);
+  if (selected) showValidMoves();
+});
+</script>
+</body>
+</html>

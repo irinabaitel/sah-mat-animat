@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌹 Labirintul Trandafirilor</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: radial-gradient(ellipse at center, #7DD63A 0%, #4A9E1F 40%, #2E7010 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: 'Baloo 2', cursive;
+    overflow-x: hidden;
+    padding: 10px 0 30px;
+  }
+
+  /* Animated background grass blades */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 2px 8px at 10% 90%, rgba(100,200,50,0.4) 0%, transparent 70%),
+      radial-gradient(ellipse 2px 8px at 20% 85%, rgba(80,170,40,0.3) 0%, transparent 70%),
+      radial-gradient(ellipse 2px 8px at 35% 92%, rgba(120,210,60,0.4) 0%, transparent 70%),
+      radial-gradient(ellipse 2px 8px at 50% 88%, rgba(90,180,45,0.3) 0%, transparent 70%),
+      radial-gradient(ellipse 2px 8px at 65% 93%, rgba(110,200,55,0.4) 0%, transparent 70%),
+      radial-gradient(ellipse 2px 8px at 80% 87%, rgba(85,175,42,0.3) 0%, transparent 70%),
+      radial-gradient(ellipse 2px 8px at 92% 91%, rgba(115,205,58,0.4) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== TITLE ===== */
+  .game-title {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: #fff;
+    text-shadow:
+      0 0 20px rgba(255, 200, 50, 0.9),
+      0 3px 0 #8B4513,
+      0 5px 0 rgba(0,0,0,0.3);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 10;
+    animation: titlePulse 3s ease-in-out infinite;
+  }
+
+  @keyframes titlePulse {
+    0%, 100% { text-shadow: 0 0 20px rgba(255,200,50,0.9), 0 3px 0 #8B4513, 0 5px 0 rgba(0,0,0,0.3); }
+    50%       { text-shadow: 0 0 35px rgba(255,220,80,1),   0 3px 0 #8B4513, 0 5px 0 rgba(0,0,0,0.3); }
+  }
+
+  /* ===== SCORE BAR ===== */
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255,255,255,0.18);
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 30px;
+    padding: 6px 24px;
+    margin-bottom: 12px;
+    backdrop-filter: blur(6px);
+    position: relative;
+    z-index: 10;
+  }
+
+  .score-bar span {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  /* ===== MAZE WRAPPER ===== */
+  .maze-wrapper {
+    position: relative;
+    z-index: 10;
+    border-radius: 18px;
+    overflow: visible;
+    filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+  }
+
+  canvas {
+    display: block;
+    border-radius: 12px;
+    border: 4px solid #2E7010;
+    outline: 3px solid rgba(255,255,255,0.25);
+  }
+
+  /* ===== CONTROLS HINT ===== */
+  .controls-hint {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    position: relative;
+    z-index: 10;
+  }
+
+  /* ===== BUTTERFLIES ===== */
+  .butterfly {
+    position: fixed;
+    pointer-events: none;
+    z-index: 5;
+    font-size: 1.5rem;
+    animation: flyPath var(--dur, 12s) linear infinite;
+    opacity: 0.85;
+  }
+
+  @keyframes flyPath {
+    0%   { transform: translate(var(--sx), var(--sy)) rotate(0deg) scaleX(1); }
+    25%  { transform: translate(calc(var(--sx) + var(--mx1)), calc(var(--sy) + var(--my1))) rotate(15deg) scaleX(-1); }
+    50%  { transform: translate(calc(var(--sx) + var(--mx2)), calc(var(--sy) + var(--my2))) rotate(-10deg) scaleX(1); }
+    75%  { transform: translate(calc(var(--sx) + var(--mx3)), calc(var(--sy) + var(--my3))) rotate(20deg) scaleX(-1); }
+    100% { transform: translate(var(--sx), var(--sy)) rotate(0deg) scaleX(1); }
+  }
+
+  .butterfly-wing {
+    display: inline-block;
+    animation: wingFlap 0.3s ease-in-out infinite alternate;
+  }
+
+  @keyframes wingFlap {
+    from { transform: scaleY(1); }
+    to   { transform: scaleY(0.4); }
+  }
+
+  /* ===== COLLECTIBLE POP ===== */
+  .collect-popup {
+    position: fixed;
+    left: 50%;
+    top: 30%;
+    transform: translateX(-50%) translateY(0);
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #5B2C00;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.3rem;
+    font-weight: 800;
+    padding: 10px 28px;
+    border-radius: 40px;
+    box-shadow: 0 4px 20px rgba(255, 165, 0, 0.7), 0 0 0 3px #fff;
+    z-index: 200;
+    pointer-events: none;
+    animation: popIn 2s ease forwards;
+  }
+
+  @keyframes popIn {
+    0%   { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.7); }
+    15%  { opacity: 1; transform: translateX(-50%) translateY(-10px) scale(1.1); }
+    30%  { transform: translateX(-50%) translateY(0) scale(1); }
+    70%  { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-30px) scale(0.9); }
+  }
+
+  /* ===== VICTORY SCREEN ===== */
+  #victory-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.25) 0%, rgba(0,0,0,0.75) 100%);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  #victory-screen.show {
+    display: flex;
+    animation: fadeInOverlay 0.6s ease;
+  }
+
+  @keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .victory-card {
+    background: linear-gradient(145deg, #fffbe6, #fff0a0);
+    border: 5px solid #FFD700;
+    border-radius: 28px;
+    padding: 40px 60px;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.7), 0 20px 50px rgba(0,0,0,0.5);
+    animation: cardBounce 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    max-width: 480px;
+  }
+
+  @keyframes cardBounce {
+    0%   { transform: scale(0.3) rotate(-5deg); opacity: 0; }
+    60%  { transform: scale(1.08) rotate(1deg); opacity: 1; }
+    80%  { transform: scale(0.97) rotate(-0.5deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .victory-card h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #8B4513;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 8px;
+  }
+
+  .victory-card p {
+    font-size: 1.2rem;
+    color: #5B3A00;
+    margin-bottom: 22px;
+  }
+
+  .victory-stars {
+    font-size: 3rem;
+    margin-bottom: 14px;
+    animation: starSpin 1.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes starSpin {
+    from { transform: scale(1) rotate(-5deg); }
+    to   { transform: scale(1.15) rotate(5deg); }
+  }
+
+  .btn-restart {
+    background: linear-gradient(135deg, #FF6B9D, #FF3D7F);
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    padding: 14px 40px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(255, 61, 127, 0.5);
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-restart:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 10px 28px rgba(255, 61, 127, 0.6);
+  }
+
+  .btn-restart:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 14px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 301;
+    animation: confettiFall var(--fall-dur, 3s) linear var(--fall-delay, 0s) infinite;
+  }
+
+  @keyframes confettiFall {
+    0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0.2; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Butterflies -->
+<div class="butterfly" style="--sx:-5vw;--sy:20vh;--mx1:30vw;--my1:-15vh;--mx2:60vw;--my2:10vh;--mx3:85vw;--my3:-5vh;--dur:14s"><span class="butterfly-wing">🦋</span></div>
+<div class="butterfly" style="--sx:80vw;--sy:60vh;--mx1:-25vw;--my1:10vh;--mx2:-50vw;--my2:-20vh;--mx3:-10vw;--my3:15vh;--dur:18s;animation-delay:-6s"><span class="butterfly-wing">🦋</span></div>
+<div class="butterfly" style="--sx:40vw;--sy:-5vh;--mx1:20vw;--my1:30vh;--mx2:-10vw;--my2:55vh;--mx3:5vw;--my3:20vh;--dur:22s;animation-delay:-10s"><span class="butterfly-wing">🦋</span></div>
+<div class="butterfly" style="--sx:10vw;--sy:80vh;--mx1:40vw;--my1:-20vh;--mx2:70vw;--my2:5vh;--mx3:30vw;--my3:-10vh;--dur:16s;animation-delay:-3s"><span class="butterfly-wing">🦋</span></div>
+
+<h1 class="game-title">🌹 Labirintul Trandafirilor</h1>
+
+<div class="score-bar">
+  <span id="score-label">📜 Lecții: <span id="score-val">0</span>/3</span>
+  <span>|</span>
+  <span id="steps-label">👣 Pași: <span id="steps-val">0</span></span>
+</div>
+
+<div class="maze-wrapper">
+  <canvas id="mazeCanvas" width="720" height="528"></canvas>
+</div>
+
+<div class="controls-hint">⬆️ ⬇️ ⬅️ ➡️ &nbsp;sau&nbsp; W A S D &nbsp;pentru a mișca pionul</div>
+
+<!-- Victory -->
+<div id="victory-screen">
+  <div class="victory-stars">⭐🌟⭐</div>
+  <div class="victory-card">
+    <h2>🏆 Bravo, Campion!</h2>
+    <p id="victory-msg">Ai ieșit din labirint și ai colectat toate lecțiile!</p>
+    <p id="victory-steps"></p>
+    <button class="btn-restart" onclick="restartGame()">🌹 Joacă din nou</button>
+  </div>
+</div>
+
+<script>
+// ========== MAZE DEFINITION ==========
+const CELL = 48;
+const COLS = 15;
+const ROWS = 11;
+
+// W=wall, P=path, S=start, G=goal, C=collectible
+const mazeGrid = [
+  ['W','W','W','W','W','W','W','W','W','W','W','W','W','W','W'],
+  ['W','S','P','P','W','P','P','P','W','P','P','P','P','P','W'],
+  ['W','W','W','P','W','P','W','P','W','P','W','W','W','P','W'],
+  ['W','P','P','P','P','P','W','P','P','P','W','C','W','P','W'],
+  ['W','P','W','W','W','W','W','W','W','W','W','W','W','P','W'],
+  ['W','P','P','P','W','C','P','P','P','P','P','P','P','P','W'],
+  ['W','W','W','P','W','W','W','W','W','W','W','P','W','W','W'],
+  ['W','C','P','P','P','P','P','W','P','P','P','P','P','P','W'],
+  ['W','W','W','W','W','W','P','W','P','W','W','W','W','P','W'],
+  ['W','P','P','P','P','P','P','P','P','P','P','C','P','P','W'],
+  ['W','W','W','W','W','W','W','W','W','W','W','W','W','G','W'],
+];
+
+// Find start position
+let startCol = 1, startRow = 1;
+let goalCol = 13, goalRow = 10;
+
+for (let r = 0; r < ROWS; r++) {
+  for (let c = 0; c < COLS; c++) {
+    if (mazeGrid[r][c] === 'S') { startCol = c; startRow = r; }
+    if (mazeGrid[r][c] === 'G') { goalCol = c; goalRow = r; }
+  }
+}
+
+// ========== GAME STATE ==========
+let player = { col: startCol, row: startRow };
+let collectibles = [];
+let collectedCount = 0;
+let steps = 0;
+let gameOver = false;
+let moveQueue = [];
+let isMoving = false;
+let playerAnimOffset = { x: 0, y: 0 }; // for smooth movement
+let playerDisplayX = startCol * CELL;
+let playerDisplayY = startRow * CELL;
+let targetX = startCol * CELL;
+let targetY = startRow * CELL;
+let animProgress = 1;
+const ANIM_SPEED = 0.18;
+
+// Collectible messages
+const collectMessages = [
+  "Pionul avansează! ♟️",
+  "Super! Lecție nouă! 📖",
+  "Excelent! Continuă! ⭐",
+  "Fantastic! Bravo! 🌟"
+];
+
+// Rose positions on walls (pre-computed for rendering)
+const roseCache = {};
+
+function getRosesForCell(r, c) {
+  const key = `${r},${c}`;
+  if (!roseCache[key]) {
+    const roses = [];
+    const hash = (r * 31 + c * 17 + r * c) % 100;
+    const count = (hash % 3) + 1; // 1-3 roses per wall cell
+    for (let i = 0; i < count; i++) {
+      const rx = ((r * 7 + c * 13 + i * 29) % 70) * 0.01 * (CELL - 12) + 6;
+      const ry = ((r * 11 + c * 5 + i * 37) % 70) * 0.01 * (CELL - 12) + 6;
+      const hue = ((r * 23 + c * 41 + i * 17) % 60); // 0-60 => red/pink/yellow
+      const roseHue = hue < 20 ? 350 + hue : (hue < 40 ? 330 + hue - 20 : hue * 5); // reds/pinks
+      roses.push({ rx, ry, hue: roseHue });
+    }
+    roseCache[key] = roses;
+  }
+  return roseCache[key];
+}
+
+// Init collectibles
+function initCollectibles() {
+  collectibles = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (mazeGrid[r][c] === 'C') {
+        collectibles.push({ col: c, row: r, collected: false, pulse: Math.random() * Math.PI * 2 });
+      }
+    }
+  }
+}
+
+// ========== CANVAS ==========
+const canvas = document.getElementById('mazeCanvas');
+const ctx = canvas.getContext('2d');
+
+// Grass pattern
+let grassPattern = null;
+function createGrassPattern() {
+  const off = document.createElement('canvas');
+  off.width = 12; off.height = 12;
+  const oc = off.getContext('2d');
+  oc.fillStyle = '#5BBF28';
+  oc.fillRect(0, 0, 12, 12);
+  // subtle texture
+  oc.fillStyle = 'rgba(80,180,30,0.25)';
+  oc.fillRect(2, 0, 1, 5);
+  oc.fillRect(7, 3, 1, 4);
+  oc.fillRect(10, 6, 1, 3);
+  grassPattern = ctx.createPattern(off, 'repeat');
+}
+
+function drawBackground() {
+  ctx.fillStyle = '#5BBF28';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // subtle radial glow
+  const grd = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.width * 0.7);
+  grd.addColorStop(0, 'rgba(120,220,60,0.15)');
+  grd.addColorStop(1, 'rgba(30,80,10,0.2)');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawPath(r, c) {
+  const x = c * CELL, y = r * CELL;
+  // Stone path gradient
+  const pg = ctx.createLinearGradient(x, y, x + CELL, y + CELL);
+  pg.addColorStop(0, '#F4ECC8');
+  pg.addColorStop(0.5, '#F0E8C0');
+  pg.addColorStop(1, '#E8DCA8');
+  ctx.fillStyle = pg;
+  ctx.fillRect(x, y, CELL, CELL);
+
+  // Stone texture - subtle lines
+  ctx.strokeStyle = 'rgba(180,160,100,0.3)';
+  ctx.lineWidth = 0.5;
+  const hash = (r * 7 + c * 13) % 4;
+  if (hash === 0) {
+    ctx.beginPath(); ctx.moveTo(x + 8, y + CELL/2); ctx.lineTo(x + CELL - 8, y + CELL/2); ctx.stroke();
+  } else if (hash === 1) {
+    ctx.beginPath(); ctx.moveTo(x + CELL/2, y + 6); ctx.lineTo(x + CELL/2, y + CELL - 6); ctx.stroke();
+  }
+}
+
+function drawHedgeWall(r, c) {
+  const x = c * CELL, y = r * CELL;
+
+  // Multi-layer green hedge gradient
+  const hg = ctx.createLinearGradient(x, y, x, y + CELL);
+  hg.addColorStop(0,   '#3A8C1A');
+  hg.addColorStop(0.3, '#2E7010');
+  hg.addColorStop(0.7, '#246008');
+  hg.addColorStop(1,   '#1C4C06');
+  ctx.fillStyle = hg;
+  ctx.fillRect(x, y, CELL, CELL);
+
+  // Top highlight
+  const topGlow = ctx.createLinearGradient(x, y, x, y + 10);
+  topGlow.addColorStop(0, 'rgba(120,220,60,0.35)');
+  topGlow.addColorStop(1, 'transparent');
+  ctx.fillStyle = topGlow;
+  ctx.fillRect(x, y, CELL, 10);
+
+  // Hedge texture - leaf bumps
+  ctx.fillStyle = 'rgba(60,130,20,0.4)';
+  const leafOffsets = [
+    [4, 4], [14, 8], [22, 3], [32, 9], [38, 5],
+    [6, 16], [18, 20], [28, 15], [36, 18], [42, 22],
+    [8, 28], [20, 32], [30, 26], [40, 30],
+    [5, 38], [16, 42], [26, 38], [38, 42]
+  ];
+  leafOffsets.forEach(([lx, ly]) => {
+    if (lx < CELL && ly < CELL) {
+      ctx.beginPath();
+      ctx.ellipse(x + lx, y + ly, 4, 3, Math.atan2(ly, lx), 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+
+  // Dark leaf depth
+  ctx.fillStyle = 'rgba(20,60,5,0.25)';
+  leafOffsets.forEach(([lx, ly]) => {
+    if (lx < CELL && ly < CELL) {
+      ctx.beginPath();
+      ctx.ellipse(x + lx + 1, y + ly + 2, 3, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+
+  // Roses on hedge
+  const roses = getRosesForCell(r, c);
+  roses.forEach(({ rx, ry, hue }) => {
+    drawRose(x + rx, y + ry, hue);
+  });
+
+  // Border shadow for depth
+  ctx.strokeStyle = 'rgba(10,40,2,0.5)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x + 0.5, y + 0.5, CELL - 1, CELL - 1);
+}
+
+function drawRose(cx, cy, hue) {
+  const r = 4.5;
+  // Petals
+  const colors = [`hsl(${hue},90%,60%)`, `hsl(${hue},85%,55%)`, `hsl(${hue+10},95%,65%)`];
+  for (let p = 0; p < 5; p++) {
+    const angle = (p / 5) * Math.PI * 2;
+    ctx.fillStyle = colors[p % colors.length];
+    ctx.beginPath();
+    ctx.ellipse(
+      cx + Math.cos(angle) * (r * 0.55),
+      cy + Math.sin(angle) * (r * 0.55),
+      r * 0.7, r * 0.5, angle, 0, Math.PI * 2
+    );
+    ctx.fill();
+  }
+  // Center
+  ctx.fillStyle = `hsl(${hue+15},100%,80%)`;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.38, 0, Math.PI * 2);
+  ctx.fill();
+  // Center dot
+  ctx.fillStyle = `hsl(${hue+30},90%,50%)`;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.18, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawGoal(r, c, t) {
+  const x = c * CELL + CELL / 2;
+  const y = r * CELL + CELL / 2;
+  const pulse = Math.sin(t * 0.003) * 0.3 + 0.7;
+
+  // Glowing circle
+  const gg = ctx.createRadialGradient(x, y, 2, x, y, CELL * 0.45);
+  gg.addColorStop(0, `rgba(255,240,100,${0.9 * pulse})`);
+  gg.addColorStop(0.5, `rgba(255,200,0,${0.6 * pulse})`);
+  gg.addColorStop(1, 'rgba(255,160,0,0)');
+  ctx.fillStyle = gg;
+  ctx.beginPath();
+  ctx.arc(x, y, CELL * 0.45, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Gate arch
+  ctx.strokeStyle = `rgba(200,140,0,${pulse})`;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(x, y + 4, 16, Math.PI, 0, false);
+  ctx.stroke();
+
+  // Gate pillars
+  ctx.fillStyle = `rgba(200,140,0,${0.9 * pulse})`;
+  ctx.fillRect(x - 18, y - 4, 5, 22);
+  ctx.fillRect(x + 13, y - 4, 5, 22);
+
+  // Star on top
+  drawStar(x, y - 14, 7, 4, 5, `rgba(255,220,0,${pulse})`, `rgba(200,140,0,${pulse})`);
+
+  // "EXIT" text
+  ctx.fillStyle = `rgba(180,100,0,${pulse})`;
+  ctx.font = 'bold 7px Baloo 2, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('IEȘIRE', x, y + 20);
+}
+
+function drawCollectible(col, row, pulse, t) {
+  const cx = col * CELL + CELL / 2;
+  const cy = row * CELL + CELL / 2;
+  const bobY = Math.sin(t * 0.004 + pulse) * 3;
+  const scale = 1 + Math.sin(t * 0.003 + pulse) * 0.12;
+
+  ctx.save();
+  ctx.translate(cx, cy + bobY);
+  ctx.scale(scale, scale);
+
+  // Glow
+  const gg = ctx.createRadialGradient(0, 0, 2, 0, 0, 18);
+  gg.addColorStop(0, 'rgba(255,240,100,0.9)');
+  gg.addColorStop(1, 'rgba(255,200,0,0)');
+  ctx.fillStyle = gg;
+  ctx.beginPath();
+  ctx.arc(0, 0, 18, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Star
+  drawStar(0, 0, 11, 5, 5, '#FFD700', '#FFA500');
+
+  // Sparkles
+  for (let i = 0; i < 4; i++) {
+    const angle = (i / 4) * Math.PI * 2 + t * 0.005;
+    const dist = 13 + Math.sin(t * 0.008 + i) * 3;
+    ctx.fillStyle = 'rgba(255,255,150,0.8)';
+    ctx.beginPath();
+    ctx.arc(Math.cos(angle) * dist, Math.sin(angle) * dist, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+function drawStar(cx, cy, outerR, innerR, points, fillColor, strokeColor) {
+  ctx.beginPath();
+  for (let i = 0; i < points * 2; i++) {
+    const angle = (i * Math.PI) / points - Math.PI / 2;
+    const r = i % 2 === 0 ? outerR : innerR;
+    const px = cx + Math.cos(angle) * r;
+    const py = cy + Math.sin(angle) * r;
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.fillStyle = fillColor;
+  ctx.fill();
+  if (strokeColor) {
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+}
+
+function drawPlayer(px, py, t) {
+  const cx = px + CELL / 2;
+  const cy = py + CELL / 2;
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath();
+  ctx.ellipse(cx + 2, cy + 17, 10, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Body bounce
+  const bounce = Math.abs(Math.sin(t * 0.01)) * 2;
+
+  ctx.save();
+  ctx.translate(cx, cy - bounce);
+
+  // Pawn base
+  const bodyGrad = ctx.createRadialGradient(-4, -8, 2, 0, 0, 18);
+  bodyGrad.addColorStop(0,   '#FFE44D');
+  bodyGrad.addColorStop(0.4, '#FFD700');
+  bodyGrad.addColorStop(0.8, '#D4A500');
+  bodyGrad.addColorStop(1,   '#A07800');
+  ctx.fillStyle = bodyGrad;
+
+  // Pawn shape: head circle + neck + rounded base
+  ctx.beginPath();
+  ctx.arc(0, -10, 7.5, 0, Math.PI * 2); // head
+  ctx.fill();
+
+  // Neck
+  ctx.fillStyle = '#D4A500';
+  ctx.fillRect(-3, -4, 6, 5);
+
+  // Base
+  ctx.fillStyle = bodyGrad;
+  ctx.beginPath();
+  ctx.moveTo(-10, 14);
+  ctx.quadraticCurveTo(-12, 8, -5, 4);
+  ctx.quadraticCurveTo(0, 2, 5, 4);
+  ctx.quadraticCurveTo(12, 8, 10, 14);
+  ctx.closePath();
+  ctx.fill();
+
+  // Highlight on head
+  const hlGrad = ctx.createRadialGradient(-3, -13, 1, -3, -13, 5);
+  hlGrad.addColorStop(0, 'rgba(255,255,200,0.8)');
+  hlGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = hlGrad;
+  ctx.beginPath();
+  ctx.arc(-2, -13, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Cute face
+  // Eyes
+  ctx.fillStyle = '#3A2000';
+  ctx.beginPath();
+  ctx.arc(-2.5, -10.5, 1.5, 0, Math.PI * 2);
+  ctx.arc(2.5, -10.5, 1.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Eye shine
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.beginPath();
+  ctx.arc(-2, -11.2, 0.6, 0, Math.PI * 2);
+  ctx.arc(3, -11.2, 0.6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Smile
+  ctx.strokeStyle = '#3A2000';
+  ctx.lineWidth = 1.2;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.arc(0, -9, 2.5, 0.2, Math.PI - 0.2);
+  ctx.stroke();
+
+  // Rosy cheeks
+  ctx.fillStyle = 'rgba(255,150,120,0.45)';
+  ctx.beginPath();
+  ctx.ellipse(-4, -9.5, 2, 1.5, 0, 0, Math.PI * 2);
+  ctx.ellipse(4, -9.5, 2, 1.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Outline
+  ctx.strokeStyle = '#A07800';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(0, -10, 7.5, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+// ========== GAME LOOP ==========
+let lastTime = 0;
+
+function render(timestamp) {
+  const dt = timestamp - lastTime;
+  lastTime = timestamp;
+
+  // Smooth movement interpolation
+  if (animProgress < 1) {
+    animProgress = Math.min(1, animProgress + ANIM_SPEED);
+    const ease = 1 - Math.pow(1 - animProgress, 3);
+    playerDisplayX = playerDisplayX + (targetX - playerDisplayX) * 0.25;
+    playerDisplayY = playerDisplayY + (targetY - playerDisplayY) * 0.25;
+    if (animProgress >= 1) {
+      playerDisplayX = targetX;
+      playerDisplayY = targetY;
+      isMoving = false;
+      processNextMove();
+    }
+  }
+
+  drawBackground();
+
+  // Draw all cells
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = mazeGrid[r][c];
+      if (cell === 'W') {
+        drawHedgeWall(r, c);
+      } else {
+        // Path, Start, Goal, Collectible cell backgrounds are all stone
+        drawPath(r, c);
+      }
+    }
+  }
+
+  // Draw goal
+  drawGoal(goalRow, goalCol, timestamp);
+
+  // Draw collectibles
+  collectibles.forEach(col => {
+    if (!col.collected) {
+      drawCollectible(col.col, col.row, col.pulse, timestamp);
+    }
+  });
+
+  // Draw player
+  drawPlayer(playerDisplayX, playerDisplayY, timestamp);
+
+  // Grid overlay (subtle)
+  // ctx.strokeStyle = 'rgba(0,0,0,0.04)';
+  // ctx.lineWidth = 0.5;
+  // for(let r=0;r<=ROWS;r++){ctx.beginPath();ctx.moveTo(0,r*CELL);ctx.lineTo(COLS*CELL,r*CELL);ctx.stroke();}
+  // for(let c=0;c<=COLS;c++){ctx.beginPath();ctx.moveTo(c*CELL,0);ctx.lineTo(c*CELL,ROWS*CELL);ctx.stroke();}
+
+  if (!gameOver) {
+    requestAnimationFrame(render);
+  }
+}
+
+// ========== INPUT ==========
+const keysDown = new Set();
+
+document.addEventListener('keydown', e => {
+  const key = e.key.toLowerCase();
+  const dirs = {
+    'arrowup': [0,-1], 'w': [0,-1],
+    'arrowdown': [0,1], 's': [0,1],
+    'arrowleft': [-1,0], 'a': [-1,0],
+    'arrowright': [1,0], 'd': [1,0],
+  };
+  if (dirs[key]) {
+    e.preventDefault();
+    if (!keysDown.has(key)) {
+      keysDown.add(key);
+      moveQueue.push(dirs[key]);
+      if (!isMoving && !gameOver) processNextMove();
+    }
+  }
+});
+
+document.addEventListener('keyup', e => {
+  keysDown.delete(e.key.toLowerCase());
+});
+
+function processNextMove() {
+  if (moveQueue.length === 0 || isMoving || gameOver) return;
+  const [dc, dr] = moveQueue.shift();
+  tryMove(dc, dr);
+}
+
+function tryMove(dc, dr) {
+  const newCol = player.col + dc;
+  const newRow = player.row + dr;
+
+  if (newCol < 0 || newCol >= COLS || newRow < 0 || newRow >= ROWS) return;
+  if (mazeGrid[newRow][newCol] === 'W') {
+    // Bump effect - small visual shake (no move)
+    return;
+  }
+
+  player.col = newCol;
+  player.row = newRow;
+  steps++;
+  document.getElementById('steps-val').textContent = steps;
+
+  targetX = player.col * CELL;
+  targetY = player.row * CELL;
+  isMoving = true;
+  animProgress = 0;
+
+  // Check collectible
+  const cIdx = collectibles.findIndex(c => c.col === player.col && c.row === player.row && !c.collected);
+  if (cIdx !== -1) {
+    collectibles[cIdx].collected = true;
+    collectedCount++;
+    document.getElementById('score-val').textContent = collectedCount;
+    showCollectMessage(collectMessages[Math.min(cIdx, collectMessages.length - 1)]);
+  }
+
+  // Check goal
+  if (player.col === goalCol && player.row === goalRow) {
+    setTimeout(showVictory, 400);
+  }
+}
+
+// ========== COLLECT POPUP ==========
+function showCollectMessage(msg) {
+  const el = document.createElement('div');
+  el.className = 'collect-popup';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2100);
+}
+
+// ========== VICTORY ==========
+function showVictory() {
+  gameOver = true;
+  document.getElementById('victory-msg').textContent =
+    collectedCount === 3
+      ? 'Ai ieșit din labirint și ai colectat toate lecțiile! 🌹🌹🌹'
+      : `Ai ieșit din labirint cu ${collectedCount}/3 lecții colectate!`;
+  document.getElementById('victory-steps').textContent = `Total pași: ${steps}`;
+  document.getElementById('victory-screen').classList.add('show');
+  spawnConfetti();
+}
+
+function spawnConfetti() {
+  const colors = ['#FF6B9D','#FFD700','#7EC8E3','#A8E6CF','#FF8C42','#C3A6FF'];
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left: ${Math.random() * 100}vw;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      --fall-dur: ${2.5 + Math.random() * 2}s;
+      --fall-delay: ${Math.random() * 2}s;
+      transform: rotate(${Math.random() * 360}deg);
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 6000);
+  }
+}
+
+function restartGame() {
+  player = { col: startCol, row: startRow };
+  playerDisplayX = startCol * CELL;
+  playerDisplayY = startRow * CELL;
+  targetX = startCol * CELL;
+  targetY = startRow * CELL;
+  collectedCount = 0;
+  steps = 0;
+  moveQueue = [];
+  isMoving = false;
+  animProgress = 1;
+  gameOver = false;
+  document.getElementById('score-val').textContent = '0';
+  document.getElementById('steps-val').textContent = '0';
+  document.getElementById('victory-screen').classList.remove('show');
+  initCollectibles();
+  requestAnimationFrame(t => { lastTime = t; render(t); });
+}
+
+// ========== START ==========
+initCollectibles();
+requestAnimationFrame(t => { lastTime = t; render(t); });
+</script>
+</body>
+</html>

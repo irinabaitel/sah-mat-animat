@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harta Castelului Șahului</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: #1A1208;
+    font-family: 'Baloo 2', cursive;
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: #E8D5A0;
+  }
+
+  /* Stone tile background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.18) 39px, rgba(0,0,0,0.18) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,0,0,0.18) 39px, rgba(0,0,0,0.18) 40px),
+      repeating-linear-gradient(0deg, rgba(255,200,80,0.015) 0px, rgba(255,200,80,0.015) 19px, transparent 19px, transparent 40px),
+      repeating-linear-gradient(90deg, rgba(255,200,80,0.015) 0px, rgba(255,200,80,0.015) 19px, transparent 19px, transparent 40px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Vignette overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(10,6,2,0.65) 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== LAYOUT ===== */
+  #app {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 28px 20px 40px;
+    transition: margin-right 0.4s ease;
+  }
+
+  #app.panel-open {
+    margin-right: 310px;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .header h1 {
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 800;
+    color: #FFD060;
+    text-shadow: 0 0 20px rgba(255,180,30,0.6), 0 2px 4px rgba(0,0,0,0.8);
+    letter-spacing: 2px;
+  }
+
+  .header p {
+    font-size: 14px;
+    color: #B8905A;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  /* ===== CASTLE MAP WRAPPER ===== */
+  .castle-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 760px;
+  }
+
+  /* ===== GRID ===== */
+  .grid {
+    display: grid;
+    grid-template-columns: 180px 60px 180px 60px 180px;
+    grid-template-rows: 160px 50px 160px 50px 160px;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    position: relative;
+  }
+
+  /* ===== ROOM ===== */
+  .room {
+    width: 180px;
+    height: 160px;
+    background: #3A2810;
+    border: 2px solid #C8882A;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.15s;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,200,80,0.08);
+    user-select: none;
+  }
+
+  .room::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    background: repeating-linear-gradient(
+      135deg,
+      transparent,
+      transparent 8px,
+      rgba(0,0,0,0.07) 8px,
+      rgba(0,0,0,0.07) 9px
+    );
+    pointer-events: none;
+  }
+
+  .room.unlocked:hover {
+    border-color: #FFD060;
+    box-shadow: 0 0 28px rgba(255,180,30,0.5), 0 4px 18px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,200,80,0.12);
+    transform: translateY(-2px);
+  }
+
+  .room.unlocked.active {
+    border-color: #FFD060;
+    animation: roomGlow 2s ease-in-out infinite;
+    box-shadow: 0 0 36px rgba(255,180,30,0.65), 0 4px 18px rgba(0,0,0,0.6);
+  }
+
+  .room.locked {
+    background: #1A1410;
+    border-color: #554433;
+    cursor: pointer;
+    opacity: 0.85;
+  }
+
+  .room.locked:hover {
+    border-color: #776655;
+  }
+
+  .room.shake {
+    animation: shake 0.4s ease;
+  }
+
+  .piece-symbol {
+    font-size: 72px;
+    line-height: 1;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7));
+  }
+
+  .room.unlocked .piece-symbol {
+    color: #C8882A;
+    text-shadow: 0 0 12px rgba(200,136,42,0.4);
+  }
+
+  .room.locked .piece-symbol {
+    color: #554433;
+    filter: grayscale(1) brightness(0.5);
+  }
+
+  .room-name {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #D4A855;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+
+  .room.locked .room-name {
+    color: #665544;
+  }
+
+  .status-badge {
+    margin-top: 7px;
+    font-size: 11px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .room.unlocked .status-badge {
+    background: rgba(200,136,42,0.18);
+    border: 1px solid rgba(200,136,42,0.4);
+    color: #C8882A;
+  }
+
+  .room.locked .status-badge {
+    background: rgba(50,30,20,0.5);
+    border: 1px solid #443322;
+    color: #665544;
+  }
+
+  /* ===== POSITION MARKER ===== */
+  .marker {
+    position: absolute;
+    font-size: 22px;
+    z-index: 10;
+    animation: markerBounce 1.2s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(255,200,50,0.9));
+    pointer-events: none;
+    transition: top 0.55s cubic-bezier(.68,-0.55,.27,1.55), left 0.55s cubic-bezier(.68,-0.55,.27,1.55);
+    transform: translate(-50%, -130%);
+  }
+
+  /* ===== CORRIDORS ===== */
+  .corridor-h {
+    width: 60px;
+    height: 18px;
+    background: linear-gradient(to bottom, rgba(30,18,8,0.9) 0%, #2A1C0A 40%, #2A1C0A 60%, rgba(30,18,8,0.9) 100%);
+    border-top: 1px solid rgba(200,136,42,0.25);
+    border-bottom: 1px solid rgba(200,136,42,0.25);
+    position: relative;
+    align-self: center;
+  }
+
+  .corridor-h::before, .corridor-h::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(200,136,42,0.3);
+  }
+  .corridor-h::before { left: 8px; }
+  .corridor-h::after  { right: 8px; }
+
+  .corridor-v {
+    width: 18px;
+    height: 50px;
+    background: linear-gradient(to right, rgba(30,18,8,0.9) 0%, #2A1C0A 40%, #2A1C0A 60%, rgba(30,18,8,0.9) 100%);
+    border-left: 1px solid rgba(200,136,42,0.25);
+    border-right: 1px solid rgba(200,136,42,0.25);
+    justify-self: center;
+    position: relative;
+  }
+
+  .corridor-v::before, .corridor-v::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(200,136,42,0.3);
+  }
+  .corridor-v::before { top: 8px; }
+  .corridor-v::after  { bottom: 8px; }
+
+  /* Intersection cells (torch positions) */
+  .corner {
+    width: 60px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .torch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #FFE066 0%, #FF9900 50%, #AA4400 100%);
+    animation: torchFlicker 1.8s ease-in-out infinite;
+    position: absolute;
+  }
+
+  .torch:nth-child(2) { animation-delay: 0.6s; }
+  .torch:nth-child(3) { animation-delay: 1.2s; }
+
+  /* ===== SIDE PANEL ===== */
+  #side-panel {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 310px;
+    height: 100vh;
+    background: #2A1A0A;
+    border-left: 2px solid #C8882A;
+    box-shadow: -6px 0 30px rgba(0,0,0,0.7);
+    transition: right 0.4s cubic-bezier(.4,0,.2,1);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 24px 24px;
+    overflow-y: auto;
+  }
+
+  #side-panel.open {
+    right: 0;
+  }
+
+  .panel-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: #C8882A;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .panel-close:hover {
+    color: #FFD060;
+    background: rgba(200,136,42,0.12);
+  }
+
+  .panel-piece {
+    font-size: 110px;
+    text-align: center;
+    color: #C8882A;
+    text-shadow: 0 0 30px rgba(200,136,42,0.5);
+    margin: 10px 0 8px;
+    line-height: 1;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.7));
+  }
+
+  .panel-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: #FFD060;
+    text-align: center;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 12px rgba(255,180,30,0.4);
+    margin-bottom: 16px;
+  }
+
+  .panel-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #C8882A, transparent);
+    margin-bottom: 18px;
+  }
+
+  .panel-desc {
+    font-size: 14px;
+    color: #D4B880;
+    line-height: 1.75;
+    text-align: center;
+    margin-bottom: 28px;
+    font-weight: 400;
+  }
+
+  .panel-btn {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #FF8C20, #D46010);
+    color: #FFF8E8;
+    font-family: 'Baloo 2', cursive;
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(255,120,20,0.4);
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    margin-top: auto;
+  }
+
+  .panel-btn:hover {
+    background: linear-gradient(135deg, #FFA040, #E07020);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(255,120,20,0.6);
+  }
+
+  /* ===== TOAST ===== */
+  #toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #3A1A08;
+    border: 1px solid #C8882A;
+    color: #FFD060;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 200;
+    transition: transform 0.35s cubic-bezier(.4,0,.2,1), opacity 0.35s;
+    opacity: 0;
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  }
+
+  #toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* ===== LEGEND ===== */
+  .legend {
+    margin-top: 28px;
+    font-size: 13px;
+    color: #8A6840;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes torchFlicker {
+    0%   { opacity: 0.85; box-shadow: 0 0 6px 3px rgba(255,160,20,0.5); }
+    30%  { opacity: 1.0;  box-shadow: 0 0 12px 6px rgba(255,200,40,0.8); }
+    60%  { opacity: 0.90; box-shadow: 0 0 8px 4px rgba(255,140,20,0.55); }
+    80%  { opacity: 1.0;  box-shadow: 0 0 14px 7px rgba(255,210,60,0.75); }
+    100% { opacity: 0.85; box-shadow: 0 0 6px 3px rgba(255,160,20,0.5); }
+  }
+
+  @keyframes roomGlow {
+    0%   { box-shadow: 0 0 24px rgba(255,180,30,0.45), 0 4px 18px rgba(0,0,0,0.6); border-color: #FFD060; }
+    50%  { box-shadow: 0 0 44px rgba(255,200,50,0.75), 0 4px 18px rgba(0,0,0,0.6); border-color: #FFE080; }
+    100% { box-shadow: 0 0 24px rgba(255,180,30,0.45), 0 4px 18px rgba(0,0,0,0.6); border-color: #FFD060; }
+  }
+
+  @keyframes shake {
+    0%   { transform: translateX(0); }
+    15%  { transform: translateX(-7px); }
+    30%  { transform: translateX(7px); }
+    45%  { transform: translateX(-5px); }
+    60%  { transform: translateX(5px); }
+    75%  { transform: translateX(-3px); }
+    90%  { transform: translateX(3px); }
+    100% { transform: translateX(0); }
+  }
+
+  @keyframes markerBounce {
+    0%   { transform: translate(-50%, -130%); }
+    50%  { transform: translate(-50%, -145%); }
+    100% { transform: translate(-50%, -130%); }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 680px) {
+    .grid {
+      grid-template-columns: 130px 44px 130px 44px 130px;
+      grid-template-rows: 120px 38px 120px 38px 120px;
+    }
+    .room { width: 130px; height: 120px; }
+    .piece-symbol { font-size: 48px; }
+    .room-name { font-size: 11px; }
+    .corridor-h { width: 44px; }
+    .corridor-v { height: 38px; }
+    #app.panel-open { margin-right: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="header">
+    <h1>🏰 Harta Castelului</h1>
+    <p>Explorează și descoperă secretele șahului</p>
+  </div>
+
+  <div class="castle-wrap">
+    <!-- The marker floats over the grid, positioned by JS -->
+    <div class="marker" id="marker">♞</div>
+
+    <div class="grid" id="castle-grid">
+
+      <!-- ROW 1: rooms + horizontal corridors -->
+      <div class="room unlocked" id="r-intrare" data-id="intrare">
+        <div class="piece-symbol">🏰</div>
+        <div class="room-name">Intrare</div>
+        <div class="status-badge">🔓 Disponibil</div>
+      </div>
+
+      <div class="corridor-h"></div>
+
+      <div class="room unlocked" id="r-pionul" data-id="pionul">
+        <div class="piece-symbol">♟</div>
+        <div class="room-name">Pionul</div>
+        <div class="status-badge">🔓 Disponibil</div>
+      </div>
+
+      <div class="corridor-h"></div>
+
+      <div class="room unlocked" id="r-calul" data-id="calul">
+        <div class="piece-symbol">♞</div>
+        <div class="room-name">Calul</div>
+        <div class="status-badge">🔓 Disponibil</div>
+      </div>
+
+      <!-- ROW 2: vertical corridors + corners with torches -->
+      <div class="corridor-v" style="justify-self:center;"></div>
+      <div class="corner"><div class="torch"></div></div>
+      <div class="corridor-v" style="justify-self:center;"></div>
+      <div class="corner"><div class="torch"></div></div>
+      <div class="corridor-v" style="justify-self:center;"></div>
+
+      <!-- ROW 3 -->
+      <div class="room unlocked" id="r-sala" data-id="sala">
+        <div class="piece-symbol">⚔️</div>
+        <div class="room-name">Sala Mare</div>
+        <div class="status-badge">🔓 Disponibil</div>
+      </div>
+
+      <div class="corridor-h"></div>
+
+      <div class="room unlocked" id="r-nebunul" data-id="nebunul">
+        <div class="piece-symbol">♝</div>
+        <div class="room-name">Nebunul</div>
+        <div class="status-badge">🔓 Disponibil</div>
+      </div>
+
+      <div class="corridor-h"></div>
+
+      <div class="room unlocked" id="r-turnul" data-id="turnul">
+        <div class="piece-symbol">♜</div>
+        <div class="room-name">Turnul</div>
+        <div class="status-badge">🔓 Disponibil</div>
+      </div>
+
+      <!-- ROW 4: vertical corridors + corners with torches -->
+      <div class="corridor-v" style="justify-self:center;"></div>
+      <div class="corner"><div class="torch"></div></div>
+      <div class="corridor-v" style="justify-self:center;"></div>
+      <div class="corner"><div class="torch"></div></div>
+      <div class="corridor-v" style="justify-self:center;"></div>
+
+      <!-- ROW 5 -->
+      <div class="room locked" id="r-tronul" data-id="tronul">
+        <div class="piece-symbol">🔒</div>
+        <div class="room-name">Tronul</div>
+        <div class="status-badge">🔒 Blocat</div>
+      </div>
+
+      <div class="corridor-h" style="opacity:0.4;"></div>
+
+      <div class="room locked" id="r-dama" data-id="dama">
+        <div class="piece-symbol">🔒</div>
+        <div class="room-name">Dama</div>
+        <div class="status-badge">🔒 Blocat</div>
+      </div>
+
+      <div class="corridor-h" style="opacity:0.4;"></div>
+
+      <div class="room locked" id="r-regele" data-id="regele">
+        <div class="piece-symbol">🔒</div>
+        <div class="room-name">Regele</div>
+        <div class="status-badge">🔒 Blocat</div>
+      </div>
+
+    </div><!-- /grid -->
+  </div><!-- /castle-wrap -->
+
+  <div class="legend">🔓 Disponibil &nbsp;|&nbsp; 🔒 Blocat &nbsp;|&nbsp; ⭐ Completat</div>
+</div><!-- /app -->
+
+<!-- SIDE PANEL -->
+<div id="side-panel">
+  <button class="panel-close" id="panel-close" title="Închide">✕</button>
+  <div class="panel-piece" id="panel-piece">♟</div>
+  <div class="panel-name" id="panel-name">Pionul</div>
+  <div class="panel-divider"></div>
+  <div class="panel-desc" id="panel-desc">Descriere.</div>
+  <button class="panel-btn">Intră în cameră →</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast">🔒 Completați lecțiile anterioare!</div>
+
+<script>
+  const ROOMS = {
+    intrare: {
+      symbol: '🏰',
+      name: 'Intrare',
+      desc: 'Bun venit în Castelul Șahului!\nAlege o cameră pentru a începe aventura.',
+      locked: false,
+    },
+    pionul: {
+      symbol: '♟',
+      name: 'Pionul',
+      desc: 'Pionul este cel mai numeros soldat.\nAvansează înainte și capturează diagonal!',
+      locked: false,
+    },
+    calul: {
+      symbol: '♞',
+      name: 'Calul',
+      desc: 'Calul sare în formă de L —\nsingura piesă care poate sări peste altele!',
+      locked: false,
+    },
+    sala: {
+      symbol: '⚔️',
+      name: 'Sala Mare',
+      desc: 'Sala centrală a castelului.\nToate drumurile trec prin ea.',
+      locked: false,
+    },
+    nebunul: {
+      symbol: '♝',
+      name: 'Nebunul',
+      desc: 'Nebunul alunecă pe diagonale,\nstăpânind culoarea sa pentru totdeauna.',
+      locked: false,
+    },
+    turnul: {
+      symbol: '♜',
+      name: 'Turnul',
+      desc: 'Turnul domină liniile și coloanele —\no fortăreață în mișcare!',
+      locked: false,
+    },
+    tronul: { symbol: '♚', name: 'Tronul', desc: '', locked: true },
+    dama:   { symbol: '♛', name: 'Dama',   desc: '', locked: true },
+    regele: { symbol: '♔', name: 'Regele', desc: '', locked: true },
+  };
+
+  const panel      = document.getElementById('side-panel');
+  const panelClose = document.getElementById('panel-close');
+  const panelPiece = document.getElementById('panel-piece');
+  const panelName  = document.getElementById('panel-name');
+  const panelDesc  = document.getElementById('panel-desc');
+  const app        = document.getElementById('app');
+  const toast      = document.getElementById('toast');
+  const marker     = document.getElementById('marker');
+
+  let activeRoom = null;
+  let toastTimer = null;
+
+  // ---- Marker positioning ----
+  function positionMarker(roomEl) {
+    const gridEl = document.getElementById('castle-grid');
+    const gridRect = gridEl.getBoundingClientRect();
+    const roomRect = roomEl.getBoundingClientRect();
+    const wrapRect = document.querySelector('.castle-wrap').getBoundingClientRect();
+
+    // Offset relative to the castle-wrap (marker is absolute inside it)
+    const relTop  = roomRect.top  - wrapRect.top  + roomRect.height * 0.12;
+    const relLeft = roomRect.left - wrapRect.left + roomRect.width  * 0.5;
+
+    marker.style.top  = relTop  + 'px';
+    marker.style.left = relLeft + 'px';
+  }
+
+  // ---- Toast ----
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+  }
+
+  // ---- Open panel ----
+  function openPanel(id) {
+    const data = ROOMS[id];
+    panelPiece.textContent = data.symbol;
+    panelName.textContent  = data.name;
+    panelDesc.innerHTML    = data.desc.replace('\n', '<br>');
+    panel.classList.add('open');
+    app.classList.add('panel-open');
+  }
+
+  // ---- Close panel ----
+  function closePanel() {
+    panel.classList.remove('open');
+    app.classList.remove('panel-open');
+  }
+
+  panelClose.addEventListener('click', closePanel);
+
+  // ---- Room click handlers ----
+  document.querySelectorAll('.room').forEach(roomEl => {
+    roomEl.addEventListener('click', () => {
+      const id   = roomEl.dataset.id;
+      const data = ROOMS[id];
+
+      if (data.locked) {
+        // Shake and toast
+        roomEl.classList.remove('shake');
+        void roomEl.offsetWidth; // reflow to re-trigger animation
+        roomEl.classList.add('shake');
+        roomEl.addEventListener('animationend', () => roomEl.classList.remove('shake'), { once: true });
+        showToast('🔒 Completați lecțiile anterioare!');
+        return;
+      }
+
+      // Deactivate previous active room
+      if (activeRoom) {
+        document.getElementById('r-' + activeRoom)?.classList.remove('active');
+      }
+
+      activeRoom = id;
+      roomEl.classList.add('active');
+
+      // Move marker
+      positionMarker(roomEl);
+
+      // Open panel
+      openPanel(id);
+    });
+  });
+
+  // ---- Init: place marker on INTRARE ----
+  window.addEventListener('load', () => {
+    const startRoom = document.getElementById('r-intrare');
+    if (startRoom) {
+      positionMarker(startRoom);
+      startRoom.classList.add('active');
+      activeRoom = 'intrare';
+    }
+  });
+
+  // Reposition marker on resize
+  window.addEventListener('resize', () => {
+    if (activeRoom) {
+      const el = document.getElementById('r-' + activeRoom);
+      if (el) positionMarker(el);
+    }
+  });
+</script>
+</body>
+</html>

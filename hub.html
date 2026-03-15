@@ -80,6 +80,44 @@
             box-shadow: 0 8px 28px rgba(0,0,0,0.18);
         }
 
+        /* ── LOCKED STATE ── */
+        .card-locked, .intro-card-locked {
+            position: relative;
+            pointer-events: none;
+            filter: grayscale(60%) brightness(0.75);
+        }
+        .card-locked::after, .intro-card-locked::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,.22);
+            border-radius: inherit;
+        }
+        .lock-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            gap: 6px;
+        }
+        .lock-icon { font-size: 2rem; }
+        .lock-play-btn {
+            background: #e07030;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-family: 'Baloo 2', cursive;
+            font-size: .85rem;
+            font-weight: 700;
+            cursor: pointer;
+            pointer-events: all;
+            text-decoration: none;
+        }
+
         .card-soon {
             opacity: 0.55;
             cursor: default;
@@ -208,7 +246,7 @@
     <p class="subtitle">Alege un capitol &#351;i &#238;ncepe s&#259; &#238;nve&#539;i!</p>
 
     <!-- Intro -->
-    <a href="pagina1.html" class="intro-card">
+    <a href="pagina1.html" class="intro-card" data-unlock="pagina1">
         <div class="intro-card-icon">&#128218;</div>
         <div class="intro-card-body">
             <div class="intro-card-title">No&#539;iuni de baz&#259;</div>
@@ -222,7 +260,7 @@
         <div class="section-title">&#9820; Maturi simple cu figuri</div>
         <div class="cards">
 
-            <a href="pagina10.html" class="card">
+            <a href="pagina10.html" class="card" data-unlock="pagina10">
                 <div class="card-pieces">
                     <img src="pieces/wQ.svg" alt="">
                     <img src="pieces/wR.svg" alt="">
@@ -232,7 +270,7 @@
                 <span class="card-btn">Deschide &#9654;</span>
             </a>
 
-            <a href="pagina12.html" class="card">
+            <a href="pagina12.html" class="card" data-unlock="pagina12">
                 <div class="card-pieces">
                     <img src="pieces/wR.svg" alt="">
                     <img src="pieces/wR.svg" alt="">
@@ -242,7 +280,7 @@
                 <span class="card-btn">Deschide &#9654;</span>
             </a>
 
-            <a href="pagina16.html" class="card">
+            <a href="pagina16.html" class="card" data-unlock="pagina16">
                 <div class="card-pieces">
                     <img src="pieces/wQ.svg" alt="">
                     <img src="pieces/wB.svg" alt="">
@@ -263,7 +301,7 @@
                 <span class="card-btn">Deschide &#9654;</span>
             </div>
 
-            <a href="pagina19.html" class="card">
+            <a href="pagina19.html" class="card" data-unlock="pagina19">
                 <div class="card-pieces">
                     <img src="pieces/wB.svg" alt="">
                     <img src="pieces/wB.svg" alt="">
@@ -324,5 +362,25 @@
         </div>
     </div>
 
+<script>
+(function() {
+    // Check which lessons are unlocked via localStorage
+    document.querySelectorAll('[data-unlock]').forEach(function(el) {
+        const key = el.getAttribute('data-unlock');
+        const unlocked = localStorage.getItem('sma_unlocked_' + key) === '1';
+        if (!unlocked) {
+            el.classList.add(el.tagName === 'A' ? (el.classList.contains('intro-card') ? 'intro-card-locked' : 'card-locked') : '');
+            el.removeAttribute('href');
+            // Add lock overlay with play button
+            const ov = document.createElement('div');
+            ov.className = 'lock-overlay';
+            ov.innerHTML = '<span class="lock-icon">🔒</span>'
+                + '<a href="demo_cal.html" class="lock-play-btn">♞ Joacă pentru a debloca</a>';
+            el.style.position = 'relative';
+            el.appendChild(ov);
+        }
+    });
+})();
+</script>
 </body>
 </html>
