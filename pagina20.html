@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sah Mat Animat - Dama si Nebun vs Rege - Exemple</title>
+    <title>Sah Mat Animat - Doi Nebuni vs Rege - Exemple</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <style>
@@ -210,13 +210,14 @@
 <body>
 
 <div class="page">
-    <img src="pieces/wQ.svg" class="corner-piece corner-tl" alt="">
-    <img src="pieces/wQ.svg" class="corner-piece corner-tr" alt="">
+    <img src="pieces/wB.svg" class="corner-piece corner-tl" alt="">
+    <img src="pieces/wB.svg" class="corner-piece corner-tr" alt="">
 
     <div class="chapter-tabs">
-        <button class="tab-btn active" onclick="loadChapter(0)">1. Blocada</button>
-        <button class="tab-btn"        onclick="loadChapter(1)">2. Urm&#259;rirea</button>
-        <button class="tab-btn"        onclick="loadChapter(2)">3. Matul</button>
+        <button class="tab-btn active" onclick="loadChapter(0)">1. Nebunii &#238;n centru</button>
+        <button class="tab-btn"        onclick="loadChapter(1)">2. Regele vine</button>
+        <button class="tab-btn"        onclick="loadChapter(2)">3. Spre margine</button>
+        <button class="tab-btn"        onclick="loadChapter(3)">4. Spre col&#539; &#351;i mat</button>
     </div>
 
     <div class="chapter-title"    id="chapterTitle"></div>
@@ -245,8 +246,8 @@
     </div>
 
     <div class="nav-buttons">
-        <a href="pagina16.html" class="nav-btn back">&#9664; &#206;napoi</a>
-        <a href="pagina18.html" class="nav-btn">&#206;nainte &#9654;</a>
+        <a href="pagina19.html" class="nav-btn back">&#9664; &#206;napoi</a>
+        <a href="pagina21.html" class="nav-btn">&#206;nainte &#9654;</a>
     </div>
 </div>
 
@@ -262,39 +263,76 @@ function toRo(san) {
 
 const chapters = [
     {
-        title:    "1. Blocada",
-        subtitle: "Regina stabile\u015fte blocada \u2014 regele advers r\u0103m\u00e2ne f\u0103r\u0103 sc\u0103pare",
-        startFen: "8/8/8/3k4/8/2QBK3/8/8 w - - 0 1",
-        sanMoves: ["Qc7", "Ke6"],
+        title:    "1. Nebunii \u00een centru",
+        subtitle: "Mai \u00eent\u00e2i aducem ambii nebuni \u00een centrul tablei",
+        startFen: "8/8/8/8/B3k3/8/1B6/1K6 w - - 0 1",
+        highlightFrom: 5,
+        sanMoves: ["Bc6+", "Kf5", "Bd4", "Ke6", "Be4", "Kd6"],
         annotations: [
-            "Regina \u015fi nebunul lucreaz\u0103 \u00eempreun\u0103 \u2014 observ\u0103 cum coopereaz\u0103 pentru a-l prinde pe regele advers.",
-            "Regina blocheaz\u0103 accesul regelui pe coloana c \u015fi p\u0103tr\u0103\u0163elele d6 \u015fi e5. Singurul loc unde poate merge regele negru este e6.",
+            "Urm\u0103re\u015fte cum aducem nebunii \u00een centru pentru a-l prinde pe regele advers",
+            "\u00cencepem prin a aduce primul nebun \u00een centru",
+            "",
+            "Acum al doilea nebun \u2014 tot \u00een centru!",
+            "",
+            "\u00cen acest fel control\u0103m \u00eentreaga tabl\u0103: regele negru este prins",
             ""
         ]
     },
     {
-        title:    "2. Urm\u0103rirea",
-        subtitle: "Regele alb intr\u0103 \u00een ac\u0163iune \u015fi &#238;mpinge regele advers spre margine",
-        startFen: "8/2Q5/4k3/8/8/3BK3/8/8 w - - 2 2",
-        sanMoves: ["Ke4", "Kf6", "Kf4", "Ke6"],
+        title:    "2. Regele vine",
+        subtitle: "Aducem regele \u00een lupt\u0103 pentru a limita mi\u015fc\u0103rile regelui advers",
+        startFen: "8/8/3k4/8/3BB3/8/8/1K6 w - - 0 1",
+        sanMoves: ["Kc2", "Ke6", "Kc3", "Kd6", "Kc4", "Ke6", "Kc5", "Kd7"],
         annotations: [
-            "Regina a stabilit blocada. Acum regele alb intr\u0103 \u00een ac\u0163iune!",
+            "Nebunii sunt \u00een centru. Acum venim cu regele!",
+            "Acum nu mai mut\u0103m nebunii \u2014 venim cu regele",
             "",
             "",
-            "Se interzice sc\u0103parea regelui pe la g5. Nebunul blocheaz\u0103 g6, prin urmare regele negru nu poate dec\u00e2t s\u0103 se \u00eentoarc\u0103 la e6.",
+            "Regele negru nu are pe unde s\u0103 mai scape",
+            "",
+            "",
+            "De acum \u00eencepe for\u0163area regelui spre col\u0163",
             ""
         ]
     },
     {
-        title:    "3. Matul",
-        subtitle: "Nebunul d\u0103 \u015eah, iar regina d\u0103 lovitura final\u0103",
-        startFen: "8/2Q5/4k3/8/5K2/3B4/8/8 w - - 6 4",
-        sanMoves: ["Bc4+", "Kf6", "Qf7#"],
+        title:    "3. Spre margine",
+        subtitle: "\u00cempingem regele advers spre marginea tablei",
+        startFen: "8/3k4/8/2K5/3BB3/8/8/8 w - - 0 1",
+        sanMoves: ["Bd5", "Ke7", "Be5", "Kd7", "Bd6", "Kd8", "Kc6", "Kc8"],
         annotations: [
-            "Regele negru este blocat pe r\u00e2ndul 6 \u2014 vine matul!",
-            "Nebunul d\u0103 \u015eah \u015fi \u00eel trimite pe regele negru \u00eenapoi la f6, de unde ar mai putea sc\u0103pa doar pe la g6\u2026 deocamdat\u0103.",
+            "Regele negru va fi \u00eempins spre marginea tablei",
+            "Mic\u015for\u0103m num\u0103rul de p\u0103tr\u0103\u0163ele pe care regele negru poate muta",
             "",
-            "Regina, ap\u0103rat\u0103 de nebun, \u00eel atac\u0103 la f7. \u015eah mat!"
+            "Aducem \u015fi cel\u0103lalt nebun, \u00eempingând regele advers mai aproape de margine",
+            "",
+            "",
+            "",
+            "Folosim regele pentru a limita mut\u0103rile regelui advers",
+            "Regele este complet blocat pe ultima linie"
+        ]
+    },
+    {
+        highlightKing: true,
+        title:    "4. Spre col\u0163 \u015fi mat",
+        subtitle: "For\u0163\u0103m regele \u00een col\u0163 \u015fi d\u0103m mat",
+        startFen: "2k5/8/2KB4/3B4/8/8/8/8 w - - 0 1",
+        sanMoves: ["Be6+", "Kd8", "Bf7", "Kc8", "Be7", "Kb8", "Kb6", "Kc8", "Be6+", "Kb8", "Bd6+", "Ka8", "Bd5#"],
+        annotations: [
+            "Regele este pe ultima linie. Acum \u00eel for\u0163\u0103m spre col\u0163!",
+            "",
+            "",
+            "Cu aceast\u0103 mutare \u00eel \u00eempiedic\u0103m pe rege s\u0103 scape pe la e8, for\u0163\u00e2ndu-l spre col\u0163ul a8",
+            "",
+            "Acoperim ie\u015firea pe la d8, for\u0163\u00e2nd regele mai aproape de col\u0163",
+            "",
+            "Lu\u0103m opozi\u0163ia pentru a evita sc\u0103parea regelui pe la a7",
+            "C\u00e2nd regele \u00eencerc\u0103 s\u0103 fug\u0103...",
+            "...\u00eei t\u0103iem calea cu nebunul, bloc\u00e2ndu-i accesul",
+            "",
+            "\u00cel gonim spre col\u0163!",
+            "",
+            "\u015ei urmeaz\u0103 atacul final. \u015eah-mat!"
         ]
     }
 ];
@@ -355,9 +393,12 @@ function buildMovesList() {
     });
 }
 
-function highlightQueenControl() {
+function highlightBishopControl() {
     const boardEl = document.getElementById('board');
     boardEl.querySelectorAll('.sq-hl').forEach(el => el.remove());
+
+    const from = currentChapter.highlightFrom || 0;
+    if (currentStep < from) return;
 
     const bd = new Chess(positions[currentStep]).board();
     const dirs8 = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
@@ -370,17 +411,14 @@ function highlightQueenControl() {
         }
     if (bkr < 0) return;
 
+    // All squares attacked by white pieces
     const whitePieceAttacks = new Set();
     for (let r = 0; r < 8; r++)
         for (let f = 0; f < 8; f++) {
             const piece = bd[r][f];
             if (!piece || piece.color !== 'w') continue;
-            if (piece.type === 'q' || piece.type === 'b') {
-                const diags = [[-1,-1],[-1,1],[1,-1],[1,1]];
-                const rays  = piece.type === 'q'
-                    ? [...diags, [-1,0],[0,-1],[0,1],[1,0]]
-                    : diags;
-                for (const [dr, df] of rays) {
+            if (piece.type === 'b') {
+                for (const [dr, df] of [[-1,-1],[-1,1],[1,-1],[1,1]]) {
                     let cr = r + dr, cf = f + df;
                     while (cr >= 0 && cr < 8 && cf >= 0 && cf < 8) {
                         whitePieceAttacks.add(cr * 8 + cf);
@@ -397,6 +435,7 @@ function highlightQueenControl() {
             }
         }
 
+    // Highlight only squares adjacent to black king that are attacked by white
     for (const [dr, df] of dirs8) {
         const cr = bkr + dr, cf = bkf + df;
         if (cr < 0 || cr >= 8 || cf < 0 || cf >= 8) continue;
@@ -445,7 +484,7 @@ function updateUI() {
         ? '<span class="checkmate-badge">\u2713 \u015eAH MAT!</span><br>' + text
         : text;
 
-    highlightQueenControl();
+    highlightBishopControl();
 }
 
 document.addEventListener('keydown', e => {

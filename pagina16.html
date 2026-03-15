@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sah Mat Animat - Doi Nebuni vs Rege</title>
+    <title>Sah Mat Animat - Dama si Nebun vs Rege</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -14,7 +15,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px;
+            padding: 40px 16px;
         }
         .page {
             max-width: 860px;
@@ -30,18 +31,63 @@
             font-size: 2.2em;
             color: #1a3a6b;
             text-transform: uppercase;
-            margin-bottom: 36px;
+            margin-bottom: 30px;
             margin-top: 10px;
             text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
             text-align: center;
             line-height: 1.25;
         }
         .text-block {
-            font-size: 1.3em;
+            font-size: 1.15em;
             line-height: 1.75;
             color: #1a1a1a;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
             text-align: justify;
+        }
+        .examples-heading {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.2em;
+            color: #1a3a6b;
+            margin: 28px 0 18px;
+            text-align: center;
+        }
+        .examples-row {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        .mini-example {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .mini-board { width: 220px; }
+        .play-btn {
+            background: #1a3a6b;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 28px;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.15em;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(26,58,107,0.4);
+        }
+        .play-btn:hover { background: #2a5aab; transform: translateY(-2px); }
+        .play-btn.done {
+            background: #c0392b;
+            box-shadow: 0 4px 14px rgba(192,57,43,0.4);
+            cursor: default;
+            transform: none;
+        }
+        .mini-label {
+            font-size: 0.88em;
+            color: rgba(26,58,107,0.65);
+            font-style: italic;
         }
         .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 10px; }
         .nav-btn {
@@ -58,27 +104,50 @@
         }
         .nav-btn:hover { background: #2a5aab; transform: translateY(-3px); }
         .nav-btn.back { background: rgba(26,58,107,0.5); }
+        @media (max-width: 680px) {
+            .page { padding: 40px 20px 50px; }
+        }
     </style>
 </head>
 <body>
 <div class="page">
-    <img src="pieces/wB.svg" class="corner-piece corner-tl" alt="">
-    <img src="pieces/wB.svg" class="corner-piece corner-tr" alt="">
+    <img src="pieces/wQ.svg" class="corner-piece corner-tl" alt="">
+    <img src="pieces/wQ.svg" class="corner-piece corner-tr" alt="">
 
-    <h1>Maturi Simple cu Figuri<br>Doi Nebuni + Rege vs. Rege</h1>
+    <h1>Maturi Simple cu Figuri<br>Dam&#259; + Nebun vs. Rege</h1>
 
     <div class="text-block">
-        Pentru a reu&#351;i matul cu doi nebuni, mi&#351;carea regelui advers trebuie s&#259; fie limitat&#259;
-        cu ajutorul nebunilor. Pentru aceasta, mai &#238;nt&#226;i aducem nebunii &#238;n centrul tablei &#8212;
-        iar regele advers va fi deja prizonierul nostru. Apoi, folosind &#351;i regele propriu,
-        vom limita din ce &#238;n ce mai mult spa&#539;iul regelui advers, p&#226;n&#259; c&#226;nd &#238;l vom
-        &#238;mpinge la marginea tablei.
+        C&#226;nd sunt pu&#539;ine piese pe tabl&#259;, o singur&#259; pies&#259; nu prea poate s&#259; dea mat,
+        prin urmare piesele trebuie s&#259; colaboreze &#238;ntre ele, schimb&#226;ndu-&#351;i la nevoie
+        rolurile pe care le au. Una dintre piese este, la un moment dat,
+        <strong>v&#226;n&#259;torul</strong>, iar rolul v&#226;n&#259;torului este acela de a fug&#259;ri regele
+        &#351;i de a-l obliga s&#259; se duc&#259; &#238;ntr-un anumit loc, pe un anumit p&#259;tr&#259;&#539;el.
+        Cealalt&#259; pies&#259; are rolul de <strong>gardian</strong> &#351;i &#238;i taie calea regelui
+        &#238;n timp ce acesta fuge de v&#226;n&#259;tor, astfel &#238;nc&#226;t regele fug&#259;rit s&#259; ajung&#259;
+        c&#226;t mai repede pe p&#259;tr&#259;&#539;elul pe care ace&#351;tia &#238;&#351;i doresc. Pentru c&#259; joac&#259;
+        &#238;n aceea&#351;i echip&#259;, intervine &#351;i regele, u&#351;ur&#226;ndu-le &#351;i mai mult munca celor doi.
+        Uneori se poate &#351;i f&#259;r&#259; ajutorul regelui, dar, &#351;tim bine, unde-s mul&#539;i, puterea cre&#351;te!
     </div>
 
     <div class="text-block">
-        De acolo, &#238;ncepem for&#539;area lui c&#259;tre col&#539;ul cel mai apropiat. &#206;n acest moment,
-        trebuie s&#259; fim foarte aten&#539;i: dac&#259; nu juc&#259;m cu grij&#259;, riscăm s&#259; facem pat
-        &#351;i s&#259; pierdem victoria!
+        Matul cu regina &#351;i nebunul s-ar putea da &#351;i f&#259;r&#259; ajutorul regelui, regina av&#226;nd
+        destul&#259; putere pentru a-l for&#539;a pe regele inamic s&#259; ajung&#259; la marginea tablei,
+        dar, a&#351;a cum am spus, din acest moment are nevoie de un ajutor pentru a da mat.
+    </div>
+
+    <div class="examples-heading">Iat&#259; dou&#259; situa&#539;ii &#238;n care ob&#539;inem matul cu regina &#351;i nebunul:</div>
+
+    <div class="examples-row">
+        <div class="mini-example">
+            <div id="board1" class="mini-board"></div>
+            <button class="play-btn" id="btn1" onclick="playMove1()">&#9654; Dd7#</button>
+            <span class="mini-label">Regina d&#259; mat la d7</span>
+        </div>
+        <div class="mini-example">
+            <div id="board2" class="mini-board"></div>
+            <button class="play-btn" id="btn2" onclick="playMove2()">&#9654; Df7#</button>
+            <span class="mini-label">Regina d&#259; mat la f7</span>
+        </div>
     </div>
 
     <div class="nav-buttons">
@@ -86,5 +155,33 @@
         <a href="pagina17.html" class="nav-btn">&#206;nainte &#9654;</a>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+const fen1start = '3k4/8/8/1Q3B2/8/5K2/8/8 w - - 0 1';
+const fen1mate  = '3Q4/8/8/5B2/8/5K2/8/8 b - - 1 1';
+const fen2start = '8/2Q5/5k2/8/2B2K2/8/8/8 w - - 0 1';
+const fen2mate  = '8/5Q2/5k2/8/2B2K2/8/8/8 b - - 1 1';
+
+const cfg = { pieceTheme: 'pieces/{piece}.svg', draggable: false };
+
+const board1 = Chessboard('board1', Object.assign({}, cfg, { position: fen1start }));
+const board2 = Chessboard('board2', Object.assign({}, cfg, { position: fen2start }));
+
+function playMove1() {
+    board1.position(fen1mate, false);
+    const btn = document.getElementById('btn1');
+    btn.textContent = '\u2713 \u015eah mat!';
+    btn.classList.add('done');
+}
+function playMove2() {
+    board2.position(fen2mate, false);
+    const btn = document.getElementById('btn2');
+    btn.textContent = '\u2713 \u015eah mat!';
+    btn.classList.add('done');
+}
+</script>
 </body>
 </html>
