@@ -9,235 +9,318 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            min-height: 100vh;
-            background: linear-gradient(160deg, #87CEEB 0%, #B8E4F9 40%, #F4A47A 100%);
-            font-family: 'Nunito', sans-serif;
+            width: 100vw; height: 100vh;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            background: linear-gradient(180deg,
+                #6EC6F0 0%, #A8DCF5 40%,
+                #A8DCF5 58%, #8CC85A 70%, #6AAE38 100%);
         }
 
-        /* Piese plutitoare în fundal */
-        .floating-piece {
-            position: fixed;
-            width: 60px;
-            height: 60px;
-            opacity: 0.6;
-            animation: float linear infinite;
-            pointer-events: none;
-            user-select: none;
-        }
-
-        .floating-piece img {
-            width: 100%;
-            height: 100%;
-        }
-
-        @keyframes float {
-            0%   { transform: translateY(110vh) rotate(0deg); }
-            100% { transform: translateY(-20vh) rotate(360deg); }
-        }
-
-        /* Nori */
+        /* ── nori ── */
         .cloud {
-            position: fixed;
-            background: white;
-            border-radius: 50px;
-            opacity: 0.7;
-            animation: drift linear infinite;
+            position: absolute;
+            background: rgba(255,255,255,0.82);
+            border-radius: 60px;
+            pointer-events: none;
         }
         .cloud::before, .cloud::after {
-            content: '';
-            position: absolute;
-            background: white;
+            content: ''; position: absolute;
+            background: rgba(255,255,255,0.82);
             border-radius: 50%;
         }
-        .cloud::before { width: 60%; height: 150%; top: -40%; left: 10%; }
-        .cloud::after  { width: 40%; height: 120%; top: -30%; right: 10%; }
+        .cloud::before { width:55%; height:160%; top:-45%; left:12%; }
+        .cloud::after  { width:38%; height:130%; top:-30%; right:12%; }
+        @keyframes drift { from { left: -220px; } to { left: 110vw; } }
 
-        @keyframes drift {
-            0%   { transform: translateX(-200px); }
-            100% { transform: translateX(110vw); }
+        /* ── piese ── */
+        .pc {
+            position: absolute;
+            width: 72px; height: 84px;
+            pointer-events: none;
+            will-change: transform, left, top;
         }
 
-        /* Card central */
-        .cover-card {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            border: 3px solid rgba(255,255,255,0.5);
-            padding: 40px 50px;
+        @keyframes wobble {
+            0%,100% { transform: rotate(-8deg) scaleY(0.94); }
+            50%      { transform: rotate( 8deg) scaleY(1.06); }
+        }
+        .pc.running { animation: wobble 0.28s ease-in-out infinite; }
+        .pc.it-piece { animation: wobble 0.38s ease-in-out infinite; }
+
+        @keyframes tag-pop {
+            0%   { transform: scale(1);   opacity: .8; }
+            100% { transform: scale(2.8); opacity: 0; }
+        }
+        .tag-ring {
+            position: absolute;
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            border: 4px solid #ff4444;
+            animation: tag-pop 0.55s ease-out forwards;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* ── titlu ── */
+        .title-wrap {
+            position: absolute;
+            top: 28px; left: 50%;
+            transform: translateX(-50%);
             text-align: center;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-            position: relative;
-            z-index: 10;
-            animation: fadeIn 1s ease;
+            z-index: 30;
+            pointer-events: none;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .author {
-            font-size: 1em;
-            font-weight: 700;
-            color: #1a3a6b;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-        }
-
-        .chess-decoration {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-10px); }
-        }
-
-        h1 {
+        .title-wrap h1 {
             font-family: 'Baloo 2', cursive;
-            font-size: 4em;
+            font-size: clamp(2em, 5vw, 3.8em);
             color: #1a3a6b;
+            text-shadow: 3px 3px 0 rgba(255,255,255,0.65),
+                         6px 6px 0 rgba(26,58,107,0.12);
+            white-space: nowrap;
             line-height: 1.1;
-            text-shadow: 3px 3px 0px rgba(255,255,255,0.5),
-                         5px 5px 0px rgba(26,58,107,0.2);
-            margin-bottom: 10px;
         }
-
-        .subtitle {
-            font-size: 1em;
+        .title-wrap .sub {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.05em;
             color: #1a3a6b;
-            opacity: 0.8;
-            margin-bottom: 30px;
+            opacity: .75;
             font-style: italic;
         }
 
-        .cover-image {
-            width: 100%;
-            max-width: 420px;
-            border-radius: 20px;
-            margin: 0 auto 25px;
-            display: block;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: float-img 4s ease-in-out infinite;
+        /* ── buton ── */
+        .author {
+            position: absolute;
+            bottom: 108px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            color: #1a3a6b;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: .9em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 0 rgba(255,255,255,.6);
+            white-space: nowrap;
         }
-
-        @keyframes float-img {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-8px); }
-        }
-
         .btn-start {
-            display: inline-block;
+            position: absolute;
+            bottom: 40px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
             background: #1a3a6b;
             color: white;
             font-family: 'Baloo 2', cursive;
-            font-size: 1.4em;
-            padding: 14px 40px;
+            font-size: 1.55em;
+            padding: 13px 52px;
             border-radius: 50px;
-            border: none;
-            cursor: pointer;
             text-decoration: none;
-            transition: all 0.2s;
-            box-shadow: 0 5px 20px rgba(26,58,107,0.4);
+            box-shadow: 0 6px 24px rgba(26,58,107,.45);
+            transition: all .2s;
             letter-spacing: 1px;
+            white-space: nowrap;
         }
-
         .btn-start:hover {
             background: #2a5aab;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(26,58,107,0.5);
-        }
-
-        .stars {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle ease-in-out infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(1); }
-            50%       { opacity: 0.8; transform: scale(1.5); }
+            transform: translateX(-50%) translateY(-4px);
+            box-shadow: 0 10px 30px rgba(26,58,107,.5);
         }
     </style>
 </head>
 <body>
 
-    <!-- Stele -->
-    <div class="stars" id="stars"></div>
+<!-- Nori -->
+<div class="cloud" style="width:150px;height:48px;top:7%;animation:drift 32s linear -6s infinite;"></div>
+<div class="cloud" style="width:95px; height:32px;top:16%;animation:drift 44s linear -22s infinite;"></div>
+<div class="cloud" style="width:190px;height:58px;top:4%;animation:drift 38s linear -14s infinite;"></div>
+<div class="cloud" style="width:110px;height:36px;top:22%;animation:drift 50s linear -35s infinite;"></div>
 
-    <!-- Nori -->
-    <div class="cloud" style="width:120px;height:40px;top:10%;animation-duration:25s;animation-delay:-5s;"></div>
-    <div class="cloud" style="width:80px;height:28px;top:20%;animation-duration:35s;animation-delay:-15s;"></div>
-    <div class="cloud" style="width:150px;height:50px;top:5%;animation-duration:40s;animation-delay:-25s;"></div>
+<!-- Titlu -->
+<div class="title-wrap">
+    <h1>&#9822; &#350;ah Mat Animat</h1>
+    <div class="sub">&#206;nva&#539;&#259; &#351;ahul juc&#226;ndu-te!</div>
+</div>
 
-    <!-- Piese plutitoare caliente -->
-    <div class="floating-piece" style="left:3%;animation-duration:12s;animation-delay:0s;"><img src="pieces/wQ.svg"></div>
-    <div class="floating-piece" style="left:12%;animation-duration:18s;animation-delay:-3s;"><img src="pieces/bK.svg"></div>
-    <div class="floating-piece" style="left:22%;animation-duration:15s;animation-delay:-7s;"><img src="pieces/wN.svg"></div>
-    <div class="floating-piece" style="left:35%;animation-duration:20s;animation-delay:-10s;"><img src="pieces/bQ.svg"></div>
-    <div class="floating-piece" style="left:48%;animation-duration:14s;animation-delay:-2s;"><img src="pieces/wR.svg"></div>
-    <div class="floating-piece" style="left:60%;animation-duration:17s;animation-delay:-8s;"><img src="pieces/bN.svg"></div>
-    <div class="floating-piece" style="left:72%;animation-duration:22s;animation-delay:-5s;"><img src="pieces/wB.svg"></div>
-    <div class="floating-piece" style="left:82%;animation-duration:16s;animation-delay:-1s;"><img src="pieces/bR.svg"></div>
-    <div class="floating-piece" style="left:92%;animation-duration:19s;animation-delay:-9s;"><img src="pieces/wP.svg"></div>
-    <div class="floating-piece" style="left:8%;animation-duration:25s;animation-delay:-14s;"><img src="pieces/bB.svg"></div>
-    <div class="floating-piece" style="left:55%;animation-duration:23s;animation-delay:-6s;"><img src="pieces/wK.svg"></div>
-    <div class="floating-piece" style="left:40%;animation-duration:21s;animation-delay:-11s;"><img src="pieces/bP.svg"></div>
+<!-- Autor + Buton -->
+<div class="author">Irina-Mihaela B&#259;&#539;el</div>
+<a href="hub.html" class="btn-start">&#9654; &#206;ncepe!</a>
 
-    <!-- Card principal -->
-    <div class="cover-card">
-        <div class="author">Irina-Mihaela Băițel</div>
+<script>
+/* ───────────────────────────────────────────────
+   Piesele ─ date vizuale
+─────────────────────────────────────────────── */
+const PIECE_DEF = [
+    { hat:'♔', name:'Regele',  fill:'#F4C430', stroke:'#B8860B' },
+    { hat:'♛', name:'Regina',  fill:'#A56ABD', stroke:'#6C3483' },
+    { hat:'♜', name:'Turnul',  fill:'#4A9FD4', stroke:'#1A5276' },
+    { hat:'♝', name:'Nebunul', fill:'#4ABD7A', stroke:'#1E8449' },
+    { hat:'♞', name:'Calul',   fill:'#E8734A', stroke:'#A93226' },
+];
 
-        <div class="chess-decoration">
-            <img src="pieces/wK.svg" style="width:45px;height:45px;">
-            <img src="pieces/wQ.svg" style="width:45px;height:45px;">
-            <img src="pieces/wR.svg" style="width:45px;height:45px;">
-        </div>
+const W = () => window.innerWidth;
+const H = () => window.innerHeight;
+const SIZE = 72;
+const TITLE_SAFE = 140;   // nu intră sub titlu
+const BOTTOM_SAFE = 160;  // nu intră pe buton
 
-        <h1>Șah Mat Animat</h1>
+/* ── generează SVG personaj ── */
+function makeSvg(pd, isIt) {
+    const f = pd.fill, s = pd.stroke;
+    return `<svg viewBox="0 0 72 86" xmlns="http://www.w3.org/2000/svg">
+        <!-- umbra -->
+        <ellipse cx="36" cy="82" rx="17" ry="5" fill="rgba(0,0,0,0.13)"/>
+        <!-- cerc IT -->
+        ${isIt ? `<circle cx="36" cy="44" r="35" fill="rgba(255,60,60,0.10)"
+            stroke="rgba(255,60,60,0.65)" stroke-width="2.5" stroke-dasharray="5,3"/>` : ''}
+        <!-- mâna stânga -->
+        <ellipse cx="9"  cy="54" rx="10" ry="6" fill="${f}" stroke="${s}" stroke-width="1.5"
+            transform="rotate(-35,9,54)"/>
+        <!-- mâna dreapta -->
+        <ellipse cx="63" cy="54" rx="10" ry="6" fill="${f}" stroke="${s}" stroke-width="1.5"
+            transform="rotate(35,63,54)"/>
+        <!-- corp -->
+        <ellipse cx="36" cy="59" rx="19" ry="15" fill="${f}" stroke="${s}" stroke-width="1.5"/>
+        <!-- gât -->
+        <rect x="29" y="41" width="14" height="9" rx="5" fill="${f}" stroke="${s}" stroke-width="1"/>
+        <!-- cap -->
+        <circle cx="36" cy="31" r="21" fill="${f}" stroke="${s}" stroke-width="1.8"/>
+        <!-- ochi fericiți (arcuri) -->
+        <path d="M 24 28 Q 27.5 23 31 28" stroke="${s}" stroke-width="2.8"
+            fill="none" stroke-linecap="round"/>
+        <path d="M 41 28 Q 44.5 23 48 28" stroke="${s}" stroke-width="2.8"
+            fill="none" stroke-linecap="round"/>
+        <!-- obrăjori -->
+        <circle cx="21" cy="34" r="5" fill="rgba(255,160,160,0.45)"/>
+        <circle cx="51" cy="34" r="5" fill="rgba(255,160,160,0.45)"/>
+        <!-- zâmbet -->
+        <path d="M 24 37 Q 36 47 48 37" stroke="${s}" stroke-width="2.2"
+            fill="none" stroke-linecap="round"/>
+        <!-- piesă (pălărie) -->
+        <text x="36" y="13" text-anchor="middle"
+            font-size="16" font-family="serif" fill="${s}">${pd.hat}</text>
+        <!-- badge IT! -->
+        ${isIt ? `<text x="55" y="10" font-size="12" font-weight="900"
+            font-family="'Nunito',sans-serif"
+            stroke="white" stroke-width="3" paint-order="stroke"
+            fill="#cc0000">IT!</text>` : ''}
+    </svg>`;
+}
 
+/* ── stare joc ── */
+let pieces = [];
+let itIdx  = 0;
+let cooldown = 0;      // frames cât nu poate eticheta
+let lastTagged = -1;   // piesa tocmai etichetată (imunitate)
 
-        <!-- Ilustrație copii -->
-        <img src="3D kidss playing chess in park.jpg" alt="Copii jucând șah" class="cover-image">
+function init() {
+    const cx = W() / 2, cy = (H() - TITLE_SAFE - BOTTOM_SAFE) / 2 + TITLE_SAFE;
+    PIECE_DEF.forEach((pd, i) => {
+        const angle = (i / PIECE_DEF.length) * Math.PI * 2;
+        const r = Math.min(W(), H()) * 0.28;
+        const el = document.createElement('div');
+        el.className = 'pc running';
+        el.id = 'pc' + i;
+        document.body.appendChild(el);
+        const speed = 1.6 + Math.random() * 0.6;
+        const va = angle + Math.PI; // pornesc cu viteza înspre interior
+        pieces.push({
+            el, pd,
+            x: cx + Math.cos(angle) * r - SIZE/2,
+            y: cy + Math.sin(angle) * r - SIZE/2,
+            vx: Math.cos(va) * speed,
+            vy: Math.sin(va) * speed,
+        });
+    });
+    itIdx = 0;
+    refresh();
+    loop();
+}
 
-        <a href="pagina1.html" class="btn-start">▶ Începe!</a>
-    </div>
+function refresh() {
+    pieces.forEach((p, i) => {
+        p.el.innerHTML = makeSvg(p.pd, i === itIdx);
+        p.el.className = 'pc ' + (i === itIdx ? 'it-piece' : 'running');
+    });
+}
 
-    <script>
-        // Generează stele
-        const starsEl = document.getElementById('stars');
-        for (let i = 0; i < 30; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            const size = Math.random() * 4 + 2;
-            star.style.cssText = `
-                width: ${size}px; height: ${size}px;
-                top: ${Math.random() * 100}%;
-                left: ${Math.random() * 100}%;
-                animation-duration: ${2 + Math.random() * 3}s;
-                animation-delay: ${-Math.random() * 3}s;
-            `;
-            starsEl.appendChild(star);
-        }
-    </script>
+function dist(a, b) {
+    return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function loop() {
+    const w = W(), h = H();
+    const maxX = w - SIZE - 10;
+    const minY = TITLE_SAFE + 10;
+    const maxY = h - BOTTOM_SAFE - SIZE;
+
+    if (cooldown > 0) cooldown--;
+
+    const IT = pieces[itIdx];
+    const IT_SPD = 2.0, FLEE_SPD = 2.8;
+
+    /* IT aleargă spre cea mai apropiată piesă */
+    let nearest = null, nearestD = Infinity;
+    pieces.forEach((p, i) => {
+        if (i === itIdx) return;
+        const d = dist(IT, p);
+        if (d < nearestD) { nearestD = d; nearest = p; }
+    });
+    if (nearest) {
+        const dx = nearest.x - IT.x, dy = nearest.y - IT.y;
+        const d = Math.hypot(dx, dy) || 1;
+        IT.vx = IT.vx * 0.88 + dx / d * IT_SPD * 0.12;
+        IT.vy = IT.vy * 0.88 + dy / d * IT_SPD * 0.12;
+        const spd = Math.hypot(IT.vx, IT.vy);
+        if (spd > IT_SPD) { IT.vx = IT.vx/spd*IT_SPD; IT.vy = IT.vy/spd*IT_SPD; }
+    }
+
+    /* celelalte piese fug */
+    pieces.forEach((p, i) => {
+        if (i === itIdx) return;
+        const dx = p.x - IT.x, dy = p.y - IT.y;
+        const d = Math.hypot(dx, dy) || 1;
+        const urgency = Math.max(0, (220 - d) / 220);
+        p.vx = p.vx * 0.9 + (dx/d * urgency * FLEE_SPD + (Math.random()-.5) * .12) * 0.10;
+        p.vy = p.vy * 0.9 + (dy/d * urgency * FLEE_SPD + (Math.random()-.5) * .12) * 0.10;
+        const spd = Math.hypot(p.vx, p.vy);
+        if (spd > FLEE_SPD) { p.vx = p.vx/spd*FLEE_SPD; p.vy = p.vy/spd*FLEE_SPD; }
+    });
+
+    /* mișcă toate piesele + respinge de margini */
+    pieces.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 10)    { p.x = 10;    p.vx =  Math.abs(p.vx) + .5; }
+        if (p.x > maxX)  { p.x = maxX;  p.vx = -Math.abs(p.vx) - .5; }
+        if (p.y < minY)  { p.y = minY;  p.vy =  Math.abs(p.vy) + .5; }
+        if (p.y > maxY)  { p.y = maxY;  p.vy = -Math.abs(p.vy) - .5; }
+        p.el.style.left = p.x + 'px';
+        p.el.style.top  = p.y + 'px';
+    });
+
+    /* verifică etichetare */
+    if (cooldown === 0) {
+        pieces.forEach((p, i) => {
+            if (i === itIdx || i === lastTagged) return;
+            if (dist(IT, p) < SIZE * 0.75) {
+                /* efect vizual */
+                const ring = document.createElement('div');
+                ring.className = 'tag-ring';
+                ring.style.left = p.x + 'px';
+                ring.style.top  = p.y + 'px';
+                document.body.appendChild(ring);
+                setTimeout(() => ring.remove(), 600);
+                /* schimb IT */
+                lastTagged = itIdx;
+                itIdx = i;
+                cooldown = 90;
+                refresh();
+            }
+        });
+    }
+
+    requestAnimationFrame(loop);
+}
+
+init();
+</script>
 </body>
 </html>
