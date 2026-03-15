@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Șah Mat Animat – Cuprins</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background: #F5A96E;
+            font-family: 'Nunito', sans-serif;
+            padding: 40px 20px 60px;
+        }
+
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.6em;
+            color: #1a3a6b;
+            text-align: center;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0 rgba(255,255,255,0.4);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #1a3a6b;
+            opacity: 0.7;
+            font-size: 1.05em;
+            margin-bottom: 44px;
+            font-style: italic;
+        }
+
+        /* ── SECȚIUNI ── */
+        .section {
+            max-width: 1000px;
+            margin: 0 auto 48px;
+        }
+
+        .section-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.15em;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #1a3a6b;
+            letter-spacing: 2px;
+            margin-bottom: 18px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid rgba(26,58,107,0.25);
+        }
+
+        /* ── GRID CARDURI ── */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.55);
+            border-radius: 20px;
+            padding: 22px 18px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+            transition: transform 0.18s, box-shadow 0.18s;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+        }
+
+        .card:hover:not(.card-soon) {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+        }
+
+        .card-soon {
+            opacity: 0.55;
+            cursor: default;
+        }
+
+        .card-pieces {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .card-pieces img {
+            width: 38px;
+            height: 38px;
+        }
+
+        .card-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1em;
+            font-weight: 900;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            line-height: 1.25;
+            margin-bottom: 6px;
+        }
+
+        .card-desc {
+            font-size: 0.82em;
+            color: #444;
+            line-height: 1.5;
+            flex: 1;
+            margin-bottom: 14px;
+        }
+
+        .card-btn {
+            display: inline-block;
+            background: #1a3a6b;
+            color: white;
+            font-family: 'Baloo 2', cursive;
+            font-size: 0.9em;
+            padding: 7px 22px;
+            border-radius: 50px;
+            box-shadow: 0 3px 10px rgba(26,58,107,0.35);
+        }
+
+        .card-soon-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(26,58,107,0.18);
+            color: #1a3a6b;
+            font-size: 0.7em;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── INTRO CARD (orizontal) ── */
+        .intro-card {
+            background: rgba(255,255,255,0.55);
+            border-radius: 20px;
+            padding: 20px 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.18s, box-shadow 0.18s;
+            max-width: 1000px;
+            margin: 0 auto 48px;
+        }
+
+        .intro-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+        }
+
+        .intro-card-icon {
+            font-size: 2.2em;
+            flex-shrink: 0;
+        }
+
+        .intro-card-body { flex: 1; }
+
+        .intro-card-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.1em;
+            font-weight: 900;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .intro-card-desc {
+            font-size: 0.9em;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .intro-card-btn {
+            background: #1a3a6b;
+            color: white;
+            font-family: 'Baloo 2', cursive;
+            font-size: 0.9em;
+            padding: 8px 24px;
+            border-radius: 50px;
+            white-space: nowrap;
+            box-shadow: 0 3px 10px rgba(26,58,107,0.35);
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2em; }
+            .cards { grid-template-columns: 1fr 1fr; }
+            .intro-card { flex-direction: column; text-align: center; }
+            .intro-card-btn { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>&#9822; &#350;ah Mat Animat</h1>
+    <p class="subtitle">Alege un capitol &#351;i &#238;ncepe s&#259; &#238;nve&#539;i!</p>
+
+    <!-- Intro -->
+    <a href="pagina1.html" class="intro-card">
+        <div class="intro-card-icon">&#128218;</div>
+        <div class="intro-card-body">
+            <div class="intro-card-title">No&#539;iuni de baz&#259;</div>
+            <div class="intro-card-desc">&#350;ahul mat, patul, ap&#259;rarea regelui, &#351;ahul dublu &#8212; tot ce trebuie s&#259; &#351;tii &#238;nainte de maturi.</div>
+        </div>
+        <div class="intro-card-btn">Deschide &#9654;</div>
+    </a>
+
+    <!-- Maturi -->
+    <div class="section">
+        <div class="section-title">&#9820; Maturi simple cu figuri</div>
+        <div class="cards">
+
+            <a href="pagina10.html" class="card">
+                <div class="card-pieces">
+                    <img src="pieces/wQ.svg" alt="">
+                    <img src="pieces/wR.svg" alt="">
+                </div>
+                <div class="card-title">Dam&#259; + Turn<br>vs. Rege</div>
+                <div class="card-desc">V&#226;n&#259;torul &#351;i gardianul colaboreaz&#259; pentru a da mat.</div>
+                <span class="card-btn">Deschide &#9654;</span>
+            </a>
+
+            <a href="pagina12.html" class="card">
+                <div class="card-pieces">
+                    <img src="pieces/wR.svg" alt="">
+                    <img src="pieces/wR.svg" alt="">
+                </div>
+                <div class="card-title">Dou&#259; Turnuri<br>vs. Rege</div>
+                <div class="card-desc">Matul clasic cu dou&#259; turnuri &#8212; simplu &#351;i eficient.</div>
+                <span class="card-btn">Deschide &#9654;</span>
+            </a>
+
+            <a href="pagina16.html" class="card">
+                <div class="card-pieces">
+                    <img src="pieces/wQ.svg" alt="">
+                    <img src="pieces/wB.svg" alt="">
+                </div>
+                <div class="card-title">Dam&#259; + Nebun<br>vs. Rege</div>
+                <div class="card-desc">Regina are putere, nebunul ajut&#259; cu precizie.</div>
+                <span class="card-btn">Deschide &#9654;</span>
+            </a>
+
+            <div class="card card-soon">
+                <span class="card-soon-badge">&#206;n cur&#226;nd</span>
+                <div class="card-pieces">
+                    <img src="pieces/wQ.svg" alt="">
+                    <img src="pieces/wN.svg" alt="">
+                </div>
+                <div class="card-title">Dam&#259; + Cal<br>vs. Rege</div>
+                <div class="card-desc">Un cal imprevizibil al&#259;turi de regina puternic&#259;.</div>
+                <span class="card-btn">Deschide &#9654;</span>
+            </div>
+
+            <a href="pagina19.html" class="card">
+                <div class="card-pieces">
+                    <img src="pieces/wB.svg" alt="">
+                    <img src="pieces/wB.svg" alt="">
+                </div>
+                <div class="card-title">Doi Nebuni<br>vs. Rege</div>
+                <div class="card-desc">Doi nebuni care colaboreaz&#259; pentru a controla tabla.</div>
+                <span class="card-btn">Deschide &#9654;</span>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- Tactici -->
+    <div class="section">
+        <div class="section-title">&#9889; Tactici</div>
+        <div class="cards">
+
+            <div class="card card-soon">
+                <span class="card-soon-badge">&#206;n cur&#226;nd</span>
+                <div class="card-pieces">
+                    <img src="pieces/wN.svg" alt="">
+                </div>
+                <div class="card-title">Furculița</div>
+                <div class="card-desc">Calul atac&#259; dou&#259; piese deodat&#259;.</div>
+                <span class="card-btn">Deschide &#9654;</span>
+            </div>
+
+            <div class="card card-soon">
+                <span class="card-soon-badge">&#206;n cur&#226;nd</span>
+                <div class="card-pieces">
+                    <img src="pieces/wB.svg" alt="">
+                </div>
+                <div class="card-title">&#206;n&#539;ep&#259;tura</div>
+                <div class="card-desc">O pies&#259; este atacat&#259; &#351;i nu se poate retrage.</div>
+                <span class="card-btn">Deschide &#9654;</span>
+            </div>
+
+            <div class="card card-soon">
+                <span class="card-soon-badge">&#206;n cur&#226;nd</span>
+                <div class="card-pieces">
+                    <img src="pieces/wR.svg" alt="">
+                </div>
+                <div class="card-title">&#350;trengarul</div>
+                <div class="card-desc">O pies&#259; valoroas&#259; este &#238;n spatele uneia mai pu&#539;in valoroase.</div>
+                <span class="card-btn">Deschide &#9654;</span>
+            </div>
+
+            <div class="card card-soon">
+                <span class="card-soon-badge">&#206;n cur&#226;nd</span>
+                <div class="card-pieces">
+                    <img src="pieces/wQ.svg" alt="">
+                </div>
+                <div class="card-title">Descoperirea</div>
+                <div class="card-desc">O pies&#259; se mut&#259; &#351;i descoper&#259; atacul alteia.</div>
+                <span class="card-btn">Deschide &#9654;</span>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
