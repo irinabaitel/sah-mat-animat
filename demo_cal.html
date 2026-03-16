@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calul și Margaretele</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -324,12 +325,34 @@
     background: linear-gradient(135deg, #fffbe6 0%, #e8f5d0 100%);
     border-radius: 24px;
     padding: 30px 32px;
-    max-width: 440px;
-    width: 92%;
+    max-width: 520px;
+    width: 94%;
     text-align: center;
     box-shadow: 0 16px 56px rgba(0,0,0,0.32);
     animation: victoryBounce 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
   }
+
+  #lessonPuzzle { margin: 16px 0 8px; }
+  .puzzle-label {
+    font-size: .95rem;
+    font-weight: 700;
+    color: #3A7A10;
+    margin-bottom: 8px;
+  }
+  #miniBoard { margin: 8px auto 0; }
+  .mini-msg {
+    font-size: .9rem;
+    font-weight: 700;
+    color: #555;
+    min-height: 34px;
+    padding: 7px 12px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.04);
+    margin-top: 8px;
+    transition: all 0.3s;
+  }
+  .mini-msg.correct { background: rgba(39,174,96,0.15); color: #1a5c30; }
+  .mini-msg.wrong   { background: rgba(192,57,43,0.10); color: #7b1a10; }
   .lesson-link-btn {
     display: block;
     background: #e07030;
@@ -359,17 +382,6 @@
     margin-bottom: 16px;
   }
 
-  /* L-shape diagram */
-  #lDiagram {
-    margin: 0 auto 16px;
-    position: relative;
-    width: 180px;
-    height: 180px;
-  }
-  #lDiagram svg {
-    width: 180px;
-    height: 180px;
-  }
 
   /* ======= ANIMATIONS ======= */
   @keyframes flowerPop {
@@ -466,10 +478,11 @@
 <div id="lessonPanel">
   <div id="lessonCard">
     <div id="lessonDynamic"></div>
-    <div id="lDiagram">
-      <svg id="lSvg" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="lessonPuzzle">
+      <p class="puzzle-label" id="miniPuzzleLabel">🧩 Rezolvă puzzle-ul!</p>
+      <div id="miniBoard" style="width:240px"></div>
+      <div class="mini-msg" id="miniMsg">Trage piesa pe câmpul corect!</div>
     </div>
-    <p style="font-size:.85rem;color:#666;margin-top:8px">Calul se mișcă în <b>L</b>: 2+1 pătrate. Singura piesă care sare peste altele!</p>
   </div>
 </div>
 
@@ -481,7 +494,13 @@ const LEVELS = [
     unlocks:[
       { key:'pagina1', page:'pagina1.html', title:'Noțiuni de Bază',
         desc:'Șahul mat, patul, apărarea regelui, șahul dublu.' }
-    ]
+    ],
+    puzzle:{
+      fen: '7k/8/6K1/8/8/8/8/R7 w - - 0 1',
+      solutions: [{from:'a1', to:'a8'}],
+      label: '🎯 Mat în 1 — Albul mută cu Turnul!',
+      successMsg: '✓ Ta8# — Turnul dă mat pe a8! Regele negru nu are nicio scăpare.'
+    }
   },
   { start:{col:0,row:7}, end:{col:6,row:2}, label:"Nivelul 2 - Mediu",
     unlocks:[
@@ -489,7 +508,13 @@ const LEVELS = [
         desc:'Vânătorul și gardianul colaborează pentru a da mat.' },
       { key:'pagina12', page:'pagina12.html', title:'Două Turnuri vs. Rege',
         desc:'Matul clasic cu două turnuri — simplu și eficient.' }
-    ]
+    ],
+    puzzle:{
+      fen: '3k4/8/3K4/8/8/8/8/R6R w - - 0 1',
+      solutions: [{from:'a1', to:'a8'}, {from:'h1', to:'h8'}],
+      label: '🎯 Mat în 1 — Albul mută cu Două Turnuri!',
+      successMsg: '✓ Mat cu două turnuri! Oricare turn pe linia 8 dă mat.'
+    }
   },
   { start:{col:7,row:7}, end:{col:0,row:0}, label:"Nivelul 3 - Greu",
     unlocks:[
@@ -497,7 +522,13 @@ const LEVELS = [
         desc:'Regina are putere, nebunul ajută cu precizie.' },
       { key:'pagina19', page:'pagina19.html', title:'Doi Nebuni vs. Rege',
         desc:'Doi nebuni care colaborează pentru a controla tabla.' }
-    ]
+    ],
+    puzzle:{
+      fen: '4k3/8/4K3/8/8/Q7/8/8 w - - 0 1',
+      solutions: [{from:'a3', to:'a8'}, {from:'a3', to:'e7'}],
+      label: '🎯 Mat în 1 — Albul mută cu Dama! (2 soluții posibile)',
+      successMsg: '✓ Mat cu Dama! Regele și dama cooperează perfect.'
+    }
   },
 ];
 const KNIGHT_MOVES = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
@@ -939,20 +970,21 @@ function unlockLessons(levelIdx) {
 }
 
 // ─── LESSON ──────────────────────────────────────────────────────────────────
+var miniChessBoard = null;
+var miniChessGame  = null;
+var miniPuzzleDone = false;
+
 function showLesson() {
-  const lp = document.getElementById('lessonPanel');
-  const card = document.getElementById('lessonCard');
+  const lp  = document.getElementById('lessonPanel');
   const lvl = LEVELS[currentLevel];
 
-  // Build dynamic lesson content
+  // Build lesson links
   let linksHtml = lvl.unlocks.map(u => `
-    <a href="${u.page}" class="lesson-link-btn">
-      📖 ${u.title} →
-    </a>
+    <a href="${u.page}" class="lesson-link-btn">📖 ${u.title} →</a>
     <p class="lesson-link-desc">${u.desc}</p>
   `).join('');
 
-  card.querySelector('#lessonDynamic').innerHTML = `
+  document.getElementById('lessonDynamic').innerHTML = `
     <h2>🔓 Lecție deblocată!</h2>
     ${linksHtml}
     <button class="panel-btn btn-blue" onclick="closeLesson()" style="margin-top:14px">
@@ -960,8 +992,49 @@ function showLesson() {
     </button>
   `;
 
-  buildLDiagram();
+  // Init puzzle
+  const pz = lvl.puzzle;
+  miniPuzzleDone = false;
+  miniChessGame  = new Chess(pz.fen);
+  document.getElementById('miniPuzzleLabel').textContent = pz.label;
+  const msgEl = document.getElementById('miniMsg');
+  msgEl.textContent = 'Trage piesa pe câmpul corect!';
+  msgEl.className   = 'mini-msg';
+
+  if (miniChessBoard) { miniChessBoard.destroy(); miniChessBoard = null; }
+
   lp.classList.add('show');
+
+  // Init board after panel is visible so width is known
+  requestAnimationFrame(function() {
+    miniChessBoard = Chessboard('miniBoard', {
+      draggable:   true,
+      position:    pz.fen,
+      pieceTheme:  'pieces/{piece}.svg',
+      orientation: 'white',
+      onDragStart: function(src, piece) {
+        if (miniPuzzleDone) return false;
+        if (piece.search(/^b/) !== -1) return false;
+        return true;
+      },
+      onDrop: function(src, tgt) {
+        var move = miniChessGame.move({from: src, to: tgt, promotion: 'q'});
+        if (move === null) return 'snapback';
+        var correct = pz.solutions.some(function(s){ return s.from===src && s.to===tgt; });
+        if (correct) {
+          miniPuzzleDone = true;
+          msgEl.textContent = pz.successMsg;
+          msgEl.className   = 'mini-msg correct';
+        } else {
+          miniChessGame.undo();
+          msgEl.textContent = '✗ Nu e matul — mai încearcă!';
+          msgEl.className   = 'mini-msg wrong';
+          return 'snapback';
+        }
+      },
+      onSnapEnd: function() { miniChessBoard.position(miniChessGame.fen()); }
+    });
+  });
 }
 
 function closeLesson() {
@@ -972,87 +1045,6 @@ function closeLesson() {
   }
 }
 
-function buildLDiagram() {
-  const svg = document.getElementById('lSvg');
-  svg.innerHTML = '';
-
-  // Draw 5x5 mini grid
-  const GS = 32; // grid square size
-  const OX = 16, OY = 16; // offset
-  const CENTER = 2; // center cell index (0-based in 5x5)
-
-  // Grid background
-  for (let r=0; r<5; r++) {
-    for (let c=0; c<5; c++) {
-      const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-      rect.setAttribute('x', OX + c*GS);
-      rect.setAttribute('y', OY + r*GS);
-      rect.setAttribute('width', GS);
-      rect.setAttribute('height', GS);
-      rect.setAttribute('fill', (r+c)%2===0 ? '#EEEED2' : '#769656');
-      rect.setAttribute('stroke', '#fff');
-      rect.setAttribute('stroke-width', '0.5');
-      svg.appendChild(rect);
-    }
-  }
-
-  // Center square highlight
-  const cr2 = document.createElementNS('http://www.w3.org/2000/svg','rect');
-  cr2.setAttribute('x', OX + CENTER*GS + 2);
-  cr2.setAttribute('y', OY + CENTER*GS + 2);
-  cr2.setAttribute('width', GS-4);
-  cr2.setAttribute('height', GS-4);
-  cr2.setAttribute('rx', '4');
-  cr2.setAttribute('fill', 'rgba(255,200,0,0.6)');
-  svg.appendChild(cr2);
-
-  // Knight symbol in center
-  const kt = document.createElementNS('http://www.w3.org/2000/svg','text');
-  kt.setAttribute('x', OX + CENTER*GS + GS/2);
-  kt.setAttribute('y', OY + CENTER*GS + GS/2 + 7);
-  kt.setAttribute('text-anchor', 'middle');
-  kt.setAttribute('font-size', '20');
-  kt.textContent = '♞';
-  svg.appendChild(kt);
-
-  // L-move targets from (2,2) in 5x5
-  const lMoves = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
-  const colors = ['#e74c3c','#e67e22','#27ae60','#2980b9','#8e44ad','#16a085','#c0392b','#d35400'];
-  let delay = 0;
-  for (let i=0; i<lMoves.length; i++) {
-    const [dc,dr] = lMoves[i];
-    const tc = CENTER+dc, tr = CENTER+dr;
-    if (tc<0||tc>=5||tr<0||tr>=5) continue;
-
-    // Arrow
-    const x1 = OX + CENTER*GS + GS/2;
-    const y1 = OY + CENTER*GS + GS/2;
-    const x2 = OX + tc*GS + GS/2;
-    const y2 = OY + tr*GS + GS/2;
-
-    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-    line.setAttribute('stroke', colors[i%colors.length]);
-    line.setAttribute('stroke-width', '2.5');
-    line.setAttribute('stroke-dasharray', '60');
-    line.setAttribute('stroke-dashoffset', '60');
-    line.setAttribute('opacity', '0');
-    line.style.animation = `arrowFade 0.35s ${delay}s ease forwards`;
-    svg.appendChild(line);
-
-    // Target dot
-    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
-    dot.setAttribute('cx', x2); dot.setAttribute('cy', y2);
-    dot.setAttribute('r', '6');
-    dot.setAttribute('fill', colors[i%colors.length]);
-    dot.setAttribute('opacity', '0');
-    dot.style.animation = `arrowFade 0.25s ${delay+0.3}s ease forwards`;
-    svg.appendChild(dot);
-
-    delay += 0.12;
-  }
-}
 
 // ─── MARK LEVEL DONE ─────────────────────────────────────────────────────────
 function markLevelDone(idx) {
@@ -1155,5 +1147,8 @@ window.addEventListener('resize', ()=>{
   if (selected) showValidMoves();
 });
 </script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 </body>
 </html>
