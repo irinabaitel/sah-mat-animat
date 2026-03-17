@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sah Mat Animat - Echipa de Soc: Rege + Regina vs Rege</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #F5A96E;
+            font-family: 'Nunito', sans-serif;
+            padding: 24px 16px;
+            min-height: 100vh;
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 44px 50px;
+            position: relative;
+        }
+
+        .corner-piece { position: absolute; width: 80px; height: 80px; }
+        .corner-tl { top: 0; left: 0; }
+        .corner-tr { top: 0; right: 0; transform: scaleX(-1); }
+
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.2em;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            margin-top: 10px;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        .text-block {
+            font-size: 1.1em;
+            line-height: 1.75;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .lesson-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.35em;
+            font-weight: 900;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            margin: 28px 0 6px;
+        }
+
+        .chapter-subtitle {
+            text-align: center;
+            color: #1a3a6b;
+            font-size: 0.95em;
+            margin-bottom: 22px;
+            font-style: italic;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 22px;
+            align-items: flex-start;
+        }
+
+        .board-section { flex: 0 0 auto; }
+        #board-wrap {
+            position: relative;
+            display: inline-block;
+            width: 360px;
+            height: 360px;
+            overflow: hidden;
+        }
+        #board { width: 360px; }
+
+        /* ===== ANIMAȚIE CUȘCĂ TOM & JERRY ===== */
+        @keyframes cage-fall {
+            0%   { opacity: 0;   transform: scale(1.06) translateY(-8px); }
+            7%   { opacity: 1;   transform: scale(0.96) translateY(5px); }
+            14%  { transform: scale(1.02) translateY(-3px) rotate(0.5deg); }
+            21%  { transform: scale(0.99) translateY(2px) rotate(-0.4deg); }
+            28%  { transform: scale(1.01) translateY(-1px) rotate(0.2deg); }
+            35%  { transform: scale(1)    translateY(0)    rotate(0); }
+            72%  { opacity: 1;   transform: scale(1) translateY(0); }
+            100% { opacity: 0;   transform: scale(1) translateY(0); }
+        }
+
+        #cage-svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            animation: cage-fall 2.2s ease forwards;
+            transform-origin: center center;
+        }
+
+        #cage-svg .cage-outer {
+            fill: none;
+            stroke: #1a1a1a;
+            stroke-width: 10;
+            stroke-dasharray: 14 8;
+            stroke-linejoin: round;
+            stroke-linecap: square;
+        }
+
+        #cage-svg .cage-inner {
+            fill: none;
+            stroke: #e86000;
+            stroke-width: 4;
+            stroke-dasharray: 14 8;
+            stroke-linejoin: round;
+            stroke-linecap: square;
+            filter: drop-shadow(0 0 4px rgba(255,140,0,0.9));
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .ctrl-btn {
+            background: #1a3a6b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 46px;
+            height: 46px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .ctrl-btn:hover:not(:disabled) { background: #2a5aab; }
+        .ctrl-btn:disabled { background: rgba(26,58,107,0.25); cursor: not-allowed; }
+
+        .move-counter {
+            background: rgba(255,255,255,0.6);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-weight: 700;
+            color: #1a3a6b;
+            font-size: 0.9em;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .info-section { flex: 1; min-width: 0; }
+
+        .moves-box {
+            background: rgba(255,255,255,0.4);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+        }
+        .moves-box h3 {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1a3a6b;
+            margin-bottom: 10px;
+        }
+
+        .moves-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .move-number { color: rgba(26,58,107,0.5); font-size: 0.8em; padding: 0 2px; }
+
+        .move-token {
+            border: 1px solid rgba(26,58,107,0.3);
+            border-radius: 6px;
+            padding: 4px 9px;
+            font-size: 0.92em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .move-token.white-move { background: rgba(255,255,255,0.7); color: #1a3a6b; }
+        .move-token.black-move { background: rgba(50,50,50,0.12); color: #333; }
+        .move-token.active { background: #1a3a6b !important; color: white !important; border-color: #1a3a6b; }
+        .move-token.king-move { border-color: #27ae60; }
+        .move-token.king-move.active { background: #27ae60 !important; border-color: #27ae60; }
+        .move-token:hover:not(.active) { background: rgba(255,255,255,0.9); }
+
+        .annotation-box {
+            background: rgba(255,255,255,0.6);
+            border-radius: 12px;
+            padding: 16px;
+            line-height: 1.7;
+            color: #333;
+            font-size: 1em;
+            height: 175px;
+            overflow-y: auto;
+            border-left: 4px solid #1a3a6b;
+        }
+        .annotation-box.checkmate {
+            border-left-color: #c0392b;
+            background: rgba(255,255,255,0.85);
+        }
+        .annotation-box.king-active {
+            border-left-color: #27ae60;
+            background: rgba(220,255,230,0.75);
+        }
+        .annotation-box.puzzle {
+            border-left-color: #8e44ad;
+            background: rgba(240,220,255,0.75);
+        }
+
+        .checkmate-badge {
+            display: inline-block;
+            background: #c0392b;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .king-badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .hint {
+            text-align: center;
+            color: rgba(26,58,107,0.5);
+            font-size: 0.78em;
+            margin-top: 10px;
+        }
+
+        .volume-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        #volBtn {
+            background: none;
+            border: none;
+            font-size: 1.3em;
+            cursor: pointer;
+            line-height: 1;
+            padding: 2px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        #volBtn:hover { opacity: 1; }
+
+        #volSlider {
+            width: 90px;
+            accent-color: #1a3a6b;
+            cursor: pointer;
+        }
+
+        /* ===== KNIGHT LINK + UMBRĂ ===== */
+        @keyframes kl-flash {
+            0%   { opacity: 0; }
+            18%  { opacity: 1; }
+            72%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        #knight-link-svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 8;
+            animation: kl-flash 2.2s ease forwards;
+        }
+
+        /* ===== INIMIOARĂ ===== */
+        @keyframes hb-slow {
+            0%,100% { transform: translate(-50%,-50%) scale(1); }
+            15%     { transform: translate(-50%,-50%) scale(1.4); }
+            30%     { transform: translate(-50%,-50%) scale(1); }
+            45%     { transform: translate(-50%,-50%) scale(1.3); }
+            60%     { transform: translate(-50%,-50%) scale(1); }
+        }
+        @keyframes hb-fast {
+            0%,100% { transform: translate(-50%,-50%) scale(1); }
+            10%     { transform: translate(-50%,-50%) scale(1.55); }
+            20%     { transform: translate(-50%,-50%) scale(1); }
+            30%     { transform: translate(-50%,-50%) scale(1.55); }
+            40%     { transform: translate(-50%,-50%) scale(1); }
+            50%     { transform: translate(-50%,-50%) scale(1.55); }
+            60%     { transform: translate(-50%,-50%) scale(1); }
+        }
+        .heart-badge {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            font-size: 2em;
+            pointer-events: none;
+            z-index: 15;
+            line-height: 1;
+        }
+        .heart-badge.hb-slow { animation: hb-slow 1.4s ease-in-out infinite; }
+        .heart-badge.hb-fast { animation: hb-fast 0.55s ease-in-out infinite; }
+
+        /* ===== CONFETTI ===== */
+        @keyframes confetti-fly {
+            0%   { transform: translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%,-50%) translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(0); opacity: 0; }
+        }
+        .confetti-particle {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 9px; height: 9px;
+            border-radius: 3px;
+            pointer-events: none;
+            z-index: 20;
+            animation: confetti-fly 0.85s ease-out forwards;
+        }
+
+        .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 28px; }
+        .nav-btn {
+            display: inline-block;
+            background: #1a3a6b;
+            color: white;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3em;
+            padding: 13px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 5px 20px rgba(26,58,107,0.4);
+        }
+        .nav-btn:hover { background: #2a5aab; transform: translateY(-3px); }
+        .nav-btn.back { background: rgba(26,58,107,0.5); }
+
+        @media (max-width: 680px) {
+            .page { padding: 40px 20px 50px; }
+            .main-content { flex-direction: column; }
+            #board { width: 300px; }
+            .board-section { margin: 0 auto; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <img src="pieces/wQ.svg" class="corner-piece corner-tl" alt="">
+    <img src="pieces/wK.svg" class="corner-piece corner-tr" alt="">
+
+    <h1>Metoda &#8222;Echipa de &#350;oc&#8221;<br>Rege + Regin&#259; vs. Rege</h1>
+
+    <div class="text-block">
+        Acum c&#259; &#351;tii s&#259; folose&#351;ti Regina, e timpul s&#259; &#238;nve&#539;i cum s&#259; c&#226;&#351;tigi
+        ca un adev&#259;rat mare maestru: prin <strong>munc&#259; de echip&#259;</strong>! &#206;n loc
+        s&#259; l&#259;s&#259;m Regina s&#259; fac&#259; tot greul, &#238;l aducem pe Regele nostru la
+        lupt&#259; <em>&#238;nc&#259; de la &#238;nceput</em>. De ce? Pentru c&#259; doi prieteni care
+        lucreaz&#259; &#238;mpreun&#259; termin&#259; treaba mai repede dec&#226;t unul singur.
+        Regele t&#259;u va fi ca un <strong>zid</strong>, iar Regina va fi
+        <strong>sabia</strong> care d&#259; matul!
+    </div>
+
+    <div class="lesson-title">Lec&#539;ia 2: Echipa de &#350;oc &mdash; Rege + Regin&#259;</div>
+    <div class="text-block">
+        Compar&#259; cu lec&#539;ia anterioar&#259;: acolo Regina lucra 15 mut&#259;ri singur&#259;. Acum
+        Regele intr&#259; activ &#238;n joc din mutarea 3 &#351;i ob&#539;inem matul
+        &#238;n doar <strong>6 mut&#259;ri</strong>! Urm&#259;re&#351;te sgeata verde: ea arat&#259;
+        exact momentul &#238;n care Regele alb &#238;&#351;i abandoneaz&#259; siguran&#539;a &#351;i
+        devine parte din asediu.
+    </div>
+
+    <div class="chapter-subtitle">Sgeata portocalie = Regina; Sgeata verde = Regele alb; Sgeata albastr&#259; = Regele negru (umbra)</div>
+
+    <div class="main-content">
+        <div class="board-section">
+            <div id="board-wrap">
+                <div id="board"></div>
+            </div>
+            <div class="controls">
+                <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima pozi&#539;ie">&#9198;</button>
+                <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="&#206;napoi">&#9664;</button>
+                <div class="move-counter" id="moveCounter">Start</div>
+                <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="&#206;nainte">&#9654;</button>
+                <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima pozi&#539;ie">&#9197;</button>
+            </div>
+            <p class="hint">&#8592; &#8594; sau butoanele de mai sus</p>
+            <div class="volume-row">
+                <button id="volBtn" onclick="toggleMute()" title="Sunet">&#128266;</button>
+                <input type="range" id="volSlider" min="0" max="100" value="70"
+                       oninput="setVolume(this.value)">
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="moves-box">
+                <h3>Mut&#259;ri</h3>
+                <div class="moves-list" id="movesList"></div>
+            </div>
+            <div class="annotation-box" id="annotationBox"></div>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="pagina24.html" class="nav-btn back">&#9664; &#206;napoi</a>
+        <a href="pagina26.html" class="nav-btn">&#206;nainte &#9654;</a>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+
+<script>
+function toRo(san) {
+    const map = { K:'R', Q:'D', R:'T', B:'N', N:'C' };
+    return san.replace(/[KQRBN]/g, m => map[m]);
+}
+
+const chapter = {
+    startFen: '8/8/8/8/4k3/8/8/3QK3 w - - 0 1',
+    sanMoves: ['Qd6','Ke3','Qd5','Kf4','Kf2','Kg4','Qe5','Kh4','Kf3','Kh3','Qh5#'],
+    // white king moves at steps 5 and 9
+    whiteKingSteps: new Set([5, 9]),
+    annotations: [
+        'Regina &#351;i Regele alb sunt preg&#259;ti&#539;i. Aceasta este pozi&#539;ia de start &mdash; Regele negru e &#238;n centrul tablei. &#206;n metoda <strong>Echipei de &#350;oc</strong>, Regele alb va intra activ &#238;n lupt&#259;!',
+        'Regina traseaz&#259; <strong>primul perete</strong>! Ea controleaz&#259; coloana d &#351;i r&#226;ndul 6, limitând spa&#539;iul regelui negru. Observ&#259; cu&#351;ca portocalie!',
+        'Regele negru &#238;ncearc&#259; s&#259; r&#259;m&#226;n&#259; activ... dar cu&#351;ca &#238;l a&#351;teapt&#259;.',
+        'Regina <strong>str&#226;nge &#351;i mai mult</strong>! Acum coloana d &#351;i r&#226;ndul 5 sunt controlate. Spa&#539;iul regelui negru s-a micurat!',
+        'Regele negru fuge spre dreapta &mdash; dar nu &#351;tie ce &#238;l a&#351;teapt&#259;...',
+        '<span class="king-badge">&#9814; Regele Intr&#259; &#238;n Lupt&#259;!</span><br>La Rf2, Regele alb abandoneaz&#259; siguran&#539;a &#351;i devine parte din asediu. Doi &#238;mpotriva unuia &mdash; acum viteza cre&#351;te dramatic!',
+        'Regele negru fuge spre col&#539;, dar cu&#351;ca se str&#226;nge...',
+        'Regina str&#226;nge cu&#351;ca &#351;i mai mult, acum <strong>cu ajutorul regelui alb</strong> care blocheaz&#259; c&#226;mpurile din st&#226;nga! Observ&#259; cum zona portocalie s-a mic&#351;orat!',
+        'Regele negru este for&#539;at la marginea tablei &mdash; nu mai are sc&#259;pare!',
+        '<span class="king-badge">&#9814; Regele Avanseaz&#259;!</span><br>Regele alb ajunge la f3, complet activ &#238;n asediu. Acum regina poate livra lovitura final&#259;!',
+        '&#129504; <strong>Regele negru este prins la margine!</strong> Exist&#259; <em>trei</em> variante de mat &mdash; le po&#539;i g&#259;si pe toate? <strong>Dh5#</strong>, <strong>Dh8#</strong> sau <strong>Dg3#</strong>!',
+        'Regina d&#259; mat pe h5, ap&#259;rat&#259; de regele alb de pe f3. Regele negru nu are nicio scap&#259;re. <strong>&#350;ah mat!</strong> Aceasta este puterea Echipei de &#350;oc &mdash; doi prieteni care termin&#259; treaba &#238;mpreun&#259; &#238;n 6 mut&#259;ri!'
+    ]
+};
+
+// Cuști per pas (doar la mutările reginei albe)
+const cages = {
+    1:  ['e','h',1,5],   // Dd6: taie col. d + rândul 6 → e-h, 1-5
+    3:  ['e','h',1,4],   // Dd5: taie col. d + rândul 5 → e-h, 1-4
+    7:  ['f','h',1,4]    // De5: taie col. e + rândul 5 → f-h, 1-4
+};
+
+// Knight links:
+// type 'Q'  = queen move  → orange arrow prevQ→Q + gold L-shape
+// type 'bK' = black king  → blue dashed arrow prevbK→bK + faint L-shape
+// type 'wK' = white king  → green arrow prevwK→wK + faint L-shape
+const knightLinks = {
+    1:  { type:'Q',  q:[3,6], k:[4,4], pq:[3,1] },
+    2:  { type:'bK', q:[3,6], k:[4,3], pk:[4,4] },
+    3:  { type:'Q',  q:[3,5], k:[4,3], pq:[3,6] },
+    4:  { type:'bK', q:[3,5], k:[5,4], pk:[4,3] },
+    5:  { type:'wK', q:[3,5], k:[5,4], wk:[5,2], pwk:[4,1] },
+    6:  { type:'bK', q:[3,5], k:[6,4], pk:[5,4],  wk:[5,2] },
+    7:  { type:'Q',  q:[4,5], k:[6,4], pq:[3,5],  wk:[5,2] },
+    8:  { type:'bK', q:[4,5], k:[7,4], pk:[6,4],  wk:[5,2] },
+    9:  { type:'wK', q:[4,5], k:[7,4], wk:[5,3],  pwk:[5,2] },
+    10: { type:'bK', q:[4,5], k:[7,3], pk:[7,4],  wk:[5,3] }
+};
+
+let cageTimer = null;
+let klTimer   = null;
+let heartEl   = null;
+
+function removeHeart() {
+    if (heartEl) { heartEl.remove(); heartEl = null; }
+}
+function showHeart(squareSel, fast) {
+    removeHeart();
+    const sq = document.querySelector('#board ' + squareSel);
+    if (!sq) return;
+    heartEl = document.createElement('div');
+    heartEl.className = 'heart-badge ' + (fast ? 'hb-fast' : 'hb-slow');
+    heartEl.textContent = '❤️';
+    sq.appendChild(heartEl);
+}
+let soundVolume = 0.7;
+let soundMuted  = false;
+
+function setVolume(val) {
+    soundVolume = val / 100;
+    soundMuted  = (val == 0);
+    document.getElementById('volBtn').textContent = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
+}
+
+function toggleMute() {
+    soundMuted = !soundMuted;
+    document.getElementById('volBtn').textContent = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
+    document.getElementById('volSlider').value = soundMuted ? 0 : soundVolume * 100;
+}
+
+function playCageClank() {
+    if (soundMuted || soundVolume === 0) return;
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const t   = ctx.currentTime;
+        const vol = soundVolume;
+        [160, 310, 520, 860, 1400].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const g   = ctx.createGain();
+            osc.type = i % 2 === 0 ? 'triangle' : 'sawtooth';
+            osc.frequency.value = freq;
+            osc.frequency.exponentialRampToValueAtTime(freq * 0.75, t + 0.5);
+            g.gain.setValueAtTime(vol * 0.22 / (i * 0.6 + 1), t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.55 + i * 0.07);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(t); osc.stop(t + 0.7);
+        });
+        const noiseLen = Math.floor(ctx.sampleRate * 0.07);
+        const buf = ctx.createBuffer(1, noiseLen, ctx.sampleRate);
+        const d   = buf.getChannelData(0);
+        for (let i = 0; i < noiseLen; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / noiseLen);
+        const ns2 = ctx.createBufferSource();
+        ns2.buffer = buf;
+        const ng = ctx.createGain();
+        ng.gain.value = vol * 0.5;
+        ns2.connect(ng); ng.connect(ctx.destination);
+        ns2.start(t);
+    } catch(e) {}
+}
+
+function playKingStep() {
+    if (soundMuted || soundVolume === 0) return;
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const t   = ctx.currentTime;
+        const v   = soundVolume;
+        // Solid "thud" — low + mid frequencies
+        [110, 220, 440].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const g   = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            g.gain.setValueAtTime(v * 0.3 / (i + 1), t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.25 + i * 0.05);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(t); osc.stop(t + 0.35);
+        });
+    } catch(e) {}
+}
+
+function spawnConfetti(squareSel) {
+    const sq = document.querySelector('#board ' + squareSel);
+    if (!sq) return;
+    const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb'];
+    for (let i = 0; i < 24; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-particle';
+        p.style.background = colors[i % colors.length];
+        const angle = (Math.PI * 2 * i / 24) + Math.random() * 0.35;
+        const dist  = 38 + Math.random() * 58;
+        p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+        p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+        p.style.setProperty('--rot', `${Math.random() * 720 - 360}deg`);
+        sq.appendChild(p);
+        setTimeout(() => p.remove(), 900);
+    }
+}
+
+/* ===== CUȘCĂ ===== */
+function showCage(step) {
+    const existing = document.getElementById('cage-svg');
+    if (existing) existing.remove();
+    if (cageTimer) { clearTimeout(cageTimer); cageTimer = null; }
+    if (!cages[step]) return;
+
+    const boardEl  = document.getElementById('board-wrap');
+    const boardSize = boardEl.offsetWidth;
+    const sq = boardSize / 8;
+    const [fMin, fMax, rMin, rMax] = cages[step];
+    const x = (fMin.charCodeAt(0) - 97) * sq;
+    const y = (8 - rMax) * sq;
+    const w = (fMax.charCodeAt(0) - fMin.charCodeAt(0) + 1) * sq;
+    const h = (rMax - rMin + 1) * sq;
+    const pad = 5;
+
+    const ns  = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.id = 'cage-svg';
+    svg.setAttribute('viewBox', `0 0 ${boardSize} ${boardSize}`);
+
+    const outer = document.createElementNS(ns, 'rect');
+    outer.setAttribute('x', x + pad); outer.setAttribute('y', y + pad);
+    outer.setAttribute('width', w - pad*2); outer.setAttribute('height', h - pad*2);
+    outer.setAttribute('rx', '4'); outer.classList.add('cage-outer');
+
+    const inner = document.createElementNS(ns, 'rect');
+    inner.setAttribute('x', x + pad + 3); inner.setAttribute('y', y + pad + 3);
+    inner.setAttribute('width', w - pad*2 - 6); inner.setAttribute('height', h - pad*2 - 6);
+    inner.setAttribute('rx', '3'); inner.classList.add('cage-inner');
+
+    svg.appendChild(outer); svg.appendChild(inner);
+    boardEl.appendChild(svg);
+    playCageClank();
+
+    cageTimer = setTimeout(() => {
+        const el = document.getElementById('cage-svg');
+        if (el) el.remove();
+        cageTimer = null;
+    }, 2200);
+}
+
+/* ===== GARD ÎNTRE REGI ===== */
+const fenceData = {
+    2:  ['d2','e2','f2'],   // Re3: gardul regelui alb pe rândul 2
+    5:  ['e3','f3','g3'],   // Rf2: gardul regelui alb pe rândul 3
+    9:  ['g2','g3','g4'],   // Rf3: gardul regelui alb pe coloana g
+    10: ['g2','g3','g4']    // Rh3: gardul rămâne pe coloana g
+};
+
+function drawFence(svg, ns, squares) {
+    const sqSize = 45;
+    function sc(name) {
+        const fi = name.charCodeAt(0) - 97;
+        const rk = parseInt(name[1]);
+        return { x: (fi + 0.5) * sqSize, y: (8.5 - rk) * sqSize };
+    }
+    const pts   = squares.map(sc);
+    const horiz = pts.every(p => Math.abs(p.y - pts[0].y) < 1);
+    const bux = horiz ? 0 : 1, buy = horiz ? 1 : 0;
+    const rux = horiz ? 1 : 0, ruy = horiz ? 0 : 1;
+    const barHalf = sqSize * 0.28;
+    const railPad = sqSize * 0.45;
+
+    pts.forEach(p => {
+        const bar = document.createElementNS(ns, 'line');
+        bar.setAttribute('x1', p.x - barHalf * bux); bar.setAttribute('y1', p.y - barHalf * buy);
+        bar.setAttribute('x2', p.x + barHalf * bux); bar.setAttribute('y2', p.y + barHalf * buy);
+        bar.setAttribute('stroke', '#ff2200'); bar.setAttribute('stroke-width', '4');
+        bar.setAttribute('stroke-linecap', 'round'); bar.setAttribute('opacity', '0.92');
+        bar.setAttribute('filter', 'drop-shadow(0 0 3px rgba(255,50,0,0.8))');
+        svg.appendChild(bar);
+    });
+
+    const first = pts[0], last = pts[pts.length - 1];
+    [-1, 1].forEach(sign => {
+        const rail = document.createElementNS(ns, 'line');
+        rail.setAttribute('x1', first.x + sign * barHalf * bux - railPad * rux);
+        rail.setAttribute('y1', first.y + sign * barHalf * buy - railPad * ruy);
+        rail.setAttribute('x2', last.x  + sign * barHalf * bux + railPad * rux);
+        rail.setAttribute('y2', last.y  + sign * barHalf * buy + railPad * ruy);
+        rail.setAttribute('stroke', '#cc2200'); rail.setAttribute('stroke-width', '2');
+        rail.setAttribute('stroke-linecap', 'round'); rail.setAttribute('opacity', '0.85');
+        rail.setAttribute('filter', 'drop-shadow(0 0 2px rgba(200,30,0,0.6))');
+        svg.appendChild(rail);
+    });
+}
+
+/* ===== KNIGHT LINK + UMBRĂ ===== */
+function sqC(fi, rank) {
+    const s = 360 / 8;
+    return { x: (fi + 0.5) * s, y: (8.5 - rank) * s };
+}
+
+function showKnightLink(step) {
+    const ex = document.getElementById('knight-link-svg');
+    if (ex) ex.remove();
+    if (klTimer) { clearTimeout(klTimer); klTimer = null; }
+    if (!knightLinks[step]) return;
+
+    const d  = knightLinks[step];
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.id = 'knight-link-svg';
+    svg.setAttribute('viewBox', '0 0 360 360');
+
+    const defs = document.createElementNS(ns, 'defs');
+    function mkMarker(id, color) {
+        const m = document.createElementNS(ns, 'marker');
+        m.setAttribute('id', id); m.setAttribute('markerWidth', '7');
+        m.setAttribute('markerHeight', '7'); m.setAttribute('refX', '5');
+        m.setAttribute('refY', '3.5'); m.setAttribute('orient', 'auto');
+        const p = document.createElementNS(ns, 'polygon');
+        p.setAttribute('points', '0 0, 7 3.5, 0 7'); p.setAttribute('fill', color);
+        m.appendChild(p); return m;
+    }
+    defs.appendChild(mkMarker('arQ',  '#ff7700'));
+    defs.appendChild(mkMarker('arK',  '#55aaff'));
+    defs.appendChild(mkMarker('arWK', '#27ae60'));
+    defs.appendChild(mkMarker('arL',  '#ffd700'));
+    svg.appendChild(defs);
+
+    function mkLine(x1, y1, x2, y2, color, sw, dash, mid, opacity) {
+        const l = document.createElementNS(ns, 'line');
+        l.setAttribute('x1', x1); l.setAttribute('y1', y1);
+        l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+        l.setAttribute('stroke', color); l.setAttribute('stroke-width', sw);
+        if (dash) l.setAttribute('stroke-dasharray', dash);
+        if (mid)  l.setAttribute('marker-end', 'url(#' + mid + ')');
+        if (opacity !== undefined) l.setAttribute('opacity', opacity);
+        return l;
+    }
+    function mkCircle(cx, cy, r, strokeColor) {
+        const c = document.createElementNS(ns, 'circle');
+        c.setAttribute('cx', cx); c.setAttribute('cy', cy);
+        c.setAttribute('r', r); c.setAttribute('fill', 'none');
+        c.setAttribute('stroke', strokeColor); c.setAttribute('stroke-width', '2.5');
+        c.setAttribute('opacity', '0.85'); return c;
+    }
+
+    const q = sqC(d.q[0], d.q[1]);
+    const k = sqC(d.k[0], d.k[1]);
+    const corner = { x: k.x, y: q.y };
+
+    // Gold L-shape from queen to black king
+    const lOp = (d.type === 'Q') ? '0.82' : '0.38';
+    const lW  = (d.type === 'Q') ? '2.5'  : '1.8';
+    svg.appendChild(mkLine(q.x, q.y, corner.x, corner.y, '#ffd700', lW, '7 4', null, lOp));
+    svg.appendChild(mkLine(corner.x, corner.y, k.x, k.y, '#ffd700', lW, '7 4', 'arL', lOp));
+    const cdot = document.createElementNS(ns, 'circle');
+    cdot.setAttribute('cx', corner.x); cdot.setAttribute('cy', corner.y);
+    cdot.setAttribute('r', '3.5'); cdot.setAttribute('fill', '#ffd700');
+    cdot.setAttribute('opacity', lOp); svg.appendChild(cdot);
+
+    if (d.type === 'Q' && d.pq) {
+        const pq = sqC(d.pq[0], d.pq[1]);
+        svg.appendChild(mkLine(pq.x, pq.y, q.x, q.y, '#ff7700', '3', null, 'arQ', '0.9'));
+        svg.appendChild(mkCircle(q.x, q.y, 7, '#ff7700'));
+    }
+
+    if (d.type === 'bK' && d.pk) {
+        const pk = sqC(d.pk[0], d.pk[1]);
+        svg.appendChild(mkLine(pk.x, pk.y, k.x, k.y, '#55aaff', '3', '5 3', 'arK', '0.9'));
+        svg.appendChild(mkCircle(k.x, k.y, 7, '#55aaff'));
+    }
+
+    if (d.type === 'wK' && d.wk && d.pwk) {
+        const wk  = sqC(d.wk[0],  d.wk[1]);
+        const pwk = sqC(d.pwk[0], d.pwk[1]);
+        svg.appendChild(mkLine(pwk.x, pwk.y, wk.x, wk.y, '#27ae60', '3.5', null, 'arWK', '0.95'));
+        svg.appendChild(mkCircle(wk.x, wk.y, 8, '#27ae60'));
+        // Extra glow ring
+        const glow = document.createElementNS(ns, 'circle');
+        glow.setAttribute('cx', wk.x); glow.setAttribute('cy', wk.y);
+        glow.setAttribute('r', '13'); glow.setAttribute('fill', 'none');
+        glow.setAttribute('stroke', '#27ae60'); glow.setAttribute('stroke-width', '1.5');
+        glow.setAttribute('opacity', '0.4');
+        svg.appendChild(glow);
+    }
+
+    // ===== GARD ÎNTRE REGI =====
+    if (fenceData[step]) drawFence(svg, ns, fenceData[step]);
+
+    document.getElementById('board-wrap').appendChild(svg);
+    klTimer = setTimeout(() => {
+        const el = document.getElementById('knight-link-svg');
+        if (el) el.remove();
+        klTimer = null;
+    }, 2200);
+}
+
+/* ===== ENGINE ===== */
+function computePositions() {
+    const chess = new Chess(chapter.startFen);
+    const fens = [chess.fen()];
+    for (const mv of chapter.sanMoves) {
+        if (!chess.move(mv)) { console.error('Mutare invalida:', mv); break; }
+        fens.push(chess.fen());
+    }
+    return fens;
+}
+
+const positions = computePositions();
+let currentStep = 0;
+
+const board = Chessboard('board', {
+    position: positions[0],
+    pieceTheme: 'pieces/{piece}.svg'
+});
+
+function buildMovesList() {
+    const container = document.getElementById('movesList');
+    container.innerHTML = '';
+    chapter.sanMoves.forEach((mv, i) => {
+        if (i % 2 === 0) {
+            const num = document.createElement('span');
+            num.className = 'move-number';
+            num.textContent = (Math.floor(i / 2) + 1) + '.';
+            container.appendChild(num);
+        }
+        const btn = document.createElement('button');
+        const step = i + 1;
+        let cls = 'move-token ' + (i % 2 === 0 ? 'white-move' : 'black-move');
+        if (chapter.whiteKingSteps.has(step)) cls += ' king-move';
+        btn.className = cls;
+        btn.textContent = toRo(mv);
+        btn.dataset.step = step;
+        btn.onclick = () => goToStep(step);
+        container.appendChild(btn);
+    });
+}
+
+function goToStep(s) {
+    currentStep = s;
+    board.position(positions[s], false);
+    removeHeart();
+    updateUI();
+    showCage(s);
+    showKnightLink(s);
+    if (s === 10) showHeart('.square-h5', false);
+    if (s === positions.length - 1) {
+        showHeart('.square-h5', true);
+        setTimeout(() => spawnConfetti('.square-h5'), 600);
+    }
+    if (chapter.whiteKingSteps.has(s)) playKingStep();
+}
+
+function goFirst() { goToStep(0); }
+function goLast()  { goToStep(positions.length - 1); }
+function goPrev()  { if (currentStep > 0) goToStep(currentStep - 1); }
+function goNext()  { if (currentStep < positions.length - 1) goToStep(currentStep + 1); }
+
+function updateUI() {
+    const total = positions.length - 1;
+    document.getElementById('moveCounter').textContent =
+        currentStep === 0 ? 'Start' : currentStep + ' / ' + total;
+
+    document.getElementById('btnFirst').disabled = currentStep === 0;
+    document.getElementById('btnPrev').disabled  = currentStep === 0;
+    document.getElementById('btnNext').disabled  = currentStep === total;
+    document.getElementById('btnLast').disabled  = currentStep === total;
+
+    document.querySelectorAll('.move-token').forEach(b =>
+        b.classList.toggle('active', parseInt(b.dataset.step) === currentStep));
+
+    const box  = document.getElementById('annotationBox');
+    const text = chapter.annotations[currentStep] || '';
+    const isMat = currentStep === total;
+    const isKing = chapter.whiteKingSteps.has(currentStep);
+    const isPuzzle = currentStep === 10;
+
+    if (isMat) {
+        box.className = 'annotation-box checkmate';
+        box.innerHTML = '<span class="checkmate-badge">&#10003; &#350;AH MAT!</span><br>' + text;
+    } else if (isKing) {
+        box.className = 'annotation-box king-active';
+        box.innerHTML = text;
+    } else if (isPuzzle) {
+        box.className = 'annotation-box puzzle';
+        box.innerHTML = text;
+    } else {
+        box.className = 'annotation-box';
+        box.innerHTML = text;
+    }
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') goNext();
+    if (e.key === 'ArrowLeft')  goPrev();
+    if (e.key === 'Home')       goFirst();
+    if (e.key === 'End')        goLast();
+});
+
+buildMovesList();
+updateUI();
+</script>
+<style>
+.hub-btn {
+    position: fixed; top: 16px; right: 16px;
+    background: #1a3a6b; color: white;
+    font-family: "Baloo 2", cursive; font-size: .85em;
+    padding: 8px 18px; border-radius: 50px;
+    text-decoration: none; box-shadow: 0 3px 12px rgba(26,58,107,.4);
+    z-index: 100; transition: background .2s;
+}
+.hub-btn:hover { background: #2a5aab; }
+</style>
+<a href="hub.html" class="hub-btn">&#9776; Cuprins</a>
+</body>
+</html>

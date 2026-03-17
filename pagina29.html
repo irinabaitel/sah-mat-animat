@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sah Mat Animat - Antrenamentul pentru Micii Maeștri</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: #F5A96E;
+            font-family: 'Nunito', sans-serif;
+            padding: 24px 16px;
+            min-height: 100vh;
+        }
+        .page {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 40px 44px 50px;
+            position: relative;
+        }
+        .corner-piece { position: absolute; width: 80px; height: 80px; }
+        .corner-tl { top: 0; left: 0; }
+        .corner-tr { top: 0; right: 0; transform: scaleX(-1); }
+
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2em; color: #1a3a6b;
+            text-transform: uppercase; margin-bottom: 6px; margin-top: 10px;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
+            text-align: center; line-height: 1.2;
+        }
+        .subtitle-top {
+            font-family: 'Baloo 2', cursive; font-weight: 700;
+            text-align: center; color: #1a1a1a;
+            font-size: 1.05em; margin-bottom: 4px; line-height: 1.3;
+        }
+        .subtitle-body {
+            font-family: 'Baloo 2', cursive; font-weight: 700;
+            text-align: left; color: #1a1a1a;
+            font-size: 0.95em; margin-bottom: 20px; line-height: 1.5;
+        }
+
+        /* ===== LAYOUT ===== */
+        .main-content {
+            display: flex; gap: 22px; align-items: flex-start;
+        }
+        .board-section { flex: 0 0 auto; }
+        #board-wrap {
+            position: relative; display: inline-block;
+            width: 360px; height: 360px; overflow: visible;
+        }
+        #board { width: 360px; }
+
+        /* ===== RIGHT PANEL ===== */
+        .right-section { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; height: 360px; overflow: hidden; }
+
+        /* Status */
+        .status-bar {
+            background: rgba(255,255,255,0.65);
+            border-radius: 12px; padding: 12px 16px;
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 700; font-size: 0.95em;
+        }
+        .turn-dot {
+            width: 12px; height: 12px; border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .turn-dot.white { background: #f0d9b5; border: 2px solid #aaa; }
+        .turn-dot.black { background: #333; border: 2px solid #666; }
+        .turn-dot.thinking { background: #e67e22; animation: pulse 0.7s ease infinite alternate; }
+        @keyframes pulse { from {opacity:0.5;} to {opacity:1;} }
+
+        .move-count {
+            margin-left: auto;
+            background: #1a3a6b; color: white;
+            border-radius: 20px; padding: 2px 12px;
+            font-size: 0.85em; font-family: 'Baloo 2', cursive;
+        }
+
+        /* Move log */
+        .log-wrap {
+            background: rgba(255,255,255,0.45);
+            border-radius: 12px; padding: 10px 12px;
+            flex: 1; min-height: 0;
+            display: flex; flex-direction: column;
+        }
+        .log-title {
+            font-size: 0.75em; text-transform: uppercase;
+            letter-spacing: 1px; color: #1a3a6b;
+            margin-bottom: 8px; font-weight: 700;
+            flex-shrink: 0;
+        }
+        .log-scroll {
+            flex: 1; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 2px;
+        }
+        .log-row {
+            display: grid; grid-template-columns: 28px 1fr 1fr;
+            gap: 4px; font-size: 0.88em; padding: 2px 4px;
+            border-radius: 5px;
+        }
+        .log-row.last { background: rgba(26,58,107,0.1); }
+        .log-num  { color: rgba(26,58,107,0.45); font-size: 0.85em; padding-top: 1px; }
+        .log-white { color: #1a3a6b; font-weight: 700; }
+        .log-black { color: #7b241c; font-weight: 700; }
+        .log-black.pending { color: #aaa; font-style: italic; }
+
+        /* Centrality indicator */
+        .centrality-bar {
+            background: rgba(255,255,255,0.45);
+            border-radius: 12px; padding: 12px 16px;
+        }
+        .centrality-label {
+            font-size: 0.8em; color: #1a3a6b; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .centrality-track {
+            background: rgba(0,0,0,0.1); border-radius: 20px;
+            height: 10px; position: relative; overflow: hidden;
+        }
+        .centrality-fill {
+            height: 100%; border-radius: 20px;
+            background: linear-gradient(90deg, #c0392b, #e67e22, #27ae60);
+            transition: width 0.5s ease;
+        }
+        .centrality-labels {
+            display: flex; justify-content: space-between;
+            font-size: 0.72em; color: rgba(26,58,107,0.6);
+            margin-top: 4px;
+        }
+
+        /* Feedback — rezervă mereu spațiu, nu apare/dispare brusc */
+        .feedback-box {
+            border-radius: 12px; padding: 12px 16px;
+            font-weight: 700; font-size: 0.95em; line-height: 1.55;
+            transition: opacity 0.25s;
+            min-height: 54px; flex-shrink: 0;
+        }
+        .feedback-box.hidden   { opacity: 0; pointer-events: none; background: transparent; border: 2px solid transparent; }
+        .feedback-box.wrong    { opacity: 1; background: rgba(192,57,43,0.15); border: 2px solid #c0392b; color: #7b241c; }
+        .feedback-box.info     { opacity: 1; background: rgba(26,58,107,0.1);  border: 2px solid rgba(26,58,107,0.3); color: #1a3a6b; }
+        .feedback-box.edge     { opacity: 1; background: rgba(39,174,96,0.15); border: 2px solid #27ae60; color: #145a32; }
+        .feedback-box.stalemate{ opacity: 1; background: rgba(230,126,34,0.2); border: 2px solid #e67e22; color: #784212; }
+
+        /* Victory */
+        .victory-overlay {
+            display: none; position: fixed;
+            inset: 0; background: rgba(0,0,0,0.55);
+            z-index: 200; align-items: center; justify-content: center;
+        }
+        .victory-overlay.show { display: flex; }
+        .victory-card {
+            background: #fff9f0; border-radius: 24px;
+            padding: 40px 44px; max-width: 420px; width: 90%;
+            text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .victory-title {
+            font-family: 'Baloo 2', cursive; font-size: 2em;
+            color: #1a3a6b; margin-bottom: 10px;
+        }
+        .victory-stat {
+            font-size: 1.1em; color: #333; line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .victory-stat strong { color: #1a3a6b; }
+        .victory-rating {
+            font-size: 2.2em; margin-bottom: 16px;
+        }
+        .retry-btn {
+            background: #1a3a6b; color: white;
+            font-family: 'Baloo 2', cursive; font-size: 1.1em;
+            padding: 11px 36px; border-radius: 50px; border: none;
+            cursor: pointer; transition: background 0.2s;
+            box-shadow: 0 4px 14px rgba(26,58,107,0.35);
+        }
+        .retry-btn:hover { background: #2a5aab; }
+
+        /* Confetti */
+        @keyframes confetti-fly {
+            0%   { transform: translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1.2); opacity:1; }
+            100% { transform: translate(-50%,-50%) translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(0); opacity:0; }
+        }
+        .confetti-particle {
+            position: fixed; width: 10px; height: 10px;
+            border-radius: 3px; pointer-events: none; z-index: 999;
+            animation: confetti-fly 1.1s ease-out forwards;
+        }
+
+        /* Nav */
+        .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 28px; }
+        .nav-btn {
+            display: inline-block; background: #1a3a6b; color: white;
+            font-family: 'Baloo 2', cursive; font-size: 1.3em;
+            padding: 13px 40px; border-radius: 50px; text-decoration: none;
+            transition: all 0.2s; box-shadow: 0 5px 20px rgba(26,58,107,0.4);
+        }
+        .nav-btn:hover { background: #2a5aab; transform: translateY(-3px); }
+        .nav-btn.back { background: rgba(26,58,107,0.5); }
+
+        @media (max-width: 700px) {
+            .page { padding: 40px 20px 50px; }
+            .main-content { flex-direction: column; }
+            .right-section { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <img src="pieces/wQ.svg" class="corner-piece corner-tl" alt="">
+    <img src="pieces/wK.svg" class="corner-piece corner-tr" alt="">
+
+    <h1>&#127942; Antrenamentul pentru Micii Mae&#351;tri</h1>
+    <div class="subtitle-top">E&#351;ti gata pentru proba suprem&#259;? Cu&#351;ca a devenit invizibil&#259;!</div>
+    <div class="subtitle-body">Doar marii mae&#351;tri o pot vedea cu ochii min&#539;ii. &#206;mpinge Regele negru spre margine &#351;i demonstreaz&#259; c&#259; ai puteri magice de &#351;ahist!</div>
+
+    <div class="main-content">
+        <div class="board-section">
+            <div id="board-wrap">
+                <div id="board"></div>
+            </div>
+        </div>
+
+        <div class="right-section">
+
+            <div class="status-bar">
+                <div class="turn-dot white" id="turnDot"></div>
+                <span id="statusText">Mut&#259; o pies&#259; alb&#259;!</span>
+                <span class="move-counter" id="moveBadge" style="margin-left:auto;background:#1a3a6b;color:white;border-radius:20px;padding:2px 12px;font-size:0.85em;font-family:'Baloo 2',cursive;">0 mut&#259;ri</span>
+            </div>
+
+            <div class="centrality-bar">
+                <div class="centrality-label">Pozi&#539;ia Regelui Negru</div>
+                <div class="centrality-track">
+                    <div class="centrality-fill" id="centralityFill" style="width:75%"></div>
+                </div>
+                <div class="centrality-labels">
+                    <span>Col&#539; / Margine</span>
+                    <span>Centru</span>
+                </div>
+            </div>
+
+            <div class="log-wrap">
+                <div class="log-title">&#128221; Jurnalul Mut&#259;rilor</div>
+                <div class="log-scroll" id="moveLog">
+                    <div style="color:#aaa;font-size:0.85em;font-style:italic;padding:4px;">
+                        Mut&#259;rile vor ap&#259;rea aici...
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-box hidden" id="feedbackBox"></div>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="pagina28.html" class="nav-btn back">&#9664; &#206;napoi</a>
+        <span class="nav-btn" style="opacity:0.35;cursor:default;">&#206;nainte &#9654;</span>
+    </div>
+</div>
+
+<!-- Victory overlay -->
+<div class="victory-overlay" id="victoryOverlay">
+    <div class="victory-card">
+        <div class="victory-title" id="victoryTitle">&#127881; &#350;ah Mat!</div>
+        <div class="victory-rating" id="victoryRating"></div>
+        <div class="victory-stat" id="victoryStat"></div>
+        <button class="retry-btn" onclick="resetGame()">&#8635; Joac&#259; din nou</button>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+
+<script>
+// ===== NOTATION =====
+function toRo(san) {
+    const map = { K:'R', Q:'D', R:'T', B:'N', N:'C' };
+    return san.replace(/[KQRBN]/g, m => map[m]);
+}
+
+// ===== START POSITION =====
+// wK=a1, wQ=b1, bK=d4 (center)
+// b1 → d4: file diff=2, rank diff=3 → NOT diagonal → legal position ✓
+const START_FEN = '8/8/8/8/3k4/8/8/KQ6 w - - 0 1';
+
+// ===== CENTRALITY SCORE =====
+// How central is a square? min(distance to nearest edge), 0-3
+function centralityScore(sq) {
+    const f = sq.charCodeAt(0) - 97;  // 0-7
+    const r = parseInt(sq[1]) - 1;    // 0-7
+    return Math.min(f, 7-f, r, 7-r);  // 0=edge/corner, 3=center
+}
+
+// ===== BLACK KING AI =====
+function getBestBlackMove(chess) {
+    const moves = chess.moves({ verbose: true });
+    if (!moves.length) return null;
+
+    let best = [], bestScore = -Infinity;
+    for (const mv of moves) {
+        // Primary: maximize centrality of destination
+        let score = centralityScore(mv.to) * 10;
+        // Tiebreak: prefer squares farther from white queen (avoid being cornered faster)
+        const wQPos = getWhieenPos(chess);
+        if (wQPos) {
+            const qf = wQPos.charCodeAt(0) - 97;
+            const qr = parseInt(wQPos[1]) - 1;
+            const tf = mv.to.charCodeAt(0) - 97;
+            const tr = parseInt(mv.to[1]) - 1;
+            score += Math.max(Math.abs(tf - qf), Math.abs(tr - qr)) * 0.3;
+        }
+        if (score > bestScore) { bestScore = score; best = [mv]; }
+        else if (Math.abs(score - bestScore) < 0.01) best.push(mv);
+    }
+    return best[Math.floor(Math.random() * best.length)];
+}
+
+function getWhieenPos(chess) {
+    const board = chess.board();
+    for (let r = 0; r < 8; r++)
+        for (let f = 0; f < 8; f++)
+            if (board[r][f] && board[r][f].type === 'q' && board[r][f].color === 'w')
+                return String.fromCharCode(97+f) + (8-r);
+    return null;
+}
+
+function getBlackKingPos(chess) {
+    const board = chess.board();
+    for (let r = 0; r < 8; r++)
+        for (let f = 0; f < 8; f++)
+            if (board[r][f] && board[r][f].type === 'k' && board[r][f].color === 'b')
+                return String.fromCharCode(97+f) + (8-r);
+    return null;
+}
+
+// ===== STATE =====
+let chess        = new Chess(START_FEN);
+let board;
+let moveLog      = [];   // [{num, white, black}]
+let whiteMoves   = 0;
+let lastDropOk   = false;
+let blackTimer   = null;
+let gameOver     = false;
+
+// ===== MOVE LOG =====
+function renderLog() {
+    const container = document.getElementById('moveLog');
+    if (!moveLog.length) {
+        container.innerHTML = '<div style="color:#aaa;font-size:0.85em;font-style:italic;padding:4px;">Mutările vor apărea aici...</div>';
+        return;
+    }
+    container.innerHTML = moveLog.map((entry, i) => {
+        const isLast = i === moveLog.length - 1;
+        const blackCls = entry.black ? 'log-black' : 'log-black pending';
+        const blackTxt = entry.black || '...';
+        return `<div class="log-row${isLast?' last':''}">
+            <span class="log-num">${entry.num}.</span>
+            <span class="log-white">${entry.white}</span>
+            <span class="${blackCls}">${blackTxt}</span>
+        </div>`;
+    }).join('');
+    container.scrollTop = container.scrollHeight;
+}
+
+// ===== CENTRALITY BAR =====
+function updateCentralityBar() {
+    const pos = getBlackKingPos(chess);
+    if (!pos) return;
+    const score = centralityScore(pos); // 0-3
+    const pct   = (score / 3) * 100;
+    document.getElementById('centralityFill').style.width = pct + '%';
+}
+
+// ===== STATUS =====
+function setStatus(dotClass, text) {
+    document.getElementById('turnDot').className = 'turn-dot ' + dotClass;
+    document.getElementById('statusText').innerHTML = text;
+}
+
+function updateMoveBadge() {
+    document.getElementById('moveBadge').textContent = whiteMoves + (whiteMoves === 1 ? ' mutare' : ' mutări');
+}
+
+// ===== FEEDBACK =====
+function showFeedback(type, msg) {
+    const box = document.getElementById('feedbackBox');
+    box.className = 'feedback-box ' + type;
+    box.innerHTML = msg;
+}
+function clearFeedback() {
+    document.getElementById('feedbackBox').className = 'feedback-box hidden';
+}
+
+// ===== SOUND =====
+function playMove() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const t = ctx.currentTime;
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'triangle';
+        o.frequency.setValueAtTime(660, t);
+        o.frequency.exponentialRampToValueAtTime(440, t + 0.08);
+        g.gain.setValueAtTime(0.15, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(t); o.stop(t + 0.15);
+    } catch(e) {}
+}
+function playWrong() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const t = ctx.currentTime;
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'square';
+        o.frequency.setValueAtTime(200, t);
+        o.frequency.exponentialRampToValueAtTime(100, t + 0.18);
+        g.gain.setValueAtTime(0.18, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(t); o.stop(t + 0.25);
+    } catch(e) {}
+}
+function playEdge() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const t = ctx.currentTime;
+        [523, 659, 784].forEach((f, i) => {
+            const o = ctx.createOscillator(), g = ctx.createGain();
+            o.type = 'sine'; o.frequency.value = f;
+            g.gain.setValueAtTime(0.12, t + i*0.08);
+            g.gain.exponentialRampToValueAtTime(0.001, t + i*0.08 + 0.15);
+            o.connect(g); g.connect(ctx.destination);
+            o.start(t + i*0.08); o.stop(t + i*0.08 + 0.18);
+        });
+    } catch(e) {}
+}
+
+// ===== CONFETTI =====
+function spawnConfetti() {
+    const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb'];
+    const cx = window.innerWidth/2, cy = window.innerHeight/3;
+    for (let i = 0; i < 50; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-particle';
+        p.style.background = colors[i % colors.length];
+        p.style.left = cx+'px'; p.style.top = cy+'px';
+        const angle = (Math.PI*2*i/50) + Math.random()*0.2;
+        const dist  = 80 + Math.random()*180;
+        p.style.setProperty('--dx', `${Math.cos(angle)*dist}px`);
+        p.style.setProperty('--dy', `${Math.sin(angle)*dist}px`);
+        p.style.setProperty('--rot', `${Math.random()*720-360}deg`);
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 1200);
+    }
+}
+
+// ===== RATING =====
+function getRating(moves) {
+    if (moves <= 10) return { stars: '⭐⭐⭐⭐⭐', text: 'Perfect! Maestru absolut!' };
+    if (moves <= 14) return { stars: '⭐⭐⭐⭐', text: 'Excelent! Aproape perfect!' };
+    if (moves <= 18) return { stars: '⭐⭐⭐', text: 'Bine! Continuă să exersezi!' };
+    if (moves <= 25) return { stars: '⭐⭐', text: 'În curs de învățare — vei reuși!' };
+    return { stars: '⭐', text: 'Nu renunța — practica face maestrul!' };
+}
+
+// ===== GAME OVER =====
+function handleGameOver() {
+    gameOver = true;
+    board.draggable = false;
+
+    const isCheckmate = chess.in_checkmate();
+    const isStalemate = chess.in_stalemate();
+
+    if (isStalemate) {
+        document.getElementById('victoryTitle').textContent = '⚠️ PAT — Remiză!';
+        document.getElementById('victoryRating').textContent = '😅';
+        document.getElementById('victoryStat').innerHTML =
+            `Ai dat <strong>PAT</strong> în ${whiteMoves} mutări!<br>
+             Regele negru nu mai are mutări dar NU e în șah.<br>
+             Încearcă să eviți situația de pat!`;
+        showFeedback('stalemate', '⚠️ PAT! Regele negru nu are mutare dar nu e în șah. Remiză! Mai încearcă!');
+    } else if (isCheckmate) {
+        const rating = getRating(whiteMoves);
+        document.getElementById('victoryTitle').textContent = '🏆 Șah Mat!';
+        document.getElementById('victoryRating').textContent = rating.stars;
+        document.getElementById('victoryStat').innerHTML =
+            `Ai dat mat în <strong>${whiteMoves} mutări</strong>!<br>${rating.text}`;
+        spawnConfetti();
+        setTimeout(spawnConfetti, 500);
+    }
+
+    setTimeout(() => {
+        document.getElementById('victoryOverlay').classList.add('show');
+    }, isCheckmate ? 800 : 300);
+}
+
+// ===== AUTO-PLAY BLACK =====
+function autoPlayBlack() {
+    if (blackTimer) { clearTimeout(blackTimer); blackTimer = null; }
+    setStatus('thinking', 'Regele negru g&#226;nde&#351;te...');
+
+    blackTimer = setTimeout(() => {
+        const mv = getBestBlackMove(chess);
+        if (!mv) {
+            handleGameOver();
+            return;
+        }
+
+        chess.move(mv);
+        board.position(chess.fen(), false);
+        playMove();
+
+        // Log black's move
+        if (moveLog.length > 0)
+            moveLog[moveLog.length - 1].black = toRo(mv.san);
+        renderLog();
+        updateCentralityBar();
+
+        // Feedback based on new position
+        const bkPos = getBlackKingPos(chess);
+        const cent  = centralityScore(bkPos);
+        if (cent === 0) {
+            playEdge();
+            showFeedback('edge', '&#127881; Regele a ajuns la margine! Continu&#259; &#8212; mai trebuie s&#259;-l prinzi!');
+        } else if (cent === 1) {
+            showFeedback('info', 'Regele e aproape de margine. Str&#226;nge &#351;i mai mult!');
+        } else {
+            clearFeedback();
+        }
+
+        // Check game over
+        if (chess.game_over()) {
+            handleGameOver();
+            return;
+        }
+
+        setStatus('white', 'Mut&#259; o pies&#259; alb&#259;!');
+        blackTimer = null;
+    }, 700);
+}
+
+// ===== BOARD CALLBACKS =====
+function onDragStart(source, piece) {
+    if (gameOver) return false;
+    if (chess.turn() !== 'w') return false;
+    return piece.startsWith('w');
+}
+
+function onDrop(source, target) {
+    lastDropOk = false;
+    if (target === 'offboard' || target === source) return 'snapback';
+
+    const mv = chess.move({ from: source, to: target, promotion: 'q' });
+    if (!mv) { playWrong(); return 'snapback'; }
+
+    lastDropOk = true;
+    playMove();
+    whiteMoves++;
+    updateMoveBadge();
+
+    // Log white's move
+    moveLog.push({ num: whiteMoves, white: toRo(mv.san), black: null });
+    renderLog();
+
+    board.position(chess.fen(), false);
+    clearFeedback();
+
+    // Check game over (white giving checkmate or stalemate immediately)
+    if (chess.game_over()) {
+        handleGameOver();
+        return;
+    }
+
+    // Auto-play black
+    autoPlayBlack();
+}
+
+function onSnapEnd() {
+    if (!lastDropOk) board.position(chess.fen(), false);
+    lastDropOk = false;
+}
+
+// ===== RESET =====
+function resetGame() {
+    if (blackTimer) { clearTimeout(blackTimer); blackTimer = null; }
+    chess      = new Chess(START_FEN);
+    moveLog    = [];
+    whiteMoves = 0;
+    gameOver   = false;
+    lastDropOk = false;
+
+    document.getElementById('victoryOverlay').classList.remove('show');
+    clearFeedback();
+    renderLog();
+    updateCentralityBar();
+    updateMoveBadge();
+    setStatus('white', 'Mut&#259; o pies&#259; alb&#259;!');
+    board.position(START_FEN, false);
+}
+
+// ===== INIT =====
+board = Chessboard('board', {
+    position:    START_FEN,
+    pieceTheme:  'pieces/{piece}.svg',
+    draggable:   true,
+    onDragStart: onDragStart,
+    onDrop:      onDrop,
+    onSnapEnd:   onSnapEnd
+});
+
+updateCentralityBar();
+updateMoveBadge();
+setStatus('white', 'Mut&#259; o pies&#259; alb&#259;!');
+</script>
+
+<style>
+.hub-btn {
+    position: fixed; top: 16px; right: 16px;
+    background: #1a3a6b; color: white;
+    font-family: "Baloo 2", cursive; font-size: .85em;
+    padding: 8px 18px; border-radius: 50px;
+    text-decoration: none; box-shadow: 0 3px 12px rgba(26,58,107,.4);
+    z-index: 100; transition: background .2s;
+}
+.hub-btn:hover { background: #2a5aab; }
+</style>
+<a href="hub.html" class="hub-btn">&#9776; Cuprins</a>
+</body>
+</html>

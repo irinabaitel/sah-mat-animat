@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sah Mat Animat - Harta Mentala Doi Nebuni</title>
+    <title>Sah Mat Animat - Harta Mentala Dama + Rege vs Rege</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -41,30 +41,30 @@
         .mindmap-wrap {
             position: relative;
             width: 1100px;
-            height: 700px;
+            height: 720px;
             margin: 0 auto;
         }
 
         .mm-svg {
             position: absolute;
             top: 0; left: 0;
-            width: 1100px; height: 700px;
+            width: 1100px; height: 720px;
             pointer-events: none;
         }
 
         .node {
             position: absolute;
             border-radius: 18px;
-            padding: 12px 16px;
+            padding: 14px 18px;
             font-family: 'Nunito', sans-serif;
             box-shadow: 0 5px 16px rgba(0,0,0,0.22);
         }
 
         .node-center {
-            width: 170px;
-            height: 86px;
-            left: 465px;
-            top:  247px;
+            width: 190px;
+            height: 92px;
+            left: 455px;
+            top: 314px;
             background: #e67e22;
             border: 3px solid #ca6f1e;
             display: flex;
@@ -72,7 +72,7 @@
             justify-content: center;
             text-align: center;
             font-family: 'Baloo 2', cursive;
-            font-size: 0.95em;
+            font-size: 0.9em;
             font-weight: 900;
             color: white;
             text-transform: uppercase;
@@ -80,44 +80,61 @@
             text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
         }
 
-        .node-branch { width: 400px; }
+        .node-branch { width: 420px; }
         .node-branch .bt {
             font-family: 'Baloo 2', cursive;
             font-size: 1em;
             font-weight: 900;
             text-transform: uppercase;
-            margin-bottom: 7px;
+            margin-bottom: 8px;
         }
         .node-branch ul {
             list-style: none;
-            font-size: 0.88em;
-            line-height: 1.6;
+            font-size: 0.87em;
+            line-height: 1.65;
         }
         .node-branch ul li::before { content: '\2022 '; font-weight: 900; }
 
+        /* Varianta 1 — Cușca (albastru, stânga-sus) */
         .node-blue {
             background: #2471a3;
             border: 3px solid #1a5276;
             color: white;
-            top: 20px; left: 0px;
+            top: 18px; left: 0px;
         }
+        /* Varianta 2 — Echipa de Șoc (verde, dreapta-sus) */
         .node-green {
             background: #1e8449;
             border: 3px solid #145a32;
             color: white;
-            top: 20px; left: 700px;
+            top: 18px; left: 680px;
         }
+        /* Capcana PAT (roșu, stânga-jos) */
         .node-red {
             background: #b03a2e;
             border: 3px solid #7b241c;
             color: white;
-            top: 390px; left: 0px;
+            top: 440px; left: 0px;
         }
+        /* De reținut (mov, dreapta-jos) */
         .node-purple {
             background: #7d3c98;
             border: 3px solid #5b2c6f;
             color: white;
-            top: 360px; left: 700px;
+            top: 440px; left: 680px;
+        }
+
+        /* Etichetă variantă (badge număr) */
+        .variant-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.25);
+            border-radius: 20px;
+            padding: 1px 10px;
+            font-size: 0.78em;
+            margin-bottom: 6px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            letter-spacing: 0.5px;
         }
 
         /* ===== NAV ===== */
@@ -148,78 +165,81 @@
 </head>
 <body>
 <div class="page">
-    <img src="pieces/wB.svg" class="corner-piece corner-tl" alt="">
-    <img src="pieces/wB.svg" class="corner-piece corner-tr" alt="">
+    <img src="pieces/wQ.svg" class="corner-piece corner-tl" alt="">
+    <img src="pieces/wK.svg" class="corner-piece corner-tr" alt="">
 
-    <h1>Hart&#259; Mental&#259;</h1>
+    <h1>Hart&#259; Mental&#259;<br>Dam&#259; + Rege vs. Rege</h1>
 
     <div class="mindmap-wrap">
 
-        <!--
-            Center:  (370, 290)
-            Blue  top-left  left=20 top=20  w=190 h≈105  → center (115, 73)
-            Green top-right left=530 top=20              → center (625, 73)
-            Red   bot-left  left=20 top=390 h≈95         → center (115, 443)
-            Purple bot-right left=530 top=360 h≈110      → center (625, 415)
-        -->
-        <svg class="mm-svg" viewBox="0 0 1100 700">
-            <line x1="550" y1="290" x2="400" y2="73"  stroke="#2471a3" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
-            <line x1="550" y1="290" x2="700" y2="73"  stroke="#1e8449" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
-            <line x1="550" y1="290" x2="400" y2="443" stroke="#b03a2e" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
-            <line x1="550" y1="290" x2="700" y2="415" stroke="#7d3c98" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
+        <svg class="mm-svg" viewBox="0 0 1100 720">
+            <!-- Linii de la centru spre ramuri -->
+            <line x1="550" y1="360" x2="420" y2="100"  stroke="#2471a3" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
+            <line x1="550" y1="360" x2="680" y2="100"  stroke="#1e8449" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
+            <line x1="550" y1="360" x2="420" y2="500"  stroke="#b03a2e" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
+            <line x1="550" y1="360" x2="680" y2="500"  stroke="#7d3c98" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
         </svg>
 
-        <!-- Center node -->
-        <div class="node node-center">Mat cu<br>Doi Nebuni<br>+ Rege vs. Rege</div>
+        <!-- Nodul central -->
+        <div class="node node-center">Mat cu<br>Dam&#259; + Rege<br>vs. Rege</div>
 
-        <!-- SCOPUL (blue, top-left) -->
+        <!-- VARIANTA 1 — CUȘCA (albastru, stânga-sus) -->
         <div class="node node-branch node-blue">
-            <div class="bt">&#127919; Scopul</div>
+            <div class="variant-badge">Varianta 1 &mdash; Lec&#539;ia 1</div>
+            <div class="bt">&#128274; Metoda Cu&#351;tii</div>
             <ul>
-                <li>&#206;mpinge regele advers spre col&#539;</li>
-                <li>Orice col&#539; este bun</li>
-                <li>Regele propriu este esen&#539;ial</li>
+                <li>Regina se plaseaz&#259; la o <em>s&#259;ritur&#259; de cal</em> fa&#539;&#259; de rege</li>
+                <li>La fiecare mutare, cu&#351;ca invizibil&#259; se str&#226;nge</li>
+                <li>Regina singur&#259; conduce asediul &mdash; cca. <strong>15 mut&#259;ri</strong></li>
+                <li><strong>Regina NU d&#259; niciun &#351;ah p&#226;n&#259; la mat!</strong> Doar forteaz&#259;</li>
+                <li>Regele alb intr&#259; doar la final, pentru lovitura decisiv&#259;</li>
+                <li>Risc: PAT dac&#259; nu chemi Regele la timp!</li>
             </ul>
         </div>
 
-        <!-- PIESELE (green, top-right) -->
+        <!-- VARIANTA 2 — ECHIPA DE ȘOC (verde, dreapta-sus) -->
         <div class="node node-branch node-green">
-            <div class="bt">&#9815; Piesele</div>
+            <div class="variant-badge">Varianta 2 &mdash; Lec&#539;ia 2</div>
+            <div class="bt">&#9889; Echipa de &#350;oc</div>
             <ul>
-                <li>Doi nebuni pe culori diferite</li>
-                <li>Acoper&#259; toate diagonalele tablei</li>
-                <li>Lucreaz&#259; &#238;mpreun&#259; cu regele</li>
+                <li>Regele alb intr&#259; activ &#238;n lupt&#259; din <strong>mutarea 3</strong></li>
+                <li>Regele = <strong>zidul</strong> (blocheaz&#259;) &mdash; Regina = <strong>sabia</strong> (atac&#259;)</li>
+                <li><strong>Niciun &#351;ah p&#226;n&#259; la mat!</strong> Regele e for&#539;at, nu gonit</li>
+                <li>Gardul ro&#351;u arat&#259; zonele interzise regelui negru</li>
+                <li>Rezultat: mat &#238;n doar <strong>6 mut&#259;ri</strong> &mdash; de 2,5&#215; mai rapid!</li>
+                <li>Trei variante de mat posibile la final</li>
             </ul>
         </div>
 
-        <!-- ETAPELE (red, bottom-left) -->
+        <!-- CAPCANA PAT (roșu, stânga-jos) -->
         <div class="node node-branch node-red">
-            <div class="bt">&#128337; Etapele</div>
+            <div class="bt">&#9888;&#65039; Capcana PAT!</div>
             <ul>
-                <li>Nebunii &#238;n centru</li>
-                <li>Regele vine &#238;n lupt&#259;</li>
-                <li>&#206;mpingem regele spre margine</li>
-                <li>For&#539;&#259;m regele spre col&#539;</li>
-                <li>Mat!</li>
+                <li>PAT &#8800; &#350;ah Mat &rarr; PAT = <strong>Remiz&#259;!</strong></li>
+                <li>Dac&#259; regele advers nu are mutare &#351;i NU e &#238;n &#351;ah &rarr; PAT</li>
+                <li>Cel mai periculos la margine &#351;i &#238;n col&#539;</li>
+                <li>Solu&#539;ie: mut&#259; regele alb sau repozioneaz&#259; regina</li>
+                <li>Exemplu clasic: Rege negru pe h1, Regina pe g3 &rarr; PAT!</li>
             </ul>
         </div>
 
-        <!-- DE RETINUT (purple, bottom-right) -->
+        <!-- DE REȚINUT (mov, dreapta-jos) -->
         <div class="node node-branch node-purple">
             <div class="bt">&#128161; De re&#539;inut!</div>
             <ul>
-                <li>A&#351;ezi nebunii &#238;n centru, t&#259;ind orice cale de sc&#259;pare a regelui</li>
-                <li>Fiecare mutare trebuie s&#259;-l &#539;in&#259; pe rege prizonier</li>
-                <li>Du regele &#238;ntr-un col&#539;</li>
-                <li>Aten&#539;ie la pat!</li>
+                <li>Matul se d&#259; <strong>&#238;ntotdeauna</strong> la margine sau col&#539;</li>
+                <li>Regina singur&#259; NU poate da mat niciodat&#259;</li>
+                <li>Cu Regele activ: mult mai rapid &#351;i mai sigur</li>
+                <li>Regula celor 50 de mut&#259;ri: termin&#259; repede!</li>
+                <li>&#206;nva&#539;&#259; ambele variante &mdash; ele se completeaz&#259;!</li>
             </ul>
         </div>
 
     </div><!-- end mindmap-wrap -->
 
     <div class="nav-buttons">
-        <a href="pagina20.html" class="nav-btn back">&#9664; &#206;napoi</a>
-        <a href="pagina22.html" class="nav-btn">&#206;nainte &#9654;</a>
+        <a href="pagina25.html" class="nav-btn back">&#9664; &#206;napoi</a>
+        <a href="pagina27.html" class="nav-btn">&#206;nainte &#9654;</a>
     </div>
 </div>
 <style>

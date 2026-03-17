@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sah Mat Animat - Dama si Nebun vs Rege - Exemple</title>
+    <title>Sah Mat Animat - Dama si Cal vs Rege</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <style>
@@ -27,29 +27,35 @@
         .corner-tl { top: 0; left: 0; }
         .corner-tr { top: 0; right: 0; transform: scaleX(-1); }
 
-        .chapter-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.2em;
+            color: #1a3a6b;
+            text-transform: uppercase;
             margin-bottom: 20px;
-            flex-wrap: wrap;
+            margin-top: 10px;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
+            text-align: center;
+            line-height: 1.25;
         }
 
-        .tab-btn {
-            background: rgba(255,255,255,0.4);
-            border: 2px solid #1a3a6b;
-            border-radius: 25px;
-            padding: 8px 18px;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
-            color: #1a3a6b;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
+        .text-block {
+            font-size: 1.1em;
+            line-height: 1.75;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            text-align: justify;
         }
-        .tab-btn.active, .tab-btn:hover {
-            background: #1a3a6b;
-            color: white;
+
+        .role-icon {
+            position: absolute;
+            bottom: 1px;
+            right: 1px;
+            font-size: 22px;
+            line-height: 1;
+            z-index: 10;
+            pointer-events: none;
+            filter: drop-shadow(0 0 2px white) drop-shadow(0 0 4px white) drop-shadow(0 1px 4px rgba(0,0,0,0.9));
         }
 
         .chapter-title {
@@ -76,17 +82,6 @@
 
         .board-section { flex: 0 0 auto; }
         #board { width: 360px; }
-        .sq-hl { position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(210,40,30,0.32);pointer-events:none;z-index:5; }
-        .role-icon {
-            position: absolute;
-            bottom: 1px;
-            right: 1px;
-            font-size: 22px;
-            line-height: 1;
-            z-index: 10;
-            pointer-events: none;
-            filter: drop-shadow(0 0 2px white) drop-shadow(0 0 4px white) drop-shadow(0 1px 4px rgba(0,0,0,0.9));
-        }
 
         .controls {
             display: flex;
@@ -164,10 +159,10 @@
             background: rgba(255,255,255,0.6);
             border-radius: 12px;
             padding: 16px;
-            line-height: 1.65;
+            line-height: 1.7;
             color: #333;
             font-size: 1em;
-            min-height: 100px;
+            min-height: 110px;
             border-left: 4px solid #1a3a6b;
         }
         .annotation-box.checkmate {
@@ -221,16 +216,27 @@
 
 <div class="page">
     <img src="pieces/wQ.svg" class="corner-piece corner-tl" alt="">
-    <img src="pieces/wB.svg" class="corner-piece corner-tr" alt="">
+    <img src="pieces/wN.svg" class="corner-piece corner-tr" alt="">
 
-    <div class="chapter-tabs">
-        <button class="tab-btn active" onclick="loadChapter(0)">1. Blocada</button>
-        <button class="tab-btn"        onclick="loadChapter(1)">2. Urm&#259;rirea</button>
-        <button class="tab-btn"        onclick="loadChapter(2)">3. Matul</button>
+    <h1>Maturi Simple cu Figuri<br>Dam&#259; + Cal vs. Rege</h1>
+
+    <div class="text-block">
+        &#350;i &#238;n acest caz, rolul de <strong>&#x1F3F9; v&#226;n&#259;tor</strong> &#351;i <strong>&#x1F6E1;&#xFE0F; gardian</strong>
+        se schimb&#259; de la mutare la mutare &mdash; uneori regina alearg&#259; regele, alteori calul
+        d&#259; &#351;ah &#351;i oblig&#259; regele s&#259; se retrag&#259;. De&#351;i &#238;n exemplul de mai jos regele
+        alb a f&#259;cut o singur&#259; mutare, acest mat se poate realiza f&#259;r&#259; interven&#539;ia lui,
+        calul av&#226;nd &#238;n final rolul de ap&#259;r&#259;tor al reginei, care va da mat regelui aflat
+        pe ultima linie.
+    </div>
+    <div class="text-block">
+        Pentru juc&#259;torii mai experimenta&#539;i: participarea regelui alb poate <strong>gr&#259;bi
+        considerabil matul</strong>. Mai mult, atunci c&#226;nd regele intr&#259; &#238;n ac&#539;iune,
+        matul se poate da chiar &#351;i <strong>&#238;n centrul tablei</strong> &mdash; regele advers
+        nu mai are nevoie s&#259; fie alungat p&#226;n&#259; la margine!
     </div>
 
-    <div class="chapter-title"    id="chapterTitle"></div>
-    <div class="chapter-subtitle" id="chapterSubtitle"></div>
+    <div class="chapter-title">Dam&#259; + Cal &mdash; Exemplul 1</div>
+    <div class="chapter-subtitle">Mat &#238;n 5 mut&#259;ri &mdash; Regele alungat pe ultima linie</div>
 
     <div class="main-content">
         <div class="board-section">
@@ -255,8 +261,8 @@
     </div>
 
     <div class="nav-buttons">
-        <a href="pagina16.html" class="nav-btn back">&#9664; &#206;napoi</a>
-        <a href="pagina18.html" class="nav-btn">&#206;nainte &#9654;</a>
+        <a href="pagina21.html" class="nav-btn back">&#9664; &#206;napoi</a>
+        <a href="pagina23.html" class="nav-btn">&#206;nainte &#9654;</a>
     </div>
 </div>
 
@@ -270,90 +276,87 @@ function toRo(san) {
     return san.replace(/[KQRBN]/g, m => map[m]);
 }
 
-const chapters = [
-    {
-        title:    "1. Blocada",
-        subtitle: "Regina stabile\u015fte blocada \u2014 regele advers r\u0103m\u00e2ne f\u0103r\u0103 sc\u0103pare",
-        startFen: "8/8/8/3k4/8/2QBK3/8/8 w - - 0 1",
-        sanMoves: ["Qc7", "Ke6"],
-        annotations: [
-            "Regina \u015fi nebunul lucreaz\u0103 \u00eempreun\u0103 \u2014 observ\u0103 cum coopereaz\u0103 pentru a-l prinde pe regele advers.",
-            "Regina blocheaz\u0103 accesul regelui pe coloana c \u015fi p\u0103tr\u0103\u0163elele d6 \u015fi e5. Singurul loc unde poate merge regele negru este e6.",
-            ""
-        ]
-    },
-    {
-        title:    "2. Urm\u0103rirea",
-        subtitle: "Regele alb intr\u0103 \u00een ac\u0163iune \u015fi &#238;mpinge regele advers spre margine",
-        startFen: "8/2Q5/4k3/8/8/3BK3/8/8 w - - 2 2",
-        sanMoves: ["Ke4", "Kf6", "Kf4", "Ke6"],
-        annotations: [
-            "Regina a stabilit blocada. Acum regele alb intr\u0103 \u00een ac\u0163iune!",
-            "",
-            "",
-            "Se interzice sc\u0103parea regelui pe la g5. Nebunul blocheaz\u0103 g6, prin urmare regele negru nu poate dec\u00e2t s\u0103 se \u00eentoarc\u0103 la e6.",
-            ""
-        ]
-    },
-    {
-        title:    "3. Matul",
-        subtitle: "Nebunul d\u0103 \u015eah, iar regina d\u0103 lovitura final\u0103",
-        startFen: "8/2Q5/4k3/8/5K2/3B4/8/8 w - - 6 4",
-        sanMoves: ["Bc4+", "Kf6", "Qf7#"],
-        annotations: [
-            "Regele negru este blocat pe r\u00e2ndul 6 \u2014 vine matul!",
-            "Nebunul d\u0103 \u015eah \u015fi \u00eel trimite pe regele negru \u00eenapoi la f6, de unde ar mai putea sc\u0103pa doar pe la g6\u2026 deocamdat\u0103.",
-            "",
-            "Regina, ap\u0103rat\u0103 de nebun, \u00eel atac\u0103 la f7. \u015eah mat!"
-        ]
-    }
-];
-
-// Iconițe rol per capitol și pas
-// Capitol 0 "Blocada": Dc3→c7, Nb3, Re3 vs Rd5
-// Capitol 1 "Urmărirea": Dc7, Nd3, Re3→e4→f4 vs Re6
-// Capitol 2 "Matul": Dc7, Nd3→c4, Rf4 vs Re6→f6
-const chapterRoleIcons = [
-    [   // Capitol 0: Blocada
-        { c3: '\uD83C\uDFF9', d3: '\uD83D\uDEE1\uFE0F' },   // 0: start — regina atacă prima
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' }, // 1: Dc7 — blocada stabilită, ambii gardieni
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' }  // 2: Re6
-    ],
-    [   // Capitol 1: Urmărirea — ambii gardieni pe tot parcursul
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' }
-    ],
-    [   // Capitol 2: Matul
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83C\uDFF9' },   // 0: start — nebunul urmează să atace
-        { c4: '\uD83C\uDFF9', c7: '\uD83D\uDEE1\uFE0F' },   // 1: Nc4+ — nebunul dă șah
-        { c4: '\uD83D\uDEE1\uFE0F', c7: '\uD83C\uDFF9' },   // 2: Rf6 — nebunul gardian f7, regina se pregătește
-        { f7: '\uD83C\uDFF9', c4: '\uD83D\uDEE1\uFE0F' }    // 3: Df7# — regina dă mat, nebunul apără
+const chapter = {
+    startFen: '8/8/3k4/8/8/2QNK3/8/8 w - - 0 1',
+    sanMoves: ['Qf6+', 'Kd7', 'Nc5+', 'Kc7', 'Ke4', 'Kc8', 'Qc6+', 'Kd8', 'Qd7#'],
+    annotations: [
+        '\uD83C\uDFF9 Regina va ataca prima, iar \uD83D\uDEE1\uFE0F Calul o va sus\u0163ine. Regele negru se afl\u0103 \u00een centrul tablei \u2014 trebuie alungat spre ultima linie. Urm\u0103re\u015fte cum \u00ee\u015fi schimb\u0103 rolurile!',
+        '\uD83C\uDFF9 Regina d\u0103 \u015fah pe f6! Regele negru este atacat direct \u015fi trebuie s\u0103 fug\u0103.',
+        'Regele negru fuge pe d7. Acum e r\u00e2ndul calului s\u0103 intre \u00een scen\u0103!',
+        '\uD83C\uDFF9 Calul sare pe c5 \u015fi d\u0103 \u015fah \u2014 acum el este v\u00e2n\u0103torul! \uD83D\uDEE1\uFE0F Regina r\u0103m\u00e2ne pe f6 \u015fi \u00eei taie regelui calea spre linia a 6-a. Regele nu are alt\u0103 ie\u015fire dec\u00e2t c7.',
+        'Regele negru fuge pe c7, \u00eencerc\u00e2nd s\u0103 scape spre flancul damei.',
+        '\uD83D\uDEE1\uFE0F Acum ambele piese sunt gardieni! \uD83D\uDEE1\uFE0F Regina (pe f6) blocheaz\u0103 c\u00e2mpurile b6, c6, d6, d7, iar \uD83D\uDEE1\uFE0F Calul (pe c5) blocheaz\u0103 b7 \u015fi d7. Regele alb intr\u0103 \u015fi el \u00een ac\u0163iune pe e4!',
+        'Regele negru se retrage pe c8 \u2014 ultima linie. Spa\u0163iul lui se micoreaz\u0103 dramatic!',
+        '\uD83C\uDFF9 Regina d\u0103 \u015fah pe c6! Dup\u0103 aceast\u0103 mutare, regele negru nu mai poate p\u0103r\u0103si ultima linie.',
+        'Regele negru fuge pe d8 \u2014 singura mutare posibil\u0103. \uD83D\uDEE1\uFE0F Calul st\u0103 pe c5 \u015fi blocheaz\u0103 b7 \u015fi d7 \u2014 regele nu poate sc\u0103pa. Vine lovitura final\u0103!',
+        '\uD83D\uDEE1\uFE0F Calul ap\u0103r\u0103 regina, iar \uD83C\uDFF9 regina d\u0103 mat pe d7! Regele negru nu mai are nicio sc\u0103pare. \u015eah mat pe ultima linie!'
     ]
-];
+};
 
-let board = null;
-let currentChapter = null;
-let currentChapterIdx = 0;
-let positions = [];
-let currentStep = 0;
-
-function computePositions(chapter) {
+function computePositions() {
     const chess = new Chess(chapter.startFen);
     const fens = [chess.fen()];
     for (const mv of chapter.sanMoves) {
-        const result = chess.move(mv);
-        if (!result) { console.error('Mutare invalida:', mv); break; }
+        if (!chess.move(mv)) { console.error('Mutare invalida:', mv); break; }
         fens.push(chess.fen());
     }
     return fens;
 }
 
-function showRoleIcons(chIdx, step) {
+const positions = computePositions();
+let currentStep = 0;
+
+const board = Chessboard('board', {
+    position: positions[0],
+    pieceTheme: 'pieces/{piece}.svg'
+});
+
+function buildMovesList() {
+    const container = document.getElementById('movesList');
+    container.innerHTML = '';
+    chapter.sanMoves.forEach((mv, i) => {
+        if (i % 2 === 0) {
+            const num = document.createElement('span');
+            num.className = 'move-number';
+            num.textContent = (Math.floor(i / 2) + 1) + '.';
+            container.appendChild(num);
+        }
+        const btn = document.createElement('button');
+        btn.className = 'move-token ' + (i % 2 === 0 ? 'white-move' : 'black-move');
+        btn.textContent = toRo(mv);
+        btn.dataset.step = i + 1;
+        btn.onclick = () => goToStep(i + 1);
+        container.appendChild(btn);
+    });
+}
+
+// Iconițe de rol per pas: { pătrat: emoji }
+// step 0: start  — Regina c3 🏹, Calul d3 🛡️
+// step 1: Df6+   — Regina f6 🏹
+// step 2: Rd7    — Regina f6 🏹
+// step 3: Cc5+   — Calul c5 🏹, Regina f6 🛡️
+// step 4: Rc7    — Calul c5 🏹, Regina f6 🛡️
+// step 5: Re4    — Calul c5 🛡️, Regina f6 🛡️
+// step 6: Rc8    — Calul c5 🛡️, Regina f6 🛡️
+// step 7: Dc6+   — Regina c6 🏹
+// step 8: Rd8    — Regina c6 🏹, Calul c5 🛡️
+// step 9: Dd7#   — Calul c5 🛡️, Regina d7 🏹
+const roleIcons = [
+    { c3: '\uD83C\uDFF9', d3: '\uD83D\uDEE1\uFE0F' },
+    { f6: '\uD83C\uDFF9' },
+    { f6: '\uD83C\uDFF9' },
+    { c5: '\uD83C\uDFF9', f6: '\uD83D\uDEE1\uFE0F' },
+    { c5: '\uD83C\uDFF9', f6: '\uD83D\uDEE1\uFE0F' },
+    { c5: '\uD83D\uDEE1\uFE0F', f6: '\uD83D\uDEE1\uFE0F' },
+    { c5: '\uD83D\uDEE1\uFE0F', f6: '\uD83D\uDEE1\uFE0F' },
+    { c6: '\uD83C\uDFF9' },
+    { c6: '\uD83C\uDFF9', c5: '\uD83D\uDEE1\uFE0F' },
+    { c5: '\uD83D\uDEE1\uFE0F', d7: '\uD83C\uDFF9' }
+];
+
+function showRoleIcons(step) {
     document.querySelectorAll('.role-icon').forEach(el => el.remove());
-    const icons = (chapterRoleIcons[chIdx] || [])[step];
+    const icons = roleIcons[step];
     if (!icons) return;
     for (const [sq, icon] of Object.entries(icons)) {
         const squareEl = document.querySelector('#board .square-' + sq);
@@ -362,102 +365,6 @@ function showRoleIcons(chIdx, step) {
         div.className = 'role-icon';
         div.textContent = icon;
         squareEl.appendChild(div);
-    }
-}
-
-function loadChapter(idx) {
-    document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-    currentChapter = chapters[idx];
-    currentChapterIdx = idx;
-    positions = computePositions(currentChapter);
-    currentStep = 0;
-
-    document.getElementById('chapterTitle').textContent    = currentChapter.title;
-    document.getElementById('chapterSubtitle').textContent = currentChapter.subtitle;
-
-    if (board) board.destroy();
-    board = Chessboard('board', {
-        position: positions[0],
-        pieceTheme: 'pieces/{piece}.svg'
-    });
-
-    buildMovesList();
-    updateUI();
-}
-
-function buildMovesList() {
-    const container = document.getElementById('movesList');
-    container.innerHTML = '';
-    const whiteFirst = currentChapter.startFen.split(' ')[1] === 'w';
-    currentChapter.sanMoves.forEach((mv, i) => {
-        if (i % 2 === 0) {
-            const num = document.createElement('span');
-            num.className = 'move-number';
-            num.textContent = (Math.floor(i / 2) + 1) + '.';
-            container.appendChild(num);
-        }
-        const isWhite = whiteFirst ? (i % 2 === 0) : (i % 2 !== 0);
-        const btn = document.createElement('button');
-        btn.className = 'move-token ' + (isWhite ? 'white-move' : 'black-move');
-        btn.textContent = toRo(mv);
-        btn.dataset.step = i + 1;
-        btn.onclick = () => goToStep(i + 1);
-        container.appendChild(btn);
-    });
-}
-
-function highlightQueenControl() {
-    const boardEl = document.getElementById('board');
-    boardEl.querySelectorAll('.sq-hl').forEach(el => el.remove());
-
-    const bd = new Chess(positions[currentStep]).board();
-    const dirs8 = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
-
-    let bkr = -1, bkf = -1;
-    for (let r = 0; r < 8; r++)
-        for (let f = 0; f < 8; f++) {
-            const p = bd[r][f];
-            if (p && p.type === 'k' && p.color === 'b') { bkr = r; bkf = f; }
-        }
-    if (bkr < 0) return;
-
-    const whitePieceAttacks = new Set();
-    for (let r = 0; r < 8; r++)
-        for (let f = 0; f < 8; f++) {
-            const piece = bd[r][f];
-            if (!piece || piece.color !== 'w') continue;
-            if (piece.type === 'q' || piece.type === 'b') {
-                const diags = [[-1,-1],[-1,1],[1,-1],[1,1]];
-                const rays  = piece.type === 'q'
-                    ? [...diags, [-1,0],[0,-1],[0,1],[1,0]]
-                    : diags;
-                for (const [dr, df] of rays) {
-                    let cr = r + dr, cf = f + df;
-                    while (cr >= 0 && cr < 8 && cf >= 0 && cf < 8) {
-                        whitePieceAttacks.add(cr * 8 + cf);
-                        if (bd[cr][cf]) break;
-                        cr += dr; cf += df;
-                    }
-                }
-            } else if (piece.type === 'k') {
-                for (const [dr, df] of dirs8) {
-                    const cr = r + dr, cf = f + df;
-                    if (cr >= 0 && cr < 8 && cf >= 0 && cf < 8)
-                        whitePieceAttacks.add(cr * 8 + cf);
-                }
-            }
-        }
-
-    for (const [dr, df] of dirs8) {
-        const cr = bkr + dr, cf = bkf + df;
-        if (cr < 0 || cr >= 8 || cf < 0 || cf >= 8) continue;
-        if (!whitePieceAttacks.has(cr * 8 + cf)) continue;
-        const sq = String.fromCharCode(97 + cf) + (8 - cr);
-        const el = boardEl.querySelector('.square-' + sq);
-        if (!el) continue;
-        const hl = document.createElement('div');
-        hl.className = 'sq-hl';
-        el.appendChild(hl);
     }
 }
 
@@ -474,7 +381,6 @@ function goNext()  { if (currentStep < positions.length - 1) goToStep(currentSte
 
 function updateUI() {
     const total = positions.length - 1;
-
     document.getElementById('moveCounter').textContent =
         currentStep === 0 ? 'Start' : currentStep + ' / ' + total;
 
@@ -487,17 +393,15 @@ function updateUI() {
         b.classList.toggle('active', parseInt(b.dataset.step) === currentStep));
 
     const box  = document.getElementById('annotationBox');
-    const text = currentChapter.annotations[currentStep] || '';
-    const lastMove = currentChapter.sanMoves[currentChapter.sanMoves.length - 1] || '';
-    const isMat = currentStep === total && lastMove.includes('#');
+    const text = chapter.annotations[currentStep] || '';
+    const isMat = currentStep === total;
 
     box.className = 'annotation-box' + (isMat ? ' checkmate' : '');
     box.innerHTML = isMat
         ? '<span class="checkmate-badge">\u2713 \u015eAH MAT!</span><br>' + text
         : text;
 
-    highlightQueenControl();
-    showRoleIcons(currentChapterIdx, currentStep);
+    showRoleIcons(currentStep);
 }
 
 document.addEventListener('keydown', e => {
@@ -507,7 +411,8 @@ document.addEventListener('keydown', e => {
     if (e.key === 'End')        goLast();
 });
 
-loadChapter(0);
+buildMovesList();
+updateUI();
 </script>
 <style>
 .hub-btn {
