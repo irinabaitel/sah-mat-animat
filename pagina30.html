@@ -329,7 +329,7 @@
             border-radius: 3px;
             pointer-events: none;
             z-index: 20;
-            animation: confetti-fly 0.85s ease-out forwards;
+            animation: confetti-fly 1.5s ease-out forwards;
         }
 
         .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 28px; }
@@ -668,10 +668,12 @@ function spawnBigConfetti() {
         }, delay);
     }
 
-    const r = bw * 0.55;
-    fireWave(36, r * 0.4, r,        0,   900);
-    fireWave(30, r * 0.3, r * 0.8, 180,  950);
-    fireWave(24, r * 0.5, r * 0.9, 380, 1000);
+    const r = bw * 0.58;
+    fireWave(40, r * 0.3, r,         0,   1400);
+    fireWave(34, r * 0.4, r * 0.85, 250,  1500);
+    fireWave(30, r * 0.2, r * 0.9,  500,  1600);
+    fireWave(26, r * 0.5, r,        800,  1400);
+    fireWave(20, r * 0.3, r * 0.75,1150,  1300);
 }
 
 /* ===== CUȘCĂ ===== */
@@ -875,7 +877,7 @@ function goToStep(s) {
             const fast = (s >= 33);
             showHeart(bkSq, fast);
             if (s === positions.length - 1) {
-                setTimeout(() => spawnBigConfetti(), 500);
+                setTimeout(() => { removeHeart(); spawnBigConfetti(); }, 500);
             }
         }
     }
