@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sah Mat Animat - Turn + Rege vs Rege: Se Strânge Cușca</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #F5A96E;
+            font-family: 'Nunito', sans-serif;
+            padding: 24px 16px;
+            min-height: 100vh;
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 44px 50px;
+            position: relative;
+        }
+
+        .corner-piece { position: absolute; width: 80px; height: 80px; }
+        .corner-tl { top: 0; left: 0; }
+        .corner-tr { top: 0; right: 0; transform: scaleX(-1); }
+
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.2em;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            margin-top: 10px;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        .text-block {
+            font-size: 1.1em;
+            line-height: 1.75;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .lesson-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.35em;
+            font-weight: 900;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            margin: 28px 0 6px;
+        }
+
+        .chapter-subtitle {
+            text-align: center;
+            color: #1a3a6b;
+            font-size: 0.95em;
+            margin-bottom: 22px;
+            font-style: italic;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 22px;
+            align-items: flex-start;
+        }
+
+        .board-section { flex: 0 0 auto; }
+        #board-wrap {
+            position: relative;
+            display: inline-block;
+            width: min(360px, calc(100vw - 40px));
+            height: min(360px, calc(100vw - 40px));
+            overflow: hidden;
+        }
+        #board { width: 100%; }
+
+        /* ===== CUȘCĂ ===== */
+        @keyframes cage-fall {
+            0%   { opacity: 0;   transform: scale(1.06) translateY(-8px); }
+            7%   { opacity: 1;   transform: scale(0.96) translateY(5px); }
+            14%  { transform: scale(1.02) translateY(-3px) rotate(0.5deg); }
+            21%  { transform: scale(0.99) translateY(2px) rotate(-0.4deg); }
+            28%  { transform: scale(1.01) translateY(-1px) rotate(0.2deg); }
+            35%  { transform: scale(1)    translateY(0)    rotate(0); }
+            72%  { opacity: 1;   transform: scale(1) translateY(0); }
+            100% { opacity: 0;   transform: scale(1) translateY(0); }
+        }
+
+        #cage-svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            animation: cage-fall 2.2s ease forwards;
+            transform-origin: center center;
+        }
+
+        #cage-svg .cage-outer {
+            fill: none;
+            stroke: #1a1a1a;
+            stroke-width: 10;
+            stroke-dasharray: 14 8;
+            stroke-linejoin: round;
+            stroke-linecap: square;
+        }
+
+        #cage-svg .cage-inner {
+            fill: none;
+            stroke: #e86000;
+            stroke-width: 4;
+            stroke-dasharray: 14 8;
+            stroke-linejoin: round;
+            stroke-linecap: square;
+            filter: drop-shadow(0 0 4px rgba(255,140,0,0.9));
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .ctrl-btn {
+            background: #1a3a6b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 46px;
+            height: 46px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .ctrl-btn:hover:not(:disabled) { background: #2a5aab; }
+        .ctrl-btn:disabled { background: rgba(26,58,107,0.25); cursor: not-allowed; }
+
+        .move-counter {
+            background: rgba(255,255,255,0.6);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-weight: 700;
+            color: #1a3a6b;
+            font-size: 0.9em;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .info-section { flex: 1; min-width: 0; }
+
+        .moves-box {
+            background: rgba(255,255,255,0.4);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+        }
+        .moves-box h3 {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1a3a6b;
+            margin-bottom: 10px;
+        }
+
+        .moves-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .move-number { color: rgba(26,58,107,0.5); font-size: 0.8em; padding: 0 2px; }
+
+        .move-token {
+            border: 1px solid rgba(26,58,107,0.3);
+            border-radius: 6px;
+            padding: 4px 9px;
+            font-size: 0.92em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .move-token.white-move { background: rgba(255,255,255,0.7); color: #1a3a6b; }
+        .move-token.black-move { background: rgba(50,50,50,0.12); color: #333; }
+        .move-token.active { background: #1a3a6b !important; color: white !important; border-color: #1a3a6b; }
+        .move-token.king-move { border-color: #27ae60; border-width: 2px; }
+        .move-token.king-move.active { background: #27ae60 !important; border-color: #27ae60; }
+        .move-token.rook-move { border-color: #e67e22; border-width: 2px; }
+        .move-token.rook-move.active { background: #e67e22 !important; border-color: #e67e22; }
+        .move-token:hover:not(.active) { background: rgba(255,255,255,0.9); }
+
+        .annotation-box {
+            background: rgba(255,255,255,0.6);
+            border-radius: 12px;
+            padding: 16px;
+            line-height: 1.7;
+            color: #333;
+            font-size: 1em;
+            height: 175px;
+            overflow-y: auto;
+            border-left: 4px solid #1a3a6b;
+        }
+        .annotation-box.checkmate {
+            border-left-color: #c0392b;
+            background: rgba(255,255,255,0.85);
+        }
+        .annotation-box.king-active {
+            border-left-color: #27ae60;
+            background: rgba(220,255,230,0.75);
+        }
+
+        .checkmate-badge {
+            display: inline-block;
+            background: #c0392b;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .king-badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .hint {
+            text-align: center;
+            color: rgba(26,58,107,0.5);
+            font-size: 0.78em;
+            margin-top: 10px;
+        }
+
+        .volume-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        #volBtn {
+            background: none;
+            border: none;
+            font-size: 1.3em;
+            cursor: pointer;
+            line-height: 1;
+            padding: 2px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        #volBtn:hover { opacity: 1; }
+
+        #volSlider {
+            width: 90px;
+            accent-color: #1a3a6b;
+            cursor: pointer;
+        }
+
+        /* ===== SĂGEATĂ MUTARE ===== */
+        @keyframes kl-flash {
+            0%   { opacity: 0; }
+            18%  { opacity: 1; }
+            72%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        #arrow-svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 8;
+            animation: kl-flash 2.2s ease forwards;
+        }
+
+        /* ===== INIMIOARĂ ===== */
+        @keyframes hb-slow {
+            0%,100% { transform: translate(-50%,-50%) scale(1); }
+            15%     { transform: translate(-50%,-50%) scale(1.4); }
+            30%     { transform: translate(-50%,-50%) scale(1); }
+            45%     { transform: translate(-50%,-50%) scale(1.3); }
+            60%     { transform: translate(-50%,-50%) scale(1); }
+        }
+        @keyframes hb-fast {
+            0%,100% { transform: translate(-50%,-50%) scale(1); }
+            10%     { transform: translate(-50%,-50%) scale(1.55); }
+            20%     { transform: translate(-50%,-50%) scale(1); }
+            30%     { transform: translate(-50%,-50%) scale(1.55); }
+            40%     { transform: translate(-50%,-50%) scale(1); }
+            50%     { transform: translate(-50%,-50%) scale(1.55); }
+            60%     { transform: translate(-50%,-50%) scale(1); }
+        }
+        .heart-badge {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            font-size: 2em;
+            pointer-events: none;
+            z-index: 15;
+            line-height: 1;
+        }
+        .heart-badge.hb-slow { animation: hb-slow 1.4s ease-in-out infinite; }
+        .heart-badge.hb-fast { animation: hb-fast 0.55s ease-in-out infinite; }
+
+        /* ===== CONFETTI ===== */
+        @keyframes confetti-fly {
+            0%   { transform: translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%,-50%) translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(0); opacity: 0; }
+        }
+        .confetti-particle {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 9px; height: 9px;
+            border-radius: 3px;
+            pointer-events: none;
+            z-index: 20;
+            animation: confetti-fly 0.85s ease-out forwards;
+        }
+
+        .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 28px; }
+        .nav-btn {
+            display: inline-block;
+            background: #1a3a6b;
+            color: white;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3em;
+            padding: 13px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 5px 20px rgba(26,58,107,0.4);
+        }
+        .nav-btn:hover { background: #2a5aab; transform: translateY(-3px); }
+        .nav-btn.back { background: rgba(26,58,107,0.5); }
+        .nav-btn.disabled { background: rgba(26,58,107,0.2); pointer-events: none; }
+
+        @media (max-width: 680px) {
+            body { padding: 8px 4px; }
+            .page { padding: 12px 10px 28px; }
+            .corner-piece { display: none; }
+            h1 { font-size: 1.6em; margin-top: 0; }
+            .main-content { flex-direction: column; }
+            .board-section { margin: 0 auto; }
+            .annotation-box { height: auto; min-height: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <img src="pieces/wR.svg" class="corner-piece corner-tl" alt="">
+    <img src="pieces/wK.svg" class="corner-piece corner-tr" alt="">
+
+    <h1>Metoda &#8222;Se Str&#226;nge Cu&#351;ca&#8221;<br>Rege + Turn vs. Rege</h1>
+
+    <div class="text-block">
+        Ai &#238;nv&#259;&#539;at s&#259; c&#226;&#351;tigi cu Regina. Acum e r&#226;ndul Turnului!
+        Turnul este mai pu&#539;in puternic dec&#226;t Regina &mdash; nu poate controla
+        att de multe c&#226;mpuri deodat&#259;. Dar cu ajutorul Regelui, turnul poate
+        da mat la fel de sigur. Secretul? <strong>Se Str&#226;nge Cu&#351;ca</strong>:
+        la fiecare mutare, turnul construie&#351;te un nou zid, iar regele alb &#238;l
+        urm&#259;re&#351;te &#238;ndeaproape. Pas cu pas, r&#226;nd cu r&#226;nd, spa&#539;iul
+        regelui negru se mic&#351;oreaz&#259; &mdash; p&#226;n&#259; la matul inevitabil!
+    </div>
+
+    <div class="lesson-title">Lec&#539;ia: Se Str&#226;nge Cu&#351;ca &mdash; Turn + Rege</div>
+    <div class="text-block">
+        Observ&#259; cum turnul construie&#351;te un zid orizontal la fiecare mutare
+        important&#259;: r&#226;ndul 3, r&#226;ndul 4, r&#226;ndul 5, r&#226;ndul 6 &mdash; cu&#351;ca
+        invizibil&#259; se str&#226;nge treptat. Regele alb &#238;l urm&#259;re&#351;te
+        pe regele negru ca o umbr&#259;, t&#259;indu-i toate c&#259;ile de &#238;ntoarcere.
+        Rezultatul: mat &#238;n <strong>18 mut&#259;ri</strong> din pozi&#539;ia de start!
+    </div>
+
+    <div class="chapter-subtitle">S&#259;geata portocalie = Turnul &nbsp;|&nbsp; S&#259;geata verde = Regele alb</div>
+
+    <div class="main-content">
+        <div class="board-section">
+            <div id="board-wrap">
+                <div id="board"></div>
+            </div>
+            <div class="controls">
+                <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima pozi&#539;ie">&#9198;</button>
+                <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="&#206;napoi">&#9664;</button>
+                <div class="move-counter" id="moveCounter">Start</div>
+                <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="&#206;nainte">&#9654;</button>
+                <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima pozi&#539;ie">&#9197;</button>
+            </div>
+            <p class="hint">&#8592; &#8594; sau butoanele de mai sus</p>
+            <div class="volume-row">
+                <button id="volBtn" onclick="toggleMute()" title="Sunet">&#128266;</button>
+                <input type="range" id="volSlider" min="0" max="100" value="70"
+                       oninput="setVolume(this.value)">
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="moves-box">
+                <h3>Mut&#259;ri</h3>
+                <div class="moves-list" id="movesList"></div>
+            </div>
+            <div class="annotation-box" id="annotationBox"></div>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="pagina29.html" class="nav-btn back">&#9664; &#206;napoi</a>
+        <a href="pagina31.html" class="nav-btn disabled">&#206;nainte &#9654;</a>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+
+<script>
+function toRo(san) {
+    const map = { K:'R', Q:'D', R:'T', B:'N', N:'C' };
+    return san.replace(/[KQRBN]/g, m => map[m]);
+}
+
+const chapter = {
+    startFen: '8/8/8/8/3k4/8/8/3K3R w - - 0 1',
+    sanMoves: ['Rh3','Ke4','Kd2','Kd4','Re3','Kc4','Rd3','Kc5','Ke3','Kc4','Ke4','Kc5','Rd4','Kc6','Rd5','Kc7','Ke5','Kc6','Ke6','Kc7','Rd6','Kb7','Kd7','Ka7','Rc6','Kb7','Rd6','Kb8','Rc6','Ka8','Kc7','Ka7','Rb6','Ka8','Ra6'],
+    whiteKingSteps: new Set([3, 9, 11, 17, 19, 23, 31]),
+    rookMoveSteps:  new Set([1, 5, 7, 13, 15, 21, 25, 27, 29, 33, 35]),
+    annotations: [
+        // 0 — start
+        'Turnul &#351;i Regele alb sunt preg&#259;ti&#539;i. Regele negru se afl&#259; &#238;n centrul tablei &mdash; un loc periculos! &#206;n metoda <strong>Se Str&#226;nge Cu&#351;ca</strong>, turnul va construi zid dup&#259; zid, iar regele alb va &#238;nchide &#238;n&#259; o cale de sc&#259;pare.',
+        // 1 — Rh3
+        'Turnul sare la h3! <strong>Primul zid</strong>: turnul controleaz&#259; &#238;ntreg r&#226;ndul 3. Acum regele negru are la dispozi&#539;ie doar 5 r&#226;nduri. Observ&#259; cu&#351;ca portocalie &mdash; ea arat&#259; zona &#238;n care e prins!',
+        // 2 — Ke4
+        'Regele negru &#238;ncearc&#259; s&#259; r&#259;m&#226;n&#259; activ &#238;n centru... dar nu &#351;tie c&#259; planul alb abia a &#238;nceput!',
+        // 3 — Kd2
+        '<span class="king-badge">&#9814; Regele Alb Porne&#351;te!</span><br>Regele alb p&#259;r&#259;se&#351;te col&#539;ul &#351;i porne&#351;te spre centru! F&#259;r&#259; ajutorul regelui, turnul nu poate da mat singur. De acum, cei doi lucreaz&#259; &#238;n echip&#259;!',
+        // 4 — Kd4
+        'Regele negru se apropie de turn &mdash; oare &#238;l provoac&#259;?',
+        // 5 — Re3
+        'Turnul se muta la e3, men&#539;in&#226;nd zidul pe r&#226;ndul 3! Cu&#351;ca r&#259;m&#226;ne str&#226;ns&#259;: regele negru e blocat pe r&#226;ndurile 4&ndash;8.',
+        // 6 — Kc4
+        'Regele negru fuge spre coloana c...',
+        // 7 — Rd3
+        'Turnul urm&#259;re&#351;te la d3! Zidul pe r&#226;ndul 3 r&#259;m&#226;ne intact. Regele negru nu poate trece spre jos!',
+        // 8 — Kc5
+        'Regele negru se retrage spre nord...',
+        // 9 — Ke3
+        '<span class="king-badge">&#9814; Regele Alb Avanseaz&#259;!</span><br>Regele alb ajunge la e3, chiar &#238;n spatele turnului! Acum cei doi formeaz&#259; un tandem perfect: turnul &#539;ine zidul, regele &#238;l sus&#539;ine.',
+        // 10 — Kc4
+        'Regele negru &#238;ncearc&#259; s&#259; coboare, dar zidul turnului &#238;l opre&#351;te!',
+        // 11 — Ke4
+        '<span class="king-badge">&#9814; Regele Pres&#259;!</span><br>Regele alb avanseaz&#259; la e4! Acum regele negru simte presiunea din dou&#259; direc&#539;ii: turnul &#238;n fa&#539;&#259;, regele alb din urm&#259;.',
+        // 12 — Kc5
+        'Regele negru se retrage spre nord-vest...',
+        // 13 — Rd4
+        'Turnul sare la r&#226;ndul 4! <strong>Al doilea zid</strong>: cu&#351;ca s-a str&#226;ns din nou. Acum regele negru e blocat pe r&#226;ndurile 5&ndash;8. Zona se mic&#351;oreaz&#259;!',
+        // 14 — Kc6
+        'Regele negru continu&#259; s&#259; fug&#259; spre nord...',
+        // 15 — Rd5
+        'Turnul urm&#259;re&#351;te la r&#226;ndul 5! R&#226;ndurile disponibile s-au redus la trei: 6, 7 &#351;i 8. <strong>Sf&#226;r&#351;itul se apropie!</strong>',
+        // 16 — Kc7
+        'Regele negru se apropie de marginea tablei... Simte pericolul!',
+        // 17 — Ke5
+        '<span class="king-badge">&#9814; Regele Pres&#259;!</span><br>Regele alb la e5, apropiindu-se de regele negru. Acum are doar dou&#259; r&#226;nduri la dispozi&#539;ie: 7 &#351;i 8!',
+        // 18 — Kc6
+        'Regele negru &#238;ncearc&#259; s&#259; coboare, dar regele alb &#238;l blocheaz&#259;!',
+        // 19 — Ke6
+        '<span class="king-badge">&#9814; Regele Taie Retragerea!</span><br>Regele alb la e6 taie orice drum spre jos! Regele negru are acum doar r&#226;ndul 7 &#351;i r&#226;ndul 8. Cu&#351;ca e aproape &#238;nchis&#259;!',
+        // 20 — Kc7
+        'Regele negru se retrage la r&#226;ndul 7... ultimul r&#226;nd &#238;nainte de margine!',
+        // 21 — Rd6
+        'Turnul sare la r&#226;ndul 6! <strong>Al treilea zid</strong>: acum regele negru e blocat pe r&#226;ndurile 7&ndash;8. Doar dou&#259; r&#226;nduri r&#259;m&#226;n &mdash; cu&#351;ca e aproape complet&#259;!',
+        // 22 — Kb7
+        'Regele negru fuge spre col&#539;ul a8... Brrr, se face frig la margine!',
+        // 23 — Kd7
+        '<span class="king-badge">&#9814; Regele Alb Blocheaz&#259;!</span><br>Regele alb la d7 taie drumul de &#238;ntoarcere! Regele negru e prins &#238;ntre turn, regele alb &#351;i marginea tablei.',
+        // 24 — Ka7
+        'Regele negru ajunge pe coloana a &mdash; e la marginea tablei! Nu mai are unde fugi lateral.',
+        // 25 — Rc6
+        'Turnul la c6 preg&#259;te&#351;te lovitura final&#259;! Acum regele negru e blocat &#238;n zona a7&ndash;a8&ndash;b8.',
+        // 26 — Kb7
+        'Regele negru &#238;ncearc&#259; s&#259; ias&#259; din col&#539;...',
+        // 27 — Rd6
+        'Turnul blocheaz&#259; la d6! Regele negru nu poate trece de coloana c.',
+        // 28 — Kb8
+        'Regele negru se retrage la b8 &mdash; col&#539;ul se apropie!',
+        // 29 — Rc6
+        'Turnul revine la c6, men&#539;in&#226;nd blocada! Regele negru e prins pe coloanele a &#351;i b, r&#226;ndurile 7&ndash;8.',
+        // 30 — Ka8
+        'Regele negru ajunge &#238;n col&#539;ul a8... Cu&#351;ca s-a &#238;nchis!',
+        // 31 — Kc7
+        '<span class="king-badge">&#9814; Lovitura de Gra&#539;ie!</span><br>Regele alb la c7 blocheaz&#259; toate c&#259;ile de sc&#259;pare! Acum turnul poate livra matul.',
+        // 32 — Ka7
+        'Ultimul r&#259;suflet &mdash; regele negru la a7.',
+        // 33 — Rb6
+        'Turnul la b6! Regele negru va fi mat pe a8. Inima bate...',
+        // 34 — Ka8
+        'Regele negru se &#238;ntoarce la a8 &mdash; ultima sa mutare!',
+        // 35 — Ra6#
+        '&#127942; Turnul d&#259; mat pe a6! Regele negru pe a8 nu are nicio sc&#259;pare: turnul controleaz&#259; &#238;ntreg r&#226;ndul 6, regele alb de pe c7 controleaz&#259; b8 &#351;i c8. <strong>&#350;AH MAT!</strong> Aceasta este puterea metodei <em>Se Str&#226;nge Cu&#351;ca</em> &mdash; Turn + Rege &#238;n 18 mut&#259;ri!'
+    ]
+};
+
+// Cuști per pas (la mutările turnului alb care strâng zona)
+const cages = {
+    1:  ['a','h',4,8],
+    5:  ['a','h',4,8],
+    7:  ['a','h',4,8],
+    13: ['a','h',5,8],
+    15: ['a','h',6,8],
+    21: ['a','h',7,8],
+    25: ['a','b',7,8],
+    29: ['a','b',7,8],
+    33: ['a','a',7,8]
+};
+
+// Săgeți de mutare: from/to = [fileIndex, rank]  (fileIndex: 0=a … 7=h)
+const moveArrows = {
+    1:  { from:[7,1], to:[7,3], color:'#ff7700' },  // Rh3
+    3:  { from:[3,1], to:[3,2], color:'#27ae60' },  // Kd2
+    5:  { from:[7,3], to:[4,3], color:'#ff7700' },  // Re3
+    7:  { from:[4,3], to:[3,3], color:'#ff7700' },  // Rd3
+    9:  { from:[3,2], to:[4,3], color:'#27ae60' },  // Ke3
+    11: { from:[4,3], to:[4,4], color:'#27ae60' },  // Ke4
+    13: { from:[3,3], to:[3,4], color:'#ff7700' },  // Rd4
+    15: { from:[3,4], to:[3,5], color:'#ff7700' },  // Rd5
+    17: { from:[4,4], to:[4,5], color:'#27ae60' },  // Ke5
+    19: { from:[4,5], to:[4,6], color:'#27ae60' },  // Ke6
+    21: { from:[3,5], to:[3,6], color:'#ff7700' },  // Rd6
+    23: { from:[4,6], to:[3,7], color:'#27ae60' },  // Kd7
+    25: { from:[3,6], to:[2,6], color:'#ff7700' },  // Rc6
+    27: { from:[2,6], to:[3,6], color:'#ff7700' },  // Rd6
+    29: { from:[3,6], to:[2,6], color:'#ff7700' },  // Rc6
+    31: { from:[3,7], to:[2,7], color:'#27ae60' },  // Kc7
+    33: { from:[2,6], to:[1,6], color:'#ff7700' },  // Rb6
+    35: { from:[1,6], to:[0,6], color:'#ff7700' }   // Ra6#
+};
+
+let cageTimer  = null;
+let arrowTimer = null;
+let heartEl    = null;
+
+/* ===== INIMIOARĂ ===== */
+function removeHeart() {
+    if (heartEl) { heartEl.remove(); heartEl = null; }
+}
+function showHeart(squareSel, fast) {
+    removeHeart();
+    const sq = document.querySelector('#board ' + squareSel);
+    if (!sq) return;
+    heartEl = document.createElement('div');
+    heartEl.className = 'heart-badge ' + (fast ? 'hb-fast' : 'hb-slow');
+    heartEl.textContent = '❤️';
+    sq.appendChild(heartEl);
+}
+
+/* ===== SUNET ===== */
+let soundVolume = 0.7;
+let soundMuted  = false;
+
+function setVolume(val) {
+    soundVolume = val / 100;
+    soundMuted  = (val == 0);
+    document.getElementById('volBtn').textContent = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
+}
+function toggleMute() {
+    soundMuted = !soundMuted;
+    document.getElementById('volBtn').textContent = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
+    document.getElementById('volSlider').value = soundMuted ? 0 : soundVolume * 100;
+}
+
+function playCageClank() {
+    if (soundMuted || soundVolume === 0) return;
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const t   = ctx.currentTime;
+        const vol = soundVolume;
+        [160, 310, 520, 860, 1400].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const g   = ctx.createGain();
+            osc.type = i % 2 === 0 ? 'triangle' : 'sawtooth';
+            osc.frequency.value = freq;
+            osc.frequency.exponentialRampToValueAtTime(freq * 0.75, t + 0.5);
+            g.gain.setValueAtTime(vol * 0.22 / (i * 0.6 + 1), t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.55 + i * 0.07);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(t); osc.stop(t + 0.7);
+        });
+        const noiseLen = Math.floor(ctx.sampleRate * 0.07);
+        const buf = ctx.createBuffer(1, noiseLen, ctx.sampleRate);
+        const d   = buf.getChannelData(0);
+        for (let i = 0; i < noiseLen; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / noiseLen);
+        const ns2 = ctx.createBufferSource();
+        ns2.buffer = buf;
+        const ng = ctx.createGain();
+        ng.gain.value = vol * 0.5;
+        ns2.connect(ng); ng.connect(ctx.destination);
+        ns2.start(t);
+    } catch(e) {}
+}
+
+function playKingStep() {
+    if (soundMuted || soundVolume === 0) return;
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const t   = ctx.currentTime;
+        const v   = soundVolume;
+        [110, 220, 440].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const g   = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            g.gain.setValueAtTime(v * 0.3 / (i + 1), t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.25 + i * 0.05);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(t); osc.stop(t + 0.35);
+        });
+    } catch(e) {}
+}
+
+/* ===== CONFETTI ===== */
+function spawnConfetti(squareSel) {
+    const sq = document.querySelector('#board ' + squareSel);
+    if (!sq) return;
+    const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb'];
+    for (let i = 0; i < 24; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-particle';
+        p.style.background = colors[i % colors.length];
+        const angle = (Math.PI * 2 * i / 24) + Math.random() * 0.35;
+        const dist  = 38 + Math.random() * 58;
+        p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+        p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+        p.style.setProperty('--rot', `${Math.random() * 720 - 360}deg`);
+        sq.appendChild(p);
+        setTimeout(() => p.remove(), 900);
+    }
+}
+
+/* ===== CUȘCĂ ===== */
+function showCage(step) {
+    const existing = document.getElementById('cage-svg');
+    if (existing) existing.remove();
+    if (cageTimer) { clearTimeout(cageTimer); cageTimer = null; }
+    if (!cages[step]) return;
+
+    const boardEl   = document.getElementById('board-wrap');
+    const boardSize = boardEl.offsetWidth;
+    const sq = boardSize / 8;
+    const [fMin, fMax, rMin, rMax] = cages[step];
+    const x = (fMin.charCodeAt(0) - 97) * sq;
+    const y = (8 - rMax) * sq;
+    const w = (fMax.charCodeAt(0) - fMin.charCodeAt(0) + 1) * sq;
+    const h = (rMax - rMin + 1) * sq;
+    const pad = 5;
+
+    const ns  = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.id = 'cage-svg';
+    svg.setAttribute('viewBox', `0 0 ${boardSize} ${boardSize}`);
+
+    const outer = document.createElementNS(ns, 'rect');
+    outer.setAttribute('x', x + pad); outer.setAttribute('y', y + pad);
+    outer.setAttribute('width', w - pad*2); outer.setAttribute('height', h - pad*2);
+    outer.setAttribute('rx', '4'); outer.classList.add('cage-outer');
+
+    const inner = document.createElementNS(ns, 'rect');
+    inner.setAttribute('x', x + pad + 3); inner.setAttribute('y', y + pad + 3);
+    inner.setAttribute('width', w - pad*2 - 6); inner.setAttribute('height', h - pad*2 - 6);
+    inner.setAttribute('rx', '3'); inner.classList.add('cage-inner');
+
+    svg.appendChild(outer); svg.appendChild(inner);
+    boardEl.appendChild(svg);
+    playCageClank();
+
+    cageTimer = setTimeout(() => {
+        const el = document.getElementById('cage-svg');
+        if (el) el.remove();
+        cageTimer = null;
+    }, 2200);
+}
+
+/* ===== SĂGEATĂ MUTARE ===== */
+function sqCenter(fileIdx, rank) {
+    const s = document.getElementById('board-wrap').offsetWidth / 8;
+    return { x: (fileIdx + 0.5) * s, y: (8.5 - rank) * s };
+}
+
+function showMoveArrow(step) {
+    const ex = document.getElementById('arrow-svg');
+    if (ex) ex.remove();
+    if (arrowTimer) { clearTimeout(arrowTimer); arrowTimer = null; }
+    const ar = moveArrows[step];
+    if (!ar) return;
+
+    const ns  = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.id = 'arrow-svg';
+    const bw = document.getElementById('board-wrap').offsetWidth;
+    svg.setAttribute('viewBox', `0 0 ${bw} ${bw}`);
+
+    const defs = document.createElementNS(ns, 'defs');
+    const marker = document.createElementNS(ns, 'marker');
+    marker.setAttribute('id', 'arHead');
+    marker.setAttribute('markerWidth', '8');
+    marker.setAttribute('markerHeight', '8');
+    marker.setAttribute('refX', '6');
+    marker.setAttribute('refY', '4');
+    marker.setAttribute('orient', 'auto');
+    const poly = document.createElementNS(ns, 'polygon');
+    poly.setAttribute('points', '0 0, 8 4, 0 8');
+    poly.setAttribute('fill', ar.color);
+    marker.appendChild(poly);
+    defs.appendChild(marker);
+    svg.appendChild(defs);
+
+    const p1 = sqCenter(ar.from[0], ar.from[1]);
+    const p2 = sqCenter(ar.to[0],   ar.to[1]);
+
+    // shorten endpoints so arrow doesn't overlap pieces
+    const dx  = p2.x - p1.x;
+    const dy  = p2.y - p1.y;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const shorten = bw / 8 * 0.33;
+    const sx1 = p1.x + dx/len * shorten;
+    const sy1 = p1.y + dy/len * shorten;
+    const sx2 = p2.x - dx/len * shorten;
+    const sy2 = p2.y - dy/len * shorten;
+
+    const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', sx1); line.setAttribute('y1', sy1);
+    line.setAttribute('x2', sx2); line.setAttribute('y2', sy2);
+    line.setAttribute('stroke', ar.color);
+    line.setAttribute('stroke-width', '5');
+    line.setAttribute('stroke-linecap', 'round');
+    line.setAttribute('marker-end', 'url(#arHead)');
+    line.setAttribute('opacity', '0.88');
+    svg.appendChild(line);
+
+    // glow circle on destination
+    const circ = document.createElementNS(ns, 'circle');
+    circ.setAttribute('cx', p2.x); circ.setAttribute('cy', p2.y);
+    circ.setAttribute('r', bw/8 * 0.28);
+    circ.setAttribute('fill', 'none');
+    circ.setAttribute('stroke', ar.color);
+    circ.setAttribute('stroke-width', '2.5');
+    circ.setAttribute('opacity', '0.65');
+    svg.appendChild(circ);
+
+    document.getElementById('board-wrap').appendChild(svg);
+
+    arrowTimer = setTimeout(() => {
+        const el = document.getElementById('arrow-svg');
+        if (el) el.remove();
+        arrowTimer = null;
+    }, 2200);
+}
+
+/* ===== ENGINE ===== */
+function computePositions() {
+    const chess = new Chess(chapter.startFen);
+    const fens = [chess.fen()];
+    for (const mv of chapter.sanMoves) {
+        if (!chess.move(mv)) { console.error('Mutare invalida:', mv); break; }
+        fens.push(chess.fen());
+    }
+    return fens;
+}
+
+const positions = computePositions();
+let currentStep = 0;
+
+const board = Chessboard('board', {
+    position: positions[0],
+    pieceTheme: 'pieces/{piece}.svg'
+});
+
+window.addEventListener('resize', () => {
+    board.resize();
+    showCage(currentStep);
+    showMoveArrow(currentStep);
+});
+
+function buildMovesList() {
+    const container = document.getElementById('movesList');
+    container.innerHTML = '';
+    chapter.sanMoves.forEach((mv, i) => {
+        if (i % 2 === 0) {
+            const num = document.createElement('span');
+            num.className = 'move-number';
+            num.textContent = (Math.floor(i / 2) + 1) + '.';
+            container.appendChild(num);
+        }
+        const btn  = document.createElement('button');
+        const step = i + 1;
+        let cls = 'move-token ' + (i % 2 === 0 ? 'white-move' : 'black-move');
+        if (chapter.whiteKingSteps.has(step)) cls += ' king-move';
+        else if (chapter.rookMoveSteps.has(step)) cls += ' rook-move';
+        btn.className = cls;
+        btn.textContent = toRo(mv);
+        btn.dataset.step = step;
+        btn.onclick = () => goToStep(step);
+        container.appendChild(btn);
+    });
+}
+
+function goToStep(s) {
+    currentStep = s;
+    board.position(positions[s], false);
+    removeHeart();
+    updateUI();
+    showCage(s);
+    showMoveArrow(s);
+    if (s === 33) showHeart('.square-a8', false);
+    if (s === 34) showHeart('.square-a8', true);
+    if (s === positions.length - 1) {
+        showHeart('.square-a8', true);
+        setTimeout(() => spawnConfetti('.square-a8'), 600);
+    }
+    if (chapter.whiteKingSteps.has(s)) playKingStep();
+}
+
+function goFirst() { goToStep(0); }
+function goLast()  { goToStep(positions.length - 1); }
+function goPrev()  { if (currentStep > 0) goToStep(currentStep - 1); }
+function goNext()  { if (currentStep < positions.length - 1) goToStep(currentStep + 1); }
+
+function updateUI() {
+    const total = positions.length - 1;
+    document.getElementById('moveCounter').textContent =
+        currentStep === 0 ? 'Start' : currentStep + ' / ' + total;
+
+    document.getElementById('btnFirst').disabled = currentStep === 0;
+    document.getElementById('btnPrev').disabled  = currentStep === 0;
+    document.getElementById('btnNext').disabled  = currentStep === total;
+    document.getElementById('btnLast').disabled  = currentStep === total;
+
+    document.querySelectorAll('.move-token').forEach(b =>
+        b.classList.toggle('active', parseInt(b.dataset.step) === currentStep));
+
+    const box  = document.getElementById('annotationBox');
+    const text = chapter.annotations[currentStep] || '';
+    const isMat  = currentStep === total;
+    const isKing = chapter.whiteKingSteps.has(currentStep);
+
+    if (isMat) {
+        box.className = 'annotation-box checkmate';
+        box.innerHTML = '<span class="checkmate-badge">&#10003; &#350;AH MAT!</span><br>' + text;
+    } else if (isKing) {
+        box.className = 'annotation-box king-active';
+        box.innerHTML = text;
+    } else {
+        box.className = 'annotation-box';
+        box.innerHTML = text;
+    }
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') goNext();
+    if (e.key === 'ArrowLeft')  goPrev();
+    if (e.key === 'Home')       goFirst();
+    if (e.key === 'End')        goLast();
+});
+
+buildMovesList();
+updateUI();
+</script>
+<style>
+.hub-btn {
+    position: fixed; top: 16px; right: 16px;
+    background: #1a3a6b; color: white;
+    font-family: "Baloo 2", cursive; font-size: .85em;
+    padding: 8px 18px; border-radius: 50px;
+    text-decoration: none; box-shadow: 0 3px 12px rgba(26,58,107,.4);
+    z-index: 100; transition: background .2s;
+}
+.hub-btn:hover { background: #2a5aab; }
+</style>
+<a href="hub.html" class="hub-btn">&#9776; Cuprins</a>
+</body>
+</html>
