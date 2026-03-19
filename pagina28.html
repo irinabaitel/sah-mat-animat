@@ -79,10 +79,11 @@
         #board-wrap {
             position: relative;
             display: inline-block;
-            width: 360px; height: 360px;
+            width: min(360px, calc(100vw - 40px));
+            height: min(360px, calc(100vw - 40px));
             overflow: hidden;
         }
-        #board { width: 360px; }
+        #board { width: 100%; }
 
         /* ===== RIGHT PANEL ===== */
         .right-section { flex: 1; min-width: 0; max-width: 310px; }
@@ -661,6 +662,7 @@ board = Chessboard('board', {
     onDrop:      onDrop,
     onSnapEnd:   onSnapEnd
 });
+window.addEventListener('resize', () => board.resize());
 
 updateProgress(0);
 updatePrompt(0);

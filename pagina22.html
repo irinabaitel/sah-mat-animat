@@ -81,7 +81,7 @@
         }
 
         .board-section { flex: 0 0 auto; }
-        #board { width: 360px; }
+        #board { width: min(360px, calc(100vw - 40px)); }
 
         .controls {
             display: flex;
@@ -207,7 +207,6 @@
         @media (max-width: 680px) {
             .page { padding: 40px 20px 50px; }
             .main-content { flex-direction: column; }
-            #board { width: 300px; }
             .board-section { margin: 0 auto; }
         }
     </style>
@@ -310,6 +309,7 @@ const board = Chessboard('board', {
     position: positions[0],
     pieceTheme: 'pieces/{piece}.svg'
 });
+window.addEventListener('resize', () => board.resize());
 
 function buildMovesList() {
     const container = document.getElementById('movesList');

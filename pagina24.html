@@ -74,11 +74,11 @@
         #board-wrap {
             position: relative;
             display: inline-block;
-            width: 360px;
-            height: 360px;
+            width: min(360px, calc(100vw - 40px));
+            height: min(360px, calc(100vw - 40px));
             overflow: hidden;
         }
-        #board { width: 360px; }
+        #board { width: 100%; }
 
         /* ===== ANIMAȚIE CUȘCĂ TOM & JERRY ===== */
         @keyframes cage-fall {
@@ -347,8 +347,8 @@
         @media (max-width: 680px) {
             .page { padding: 40px 20px 50px; }
             .main-content { flex-direction: column; }
-            #board { width: 300px; }
             .board-section { margin: 0 auto; }
+            .annotation-box { height: auto; min-height: 80px; }
         }
     </style>
 </head>
@@ -703,7 +703,7 @@ const knightLinks = {
 let klTimer = null;
 
 function sqC(fi, rank) {
-    const s = 360 / 8;
+    const s = document.getElementById('board-wrap').offsetWidth / 8;
     return { x: (fi + 0.5) * s, y: (8.5 - rank) * s };
 }
 
@@ -719,7 +719,8 @@ function showKnightLink(step) {
     const ns = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(ns, 'svg');
     svg.id = 'knight-link-svg';
-    svg.setAttribute('viewBox', '0 0 360 360');
+    const bw = document.getElementById('board-wrap').offsetWidth;
+    svg.setAttribute('viewBox', `0 0 ${bw} ${bw}`);
 
     const defs = document.createElementNS(ns, 'defs');
     function mkMarker(id, color) {
@@ -810,6 +811,11 @@ let currentStep = 0;
 const board = Chessboard('board', {
     position: positions[0],
     pieceTheme: 'pieces/{piece}.svg'
+});
+window.addEventListener('resize', () => {
+    board.resize();
+    showCage(currentStep);
+    showKnightLink(currentStep);
 });
 
 function buildMovesList() {

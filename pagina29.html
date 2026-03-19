@@ -49,9 +49,11 @@
         .board-section { flex: 0 0 auto; }
         #board-wrap {
             position: relative; display: inline-block;
-            width: 360px; height: 360px; overflow: visible;
+            width: min(360px, calc(100vw - 40px));
+            height: min(360px, calc(100vw - 40px));
+            overflow: visible;
         }
-        #board { width: 360px; }
+        #board { width: 100%; }
 
         /* ===== RIGHT PANEL ===== */
         .right-section { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; height: 360px; overflow: hidden; }
@@ -276,7 +278,9 @@
         @media (max-width: 700px) {
             .page { padding: 40px 20px 50px; }
             .main-content { flex-direction: column; }
-            .right-section { width: 100%; }
+            .right-section { width: 100%; height: auto; overflow: visible; }
+            .board-section { margin: 0 auto; }
+            .log-scroll { max-height: 180px; }
         }
     </style>
 </head>
@@ -451,7 +455,7 @@ function showSpeechBubble(msg) {
     if (!bkPos) return;
     const f = bkPos.charCodeAt(0) - 97;
     const r = parseInt(bkPos[1]) - 1;
-    const sqSize = 45;
+    const sqSize = document.getElementById('board-wrap').offsetWidth / 8;
     const centerX = (f + 0.5) * sqSize;
     const topY    = (7 - r) * sqSize;
     const bubble  = document.createElement('div');
@@ -505,11 +509,12 @@ function showHintStar(sq) {
     if (old) old.remove();
     const f = sq.charCodeAt(0) - 97;
     const r = parseInt(sq[1]) - 1;
+    const sqSz = document.getElementById('board-wrap').offsetWidth / 8;
     const star = document.createElement('div');
     star.className = 'hint-star';
     star.textContent = '⭐';
-    star.style.left = (f * 45 + 5) + 'px';
-    star.style.top  = ((7 - r) * 45 + 5) + 'px';
+    star.style.left = (f * sqSz + 5) + 'px';
+    star.style.top  = ((7 - r) * sqSz + 5) + 'px';
     document.getElementById('board-wrap').appendChild(star);
     setTimeout(() => { if (star.parentNode) star.remove(); }, 1100);
 }
@@ -830,6 +835,7 @@ board = Chessboard('board', {
     onDrop:      onDrop,
     onSnapEnd:   onSnapEnd
 });
+window.addEventListener('resize', () => board.resize());
 
 updateCentralityBar();
 updateMoveBadge();
