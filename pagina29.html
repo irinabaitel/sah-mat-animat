@@ -377,11 +377,13 @@ function getBestBlackMove(chess) {
     const moves = chess.moves({ verbose: true });
     if (!moves.length) return null;
 
+    // Capturăm regina dacă e posibil (mutare legală = regina nu e apărată de regele alb)
+    const queenCapture = moves.find(m => m.captured === 'q');
+    if (queenCapture) return queenCapture;
+
     let best = [], bestScore = -Infinity;
     for (const mv of moves) {
-        // Primary: maximize centrality of destination
         let score = centralityScore(mv.to) * 10;
-        // Tiebreak: prefer squares farther from white queen (avoid being cornered faster)
         const wQPos = getWhieenPos(chess);
         if (wQPos) {
             const qf = wQPos.charCodeAt(0) - 97;
@@ -646,8 +648,9 @@ function handleGameOver() {
     gameOver = true;
     board.draggable = false;
 
-    const isCheckmate = chess.in_checkmate();
-    const isStalemate = chess.in_stalemate();
+    const isCheckmate   = chess.in_checkmate();
+    const isStalemate   = chess.in_stalemate();
+    const isInsufficient = chess.insufficient_material();
 
     if (isStalemate) {
         document.getElementById('victoryTitle').textContent = '⚠️ PAT — Remiză!';
@@ -657,6 +660,14 @@ function handleGameOver() {
              Regele negru nu mai are mutări dar NU e în șah.<br>
              Încearcă să eviți situația de pat!`;
         showFeedback('stalemate', '⚠️ PAT! Regele negru nu are mutare dar nu e în șah. Remiză! Mai încearcă!');
+    } else if (isInsufficient) {
+        document.getElementById('victoryTitle').textContent = '🤝 Remiză!';
+        document.getElementById('victoryRating').textContent = '😬';
+        document.getElementById('victoryStat').innerHTML =
+            `Regina a fost capturată!<br>
+             <strong>Rege vs. Rege = remiză automată.</strong><br>
+             Nu lăsa niciodată regina nesupravegheată!`;
+        showFeedback('stalemate', '⚠️ Regina capturată! Rege vs. Rege — remiză automată.');
     } else if (isCheckmate) {
         const rating = getRating(whiteMoves);
         document.getElementById('victoryTitle').textContent = '🏆 Șah Mat!';
@@ -665,11 +676,16 @@ function handleGameOver() {
             `Ai dat mat în <strong>${whiteMoves} mutări</strong>!<br>${rating.text}`;
         spawnConfetti();
         setTimeout(spawnConfetti, 500);
+    } else {
+        // altă remiză (50 mutări, repetare etc.)
+        document.getElementById('victoryTitle').textContent = '🤝 Remiză!';
+        document.getElementById('victoryRating').textContent = '😐';
+        document.getElementById('victoryStat').innerHTML = 'Partidă terminată remiză. Mai încearcă!';
     }
 
     setTimeout(() => {
         document.getElementById('victoryOverlay').classList.add('show');
-    }, isCheckmate ? 800 : 300);
+    }, isCheckmate ? 800 : 400);
 }
 
 // ===== AUTO-PLAY BLACK =====
