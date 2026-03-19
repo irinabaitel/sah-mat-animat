@@ -637,22 +637,41 @@ function playKingStep() {
 }
 
 /* ===== CONFETTI ===== */
-function spawnConfetti(squareSel) {
-    const sq = document.querySelector('#board ' + squareSel);
-    if (!sq) return;
-    const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb'];
-    for (let i = 0; i < 24; i++) {
-        const p = document.createElement('div');
-        p.className = 'confetti-particle';
-        p.style.background = colors[i % colors.length];
-        const angle = (Math.PI * 2 * i / 24) + Math.random() * 0.35;
-        const dist  = 38 + Math.random() * 58;
-        p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
-        p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
-        p.style.setProperty('--rot', `${Math.random() * 720 - 360}deg`);
-        sq.appendChild(p);
-        setTimeout(() => p.remove(), 900);
+function spawnBigConfetti() {
+    const wrap = document.getElementById('board-wrap');
+    const bw   = wrap.offsetWidth;
+    const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb','#ffffff','#ff99cc'];
+
+    function fireWave(count, distMin, distMax, delay, duration) {
+        setTimeout(() => {
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.style.cssText = `
+                    position:absolute;
+                    top:50%; left:50%;
+                    width:${8 + Math.random()*7}px;
+                    height:${8 + Math.random()*7}px;
+                    border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+                    background:${colors[Math.floor(Math.random()*colors.length)]};
+                    pointer-events:none;
+                    z-index:20;
+                    animation:confetti-fly ${duration}ms ease-out forwards;
+                `;
+                const angle = (Math.PI * 2 * i / count) + Math.random() * 0.5;
+                const dist  = distMin + Math.random() * (distMax - distMin);
+                p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+                p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+                p.style.setProperty('--rot', `${Math.random() * 900 - 450}deg`);
+                wrap.appendChild(p);
+                setTimeout(() => p.remove(), duration + 100);
+            }
+        }, delay);
     }
+
+    const r = bw * 0.55;
+    fireWave(36, r * 0.4, r,        0,   900);
+    fireWave(30, r * 0.3, r * 0.8, 180,  950);
+    fireWave(24, r * 0.5, r * 0.9, 380, 1000);
 }
 
 /* ===== CUȘCĂ ===== */
@@ -856,7 +875,7 @@ function goToStep(s) {
             const fast = (s >= 33);
             showHeart(bkSq, fast);
             if (s === positions.length - 1) {
-                setTimeout(() => spawnConfetti(bkSq), 600);
+                setTimeout(() => spawnBigConfetti(), 500);
             }
         }
     }
