@@ -150,7 +150,7 @@
             font-weight: 700;
             color: #1a3a6b;
             font-size: 0.9em;
-            min-width: 80px;
+            min-width: 110px;
             text-align: center;
         }
 
@@ -838,10 +838,19 @@ function goLast()  { goToStep(positions.length - 1); }
 function goPrev()  { if (currentStep > 0) goToStep(currentStep - 1); }
 function goNext()  { if (currentStep < positions.length - 1) goToStep(currentStep + 1); }
 
+function getMoveLabel(s) {
+    if (s === 0) return 'Start';
+    const i = s - 1;
+    const wf = !chapter.startFen.includes(' b ');
+    const isW = wf ? i % 2 === 0 : i % 2 === 1;
+    const n   = wf ? Math.floor(i/2)+1 : Math.floor((i+1)/2)+1;
+    return n + (isW ? '. ' : '... ') + toRo(chapter.sanMoves[i]);
+}
+
 function updateUI() {
     const total = positions.length - 1;
     document.getElementById('moveCounter').textContent =
-        currentStep === 0 ? 'Start' : currentStep + ' / ' + total;
+        getMoveLabel(currentStep);
 
     document.getElementById('btnFirst').disabled = currentStep === 0;
     document.getElementById('btnPrev').disabled  = currentStep === 0;
