@@ -316,8 +316,10 @@
             z-index: 15;
             line-height: 1;
         }
-        .heart-badge.hb-slow { animation: hb-slow 1.4s ease-in-out infinite; }
-        .heart-badge.hb-fast { animation: hb-fast 0.55s ease-in-out infinite; }
+        .heart-badge.hb-slow  { animation: hb-slow 1.4s ease-in-out infinite; }
+        .heart-badge.hb-fast  { animation: hb-fast 0.55s ease-in-out infinite; }
+        /* Inimă mică, semitransparentă — regele se vede dedesubt */
+        .heart-badge.hb-small { font-size: 1.1em; opacity: 0.52; }
 
         /* ===== CONFETTI ===== */
         @keyframes confetti-fly {
@@ -490,12 +492,15 @@ let heartEl   = null;
 function removeHeart() {
     if (heartEl) { heartEl.remove(); heartEl = null; }
 }
-function showHeart(squareSel, fast) {
+function showHeart(squareSel, fast, small) {
     removeHeart();
     const sq = document.querySelector('#board ' + squareSel);
     if (!sq) return;
     heartEl = document.createElement('div');
-    heartEl.className = 'heart-badge ' + (fast ? 'hb-fast' : 'hb-slow');
+    let cls = 'heart-badge ';
+    if (small) cls += 'hb-small ';
+    cls += (fast ? 'hb-fast' : 'hb-slow');
+    heartEl.className = cls;
     heartEl.textContent = '❤️';
     sq.appendChild(heartEl);
 }
@@ -828,10 +833,12 @@ function goToStep(s) {
     updateUI();
     showCage(s);
     showKnightLink(s);
-    if (s === 10) showHeart('.square-h5', false);
+    if (s === 10) showHeart('.square-h3', false, true);
     if (s === positions.length - 1) {
         showHeart('.square-h5', true);
-        setTimeout(() => spawnConfetti('.square-h5'), 600);
+        setTimeout(() => spawnConfetti('.square-h5'), 400);
+        setTimeout(() => spawnConfetti('.square-h5'), 900);
+        setTimeout(() => spawnConfetti('.square-h5'), 1400);
     }
     if (chapter.whiteKingSteps.has(s)) playKingStep();
 }
