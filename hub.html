@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+in<!DOCTYPE html>
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
@@ -102,6 +102,13 @@
             width: 38px;
             height: 38px;
         }
+        .card-pieces img.illus {
+            width: auto;
+            height: 58px;
+            max-width: 54px;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+        }
 
         .card-title {
             font-family: 'Baloo 2', cursive;
@@ -201,18 +208,69 @@
             flex-shrink: 0;
         }
 
+        /* ── PARADĂ PIESE ── */
+        .piece-parade, .pawn-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            flex-wrap: nowrap;
+            gap: 4px;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 1100px;
+        }
+        .piece-parade { margin-top: 20px; }
+        .pawn-row     { margin-top: -12px; margin-bottom: 10px; }
+
+        .piece-parade img, .pawn-row img {
+            flex: 1 1 0;
+            min-width: 0;
+            object-fit: contain;
+            object-position: bottom center;
+            mix-blend-mode: multiply;
+        }
+        .piece-parade img { height: 170px; max-width: 108px; }
+        .pawn-row img     { height: 128px; max-width:  88px; }
+
         @media (max-width: 600px) {
             body { padding: 8px 4px; }
             h1 { font-size: 1.7em; }
             .cards { grid-template-columns: 1fr 1fr; }
             .intro-card { flex-direction: column; text-align: center; }
             .intro-card-btn { width: 100%; text-align: center; }
+            .piece-parade img { height: 100px; max-width: 66px; }
+            .pawn-row img     { height:  76px; max-width: 52px; }
         }
     </style>
 </head>
 <body>
 
     <h1>&#9822; &#350;ah Mat Animat</h1>
+
+    <!-- Rând piese: alternat alb-negru -->
+    <div class="piece-parade">
+        <img src="piese_sah/turn 1.png"      alt="Turn alb">
+        <img src="piese_sah/cal negru.png"   alt="Cal negru"  style="transform:scaleX(-1);">
+        <img src="piese_sah/nebun 1.png"     alt="Nebun alb">
+        <img src="piese_sah/regina 2.png"    alt="Regina neagra">
+        <img src="piese_sah/rega 1.jpg"      alt="Rege alb"   style="max-width:118px;">
+        <img src="piese_sah/nebun 2.png"     alt="Nebun negru">
+        <img src="piese_sah/cal 1.png"       alt="Cal alb">
+        <img src="piese_sah/tura neagra.png" alt="Turn negru">
+    </div>
+
+    <!-- Rând pioni: 8 pioni alternați alb-negru -->
+    <div class="pawn-row">
+        <img src="piese_sah/pion 1.png"     alt="">
+        <img src="piese_sah/pion negru.png" alt="">
+        <img src="piese_sah/pion 1.png"     alt="">
+        <img src="piese_sah/pion negru.png" alt="">
+        <img src="piese_sah/pion 1.png"     alt="">
+        <img src="piese_sah/pion negru.png" alt="">
+        <img src="piese_sah/pion 1.png"     alt="">
+        <img src="piese_sah/pion negru.png" alt="">
+    </div>
+
     <p class="subtitle">Alege un capitol &#351;i &#238;ncepe s&#259; &#238;nve&#539;i!</p>
 
     <!-- Noțiuni de bază -->
@@ -222,7 +280,7 @@
 
             <a href="pagina1.html" class="card" data-unlock="pagina1">
                 <div class="card-pieces">
-                    <img src="pieces/wK.svg" alt="">
+                    <img src="piese_sah/rega 1.jpg" class="illus" alt="">
                 </div>
                 <div class="card-title">Introducere</div>
                 <div class="card-desc">Primii pa&#351;i &#238;n lumea &#351;ahului.</div>
@@ -231,8 +289,8 @@
 
             <a href="pagina2.html" class="card" data-unlock="pagina1">
                 <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
-                    <img src="pieces/bK.svg" alt="">
+                    <img src="piese_sah/regina 1.png" class="illus" alt="">
+                    <img src="piese_sah/rege 2.png"   class="illus" alt="">
                 </div>
                 <div class="card-title">&#350;ah-Mat!</div>
                 <div class="card-desc">Scopul suprem al jocului &#8212; regele advers nu poate scăpa.</div>
@@ -241,7 +299,7 @@
 
             <a href="pagina3.html" class="card" data-unlock="pagina1">
                 <div class="card-pieces">
-                    <img src="pieces/bK.svg" alt="">
+                    <img src="piese_sah/rege 2.png" class="illus" alt="">
                 </div>
                 <div class="card-title">Ap&#259;rarea regelui</div>
                 <div class="card-desc">Cum &#238;&#351;i poate ap&#259;ra regele via&#539;a &#238;n fa&#539;a atacurilor.</div>
@@ -250,8 +308,8 @@
 
             <a href="pagina4.html" class="card" data-unlock="pagina1">
                 <div class="card-pieces">
-                    <img src="pieces/wR.svg" alt="">
-                    <img src="pieces/wB.svg" alt="">
+                    <img src="piese_sah/turn 1.png"  class="illus" alt="">
+                    <img src="piese_sah/nebun 1.png" class="illus" alt="">
                 </div>
                 <div class="card-title">&#350;ahul Dublu</div>
                 <div class="card-desc">Dou&#259; piese atac&#259; regele deodat&#259; &#8212; cea mai puternic&#259; form&#259; de &#351;ah.</div>
@@ -260,7 +318,7 @@
 
             <a href="pagina5.html" class="card" data-unlock="pagina1">
                 <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
+                    <img src="piese_sah/regina 1.png" class="illus" alt="">
                 </div>
                 <div class="card-title">Matul</div>
                 <div class="card-desc">Ce &#238;nseamn&#259; matul &#351;i exemple simple de mat cu dama.</div>
@@ -269,8 +327,8 @@
 
             <a href="pagina7.html" class="card" data-unlock="pagina1">
                 <div class="card-pieces">
-                    <img src="pieces/wK.svg" alt="">
-                    <img src="pieces/bK.svg" alt="">
+                    <img src="piese_sah/rega 1.jpg"  class="illus" alt="">
+                    <img src="piese_sah/rege 2.png"  class="illus" alt="">
                 </div>
                 <div class="card-title">Patul</div>
                 <div class="card-desc">C&#226;nd juc&#259;torul la mutare nu e &#238;n &#351;ah, dar nu poate muta &#8212; remiz&#259;, cu exemple.</div>
@@ -279,7 +337,7 @@
 
             <a href="sah_etern.html" class="card" data-unlock="pagina1">
                 <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
+                    <img src="piese_sah/regina 1.png" class="illus" alt="">
                 </div>
                 <div class="card-title">&#350;ahul Etern</div>
                 <div class="card-desc">&#350;ah repetat la nesfâr&#351;it &#8212; o alt&#259; cale spre remiz&#259;.</div>
@@ -294,124 +352,85 @@
         <div class="section-title">&#9820; Maturi simple cu figuri</div>
         <div class="cards">
 
-            <a href="pagina24.html" class="card" data-unlock="pagina24">
-                <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
-                    <img src="pieces/wK.svg" alt="">
-                </div>
-                <div class="card-title">Dam&#259; + Rege<br>vs. Rege</div>
-                <div class="card-desc">Tehnica &#8222;cu&#351;tii care se str&#226;nge&#8221; &#351;i cum s&#259; evit&#259;m patul.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina25.html" class="card" data-unlock="pagina25">
-                <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
-                    <img src="pieces/wK.svg" alt="">
-                </div>
-                <div class="card-title">Echipa de &#350;oc<br>Rege + Regin&#259;</div>
-                <div class="card-desc">Metoda &#8222;Echipei de &#350;oc&#8221;: matul &#238;n 6 mut&#259;ri cu regele activ.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina26.html" class="card" data-unlock="pagina26">
-                <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
-                    <img src="pieces/wK.svg" alt="">
-                </div>
-                <div class="card-title">Hart&#259; Mental&#259;<br>Dam&#259; + Rege</div>
-                <div class="card-desc">Cele dou&#259; variante, capcana PAT &#351;i regulile de aur.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina27.html" class="card" data-unlock="pagina27">
-                <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
-                </div>
-                <div class="card-title">&#127942; Provocarea<br>Reginei</div>
-                <div class="card-desc">Exerseaz&#259; tehnica cu&#351;tii: mic&#351;oreaz&#259; tu singur cu&#351;ca &#238;n 3 niveluri!</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina28.html" class="card" data-unlock="pagina28">
-                <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
-                    <img src="pieces/wK.svg" alt="">
-                </div>
-                <div class="card-title">&#127919; Exerci&#539;iu<br>Metoda Cu&#351;tii</div>
-                <div class="card-desc">Joac&#259; tu &#238;nsu&#539;i toate mut&#259;rile p&#226;n&#259; la mat &#8212; cu cu&#351;c&#259;, PAT &#351;i Inima!</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina29.html" class="card" data-unlock="pagina29">
-                <div class="card-pieces">
-                    <img src="pieces/wK.svg" alt="">
-                    <img src="pieces/wQ.svg" alt="">
-                    <img src="pieces/bK.svg" alt="">
-                </div>
-                <div class="card-title">&#127942; Antrenamentul<br>Micilor Mae&#351;tri</div>
-                <div class="card-desc">Cu&#351;ca e invizibil&#259;! Demonstreaz&#259; c&#259; ai puteri magice &#8212; &#238;mpinge Regele negru spre margine!</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina30.html" class="card" data-unlock="pagina30">
-                <div class="card-pieces">
-                    <img src="pieces/wR.svg" alt="">
-                    <img src="pieces/wK.svg" alt="">
-                    <img src="pieces/bK.svg" alt="">
-                </div>
-                <div class="card-title">&#128275; Se Str&#226;nge Cu&#351;ca<br>Turn + Rege vs. Rege</div>
-                <div class="card-desc">Turnul construie&#351;te zid dup&#259; zid, iar Regele alb &#238;nchide orice ie&#351;ire. Mat &#238;n 18 mut&#259;ri!</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
             <a href="pagina10.html" class="card" data-unlock="pagina10">
                 <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
-                    <img src="pieces/wR.svg" alt="">
+                    <img src="piese_sah/rega 1.jpg"   class="illus" alt="">
+                    <img src="piese_sah/regina 1.png" class="illus" alt="">
+                    <img src="piese_sah/turn 1.png"   class="illus" alt="">
+                    <img src="piese_sah/rege 2.png"   class="illus" alt="">
                 </div>
-                <div class="card-title">Dam&#259; + Turn<br>vs. Rege</div>
+                <div class="card-title">Rege + Dam&#259; + Turn<br>vs. Rege</div>
                 <div class="card-desc">V&#226;n&#259;torul &#351;i gardianul colaboreaz&#259; pentru a da mat.</div>
                 <span class="card-btn">Deschide &#9654;</span>
             </a>
 
             <a href="pagina12.html" class="card" data-unlock="pagina12">
                 <div class="card-pieces">
-                    <img src="pieces/wR.svg" alt="">
-                    <img src="pieces/wR.svg" alt="">
+                    <img src="piese_sah/rega 1.jpg"  class="illus" alt="">
+                    <img src="piese_sah/turn 1.png"  class="illus" alt="">
+                    <img src="piese_sah/turn 1.png"  class="illus" alt="">
+                    <img src="piese_sah/rege 2.png"  class="illus" alt="">
                 </div>
-                <div class="card-title">Dou&#259; Turnuri<br>vs. Rege</div>
+                <div class="card-title">Rege + Dou&#259; Turnuri<br>vs. Rege</div>
                 <div class="card-desc">Matul clasic cu dou&#259; turnuri &#8212; simplu &#351;i eficient.</div>
                 <span class="card-btn">Deschide &#9654;</span>
             </a>
 
             <a href="pagina16.html" class="card" data-unlock="pagina16">
                 <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
-                    <img src="pieces/wB.svg" alt="">
+                    <img src="piese_sah/rega 1.jpg"   class="illus" alt="">
+                    <img src="piese_sah/regina 1.png" class="illus" alt="">
+                    <img src="piese_sah/nebun 1.png"  class="illus" alt="">
+                    <img src="piese_sah/rege 2.png"   class="illus" alt="">
                 </div>
-                <div class="card-title">Dam&#259; + Nebun<br>vs. Rege</div>
+                <div class="card-title">Rege + Dam&#259; + Nebun<br>vs. Rege</div>
                 <div class="card-desc">Regina are putere, nebunul ajut&#259; cu precizie.</div>
                 <span class="card-btn">Deschide &#9654;</span>
             </a>
 
             <a href="pagina22.html" class="card" data-unlock="pagina22">
                 <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
-                    <img src="pieces/wN.svg" alt="">
+                    <img src="piese_sah/rega 1.jpg"   class="illus" alt="">
+                    <img src="piese_sah/regina 1.png" class="illus" alt="">
+                    <img src="piese_sah/cal 1.png"    class="illus" alt="">
+                    <img src="piese_sah/rege 2.png"   class="illus" alt="">
                 </div>
-                <div class="card-title">Dam&#259; + Cal<br>vs. Rege</div>
+                <div class="card-title">Rege + Dam&#259; + Cal<br>vs. Rege</div>
                 <div class="card-desc">Un cal imprevizibil al&#259;turi de regina puternic&#259;.</div>
+                <span class="card-btn">Deschide &#9654;</span>
+            </a>
+
+            <a href="pagina24.html" class="card" data-unlock="pagina24">
+                <div class="card-pieces">
+                    <img src="piese_sah/regina 1.png" class="illus" alt="">
+                    <img src="piese_sah/rega 1.jpg"   class="illus" alt="">
+                    <img src="piese_sah/rege 2.png"   class="illus" alt="">
+                </div>
+                <div class="card-title">Rege + Dam&#259;<br>vs. Rege</div>
+                <div class="card-desc">Metoda Cu&#351;tii, Echipa de &#350;oc, capcana PAT &#351;i exerci&#539;ii &#8212; tot ce trebuie s&#259; &#351;tii.</div>
                 <span class="card-btn">Deschide &#9654;</span>
             </a>
 
             <a href="pagina19.html" class="card" data-unlock="pagina19">
                 <div class="card-pieces">
-                    <img src="pieces/wB.svg" alt="">
-                    <img src="pieces/wB.svg" alt="">
+                    <img src="piese_sah/rega 1.jpg"  class="illus" alt="">
+                    <img src="piese_sah/nebun 1.png" class="illus" alt="">
+                    <img src="piese_sah/nebun 1.png" class="illus" alt="">
+                    <img src="piese_sah/rege 2.png"  class="illus" alt="">
                 </div>
-                <div class="card-title">Doi Nebuni<br>vs. Rege</div>
+                <div class="card-title">Rege + Doi Nebuni<br>vs. Rege</div>
                 <div class="card-desc">Doi nebuni care colaboreaz&#259; pentru a controla tabla.</div>
+                <span class="card-btn">Deschide &#9654;</span>
+            </a>
+
+            <a href="pagina30.html" class="card" data-unlock="pagina30">
+                <div class="card-pieces">
+                    <img src="piese_sah/turn 1.png"  class="illus" alt="">
+                    <img src="piese_sah/rega 1.jpg"  class="illus" alt="">
+                    <img src="piese_sah/rege 2.png"  class="illus" alt="">
+                </div>
+                <div class="card-title">Rege + Turn<br>vs. Rege</div>
+                <div class="card-desc">Turnul construie&#351;te zid dup&#259; zid, iar Regele alb &#238;nchide orice ie&#351;ire.</div>
                 <span class="card-btn">Deschide &#9654;</span>
             </a>
 
@@ -425,8 +444,8 @@
 
             <a href="exercitii.html" class="card">
                 <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
-                    <img src="pieces/wR.svg" alt="">
+                    <img src="piese_sah/regina 1.png" class="illus" alt="">
+                    <img src="piese_sah/turn 1.png"   class="illus" alt="">
                 </div>
                 <div class="card-title">G&#259;se&#351;te Matul!</div>
                 <div class="card-desc">3 puzzle-uri mat &#238;n 1 mutare &#8212; mut&#259; piesele direct pe tabl&#259;.</div>
@@ -444,7 +463,7 @@
             <div class="card card-soon">
                 <span class="card-soon-badge">&#206;n cur&#226;nd</span>
                 <div class="card-pieces">
-                    <img src="pieces/wN.svg" alt="">
+                    <img src="piese_sah/cal 1.png" class="illus" alt="">
                 </div>
                 <div class="card-title">Furculița</div>
                 <div class="card-desc">Calul atac&#259; dou&#259; piese deodat&#259;.</div>
@@ -454,7 +473,7 @@
             <div class="card card-soon">
                 <span class="card-soon-badge">&#206;n cur&#226;nd</span>
                 <div class="card-pieces">
-                    <img src="pieces/wB.svg" alt="">
+                    <img src="piese_sah/nebun 1.png" class="illus" alt="">
                 </div>
                 <div class="card-title">&#206;n&#539;ep&#259;tura</div>
                 <div class="card-desc">O pies&#259; este atacat&#259; &#351;i nu se poate retrage.</div>
@@ -464,7 +483,7 @@
             <div class="card card-soon">
                 <span class="card-soon-badge">&#206;n cur&#226;nd</span>
                 <div class="card-pieces">
-                    <img src="pieces/wR.svg" alt="">
+                    <img src="piese_sah/turn 1.png" class="illus" alt="">
                 </div>
                 <div class="card-title">&#350;trengarul</div>
                 <div class="card-desc">O pies&#259; valoroas&#259; este &#238;n spatele uneia mai pu&#539;in valoroase.</div>
@@ -474,7 +493,7 @@
             <div class="card card-soon">
                 <span class="card-soon-badge">&#206;n cur&#226;nd</span>
                 <div class="card-pieces">
-                    <img src="pieces/wQ.svg" alt="">
+                    <img src="piese_sah/regina 1.png" class="illus" alt="">
                 </div>
                 <div class="card-title">Descoperirea</div>
                 <div class="card-desc">O pies&#259; se mut&#259; &#351;i descoper&#259; atacul alteia.</div>

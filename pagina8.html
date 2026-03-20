@@ -114,6 +114,38 @@
         }
         .btn-reset:hover { background: #1a3a6b; color: white; }
 
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+        .ctrl-btn {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3em;
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            background: #1a3a6b;
+            color: white;
+            transition: all 0.2s;
+            box-shadow: 0 3px 10px rgba(26,58,107,0.3);
+        }
+        .ctrl-btn:hover { background: #2a5aab; transform: translateY(-2px); }
+        .ctrl-btn:disabled { opacity: 0.35; cursor: default; transform: none; }
+        .move-counter {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1em;
+            background: rgba(255,255,255,0.6);
+            border-radius: 10px;
+            padding: 7px 14px;
+            min-width: 110px;
+            text-align: center;
+            color: #1a3a6b;
+            font-weight: 700;
+        }
+
         .move-msg {
             font-size: 1.05em;
             font-weight: 700;
@@ -178,8 +210,13 @@
                     <span style="font-weight:900;color:#c0392b;">&#189;&#8209;&#189;</span>
                 </div>
             </div>
-            <button id="btnNext" class="btn-animate" onclick="nextMove()">&#9654; Mutarea urm&#259;toare</button>
-            <button class="btn-reset" onclick="resetBoard()">&#8634; Reseteaz&#259;</button>
+            <div class="controls">
+                <button class="ctrl-btn" id="btnFirst" onclick="goFirst()">&#9198;</button>
+                <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()">&#9664;</button>
+                <div class="move-counter" id="moveCounter">Start</div>
+                <button class="ctrl-btn" id="btnNext"  onclick="goNext()">&#9654;</button>
+                <button class="ctrl-btn" id="btnLast"  onclick="goLast()">&#9197;</button>
+            </div>
             <div id="msg1" class="move-msg">Apas&#259; pentru a vedea cum se ob&#539;ine patul!</div>
         </div>
     </div>
@@ -212,15 +249,15 @@
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script>
     var FENS = [
-        '3kb3/8/3P2r1/P4p2/5P2/8/2Q4P/7K',   // start
-        '3k4/8/2bP2r1/P4p2/5P2/8/2Q4P/7K',   // 1...Nc6+
-        '3k4/8/2QP2r1/P4p2/5P2/8/7P/7K',     // 2.Dxc6
-        '3k4/8/2QP4/P4p2/5P2/8/7P/6rK',      // 2...Tg1+
-        '3k4/8/2QP4/P4p2/5P2/8/7P/6K1'       // 3.Rxg1 = PAT
+        '3kb3/8/3P2r1/P4p2/5P2/8/2Q4P/7K',
+        '3k4/8/2bP2r1/P4p2/5P2/8/2Q4P/7K',
+        '3k4/8/2QP2r1/P4p2/5P2/8/7P/7K',
+        '3k4/8/2QP4/P4p2/5P2/8/7P/6rK',
+        '3k4/8/2QP4/P4p2/5P2/8/7P/6K1'
     ];
 
     var MESSAGES = [
-        'Apas\u0103 \u201eMutarea urm\u0103toare\u201d pentru a vedea cum ob\u0163inem patul!',
+        'Apas\u0103 pentru a vedea cum ob\u0163inem patul!',
         '1... Nc6+ \u2014 \u015fahul regelui alb! Nebunul nostru d\u0103 \u015fah pe diagonal\u0103.',
         '2. Dxc6 \u2014 regina captureaz\u0103 nebunul. Regele nostru e \u00een pat acum?',
         '2... Tg1+ \u2014 turnul nostru d\u0103 \u015fah! Albul e obligat s\u0103 captureze.',
@@ -228,6 +265,7 @@
     ];
 
     var MOVE_IDS = ['m1b', 'm2w', 'm2b', 'm3w'];
+    var SAN = ['Nc6+', 'Dxc6', 'Tg1+', 'Rxg1'];
     var step = 0;
 
     var board = Chessboard('board1', {
@@ -237,44 +275,38 @@
         orientation: 'black'
     });
 
-    function highlightMove(idx) {
+    function getMoveLabel(s) {
+        if (s === 0) return 'Start';
+        var i = s - 1;
+        var isBlack = (i % 2 === 0);
+        var n = isBlack ? Math.floor(i/2)+1 : Math.floor((i+1)/2)+1;
+        return n + (isBlack ? '... ' : '. ') + SAN[i];
+    }
+
+    function updateUI() {
+        board.position(FENS[step], true);
         MOVE_IDS.forEach(function(id, i) {
             var el = document.getElementById(id);
-            if (!el) return;
-            if (i === idx) el.classList.add('move-active');
-            else el.classList.remove('move-active');
+            if (el) {
+                if (i === step - 1) el.classList.add('move-active');
+                else el.classList.remove('move-active');
+            }
         });
-    }
-
-    function clearHighlights() {
-        MOVE_IDS.forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) el.classList.remove('move-active');
-        });
-    }
-
-    function nextMove() {
-        if (step >= FENS.length - 1) return;
-        step++;
-        board.position(FENS[step], true);
-        highlightMove(step - 1);
         document.getElementById('msg1').textContent = MESSAGES[step];
-        if (step >= FENS.length - 1) {
-            document.getElementById('btnNext').disabled = true;
-            document.getElementById('btnNext').style.opacity = '0.5';
-            clearHighlights();
-        }
+        document.getElementById('moveCounter').textContent = getMoveLabel(step);
+        document.getElementById('btnFirst').disabled = (step === 0);
+        document.getElementById('btnPrev').disabled  = (step === 0);
+        document.getElementById('btnNext').disabled  = (step >= FENS.length - 1);
+        document.getElementById('btnLast').disabled  = (step >= FENS.length - 1);
     }
 
-    function resetBoard() {
-        step = 0;
-        board.position(FENS[0], true);
-        clearHighlights();
-        document.getElementById('msg1').textContent = MESSAGES[0];
-        var btn = document.getElementById('btnNext');
-        btn.disabled = false;
-        btn.style.opacity = '1';
-    }
+    function goFirst() { step = 0; updateUI(); }
+    function goPrev()  { if (step > 0) { step--; updateUI(); } }
+    function goNext()  { if (step < FENS.length - 1) { step++; updateUI(); } }
+    function goLast()  { step = FENS.length - 1; updateUI(); }
+
+    document.getElementById('btnFirst').disabled = true;
+    document.getElementById('btnPrev').disabled  = true;
 </script>
 <style>
 .hub-btn {

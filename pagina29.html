@@ -24,6 +24,58 @@
         .corner-tl { top: 0; left: 0; }
         .corner-tr { top: 0; right: 0; transform: scaleX(-1); }
 
+        /* ===== CHARACTER GALLERY ===== */
+        .char-gallery {
+            display: flex; justify-content: center; align-items: flex-end;
+            gap: 18px; height: 120px; margin-top: 18px;
+        }
+        .char-img {
+            height: 100px; max-width: 88px;
+            object-fit: contain; object-position: bottom center;
+            mix-blend-mode: multiply;
+            transform-origin: bottom center;
+        }
+        @keyframes char-bounce {
+            0%,100% { transform: translateY(0) rotate(0deg); }
+            25%     { transform: translateY(-18px) rotate(-6deg); }
+            75%     { transform: translateY(-10px) rotate(5deg); }
+        }
+        @keyframes char-shake {
+            0%,100% { transform: translateX(0); }
+            20%     { transform: translateX(-8px) rotate(-5deg); }
+            40%     { transform: translateX(8px) rotate(5deg); }
+            60%     { transform: translateX(-6px) rotate(-3deg); }
+            80%     { transform: translateX(6px) rotate(3deg); }
+        }
+        @keyframes char-worried {
+            0%,100% { transform: rotate(0deg); }
+            33%     { transform: rotate(-4deg) translateY(-3px); }
+            66%     { transform: rotate(4deg) translateY(-3px); }
+        }
+        @keyframes char-wobble {
+            0%,100% { transform: rotate(0deg); }
+            25%     { transform: rotate(-8deg); }
+            75%     { transform: rotate(8deg); }
+        }
+        @keyframes char-dance {
+            0%,100% { transform: translateY(0) rotate(0deg) scale(1); }
+            20%     { transform: translateY(-14px) rotate(-8deg) scale(1.05); }
+            40%     { transform: translateY(-8px) rotate(6deg) scale(1); }
+            60%     { transform: translateY(-16px) rotate(-6deg) scale(1.08); }
+            80%     { transform: translateY(-6px) rotate(8deg) scale(1); }
+        }
+        @keyframes char-fall {
+            0%    { transform: rotate(0deg) translateY(0); opacity:1; }
+            40%   { transform: rotate(25deg) translateY(10px); opacity:0.8; }
+            100%  { transform: rotate(90deg) translateY(40px); opacity:0.3; }
+        }
+        .anim-bounce  { animation: char-bounce  0.55s ease-in-out 3; }
+        .anim-shake   { animation: char-shake   0.45s ease-in-out 2; }
+        .anim-worried { animation: char-worried 0.7s ease-in-out infinite; }
+        .anim-wobble  { animation: char-wobble  0.8s ease-in-out infinite; }
+        .anim-dance   { animation: char-dance   0.7s ease-in-out infinite; }
+        .anim-fall    { animation: char-fall    0.9s ease-out forwards; }
+
         h1 {
             font-family: 'Baloo 2', cursive;
             font-size: 2em; color: #1a3a6b;
@@ -290,8 +342,11 @@
 <body>
 
 <div class="page">
-    <img src="pieces/wQ.svg" class="corner-piece corner-tl" alt="">
-    <img src="pieces/wK.svg" class="corner-piece corner-tr" alt="">
+    <div style="position:absolute;top:0;left:0;display:flex;gap:2px;align-items:flex-end;">
+        <img src="piese_sah/regina 1.png" style="height:110px;width:auto;mix-blend-mode:multiply;" alt="">
+        <img src="piese_sah/rega 1.jpg"   style="height:95px;width:auto;mix-blend-mode:multiply;"  alt="">
+    </div>
+    <img src="piese_sah/rege 2.png" style="position:absolute;top:0;right:0;height:105px;width:auto;mix-blend-mode:multiply;" alt="">
 
     <h1>&#127942; Antrenamentul pentru Micii Mae&#351;tri</h1>
     <div class="subtitle-top">E&#351;ti gata pentru proba suprem&#259;? Cu&#351;ca a devenit invizibil&#259;!</div>
@@ -342,6 +397,12 @@
     <div class="nav-buttons">
         <a href="pagina28.html" class="nav-btn back">&#9664; &#206;napoi</a>
         <a href="pagina30.html" class="nav-btn">&#206;nainte &#9654;</a>
+    </div>
+
+    <div class="char-gallery">
+        <img id="char-q"  src="piese_sah/regina 1.png" class="char-img" alt="">
+        <img id="char-wk" src="piese_sah/rega 1.jpg"   class="char-img" alt="">
+        <img id="char-bk" src="piese_sah/rege 2.png"   class="char-img" alt="">
     </div>
 </div>
 
@@ -668,6 +729,8 @@ function handleGameOver() {
              Regele negru nu mai are mutări dar NU e în șah.<br>
              Încearcă să eviți situația de pat!`;
         showFeedback('stalemate', '⚠️ PAT! Regele negru nu are mutare dar nu e în șah. Remiză! Mai încearcă!');
+        animChar('char-q', 'shake', 900);
+        animChar('char-wk', 'shake', 900);
     } else if (isInsufficient) {
         document.getElementById('victoryTitle').textContent = '🤝 Remiză!';
         document.getElementById('victoryRating').textContent = '😬';
@@ -676,6 +739,8 @@ function handleGameOver() {
              <strong>Rege vs. Rege = remiză automată.</strong><br>
              Nu lăsa niciodată regina nesupravegheată!`;
         showFeedback('stalemate', '⚠️ Regina capturată! Rege vs. Rege — remiză automată.');
+        animChar('char-q', 'fall', -1);
+        animChar('char-wk', 'shake', 900);
     } else if (isCheckmate) {
         const rating = getRating(whiteMoves);
         document.getElementById('victoryTitle').textContent = '🏆 Șah Mat!';
@@ -684,6 +749,9 @@ function handleGameOver() {
             `Ai dat mat în <strong>${whiteMoves} mutări</strong>!<br>${rating.text}`;
         spawnConfetti();
         setTimeout(spawnConfetti, 500);
+        animChar('char-q', 'dance', -1);
+        animChar('char-wk', 'dance', -1);
+        animChar('char-bk', 'fall', -1);
     } else {
         // altă remiză (50 mutări, repetare etc.)
         document.getElementById('victoryTitle').textContent = '🤝 Remiză!';
@@ -740,14 +808,19 @@ function autoPlayBlack() {
             playEdge();
             showFeedback('edge', '&#127881; Regele a ajuns la margine! Continu&#259; &#8212; mai trebuie s&#259;-l prinzi!');
             setTimeout(() => showSpeechBubble('Brrr, se face frig aici! 🥶'), 250);
+            animChar('char-q', 'bounce', 1650);
+            animChar('char-wk', 'bounce', 1650);
+            animChar('char-bk', 'worried', -1);
         } else if (cent === 1) {
             showFeedback('info', 'Regele e aproape de margine. Str&#226;nge &#351;i mai mult!');
             if (Math.random() < 0.45)
                 setTimeout(() => showSpeechBubble('Pare cam frig pe aici... 😰'), 250);
+            animChar('char-bk', 'wobble', -1);
         } else {
             clearFeedback();
             if (Math.random() < 0.38)
                 setTimeout(() => showSpeechBubble(TAUNTS[Math.floor(Math.random() * TAUNTS.length)]), 300);
+            animChar('char-bk', null, 0);
         }
 
         if (chess.game_over()) { handleGameOver(); return; }
@@ -776,7 +849,7 @@ function onDrop(source, target) {
     centralityBeforeWhiteMove = bkBefore ? centralityScore(bkBefore) : 3;
 
     const mv = chess.move({ from: source, to: target, promotion: 'q' });
-    if (!mv) { playWrong(); return 'snapback'; }
+    if (!mv) { playWrong(); animChar('char-q', 'shake', 900); return 'snapback'; }
 
     lastDropOk = true;
     playMove();
@@ -785,6 +858,8 @@ function onDrop(source, target) {
     lastMoveWasQueen = (mv.piece === 'q');
     removeHeart();
     hideWand();
+    if (mv.piece === 'q') animChar('char-q', 'bounce', 1650);
+    else animChar('char-wk', 'bounce', 1650);
 
     moveLog.push({ num: whiteMoves, white: toRo(mv.san), black: null });
     renderLog();
@@ -826,7 +901,20 @@ function resetGame() {
     updateCentralityBar();
     updateMoveBadge();
     setStatus('white', 'Mut&#259; o pies&#259; alb&#259;!');
+    ['char-q','char-wk','char-bk'].forEach(id => animChar(id, null, 0));
     board.position(START_FEN, false);
+}
+
+// ===== CHARACTER ANIMATIONS =====
+function animChar(id, anim, duration) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const allAnims = ['anim-bounce','anim-shake','anim-worried','anim-wobble','anim-dance','anim-fall'];
+    allAnims.forEach(c => el.classList.remove(c));
+    void el.offsetWidth;
+    if (!anim) return;
+    el.classList.add('anim-' + anim);
+    if (duration > 0) setTimeout(() => el.classList.remove('anim-' + anim), duration);
 }
 
 // ===== INIT =====

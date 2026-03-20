@@ -102,6 +102,38 @@
             transition: all 0.2s;
         }
         .btn-reset:hover { background: #1a3a6b; color: white; }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+        .ctrl-btn {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3em;
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            background: #1a3a6b;
+            color: white;
+            transition: all 0.2s;
+            box-shadow: 0 3px 10px rgba(26,58,107,0.3);
+        }
+        .ctrl-btn:hover { background: #2a5aab; transform: translateY(-2px); }
+        .ctrl-btn:disabled { opacity: 0.35; cursor: default; transform: none; }
+        .move-counter {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1em;
+            background: rgba(255,255,255,0.6);
+            border-radius: 10px;
+            padding: 7px 14px;
+            min-width: 110px;
+            text-align: center;
+            color: #1a3a6b;
+            font-weight: 700;
+        }
         .move-msg {
             font-size: 1.05em;
             font-weight: 700;
@@ -140,7 +172,7 @@
     <h1>Pat</h1>
 
     <div class="text-block">
-        &#206;n aceast&#259; pozi&#539;ie negrul este superior, av&#226;nd un cal &#238;n plus. De asemenea, se observ&#259;
+        &#206;n aceast&#259; pozi&#539;ie negrul are o mul&#539;ime de piese &#238;n plus. De asemenea, se observ&#259;
         c&#259; negrul poate da mat la prima mutare &#351;i nu poate fi oprit nicicum. De aceea, albul aplic&#259;
         planul de urgen&#539;&#259; &#351;i atac&#259; cu Th7+, iar negrul captureaz&#259; turnul cu Rxh7.
     </div>
@@ -159,8 +191,13 @@
                     <span style="font-weight:900;color:#c0392b;">&#189;&#8209;&#189;</span>
                 </div>
             </div>
-            <button id="btn1" class="btn-next" onclick="nextMove(1)">&#9654; Mutarea urm&#259;toare</button>
-            <button class="btn-reset" onclick="resetBoard(1)">&#8634; Reseteaz&#259;</button>
+            <div class="controls">
+                <button class="ctrl-btn" id="btnFirst1" onclick="goFirst1()">&#9198;</button>
+                <button class="ctrl-btn" id="btnPrev1"  onclick="goPrev1()">&#9664;</button>
+                <div class="move-counter" id="moveCounter1">Start</div>
+                <button class="ctrl-btn" id="btnNext1"  onclick="goNext1()">&#9654;</button>
+                <button class="ctrl-btn" id="btnLast1"  onclick="goLast1()">&#9197;</button>
+            </div>
             <div id="msg1" class="move-msg">Apas&#259; pentru a vedea planul de pat!</div>
         </div>
     </div>
@@ -174,11 +211,11 @@
     <hr class="separator">
 
     <div class="text-block">
-        &#206;n aceast&#259; pozi&#539;ie negrul este superior, iar pionul liber care poate promova &#238;n regin&#259;
-        la prima mutare este un mare pericol. &#206;ns&#259; albul g&#259;se&#351;te o salvare prin pat!
+        &#206;n aceast&#259; pozi&#539;ie negrul este superior, iar doi pioni avansa&#539;i pe coloana f amenin&#539;&#259;
+        s&#259; promoveze. Albul g&#259;se&#351;te totu&#351;i o salvare prin pat!
     </div>
 
-    <!-- ===== DIAGRAMA 2: 1...Th2+ 2.Rf3 Txb2 = PAT ===== -->
+    <!-- ===== DIAGRAMA 2: 1...f2 2.Rxf2 2...Th2+ 3.Rf3 3...Txb2 = PAT ===== -->
     <div class="board-section">
         <div class="board-wrapper">
             <div id="board2" class="chessboard"></div>
@@ -188,27 +225,37 @@
                 <div class="move-row">
                     <span class="move-num">1.</span>
                     <span>...</span>
-                    <span id="d2m1b" class="move-black">Th2+</span>
+                    <span id="d2m1b" class="move-black">f2</span>
                 </div>
                 <div class="move-row">
                     <span class="move-num">2.</span>
-                    <span id="d2m2w" class="move-white">Rf3</span>
-                    <span id="d2m2b" class="move-black">Txb2</span>
+                    <span id="d2m2w" class="move-white">Rxf2</span>
+                    <span id="d2m2b" class="move-black">Th2+</span>
+                </div>
+                <div class="move-row">
+                    <span class="move-num">3.</span>
+                    <span id="d2m3w" class="move-white">Rf3</span>
+                    <span id="d2m3b" class="move-black">Txb2</span>
                     <span style="font-weight:900;color:#c0392b;">&#189;&#8209;&#189;</span>
                 </div>
             </div>
-            <button id="btn2" class="btn-next" onclick="nextMove(2)">&#9654; Mutarea urm&#259;toare</button>
-            <button class="btn-reset" onclick="resetBoard(2)">&#8634; Reseteaz&#259;</button>
+            <div class="controls">
+                <button class="ctrl-btn" id="btnFirst2" onclick="goFirst2()">&#9198;</button>
+                <button class="ctrl-btn" id="btnPrev2"  onclick="goPrev2()">&#9664;</button>
+                <div class="move-counter" id="moveCounter2">Start</div>
+                <button class="ctrl-btn" id="btnNext2"  onclick="goNext2()">&#9654;</button>
+                <button class="ctrl-btn" id="btnLast2"  onclick="goLast2()">&#9197;</button>
+            </div>
             <div id="msg2" class="move-msg">Apas&#259; pentru a vedea cum for&#539;&#259;m remiza!</div>
         </div>
     </div>
 
     <div class="text-block">
-        Acest lucru &#238;l for&#539;eaz&#259; pe alb s&#259; captureze, de&#351;i prin aceast&#259; mutare &#238;&#351;i a&#351;az&#259; turnul
-        pe aceea&#351;i linie cu regele propriu, permi&#539;&#226;ndu-i negrului un atac laser cu Th2+ &#351;i,
-        dup&#259; mutarea regelui, capturarea turnului. Mutarea salvatoare pentru alb este Rf3, iar
-        dup&#259; ce turnul negru captureaz&#259; la b2, negrul se g&#259;se&#351;te &#238;n imposibilitatea de a mai face
-        o mutare legal&#259;, ob&#539;in&#226;nd jum&#259;tate de punct.
+        Pionul f3 avanseaz&#259; la f2, amenin&#539;&#226;nd s&#259; promoveze &#238;n regin&#259;. Albul este nevoit s&#259;
+        captureze cu regele, de&#351;i prin aceast&#259; mutare se pozi&#539;ioneaz&#259; pe aceea&#351;i linie cu turnul
+        propriu, permi&#539;&#226;ndu-i negrului un atac laser cu Th2+. Mutarea salvatoare pentru alb
+        este Rf3, iar dup&#259; ce turnul negru captureaz&#259; la b2, albul se g&#259;se&#351;te &#238;n imposibilitatea
+        de a mai face o mutare legal&#259;, ob&#539;in&#226;nd jum&#259;tate de punct.
     </div>
 
     <!-- Nav -->
@@ -245,20 +292,23 @@
     });
 
     // ===== DIAGRAMA 2 =====
-    // Black: Kf5, Pf4, Rh3  |  White: Rb2, Kf2  (black to move)
-    // 1...Rh3-h2+ checks Kf2 via rank 2
-    // 2.Kf2-f3
-    // 2...Rh2xb2 = stalemate (Kf3: rank2 by Rb2, e3/g3 by Pf4, e4/f4/g4 by Kf5)
+    // Black: Kf5, Pf4, Pf3, Rh3  |  White: Rb2, Kf1  (black to move)
+    // 1...f2 threatens promotion → 2.Kxf2 forced → 2...Rh2+ → 3.Kf3 → 3...Rxb2 = stalemate
+    // (Kf3: rank2 by Rb2, e3/g3 by Pf4, e4/f4/g4 by Kf5)
     var F2 = [
-        '8/8/8/5k2/5p2/7r/1R3K2/8',   // start (black to move)
-        '8/8/8/5k2/5p2/8/1R3K1r/8',   // after 1...Rh2+
-        '8/8/8/5k2/5p2/5K2/1R5r/8',   // after 2.Kf3
-        '8/8/8/5k2/5p2/5K2/1r6/8'     // after 2...Rxb2 = stalemate
+        '8/8/8/5k2/5p2/5p1r/1R6/5K2',   // start (black to move)
+        '8/8/8/5k2/5p2/7r/1R3p2/5K2',   // after 1...f2
+        '8/8/8/5k2/5p2/7r/1R3K2/8',     // after 2.Kxf2
+        '8/8/8/5k2/5p2/8/1R3K1r/8',     // after 2...Th2+
+        '8/8/8/5k2/5p2/5K2/1R5r/8',     // after 3.Kf3
+        '8/8/8/5k2/5p2/5K2/1r6/8'       // after 3...Txb2 = stalemate
     ];
     var M2 = [
-        'Apas\u0103 pentru a vedea cum for\u0163\u0103m remiza!',
-        '1... Th2+ \u2014 turnul negru d\u0103 \u015fah! Regele alb e nevoit s\u0103 fug\u0103.',
-        '2. Rf3 \u2014 regele alb fuge la f3',
+        'Apas\u0103 pentru a vedea cum for\u021b\u0103m remiza!',
+        '1... f2 \u2014 pionul negru amenin\u021b\u0103 s\u0103 promoveze! Albul este nevoit s\u0103 captureze.',
+        '2. Rxf2 \u2014 regele alb capturez\u0103 pionul, pozi\u021bion\u00e2ndu-se pe aceea\u015fi linie cu turnul propriu.',
+        '2... Th2+ \u2014 turnul negru d\u0103 \u015fah! Regele alb e nevoit s\u0103 fug\u0103.',
+        '3. Rf3 \u2014 regele alb fuge la f3.',
         '\u00BD\u2011\u00BD PAT! Regele alb pe f3 nu are nicio mutare \u2014 remiz\u0103!'
     ];
     var step2 = 0;
@@ -269,47 +319,71 @@
         orientation: 'white'
     });
 
-    // ===== SHARED FUNCTIONS =====
-    function hi(id) { var e = document.getElementById(id); if (e) e.classList.add('move-active'); }
-    function lo(id) { var e = document.getElementById(id); if (e) e.classList.remove('move-active'); }
-
-    function nextMove(n) {
-        if (n === 1) {
-            if (step1 >= F1.length - 1) return;
-            step1++;
-            board1.position(F1[step1], true);
-            lo('d1m1w'); lo('d1m1b');
-            if (step1 === 1) hi('d1m1w');
-            document.getElementById('msg1').textContent = M1[step1];
-            if (step1 >= F1.length - 1) document.getElementById('btn1').disabled = true;
-        } else {
-            if (step2 >= F2.length - 1) return;
-            step2++;
-            board2.position(F2[step2], true);
-            lo('d2m1b'); lo('d2m2w'); lo('d2m2b');
-            if (step2 === 1) hi('d2m1b');
-            else if (step2 === 2) hi('d2m2w');
-            else if (step2 === 3) { lo('d2m2w'); }
-            document.getElementById('msg2').textContent = M2[step2];
-            if (step2 >= F2.length - 1) document.getElementById('btn2').disabled = true;
-        }
+    // ===== DIAGRAMA 1 CONTROLS =====
+    var D1_IDS = ['d1m1w', 'd1m1b'];
+    var SAN1 = ['Th7+', 'Rxh7'];
+    function getMoveLabel1(s) {
+        if (s === 0) return 'Start';
+        var i = s - 1;
+        var isWhite = (i % 2 === 0);
+        var n = Math.floor(i/2) + 1;
+        return n + (isWhite ? '. ' : '... ') + SAN1[i];
     }
-
-    function resetBoard(n) {
-        if (n === 1) {
-            step1 = 0;
-            board1.position(F1[0], true);
-            lo('d1m1w'); lo('d1m1b');
-            document.getElementById('msg1').textContent = M1[0];
-            document.getElementById('btn1').disabled = false;
-        } else {
-            step2 = 0;
-            board2.position(F2[0], true);
-            lo('d2m1b'); lo('d2m2w'); lo('d2m2b');
-            document.getElementById('msg2').textContent = M2[0];
-            document.getElementById('btn2').disabled = false;
-        }
+    function updateUI1() {
+        board1.position(F1[step1], true);
+        D1_IDS.forEach(function(id, i) {
+            var el = document.getElementById(id);
+            if (el) {
+                if (i === step1 - 1) el.classList.add('move-active');
+                else el.classList.remove('move-active');
+            }
+        });
+        document.getElementById('msg1').textContent = M1[step1];
+        document.getElementById('moveCounter1').textContent = getMoveLabel1(step1);
+        document.getElementById('btnFirst1').disabled = (step1 === 0);
+        document.getElementById('btnPrev1').disabled  = (step1 === 0);
+        document.getElementById('btnNext1').disabled  = (step1 >= F1.length - 1);
+        document.getElementById('btnLast1').disabled  = (step1 >= F1.length - 1);
     }
+    function goFirst1() { step1 = 0; updateUI1(); }
+    function goPrev1()  { if (step1 > 0) { step1--; updateUI1(); } }
+    function goNext1()  { if (step1 < F1.length - 1) { step1++; updateUI1(); } }
+    function goLast1()  { step1 = F1.length - 1; updateUI1(); }
+    document.getElementById('btnFirst1').disabled = true;
+    document.getElementById('btnPrev1').disabled  = true;
+
+    // ===== DIAGRAMA 2 CONTROLS =====
+    var D2_IDS = ['d2m1b', 'd2m2w', 'd2m2b', 'd2m3w', 'd2m3b'];
+    var SAN2 = ['f2', 'Rxf2', 'Th2+', 'Rf3', 'Txb2'];
+    function getMoveLabel2(s) {
+        if (s === 0) return 'Start';
+        var i = s - 1;
+        var isBlack = (i % 2 === 0);
+        var n = isBlack ? Math.floor(i/2)+1 : Math.floor((i+1)/2)+1;
+        return n + (isBlack ? '... ' : '. ') + SAN2[i];
+    }
+    function updateUI2() {
+        board2.position(F2[step2], true);
+        D2_IDS.forEach(function(id, i) {
+            var el = document.getElementById(id);
+            if (el) {
+                if (i === step2 - 1) el.classList.add('move-active');
+                else el.classList.remove('move-active');
+            }
+        });
+        document.getElementById('msg2').textContent = M2[step2];
+        document.getElementById('moveCounter2').textContent = getMoveLabel2(step2);
+        document.getElementById('btnFirst2').disabled = (step2 === 0);
+        document.getElementById('btnPrev2').disabled  = (step2 === 0);
+        document.getElementById('btnNext2').disabled  = (step2 >= F2.length - 1);
+        document.getElementById('btnLast2').disabled  = (step2 >= F2.length - 1);
+    }
+    function goFirst2() { step2 = 0; updateUI2(); }
+    function goPrev2()  { if (step2 > 0) { step2--; updateUI2(); } }
+    function goNext2()  { if (step2 < F2.length - 1) { step2++; updateUI2(); } }
+    function goLast2()  { step2 = F2.length - 1; updateUI2(); }
+    document.getElementById('btnFirst2').disabled = true;
+    document.getElementById('btnPrev2').disabled  = true;
 </script>
 <style>
 .hub-btn {

@@ -209,8 +209,11 @@
 <body>
 
 <div class="page">
-    <img src="pieces/wR.svg" class="corner-piece corner-tl" alt="">
-    <img src="pieces/wR.svg" class="corner-piece corner-tr" alt="">
+    <div style="position:absolute;top:0;left:0;display:flex;gap:2px;align-items:flex-end;">
+        <img src="piese_sah/rega 1.jpg"  style="height:95px;width:auto;mix-blend-mode:multiply;" alt="">
+        <img src="piese_sah/turn 1.png"  style="height:110px;width:auto;mix-blend-mode:multiply;" alt="">
+    </div>
+    <img src="piese_sah/rege 2.png" style="position:absolute;top:0;right:0;height:105px;width:auto;mix-blend-mode:multiply;" alt="">
 
     <div class="chapter-tabs">
         <button class="tab-btn active" onclick="loadChapter(0)">Dou&#259; Turnuri 1</button>
@@ -362,10 +365,17 @@ function buildMovesList() {
     container.innerHTML = '';
     const whiteFirst = currentChapter.startFen.split(' ')[1] === 'w';
     currentChapter.sanMoves.forEach((mv, i) => {
-        if (i % 2 === 0) {
+        let showNum = false, numText = '';
+        if (whiteFirst) {
+            if (i % 2 === 0) { showNum = true; numText = (Math.floor(i / 2) + 1) + '.'; }
+        } else {
+            if (i === 0) { showNum = true; numText = '1...'; }
+            else if (i % 2 === 1) { showNum = true; numText = (Math.floor((i + 1) / 2) + 1) + '.'; }
+        }
+        if (showNum) {
             const num = document.createElement('span');
             num.className = 'move-number';
-            num.textContent = (Math.floor(i / 2) + 1) + '.';
+            num.textContent = numText;
             container.appendChild(num);
         }
         const isWhite = whiteFirst ? (i % 2 === 0) : (i % 2 !== 0);
@@ -392,10 +402,10 @@ function goNext()  { if (currentStep < positions.length - 1) goToStep(currentSte
 function getMoveLabel(s) {
     if (s === 0) return 'Start';
     const i = s - 1;
-    const wf = !chapter.startFen.includes(' b ');
+    const wf = currentChapter.startFen.split(' ')[1] === 'w';
     const isW = wf ? i % 2 === 0 : i % 2 === 1;
     const n   = wf ? Math.floor(i/2)+1 : Math.floor((i+1)/2)+1;
-    return n + (isW ? '. ' : '... ') + toRo(chapter.sanMoves[i]);
+    return n + (isW ? '. ' : '... ') + toRo(currentChapter.sanMoves[i]);
 }
 
 function updateUI() {
