@@ -278,6 +278,16 @@
             animation: confetti-fall var(--dur, 2s) ease-in forwards;
         }
 
+        /* ===== HIGHLIGHT SQUARES (cage walls) ===== */
+        .sq-hl {
+            position: absolute;
+            pointer-events: none;
+            z-index: 5;
+            background: rgba(220, 30, 30, 0.22);
+            border: 1.5px solid rgba(200, 20, 20, 0.38);
+            box-sizing: border-box;
+        }
+
         .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 28px; }
         .nav-btn {
             display: inline-block;
@@ -320,8 +330,7 @@
         Echipa de &#350;oc poate func&#539;iona &#351;i altfel! De data aceasta, Regele alb &#238;i taie calea Regelui advers &#238;ntr-o direc&#539;ie, &#238;n timp ce Turnul &#238;i blocheaz&#259; accesul &#238;n cealalt&#259;. &#206;mpreun&#259;, construiesc o cu&#351;c&#259; ale c&#259;rei laturi sunt formate din p&#259;tr&#259;&#539;elele controlate de cele dou&#259; piese &#351;i din dou&#259; margini ale tablei care se &#238;nt&#226;lnesc &#238;ntr-un col&#539;.
     </div>
 
-    <div class="text-block">
-        Spre deosebire de metoda anterioar&#259; (cu&#351;ca clasic&#259;), aceast&#259; echip&#259; nu construie&#351;te inele concentrice &mdash; ci <strong>blocheaz&#259; pe dou&#259; axe</strong>: Regele t&#259;ie o coloan&#259;, Turnul t&#259;ie un r&#226;nd. Col&#539;ul se formeaz&#259; de la sine!
+    <div class="text-block" style="display:none">
     </div>
 
     <div class="lesson-title">Lec&#539;ia: Alt&#259; Echip&#259; de &#350;oc &mdash; Rege + Turn</div>
@@ -380,27 +389,27 @@ const chapter = {
         // step 0
         'Regele negru e &#238;n centrul tablei. Regele alb &#351;i Turnul formeaz&#259; <strong>Echipa de &#350;oc</strong>: Regele va t&#259;ia o direc&#539;ie, Turnul va bloca cealalt&#259;, for&#539;&#226;ndu-l pe regele advers spre un col&#539;!',
         // step 1 - Ke2 (white king)
-        '<span class="king-badge">&#9814; Regele Porne&#351;te!</span><br>Regele alb se apropie de centru. <strong>Regula de aur</strong>: nu turnul atac&#259; primul &mdash; coordon&#259;m for&#539;ele!',
+        '<span class="king-badge">&#9814; Regele Porne&#351;te!</span><br>Regele alb se apropie de centru. Turnul va intra &#238;n joc la momentul potrivit &mdash; mai &#238;nt&#226;i ne organiz&#259;m for&#539;ele!',
         // step 2 - Kd4 (black king)
-        'Regele negru &#238;ncearc&#259; s&#259; r&#259;m&#226;n&#259; activ &#238;n centrul tablei.',
+        'Regele negru st&#259; &#238;n centrul tablei &mdash; acolo e mai sigur dec&#226;t la margine sau la col&#539;.',
         // step 3 - Ra5 (white rook)
         'Turnul sare la linia 5 &#351;i <strong>taie tabla &#238;n dou&#259;</strong>! Dintr-o singur&#259; mutare, regele negru este blocat &#238;n jum&#259;tatea de jos. Primul zid e ridicat!',
         // step 4 - Ke4 (black king)
-        'Regele negru ia opozi&#539;ia &mdash; se pune fa&#539;&#259; &#238;n fa&#539;&#259; cu regele alb.',
+        'Regele negru ia opozi&#539;ia &mdash; se a&#351;az&#259; fa&#539;&#259; &#238;n fa&#539;&#259; cu regele alb.',
         // step 5 - Rh5 (white rook)
-        'Turnul se fere&#351;te! Dac&#259; r&#259;m&#226;nea pe a5, regele negru l-ar fi capturat (Re4&rarr;e5). Turnul se mut&#259; &#238;n siguran&#539;&#259; pe h5, men&#539;in&#226;nd controlul r&#226;ndului 5.',
+        'Turnul se mut&#259; pe h5, a&#351;tept&#226;nd s&#259; vad&#259; &#238;ncotro fuge regele negru. Nu gr&#259;bim for&#539;area &mdash; observ&#259;m mai &#238;nt&#226;i unde se &#238;ndreapt&#259;!',
         // step 6 - Kf4 (black king)
         'Regele negru profit&#259; &#351;i avanseaz&#259; spre flancul dreapta.',
         // step 7 - Kd3 (white king)
         '<span class="king-badge">&#9814; Regele Blocheaz&#259;!</span><br>Regele alb la d3 taie drumul regelui negru spre st&#226;nga. Turnul acoper&#259; r&#226;ndul 5, regele blocheaz&#259; flancul st&#226;ng &mdash; <strong>cu&#351;ca prinde contur</strong>!',
         // step 8 - Kg4 (black king)
-        'Regele negru simte c&#259; e blocat &#351;i se &#238;ndreapt&#259; spre <strong>a captura turnul</strong> de pe h5!',
+        'Regele negru atac&#259; turnul din h5!',
         // step 9 - Rb5 (white rook)
-        'Turnul se retrage la b5 &mdash; &#238;n siguran&#539;&#259;! Regele negru nu poate ajunge acolo f&#259;r&#259; s&#259; traverseze r&#226;ndul 5, controlat de turn.',
+        'Turnul se retrage la b5 &mdash; regele negru nu poate ajunge acolo f&#259;r&#259; s&#259; traverseze r&#226;ndul 5, controlat chiar de el!',
         // step 10 - Kf4 (black king)
-        'Regele negru renun&#539;&#259; la v&#226;n&#259;toarea turnului &#351;i face un pas &#238;napoi.',
+        'Regele negru se mi&#351;c&#259; pe unde mai poate.',
         // step 11 - Ra5 (white rook)
-        'Mutare de a&#351;teptare! Turnul revine &mdash; regele negru e &#238;n <strong>zugzwang</strong>: orice mutare &#238;i &#238;nr&#259;ut&#259;&#539;e&#351;te situa&#539;ia.',
+        'Mutare de a&#351;teptare &mdash; Turnul p&#259;streaz&#259; controlul asupra liniei a cincea. Regele negru e prizonier &#238;n continuare!',
         // step 12 - Kf3 (black king)
         'Regii sunt fa&#539;&#259; &#238;n fa&#539;&#259; (<strong>opozi&#539;ie direct&#259;</strong>) &mdash; un semn c&#259; regele negru e tot mai &#238;ncol&#539;it.',
         // step 13 - Ra4 (white rook)
@@ -422,7 +431,7 @@ const chapter = {
         // step 21 - Rc3 (white rook)
         'Turnul coboar&#259; la linia 3! Regele negru este blocat acum &#238;ntr-un mic dreptunghi &#238;n col&#539;ul dreapta-jos.',
         // step 22 - Kg1 (black king)
-        'Regele negru mai are c&#226;teva p&#259;trate de fugit &mdash; dar nu pentru mult timp!',
+        'Regele negru mai are foarte pu&#539;in spa&#539;iu!',
         // step 23 - Kf3 (white king)
         'Regele alb se repozi&#539;ioneaz&#259; pentru <strong>lovitura final&#259;</strong>.',
         // step 24 - Kh1 (black king)
@@ -430,11 +439,57 @@ const chapter = {
         // step 25 - Kg3 (white king)
         'Regele alb controleaz&#259; g2, f2, h2 &mdash; toate c&#259;ile de sc&#259;pare. <strong>Turnul livreaz&#259; lovitura de gra&#539;ie!</strong>',
         // step 26 - Kg1 (black king) — puzzle step
-        '&#128269; <strong>Ai g&#259;sit mata?</strong> Regele negru e pe g1, regele alb pe g3. Exist&#259; o singur&#259; mutare c&#226;&#351;tig&#259;toare &mdash; o po&#539;i g&#259;si? <strong>Tc1#!</strong>',
+        '&#128269; <strong>Ai g&#259;sit mutarea de mat? Este una singur&#259;!</strong>',
         // step 27 - Rc1# — checkmate
         'Turnul d&#259; mat pe c1! Regele negru pe g1 nu are nicio sc&#259;pare &mdash; g2, f2, h2 sunt controlate de regele alb, iar f1 &#351;i h1 de turn. <strong>&#350;ah mat!</strong> Aceasta este puterea Echipei de &#350;oc Rege + Turn!'
     ]
 };
+
+const highlights = {
+    7:  ['e2','e3','e4','e5','f5','g5'],
+    8:  ['e2','e3','e4','e5','f5','g5'],
+    9:  ['e2','e3','e4','e5','f5','g5'],
+    10: ['e2','e3','e4','e5','f5','g5'],
+    13: ['e2','e3','e4','f4','g4','h4'],
+    14: ['e2','e3','e4','f4','g4','h4'],
+    21: ['f1','f2','f3','g3','h3'],
+    22: ['f1','f2','f3','g3','h3'],
+    23: ['f2','g2','h2'],
+    24: ['f2','g2','h2'],
+    25: ['f2','g2','h2'],
+    26: ['f2','g2','h2'],
+};
+
+const heartSteps = {
+    22: { sq: '.square-g1', fast: false },
+    23: { sq: '.square-g1', fast: false },
+    24: { sq: '.square-h1', fast: false },
+    25: { sq: '.square-h1', fast: true  },
+    26: { sq: '.square-g1', fast: true  },
+    27: { sq: '.square-g1', fast: true  },
+};
+
+function removeHighlights() {
+    document.querySelectorAll('.sq-hl').forEach(el => el.remove());
+}
+function showHighlights(step) {
+    removeHighlights();
+    const sqs = highlights[step];
+    if (!sqs) return;
+    const wrap = document.getElementById('board-wrap');
+    const sz = wrap.offsetWidth / 8;
+    sqs.forEach(name => {
+        const fi = name.charCodeAt(0) - 97;
+        const rk = parseInt(name[1]);
+        const div = document.createElement('div');
+        div.className = 'sq-hl';
+        div.style.left   = (fi * sz) + 'px';
+        div.style.top    = ((8 - rk) * sz) + 'px';
+        div.style.width  = sz + 'px';
+        div.style.height = sz + 'px';
+        wrap.appendChild(div);
+    });
+}
 
 const lastMoves = [
     null,
@@ -630,6 +685,7 @@ const board = Chessboard('board', {
 window.addEventListener('resize', () => {
     board.resize();
     showLastMove(currentStep);
+    showHighlights(currentStep);
 });
 
 function buildMovesList() {
@@ -660,10 +716,9 @@ function goToStep(s) {
     board.position(positions[s], false);
     updateUI();
     showLastMove(s);
-    if (s === positions.length - 1) {
-        showHeart('.square-g1', true, true);
-        spawnPageConfetti(5000);
-    }
+    showHighlights(s);
+    if (heartSteps[s]) showHeart(heartSteps[s].sq, heartSteps[s].fast, true);
+    if (s === positions.length - 1) spawnPageConfetti(5000);
     if (chapter.whiteKingSteps.has(s)) playKingStep();
 }
 
