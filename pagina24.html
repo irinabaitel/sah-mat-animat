@@ -296,9 +296,17 @@
             20%     { transform: translate(-50%,-50%) scale(1.65); }
             40%     { transform: translate(-50%,-50%) scale(0.85); }
         }
-        @keyframes confetti-fly {
-            0%   { transform: translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1.2); opacity: 1; }
-            100% { transform: translate(-50%,-50%) translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(0); opacity: 0; }
+        @keyframes confetti-fall {
+            0%   { opacity: 1;   transform: translate(0, 0) rotate(0deg); }
+            80%  { opacity: 1; }
+            100% { opacity: 0;   transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); }
+        }
+        .confetti-page {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            border-radius: 3px;
+            animation: confetti-fall var(--dur, 2s) ease-in forwards;
         }
 
         .heart-marker {
@@ -316,16 +324,6 @@
             transform: translate(-50%,-50%) scale(0.65);
             opacity: 0.75;
             z-index: 4;
-        }
-
-        .confetti-particle {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 9px; height: 9px;
-            border-radius: 3px;
-            pointer-events: none;
-            z-index: 20;
-            animation: confetti-fly 0.85s ease-out forwards;
         }
 
         .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 28px; }
@@ -586,22 +584,33 @@ function removeHeart() {
     stopHeartbeat();
 }
 
-function spawnConfetti() {
-    const sq = document.querySelector('#board .square-g2');
-    if (!sq) return;
-    const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb'];
-    for (let i = 0; i < 24; i++) {
-        const p = document.createElement('div');
-        p.className = 'confetti-particle';
-        p.style.background = colors[i % colors.length];
-        const angle = (Math.PI * 2 * i / 24) + Math.random() * 0.35;
-        const dist  = 38 + Math.random() * 58;
-        p.style.setProperty('--dx',  `${Math.cos(angle) * dist}px`);
-        p.style.setProperty('--dy',  `${Math.sin(angle) * dist}px`);
-        p.style.setProperty('--rot', `${Math.random() * 720 - 360}deg`);
-        sq.appendChild(p);
-        setTimeout(() => p.remove(), 900);
+function spawnPageConfetti(duration) {
+    const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb','#ff99cc','#ffffff'];
+    const endTime = Date.now() + duration;
+    function batch() {
+        if (Date.now() >= endTime) return;
+        for (let i = 0; i < 12; i++) {
+            const p = document.createElement('div');
+            p.className = 'confetti-page';
+            const w = 7 + Math.random() * 7;
+            const h = w * (0.35 + Math.random() * 0.7);
+            p.style.width  = w + 'px';
+            p.style.height = h + 'px';
+            p.style.background = colors[Math.floor(Math.random() * colors.length)];
+            p.style.left = (Math.random() * 100) + 'vw';
+            p.style.top  = '-14px';
+            const fallDist = window.innerHeight * (0.65 + Math.random() * 0.45);
+            p.style.setProperty('--dx',  ((Math.random() - 0.5) * 180) + 'px');
+            p.style.setProperty('--dy',  fallDist + 'px');
+            p.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
+            const dur = 1.8 + Math.random() * 2.4;
+            p.style.setProperty('--dur', dur + 's');
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), dur * 1000 + 200);
+        }
+        setTimeout(batch, 110);
     }
+    batch();
 }
 
 function updateHeart(step) {
@@ -623,7 +632,7 @@ function updateHeart(step) {
         sq.appendChild(heartEl);
         startHeartbeat(450);
     } else if (step === 15) {
-        spawnConfetti();
+        spawnPageConfetti(5000);
         // Inimă mică de victorie sub regină
         const sq = document.querySelector('#board .square-g2');
         if (sq) {

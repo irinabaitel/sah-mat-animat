@@ -212,17 +212,17 @@
         .victory-text { font-size: 1.1em; color: #333; line-height: 1.7; }
 
         /* ===== CONFETTI ===== */
-        @keyframes confetti-fly {
-            0%   { transform: translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1.2); opacity: 1; }
-            100% { transform: translate(-50%,-50%) translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(0); opacity: 0; }
+        @keyframes confetti-fall {
+            0%   { opacity: 1;   transform: translate(0, 0) rotate(0deg); }
+            80%  { opacity: 1; }
+            100% { opacity: 0;   transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); }
         }
-        .confetti-particle {
+        .confetti-page {
             position: fixed;
-            width: 10px; height: 10px;
-            border-radius: 3px;
             pointer-events: none;
-            z-index: 999;
-            animation: confetti-fly 1.1s ease-out forwards;
+            z-index: 9999;
+            border-radius: 3px;
+            animation: confetti-fall var(--dur, 2s) ease-in forwards;
         }
 
         /* ===== NAV ===== */
@@ -458,22 +458,33 @@ function playWrong() {
 }
 
 /* ===== CONFETTI ===== */
-function spawnConfetti() {
-    const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb'];
-    const cx = window.innerWidth / 2, cy = window.innerHeight / 3;
-    for (let i = 0; i < 48; i++) {
-        const p = document.createElement('div');
-        p.className = 'confetti-particle';
-        p.style.background = colors[i % colors.length];
-        p.style.left = cx + 'px'; p.style.top = cy + 'px';
-        const angle = (Math.PI * 2 * i / 48) + Math.random() * 0.2;
-        const dist  = 80 + Math.random() * 160;
-        p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
-        p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
-        p.style.setProperty('--rot', `${Math.random() * 720 - 360}deg`);
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 1200);
+function spawnPageConfetti(duration) {
+    const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb','#ff99cc','#ffffff'];
+    const endTime = Date.now() + duration;
+    function batch() {
+        if (Date.now() >= endTime) return;
+        for (let i = 0; i < 12; i++) {
+            const p = document.createElement('div');
+            p.className = 'confetti-page';
+            const w = 7 + Math.random() * 7;
+            const h = w * (0.35 + Math.random() * 0.7);
+            p.style.width  = w + 'px';
+            p.style.height = h + 'px';
+            p.style.background = colors[Math.floor(Math.random() * colors.length)];
+            p.style.left = (Math.random() * 100) + 'vw';
+            p.style.top  = '-14px';
+            const fallDist = window.innerHeight * (0.65 + Math.random() * 0.45);
+            p.style.setProperty('--dx',  ((Math.random() - 0.5) * 180) + 'px');
+            p.style.setProperty('--dy',  fallDist + 'px');
+            p.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
+            const dur = 1.8 + Math.random() * 2.4;
+            p.style.setProperty('--dur', dur + 's');
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), dur * 1000 + 200);
+        }
+        setTimeout(batch, 110);
     }
+    batch();
 }
 
 /* ===== FEEDBACK ===== */
@@ -526,8 +537,7 @@ function showVictory() {
     document.getElementById('challengeBox').style.display = 'none';
     document.getElementById('feedbackBox').className = 'feedback-box hidden';
     document.getElementById('victoryScreen').classList.add('show');
-    spawnConfetti();
-    setTimeout(spawnConfetti, 600);
+        spawnPageConfetti(5000);
 }
 
 /* ===== BOARD ===== */
