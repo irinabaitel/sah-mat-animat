@@ -393,19 +393,19 @@ const chapter = {
         // step 2 - Kd4 (black king)
         'Regele negru st&#259; &#238;n centrul tablei &mdash; acolo e mai sigur dec&#226;t la margine sau la col&#539;.',
         // step 3 - Ra5 (white rook)
-        'Turnul sare la linia 5 &#351;i <strong>taie tabla &#238;n dou&#259;</strong>! Dintr-o singur&#259; mutare, regele negru este blocat &#238;n jum&#259;tatea de jos. Primul zid e ridicat!',
+        'Turnul se duce pe linia 5 &#351;i <strong>&#238;mparte tabla &#238;n dou&#259;</strong>! Regele negru este blocat &#238;n jum&#259;tatea de jos. Primul zid e ridicat!',
         // step 4 - Ke4 (black king)
         'Regele negru ia opozi&#539;ia &mdash; se a&#351;az&#259; fa&#539;&#259; &#238;n fa&#539;&#259; cu regele alb.',
         // step 5 - Rh5 (white rook)
         'Turnul se mut&#259; pe h5, a&#351;tept&#226;nd s&#259; vad&#259; &#238;ncotro fuge regele negru. Nu gr&#259;bim for&#539;area &mdash; observ&#259;m mai &#238;nt&#226;i unde se &#238;ndreapt&#259;!',
         // step 6 - Kf4 (black king)
-        'Regele negru profit&#259; &#351;i avanseaz&#259; spre flancul dreapta.',
+        'Regele negru se putea duce &#238;n orice direc&#539;ie &mdash; &#351;i-a ales flancul dreapta.',
         // step 7 - Kd3 (white king)
-        '<span class="king-badge">&#9814; Regele Blocheaz&#259;!</span><br>Regele alb la d3 taie drumul regelui negru spre st&#226;nga. Turnul acoper&#259; r&#226;ndul 5, regele blocheaz&#259; flancul st&#226;ng &mdash; <strong>cu&#351;ca prinde contur</strong>!',
+        '<span class="king-badge">&#9814; Regele Blocheaz&#259;!</span><br>Regele alb taie drumul spre flancul damei. Turnul p&#259;ze&#351;te linia a cincea &mdash; <strong>cu&#351;ca prinde contur</strong>!',
         // step 8 - Kg4 (black king)
         'Regele negru atac&#259; turnul din h5!',
         // step 9 - Rb5 (white rook)
-        'Turnul se retrage la b5 &mdash; regele negru nu poate ajunge acolo f&#259;r&#259; s&#259; traverseze r&#226;ndul 5, controlat chiar de el!',
+        'Turnul se retrage la b5.',
         // step 10 - Kf4 (black king)
         'Regele negru se mi&#351;c&#259; pe unde mai poate.',
         // step 11 - Ra5 (white rook)
@@ -476,8 +476,8 @@ function showHighlights(step) {
     removeHighlights();
     const sqs = highlights[step];
     if (!sqs) return;
-    const wrap = document.getElementById('board-wrap');
-    const sz = wrap.offsetWidth / 8;
+    const boardEl = document.getElementById('board');
+    const sz = boardEl.offsetWidth / 8;
     sqs.forEach(name => {
         const fi = name.charCodeAt(0) - 97;
         const rk = parseInt(name[1]);
@@ -487,7 +487,7 @@ function showHighlights(step) {
         div.style.top    = ((8 - rk) * sz) + 'px';
         div.style.width  = sz + 'px';
         div.style.height = sz + 'px';
-        wrap.appendChild(div);
+        boardEl.appendChild(div);
     });
 }
 
