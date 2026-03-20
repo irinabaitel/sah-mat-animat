@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sah Mat Animat - Alta Echipa de Soc: Rege + Turn vs Rege</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #F5A96E;
+            font-family: 'Nunito', sans-serif;
+            padding: 24px 16px;
+            min-height: 100vh;
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 44px 50px;
+            position: relative;
+        }
+
+        .corner-piece { position: absolute; width: 80px; height: 80px; }
+        .corner-tl { top: 0; left: 0; }
+        .corner-tr { top: 0; right: 0; transform: scaleX(-1); }
+
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.2em;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            margin-top: 10px;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        .text-block {
+            font-size: 1.1em;
+            line-height: 1.75;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .lesson-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.35em;
+            font-weight: 900;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            margin: 28px 0 6px;
+        }
+
+        .chapter-subtitle {
+            text-align: center;
+            color: #1a3a6b;
+            font-size: 0.95em;
+            margin-bottom: 22px;
+            font-style: italic;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 22px;
+            align-items: flex-start;
+        }
+
+        .board-section { flex: 0 0 auto; }
+        #board-wrap {
+            position: relative;
+            display: inline-block;
+            width: min(360px, calc(100vw - 40px));
+            height: min(360px, calc(100vw - 40px));
+            overflow: hidden;
+        }
+        #board { width: 100%; }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .ctrl-btn {
+            background: #1a3a6b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 46px;
+            height: 46px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .ctrl-btn:hover:not(:disabled) { background: #2a5aab; }
+        .ctrl-btn:disabled { background: rgba(26,58,107,0.25); cursor: not-allowed; }
+
+        .move-counter {
+            background: rgba(255,255,255,0.6);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-weight: 700;
+            color: #1a3a6b;
+            font-size: 0.9em;
+            min-width: 110px;
+            text-align: center;
+        }
+
+        .info-section { flex: 1; min-width: 0; }
+
+        .moves-box {
+            background: rgba(255,255,255,0.4);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+        }
+        .moves-box h3 {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1a3a6b;
+            margin-bottom: 10px;
+        }
+
+        .moves-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .move-number { color: rgba(26,58,107,0.5); font-size: 0.8em; padding: 0 2px; }
+
+        .move-token {
+            border: 1px solid rgba(26,58,107,0.3);
+            border-radius: 6px;
+            padding: 4px 9px;
+            font-size: 0.92em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .move-token.white-move { background: rgba(255,255,255,0.7); color: #1a3a6b; }
+        .move-token.black-move { background: rgba(50,50,50,0.12); color: #333; }
+        .move-token.active { background: #1a3a6b !important; color: white !important; border-color: #1a3a6b; }
+        .move-token.king-move { border-color: #27ae60; }
+        .move-token.king-move.active { background: #27ae60 !important; border-color: #27ae60; }
+        .move-token:hover:not(.active) { background: rgba(255,255,255,0.9); }
+
+        .annotation-box {
+            background: rgba(255,255,255,0.6);
+            border-radius: 12px;
+            padding: 16px;
+            line-height: 1.7;
+            color: #333;
+            font-size: 1em;
+            height: 175px;
+            overflow-y: auto;
+            border-left: 4px solid #1a3a6b;
+        }
+        .annotation-box.checkmate {
+            border-left-color: #c0392b;
+            background: rgba(255,255,255,0.85);
+        }
+        .annotation-box.king-active {
+            border-left-color: #27ae60;
+            background: rgba(220,255,230,0.75);
+        }
+        .annotation-box.puzzle {
+            border-left-color: #8e44ad;
+            background: rgba(240,220,255,0.75);
+        }
+
+        .checkmate-badge {
+            display: inline-block;
+            background: #c0392b;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .king-badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .hint {
+            text-align: center;
+            color: rgba(26,58,107,0.5);
+            font-size: 0.78em;
+            margin-top: 10px;
+        }
+
+        .volume-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        #volBtn {
+            background: none;
+            border: none;
+            font-size: 1.3em;
+            cursor: pointer;
+            line-height: 1;
+            padding: 2px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        #volBtn:hover { opacity: 1; }
+
+        #volSlider {
+            width: 90px;
+            accent-color: #1a3a6b;
+            cursor: pointer;
+        }
+
+        /* ===== INIMIOARĂ ===== */
+        @keyframes hb-slow {
+            0%,100% { transform: translate(-50%,-50%) scale(1); }
+            15%     { transform: translate(-50%,-50%) scale(1.4); }
+            30%     { transform: translate(-50%,-50%) scale(1); }
+            45%     { transform: translate(-50%,-50%) scale(1.3); }
+            60%     { transform: translate(-50%,-50%) scale(1); }
+        }
+        @keyframes hb-fast {
+            0%,100% { transform: translate(-50%,-50%) scale(1); }
+            10%     { transform: translate(-50%,-50%) scale(1.55); }
+            20%     { transform: translate(-50%,-50%) scale(1); }
+            30%     { transform: translate(-50%,-50%) scale(1.55); }
+            40%     { transform: translate(-50%,-50%) scale(1); }
+            50%     { transform: translate(-50%,-50%) scale(1.55); }
+            60%     { transform: translate(-50%,-50%) scale(1); }
+        }
+        .heart-badge {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            font-size: 2em;
+            pointer-events: none;
+            z-index: 15;
+            line-height: 1;
+        }
+        .heart-badge.hb-slow  { animation: hb-slow 1.4s ease-in-out infinite; }
+        .heart-badge.hb-fast  { animation: hb-fast 0.55s ease-in-out infinite; }
+        /* Inimă mică, semitransparentă — regele se vede dedesubt */
+        .heart-badge.hb-small { font-size: 1.1em; opacity: 0.52; }
+
+        /* ===== CONFETTI pagina întreagă ===== */
+        @keyframes confetti-fall {
+            0%   { opacity: 1;   transform: translate(0, 0) rotate(0deg); }
+            80%  { opacity: 1; }
+            100% { opacity: 0;   transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); }
+        }
+        .confetti-page {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            border-radius: 3px;
+            animation: confetti-fall var(--dur, 2s) ease-in forwards;
+        }
+
+        .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 28px; }
+        .nav-btn {
+            display: inline-block;
+            background: #1a3a6b;
+            color: white;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3em;
+            padding: 13px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 5px 20px rgba(26,58,107,0.4);
+        }
+        .nav-btn:hover { background: #2a5aab; transform: translateY(-3px); }
+        .nav-btn.back { background: rgba(26,58,107,0.5); }
+
+        @media (max-width: 680px) {
+            body { padding: 8px 4px; }
+            .page { padding: 12px 10px 28px; }
+            .corner-piece { display: none; }
+            h1 { font-size: 1.6em; margin-top: 0; }
+            .main-content { flex-direction: column; }
+            .board-section { margin: 0 auto; }
+            .annotation-box { height: auto; min-height: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <div style="position:absolute;top:0;left:0;display:flex;gap:2px;align-items:flex-end;">
+        <img src="piese_sah/turn 1.png" style="height:110px;width:auto;mix-blend-mode:multiply;" alt="">
+        <img src="piese_sah/rega 1.jpg"   style="height:95px;width:auto;mix-blend-mode:multiply;" alt="">
+    </div>
+    <img src="piese_sah/rege 2.png" style="position:absolute;top:0;right:0;height:105px;width:auto;mix-blend-mode:multiply;" alt="">
+
+    <h1>Alt&#259; Echip&#259; de &#350;oc<br>Rege + Turn vs. Rege</h1>
+
+    <div class="text-block">
+        Echipa de &#350;oc poate func&#539;iona &#351;i altfel! De data aceasta, Regele alb &#238;i taie calea Regelui advers &#238;ntr-o direc&#539;ie, &#238;n timp ce Turnul &#238;i blocheaz&#259; accesul &#238;n cealalt&#259;. &#206;mpreun&#259;, construiesc o cu&#351;c&#259; ale c&#259;rei laturi sunt formate din p&#259;tr&#259;&#539;elele controlate de cele dou&#259; piese &#351;i din dou&#259; margini ale tablei care se &#238;nt&#226;lnesc &#238;ntr-un col&#539;.
+    </div>
+
+    <div class="text-block">
+        Spre deosebire de metoda anterioar&#259; (cu&#351;ca clasic&#259;), aceast&#259; echip&#259; nu construie&#351;te inele concentrice &mdash; ci <strong>blocheaz&#259; pe dou&#259; axe</strong>: Regele t&#259;ie o coloan&#259;, Turnul t&#259;ie un r&#226;nd. Col&#539;ul se formeaz&#259; de la sine!
+    </div>
+
+    <div class="lesson-title">Lec&#539;ia: Alt&#259; Echip&#259; de &#350;oc &mdash; Rege + Turn</div>
+    <div class="chapter-subtitle">S&#259;geata portocalie = Turnul &nbsp;|&nbsp; S&#259;geata verde = Regele alb &nbsp;|&nbsp; S&#259;geata albastr&#259; = Regele negru</div>
+
+    <div class="main-content">
+        <div class="board-section">
+            <div id="board-wrap">
+                <div id="board"></div>
+            </div>
+            <div class="controls">
+                <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima pozi&#539;ie">&#9198;</button>
+                <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="&#206;napoi">&#9664;</button>
+                <div class="move-counter" id="moveCounter">Start</div>
+                <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="&#206;nainte">&#9654;</button>
+                <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima pozi&#539;ie">&#9197;</button>
+            </div>
+            <p class="hint">&#8592; &#8594; sau butoanele de mai sus</p>
+            <div class="volume-row">
+                <button id="volBtn" onclick="toggleMute()" title="Sunet">&#128266;</button>
+                <input type="range" id="volSlider" min="0" max="100" value="70"
+                       oninput="setVolume(this.value)">
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="moves-box">
+                <h3>Mut&#259;ri</h3>
+                <div class="moves-list" id="movesList"></div>
+            </div>
+            <div class="annotation-box" id="annotationBox"></div>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="pagina30.html" class="nav-btn back">&#9664; &#206;napoi</a>
+        <a href="pagina32.html" class="nav-btn">&#206;nainte &#9654;</a>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+
+<script>
+function toRo(san) {
+    const map = { K:'R', Q:'D', R:'T', B:'N', N:'C' };
+    return san.replace(/[KQRBN]/g, m => map[m]);
+}
+
+const chapter = {
+    startFen: '8/8/8/4k3/8/8/8/R3K3 w Q - 0 1',
+    sanMoves: ['Ke2','Kd4','Ra5','Ke4','Rh5','Kf4','Kd3','Kg4','Rb5','Kf4','Ra5','Kf3','Ra4','Kf2','Rf4+','Kg2','Ke2','Kg3','Rc4','Kg2','Rc3','Kg1','Kf3','Kh1','Kg3','Kg1','Rc1#'],
+    whiteKingSteps: new Set([1, 7, 17, 23, 25]),
+    annotations: [
+        // step 0
+        'Regele negru e &#238;n centrul tablei. Regele alb &#351;i Turnul formeaz&#259; <strong>Echipa de &#350;oc</strong>: Regele va t&#259;ia o direc&#539;ie, Turnul va bloca cealalt&#259;, for&#539;&#226;ndu-l pe regele advers spre un col&#539;!',
+        // step 1 - Ke2 (white king)
+        '<span class="king-badge">&#9814; Regele Porne&#351;te!</span><br>Regele alb se apropie de centru. <strong>Regula de aur</strong>: nu turnul atac&#259; primul &mdash; coordon&#259;m for&#539;ele!',
+        // step 2 - Kd4 (black king)
+        'Regele negru &#238;ncearc&#259; s&#259; r&#259;m&#226;n&#259; activ &#238;n centrul tablei.',
+        // step 3 - Ra5 (white rook)
+        'Turnul sare la linia 5 &#351;i <strong>taie tabla &#238;n dou&#259;</strong>! Dintr-o singur&#259; mutare, regele negru este blocat &#238;n jum&#259;tatea de jos. Primul zid e ridicat!',
+        // step 4 - Ke4 (black king)
+        'Regele negru ia opozi&#539;ia &mdash; se pune fa&#539;&#259; &#238;n fa&#539;&#259; cu regele alb.',
+        // step 5 - Rh5 (white rook)
+        'Turnul se fere&#351;te! Dac&#259; r&#259;m&#226;nea pe a5, regele negru l-ar fi capturat (Re4&rarr;e5). Turnul se mut&#259; &#238;n siguran&#539;&#259; pe h5, men&#539;in&#226;nd controlul r&#226;ndului 5.',
+        // step 6 - Kf4 (black king)
+        'Regele negru profit&#259; &#351;i avanseaz&#259; spre flancul dreapta.',
+        // step 7 - Kd3 (white king)
+        '<span class="king-badge">&#9814; Regele Blocheaz&#259;!</span><br>Regele alb la d3 taie drumul regelui negru spre st&#226;nga. Turnul acoper&#259; r&#226;ndul 5, regele blocheaz&#259; flancul st&#226;ng &mdash; <strong>cu&#351;ca prinde contur</strong>!',
+        // step 8 - Kg4 (black king)
+        'Regele negru simte c&#259; e blocat &#351;i se &#238;ndreapt&#259; spre <strong>a captura turnul</strong> de pe h5!',
+        // step 9 - Rb5 (white rook)
+        'Turnul se retrage la b5 &mdash; &#238;n siguran&#539;&#259;! Regele negru nu poate ajunge acolo f&#259;r&#259; s&#259; traverseze r&#226;ndul 5, controlat de turn.',
+        // step 10 - Kf4 (black king)
+        'Regele negru renun&#539;&#259; la v&#226;n&#259;toarea turnului &#351;i face un pas &#238;napoi.',
+        // step 11 - Ra5 (white rook)
+        'Mutare de a&#351;teptare! Turnul revine &mdash; regele negru e &#238;n <strong>zugzwang</strong>: orice mutare &#238;i &#238;nr&#259;ut&#259;&#539;e&#351;te situa&#539;ia.',
+        // step 12 - Kf3 (black king)
+        'Regii sunt fa&#539;&#259; &#238;n fa&#539;&#259; (<strong>opozi&#539;ie direct&#259;</strong>) &mdash; un semn c&#259; regele negru e tot mai &#238;ncol&#539;it.',
+        // step 13 - Ra4 (white rook)
+        'Turnul coboar&#259; la linia 4! Cu&#351;ca se str&#226;nge &mdash; regele negru nu mai poate urca dincolo de r&#226;ndul 4.',
+        // step 14 - Kf2 (black king)
+        'Regele negru e for&#539;at s&#259; coboare, pas cu pas.',
+        // step 15 - Rf4+ (white rook, check)
+        'Turnul d&#259; <strong>&#351;ah</strong> de pe f4! Regele negru e obligat s&#259; fug&#259; spre col&#539;ul h.',
+        // step 16 - Kg2 (black king)
+        'Regele negru fuge spre col&#539;ul dreapta-jos.',
+        // step 17 - Ke2 (white king)
+        '<span class="king-badge">&#9814; Regele Avanseaz&#259;!</span><br>Regele alb la e2 controleaz&#259; f1, f2, f3 &mdash; <strong>trei p&#259;trate interzise</strong> &#238;n plus pentru regele negru!',
+        // step 18 - Kg3 (black king)
+        'Regele negru mai are c&#226;teva p&#259;trate libere...',
+        // step 19 - Rc4 (white rook)
+        'Turnul p&#259;ze&#351;te r&#226;ndul 4 de pe c4 &mdash; un punct sigur, departe de regele negru. Cu&#351;ca se str&#226;nge!',
+        // step 20 - Kg2 (black king)
+        'Regele negru se retrage for&#539;at.',
+        // step 21 - Rc3 (white rook)
+        'Turnul coboar&#259; la linia 3! Regele negru este blocat acum &#238;ntr-un mic dreptunghi &#238;n col&#539;ul dreapta-jos.',
+        // step 22 - Kg1 (black king)
+        'Regele negru mai are c&#226;teva p&#259;trate de fugit &mdash; dar nu pentru mult timp!',
+        // step 23 - Kf3 (white king)
+        'Regele alb se repozi&#539;ioneaz&#259; pentru <strong>lovitura final&#259;</strong>.',
+        // step 24 - Kh1 (black king)
+        'Regele negru este for&#539;at &#238;n col&#539;ul h1! Cu&#351;ca s-a &#238;nchis &mdash; nu mai are sc&#259;pare.',
+        // step 25 - Kg3 (white king)
+        'Regele alb controleaz&#259; g2, f2, h2 &mdash; toate c&#259;ile de sc&#259;pare. <strong>Turnul livreaz&#259; lovitura de gra&#539;ie!</strong>',
+        // step 26 - Kg1 (black king) — puzzle step
+        '&#128269; <strong>Ai g&#259;sit mata?</strong> Regele negru e pe g1, regele alb pe g3. Exist&#259; o singur&#259; mutare c&#226;&#351;tig&#259;toare &mdash; o po&#539;i g&#259;si? <strong>Tc1#!</strong>',
+        // step 27 - Rc1# — checkmate
+        'Turnul d&#259; mat pe c1! Regele negru pe g1 nu are nicio sc&#259;pare &mdash; g2, f2, h2 sunt controlate de regele alb, iar f1 &#351;i h1 de turn. <strong>&#350;ah mat!</strong> Aceasta este puterea Echipei de &#350;oc Rege + Turn!'
+    ]
+};
+
+const lastMoves = [
+    null,
+    { type:'wK', from:'e1', to:'e2' },
+    { type:'bK', from:'e5', to:'d4' },
+    { type:'wR', from:'a1', to:'a5' },
+    { type:'bK', from:'d4', to:'e4' },
+    { type:'wR', from:'a5', to:'h5' },
+    { type:'bK', from:'e4', to:'f4' },
+    { type:'wK', from:'e2', to:'d3' },
+    { type:'bK', from:'f4', to:'g4' },
+    { type:'wR', from:'h5', to:'b5' },
+    { type:'bK', from:'g4', to:'f4' },
+    { type:'wR', from:'b5', to:'a5' },
+    { type:'bK', from:'f4', to:'f3' },
+    { type:'wR', from:'a5', to:'a4' },
+    { type:'bK', from:'f3', to:'f2' },
+    { type:'wR', from:'a4', to:'f4' },
+    { type:'bK', from:'f2', to:'g2' },
+    { type:'wK', from:'d3', to:'e2' },
+    { type:'bK', from:'g2', to:'g3' },
+    { type:'wR', from:'f4', to:'c4' },
+    { type:'bK', from:'g3', to:'g2' },
+    { type:'wR', from:'c4', to:'c3' },
+    { type:'bK', from:'g2', to:'g1' },
+    { type:'wK', from:'e2', to:'f3' },
+    { type:'bK', from:'g1', to:'h1' },
+    { type:'wK', from:'f3', to:'g3' },
+    { type:'bK', from:'h1', to:'g1' },
+    { type:'wR', from:'c3', to:'c1' },
+];
+
+function sqXY(name) {
+    const s = document.getElementById('board-wrap').offsetWidth / 8;
+    const fi = name.charCodeAt(0) - 97; // 'a'=0
+    const rk = parseInt(name[1]);
+    return { x: (fi + 0.5) * s, y: (8.5 - rk) * s };
+}
+
+let arrowTimer = null;
+function showLastMove(step) {
+    const ex = document.getElementById('last-move-svg');
+    if (ex) ex.remove();
+    if (arrowTimer) { clearTimeout(arrowTimer); arrowTimer = null; }
+    const mv = lastMoves[step];
+    if (!mv) return;
+
+    const bw = document.getElementById('board-wrap').offsetWidth;
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.id = 'last-move-svg';
+    svg.setAttribute('viewBox', `0 0 ${bw} ${bw}`);
+    svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8;';
+
+    const color = mv.type === 'wK' ? '#27ae60' : mv.type === 'wR' ? '#ff7700' : '#55aaff';
+    const defs = document.createElementNS(ns, 'defs');
+    const marker = document.createElementNS(ns, 'marker');
+    marker.setAttribute('id', 'arr-tip');
+    marker.setAttribute('markerWidth', '7'); marker.setAttribute('markerHeight', '7');
+    marker.setAttribute('refX', '5'); marker.setAttribute('refY', '3.5');
+    marker.setAttribute('orient', 'auto');
+    const poly = document.createElementNS(ns, 'polygon');
+    poly.setAttribute('points', '0 0, 7 3.5, 0 7');
+    poly.setAttribute('fill', color);
+    marker.appendChild(poly); defs.appendChild(marker); svg.appendChild(defs);
+
+    const from = sqXY(mv.from), to = sqXY(mv.to);
+    // shorten line slightly so arrowhead doesn't overlap piece
+    const dx = to.x - from.x, dy = to.y - from.y;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const tx = to.x - dx/len * 14, ty = to.y - dy/len * 14;
+
+    const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', from.x); line.setAttribute('y1', from.y);
+    line.setAttribute('x2', tx); line.setAttribute('y2', ty);
+    line.setAttribute('stroke', color); line.setAttribute('stroke-width', '3.5');
+    line.setAttribute('stroke-linecap', 'round');
+    line.setAttribute('marker-end', 'url(#arr-tip)');
+    line.setAttribute('opacity', '0.88');
+    if (mv.type === 'bK') line.setAttribute('stroke-dasharray', '6 3');
+    svg.appendChild(line);
+
+    document.getElementById('board-wrap').appendChild(svg);
+
+    // Fade out after 2.2s
+    arrowTimer = setTimeout(() => {
+        const el = document.getElementById('last-move-svg');
+        if (el) el.remove();
+        arrowTimer = null;
+    }, 2200);
+}
+
+let heartEl = null;
+
+function removeHeart() {
+    if (heartEl) { heartEl.remove(); heartEl = null; }
+}
+function showHeart(squareSel, fast, small) {
+    removeHeart();
+    const sq = document.querySelector('#board ' + squareSel);
+    if (!sq) return;
+    heartEl = document.createElement('div');
+    let cls = 'heart-badge ';
+    if (small) cls += 'hb-small ';
+    cls += (fast ? 'hb-fast' : 'hb-slow');
+    heartEl.className = cls;
+    heartEl.textContent = '❤️';
+    sq.appendChild(heartEl);
+}
+
+let soundVolume = 0.7;
+let soundMuted  = false;
+
+function setVolume(val) {
+    soundVolume = val / 100;
+    soundMuted  = (val == 0);
+    document.getElementById('volBtn').textContent = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
+}
+
+function toggleMute() {
+    soundMuted = !soundMuted;
+    document.getElementById('volBtn').textContent = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
+    document.getElementById('volSlider').value = soundMuted ? 0 : soundVolume * 100;
+}
+
+function playKingStep() {
+    if (soundMuted || soundVolume === 0) return;
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const t   = ctx.currentTime;
+        const v   = soundVolume;
+        // Solid "thud" — low + mid frequencies
+        [110, 220, 440].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const g   = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            g.gain.setValueAtTime(v * 0.3 / (i + 1), t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.25 + i * 0.05);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(t); osc.stop(t + 0.35);
+        });
+    } catch(e) {}
+}
+
+function spawnPageConfetti(duration) {
+    const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb','#ff99cc','#ffffff'];
+    const endTime = Date.now() + duration;
+    function batch() {
+        if (Date.now() >= endTime) return;
+        for (let i = 0; i < 12; i++) {
+            const p = document.createElement('div');
+            p.className = 'confetti-page';
+            const w = 7 + Math.random() * 7;
+            const h = w * (0.35 + Math.random() * 0.7);
+            p.style.width  = w + 'px';
+            p.style.height = h + 'px';
+            p.style.background = colors[Math.floor(Math.random() * colors.length)];
+            p.style.left = (Math.random() * 100) + 'vw';
+            p.style.top  = '-14px';
+            const fallDist = window.innerHeight * (0.65 + Math.random() * 0.45);
+            p.style.setProperty('--dx',  ((Math.random() - 0.5) * 180) + 'px');
+            p.style.setProperty('--dy',  fallDist + 'px');
+            p.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
+            const dur = 1.8 + Math.random() * 2.4;
+            p.style.setProperty('--dur', dur + 's');
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), dur * 1000 + 200);
+        }
+        setTimeout(batch, 110);
+    }
+    batch();
+}
+
+/* ===== ENGINE ===== */
+function computePositions() {
+    const chess = new Chess(chapter.startFen);
+    const fens = [chess.fen()];
+    for (const mv of chapter.sanMoves) {
+        if (!chess.move(mv)) { console.error('Mutare invalida:', mv); break; }
+        fens.push(chess.fen());
+    }
+    return fens;
+}
+
+const positions = computePositions();
+let currentStep = 0;
+
+const board = Chessboard('board', {
+    position: positions[0],
+    pieceTheme: 'pieces/{piece}.svg'
+});
+window.addEventListener('resize', () => {
+    board.resize();
+    showLastMove(currentStep);
+});
+
+function buildMovesList() {
+    const container = document.getElementById('movesList');
+    container.innerHTML = '';
+    chapter.sanMoves.forEach((mv, i) => {
+        if (i % 2 === 0) {
+            const num = document.createElement('span');
+            num.className = 'move-number';
+            num.textContent = (Math.floor(i / 2) + 1) + '.';
+            container.appendChild(num);
+        }
+        const btn = document.createElement('button');
+        const step = i + 1;
+        let cls = 'move-token ' + (i % 2 === 0 ? 'white-move' : 'black-move');
+        if (chapter.whiteKingSteps.has(step)) cls += ' king-move';
+        btn.className = cls;
+        btn.textContent = toRo(mv);
+        btn.dataset.step = step;
+        btn.onclick = () => goToStep(step);
+        container.appendChild(btn);
+    });
+}
+
+function goToStep(s) {
+    currentStep = s;
+    removeHeart();
+    board.position(positions[s], false);
+    updateUI();
+    showLastMove(s);
+    if (s === positions.length - 1) {
+        showHeart('.square-g1', true, true);
+        spawnPageConfetti(5000);
+    }
+    if (chapter.whiteKingSteps.has(s)) playKingStep();
+}
+
+function goFirst() { goToStep(0); }
+function goLast()  { goToStep(positions.length - 1); }
+function goPrev()  { if (currentStep > 0) goToStep(currentStep - 1); }
+function goNext()  { if (currentStep < positions.length - 1) goToStep(currentStep + 1); }
+
+function getMoveLabel(s) {
+    if (s === 0) return 'Start';
+    const i = s - 1;
+    const wf = !chapter.startFen.includes(' b ');
+    const isW = wf ? i % 2 === 0 : i % 2 === 1;
+    const n   = wf ? Math.floor(i/2)+1 : Math.floor((i+1)/2)+1;
+    return n + (isW ? '. ' : '... ') + toRo(chapter.sanMoves[i]);
+}
+
+function updateUI() {
+    const total = positions.length - 1;
+    document.getElementById('moveCounter').textContent =
+        getMoveLabel(currentStep);
+
+    document.getElementById('btnFirst').disabled = currentStep === 0;
+    document.getElementById('btnPrev').disabled  = currentStep === 0;
+    document.getElementById('btnNext').disabled  = currentStep === total;
+    document.getElementById('btnLast').disabled  = currentStep === total;
+
+    document.querySelectorAll('.move-token').forEach(b =>
+        b.classList.toggle('active', parseInt(b.dataset.step) === currentStep));
+
+    const box  = document.getElementById('annotationBox');
+    const text = chapter.annotations[currentStep] || '';
+    const isMat = currentStep === total;
+    const isKing = chapter.whiteKingSteps.has(currentStep);
+    const isPuzzle = currentStep === 26;
+
+    if (isMat) {
+        box.className = 'annotation-box checkmate';
+        box.innerHTML = '<span class="checkmate-badge">&#10003; &#350;AH MAT!</span><br>' + text;
+    } else if (isKing) {
+        box.className = 'annotation-box king-active';
+        box.innerHTML = text;
+    } else if (isPuzzle) {
+        box.className = 'annotation-box puzzle';
+        box.innerHTML = text;
+    } else {
+        box.className = 'annotation-box';
+        box.innerHTML = text;
+    }
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') goNext();
+    if (e.key === 'ArrowLeft')  goPrev();
+    if (e.key === 'Home')       goFirst();
+    if (e.key === 'End')        goLast();
+});
+
+buildMovesList();
+updateUI();
+</script>
+<style>
+.hub-btn {
+    position: fixed; top: 16px; right: 16px;
+    background: #1a3a6b; color: white;
+    font-family: "Baloo 2", cursive; font-size: .85em;
+    padding: 8px 18px; border-radius: 50px;
+    text-decoration: none; box-shadow: 0 3px 12px rgba(26,58,107,.4);
+    z-index: 100; transition: background .2s;
+}
+.hub-btn:hover { background: #2a5aab; }
+</style>
+<a href="hub.html" class="hub-btn">&#9776; Cuprins</a>
+</body>
+</html>
