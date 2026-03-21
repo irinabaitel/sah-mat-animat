@@ -469,7 +469,8 @@ function onDrop(source, target) {
 
     /* Checkmate right after white moves */
     if (chess.in_checkmate()) {
-        statusBox.innerHTML = '&#127942; <strong>&#350;ah mat!</strong> Ai câștigat! Felicit&#259;ri!';
+        const whiteMoves = Math.ceil(chess.history().length / 2);
+        statusBox.innerHTML = '&#127942; <strong>&#350;ah mat!</strong> Ai reu&#351;it din <strong>' + whiteMoves + ' mut&#259;ri</strong>. Po&#539;i mai bine?';
         statusBox.className = 'status-box success';
         bounceChars();
         spawnPageConfetti(5000);
