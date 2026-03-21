@@ -159,6 +159,28 @@
             animation: confetti-fall var(--dur, 2s) ease-in forwards;
         }
 
+        /* ===== HEART BADGE ===== */
+        .heart-badge {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.3em;
+            z-index: 10;
+            pointer-events: none;
+            animation: heartbeat-slow 1.3s ease-in-out infinite;
+        }
+        .heart-badge.hb-fast {
+            animation: heartbeat-fast 0.45s ease-in-out infinite;
+        }
+        @keyframes heartbeat-slow {
+            0%,100% { transform: translate(-50%,-50%) scale(1); }
+            50%      { transform: translate(-50%,-50%) scale(1.4); }
+        }
+        @keyframes heartbeat-fast {
+            0%,100% { transform: translate(-50%,-50%) scale(1); }
+            50%      { transform: translate(-50%,-50%) scale(1.5); }
+        }
+
         /* ===== THINKING DOTS ===== */
         @keyframes dots { 0%{content:'.';} 33%{content:'..';} 66%{content:'...';} 100%{content:'';} }
         .dots::after { content: ''; animation: dots 1.2s steps(3,end) infinite; }
@@ -224,7 +246,7 @@
         <!-- Info -->
         <div class="info-section">
             <div class="status-box" id="statusBox">
-                Mutarea ta! Alb &#238;ncepe. Restr&#226;nge Regele negru spre margine!
+                Mutarea ta! Alb &#238;ncepe. For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!
             </div>
             <button class="restart-btn" onclick="restartGame()">&#8635; Reia Jocul</button>
         </div>
@@ -251,6 +273,7 @@ let stockfish       = null;
 let sfCallback      = null;
 let sfBestForWhite  = null;
 let sfReady         = false;
+let sfMateIn        = null;
 
 function initStockfish() {
     try {
@@ -272,6 +295,10 @@ function initStockfish() {
             sfReady = true;
             prepareWhiteBest();
         }
+        if (typeof msg === 'string' && msg.includes('score mate')) {
+            const m = msg.match(/score mate (-?\d+)/);
+            if (m) { const n = parseInt(m[1]); if (n > 0) sfMateIn = n; }
+        }
         if (typeof msg === 'string' && msg.startsWith('bestmove')) {
             const mv = msg.split(' ')[1];
             if (sfCallback) { const cb = sfCallback; sfCallback = null; cb(mv); }
@@ -292,8 +319,10 @@ function askStockfish(fen, depth, callback) {
 function prepareWhiteBest() {
     if (chess.turn() !== 'w' || chess.game_over()) return;
     sfBestForWhite = null;
+    sfMateIn = null;
     askStockfish(chess.fen(), 14, function(mv) {
-        sfBestForWhite = mv; // UCI format e.g. 'e1e2'
+        sfBestForWhite = mv;
+        updateHeart();
     });
 }
 
@@ -336,6 +365,43 @@ function spawnPageConfetti(duration) {
         setTimeout(batch, 110);
     }
     batch();
+}
+
+/* ===== HEART ON BLACK KING ===== */
+function blackKingSquare() {
+    const b = chess.board();
+    const files = 'abcdefgh';
+    for (let r = 0; r < 8; r++)
+        for (let c = 0; c < 8; c++)
+            if (b[r][c] && b[r][c].type === 'k' && b[r][c].color === 'b')
+                return files[c] + (8 - r);
+    return null;
+}
+
+function removeHeart() {
+    const h = document.getElementById('king-heart');
+    if (h) h.remove();
+}
+
+function showHeart(square, fast) {
+    removeHeart();
+    const el = document.querySelector('#board .square-' + square);
+    if (!el) return;
+    const h = document.createElement('div');
+    h.id = 'king-heart';
+    h.className = 'heart-badge' + (fast ? ' hb-fast' : '');
+    h.textContent = '\u2764\ufe0f';
+    el.style.position = 'relative';
+    el.appendChild(h);
+}
+
+function updateHeart() {
+    if (chess.game_over()) { removeHeart(); return; }
+    const sq = blackKingSquare();
+    if (!sq || sfMateIn === null) { removeHeart(); return; }
+    if (sfMateIn <= 3)      showHeart(sq, true);
+    else if (sfMateIn <= 8) showHeart(sq, false);
+    else                    removeHeart();
 }
 
 /* ===== BOARD CALLBACKS ===== */
@@ -440,7 +506,9 @@ function restartGame() {
     chess.load(startFen);
     board.position(startFen, false);
     sfBestForWhite = null;
-    statusBox.innerHTML = 'Mutarea ta! Alb &#238;ncepe. Restr&#226;nge Regele negru spre margine!';
+    sfMateIn = null;
+    removeHeart();
+    statusBox.innerHTML = 'Mutarea ta! Alb &#238;ncepe. For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!';
     statusBox.className = 'status-box';
     prepareWhiteBest();
 }
