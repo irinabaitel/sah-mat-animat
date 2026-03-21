@@ -207,6 +207,10 @@
         .move-list .mw { color: #1a3a6b; font-weight: 700; margin-right: 6px; }
         .move-list .mb { color: #333; margin-right: 10px; }
         .move-list em  { color: rgba(0,0,0,0.35); font-style: italic; }
+        .move-item { border-radius: 3px; padding: 1px 3px; cursor: default; transition: background 0.15s; }
+        .move-list.review-ready .move-item { cursor: pointer; }
+        .move-list.review-ready .move-item:hover { background: rgba(26,58,107,0.15); }
+        .move-item.active { background: rgba(26,58,107,0.28) !important; color: white !important; }
 
         .hint-text {
             font-size: 0.82em;
@@ -336,6 +340,7 @@
                 <button class="restart-btn revansa-btn" style="margin-top:0;flex:1;" onclick="startRevansa()">&#9818; Revan&#351;&#259;!</button>
             </div>
             <div class="move-list" id="moveList"><em>Nicio mutare &#238;nc&#259;.</em></div>
+            <p id="reviewHint" style="display:none;font-size:0.8em;color:rgba(26,58,107,0.6);margin-top:6px;">&#9432; Apas&#259; pe o mutare pentru a revedea pozi&#539;ia.</p>
         </div>
 
     </div><!-- end main-content -->
@@ -362,6 +367,8 @@ let sfBestForWhite  = null;
 let sfReady         = false;
 let sfMateIn        = null;
 let playerSide      = 'w';  // 'w' = user plays white, 'b' = user plays black
+let positionHistory = [];
+let gameOver        = false;
 
 function initStockfish() {
     try {
@@ -433,6 +440,7 @@ function stockfishPlayWhite() {
         }
         chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
         board.position(chess.fen());
+        positionHistory.push(chess.fen());
         updateMoveList();
 
         if (chess.in_checkmate()) {
@@ -441,6 +449,7 @@ function stockfishPlayWhite() {
             statusBox.className = 'status-box danger';
             stopClock();
             setTimeout(removeHeart, 1000);
+            enableReview();
             return;
         }
         if (chess.in_stalemate() || chess.in_draw()) {
@@ -448,6 +457,7 @@ function stockfishPlayWhite() {
             statusBox.className = 'status-box success';
             stopClock();
             spawnPageConfetti(5000);
+            enableReview();
             return;
         }
         startClock('b');
@@ -507,8 +517,8 @@ function updateMoveList() {
     let html = '';
     for (let i = 0; i < hist.length; i += 2) {
         html += '<span class="mn">' + (i/2+1) + '.</span>'
-              + '<span class="mw">' + hist[i] + '</span>'
-              + (hist[i+1] ? '<span class="mb">' + hist[i+1] + '</span>' : '');
+              + '<span class="mw move-item" data-idx="' + i + '">' + hist[i] + '</span>'
+              + (hist[i+1] ? '<span class="mb move-item" data-idx="' + (i+1) + '">' + hist[i+1] + '</span>' : '');
     }
     el.innerHTML = html;
     el.scrollTop = el.scrollHeight;
@@ -623,6 +633,7 @@ function onDrop(source, target) {
 
     /* ---- REVANȘĂ MODE: user plays black ---- */
     if (playerSide === 'b') {
+        positionHistory.push(chess.fen());
         updateMoveList();
         setTimeout(stockfishPlayWhite, 350);
         return;
@@ -640,6 +651,7 @@ function onDrop(source, target) {
         return 'snapback';
     }
 
+    positionHistory.push(chess.fen());
     updateMoveList();
     startClock('b');
 
@@ -652,6 +664,7 @@ function onDrop(source, target) {
         bounceChars();
         spawnPageConfetti(5000);
         setTimeout(removeHeart, 1000);
+        enableReview();
         return;
     }
 
@@ -677,18 +690,21 @@ function onDrop(source, target) {
             }
             chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
             board.position(chess.fen());
+            positionHistory.push(chess.fen());
             updateMoveList();
 
             if (chess.in_checkmate()) {
                 statusBox.innerHTML = '&#10060; &#350;ah mat! Regele negru a c&#226;&#351;tigat. Mai &#238;ncerc&#259;!';
                 statusBox.className = 'status-box danger';
                 stopClock();
+                enableReview();
                 return;
             }
             if (chess.in_stalemate() || chess.in_draw()) {
                 statusBox.innerHTML = '&#9888;&#65039; Remiz&#259;! Mai &#238;ncerc&#259;.';
                 statusBox.className = 'status-box warning';
                 stopClock();
+                enableReview();
                 return;
             }
             startClock('w');
@@ -717,14 +733,41 @@ const board = Chessboard('board', {
 
 window.addEventListener('resize', function() { board.resize(); });
 
+/* ===== REVIEW CLICK HANDLER ===== */
+document.getElementById('moveList').addEventListener('click', function(e) {
+    if (!gameOver) return;
+    const item = e.target.closest('.move-item');
+    if (!item) return;
+    const idx = parseInt(item.dataset.idx);
+    const pos = positionHistory[idx + 1];
+    if (!pos) return;
+    board.position(pos, false);
+    document.querySelectorAll('#moveList .move-item').forEach(function(el) {
+        el.classList.remove('active');
+    });
+    item.classList.add('active');
+});
+
 /* ===== RESTART / REVANȘĂ ===== */
+function enableReview() {
+    gameOver = true;
+    document.getElementById('moveList').classList.add('review-ready');
+    const rh = document.getElementById('reviewHint');
+    if (rh) rh.style.display = 'block';
+}
+
 function resetBoard() {
     chess.load(startFen);
     board.position(startFen, false);
     sfBestForWhite = null;
     sfMateIn = null;
+    gameOver = false;
+    positionHistory = [startFen];
     removeHeart();
     resetClocks();
+    document.getElementById('moveList').classList.remove('review-ready');
+    const rh = document.getElementById('reviewHint');
+    if (rh) rh.style.display = 'none';
     updateMoveList();
 }
 
