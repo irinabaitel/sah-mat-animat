@@ -138,6 +138,23 @@
         }
         .restart-btn:hover { background: #2a5aab; }
 
+        /* ===== MOVE LIST ===== */
+        .move-list {
+            background: rgba(255,255,255,0.45);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-top: 10px;
+            font-size: 0.85em;
+            line-height: 1.9;
+            max-height: 180px;
+            overflow-y: auto;
+            color: #222;
+        }
+        .move-list .mn { color: rgba(26,58,107,0.5); font-weight: 700; margin-right: 2px; }
+        .move-list .mw { color: #1a3a6b; font-weight: 700; margin-right: 6px; }
+        .move-list .mb { color: #333; margin-right: 10px; }
+        .move-list em  { color: rgba(0,0,0,0.35); font-style: italic; }
+
         .hint-text {
             font-size: 0.82em;
             color: rgba(26,58,107,0.6);
@@ -225,6 +242,8 @@
 
     <p class="intro">
         Este momentul s&#259; verifici c&#226;t de bine ai &#238;n&#539;eles cum lucreaz&#259; Echipa de &#350;oc Rege + Turn!
+        Exerseaz&#259; de mai multe ori, p&#226;n&#259; c&#226;nd pare c&#259; merge de la sine.
+        Cu c&#226;t reu&#351;e&#351;ti s&#259; dai mat din mai pu&#539;ine mut&#259;ri, cu at&#226;t e&#351;ti mai aproape de a deveni maestru!
         <strong>Regele negru joac&#259; singur cele mai bune mut&#259;ri!</strong>
     </p>
 
@@ -249,6 +268,7 @@
                 Mutarea ta! Alb &#238;ncepe. For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!
             </div>
             <button class="restart-btn" onclick="restartGame()">&#8635; Reia Jocul</button>
+            <div class="move-list" id="moveList"><em>Nicio mutare &#238;nc&#259;.</em></div>
         </div>
 
     </div><!-- end main-content -->
@@ -367,6 +387,22 @@ function spawnPageConfetti(duration) {
     batch();
 }
 
+/* ===== MOVE LIST ===== */
+function updateMoveList() {
+    const el = document.getElementById('moveList');
+    if (!el) return;
+    const hist = chess.history();
+    if (hist.length === 0) { el.innerHTML = '<em>Nicio mutare &#238;nc&#259;.</em>'; return; }
+    let html = '';
+    for (let i = 0; i < hist.length; i += 2) {
+        html += '<span class="mn">' + (i/2+1) + '.</span>'
+              + '<span class="mw">' + hist[i] + '</span>'
+              + (hist[i+1] ? '<span class="mb">' + hist[i+1] + '</span>' : '');
+    }
+    el.innerHTML = html;
+    el.scrollTop = el.scrollHeight;
+}
+
 /* ===== HEART ON BLACK KING ===== */
 function blackKingSquare() {
     const b = chess.board();
@@ -429,6 +465,8 @@ function onDrop(source, target) {
         return 'snapback';
     }
 
+    updateMoveList();
+
     /* Checkmate right after white moves */
     if (chess.in_checkmate()) {
         statusBox.innerHTML = '&#127942; <strong>&#350;ah mat!</strong> Ai câștigat! Felicit&#259;ri!';
@@ -463,6 +501,7 @@ function onDrop(source, target) {
 
             chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
             board.position(chess.fen());
+            updateMoveList();
 
             if (chess.in_checkmate()) {
                 statusBox.innerHTML = '&#10060; &#350;ah mat! Regele negru a câștigat. Mai &#238;ncearcă!';
@@ -509,6 +548,7 @@ function restartGame() {
     sfBestForWhite = null;
     sfMateIn = null;
     removeHeart();
+    updateMoveList();
     statusBox.innerHTML = 'Mutarea ta! Alb &#238;ncepe. For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!';
     statusBox.className = 'status-box';
     prepareWhiteBest();
