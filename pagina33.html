@@ -137,6 +137,8 @@
             display: block;
         }
         .restart-btn:hover { background: #2a5aab; }
+        .revansa-btn { background: #7d3c98; }
+        .revansa-btn:hover { background: #9b59b6; }
 
         /* ===== CHESS CLOCK ===== */
         .clock-wrap {
@@ -295,7 +297,8 @@
         Este momentul s&#259; verifici c&#226;t de bine ai &#238;n&#539;eles cum lucreaz&#259; Echipa de &#350;oc Rege + Turn!
         Exerseaz&#259; de mai multe ori, p&#226;n&#259; c&#226;nd pare c&#259; merge de la sine.
         Cu c&#226;t reu&#351;e&#351;ti s&#259; dai mat din mai pu&#539;ine mut&#259;ri, cu at&#226;t e&#351;ti mai aproape de a deveni maestru!
-        <strong>Regele negru joac&#259; singur cele mai bune mut&#259;ri!</strong>
+        Atunci c&#226;nd joci cu negrele, &#238;ncerc&#259; s&#259; rezis&#539;i c&#226;t mai mult &mdash; acest lucru este posibil dac&#259; nu te duci de bun&#259;voie la marginea tablei.
+        <strong>Robotul joac&#259; cele mai bune mut&#259;ri pentru adversar!</strong>
     </p>
 
     <div class="main-content">
@@ -320,15 +323,18 @@
             </div>
             <div class="clock-wrap">
                 <div class="clock-box" id="clockWhite">
-                    <div class="clock-label"><span class="clock-dot"></span>&#9812; Tu</div>
+                    <div class="clock-label"><span class="clock-dot"></span>&#9812; <span id="labelWhite">Tu</span></div>
                     <div class="clock-time" id="clockWhiteTime">00:00</div>
                 </div>
                 <div class="clock-box" id="clockBlack">
-                    <div class="clock-label"><span class="clock-dot"></span>&#9818; Robot</div>
+                    <div class="clock-label"><span class="clock-dot"></span>&#9818; <span id="labelBlack">Robot</span></div>
                     <div class="clock-time" id="clockBlackTime">00:00</div>
                 </div>
             </div>
-            <button class="restart-btn" onclick="restartGame()">&#8635; Reia Jocul</button>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+                <button class="restart-btn" style="margin-top:0;flex:1;" onclick="restartGame()">&#8635; Reia Jocul</button>
+                <button class="restart-btn revansa-btn" style="margin-top:0;flex:1;" onclick="startRevansa()">&#9818; Revan&#351;&#259;!</button>
+            </div>
             <div class="move-list" id="moveList"><em>Nicio mutare &#238;nc&#259;.</em></div>
         </div>
 
@@ -355,6 +361,7 @@ let sfCallback      = null;
 let sfBestForWhite  = null;
 let sfReady         = false;
 let sfMateIn        = null;
+let playerSide      = 'w';  // 'w' = user plays white, 'b' = user plays black
 
 function initStockfish() {
     try {
@@ -374,8 +381,8 @@ function initStockfish() {
         }
         if (msg === 'readyok') {
             sfReady = true;
-            prepareWhiteBest();
-            startClock('w');
+            if (playerSide === 'w') { prepareWhiteBest(); startClock('w'); }
+            else stockfishPlayWhite();
         }
         if (typeof msg === 'string' && msg.includes('score mate')) {
             const m = msg.match(/score mate (-?\d+)/);
@@ -397,13 +404,55 @@ function askStockfish(fen, depth, callback) {
     stockfish.postMessage('go depth ' + depth);
 }
 
-/* Ask Stockfish for the best WHITE move (call before user plays) */
+/* Ask Stockfish for the best WHITE move — only in white-player mode */
 function prepareWhiteBest() {
+    if (playerSide !== 'w') return;
     if (chess.turn() !== 'w' || chess.game_over()) return;
     sfBestForWhite = null;
     sfMateIn = null;
     askStockfish(chess.fen(), 14, function(mv) {
         sfBestForWhite = mv;
+        updateHeart();
+    });
+}
+
+/* Stockfish plays white — used in revanșă mode */
+function stockfishPlayWhite() {
+    if (chess.game_over()) return;
+    sfMateIn = null;
+    startClock('w');
+    statusBox.innerHTML = 'Robotul se g&#226;nde&#351;te<span class="dots"></span>';
+    statusBox.className = 'status-box';
+    askStockfish(chess.fen(), 15, function(mv) {
+        if (!mv || mv === '(none)') {
+            startClock('b');
+            statusBox.innerHTML = 'E r&#226;ndul t&#259;u!';
+            statusBox.className = 'status-box';
+            updateHeart();
+            return;
+        }
+        chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+        board.position(chess.fen());
+        updateMoveList();
+
+        if (chess.in_checkmate()) {
+            const survived = Math.floor(chess.history().length / 2);
+            statusBox.innerHTML = '&#128128; <strong>&#350;ah mat!</strong> Ai rezistat <strong>' + survived + ' mut&#259;ri</strong>. Po&#539;i mai bine?';
+            statusBox.className = 'status-box danger';
+            stopClock();
+            setTimeout(removeHeart, 1000);
+            return;
+        }
+        if (chess.in_stalemate() || chess.in_draw()) {
+            statusBox.innerHTML = '&#127881; <strong>Pat!</strong> Ai ob&#539;inut remiza &mdash; excep&#539;ional!';
+            statusBox.className = 'status-box success';
+            stopClock();
+            spawnPageConfetti(5000);
+            return;
+        }
+        startClock('b');
+        statusBox.innerHTML = 'E r&#226;ndul t&#259;u! Nu te apropia de margine.';
+        statusBox.className = 'status-box';
         updateHeart();
     });
 }
@@ -559,21 +608,31 @@ function updateHeart() {
 /* ===== BOARD CALLBACKS ===== */
 function onDragStart(source, piece) {
     if (chess.game_over()) return false;
-    if (chess.turn() !== 'w') return false;
-    if (piece.startsWith('b')) return false;
+    if (chess.turn() !== playerSide) return false;
+    if (playerSide === 'w' && piece.startsWith('b')) return false;
+    if (playerSide === 'b' && piece.startsWith('w')) return false;
     return true;
 }
 
 function onDrop(source, target) {
-    if (chess.turn() !== 'w') return 'snapback';
+    if (chess.turn() !== playerSide) return 'snapback';
 
     const uciMove = source + target;
     const move = chess.move({ from: source, to: target, promotion: 'q' });
     if (!move) return 'snapback';
 
+    /* ---- REVANȘĂ MODE: user plays black ---- */
+    if (playerSide === 'b') {
+        updateMoveList();
+        setTimeout(stockfishPlayWhite, 350);
+        return;
+    }
+
+    /* ---- NORMAL MODE: user plays white ---- */
+
     /* Stalemate check right after white moves */
     if (chess.in_stalemate()) {
-        statusBox.innerHTML = '&#9888;&#65039; <strong>Pat!</strong> Regele negru nu mai are mutări &mdash; e remiză! &#206;ncearcă altă mutare.';
+        statusBox.innerHTML = '&#9888;&#65039; <strong>Pat!</strong> Regele negru nu mai are mut&#259;ri &mdash; e remiz&#259;! &#206;ncerc&#259; alt&#259; mutare.';
         statusBox.className = 'status-box warning';
         chess.undo();
         board.position(chess.fen());
@@ -598,7 +657,6 @@ function onDrop(source, target) {
 
     /* Good move detection */
     const isGood = sfBestForWhite && uciMove === sfBestForWhite;
-
     if (isGood) {
         bounceChars();
         statusBox.innerHTML = '&#9989; Mutare excelent&#259;! Acum r&#259;spunde Regele negru<span class="dots"></span>';
@@ -617,31 +675,27 @@ function onDrop(source, target) {
                 prepareWhiteBest();
                 return;
             }
-
             chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
             board.position(chess.fen());
             updateMoveList();
 
             if (chess.in_checkmate()) {
-                statusBox.innerHTML = '&#10060; &#350;ah mat! Regele negru a câștigat. Mai &#238;ncearcă!';
+                statusBox.innerHTML = '&#10060; &#350;ah mat! Regele negru a c&#226;&#351;tigat. Mai &#238;ncerc&#259;!';
                 statusBox.className = 'status-box danger';
                 stopClock();
                 return;
             }
-
             if (chess.in_stalemate() || chess.in_draw()) {
-                statusBox.innerHTML = '&#9888;&#65039; Remiză! Mai &#238;ncearcă.';
+                statusBox.innerHTML = '&#9888;&#65039; Remiz&#259;! Mai &#238;ncerc&#259;.';
                 statusBox.className = 'status-box warning';
                 stopClock();
                 return;
             }
-
             startClock('w');
             statusBox.innerHTML = isGood
                 ? '&#9989; Mutare excelent&#259;! Acum e r&#226;ndul t&#259;u.'
                 : 'E r&#226;ndul t&#259;u. G&#226;nde&#351;te-te cum s&#259; restr&#226;ngi Regele negru spre margine!';
             statusBox.className = isGood ? 'status-box success' : 'status-box';
-
             prepareWhiteBest();
         });
     }, 350);
@@ -663,19 +717,36 @@ const board = Chessboard('board', {
 
 window.addEventListener('resize', function() { board.resize(); });
 
-/* ===== RESTART ===== */
-function restartGame() {
+/* ===== RESTART / REVANȘĂ ===== */
+function resetBoard() {
     chess.load(startFen);
     board.position(startFen, false);
     sfBestForWhite = null;
     sfMateIn = null;
     removeHeart();
     resetClocks();
-    startClock('w');
     updateMoveList();
+}
+
+function restartGame() {
+    playerSide = 'w';
+    document.getElementById('labelWhite').textContent = 'Tu';
+    document.getElementById('labelBlack').textContent = 'Robot';
+    resetBoard();
+    startClock('w');
     statusBox.innerHTML = 'Mutarea ta! Alb &#238;ncepe. For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!';
     statusBox.className = 'status-box';
     prepareWhiteBest();
+}
+
+function startRevansa() {
+    playerSide = 'b';
+    document.getElementById('labelWhite').textContent = 'Robot';
+    document.getElementById('labelBlack').textContent = 'Tu';
+    resetBoard();
+    statusBox.innerHTML = 'Robotul mut&#259; primul&#8230;';
+    statusBox.className = 'status-box';
+    setTimeout(stockfishPlayWhite, 500);
 }
 
 /* ===== START ===== */
