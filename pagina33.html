@@ -203,8 +203,7 @@
 
     <p class="intro">
         Este momentul s&#259; verifici c&#226;t de bine ai &#238;n&#539;eles cum lucreaz&#259; Echipa de &#350;oc Rege + Turn!
-        Mi&#351;c&#259; Regele alb &#351;i Turnul ca s&#259; for&#539;ezi Regele negru spre un col&#539;.
-        <strong>Regele negru joac&#259; singur cele mai bune mutari!</strong>
+        <strong>Regele negru joac&#259; singur cele mai bune mut&#259;ri!</strong>
     </p>
 
     <div class="main-content">
@@ -225,13 +224,9 @@
         <!-- Info -->
         <div class="info-section">
             <div class="status-box" id="statusBox">
-                Mutarea ta! Alb &#238;ncepe. Restr&#226;nge Regele negru spre un col&#539;!
+                Mutarea ta! Alb &#238;ncepe. Restr&#226;nge Regele negru spre margine!
             </div>
             <button class="restart-btn" onclick="restartGame()">&#8635; Reia Jocul</button>
-            <p class="hint-text">
-                &#9432; Tr&#259;ge&#351;te Turnul sau Regele alb pe tabla de &#351;ah.<br>
-                Aten&#539;ie la <strong>pat</strong> &mdash; nu bloca turnul regele negru f&#259;r&#259; &#351;ah!
-            </p>
         </div>
 
     </div><!-- end main-content -->
@@ -416,7 +411,7 @@ function onDrop(source, target) {
 
             statusBox.innerHTML = isGood
                 ? '&#9989; Mutare excelent&#259;! Acum e r&#226;ndul t&#259;u.'
-                : 'E r&#226;ndul t&#259;u. G&#226;nde&#351;te-te cum s&#259; restr&#226;ngi Regele negru!';
+                : 'E r&#226;ndul t&#259;u. G&#226;nde&#351;te-te cum s&#259; restr&#226;ngi Regele negru spre margine!';
             statusBox.className = isGood ? 'status-box success' : 'status-box';
 
             prepareWhiteBest();
@@ -445,7 +440,7 @@ function restartGame() {
     chess.load(startFen);
     board.position(startFen, false);
     sfBestForWhite = null;
-    statusBox.innerHTML = 'Mutarea ta! Alb &#238;ncepe. Restr&#226;nge Regele negru spre un col&#539;!';
+    statusBox.innerHTML = 'Mutarea ta! Alb &#238;ncepe. Restr&#226;nge Regele negru spre margine!';
     statusBox.className = 'status-box';
     prepareWhiteBest();
 }
