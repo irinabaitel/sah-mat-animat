@@ -138,6 +138,57 @@
         }
         .restart-btn:hover { background: #2a5aab; }
 
+        /* ===== CHESS CLOCK ===== */
+        .clock-wrap {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .clock-box {
+            flex: 1;
+            background: rgba(255,255,255,0.4);
+            border-radius: 10px;
+            padding: 8px 10px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .clock-box.active {
+            border-color: #1a3a6b;
+            background: rgba(255,255,255,0.75);
+        }
+        .clock-label {
+            font-size: 0.72em;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: rgba(26,58,107,0.6);
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .clock-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #e67e22;
+            display: none;
+            animation: pulse-dot 0.8s ease-in-out infinite;
+        }
+        .clock-box.active .clock-dot { display: inline-block; }
+        @keyframes pulse-dot {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50%      { opacity: 0.4; transform: scale(0.7); }
+        }
+        .clock-time {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.5em;
+            font-weight: 900;
+            color: #1a3a6b;
+            letter-spacing: 1px;
+        }
+        .clock-box.active .clock-time { color: #e67e22; }
+
         /* ===== MOVE LIST ===== */
         .move-list {
             background: rgba(255,255,255,0.45);
@@ -267,6 +318,16 @@
             <div class="status-box" id="statusBox">
                 Mutarea ta! Alb &#238;ncepe. For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!
             </div>
+            <div class="clock-wrap">
+                <div class="clock-box" id="clockWhite">
+                    <div class="clock-label"><span class="clock-dot"></span>&#9812; Tu</div>
+                    <div class="clock-time" id="clockWhiteTime">00:00</div>
+                </div>
+                <div class="clock-box" id="clockBlack">
+                    <div class="clock-label"><span class="clock-dot"></span>&#9818; Robot</div>
+                    <div class="clock-time" id="clockBlackTime">00:00</div>
+                </div>
+            </div>
             <button class="restart-btn" onclick="restartGame()">&#8635; Reia Jocul</button>
             <div class="move-list" id="moveList"><em>Nicio mutare &#238;nc&#259;.</em></div>
         </div>
@@ -314,6 +375,7 @@ function initStockfish() {
         if (msg === 'readyok') {
             sfReady = true;
             prepareWhiteBest();
+            startClock('w');
         }
         if (typeof msg === 'string' && msg.includes('score mate')) {
             const m = msg.match(/score mate (-?\d+)/);
@@ -403,6 +465,60 @@ function updateMoveList() {
     el.scrollTop = el.scrollHeight;
 }
 
+/* ===== CHESS CLOCK ===== */
+let whiteTime = 0, blackTime = 0;
+let clockInterval = null, clockSide = null, clockLastTick = null;
+
+function formatTime(ms) {
+    const s = Math.floor(ms / 1000);
+    const m = Math.floor(s / 60);
+    return (m < 10 ? '0' : '') + m + ':' + ((s % 60) < 10 ? '0' : '') + (s % 60);
+}
+
+function updateClockDisplay() {
+    document.getElementById('clockWhiteTime').textContent = formatTime(whiteTime);
+    document.getElementById('clockBlackTime').textContent = formatTime(blackTime);
+}
+
+function startClock(side) {
+    if (clockInterval) clearInterval(clockInterval);
+    if (clockLastTick && clockSide) {
+        const delta = Date.now() - clockLastTick;
+        if (clockSide === 'w') whiteTime += delta;
+        else blackTime += delta;
+    }
+    clockSide = side;
+    clockLastTick = Date.now();
+    clockInterval = setInterval(function() {
+        const now = Date.now();
+        if (clockSide === 'w') whiteTime += now - clockLastTick;
+        else blackTime += now - clockLastTick;
+        clockLastTick = now;
+        updateClockDisplay();
+    }, 100);
+    document.getElementById('clockWhite').classList.toggle('active', side === 'w');
+    document.getElementById('clockBlack').classList.toggle('active', side === 'b');
+}
+
+function stopClock() {
+    if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
+    if (clockLastTick && clockSide) {
+        const delta = Date.now() - clockLastTick;
+        if (clockSide === 'w') whiteTime += delta;
+        else blackTime += delta;
+    }
+    clockSide = null; clockLastTick = null;
+    document.getElementById('clockWhite').classList.remove('active');
+    document.getElementById('clockBlack').classList.remove('active');
+    updateClockDisplay();
+}
+
+function resetClocks() {
+    stopClock();
+    whiteTime = 0; blackTime = 0;
+    updateClockDisplay();
+}
+
 /* ===== HEART ON BLACK KING ===== */
 function blackKingSquare() {
     const b = chess.board();
@@ -466,12 +582,14 @@ function onDrop(source, target) {
     }
 
     updateMoveList();
+    startClock('b');
 
     /* Checkmate right after white moves */
     if (chess.in_checkmate()) {
         const whiteMoves = Math.ceil(chess.history().length / 2);
         statusBox.innerHTML = '&#127942; <strong>&#350;ah mat!</strong> Ai reu&#351;it din <strong>' + whiteMoves + ' mut&#259;ri</strong>. Po&#539;i mai bine?';
         statusBox.className = 'status-box success';
+        stopClock();
         bounceChars();
         spawnPageConfetti(5000);
         setTimeout(removeHeart, 1000);
@@ -507,15 +625,18 @@ function onDrop(source, target) {
             if (chess.in_checkmate()) {
                 statusBox.innerHTML = '&#10060; &#350;ah mat! Regele negru a câștigat. Mai &#238;ncearcă!';
                 statusBox.className = 'status-box danger';
+                stopClock();
                 return;
             }
 
             if (chess.in_stalemate() || chess.in_draw()) {
                 statusBox.innerHTML = '&#9888;&#65039; Remiză! Mai &#238;ncearcă.';
                 statusBox.className = 'status-box warning';
+                stopClock();
                 return;
             }
 
+            startClock('w');
             statusBox.innerHTML = isGood
                 ? '&#9989; Mutare excelent&#259;! Acum e r&#226;ndul t&#259;u.'
                 : 'E r&#226;ndul t&#259;u. G&#226;nde&#351;te-te cum s&#259; restr&#226;ngi Regele negru spre margine!';
@@ -549,6 +670,8 @@ function restartGame() {
     sfBestForWhite = null;
     sfMateIn = null;
     removeHeart();
+    resetClocks();
+    startClock('w');
     updateMoveList();
     statusBox.innerHTML = 'Mutarea ta! Alb &#238;ncepe. For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!';
     statusBox.className = 'status-box';
