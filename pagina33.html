@@ -139,6 +139,9 @@
         .restart-btn:hover { background: #2a5aab; }
         .revansa-btn { background: #7d3c98; }
         .revansa-btn:hover { background: #9b59b6; }
+        .start-btn { background: #27ae60; }
+        .start-btn:hover:not(:disabled) { background: #2ecc71; }
+        .start-btn:disabled { background: rgba(39,174,96,0.35); cursor: default; transform: none !important; }
 
         /* ===== CHESS CLOCK ===== */
         .clock-wrap {
@@ -323,7 +326,7 @@
         <!-- Info -->
         <div class="info-section">
             <div class="status-box" id="statusBox">
-                Mutarea ta! Alb &#238;ncepe. For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!
+                Ap&#259;sa&#539;i <strong>Start!</strong> pentru a &#238;ncepe.
             </div>
             <div class="clock-wrap">
                 <div class="clock-box" id="clockWhite">
@@ -337,6 +340,7 @@
             </div>
             <div style="display:flex;gap:8px;margin-top:10px;">
                 <button class="restart-btn" style="margin-top:0;flex:1;" onclick="restartGame()">&#8635; Reia Jocul</button>
+                <button class="restart-btn start-btn" id="startBtn" style="margin-top:0;flex:1;" onclick="startGame()">&#9654; Start!</button>
                 <button class="restart-btn revansa-btn" style="margin-top:0;flex:1;" onclick="startRevansa()">&#9818; Revan&#351;&#259;!</button>
             </div>
             <div class="move-list" id="moveList"><em>Nicio mutare &#238;nc&#259;.</em></div>
@@ -369,6 +373,7 @@ let sfMateIn        = null;
 let playerSide      = 'w';  // 'w' = user plays white, 'b' = user plays black
 let positionHistory = [];
 let gameOver        = false;
+let gameStarted     = false;
 
 function initStockfish() {
     try {
@@ -388,8 +393,7 @@ function initStockfish() {
         }
         if (msg === 'readyok') {
             sfReady = true;
-            if (playerSide === 'w') { prepareWhiteBest(); startClock('w'); }
-            else stockfishPlayWhite();
+            // clock și prima mutare pornesc doar la apăsarea Start
         }
         if (typeof msg === 'string' && msg.includes('score mate')) {
             const m = msg.match(/score mate (-?\d+)/);
@@ -615,9 +619,26 @@ function updateHeart() {
     else                    removeHeart();
 }
 
+/* ===== START GAME ===== */
+function startGame() {
+    if (gameStarted) return;
+    gameStarted = true;
+    document.getElementById('startBtn').disabled = true;
+    if (playerSide === 'w') {
+        startClock('w');
+        prepareWhiteBest();
+        statusBox.innerHTML = 'Mutarea ta! For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!';
+        statusBox.className = 'status-box';
+    } else {
+        statusBox.innerHTML = 'Robotul se g&#226;nde&#351;te<span class="dots"></span>';
+        statusBox.className = 'status-box';
+        setTimeout(stockfishPlayWhite, 1000);
+    }
+}
+
 /* ===== BOARD CALLBACKS ===== */
 function onDragStart(source, piece) {
-    if (chess.game_over()) return false;
+    if (!gameStarted || chess.game_over()) return false;
     if (chess.turn() !== playerSide) return false;
     if (playerSide === 'w' && piece.startsWith('b')) return false;
     if (playerSide === 'b' && piece.startsWith('w')) return false;
@@ -762,12 +783,14 @@ function resetBoard() {
     sfBestForWhite = null;
     sfMateIn = null;
     gameOver = false;
+    gameStarted = false;
     positionHistory = [startFen];
     removeHeart();
     resetClocks();
     document.getElementById('moveList').classList.remove('review-ready');
     const rh = document.getElementById('reviewHint');
     if (rh) rh.style.display = 'none';
+    document.getElementById('startBtn').disabled = false;
     updateMoveList();
 }
 
@@ -776,10 +799,8 @@ function restartGame() {
     document.getElementById('labelWhite').textContent = 'Tu';
     document.getElementById('labelBlack').textContent = 'Robot';
     resetBoard();
-    startClock('w');
-    statusBox.innerHTML = 'Mutarea ta! Alb &#238;ncepe. For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!';
+    statusBox.innerHTML = 'Ap&#259;sa&#539;i <strong>Start!</strong> pentru a &#238;ncepe.';
     statusBox.className = 'status-box';
-    prepareWhiteBest();
 }
 
 function startRevansa() {
@@ -787,9 +808,8 @@ function startRevansa() {
     document.getElementById('labelWhite').textContent = 'Robot';
     document.getElementById('labelBlack').textContent = 'Tu';
     resetBoard();
-    statusBox.innerHTML = 'Robotul mut&#259; primul&#8230;';
+    statusBox.innerHTML = 'Ap&#259;sa&#539;i <strong>Start!</strong> &mdash; Robotul mut&#259; primul!';
     statusBox.className = 'status-box';
-    setTimeout(stockfishPlayWhite, 500);
 }
 
 /* ===== START ===== */
