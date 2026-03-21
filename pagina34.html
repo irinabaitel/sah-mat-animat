@@ -46,6 +46,7 @@
             margin-right: auto;
         }
 
+        /* ===== LAYOUT ===== */
         .main-content {
             display: flex;
             gap: 16px;
@@ -53,44 +54,18 @@
             flex-wrap: wrap;
         }
 
-        .left-col {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            min-width: 80px;
-            padding-top: 20px;
-        }
-
-        .left-col img {
-            height: 80px;
-            width: auto;
-            mix-blend-mode: multiply;
-            transform-origin: 50% 95%;
-            transition: filter 0.2s;
-        }
-
-        @keyframes piece-bounce {
-            0%,100% { transform: translateY(0) scale(1); }
-            25%     { transform: translateY(-16px) scaleX(0.92) scaleY(1.1); }
-            60%     { transform: translateY(-6px) scale(1); }
-            80%     { transform: translateY(-2px); }
-        }
-        .anim-bounce-piece {
-            animation: piece-bounce 0.65s ease-in-out;
-        }
-
+        /* ===== BOARD ===== */
         .board-section { flex: 0 0 auto; }
 
         #board-wrap {
             position: relative;
             display: inline-block;
-            width: min(340px, calc(100vw - 220px));
-            height: min(340px, calc(100vw - 220px));
+            width: min(480px, calc(100vw - 280px));
+            height: min(480px, calc(100vw - 280px));
         }
         #board { width: 100%; }
 
+        /* ===== INFO ===== */
         .info-section {
             flex: 1;
             min-width: 200px;
@@ -137,8 +112,9 @@
         .revansa-btn:hover { background: #9b59b6; }
         .start-btn { background: #27ae60; }
         .start-btn:hover:not(:disabled) { background: #2ecc71; }
-        .start-btn:disabled { background: rgba(39,174,96,0.35); cursor: default; }
+        .start-btn:disabled { background: rgba(39,174,96,0.35); cursor: default; transform: none !important; }
 
+        /* ===== CHESS CLOCK ===== */
         .clock-wrap {
             display: flex;
             gap: 8px;
@@ -189,6 +165,7 @@
         }
         .clock-box.active .clock-time { color: #e67e22; }
 
+        /* ===== MOVE LIST ===== */
         .move-list {
             background: rgba(255,255,255,0.45);
             border-radius: 10px;
@@ -209,6 +186,7 @@
         .move-list.review-ready .move-item:hover { background: rgba(26,58,107,0.15); }
         .move-item.active { background: rgba(26,58,107,0.28) !important; color: white !important; }
 
+        /* ===== CONFETTI ===== */
         @keyframes confetti-fall {
             0%   { opacity: 1; transform: translate(0,0) rotate(0deg); }
             80%  { opacity: 1; }
@@ -222,6 +200,7 @@
             animation: confetti-fall var(--dur, 2s) ease-in forwards;
         }
 
+        /* ===== HEART BADGE ===== */
         .heart-badge {
             position: absolute;
             top: 50%; left: 50%;
@@ -243,9 +222,11 @@
             50%      { transform: translate(-50%,-50%) scale(1.5); }
         }
 
+        /* ===== THINKING DOTS ===== */
         @keyframes dots { 0%{content:'.';} 33%{content:'..';} 66%{content:'...';} 100%{content:'';} }
         .dots::after { content: ''; animation: dots 1.2s steps(3,end) infinite; }
 
+        /* ===== NAV ===== */
         .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 28px; }
         .nav-btn {
             display: inline-block;
@@ -267,8 +248,7 @@
             .page { padding: 12px 10px 28px; }
             h1 { font-size: 1.5em; margin-top: 0; }
             .main-content { flex-direction: column; align-items: center; }
-            .left-col { flex-direction: row; padding-top: 0; }
-            #board-wrap { width: min(340px, calc(100vw - 40px)); height: min(340px, calc(100vw - 40px)); }
+            #board-wrap { width: min(480px, calc(100vw - 40px)); height: min(480px, calc(100vw - 40px)); }
         }
     </style>
 </head>
@@ -277,35 +257,31 @@
 <div class="page">
     <div style="position:absolute;top:0;left:0;display:flex;gap:2px;align-items:flex-end;">
         <img src="piese_sah/regina 1.png" style="height:100px;width:auto;mix-blend-mode:multiply;" alt="">
-        <img src="piese_sah/turn 1.png"   style="height:85px;width:auto;mix-blend-mode:multiply;" alt="">
-        <img src="piese_sah/rega 1.jpg"   style="height:72px;width:auto;mix-blend-mode:multiply;" alt="">
+        <img src="piese_sah/turn 1.png" style="height:85px;width:auto;mix-blend-mode:multiply;" alt="">
+        <img src="piese_sah/rega 1.jpg" style="height:70px;width:auto;mix-blend-mode:multiply;" alt="">
     </div>
     <img src="piese_sah/rege 2.png" style="position:absolute;top:0;right:0;height:105px;width:auto;mix-blend-mode:multiply;" alt="">
 
     <h1>Exerseaz&#259;: Rege + Dam&#259; + Turn vs. Rege</h1>
 
     <p class="intro">
-        Este momentul s&#259; verifici c&#226;t de bine ai &#238;n&#539;eles cum lucreaz&#259; echipa Rege + Dam&#259; + Turn!
-        Exerseaz&#259; de mai multe ori, p&#226;n&#259; c&#226;nd pare c&#259; merge de la sine.
+        Echipa format&#259; din Rege, Dam&#259; &#351;i Turn este una dintre cele mai puternice combina&#539;ii de atac din &#351;ah!
+        Dam&#259; &#351;i Turn lucreaz&#259; &#238;mpreun&#259; pentru a &#238;nghe&#539;ui Regele advers &#238;ntr-un col&#539; sau la margine.
+        Exerseaz&#259; de mai multe ori, p&#226;n&#259; c&#226;nd coordonarea pieselor pare natural&#259;.
         Cu c&#226;t reu&#351;e&#351;ti s&#259; dai mat din mai pu&#539;ine mut&#259;ri, cu at&#226;t e&#351;ti mai aproape de a deveni maestru!
-        Atunci c&#226;nd joci cu negrele, &#238;ncerc&#259; s&#259; rezis&#539;i c&#226;t mai mult &mdash; acest lucru este posibil dac&#259; nu te duci de bun&#259;voie la marginea tablei.
         <strong>Robotul joac&#259; cele mai bune mut&#259;ri pentru adversar!</strong>
     </p>
 
     <div class="main-content">
 
-        <div class="left-col">
-            <img id="char-queen" src="piese_sah/regina 1.png" alt="Regin&#259; alb&#259;">
-            <img id="char-rook"  src="piese_sah/turn 1.png"   alt="Turn alb">
-            <img id="char-king"  src="piese_sah/rega 1.jpg"   alt="Rege alb">
-        </div>
-
+        <!-- Board -->
         <div class="board-section">
             <div id="board-wrap">
                 <div id="board"></div>
             </div>
         </div>
 
+        <!-- Info -->
         <div class="info-section">
             <div class="status-box" id="statusBox">
                 Ap&#259;sa&#539;i <strong>Start!</strong> pentru a &#238;ncepe.
@@ -329,7 +305,7 @@
             <p id="reviewHint" style="display:none;font-size:0.8em;color:rgba(26,58,107,0.6);margin-top:6px;">&#9432; Apas&#259; pe o mutare pentru a revedea pozi&#539;ia.</p>
         </div>
 
-    </div>
+    </div><!-- end main-content -->
 
     <div class="nav-buttons">
         <a href="pagina11.html" class="nav-btn back">&#9664; &#206;napoi</a>
@@ -346,6 +322,7 @@ const startFen = '8/8/8/4k3/8/8/8/3QR1K1 w - - 0 1';
 const chess    = new Chess(startFen);
 const statusBox = document.getElementById('statusBox');
 
+/* ===== STOCKFISH ===== */
 let stockfish       = null;
 let sfCallback      = null;
 let sfBestForWhite  = null;
@@ -447,16 +424,7 @@ function stockfishPlayWhite() {
     });
 }
 
-function bounceChars() {
-    ['char-queen', 'char-rook', 'char-king'].forEach(function(id) {
-        const el = document.getElementById(id);
-        el.classList.remove('anim-bounce-piece');
-        void el.offsetWidth;
-        el.classList.add('anim-bounce-piece');
-        setTimeout(function() { el.classList.remove('anim-bounce-piece'); }, 700);
-    });
-}
-
+/* ===== CONFETTI ===== */
 function spawnPageConfetti(duration) {
     const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb','#ff99cc','#ffffff'];
     const endTime = Date.now() + duration;
@@ -486,6 +454,7 @@ function spawnPageConfetti(duration) {
     batch();
 }
 
+/* ===== MOVE LIST ===== */
 function updateMoveList() {
     const el = document.getElementById('moveList');
     if (!el) return;
@@ -501,6 +470,7 @@ function updateMoveList() {
     el.scrollTop = el.scrollHeight;
 }
 
+/* ===== CHESS CLOCK ===== */
 let whiteTime = 0, blackTime = 0;
 let clockInterval = null, clockSide = null, clockLastTick = null;
 
@@ -554,6 +524,7 @@ function resetClocks() {
     updateClockDisplay();
 }
 
+/* ===== HEART ON BLACK KING ===== */
 function blackKingSquare() {
     const b = chess.board();
     const files = 'abcdefgh';
@@ -590,6 +561,7 @@ function updateHeart() {
     else                    removeHeart();
 }
 
+/* ===== START GAME ===== */
 function startGame() {
     if (gameStarted) return;
     gameStarted = true;
@@ -606,6 +578,7 @@ function startGame() {
     }
 }
 
+/* ===== BOARD CALLBACKS ===== */
 function onDragStart(source, piece) {
     if (!gameStarted || chess.game_over()) return false;
     if (chess.turn() !== playerSide) return false;
@@ -646,7 +619,6 @@ function onDrop(source, target) {
         statusBox.innerHTML = '&#127942; <strong>&#350;ah mat!</strong> Ai reu&#351;it din <strong>' + whiteMoves + ' mut&#259;ri</strong>. Po&#539;i mai bine?';
         statusBox.className = 'status-box success';
         stopClock();
-        bounceChars();
         spawnPageConfetti(5000);
         setTimeout(removeHeart, 1000);
         enableReview();
@@ -655,7 +627,6 @@ function onDrop(source, target) {
 
     const isGood = sfBestForWhite && uciMove === sfBestForWhite;
     if (isGood) {
-        bounceChars();
         statusBox.innerHTML = '&#9989; Mutare excelent&#259;! Acum r&#259;spunde Regele negru<span class="dots"></span>';
         statusBox.className = 'status-box success';
     } else {
@@ -700,8 +671,11 @@ function onDrop(source, target) {
     }, 350);
 }
 
-function onSnapEnd() { board.position(chess.fen()); }
+function onSnapEnd() {
+    board.position(chess.fen());
+}
 
+/* ===== BOARD INIT ===== */
 const board = Chessboard('board', {
     position: startFen,
     pieceTheme: 'pieces/{piece}.svg',
@@ -713,6 +687,7 @@ const board = Chessboard('board', {
 
 window.addEventListener('resize', function() { board.resize(); });
 
+/* ===== REVIEW CLICK HANDLER ===== */
 document.getElementById('moveList').addEventListener('click', function(e) {
     if (!gameOver) return;
     const item = e.target.closest('.move-item');
@@ -727,6 +702,7 @@ document.getElementById('moveList').addEventListener('click', function(e) {
     item.classList.add('active');
 });
 
+/* ===== RESTART / REVAN&#350;&#258; ===== */
 function enableReview() {
     gameOver = true;
     document.getElementById('moveList').classList.add('review-ready');
@@ -769,6 +745,7 @@ function startRevansa() {
     statusBox.className = 'status-box';
 }
 
+/* ===== START ===== */
 initStockfish();
 </script>
 
