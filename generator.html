@@ -383,6 +383,7 @@
         <div class="tabs">
             <button class="tab active" onclick="setMode('image')" id="tab-image">🖼 Imagine</button>
             <button class="tab" onclick="setMode('video')" id="tab-video">🎬 Film / Animație</button>
+            <button class="tab" onclick="setMode('img2img')" id="tab-img2img">🎭 Costumează personaj</button>
         </div>
     </div>
 
@@ -443,6 +444,65 @@
             </div>
             <div id="batchLog" style="margin-top:10px;max-height:140px;overflow-y:auto;font-size:0.78em;color:#666;line-height:1.8;"></div>
         </div>
+    </div>
+
+    <!-- IMG2IMG -->
+    <div class="card section-hidden" id="section-img2img">
+        <div class="card-title">🎭 Costumează personaj existent</div>
+        <div style="font-size:0.82em;color:#888;margin-bottom:16px;">
+            Încarcă o piesă bună → alege epoca nouă → generează același personaj cu alt costum.<br>
+            <strong style="color:#F5A96E;">Strength mic (0.4) = păstrează fața. Strength mare (0.8) = schimbă mai mult.</strong>
+        </div>
+
+        <!-- Upload imagine -->
+        <div style="margin-bottom:16px;">
+            <div style="font-size:0.8em;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Personaj de bază</div>
+            <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+                <label style="cursor:pointer;">
+                    <div class="btn-small" style="border-color:#F5A96E;color:#F5A96E;padding:10px 18px;">📂 Alege imaginea</div>
+                    <input type="file" id="i2iFile" accept="image/*" style="display:none;" onchange="previewI2I(this)">
+                </label>
+                <div id="i2iPreview" style="width:100px;height:120px;background:#0f3460;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#555;font-size:0.8em;overflow:hidden;">
+                    preview
+                </div>
+            </div>
+        </div>
+
+        <!-- Epoca nouă -->
+        <div style="margin-bottom:16px;">
+            <div style="font-size:0.8em;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Costum nou — epocă</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;" id="i2iEpochBtns"></div>
+        </div>
+
+        <!-- Piesa -->
+        <div style="margin-bottom:16px;">
+            <div style="font-size:0.8em;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Tip piesă</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;" id="i2iPieceBtns"></div>
+        </div>
+
+        <!-- Culoare + Strength -->
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;">
+            <div style="flex:1;min-width:140px;">
+                <label style="font-size:0.8em;color:#888;display:block;margin-bottom:4px;text-transform:uppercase;">Culoare</label>
+                <select id="i2iColor" style="width:100%;background:#0f3460;border:1px solid #1a5276;border-radius:10px;padding:8px 12px;color:white;font-size:0.9em;outline:none;">
+                    <option value="white">⬜ Alb</option>
+                    <option value="black">⬛ Negru</option>
+                </select>
+            </div>
+            <div style="flex:1;min-width:140px;">
+                <label style="font-size:0.8em;color:#888;display:block;margin-bottom:4px;text-transform:uppercase;">Strength: <span id="i2iStrengthVal">0.55</span></label>
+                <input type="range" id="i2iStrength" min="0.3" max="0.85" step="0.05" value="0.55"
+                    oninput="document.getElementById('i2iStrengthVal').textContent=this.value"
+                    style="width:100%;accent-color:#F5A96E;">
+                <div style="display:flex;justify-content:space-between;font-size:0.72em;color:#555;">
+                    <span>← păstrează fața</span><span>schimbă tot →</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-generate" onclick="generateI2I()" style="padding:12px;font-size:1.1em;">
+            🎭 Costumează!
+        </button>
     </div>
 
     <!-- PERSONAJE PER EPOCĂ -->
@@ -691,6 +751,94 @@ const QUICK_PROMPTS = {
         { label: '🔥 Forjă', text: 'Chess pieces being forged from molten iron in an ancient forge, fire and sparks, steam rising, dramatic lighting, dark epic fantasy, cinematic' },
     ]
 };
+
+/* ===== IMG2IMG ===== */
+let i2iEpoch = null, i2iPiece = null, i2iBase64 = null;
+
+function renderI2IControls() {
+    document.getElementById('i2iEpochBtns').innerHTML = EPOCHS.map(e =>
+        `<button class="btn-small" data-id="${e.id}" onclick="selectI2IEpoch('${e.id}')"
+            style="border-color:${e.color};color:${e.color};">${e.label}</button>`
+    ).join('');
+    document.getElementById('i2iPieceBtns').innerHTML = Object.entries(PIECE_LABELS).map(([k,v]) =>
+        `<button class="btn-small" data-piece="${k}" onclick="selectI2IPiece('${k}')">${v}</button>`
+    ).join('');
+}
+
+function selectI2IEpoch(id) {
+    i2iEpoch = id;
+    document.querySelectorAll('#i2iEpochBtns .btn-small').forEach(b => {
+        const e = EPOCHS.find(ep => ep.id === b.dataset.id);
+        b.style.background = b.dataset.id === id ? `${e.color}33` : 'transparent';
+        b.style.fontWeight = b.dataset.id === id ? '900' : '400';
+    });
+}
+
+function selectI2IPiece(p) {
+    i2iPiece = p;
+    document.querySelectorAll('#i2iPieceBtns .btn-small').forEach(b => {
+        b.style.background = b.dataset.piece === p ? 'rgba(245,169,110,0.2)' : 'transparent';
+        b.style.borderColor = b.dataset.piece === p ? '#F5A96E' : '#1a5276';
+        b.style.color = b.dataset.piece === p ? '#F5A96E' : '#aaa';
+    });
+}
+
+function previewI2I(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        i2iBase64 = e.target.result; // data:image/jpeg;base64,...
+        document.getElementById('i2iPreview').innerHTML =
+            `<img src="${i2iBase64}" style="width:100%;height:100%;object-fit:cover;">`;
+    };
+    reader.readAsDataURL(file);
+}
+
+async function generateI2I() {
+    const key = getKey();
+    if (!key) { showError('Introdu cheia API!'); return; }
+    if (!i2iBase64) { showError('Alege o imagine de bază!'); return; }
+    if (!i2iEpoch || !i2iPiece) { showError('Alege epoca și piesa!'); return; }
+
+    const epoch = EPOCHS.find(e => e.id === i2iEpoch);
+    const color = document.getElementById('i2iColor').value;
+    const strength = parseFloat(document.getElementById('i2iStrength').value);
+    const prompt = buildPrompt(epoch, i2iPiece, color);
+
+    showStatus('🎭 Se costumează personajul...');
+    document.getElementById('resultArea').classList.remove('visible');
+    hideError();
+
+    try {
+        const resp = await fetch('https://fal.run/fal-ai/flux/dev/image-to-image', {
+            method: 'POST',
+            headers: { 'Authorization': `Key ${key}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                prompt,
+                image_url: i2iBase64,
+                strength,
+                num_inference_steps: 28,
+                guidance_scale: 3.5,
+                enable_safety_checker: false
+            })
+        });
+
+        if (!resp.ok) {
+            const err = await resp.json().catch(() => ({ message: resp.statusText }));
+            throw new Error(err.detail || err.message || `HTTP ${resp.status}`);
+        }
+
+        const data = await resp.json();
+        const images = data.images || [];
+        if (!images.length) throw new Error('Nicio imagine returnată.');
+        hideStatus();
+        showImageResults(images, prompt);
+    } catch(err) {
+        showError('Eroare: ' + err.message);
+        hideStatus();
+    }
+}
 
 /* ===== BATCH ===== */
 const EPOCH_SLUG = {
@@ -947,6 +1095,7 @@ window.onload = function() {
     renderEpochBtns();
     renderPieceBtns();
     renderBatchControls();
+    renderI2IControls();
     updateCostEstimate();
 
     document.getElementById('imgModel').addEventListener('change', updateCostEstimate);
@@ -996,10 +1145,13 @@ function setMode(mode) {
     currentMode = mode;
     document.getElementById('tab-image').classList.toggle('active', mode === 'image');
     document.getElementById('tab-video').classList.toggle('active', mode === 'video');
+    document.getElementById('tab-img2img').classList.toggle('active', mode === 'img2img');
     document.getElementById('params-image').classList.toggle('section-hidden', mode !== 'image');
     document.getElementById('params-video').classList.toggle('section-hidden', mode !== 'video');
-    renderQuickPrompts();
-    updateCostEstimate();
+    document.getElementById('section-img2img').classList.toggle('section-hidden', mode !== 'img2img');
+    document.getElementById('batchCard').classList.toggle('section-hidden', mode === 'img2img');
+    document.getElementById('btnGenerate').style.display = mode === 'img2img' ? 'none' : 'block';
+    if (mode !== 'img2img') { renderQuickPrompts(); updateCostEstimate(); }
 }
 
 /* ===== QUICK PROMPTS ===== */
