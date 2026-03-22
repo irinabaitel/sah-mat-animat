@@ -579,7 +579,7 @@ let isGenerating = false;
 let sessionHistory = [];
 
 /* Promptul de bază pentru personaje Pixar — se combină cu costumul epocii */
-const BASE_CHAR = 'A cheerful friendly human character, big expressive Pixar-Disney eyes with light reflections, smooth rounded shapes, large head small body, warm skin tones, soft subsurface lighting, rich saturated colors, warm smile, standing with feet directly on ground, PURE WHITE BACKGROUND, absolutely nothing in background, isolated single character, nothing around them, no objects nearby, no other characters, NO pedestal, NO base, NO platform, full body fits entirely in frame, no shadows on background, clean crisp 3D render, Pixar-Disney 3D animation style, consistent character design, exactly two arms, correct anatomy';
+const BASE_CHAR = 'A cheerful friendly YOUNG character, child-friendly design, cute face with big expressive Pixar-Disney eyes with light reflections, warm happy smile, smooth rounded shapes, large head small body, chubby cheeks, NOT old NOT angry NOT scary, warm skin tones, soft subsurface lighting, rich saturated colors, standing with feet directly on ground, PURE WHITE BACKGROUND, absolutely nothing in background, isolated single character, nothing around them, no objects nearby, no other characters, NO pedestal, NO base, NO platform, full body fits entirely in frame, no shadows on background, clean crisp 3D render, Pixar-Disney 3D animation style, consistent character design, exactly two arms, correct anatomy';
 
 const EPOCHS = [
     {
@@ -590,7 +590,7 @@ const EPOCHS = [
             king:   'chess KING, tribal chieftain, animal fur cape, bone crown with obsidian gems, stone axe scepter, ritual face paint, barefoot on rock',
             queen:  'chess QUEEN, shaman priestess, white animal hide dress, antler headdress, glowing spirit orbs floating around her, mystical',
             bishop: 'chess BISHOP, cave painter elder, ochre-stained robes, carved totem staff, cave bear skull helmet',
-            knight: 'chess KNIGHT, tribal warrior with mammoth skull helmet, bone armor, stone spear, wild hair, fierce expression, standing on own two feet, NO horse, NOT riding anything',
+            knight: 'brave young tribal warrior, mammoth skull helmet, bone armor, stone spear, wild hair, cheerful expression, standing upright',
             rook:   'chess ROOK, stone fortress guardian, massive rock shield, granite armor, immovable stance',
             pawn:   'chess PAWN, young tribe member, simple fur tunic, wooden club, curious determined face',
         }
@@ -603,7 +603,7 @@ const EPOCHS = [
             king:   'chess KING, iron age warlord, hammered iron crown, bear pelt cloak, blazing torch scepter, scarred fierce face, powerful commanding stance',
             queen:  'chess QUEEN, iron age warrior queen, iron circlet, chainmail and leather armor, shield with wolf emblem, battle-ready but regal',
             bishop: 'chess BISHOP, druid elder, antler headdress, iron-tipped staff, glowing rune tattoos, mysterious smoky aura',
-            knight: 'chess KNIGHT, iron age warrior, bronze helmet with horsehair plume, javelins, leather greaves, battle-ready pose, standing on own two feet, NO horse, NOT riding anything',
+            knight: 'brave young iron age warrior, bronze helmet with red plume, leather armor and greaves, javelin in hand, cheerful battle-ready pose, standing upright',
             rook:   'chess ROOK, iron fortress keeper, tower-shaped iron helmet, heavy iron shield, fire brazier behind him',
             pawn:   'chess PAWN, young iron age warrior, simple iron helmet, wooden round shield, short spear',
         }
@@ -616,7 +616,7 @@ const EPOCHS = [
             king:   'chess KING, Greek/Roman emperor, white toga with gold trim, laurel wreath crown, marble scepter, noble commanding pose',
             queen:  'chess QUEEN, goddess-like empress, flowing white and gold silk chiton, diadem with sapphires, serene powerful expression',
             bishop: 'chess BISHOP, philosopher oracle, simple toga, olive branch staff, scroll in hand, wise expression',
-            knight: 'chess KNIGHT, Greek hoplite hero, bronze breastplate, plumed helmet, spear and shield with Medusa crest, standing on own two feet, NO horse, NOT riding anything',
+            knight: 'brave young Greek hoplite warrior, bronze breastplate, plumed helmet, round shield with Medusa crest, short spear, cheerful pose, standing upright',
             rook:   'chess ROOK, Colosseum gate guardian, pillar-like armor, ornate tower shield',
             pawn:   'chess PAWN, young Roman legionary, simple tunic and sandals, small round shield, gladius',
         }
@@ -629,7 +629,7 @@ const EPOCHS = [
             king:   'chess KING, medieval king, gleaming silver plate armor, royal crimson cape, jeweled crown, longsword scepter, commanding stance',
             queen:  'chess QUEEN, medieval queen, royal blue velvet gown, golden crown, magical glowing orb, fierce elegant expression',
             bishop: 'chess BISHOP, bishop in white and gold vestments, ornate mitre hat, golden crozier staff, blessing gesture',
-            knight: 'chess KNIGHT, armored knight on no horse, full plate armor, sword raised, visor up showing brave face, heraldic cape',
+            knight: 'brave young medieval knight, full plate armor, sword raised, visor up showing cheerful face, heraldic cape, standing upright on two feet',
             rook:   'chess ROOK, castle tower guardian, tower-shaped helmet, heavy stone-textured armor, drawbridge key',
             pawn:   'chess PAWN, young squire, chainmail shirt, simple helmet, kite shield and short sword',
         }
@@ -642,7 +642,7 @@ const EPOCHS = [
             king:   'chess KING, Renaissance king, velvet doublet in deep purple and gold, feathered hat, rapier sword, elegant powerful posture, portrait-like face',
             queen:  'chess QUEEN, Renaissance noblewoman, silk brocade gown, pearl necklace, jeweled crown, holding a rose and a dagger, sophisticated and deadly',
             bishop: 'chess BISHOP, Renaissance cardinal, scarlet robes, gold chain, illuminated manuscript, wise calculating expression',
-            knight: 'chess KNIGHT, Renaissance fencer, light rapier armor, plumed helmet, dueling pose, nimble and precise, standing on own two feet, NO horse, NOT riding anything',
+            knight: 'brave young Renaissance fencer, light elegant armor, feathered hat, rapier sword, playful dueling pose, standing upright',
             rook:   'chess ROOK, castle architect, blueprint scroll, measuring compass, stone tower behind him, intellectual but imposing',
             pawn:   'chess PAWN, young Renaissance apprentice, workshop apron, small sword at hip, curious clever face',
         }
@@ -655,7 +655,7 @@ const EPOCHS = [
             king:   'chess KING, steampunk emperor, brass crown with gears, elaborate clockwork armor, steam vents on shoulders, monocle, commanding and eccentric',
             queen:  'chess QUEEN, steampunk empress, copper and bronze corset armor, clockwork wings, tesla coil scepter, brilliant and powerful',
             bishop: 'chess BISHOP, steam age inventor, goggles on forehead, gear-covered coat, mechanical arm, blueprint scroll, eccentric genius',
-            knight: 'chess KNIGHT, steampunk warrior, steam-powered armor legs, lance weapon, coal-smoke exhaust from backpack, standing upright, NO horse, NOT riding anything, two human legs with mechanical armor',
+            knight: 'brave young steampunk warrior, clockwork armor, steam lance, small exhaust pipes on backpack, cheerful adventurous pose, standing upright on two legs',
             rook:   'chess ROOK, iron factory foreman, industrial tower armor, giant wrench, chimney smoke behind him, massive and immovable',
             pawn:   'chess PAWN, factory worker, soot-stained uniform, safety goggles, small gear-gun, determined young face',
         }
@@ -668,7 +668,7 @@ const EPOCHS = [
             king:   'chess KING, futuristic commander, sleek matte black exosuit, glowing blue energy crown hologram, plasma scepter, powerful slim silhouette',
             queen:  'chess QUEEN, AI empress, chrome and white armor, holographic cape of light particles, star diadem, floating orbs of data',
             bishop: 'chess BISHOP, neural network oracle, long flowing data-stream robes, third eye scanner, quantum staff',
-            knight: 'chess KNIGHT, cybernetic warrior, sleek mech armor, energy lance, jet boosters on back, standing upright on two legs, NO horse, NOT riding anything',
+            knight: 'brave young cybernetic warrior, sleek futuristic armor, glowing energy lance, jet boosters on back, cheerful pose, standing upright on two legs',
             rook:   'chess ROOK, orbital defense station commander, angular titanium armor, force field projector',
             pawn:   'chess PAWN, young android recruit, slim white suit with glowing blue lines, compact plasma pistol',
         }
@@ -792,7 +792,7 @@ function buildPrompt(epoch, pieceKey, color) {
         queen:  'FEMALE character, woman, feminine face and figure, clearly female',
         king:   'male character, king',
         bishop: 'male character, no crown on head',
-        knight: 'male character, standing on own two feet, NO horse, NOT riding anything, no animal',
+        knight: 'ONE human character, ONE head, two arms, two legs, standing upright on ground, NOT a chess piece shape, NO horse heads, NO horses, NO animals, NOT riding, NOT mounted, human warrior person',
         rook:   'male character',
         pawn:   'young character',
     }[pieceKey] || '';
