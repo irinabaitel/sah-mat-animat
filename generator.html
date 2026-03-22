@@ -797,9 +797,10 @@ function previewI2I(input) {
 
 async function generateI2I() {
     const key = getKey();
-    if (!key) { showError('Introdu cheia API!'); return; }
-    if (!i2iBase64) { showError('Alege o imagine de bază!'); return; }
-    if (!i2iEpoch || !i2iPiece) { showError('Alege epoca și piesa!'); return; }
+    if (!key) { alert('Introdu cheia API!'); return; }
+    if (!i2iBase64) { alert('Alege o imagine de bază!'); return; }
+    if (!i2iEpoch) { alert('Alege epoca nouă!'); return; }
+    if (!i2iPiece) { alert('Alege tipul piesei (Rege, Regină etc.)!'); return; }
 
     const epoch = EPOCHS.find(e => e.id === i2iEpoch);
     const color = document.getElementById('i2iColor').value;
