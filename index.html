@@ -3,1145 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>&#350;ah Mat Animat</title>
+    <title>Șah Mat Animat</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing:border-box; margin:0; padding:0; }
-        body {
-            width:100vw; height:100vh; overflow:hidden;
-            background: linear-gradient(180deg,
-                #5BAEE0 0%, #87CEEB 25%, #C8E8FF 50%,
-                #FFE8A8 72%, #FFBE60 88%, #FF9640 100%);
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: #000;
         }
-        #sun {
-            position:absolute; top:6%; left:12%; width:80px; height:80px; border-radius:50%;
-            background: radial-gradient(circle at 40% 38%, #FFFCE0, #FFE040 55%, #FFAA00);
-            box-shadow: 0 0 30px #FFE050, 0 0 70px rgba(255,220,40,.45);
-            z-index:2; pointer-events:none;
-            animation: sunPulse 3s ease-in-out infinite;
+
+        /* ===== VIDEO BACKGROUND ===== */
+        #bg-video {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto; height: auto;
+            object-fit: cover;
+            z-index: 0;
         }
-        @keyframes sunPulse {
-            0%,100%{ box-shadow:0 0 30px #FFE050,0 0 70px rgba(255,220,40,.45) }
-            50%    { box-shadow:0 0 40px #FFEE70,0 0 90px rgba(255,220,40,.60) }
+
+        /* ===== DARK OVERLAY (readability) ===== */
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(0,0,0,0.25) 0%,
+                rgba(0,0,0,0.60) 100%
+            );
+            z-index: 1;
         }
-        #ground {
-            position:absolute; bottom:0; left:0; width:100%; height:130px; z-index:3;
-            background: linear-gradient(180deg, #7DD84A 0%, #5AAA28 60%, #3A7A10 100%);
-            border-top: 4px solid #A0E060;
+
+        /* ===== LOOP FADE (maschează restart-ul) ===== */
+        #loop-fade {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0;
+            animation: loop-mask 8s linear infinite;
         }
-        #ground::before {
-            content:''; position:absolute; top:0; left:0; width:100%; height:100%;
-            background-image:
-                radial-gradient(ellipse 28px 18px at 8% 30%, #5BBB25 0%, transparent 60%),
-                radial-gradient(ellipse 22px 14px at 18% 55%, #4CAA18 0%, transparent 60%),
-                radial-gradient(ellipse 30px 20px at 30% 25%, #68CC30 0%, transparent 60%),
-                radial-gradient(ellipse 20px 13px at 45% 60%, #5BBB25 0%, transparent 60%),
-                radial-gradient(ellipse 26px 17px at 60% 30%, #4CAA18 0%, transparent 60%),
-                radial-gradient(ellipse 24px 16px at 72% 50%, #68CC30 0%, transparent 60%),
-                radial-gradient(ellipse 28px 18px at 85% 28%, #5BBB25 0%, transparent 60%),
-                radial-gradient(ellipse 20px 13px at 94% 55%, #4CAA18 0%, transparent 60%);
+
+        @keyframes loop-mask {
+            0%   { opacity: 0; }
+            82%  { opacity: 0; }
+            91%  { opacity: 1; }
+            100% { opacity: 0; }
         }
-        .pc {
-            position:absolute; pointer-events:none;
-            will-change:left,top; z-index:15;
+
+        /* ===== CONTENT ===== */
+        #content {
+            position: fixed;
+            inset: 0;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 20px;
         }
-        @keyframes bob {
-            0%,100%{ transform:rotate(-2deg) scaleY(.98) }
-            50%    { transform:rotate(2deg)  scaleY(1.02) }
+
+        .chess-icon {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 20px rgba(255,200,50,0.8));
+            animation: float 3s ease-in-out infinite;
         }
-        .pc svg { animation: bob .38s ease-in-out infinite; display:block; }
-        @keyframes tag-pop { 0%{transform:scale(1);opacity:1} 100%{transform:scale(3.5);opacity:0} }
-        .tag-ring {
-            position:absolute; border-radius:50%; border:4px solid #FF1818;
-            animation:tag-pop .5s ease-out forwards; pointer-events:none; z-index:16;
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-12px); }
         }
-        #terrace-wrap {
-            position:absolute; right:0; bottom:88px;
-            width:330px; height:400px; z-index:20; pointer-events:none;
+
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: clamp(2.8em, 8vw, 6em);
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            line-height: 1.1;
+            text-shadow:
+                0 0 20px rgba(255,180,50,0.9),
+                0 0 60px rgba(255,140,0,0.6),
+                0 0 120px rgba(255,100,0,0.3),
+                2px 3px 0px rgba(0,0,0,0.5);
+            margin-bottom: 16px;
+            animation: title-pulse 4s ease-in-out infinite;
         }
-        .title-wrap {
-            position:absolute; top:16px; left:50%; transform:translateX(-50%);
-            text-align:center; z-index:40; pointer-events:none;
+
+        @keyframes title-pulse {
+            0%, 100% { text-shadow:
+                0 0 20px rgba(255,180,50,0.9),
+                0 0 60px rgba(255,140,0,0.6),
+                0 0 120px rgba(255,100,0,0.3),
+                2px 3px 0px rgba(0,0,0,0.5); }
+            50% { text-shadow:
+                0 0 30px rgba(255,200,80,1),
+                0 0 80px rgba(255,160,20,0.8),
+                0 0 160px rgba(255,120,0,0.5),
+                2px 3px 0px rgba(0,0,0,0.5); }
         }
-        .title-wrap h1 {
-            font-family:'Baloo 2',cursive; font-size:clamp(1.8em,4.5vw,3.2em);
-            color:#FF6B00;
-            text-shadow: 2px 2px 0 #FFEE44, 4px 4px 0 rgba(0,0,0,.15);
-            white-space:nowrap;
+
+        .tagline {
+            font-family: 'Nunito', sans-serif;
+            font-size: clamp(1em, 2.5vw, 1.4em);
+            font-weight: 700;
+            color: rgba(255,230,180,0.92);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.6);
+            margin-bottom: 50px;
         }
-        .title-wrap .sub {
-            font-family:'Nunito',sans-serif; font-size:.9em; color:#CC5500;
-            font-weight:700; text-shadow:1px 1px 0 rgba(255,255,255,.6);
+
+        .btn-enter {
+            display: inline-block;
+            padding: 18px 60px;
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+            color: white;
+            font-family: 'Baloo 2', cursive;
+            font-size: clamp(1.1em, 3vw, 1.5em);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            border-radius: 60px;
+            box-shadow:
+                0 0 30px rgba(230,126,34,0.7),
+                0 0 60px rgba(230,126,34,0.3),
+                0 6px 20px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+            animation: btn-glow 2.5s ease-in-out infinite;
+            border: 2px solid rgba(255,255,255,0.3);
         }
-        .author {
-            position:absolute; bottom:108px; left:50%; transform:translateX(-50%);
-            z-index:40; color:#884400; font-family:'Nunito',sans-serif; font-weight:700;
-            font-size:.88em; letter-spacing:2px; text-transform:uppercase;
-            text-shadow:1px 1px 0 rgba(255,255,255,.5); white-space:nowrap;
+
+        @keyframes btn-glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(230,126,34,0.7), 0 0 60px rgba(230,126,34,0.3), 0 6px 20px rgba(0,0,0,0.4); }
+            50%       { box-shadow: 0 0 45px rgba(255,160,50,0.9), 0 0 90px rgba(230,126,34,0.5), 0 6px 20px rgba(0,0,0,0.4); }
         }
-        .btn-start {
-            position:absolute; bottom:38px; left:50%; transform:translateX(-50%);
-            z-index:40; background:#FF8C20; color:white; font-family:'Baloo 2',cursive;
-            font-size:1.5em; padding:12px 48px; border-radius:50px; text-decoration:none;
-            border:3px solid #CC5500; box-shadow:4px 4px 0 #CC5500;
-            transition:all .15s; white-space:nowrap;
+
+        .btn-enter:hover {
+            transform: translateY(-4px) scale(1.04);
+            box-shadow:
+                0 0 50px rgba(255,160,50,1),
+                0 0 100px rgba(230,126,34,0.6),
+                0 10px 30px rgba(0,0,0,0.5);
         }
-        .btn-start:hover { transform:translateX(-50%) translateY(-3px); }
+
+        /* ===== PARTICLES (stele) ===== */
+        .star {
+            position: fixed;
+            border-radius: 50%;
+            background: white;
+            z-index: 2;
+            animation: twinkle var(--dur) ease-in-out infinite var(--delay);
+            opacity: 0;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(1); }
+            50%       { opacity: var(--bright); transform: scale(1.4); }
+        }
+
+        /* ===== WATERMARK VIDEO ===== */
+        /* ascunde watermark-ul Veo din colțul dreapta-jos */
+        #wm-cover {
+            position: fixed;
+            bottom: 0; right: 0;
+            width: 80px; height: 32px;
+            background: #000;
+            z-index: 4;
+        }
     </style>
 </head>
 <body>
 
-<div id="sun"></div>
-<div id="ground"></div>
+    <video id="bg-video" autoplay muted loop playsinline>
+        <source src="Filme/Video_Generat_Piese_Galactice_Convergente.mp4" type="video/mp4">
+    </video>
 
-<!-- CASTLE SILHOUETTE -->
-<svg style="position:absolute;bottom:108px;left:50%;transform:translateX(-52%);z-index:2;"
-     viewBox="0 0 680 360" width="680" height="360" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <!-- Window glow radial gradient -->
-    <radialGradient id="wG" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#FFE870"/>
-      <stop offset="100%" stop-color="#FFD040" stop-opacity="0"/>
-    </radialGradient>
-    <!-- Wall shading linear gradient for 3D effect -->
-    <linearGradient id="wallShade" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="rgba(255,255,255,.15)"/>
-      <stop offset="70%" stop-color="rgba(0,0,0,0)"/>
-      <stop offset="100%" stop-color="rgba(0,0,0,.12)"/>
-    </linearGradient>
-    <!-- Roof cone gradient -->
-    <linearGradient id="coneG" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#9BBFD8"/>
-      <stop offset="100%" stop-color="#507898"/>
-    </linearGradient>
-    <!-- Wall base gradient -->
-    <linearGradient id="wallG2" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FDFAF0"/>
-      <stop offset="100%" stop-color="#EDE4C4"/>
-    </linearGradient>
-  </defs>
+    <div id="overlay"></div>
+    <div id="loop-fade"></div>
+    <div id="wm-cover"></div>
 
-  <!-- Atmospheric warm glow behind castle -->
-  <ellipse cx="340" cy="280" rx="320" ry="120" fill="rgba(255,220,100,.12)"/>
+    <div id="content">
+        <div class="chess-icon">♟</div>
+        <h1>Șah Mat Animat</h1>
+        <div class="tagline">Aventura ta în lumea șahului începe aici</div>
+        <a href="hub_epoci.html" class="btn-enter">Intră în Joc ▶</a>
+    </div>
 
-  <!-- ═══════════════════════════════════════ -->
-  <!-- CONNECTING WALLS (drawn first, behind towers) -->
-  <!-- ═══════════════════════════════════════ -->
+    <script>
+const PAGE_ID = 'landing';
 
-  <!-- Wall between T1 and T2 (far left to left-mid) -->
-  <rect x="75" y="192" width="14" height="168" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="1"/>
-  <rect x="75" y="192" width="14" height="168" fill="url(#wallShade)"/>
-
-  <!-- Wall between T2 and T3 (left-mid to center-left turret) -->
-  <rect x="160" y="178" width="13" height="182" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="1"/>
-  <rect x="160" y="178" width="13" height="182" fill="url(#wallShade)"/>
-
-  <!-- Wall between T3 and T4 (center-left turret to main) -->
-  <rect x="220" y="174" width="6" height="186" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="1"/>
-
-  <!-- Wall between T4 and T5 (main to center-right turret) -->
-  <rect x="355" y="174" width="6" height="186" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="1"/>
-
-  <!-- Wall between T5 and T6 (center-right turret to right-mid) -->
-  <rect x="456" y="178" width="7" height="182" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="1"/>
-  <rect x="456" y="178" width="7" height="182" fill="url(#wallShade)"/>
-
-  <!-- Wall between T6 and T7 (right-mid to far right) -->
-  <rect x="534" y="192" width="14" height="168" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="1"/>
-  <rect x="534" y="192" width="14" height="168" fill="url(#wallShade)"/>
-
-  <!-- ═══════════════════════════════════════ -->
-  <!-- TOWER 1: FAR LEFT (x=15, base y=150, w=60, h=210) -->
-  <!-- ═══════════════════════════════════════ -->
-  <!-- T1 body -->
-  <rect x="15" y="150" width="60" height="210" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="3"/>
-  <rect x="15" y="150" width="60" height="210" fill="url(#wallShade)"/>
-  <!-- T1 cone roof -->
-  <polygon points="5,150 45,65 85,150" fill="#7AAAC8" stroke="#507898" stroke-width="1.5"/>
-  <polygon points="5,150 45,65 85,150" fill="url(#coneG)" opacity=".40"/>
-  <!-- T1 flag -->
-  <line x1="45" y1="65" x2="45" y2="30" stroke="#7A5010" stroke-width="2"/>
-  <polygon points="45,30 45,46 58,38" fill="#FF4444"/>
-  <!-- T1 battlements -->
-  <rect x="15" y="138" width="10" height="16" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="30" y="134" width="10" height="20" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="45" y="132" width="10" height="22" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="60" y="134" width="10" height="20" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <!-- T1 gold trim band -->
-  <rect x="15" y="200" width="60" height="4" fill="#C8A850" opacity=".55"/>
-  <!-- T1 windows (arched style) -->
-  <rect x="28" y="164" width="12" height="20" rx="6" fill="#FFD860" opacity=".90" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="34" cy="172" rx="11" ry="14" fill="url(#wG)" opacity=".55"/>
-  <rect x="48" y="164" width="12" height="20" rx="6" fill="#FFD860" opacity=".88" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="54" cy="172" rx="11" ry="14" fill="url(#wG)" opacity=".48"/>
-  <!-- T1 lower window -->
-  <rect x="35" y="210" width="14" height="22" rx="7" fill="#FFD860" opacity=".85" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="42" cy="220" rx="12" ry="15" fill="url(#wG)" opacity=".40"/>
-
-  <!-- ═══════════════════════════════════════ -->
-  <!-- TOWER 2: LEFT-MID (x=88, base y=110, w=72, h=250) -->
-  <!-- ═══════════════════════════════════════ -->
-  <!-- T2 body -->
-  <rect x="88" y="110" width="72" height="250" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="3"/>
-  <rect x="88" y="110" width="72" height="250" fill="url(#wallShade)"/>
-  <!-- T2 cone roof (taller spire) -->
-  <polygon points="76,110 124,15 172,110" fill="#7AAAC8" stroke="#507898" stroke-width="1.5"/>
-  <polygon points="76,110 124,15 172,110" fill="url(#coneG)" opacity=".40"/>
-  <!-- T2 flag -->
-  <line x1="124" y1="15" x2="124" y2="-18" stroke="#7A5010" stroke-width="2"/>
-  <polygon points="124,-18 124,-2 140,-10" fill="#FFD700"/>
-  <!-- T2 battlements -->
-  <rect x="88"  y="97"  width="10" height="17" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="102" y="92"  width="10" height="22" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="116" y="88"  width="10" height="26" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="130" y="90"  width="10" height="24" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="144" y="93"  width="10" height="21" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="152" y="97"  width="10" height="17" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <!-- T2 gold trim -->
-  <rect x="88" y="168" width="72" height="4" fill="#C8A850" opacity=".55"/>
-  <!-- T2 windows -->
-  <rect x="100" y="124" width="13" height="22" rx="6" fill="#FFD860" opacity=".90" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="107" cy="134" rx="12" ry="15" fill="url(#wG)" opacity=".55"/>
-  <rect x="122" y="124" width="13" height="22" rx="6" fill="#FFD860" opacity=".88" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="129" cy="134" rx="12" ry="15" fill="url(#wG)" opacity=".50"/>
-  <!-- T2 round window (circular) -->
-  <circle cx="124" cy="175" r="10" fill="#FFD860" opacity=".88" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="124" cy="175" rx="14" ry="14" fill="url(#wG)" opacity=".45"/>
-  <!-- T2 lower arched windows -->
-  <rect x="100" y="200" width="13" height="22" rx="6" fill="#FFD860" opacity=".82" stroke="#C09020" stroke-width="1"/>
-  <rect x="122" y="200" width="13" height="22" rx="6" fill="#FFD860" opacity=".80" stroke="#C09020" stroke-width="1"/>
-
-  <!-- ═══════════════════════════════════════ -->
-  <!-- TOWER 3: CENTER-LEFT SMALL TURRET (x=172, base y=140, w=48, h=200) -->
-  <!-- ═══════════════════════════════════════ -->
-  <!-- T3 body -->
-  <rect x="172" y="140" width="48" height="220" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="3"/>
-  <rect x="172" y="140" width="48" height="220" fill="url(#wallShade)"/>
-  <!-- T3 cone roof -->
-  <polygon points="162,140 196,80 230,140" fill="#7AAAC8" stroke="#507898" stroke-width="1.5"/>
-  <polygon points="162,140 196,80 230,140" fill="url(#coneG)" opacity=".40"/>
-  <!-- T3 flag -->
-  <line x1="196" y1="80" x2="196" y2="52" stroke="#7A5010" stroke-width="2"/>
-  <polygon points="196,52 196,66 207,59" fill="#FF4444"/>
-  <!-- T3 battlements -->
-  <rect x="172" y="128" width="9"  height="16" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="185" y="124" width="9"  height="20" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="199" y="122" width="9"  height="22" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="210" y="126" width="9"  height="18" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <!-- T3 round window -->
-  <circle cx="196" cy="160" r="9" fill="#FFD860" opacity=".90" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="196" cy="160" rx="13" ry="13" fill="url(#wG)" opacity=".45"/>
-  <!-- T3 lower window -->
-  <rect x="189" y="188" width="13" height="22" rx="6" fill="#FFD860" opacity=".85" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="196" cy="198" rx="12" ry="15" fill="url(#wG)" opacity=".40"/>
-
-  <!-- ═══════════════════════════════════════ -->
-  <!-- TOWER 4: MAIN CENTER (x=225, base y=50, w=130, h=310) -->
-  <!-- ═══════════════════════════════════════ -->
-  <!-- T4 main body -->
-  <rect x="225" y="50" width="130" height="310" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="3"/>
-  <rect x="225" y="50" width="130" height="310" fill="url(#wallShade)"/>
-  <!-- T4 shadow on right side -->
-  <rect x="330" y="50" width="25" height="310" fill="rgba(0,0,0,.08)" rx="3"/>
-  <!-- T4 VERY TALL cone spire -->
-  <polygon points="210,50 290,0 370,50" fill="#7AAAC8" stroke="#507898" stroke-width="1.5"/>
-  <polygon points="210,50 290,0 370,50" fill="url(#coneG)" opacity=".45"/>
-  <!-- T4 main flag (gold) -->
-  <line x1="290" y1="0" x2="290" y2="-30" stroke="#7A5010" stroke-width="2.5"/>
-  <polygon points="290,-30 290,-12 308,-21" fill="#FFD700"/>
-  <!-- T4 battlements -->
-  <rect x="225" y="34"  width="12" height="20" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="241" y="28"  width="12" height="26" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="257" y="22"  width="12" height="32" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="273" y="18"  width="12" height="36" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="289" y="20"  width="12" height="34" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="305" y="24"  width="12" height="30" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="321" y="28"  width="12" height="26" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="337" y="34"  width="12" height="20" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <!-- T4 ornamental mid-band -->
-  <rect x="225" y="182" width="130" height="8" fill="#C8A850" opacity=".65" rx="1"/>
-  <rect x="225" y="182" width="130" height="2" fill="rgba(255,255,255,.40)"/>
-  <!-- T4 upper gold trim -->
-  <rect x="225" y="112" width="130" height="4" fill="#C8A850" opacity=".45"/>
-  <!-- T4 windows row 1 (top) -->
-  <rect x="244" y="68" width="14" height="24" rx="7" fill="#FFD860" opacity=".90" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="251" cy="79" rx="12" ry="16" fill="url(#wG)" opacity=".55"/>
-  <rect x="270" y="68" width="14" height="24" rx="7" fill="#FFD860" opacity=".92" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="277" cy="79" rx="12" ry="16" fill="url(#wG)" opacity=".60"/>
-  <rect x="296" y="68" width="14" height="24" rx="7" fill="#FFD860" opacity=".90" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="303" cy="79" rx="12" ry="16" fill="url(#wG)" opacity=".55"/>
-  <rect x="322" y="68" width="14" height="24" rx="7" fill="#FFD860" opacity=".88" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="329" cy="79" rx="12" ry="16" fill="url(#wG)" opacity=".50"/>
-  <!-- T4 windows row 2 (middle) -->
-  <rect x="244" y="122" width="14" height="24" rx="7" fill="#FFD860" opacity=".88" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="251" cy="133" rx="12" ry="16" fill="url(#wG)" opacity=".50"/>
-  <rect x="270" y="122" width="14" height="24" rx="7" fill="#FFD860" opacity=".90" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="277" cy="133" rx="12" ry="16" fill="url(#wG)" opacity=".55"/>
-  <rect x="296" y="122" width="14" height="24" rx="7" fill="#FFD860" opacity=".88" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="303" cy="133" rx="12" ry="16" fill="url(#wG)" opacity=".50"/>
-  <rect x="322" y="122" width="14" height="24" rx="7" fill="#FFD860" opacity=".85" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="329" cy="133" rx="12" ry="16" fill="url(#wG)" opacity=".45"/>
-  <!-- T4 windows row 3 (lower, above gate) -->
-  <rect x="248" y="200" width="14" height="24" rx="7" fill="#FFD860" opacity=".85" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="255" cy="211" rx="12" ry="16" fill="url(#wG)" opacity=".45"/>
-  <rect x="272" y="200" width="14" height="24" rx="7" fill="#FFD860" opacity=".88" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="279" cy="211" rx="12" ry="16" fill="url(#wG)" opacity=".50"/>
-  <rect x="296" y="200" width="14" height="24" rx="7" fill="#FFD860" opacity=".85" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="303" cy="211" rx="12" ry="16" fill="url(#wG)" opacity=".45"/>
-  <rect x="320" y="200" width="14" height="24" rx="7" fill="#FFD860" opacity=".82" stroke="#C09020" stroke-width="1"/>
-  <!-- T4 central gate arch -->
-  <path d="M258,360 L258,265 Q290,238 322,265 L322,360Z" fill="#F0E6C0" stroke="#D4C890" stroke-width="1.5"/>
-  <path d="M263,360 L263,268 Q290,244 317,268 L317,360Z" fill="#FFE898" opacity=".75"/>
-  <!-- Gate arch keystone detail -->
-  <path d="M258,265 Q290,238 322,265" fill="none" stroke="#C8A850" stroke-width="2.5"/>
-  <ellipse cx="290" cy="252" rx="6" ry="4" fill="#C8A850" opacity=".70"/>
-
-  <!-- ═══════════════════════════════════════ -->
-  <!-- TOWER 5: CENTER-RIGHT SMALL TURRET (x=408, base y=145, w=48, h=195) -->
-  <!-- ═══════════════════════════════════════ -->
-  <!-- T5 body -->
-  <rect x="408" y="145" width="48" height="215" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="3"/>
-  <rect x="408" y="145" width="48" height="215" fill="url(#wallShade)"/>
-  <!-- T5 cone roof -->
-  <polygon points="398,145 432,85 466,145" fill="#7AAAC8" stroke="#507898" stroke-width="1.5"/>
-  <polygon points="398,145 432,85 466,145" fill="url(#coneG)" opacity=".40"/>
-  <!-- T5 flag -->
-  <line x1="432" y1="85" x2="432" y2="57" stroke="#7A5010" stroke-width="2"/>
-  <polygon points="432,57 432,71 443,64" fill="#FF4444"/>
-  <!-- T5 battlements -->
-  <rect x="408" y="133" width="9"  height="16" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="421" y="129" width="9"  height="20" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="434" y="127" width="9"  height="22" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="447" y="131" width="9"  height="18" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <!-- T5 round window -->
-  <circle cx="432" cy="164" r="9" fill="#FFD860" opacity=".90" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="432" cy="164" rx="13" ry="13" fill="url(#wG)" opacity=".45"/>
-  <!-- T5 lower window -->
-  <rect x="425" y="192" width="13" height="22" rx="6" fill="#FFD860" opacity=".85" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="432" cy="202" rx="12" ry="15" fill="url(#wG)" opacity=".40"/>
-
-  <!-- ═══════════════════════════════════════ -->
-  <!-- TOWER 6: RIGHT-MID (x=462, base y=112, w=72, h=248) -->
-  <!-- ═══════════════════════════════════════ -->
-  <!-- T6 body -->
-  <rect x="462" y="112" width="72" height="248" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="3"/>
-  <rect x="462" y="112" width="72" height="248" fill="url(#wallShade)"/>
-  <!-- T6 cone roof -->
-  <polygon points="450,112 498,18 546,112" fill="#7AAAC8" stroke="#507898" stroke-width="1.5"/>
-  <polygon points="450,112 498,18 546,112" fill="url(#coneG)" opacity=".40"/>
-  <!-- T6 flag -->
-  <line x1="498" y1="18" x2="498" y2="-16" stroke="#7A5010" stroke-width="2"/>
-  <polygon points="498,-16 498,0 514,-8" fill="#FFD700"/>
-  <!-- T6 battlements -->
-  <rect x="462" y="99"  width="10" height="17" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="476" y="94"  width="10" height="22" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="490" y="90"  width="10" height="26" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="504" y="92"  width="10" height="24" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="518" y="95"  width="10" height="21" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="526" y="99"  width="10" height="17" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <!-- T6 gold trim -->
-  <rect x="462" y="170" width="72" height="4" fill="#C8A850" opacity=".55"/>
-  <!-- T6 windows -->
-  <rect x="474" y="126" width="13" height="22" rx="6" fill="#FFD860" opacity=".90" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="481" cy="136" rx="12" ry="15" fill="url(#wG)" opacity=".55"/>
-  <rect x="496" y="126" width="13" height="22" rx="6" fill="#FFD860" opacity=".88" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="503" cy="136" rx="12" ry="15" fill="url(#wG)" opacity=".50"/>
-  <!-- T6 round window -->
-  <circle cx="498" cy="178" r="10" fill="#FFD860" opacity=".88" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="498" cy="178" rx="14" ry="14" fill="url(#wG)" opacity=".45"/>
-  <!-- T6 lower arched windows -->
-  <rect x="474" y="202" width="13" height="22" rx="6" fill="#FFD860" opacity=".82" stroke="#C09020" stroke-width="1"/>
-  <rect x="496" y="202" width="13" height="22" rx="6" fill="#FFD860" opacity=".80" stroke="#C09020" stroke-width="1"/>
-
-  <!-- ═══════════════════════════════════════ -->
-  <!-- TOWER 7: FAR RIGHT (x=547, base y=152, w=60, h=208) -->
-  <!-- ═══════════════════════════════════════ -->
-  <!-- T7 body -->
-  <rect x="547" y="152" width="60" height="208" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5" rx="3"/>
-  <rect x="547" y="152" width="60" height="208" fill="url(#wallShade)"/>
-  <!-- T7 cone roof -->
-  <polygon points="537,152 577,68 617,152" fill="#7AAAC8" stroke="#507898" stroke-width="1.5"/>
-  <polygon points="537,152 577,68 617,152" fill="url(#coneG)" opacity=".40"/>
-  <!-- T7 flag -->
-  <line x1="577" y1="68" x2="577" y2="33" stroke="#7A5010" stroke-width="2"/>
-  <polygon points="577,33 577,49 590,41" fill="#FF4444"/>
-  <!-- T7 battlements -->
-  <rect x="547" y="140" width="10" height="16" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="562" y="136" width="10" height="20" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="577" y="134" width="10" height="22" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <rect x="592" y="136" width="10" height="20" rx="2" fill="#F5EED8" stroke="#D4C890" stroke-width="1.5"/>
-  <!-- T7 gold trim band -->
-  <rect x="547" y="202" width="60" height="4" fill="#C8A850" opacity=".55"/>
-  <!-- T7 windows -->
-  <rect x="560" y="166" width="12" height="20" rx="6" fill="#FFD860" opacity=".90" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="566" cy="175" rx="11" ry="14" fill="url(#wG)" opacity=".55"/>
-  <rect x="580" y="166" width="12" height="20" rx="6" fill="#FFD860" opacity=".88" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="586" cy="175" rx="11" ry="14" fill="url(#wG)" opacity=".48"/>
-  <!-- T7 lower window -->
-  <rect x="567" y="212" width="14" height="22" rx="7" fill="#FFD860" opacity=".85" stroke="#C09020" stroke-width="1"/>
-  <ellipse cx="574" cy="222" rx="12" ry="15" fill="url(#wG)" opacity=".40"/>
-
-</svg>
-
-<!-- TERRACE + 4 ROYALS -->
-<div id="terrace-wrap">
-<svg viewBox="0 0 330 400" width="330" height="400" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="stoneG" cx="40%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#D4C098"/>
-      <stop offset="100%" stop-color="#907040"/>
-    </radialGradient>
-    <radialGradient id="kWG" cx="35%" cy="28%" r="70%">
-      <stop offset="0%" stop-color="#FFF4C0"/>
-      <stop offset="100%" stop-color="#C8A030"/>
-    </radialGradient>
-    <radialGradient id="qWG" cx="35%" cy="28%" r="70%">
-      <stop offset="0%" stop-color="#E8F0FF"/>
-      <stop offset="100%" stop-color="#7898C8"/>
-    </radialGradient>
-    <radialGradient id="kBG" cx="35%" cy="28%" r="70%">
-      <stop offset="0%" stop-color="#A85040"/>
-      <stop offset="100%" stop-color="#3A1010"/>
-    </radialGradient>
-    <radialGradient id="qBG" cx="35%" cy="28%" r="70%">
-      <stop offset="0%" stop-color="#C880E8"/>
-      <stop offset="100%" stop-color="#400868"/>
-    </radialGradient>
-    <radialGradient id="teaG" cx="35%" cy="28%" r="70%">
-      <stop offset="0%" stop-color="#F0E8C0"/>
-      <stop offset="100%" stop-color="#A89040"/>
-    </radialGradient>
-  </defs>
-
-  <!-- Stone balcony wall (background) -->
-  <rect x="0" y="180" width="330" height="220" fill="url(#stoneG)"/>
-  <!-- stone block pattern -->
-  <line x1="0"   y1="210" x2="330" y2="210" stroke="rgba(0,0,0,.18)" stroke-width="2"/>
-  <line x1="0"   y1="240" x2="330" y2="240" stroke="rgba(0,0,0,.18)" stroke-width="2"/>
-  <line x1="0"   y1="270" x2="330" y2="270" stroke="rgba(0,0,0,.18)" stroke-width="2"/>
-  <line x1="55"  y1="180" x2="55"  y2="400" stroke="rgba(0,0,0,.12)" stroke-width="1.5"/>
-  <line x1="110" y1="195" x2="110" y2="400" stroke="rgba(0,0,0,.12)" stroke-width="1.5"/>
-  <line x1="165" y1="180" x2="165" y2="400" stroke="rgba(0,0,0,.12)" stroke-width="1.5"/>
-  <line x1="220" y1="195" x2="220" y2="400" stroke="rgba(0,0,0,.12)" stroke-width="1.5"/>
-  <line x1="275" y1="180" x2="275" y2="400" stroke="rgba(0,0,0,.12)" stroke-width="1.5"/>
-  <!-- wall highlight (top) -->
-  <rect x="0" y="180" width="330" height="8" fill="rgba(255,255,255,.22)"/>
-
-  <!-- Colorful banner pennants between merlons -->
-  <polygon points="38,180 54,195 38,195"  fill="#FF6644" opacity=".88"/>
-  <polygon points="82,180 98,195 82,195"  fill="#44BBFF" opacity=".88"/>
-  <polygon points="126,180 142,195 126,195" fill="#FFD020" opacity=".88"/>
-  <polygon points="170,180 186,195 170,195" fill="#FF44AA" opacity=".88"/>
-  <polygon points="214,180 230,195 214,195" fill="#44DD88" opacity=".88"/>
-  <polygon points="258,180 274,195 258,195" fill="#FF6644" opacity=".88"/>
-
-  <!-- Front parapet / railing -->
-  <rect x="0" y="355" width="330" height="45" fill="url(#stoneG)"/>
-  <rect x="0" y="355" width="330" height="6"  fill="rgba(255,255,255,.25)"/>
-  <!-- parapet merlons -->
-  <rect x="10"  y="338" width="28" height="22" rx="4" fill="url(#stoneG)" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>
-  <rect x="54"  y="338" width="28" height="22" rx="4" fill="url(#stoneG)" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>
-  <rect x="98"  y="338" width="28" height="22" rx="4" fill="url(#stoneG)" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>
-  <rect x="142" y="338" width="28" height="22" rx="4" fill="url(#stoneG)" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>
-  <rect x="186" y="338" width="28" height="22" rx="4" fill="url(#stoneG)" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>
-  <rect x="230" y="338" width="28" height="22" rx="4" fill="url(#stoneG)" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>
-  <rect x="274" y="338" width="28" height="22" rx="4" fill="url(#stoneG)" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>
-
-  <!-- Flower decorations on parapet -->
-  <ellipse cx="34"  cy="354" rx="5" ry="4" fill="#FF3355" opacity=".85"/>
-  <ellipse cx="34"  cy="354" rx="2.5" ry="2" fill="#FFAACC"/>
-  <ellipse cx="78"  cy="354" rx="5" ry="4" fill="#FFD020" opacity=".85"/>
-  <ellipse cx="78"  cy="354" rx="2.5" ry="2" fill="#FFFAAA"/>
-  <ellipse cx="122" cy="354" rx="5" ry="4" fill="#FF3355" opacity=".85"/>
-  <ellipse cx="122" cy="354" rx="2.5" ry="2" fill="#FFAACC"/>
-  <ellipse cx="166" cy="354" rx="5" ry="4" fill="#FFD020" opacity=".85"/>
-  <ellipse cx="166" cy="354" rx="2.5" ry="2" fill="#FFFAAA"/>
-  <ellipse cx="210" cy="354" rx="5" ry="4" fill="#FF88CC" opacity=".85"/>
-  <ellipse cx="210" cy="354" rx="2.5" ry="2" fill="#FFCCEE"/>
-  <ellipse cx="254" cy="354" rx="5" ry="4" fill="#FF3355" opacity=".85"/>
-  <ellipse cx="254" cy="354" rx="2.5" ry="2" fill="#FFAACC"/>
-  <ellipse cx="298" cy="354" rx="5" ry="4" fill="#FFD020" opacity=".85"/>
-  <ellipse cx="298" cy="354" rx="2.5" ry="2" fill="#FFFAAA"/>
-
-  <!-- Torches -->
-  <!-- left torch -->
-  <rect x="16" y="195" width="8"  height="40" rx="3" fill="#6B4A20" stroke="#3A2008" stroke-width="2"/>
-  <rect x="12" y="190" width="16" height="10" rx="3" fill="#8B6030" stroke="#3A2008" stroke-width="2"/>
-  <ellipse cx="20" cy="188" rx="8" ry="14" fill="#FF8C20" opacity=".95"/>
-  <ellipse cx="20" cy="183" rx="6" ry="10" fill="#FFD840"/>
-  <ellipse cx="19" cy="180" rx="3" ry="6"  fill="white" opacity=".75"/>
-  <ellipse cx="20" cy="195" rx="20" ry="8" fill="rgba(255,180,40,.30)"/>
-  <!-- right torch -->
-  <rect x="306" y="195" width="8"  height="40" rx="3" fill="#6B4A20" stroke="#3A2008" stroke-width="2"/>
-  <rect x="302" y="190" width="16" height="10" rx="3" fill="#8B6030" stroke="#3A2008" stroke-width="2"/>
-  <ellipse cx="310" cy="188" rx="8" ry="14" fill="#FF8C20" opacity=".95"/>
-  <ellipse cx="310" cy="183" rx="6" ry="10" fill="#FFD840"/>
-  <ellipse cx="309" cy="180" rx="3" ry="6"  fill="white" opacity=".75"/>
-  <ellipse cx="310" cy="195" rx="20" ry="8" fill="rgba(255,180,40,.30)"/>
-
-  <!-- TEA TABLE (center) -->
-  <!-- table top shadow -->
-  <ellipse cx="165" cy="308" rx="38" ry="12" fill="rgba(0,0,0,.20)"/>
-  <!-- table top -->
-  <ellipse cx="165" cy="302" rx="38" ry="13" fill="#D4A840" stroke="#7A4A00" stroke-width="3"/>
-  <ellipse cx="165" cy="298" rx="36" ry="11" fill="#F0CC70"/>
-  <ellipse cx="155" cy="294" rx="14" ry="6"  fill="rgba(255,255,255,.40)"/>
-  <!-- table leg -->
-  <rect x="158" y="312" width="14" height="30" rx="5" fill="#C09030" stroke="#7A4A00" stroke-width="2.5"/>
-  <!-- TEAPOT -->
-  <ellipse cx="165" cy="294" rx="20" ry="13" fill="url(#teaG)" stroke="#7A4A00" stroke-width="2.5"/>
-  <ellipse cx="165" cy="290" rx="18" ry="11" fill="#F8ECA0"/>
-  <ellipse cx="157" cy="287" rx="8"  ry="5"  fill="rgba(255,255,255,.50)"/>
-  <path d="M185 290 Q196 286 194 295 Q191 302 185 298" fill="#C8A040" stroke="#7A4A00" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M145 290 Q134 288 134 296 Q134 304 145 300" fill="none" stroke="#7A4A00" stroke-width="3" stroke-linecap="round"/>
-  <ellipse cx="165" cy="282" rx="13" ry="6" fill="#C8A030" stroke="#7A4A00" stroke-width="2.5"/>
-  <circle  cx="165" cy="278" r="4.5" fill="#A88020" stroke="#7A4A00" stroke-width="2"/>
-  <!-- steam -->
-  <path d="M158 275 Q155 264 158 257" stroke="rgba(255,255,200,.80)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <path d="M165 273 Q162 262 165 255" stroke="rgba(255,255,200,.65)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-  <path d="M172 275 Q169 264 172 257" stroke="rgba(255,255,200,.55)" stroke-width="2"   fill="none" stroke-linecap="round"/>
-  <!-- 4 small cups on table -->
-  <ellipse cx="140" cy="298" rx="10" ry="7" fill="#E0C8F0" stroke="#7A4A00" stroke-width="2"/>
-  <ellipse cx="140" cy="295" rx="9"  ry="5" fill="#F0E0FF"/>
-  <ellipse cx="190" cy="298" rx="10" ry="7" fill="#C8E0F8" stroke="#7A4A00" stroke-width="2"/>
-  <ellipse cx="190" cy="295" rx="9"  ry="5" fill="#E0F0FF"/>
-
-  <!-- ══ KING WHITE (left, cx=55) ══ -->
-  <!-- seated body shadow -->
-  <ellipse cx="55" cy="338" rx="36" ry="10" fill="rgba(0,0,0,.18)"/>
-  <!-- body (seated round) -->
-  <ellipse cx="55" cy="318" rx="36" ry="26" fill="url(#kWG)" stroke="#5A3A00" stroke-width="3.5"/>
-  <ellipse cx="44" cy="307" rx="18" ry="11" fill="rgba(255,255,255,.28)"/>
-  <!-- arm -->
-  <path d="M78 314 Q92 306 104 300" stroke="#E8D060" stroke-width="14" stroke-linecap="round" fill="none"/>
-  <path d="M78 314 Q92 306 104 300" stroke="#5A3A00" stroke-width="3"  stroke-linecap="round" fill="none"/>
-  <!-- cup -->
-  <ellipse cx="107" cy="298" rx="12" ry="8"  fill="#C8E0F8" stroke="#2A4888" stroke-width="2.5"/>
-  <ellipse cx="107" cy="295" rx="10" ry="6"  fill="#E0F0FF"/>
-  <path d="M119 294 Q125 292 124 299 Q122 304 119 301" fill="none" stroke="#2A4888" stroke-width="2.5" stroke-linecap="round"/>
-  <!-- head -->
-  <circle cx="55" cy="270" r="40" fill="url(#kWG)" stroke="#5A3A00" stroke-width="4"/>
-  <ellipse cx="43" cy="257" rx="18" ry="11" fill="rgba(255,255,255,.30)"/>
-  <!-- WHITE BEARD -->
-  <path d="M20 282 Q16 302 24 318 Q34 328 55 330 Q76 328 86 318 Q94 302 90 282 Q80 298 55 300 Q30 298 20 282Z"
-        fill="#E8E8F0" stroke="#8888A0" stroke-width="2.5"/>
-  <path d="M24 285 Q30 296 36 300" stroke="rgba(220,220,240,.55)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <path d="M86 285 Q80 296 74 300" stroke="rgba(180,180,200,.45)" stroke-width="3"   fill="none" stroke-linecap="round"/>
-  <!-- mustache (white) -->
-  <path d="M34 278 Q44 272 55 276 Q66 272 76 278" fill="#D0D0E0" stroke="#8888A0" stroke-width="2.5"/>
-  <!-- nose (round) -->
-  <ellipse cx="55" cy="273" rx="9" ry="8" fill="#F0C898" stroke="#5A3A00" stroke-width="2.5"/>
-  <ellipse cx="51" cy="270" rx="3.5" ry="2.5" fill="rgba(255,255,255,.45)"/>
-  <!-- eyes (kind, warm) -->
-  <circle cx="40" cy="261" r="12" fill="white" stroke="#5A3A00" stroke-width="3"/>
-  <circle cx="70" cy="261" r="12" fill="white" stroke="#5A3A00" stroke-width="3"/>
-  <circle cx="41" cy="262" r="7"   fill="#4A8020"/>
-  <circle cx="71" cy="262" r="7"   fill="#4A8020"/>
-  <circle cx="41" cy="262" r="3.8" fill="#111"/>
-  <circle cx="71" cy="262" r="3.8" fill="#111"/>
-  <circle cx="38" cy="259" r="2.5" fill="white"/>
-  <circle cx="68" cy="259" r="2.5" fill="white"/>
-  <!-- eyebrows (white, bushy) -->
-  <path d="M30 250 Q40 243 51 248" stroke="#C8C8D8" stroke-width="5" fill="none" stroke-linecap="round"/>
-  <path d="M59 248 Q70 243 80 250" stroke="#C8C8D8" stroke-width="5" fill="none" stroke-linecap="round"/>
-  <!-- cheeks -->
-  <circle cx="29" cy="272" r="9"  fill="rgba(255,150,90,.45)"/>
-  <circle cx="81" cy="272" r="9"  fill="rgba(255,150,90,.45)"/>
-  <!-- smile (warm, amused) -->
-  <path d="M35 279 Q55 293 75 279" stroke="#5A3A00" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <!-- GOLD CROWN -->
-  <rect x="27" y="240" width="56" height="13" rx="5" fill="#E8A818" stroke="#5A3A00" stroke-width="3"/>
-  <rect x="27" y="240" width="56" height="5"  rx="4" fill="rgba(255,255,255,.28)"/>
-  <polygon points="30,240 38,220 46,240" fill="#FFD700" stroke="#5A3A00" stroke-width="2.5" stroke-linejoin="round"/>
-  <polygon points="45,240 55,216 65,240" fill="#FFF080" stroke="#5A3A00" stroke-width="2.5" stroke-linejoin="round"/>
-  <polygon points="64,240 72,220 80,240" fill="#FFD700" stroke="#5A3A00" stroke-width="2.5" stroke-linejoin="round"/>
-  <circle cx="38" cy="224" r="5"   fill="#FF2020" stroke="#880000" stroke-width="1.5"/>
-  <circle cx="37" cy="222" r="2"   fill="rgba(255,255,255,.65)"/>
-  <circle cx="55" cy="219" r="5.5" fill="#2244FF" stroke="#001488" stroke-width="1.5"/>
-  <circle cx="54" cy="217" r="2.2" fill="rgba(255,255,255,.65)"/>
-  <circle cx="72" cy="224" r="5"   fill="#22CC22" stroke="#006000" stroke-width="1.5"/>
-  <circle cx="71" cy="222" r="2"   fill="rgba(255,255,255,.65)"/>
-  <!-- speech bubble -->
-  <rect x="0"  y="194" width="88" height="32" rx="13" fill="rgba(255,255,255,.94)" stroke="#5A3A00" stroke-width="2"/>
-  <polygon points="32,226 44,240 44,226" fill="rgba(255,255,255,.94)"/>
-  <polygon points="30,226 46,226 46,240" fill="#5A3A00"/>
-  <polygon points="32,226 44,226 44,239" fill="rgba(255,255,255,.94)"/>
-  <text x="44" y="215" text-anchor="middle" font-size="12" font-family="Nunito,sans-serif" fill="#5A3A00" font-weight="900">Superb! &#128079;</text>
-
-  <!-- ══ QUEEN WHITE (cx=135) ══ -->
-  <ellipse cx="135" cy="338" rx="34" ry="10" fill="rgba(0,0,0,.18)"/>
-  <ellipse cx="135" cy="318" rx="34" ry="26" fill="url(#qWG)" stroke="#203868" stroke-width="3.5"/>
-  <ellipse cx="124" cy="307" rx="17" ry="11" fill="rgba(255,255,255,.28)"/>
-  <!-- dress ruffle -->
-  <path d="M105 322 Q120 314 135 317 Q150 314 165 322 Q150 330 135 328 Q120 330 105 322Z"
-        fill="#A8C8F0" stroke="#203868" stroke-width="2"/>
-  <!-- arm -->
-  <path d="M157 314 Q166 308 168 302" stroke="#B0C8E8" stroke-width="12" stroke-linecap="round" fill="none"/>
-  <path d="M157 314 Q166 308 168 302" stroke="#203868" stroke-width="3"  stroke-linecap="round" fill="none"/>
-  <!-- head -->
-  <circle cx="135" cy="268" r="38" fill="url(#qWG)" stroke="#203868" stroke-width="4"/>
-  <ellipse cx="123" cy="256" rx="17" ry="10" fill="rgba(255,255,255,.30)"/>
-  <!-- BLONDE HAIR (behind head) -->
-  <path d="M100 260 Q92 280 96 312 Q104 326 114 330" stroke="#D4B020" stroke-width="20" fill="none" stroke-linecap="round"/>
-  <path d="M170 260 Q178 280 174 312 Q166 326 156 330" stroke="#D4B020" stroke-width="20" fill="none" stroke-linecap="round"/>
-  <!-- hair top -->
-  <path d="M102 254 Q112 232 135 228 Q158 232 168 254" fill="#E8C830" stroke="#B09020" stroke-width="3"/>
-  <!-- head over hair -->
-  <circle cx="135" cy="268" r="36" fill="url(#qWG)" stroke="#203868" stroke-width="3.5"/>
-  <ellipse cx="123" cy="256" rx="17" ry="10" fill="rgba(255,255,255,.28)"/>
-  <!-- TIARA (silver) -->
-  <path d="M108 253 Q116 233 124 253 Q130 225 138 253 Q146 225 154 253 Q162 233 170 253 Z"
-        fill="#D8E8FF" stroke="#203868" stroke-width="2.5" stroke-linejoin="round"/>
-  <rect x="106" y="253" width="66" height="10" rx="5" fill="#B0C8F0" stroke="#203868" stroke-width="2.5"/>
-  <circle cx="124" cy="239" r="4.5" fill="#88AAFF" stroke="#203868" stroke-width="1.5"/>
-  <circle cx="138" cy="230" r="5.5" fill="#C0D8FF" stroke="#203868" stroke-width="1.5"/>
-  <circle cx="152" cy="239" r="4.5" fill="#88AAFF" stroke="#203868" stroke-width="1.5"/>
-  <!-- eyes (princess style) -->
-  <circle cx="122" cy="267" r="12" fill="white" stroke="#203868" stroke-width="3"/>
-  <circle cx="148" cy="267" r="12" fill="white" stroke="#203868" stroke-width="3"/>
-  <!-- eyelashes -->
-  <path d="M111 257 L107 250" stroke="#203868" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M116 255 L114 248" stroke="#203868" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M122 254 L122 246" stroke="#203868" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M136 254 L138 246" stroke="#203868" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M142 255 L144 248" stroke="#203868" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M148 257 L153 250" stroke="#203868" stroke-width="2.5" stroke-linecap="round"/>
-  <!-- iris (blue) -->
-  <circle cx="123" cy="269" r="7"   fill="#2840A8"/>
-  <circle cx="149" cy="269" r="7"   fill="#2840A8"/>
-  <circle cx="123" cy="269" r="3.8" fill="#111"/>
-  <circle cx="149" cy="269" r="3.8" fill="#111"/>
-  <circle cx="120" cy="266" r="2.5" fill="white"/>
-  <circle cx="146" cy="266" r="2.5" fill="white"/>
-  <!-- eyebrows -->
-  <path d="M113 257 Q122 251 130 255" stroke="#203868" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M140 255 Q148 251 157 257" stroke="#203868" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <!-- cheeks -->
-  <circle cx="109" cy="279" r="9" fill="rgba(255,160,200,.50)"/>
-  <circle cx="161" cy="279" r="9" fill="rgba(255,160,200,.50)"/>
-  <!-- nose (small elegant) -->
-  <path d="M130 281 Q135 286 140 281" stroke="#3A5888" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <!-- smile -->
-  <path d="M113 287 Q135 302 157 287" stroke="#203868" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <!-- speech bubble -->
-  <rect x="92"  y="194" width="92" height="32" rx="13" fill="rgba(255,255,255,.94)" stroke="#203868" stroke-width="2"/>
-  <polygon points="126,226 138,240 138,226" fill="rgba(255,255,255,.94)"/>
-  <polygon points="124,226 140,226 140,240" fill="#203868"/>
-  <polygon points="126,226 138,226 138,239" fill="rgba(255,255,255,.94)"/>
-  <text x="138" y="215" text-anchor="middle" font-size="12" font-family="Nunito,sans-serif" fill="#203868" font-weight="900">Bravo! &#10024;</text>
-
-  <!-- ══ KING BLACK (cx=210) ══ -->
-  <ellipse cx="210" cy="338" rx="34" ry="10" fill="rgba(0,0,0,.18)"/>
-  <ellipse cx="210" cy="318" rx="34" ry="26" fill="url(#kBG)" stroke="#220808" stroke-width="3.5"/>
-  <ellipse cx="199" cy="307" rx="17" ry="11" fill="rgba(255,255,255,.18)"/>
-  <!-- arm -->
-  <path d="M188 314 Q176 306 168 300" stroke="#882020" stroke-width="12" stroke-linecap="round" fill="none"/>
-  <path d="M188 314 Q176 306 168 300" stroke="#220808" stroke-width="3"  stroke-linecap="round" fill="none"/>
-  <!-- head -->
-  <circle cx="210" cy="268" r="38" fill="url(#kBG)" stroke="#220808" stroke-width="4"/>
-  <ellipse cx="198" cy="256" rx="17" ry="10" fill="rgba(255,255,255,.18)"/>
-  <!-- DARK BEARD -->
-  <path d="M176 280 Q172 300 180 314 Q190 324 210 326 Q230 324 240 314 Q248 300 244 280 Q234 295 210 298 Q186 295 176 280Z"
-        fill="#2A1010" stroke="#110808" stroke-width="2.5"/>
-  <path d="M180 283 Q185 294 190 298" stroke="rgba(160,80,80,.45)" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <!-- mustache (dark) -->
-  <path d="M190 275 Q200 269 210 273 Q220 269 230 275" fill="#3A1818" stroke="#220808" stroke-width="2.5"/>
-  <!-- nose -->
-  <ellipse cx="210" cy="272" rx="9" ry="8" fill="#8A4838" stroke="#220808" stroke-width="2.5"/>
-  <ellipse cx="206" cy="269" rx="3.5" ry="2.5" fill="rgba(255,255,255,.30)"/>
-  <!-- eyes (dignified) -->
-  <circle cx="195" cy="261" r="12" fill="white" stroke="#220808" stroke-width="3"/>
-  <circle cx="225" cy="261" r="12" fill="white" stroke="#220808" stroke-width="3"/>
-  <circle cx="196" cy="262" r="7"  fill="#6A1010"/>
-  <circle cx="226" cy="262" r="7"  fill="#6A1010"/>
-  <circle cx="196" cy="262" r="3.8" fill="#111"/>
-  <circle cx="226" cy="262" r="3.8" fill="#111"/>
-  <circle cx="193" cy="259" r="2.5" fill="white"/>
-  <circle cx="223" cy="259" r="2.5" fill="white"/>
-  <!-- eyebrows (strong, dark) -->
-  <path d="M185 249 Q195 242 206 247" stroke="#1A0808" stroke-width="5.5" fill="none" stroke-linecap="round"/>
-  <path d="M214 247 Q225 242 235 249" stroke="#1A0808" stroke-width="5.5" fill="none" stroke-linecap="round"/>
-  <!-- cheeks -->
-  <circle cx="183" cy="271" r="9"  fill="rgba(200,100,60,.35)"/>
-  <circle cx="237" cy="271" r="9"  fill="rgba(200,100,60,.35)"/>
-  <!-- smile (dignified nod) -->
-  <path d="M190 279 Q210 291 230 279" stroke="#220808" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <!-- BLACK CROWN with red jewels -->
-  <rect x="182" y="240" width="56" height="13" rx="5" fill="#2A1010" stroke="#110808" stroke-width="3"/>
-  <rect x="182" y="240" width="56" height="5"  rx="4" fill="rgba(255,255,255,.14)"/>
-  <polygon points="185,240 193,220 201,240" fill="#3A1818" stroke="#110808" stroke-width="2.5" stroke-linejoin="round"/>
-  <polygon points="200,240 210,216 220,240" fill="#4A2020" stroke="#110808" stroke-width="2.5" stroke-linejoin="round"/>
-  <polygon points="219,240 227,220 235,240" fill="#3A1818" stroke="#110808" stroke-width="2.5" stroke-linejoin="round"/>
-  <circle cx="193" cy="224" r="5"   fill="#FF2020" stroke="#880000" stroke-width="1.5"/>
-  <circle cx="192" cy="222" r="2"   fill="rgba(255,255,255,.60)"/>
-  <circle cx="210" cy="219" r="5.5" fill="#FF4040" stroke="#880000" stroke-width="1.5"/>
-  <circle cx="209" cy="217" r="2.2" fill="rgba(255,255,255,.60)"/>
-  <circle cx="227" cy="224" r="5"   fill="#FF2020" stroke="#880000" stroke-width="1.5"/>
-  <circle cx="226" cy="222" r="2"   fill="rgba(255,255,255,.60)"/>
-  <!-- speech bubble -->
-  <rect x="190" y="194" width="96" height="32" rx="13" fill="rgba(255,255,255,.94)" stroke="#220808" stroke-width="2"/>
-  <polygon points="218,226 230,240 230,226" fill="rgba(255,255,255,.94)"/>
-  <polygon points="216,226 232,226 232,240" fill="#220808"/>
-  <polygon points="218,226 230,226 230,239" fill="rgba(255,255,255,.94)"/>
-  <text x="238" y="215" text-anchor="middle" font-size="12" font-family="Nunito,sans-serif" fill="#220808" font-weight="900">Ha! Bine! &#128170;</text>
-
-  <!-- ══ QUEEN BLACK (cx=288) ══ -->
-  <ellipse cx="288" cy="338" rx="32" ry="10" fill="rgba(0,0,0,.18)"/>
-  <ellipse cx="288" cy="318" rx="32" ry="26" fill="url(#qBG)" stroke="#2A0848" stroke-width="3.5"/>
-  <ellipse cx="278" cy="307" rx="16" ry="10" fill="rgba(255,255,255,.18)"/>
-  <!-- dress detail -->
-  <path d="M260 324 Q274 316 288 319 Q302 316 316 324 Q302 332 288 330 Q274 332 260 324Z"
-        fill="#A040C8" stroke="#2A0848" stroke-width="2"/>
-  <!-- head -->
-  <circle cx="288" cy="268" r="36" fill="url(#qBG)" stroke="#2A0848" stroke-width="4"/>
-  <ellipse cx="277" cy="256" rx="16" ry="10" fill="rgba(255,255,255,.20)"/>
-  <!-- DARK WAVY HAIR (behind head) -->
-  <path d="M256 262 Q248 280 252 308 Q260 322 268 326" stroke="#1A0830" stroke-width="18" fill="none" stroke-linecap="round"/>
-  <path d="M320 262 Q328 280 324 308 Q316 322 308 326" stroke="#1A0830" stroke-width="18" fill="none" stroke-linecap="round"/>
-  <!-- hair top -->
-  <path d="M258 256 Q266 234 288 230 Q310 234 318 256" fill="#200840" stroke="#100820" stroke-width="3"/>
-  <!-- head over hair -->
-  <circle cx="288" cy="268" r="34" fill="url(#qBG)" stroke="#2A0848" stroke-width="3.5"/>
-  <ellipse cx="277" cy="256" rx="16" ry="10" fill="rgba(255,255,255,.18)"/>
-  <!-- DARK TIARA with purple gems -->
-  <path d="M264 254 Q272 232 280 254 Q286 224 294 254 Q302 224 310 254 Q318 232 324 254 Z"
-        fill="#6818A0" stroke="#2A0848" stroke-width="2.5" stroke-linejoin="round"/>
-  <rect x="262" y="254" width="64" height="10" rx="5" fill="#501888" stroke="#2A0848" stroke-width="2.5"/>
-  <circle cx="280" cy="241" r="4.5" fill="#E040FF" stroke="#2A0848" stroke-width="1.5"/>
-  <circle cx="294" cy="232" r="5.5" fill="#C020E0" stroke="#2A0848" stroke-width="1.5"/>
-  <circle cx="308" cy="241" r="4.5" fill="#E040FF" stroke="#2A0848" stroke-width="1.5"/>
-  <!-- eyes (mysterious, beautiful) -->
-  <circle cx="276" cy="268" r="12" fill="white" stroke="#2A0848" stroke-width="3"/>
-  <circle cx="300" cy="268" r="12" fill="white" stroke="#2A0848" stroke-width="3"/>
-  <!-- eyelashes (dramatic) -->
-  <path d="M265 258 L261 251" stroke="#2A0848" stroke-width="2.8" stroke-linecap="round"/>
-  <path d="M270 256 L268 249" stroke="#2A0848" stroke-width="2.8" stroke-linecap="round"/>
-  <path d="M276 255 L276 247" stroke="#2A0848" stroke-width="2.8" stroke-linecap="round"/>
-  <path d="M290 255 L292 247" stroke="#2A0848" stroke-width="2.8" stroke-linecap="round"/>
-  <path d="M296 256 L298 249" stroke="#2A0848" stroke-width="2.8" stroke-linecap="round"/>
-  <path d="M302 258 L307 251" stroke="#2A0848" stroke-width="2.8" stroke-linecap="round"/>
-  <!-- iris (violet) -->
-  <circle cx="277" cy="270" r="7"   fill="#8020C0"/>
-  <circle cx="301" cy="270" r="7"   fill="#8020C0"/>
-  <circle cx="277" cy="270" r="3.8" fill="#111"/>
-  <circle cx="301" cy="270" r="3.8" fill="#111"/>
-  <circle cx="274" cy="267" r="2.5" fill="white"/>
-  <circle cx="298" cy="267" r="2.5" fill="white"/>
-  <!-- eyebrows (elegant) -->
-  <path d="M266 257 Q276 251 284 255" stroke="#2A0848" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M292 255 Q300 251 310 257" stroke="#2A0848" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <!-- cheeks -->
-  <circle cx="264" cy="279" r="9" fill="rgba(255,80,180,.42)"/>
-  <circle cx="312" cy="279" r="9" fill="rgba(255,80,180,.42)"/>
-  <!-- smile (mysterious elegant) -->
-  <path d="M266 287 Q288 300 310 287" stroke="#2A0848" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <!-- speech bubble -->
-  <rect x="238" y="194" width="90" height="32" rx="13" fill="rgba(255,255,255,.94)" stroke="#2A0848" stroke-width="2"/>
-  <polygon points="268,226 280,240 280,226" fill="rgba(255,255,255,.94)"/>
-  <polygon points="266,226 282,226 282,240" fill="#2A0848"/>
-  <polygon points="268,226 280,226 280,239" fill="rgba(255,255,255,.94)"/>
-  <text x="283" y="215" text-anchor="middle" font-size="12" font-family="Nunito,sans-serif" fill="#2A0848" font-weight="900">Fermec&#259;tor! &#10025;</text>
-</svg>
-</div>
-
-<!-- UI -->
-<div class="title-wrap">
-    <h1>&#9822; &#350;ah Mat Animat</h1>
-    <div class="sub">&#206;nva&#539;&#259; &#351;ahul juc&#226;ndu-te!</div>
-</div>
-<div class="author">IRINA-MIHAELA BĂIȚEL</div>
-<a href="hub.html" class="btn-start">&#9654; &#206;ncepe!</a>
-
-<script>
-/* ── Clouds ── */
-function makeClouds() {
-    const cloudData = [
-        {x:5,y:3,s:1.2},{x:22,y:8,s:1.0},{x:42,y:5,s:1.4},
-        {x:62,y:9,s:0.9},{x:78,y:4,s:1.1}
-    ];
-    cloudData.forEach(cd => {
-        const d = document.createElement('div');
-        d.style.cssText = `position:absolute;left:${cd.x}%;top:${cd.y}%;z-index:1;pointer-events:none;opacity:0.88;transform:scale(${cd.s});`;
-        d.innerHTML = `<svg width="110" height="55" viewBox="0 0 110 55" xmlns="http://www.w3.org/2000/svg">
-            <ellipse cx="55" cy="38" rx="50" ry="18" fill="white"/>
-            <ellipse cx="38" cy="30" rx="28" ry="22" fill="white"/>
-            <ellipse cx="65" cy="28" rx="25" ry="20" fill="white"/>
-            <ellipse cx="50" cy="25" rx="22" ry="18" fill="white"/>
-        </svg>`;
-        document.body.insertBefore(d, document.getElementById('sun'));
-    });
-}
-makeClouds();
-
-/* ════════════════════════════════════
-   PIECE CHARACTERS
-════════════════════════════════════ */
-const PIECES = [
-    { type:'pion',   fill:'#F8D040', sh:'#7A4A00', hi:'#FFF4A0', lc:'#D4A828', sid:0 },
-    { type:'pion',   fill:'#F87090', sh:'#880030', hi:'#FFBBC8', lc:'#D84868', sid:1 },
-    { type:'knight', fill:'#C07840', sh:'#602800', hi:'#F0B080', lc:'#A05820', sid:2 },
-    { type:'bishop', fill:'#8868D8', sh:'#3A1880', hi:'#C0B0FF', lc:'#6848C0', sid:3 },
-    { type:'rook',   fill:'#5898D8', sh:'#183870', hi:'#B0D4F8', lc:'#3878C0', sid:4 },
-];
-
-const IRIS_COLORS = ['#2266CC','#22AA44','#2266CC','#228866','#228844'];
-
-const SW = 80, SH = 120, MARGIN = 24;
-const TITLE_SAFE = 120, BOT_SAFE = 158, RIGHT_SAFE = 322;
-
-/* ── LEGS (SMIL animated) ── */
-function legs(lc, sh, phase) {
-    const a1 = phase ? 25 : -25;
-    const a2 = -a1;
-    return `<g><animateTransform attributeName="transform" type="rotate"
-        values="${a1} 22 82;${a2} 22 82;${a1} 22 82" dur="0.40s" repeatCount="indefinite"/>
-        <rect x="16" y="82" width="12" height="28" rx="6" fill="${lc}" stroke="#111" stroke-width="2.5"/>
-        <ellipse cx="28" cy="108" rx="12" ry="6" fill="${lc}" stroke="#111" stroke-width="2.5"/>
-        <ellipse cx="24" cy="107" rx="5"  ry="2.5" fill="rgba(255,255,255,.38)"/>
-    </g>
-    <g><animateTransform attributeName="transform" type="rotate"
-        values="${a2} 58 82;${a1} 58 82;${a2} 58 82" dur="0.40s" repeatCount="indefinite"/>
-        <rect x="50" y="82" width="12" height="28" rx="6" fill="${lc}" stroke="#111" stroke-width="2.5"/>
-        <ellipse cx="50" cy="108" rx="12" ry="6" fill="${lc}" stroke="#111" stroke-width="2.5"/>
-        <ellipse cx="46" cy="107" rx="5"  ry="2.5" fill="rgba(255,255,255,.28)"/>
-    </g>`;
-}
-
-/* ── IT badge ── */
-function itBadge(isIt) {
-    if (!isIt) return '';
-    return `<circle cx="40" cy="54" r="42" fill="rgba(255,20,20,.10)"
-        stroke="#FF1010" stroke-width="3.5" stroke-dasharray="6,4"/>
-    <text x="67" y="10" font-size="13" font-weight="900" font-family="Nunito,sans-serif"
-        stroke="white" stroke-width="4" paint-order="stroke" fill="#EE0000">IT!</text>`;
-}
-
-/* ── Disney eyes helper ── */
-function disneyEyes(lx, rx, ey, r, irisCol) {
-    const ir = r * 0.58, pr = r * 0.32, hl = r * 0.24;
-    return `<circle cx="${lx}" cy="${ey}" r="${r}"  fill="white" stroke="rgba(0,0,0,.4)" stroke-width="2.5"/>
-<circle cx="${rx}" cy="${ey}" r="${r}"  fill="white" stroke="rgba(0,0,0,.4)" stroke-width="2.5"/>
-<circle cx="${lx+1}" cy="${ey+1.5}" r="${ir}"  fill="${irisCol}"/>
-<circle cx="${rx+1}" cy="${ey+1.5}" r="${ir}"  fill="${irisCol}"/>
-<circle cx="${lx+1}" cy="${ey+1.5}" r="${pr}"  fill="#111"/>
-<circle cx="${rx+1}" cy="${ey+1.5}" r="${pr}"  fill="#111"/>
-<circle cx="${lx - r*0.20}" cy="${ey - r*0.20}" r="${hl}"  fill="white"/>
-<circle cx="${rx - r*0.20}" cy="${ey - r*0.20}" r="${hl}"  fill="white"/>
-<circle cx="${lx + r*0.22}" cy="${ey + r*0.30}" r="${hl*0.55}" fill="rgba(255,255,255,.70)"/>
-<circle cx="${rx + r*0.22}" cy="${ey + r*0.30}" r="${hl*0.55}" fill="rgba(255,255,255,.70)"/>`;
-}
-
-/* ══ PION ══ */
-function makePion(pd, isIt, phase) {
-    const {fill:f, sh:s, hi:h, lc, sid} = pd;
-    const g = `PN${sid}`;
-    const iris = IRIS_COLORS[sid];
-    return `<svg viewBox="0 0 80 120" width="80" height="120" xmlns="http://www.w3.org/2000/svg">
-<defs>
-  <radialGradient id="${g}" cx="32%" cy="28%" r="72%">
-    <stop offset="0%" stop-color="${h}"/>
-    <stop offset="45%" stop-color="${f}"/>
-    <stop offset="100%" stop-color="${s}"/>
-  </radialGradient>
-</defs>
-${itBadge(isIt)}
-${legs(lc, s, phase)}
-<!-- Cast shadow -->
-<ellipse cx="40" cy="112" rx="24" ry="6" fill="rgba(0,0,0,.22)"/>
-<!-- BASE (wide foot) -->
-<path d="M14,108 Q12,98 20,94 Q28,91 40,91 Q52,91 60,94 Q68,98 66,108 Q52,112 40,112 Q28,112 14,108Z" fill="url(#${g})"/>
-<!-- base highlight -->
-<ellipse cx="28" cy="97" rx="10" ry="4" fill="rgba(255,255,255,.28)" transform="rotate(-8,28,97)"/>
-<!-- NECK/STEM -->
-<path d="M30,91 Q28,82 30,75 Q33,70 40,69 Q47,70 50,75 Q52,82 50,91Z" fill="url(#${g})"/>
-<!-- COLLAR -->
-<ellipse cx="40" cy="75" rx="16" ry="5.5" fill="url(#${g})" stroke="rgba(0,0,0,.18)" stroke-width="1"/>
-<ellipse cx="33" cy="73" rx="7" ry="2.5" fill="rgba(255,255,255,.30)"/>
-<!-- HEAD (large sphere) -->
-<circle cx="40" cy="46" r="27" fill="url(#${g})"/>
-<!-- 3D specular highlight -->
-<ellipse cx="28" cy="34" rx="11" ry="8" fill="white" opacity=".34" transform="rotate(-25,28,34)"/>
-<ellipse cx="22" cy="39" rx="5" ry="3.5" fill="white" opacity=".18" transform="rotate(-15,22,39)"/>
-<!-- Ambient shadow under head -->
-<ellipse cx="40" cy="70" rx="12" ry="3" fill="rgba(0,0,0,.12)"/>
-<!-- Small crown -->
-<rect x="28" y="16" width="24" height="8" rx="3" fill="#E8A818" stroke="rgba(0,0,0,.3)" stroke-width="1.5"/>
-<polygon points="30,16 35,8 40,16" fill="#FFD700" stroke="rgba(0,0,0,.3)" stroke-width="1.5"/>
-<polygon points="38,16 40,6 42,16" fill="#FFF080" stroke="rgba(0,0,0,.3)" stroke-width="1.5"/>
-<polygon points="40,16 45,8 50,16" fill="#FFD700" stroke="rgba(0,0,0,.3)" stroke-width="1.5"/>
-<!-- EYES -->
-${disneyEyes(28, 52, 42, 11, iris)}
-<!-- Eyebrows -->
-<path d="M18 34 Q28 27 38 32" stroke="${s}" stroke-width="3" fill="none" stroke-linecap="round"/>
-<path d="M42 32 Q52 27 62 34" stroke="${s}" stroke-width="3" fill="none" stroke-linecap="round"/>
-<!-- CHEEKS -->
-<circle cx="17" cy="52" r="9" fill="rgba(255,120,120,.45)"/>
-<circle cx="63" cy="52" r="9" fill="rgba(255,120,120,.45)"/>
-<!-- SMILE -->
-<path d="M23 54 Q40 68 57 54" fill="rgba(255,220,180,.4)" stroke="${s}" stroke-width="2.5" stroke-linecap="round"/>
-</svg>`;
-}
-
-/* ══ KNIGHT ══ */
-function makeKnight(pd, isIt) {
-    const {fill:f, sh:s, hi:h, lc, sid} = pd;
-    const g = `KN${sid}`;
-    const iris = IRIS_COLORS[sid];
-    return `<svg viewBox="0 0 80 120" width="80" height="120" xmlns="http://www.w3.org/2000/svg">
-<defs>
-  <radialGradient id="${g}B" cx="32%" cy="28%" r="72%">
-    <stop offset="0%" stop-color="${h}"/>
-    <stop offset="45%" stop-color="${f}"/>
-    <stop offset="100%" stop-color="${s}"/>
-  </radialGradient>
-</defs>
-${itBadge(isIt)}
-${legs(lc, s, true)}
-<!-- Shadow -->
-<ellipse cx="40" cy="112" rx="26" ry="6" fill="rgba(0,0,0,.22)"/>
-<!-- BASE -->
-<path d="M12,108 Q10,97 18,93 Q28,90 40,90 Q52,90 62,93 Q70,97 68,108 Q54,112 40,112 Q26,112 12,108Z" fill="url(#${g}B)"/>
-<ellipse cx="27" cy="96" rx="11" ry="4" fill="rgba(255,255,255,.28)" transform="rotate(-8,27,96)"/>
-<!-- NECK -->
-<path d="M26,90 Q20,78 24,66 Q28,57 36,52 Q42,49 48,52 Q56,57 58,66 Q60,78 54,90Z" fill="url(#${g}B)"/>
-<!-- HORSE HEAD -->
-<ellipse cx="40" cy="36" rx="26" ry="28" fill="url(#${g}B)"/>
-<!-- MUZZLE -->
-<ellipse cx="40" cy="56" rx="18" ry="12" fill="url(#${g}B)"/>
-<ellipse cx="40" cy="60" rx="14" ry="8" fill="rgba(255,220,160,.55)"/>
-<!-- Nostrils -->
-<ellipse cx="34" cy="62" rx="3.5" ry="2.5" fill="rgba(0,0,0,.25)"/>
-<ellipse cx="46" cy="62" rx="3.5" ry="2.5" fill="rgba(0,0,0,.25)"/>
-<!-- Head highlight -->
-<ellipse cx="27" cy="22" rx="12" ry="9" fill="white" opacity=".32" transform="rotate(-20,27,22)"/>
-<!-- EARS -->
-<ellipse cx="24" cy="12" rx="7" ry="10" fill="url(#${g}B)" stroke="rgba(0,0,0,.2)" stroke-width="1.5" transform="rotate(-15,24,12)"/>
-<ellipse cx="56" cy="14" rx="6" ry="9"  fill="url(#${g}B)" stroke="rgba(0,0,0,.2)" stroke-width="1.5" transform="rotate(15,56,14)"/>
-<!-- inner ear -->
-<ellipse cx="24" cy="14" rx="3.5" ry="5.5" fill="rgba(255,160,120,.55)" transform="rotate(-15,24,14)"/>
-<ellipse cx="55" cy="16" rx="3" ry="4.5" fill="rgba(255,160,120,.50)" transform="rotate(15,55,16)"/>
-<!-- MANE / hair plume -->
-<path d="M24,15 Q20,4 28,2 Q30,12 34,8 Q36,1 40,0 Q44,6 46,3 Q50,0 53,8 Q57,4 60,15" fill="#FF6644" stroke="none"/>
-<path d="M26,15 Q23,6 30,4 Q32,13 36,10 Q38,3 40,2 Q42,8 45,6 Q48,2 52,8 Q55,5 58,15" fill="#FFAA22" opacity=".85"/>
-<path d="M28,15 Q26,8 32,7 Q34,14 38,12 Q39,5 40,4 Q41,10 43,8 Q46,5 50,10 Q52,7 56,15" fill="#FFE844" opacity=".70"/>
-<!-- EYES -->
-${disneyEyes(26, 54, 36, 11, iris)}
-<!-- Eyebrows (curious) -->
-<path d="M15 26 Q26 18 37 23" stroke="rgba(0,0,0,.55)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-<path d="M43 23 Q54 18 65 26" stroke="rgba(0,0,0,.55)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-<!-- CHEEKS -->
-<circle cx="15" cy="46" r="9" fill="rgba(255,140,100,.42)"/>
-<circle cx="65" cy="46" r="9" fill="rgba(255,140,100,.42)"/>
-<!-- SMILE -->
-<path d="M22 54 Q40 66 58 54" stroke="rgba(0,0,0,.5)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-</svg>`;
-}
-
-/* ══ BISHOP ══ */
-function makeBishop(pd, isIt) {
-    const {fill:f, sh:s, hi:h, lc, sid} = pd;
-    const g = `BP${sid}`;
-    const iris = IRIS_COLORS[sid];
-    return `<svg viewBox="0 0 80 120" width="80" height="120" xmlns="http://www.w3.org/2000/svg">
-<defs>
-  <radialGradient id="${g}" cx="32%" cy="28%" r="72%">
-    <stop offset="0%" stop-color="${h}"/>
-    <stop offset="45%" stop-color="${f}"/>
-    <stop offset="100%" stop-color="${s}"/>
-  </radialGradient>
-</defs>
-${itBadge(isIt)}
-${legs(lc, s, false)}
-<!-- Shadow -->
-<ellipse cx="40" cy="112" rx="25" ry="6" fill="rgba(0,0,0,.22)"/>
-<!-- BASE -->
-<path d="M13,108 Q11,97 19,93 Q28,90 40,90 Q52,90 61,93 Q69,97 67,108 Q53,112 40,112 Q27,112 13,108Z" fill="url(#${g})"/>
-<ellipse cx="28" cy="96" rx="10" ry="4" fill="rgba(255,255,255,.26)" transform="rotate(-8,28,96)"/>
-<!-- BODY (tall tapered) -->
-<path d="M28,90 Q24,78 26,66 Q28,56 34,50 Q38,47 40,47 Q42,47 46,50 Q52,56 54,66 Q56,78 52,90Z" fill="url(#${g})"/>
-<!-- body highlight -->
-<ellipse cx="32" cy="72" rx="6" ry="14" fill="rgba(255,255,255,.20)" transform="rotate(-5,32,72)"/>
-<!-- ROUND HEAD -->
-<circle cx="40" cy="42" r="20" fill="url(#${g})"/>
-<ellipse cx="30" cy="32" rx="9" ry="7" fill="white" opacity=".30" transform="rotate(-20,30,32)"/>
-<!-- BISHOP HAT (mitre) -->
-<path d="M24,45 Q28,22 40,8 Q52,22 56,45Z" fill="url(#${g})"/>
-<path d="M27,44 Q30,25 38,12" stroke="rgba(255,255,255,.38)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-<!-- HAT BAND -->
-<rect x="22" y="43" width="36" height="8" rx="4" fill="${s}" stroke="rgba(0,0,0,.2)" stroke-width="1" opacity=".70"/>
-<!-- CROSS on hat -->
-<rect x="38" y="20" width="4" height="14" rx="2" fill="rgba(255,255,255,.80)"/>
-<rect x="33" y="25" width="14" height="4" rx="2" fill="rgba(255,255,255,.80)"/>
-<!-- Ball tip on top of hat -->
-<circle cx="40" cy="9" r="5.5" fill="url(#${g})"/>
-<circle cx="38" cy="7" r="2" fill="rgba(255,255,255,.55)"/>
-<!-- HAT highlight -->
-<ellipse cx="33" cy="25" rx="5" ry="8" fill="rgba(255,255,255,.22)" transform="rotate(-15,33,25)"/>
-<!-- EYES -->
-${disneyEyes(30, 50, 40, 10, iris)}
-<!-- Eyebrows (wise) -->
-<path d="M21 31 Q30 25 39 29" stroke="${s}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-<path d="M41 29 Q50 25 59 31" stroke="${s}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-<!-- CHEEKS -->
-<circle cx="20" cy="49" r="8" fill="rgba(200,140,255,.48)"/>
-<circle cx="60" cy="49" r="8" fill="rgba(200,140,255,.48)"/>
-<!-- Nose -->
-<ellipse cx="40" cy="50" rx="4" ry="3" fill="rgba(0,0,0,.12)"/>
-<!-- SMILE -->
-<path d="M26 54 Q40 65 54 54" stroke="${s}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-<!-- Monocle -->
-<circle cx="50" cy="42" r="11" fill="none" stroke="rgba(150,100,0,.60)" stroke-width="2.5"/>
-<!-- monocle chain dots -->
-<circle cx="61" cy="47" r="1.5" fill="rgba(150,100,0,.60)"/>
-<circle cx="62" cy="51" r="1.5" fill="rgba(150,100,0,.60)"/>
-<circle cx="62" cy="55" r="1.5" fill="rgba(150,100,0,.60)"/>
-<circle cx="61" cy="59" r="1.5" fill="rgba(150,100,0,.60)"/>
-</svg>`;
-}
-
-/* ══ ROOK ══ */
-function makeRook(pd, isIt) {
-    const {fill:f, sh:s, hi:h, lc, sid} = pd;
-    const g = `RK${sid}`;
-    const iris = IRIS_COLORS[sid];
-    return `<svg viewBox="0 0 80 120" width="80" height="120" xmlns="http://www.w3.org/2000/svg">
-<defs>
-  <radialGradient id="${g}" cx="32%" cy="28%" r="72%">
-    <stop offset="0%" stop-color="${h}"/>
-    <stop offset="45%" stop-color="${f}"/>
-    <stop offset="100%" stop-color="${s}"/>
-  </radialGradient>
-</defs>
-${itBadge(isIt)}
-${legs(lc, s, true)}
-<!-- Shadow -->
-<ellipse cx="40" cy="112" rx="28" ry="6" fill="rgba(0,0,0,.22)"/>
-<!-- BASE -->
-<path d="M10,108 Q8,97 16,93 Q26,90 40,90 Q54,90 64,93 Q72,97 70,108 Q56,112 40,112 Q24,112 10,108Z" fill="url(#${g})"/>
-<ellipse cx="26" cy="96" rx="12" ry="4" fill="rgba(255,255,255,.26)" transform="rotate(-8,26,96)"/>
-<!-- TOWER BODY -->
-<rect x="14" y="50" width="52" height="42" rx="7" fill="url(#${g})"/>
-<!-- body highlight (left side) -->
-<rect x="15" y="52" width="16" height="38" rx="5" fill="rgba(255,255,255,.18)"/>
-<!-- BATTLEMENTS (3 on top, rounded) -->
-<rect x="13" y="30" width="15" height="24" rx="7" fill="url(#${g})"/>
-<rect x="32" y="30" width="16" height="24" rx="7" fill="url(#${g})"/>
-<rect x="52" y="30" width="15" height="24" rx="7" fill="url(#${g})"/>
-<!-- battlement highlights -->
-<rect x="14" y="31" width="5" height="20" rx="3" fill="rgba(255,255,255,.22)"/>
-<rect x="33" y="31" width="5" height="20" rx="3" fill="rgba(255,255,255,.22)"/>
-<rect x="53" y="31" width="5" height="20" rx="3" fill="rgba(255,255,255,.22)"/>
-<!-- BATTLEMENTS connecting strip -->
-<rect x="13" y="50" width="54" height="7" rx="3" fill="url(#${g})"/>
-<!-- FACE (big eyes like windows) -->
-${disneyEyes(26, 54, 67, 11, iris)}
-<!-- FRIENDLY SEPARATE EYEBROWS -->
-<path d="M15 55 Q25 47 36 52" stroke="rgba(0,0,0,.55)" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-<path d="M44 52 Q55 47 65 55" stroke="rgba(0,0,0,.55)" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-<!-- CHEEKS -->
-<circle cx="14" cy="77" r="8" fill="rgba(140,180,255,.48)"/>
-<circle cx="66" cy="77" r="8" fill="rgba(140,180,255,.48)"/>
-<!-- GAP TOOTH SMILE -->
-<path d="M18 82 Q40 96 62 82" fill="rgba(200,220,255,.25)" stroke="${s}" stroke-width="2.5" stroke-linecap="round"/>
-<rect x="32" y="82" width="7" height="7" rx="3" fill="white" stroke="${s}" stroke-width="1.5"/>
-<rect x="43" y="82" width="7" height="7" rx="3" fill="white" stroke="${s}" stroke-width="1.5"/>
-<rect x="39" y="82" width="4" height="5" rx="2" fill="${s}" opacity=".5"/>
-</svg>`;
-}
-
-/* ════════════════════════════
-   GAME LOOP
-════════════════════════════ */
-let pieces = [], itIdx = 0, cooldown = 0, lastTagged = -1;
-
-function makeSvg(pd, isIt, idx) {
-    const ph = idx % 2 === 0;
-    if (pd.type === 'pion')   return makePion(pd, isIt, ph);
-    if (pd.type === 'knight') return makeKnight(pd, isIt);
-    if (pd.type === 'bishop') return makeBishop(pd, isIt);
-    if (pd.type === 'rook')   return makeRook(pd, isIt);
-}
-function refresh() {
-    pieces.forEach((p, i) => { p.el.innerHTML = makeSvg(p.pd, i === itIdx, i); });
-}
-function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
-
-function init() {
-    const pw  = window.innerWidth - RIGHT_SAFE;
-    const ph2 = window.innerHeight - TITLE_SAFE - BOT_SAFE;
-    PIECES.forEach((pd, i) => {
-        const el = document.createElement('div');
-        el.className = 'pc';
-        el.style.cssText = `width:${SW}px;height:${SH}px;`;
-        document.body.appendChild(el);
-        const ang = (i / PIECES.length) * Math.PI * 2;
-        const r   = Math.min(pw, ph2) * 0.28;
-        pieces.push({
-            el, pd,
-            x: pw / 2 + Math.cos(ang) * r - SW / 2,
-            y: TITLE_SAFE + ph2 / 2 + Math.sin(ang) * r - SH / 2,
-            vx: Math.cos(ang + Math.PI) * 1.8,
-            vy: Math.sin(ang + Math.PI) * 1.8,
-        });
-    });
-    refresh();
-    requestAnimationFrame(loop);
-}
-
-function loop() {
-    const w = window.innerWidth, h = window.innerHeight;
-    const maxX = w - RIGHT_SAFE - SW - 4;
-    const minY = TITLE_SAFE + 4, maxY = h - BOT_SAFE - SH;
-    const IT_SPD = 2.0, FL_SPD = 2.8;
-    if (cooldown > 0) cooldown--;
-
-    const IT = pieces[itIdx];
-    let near = null, nearD = Infinity;
-    pieces.forEach((p, i) => {
-        if (i !== itIdx) { const d = dist(IT, p); if (d < nearD) { nearD = d; near = p; } }
-    });
-    if (near) {
-        const dx = near.x - IT.x, dy = near.y - IT.y, d = Math.hypot(dx, dy) || 1;
-        IT.vx = IT.vx * .88 + dx / d * IT_SPD * .12;
-        IT.vy = IT.vy * .88 + dy / d * IT_SPD * .12;
-        const sp = Math.hypot(IT.vx, IT.vy);
-        if (sp > IT_SPD) { IT.vx = IT.vx / sp * IT_SPD; IT.vy = IT.vy / sp * IT_SPD; }
+/* Generează stele decorative */
+(function() {
+    const count = 60;
+    for (let i = 0; i < count; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const size = Math.random() * 3 + 1;
+        s.style.cssText = `
+            width: ${size}px;
+            height: ${size}px;
+            top: ${Math.random() * 100}%;
+            left: ${Math.random() * 100}%;
+            --dur: ${2 + Math.random() * 4}s;
+            --delay: ${-Math.random() * 6}s;
+            --bright: ${0.3 + Math.random() * 0.7};
+        `;
+        document.body.appendChild(s);
     }
-    pieces.forEach((p, i) => {
-        if (i === itIdx) return;
-        const dx = p.x - IT.x, dy = p.y - IT.y, d = Math.hypot(dx, dy) || 1;
-        const u = Math.max(0, (230 - d) / 230);
-        p.vx = p.vx * .9 + (dx / d * u * FL_SPD + (Math.random() - .5) * .1) * .10;
-        p.vy = p.vy * .9 + (dy / d * u * FL_SPD + (Math.random() - .5) * .1) * .10;
-        const sp = Math.hypot(p.vx, p.vy);
-        if (sp > FL_SPD) { p.vx = p.vx / sp * FL_SPD; p.vy = p.vy / sp * FL_SPD; }
-    });
-    pieces.forEach(p => {
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < MARGIN) { p.x = MARGIN; p.vx =  Math.abs(p.vx) + .5; }
-        if (p.x > maxX)   { p.x = maxX;   p.vx = -Math.abs(p.vx) - .5; }
-        if (p.y < minY)   { p.y = minY;   p.vy =  Math.abs(p.vy) + .5; }
-        if (p.y > maxY)   { p.y = maxY;   p.vy = -Math.abs(p.vy) - .5; }
-        p.el.style.left = p.x + 'px';
-        p.el.style.top  = p.y + 'px';
-    });
-    if (cooldown === 0) {
-        pieces.forEach((p, i) => {
-            if (i === itIdx || i === lastTagged) return;
-            if (dist(IT, p) < SW * .85) {
-                const r = document.createElement('div');
-                r.className = 'tag-ring';
-                r.style.cssText = `left:${p.x}px;top:${p.y}px;width:${SW}px;height:${SW}px;`;
-                document.body.appendChild(r);
-                setTimeout(() => r.remove(), 550);
-                lastTagged = itIdx; itIdx = i; cooldown = 90; refresh();
-            }
-        });
-    }
-    requestAnimationFrame(loop);
-}
+})();
+    </script>
 
-init();
-</script>
 </body>
 </html>

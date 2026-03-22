@@ -22,16 +22,13 @@
             padding: 40px 44px 50px;
             position: relative;
         }
-        .corner-piece { position: absolute; width: 80px; height: 80px; }
-        .corner-tl { top: 0; left: 0; }
-        .corner-tr { top: 0; right: 0; transform: scaleX(-1); }
         h1 {
             font-family: 'Baloo 2', cursive;
             font-size: 2.2em;
             color: #1a3a6b;
             text-transform: uppercase;
-            margin-bottom: 30px;
-            margin-top: 10px;
+            margin-bottom: 0;
+            margin-top: 0;
             text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
             text-align: center;
             line-height: 1.25;
@@ -41,7 +38,7 @@
         .mindmap-wrap {
             position: relative;
             width: 1100px;
-            height: 640px;
+            height: 550px;
             margin: 0 auto;
         }
 
@@ -116,14 +113,14 @@
             background: #b03a2e;
             border: 3px solid #7b241c;
             color: white;
-            top: 446px; left: 0px;
+            top: 356px; left: 0px;
         }
         /* Purple – Etapele (bottom-right) */
         .node-purple {
             background: #7d3c98;
             border: 3px solid #5b2c6f;
             color: white;
-            top: 446px; left: 700px;
+            top: 356px; left: 700px;
         }
 
         /* ===== NAV ===== */
@@ -151,17 +148,134 @@
             .node-center { height: auto; padding: 14px; }
             .page { padding: 40px 20px 50px; }
         }
+
+        /* ===== COLOANE LATERALE CU PIESE ===== */
+        .page-wrapper {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .side-col {
+            flex: 0 0 120px;
+            width: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding-top: 40px;
+            align-self: flex-start;
+        }
+
+        .side-col img {
+            width: 120px;
+            height: 180px;
+            object-fit: fill;
+            mix-blend-mode: multiply;
+            display: block;
+        }
+
+        /* ===== TITLU CU PIESE FLANC ===== */
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .title-piece {
+            width: clamp(38px, 4.5vw, 62px);
+            aspect-ratio: 2 / 3;
+            object-fit: fill;
+            mix-blend-mode: multiply;
+            flex-shrink: 0;
+        }
+
+        .title-row h1 { margin-bottom: 0; margin-top: 0; }
+        .title-row + .text-block { margin-top: 18px; }
     </style>
+<style>
+/* ===== COLOANE FIXE ===== */
+body { padding-left: 224px !important; padding-right: 224px !important; }
+.page-wrapper { display: block !important; }
+.side-col {
+    position: fixed !important;
+    top: 0 !important;
+    width: 200px !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    padding: 6px 0 !important;
+    overflow: hidden !important;
+    mix-blend-mode: multiply !important;
+    z-index: 10 !important;
+}
+.page-wrapper > .side-col:first-child { left: 24px !important; right: auto !important; }
+.page-wrapper > .side-col:last-child  { right: 24px !important; left: auto !important; }
+.piece-row {
+    flex: 1 1 0 !important;
+    display: flex !important;
+    min-height: 0 !important;
+    align-items: flex-end !important;
+}
+.side-col .fig-img {
+    flex: 0 0 120px !important;
+    width: 120px !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: bottom !important;
+    display: block !important;
+}
+.side-col .pion-img {
+    flex: 0 0 80px !important;
+    width: 80px !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: bottom !important;
+    display: block !important;
+}
+/* text justify global */
+p, li, .text-block, .node-branch ul li { text-align: justify !important; }
+.intro { max-width: 100% !important; margin-left: 0 !important; margin-right: 0 !important; }
+h1, h2, h3, .bt, .nav-btn, .node-center { text-align: center !important; }
+
+@media (max-width: 900px) {
+    body { padding-left: 10px !important; padding-right: 10px !important; }
+    .side-col { display: none !important; }
+}
+</style>
 </head>
 <body>
-<div class="page">
-    <div style="position:absolute;top:0;left:0;display:flex;gap:2px;align-items:flex-end;">
-        <img src="piese_sah/regina 1.png" style="height:110px;width:auto;mix-blend-mode:multiply;" alt="">
-        <img src="piese_sah/turn 1.png"   style="height:95px;width:auto;mix-blend-mode:multiply;" alt="">
+<div class="page-wrapper">
+<div class="side-col">
+    <div class="piece-row">
+        <img class="fig-img"  src="piese_sah/rege_medieval"  alt="Rege alb" style="filter:brightness(1.18);">
+        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
     </div>
-    <img src="piese_sah/rege 2.png" style="position:absolute;top:0;right:0;height:105px;width:auto;mix-blend-mode:multiply;" alt="">
+    <div class="piece-row">
+        <img class="fig-img"  src="piese_sah/regina_medieval.jpg"  alt="Regina albă">
+        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
+    </div>
+    <div class="piece-row">
+        <img class="fig-img"  src="piese_sah/nebun_medieval.jpg"  alt="Nebun alb">
+        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
+    </div>
+    <div class="piece-row">
+        <img class="fig-img"  src="piese_sah/turn_medieval.jpg"  alt="Turn alb">
+        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
+    </div>
+    <div class="piece-row">
+        <img class="fig-img"  src="piese_sah/cal_medieval.jpg"  alt="Cal alb">
+        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
+    </div>
+</div>
 
-    <h1>Hart&#259; Mental&#259;</h1>
+<div class="page">
+        <div class="title-row">        <h1>Hart&#259; Mental&#259;</h1>    </div>
 
     <div class="mindmap-wrap">
 
@@ -172,11 +286,11 @@
             Red   bot-left  left=20 top=410 h≈95         → center (115, 458)
             Purple bot-right left=530 top=400 h≈130      → center (625, 465)
         -->
-        <svg class="mm-svg" viewBox="0 0 1100 640">
-            <line x1="550" y1="303" x2="428" y2="114" stroke="#2471a3" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
-            <line x1="550" y1="303" x2="672" y2="114" stroke="#1e8449" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
-            <line x1="550" y1="303" x2="428" y2="458" stroke="#b03a2e" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
-            <line x1="550" y1="303" x2="672" y2="458" stroke="#7d3c98" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
+        <svg class="mm-svg" viewBox="0 0 1100 550">
+            <line x1="550" y1="283" x2="428" y2="210" stroke="#2471a3" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
+            <line x1="550" y1="283" x2="672" y2="210" stroke="#1e8449" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
+            <line x1="550" y1="283" x2="428" y2="356" stroke="#b03a2e" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
+            <line x1="550" y1="283" x2="672" y2="356" stroke="#7d3c98" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
         </svg>
 
         <!-- Center node -->
@@ -230,10 +344,35 @@
         <a href="capitole.html" class="nav-btn back">&#9664; &#206;napoi</a>
         <a href="pagina34.html" class="nav-btn">&#206;nainte &#9654;</a>
     </div>
+</div><!-- /.page -->
+
+<div class="side-col">
+    <div class="piece-row">
+        <img class="pion-img" src="piese_sah/pion negru.png" alt="Pion negru">
+        <img class="fig-img"  src="piese_sah/rege_medieval_negru.jpg"  alt="Rege negru">
+    </div>
+    <div class="piece-row">
+        <img class="pion-img" src="piese_sah/pion negru.png" alt="Pion negru">
+        <img class="fig-img"  src="piese_sah/regina_medieval_negru.jpg"  alt="Regina neagră">
+    </div>
+    <div class="piece-row">
+        <img class="pion-img" src="piese_sah/pion negru.png" alt="Pion negru">
+        <img class="fig-img"  src="piese_sah/nebun_medieval_negru.jpg"  alt="Nebun negru">
+    </div>
+    <div class="piece-row">
+        <img class="pion-img" src="piese_sah/pion negru.png" alt="Pion negru">
+        <img class="fig-img"  src="piese_sah/turn_medieval_negru.jpg"  alt="Turn negru">
+    </div>
+    <div class="piece-row">
+        <img class="pion-img" src="piese_sah/pion negru.png" alt="Pion negru">
+        <img class="fig-img"  src="piese_sah/cal_medieval_negru.jpg"  alt="Cal negru">
+    </div>
 </div>
+
+</div><!-- /.page-wrapper -->
 <style>
 .hub-btn {
-    position: fixed; top: 16px; right: 16px;
+    position: fixed; top: 16px; right: 152px;
     background: #1a3a6b; color: white;
     font-family: "Baloo 2", cursive; font-size: .85em;
     padding: 8px 18px; border-radius: 50px;
@@ -243,5 +382,74 @@
 .hub-btn:hover { background: #2a5aab; }
 </style>
 <a href="hub.html" class="hub-btn">&#9776; Cuprins</a>
+<script>
+const PAGE_ID = 'em_msf_dt_hm';
+</script>
+
+<script>
+function layoutMindmap() {
+    const wrap   = document.querySelector('.mindmap-wrap');
+    const center = document.querySelector('.node-center');
+    const blue   = document.querySelector('.node-blue');
+    const green  = document.querySelector('.node-green');
+    const red    = document.querySelector('.node-red');
+    const purple = document.querySelector('.node-purple');
+    const svg    = document.querySelector('.mm-svg');
+    if (!wrap || !center || !blue || !svg) return;
+
+    const GAP = 30;
+
+    // Înălțimea reală a celulelor de sus
+    const topStart  = blue.offsetTop;
+    const topH      = Math.max(blue.offsetHeight, green.offsetHeight);
+    const topBottom = topStart + topH;
+
+    // Centru: la distanță egală deasupra și dedesubt
+    const centerTop    = topBottom + GAP;
+    center.style.top   = centerTop + 'px';
+    const centerH      = center.offsetHeight;
+    const centerBottom = centerTop + centerH;
+    const centerLeft   = center.offsetLeft;
+    const centerRight  = centerLeft + center.offsetWidth;
+
+    // Celule de jos
+    const botTop    = centerBottom + GAP;
+    red.style.top    = botTop + 'px';
+    purple.style.top = botTop + 'px';
+    const botH = Math.max(red.offsetHeight, purple.offsetHeight);
+
+    // Înălțime totală wrap
+    const totalH = botTop + botH + GAP;
+    wrap.style.height = totalH + 'px';
+    svg.setAttribute('viewBox', '0 0 1100 ' + totalH);
+    svg.style.height = totalH + 'px';
+
+    // Colțurile celulelor branch
+    const blueRight  = blue.offsetLeft  + blue.offsetWidth;
+    const greenLeft  = green.offsetLeft;
+    const redRight   = red.offsetLeft   + red.offsetWidth;
+    const purpleLeft = purple.offsetLeft;
+
+    // Linii SVG din colț în colț
+    const lines = svg.querySelectorAll('line');
+    if (lines.length >= 4) {
+        // albastru colt-DR → centru colt-SU (stanga sus)
+        lines[0].setAttribute('x1', blueRight);  lines[0].setAttribute('y1', topBottom);
+        lines[0].setAttribute('x2', centerLeft); lines[0].setAttribute('y2', centerTop);
+        // verde colt-DL → centru colt-SD (stanga-dreapta sus)
+        lines[1].setAttribute('x1', greenLeft);   lines[1].setAttribute('y1', topBottom);
+        lines[1].setAttribute('x2', centerRight); lines[1].setAttribute('y2', centerTop);
+        // centru colt-JS → rosu colt-TR
+        lines[2].setAttribute('x1', centerLeft); lines[2].setAttribute('y1', centerBottom);
+        lines[2].setAttribute('x2', redRight);   lines[2].setAttribute('y2', botTop);
+        // centru colt-JD → mov colt-TL
+        lines[3].setAttribute('x1', centerRight);  lines[3].setAttribute('y1', centerBottom);
+        lines[3].setAttribute('x2', purpleLeft);   lines[3].setAttribute('y2', botTop);
+    }
+}
+window.addEventListener('load', layoutMindmap);
+window.addEventListener('resize', layoutMindmap);
+</script>
+
 </body>
 </html>
