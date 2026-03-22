@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<title>Elimină fundal alb – Piese Șah</title>
+<style>
+    body { font-family: sans-serif; background: #F5A96E; padding: 24px; }
+    h2 { color: #1a3a6b; margin-bottom: 16px; }
+    .grid { display: flex; flex-wrap: wrap; gap: 20px; }
+    .card {
+        background: rgba(255,255,255,0.3);
+        border-radius: 12px;
+        padding: 12px;
+        text-align: center;
+        width: 160px;
+    }
+    canvas { width: 140px; height: auto; display: block; margin: 0 auto 8px; border-radius: 6px; }
+    .fname { font-size: 0.75em; color: #1a3a6b; word-break: break-all; margin-bottom: 6px; }
+    a.dl {
+        display: inline-block;
+        background: #1a3a6b; color: white;
+        border-radius: 20px; padding: 5px 14px;
+        font-size: 0.8em; text-decoration: none;
+    }
+    a.dl:hover { background: #2a5aab; }
+    p.info { color: #1a3a6b; margin-bottom: 20px; font-size: 0.95em; line-height: 1.6; }
+</style>
+</head>
+<body>
+<h2>Elimină fundal alb – Piese Medievale</h2>
+<p class="info">
+    Deschide această pagină din folderul <strong>SahMatAnimat</strong> (File → deja e). <br>
+    Apasă <strong>Descarcă PNG</strong> sub fiecare piesă și salvează fișierul în <code>piese_sah/</code>.<br>
+    PNG-urile noi au fundal transparent — nu mai e nevoie de mix-blend-mode.
+</p>
+<div class="grid" id="grid"></div>
+
+<script>
+const PIECES = [
+    'rege_medieval',
+    'rege_medieval_negru.jpg',
+    'regina_medieval.jpg',
+    'regina_medieval_negru.jpg',
+    'cal_medieval.jpg',
+    'cal_medieval_negru.jpg',
+    'turn_medieval.jpg',
+    'turn_medieval_negru.jpg',
+    'nebun_medieval.jpg',
+    'nebun_medieval_negru.jpg',
+    'pion_medieval.jpg',
+];
+
+// Threshold: pixeli cu R,G,B toți > 230 devin transparenți
+// tolerance: nuanță de gri/alb semi-transparent în margini (blur gaussian al piesei)
+function removeWhite(img, threshold = 230, feather = 20) {
+    const canvas = document.createElement('canvas');
+    canvas.width  = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const d = imageData.data;
+
+    for (let i = 0; i < d.length; i += 4) {
+        const r = d[i], g = d[i+1], b = d[i+2];
+        // Luminanță aproximativă a pixelului
+        const lum = 0.299*r + 0.587*g + 0.114*b;
+        if (lum >= threshold) {
+            // perfect alb → complet transparent
+            d[i+3] = 0;
+        } else if (lum >= threshold - feather) {
+            // zonă de tranziție → semi-transparent
+            const alpha = Math.round((threshold - lum) / feather * 255);
+            d[i+3] = alpha;
+        }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+    return canvas;
+}
+
+function addCard(src, label) {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const fname = document.createElement('div');
+    fname.className = 'fname';
+    fname.textContent = label;
+    card.appendChild(fname);
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = 'piese_sah/' + src;
+
+    img.onload = () => {
+        const canvas = removeWhite(img);
+        canvas.style.width  = '140px';
+        canvas.style.height = 'auto';
+        card.appendChild(canvas);
+
+        // fundal în damă pentru preview transparență
+        canvas.style.background = 'repeating-conic-gradient(#bbb 0% 25%, #fff 0% 50%) 0 0 / 16px 16px';
+
+        const dlName = label.replace(/\.[^.]+$/, '') + '.png';
+        const a = document.createElement('a');
+        a.className = 'dl';
+        a.textContent = 'Descarcă PNG';
+        a.download = dlName;
+        a.href = canvas.toDataURL('image/png');
+        card.appendChild(a);
+    };
+
+    img.onerror = () => {
+        const err = document.createElement('div');
+        err.style.color = '#c00';
+        err.style.fontSize = '0.75em';
+        err.textContent = 'Nu găsit';
+        card.appendChild(err);
+    };
+
+    document.getElementById('grid').appendChild(card);
+}
+
+PIECES.forEach(p => {
+    const label = p.includes('.') ? p : p; // keep filename as-is
+    addCard(p, label);
+});
+</script>
+</body>
+</html>
