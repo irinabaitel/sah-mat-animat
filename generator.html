@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator AI – Șah Mat Animat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #1a1a2e;
+            font-family: 'Nunito', sans-serif;
+            color: #eee;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2em;
+            color: #F5A96E;
+            text-align: center;
+            margin-bottom: 6px;
+            text-shadow: 0 0 20px rgba(245,169,110,0.4);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .card {
+            background: #16213e;
+            border-radius: 16px;
+            padding: 22px 26px;
+            border: 1px solid #0f3460;
+        }
+
+        .card-title {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1em;
+            color: #F5A96E;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+
+        /* API KEY */
+        .key-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .key-row input {
+            flex: 1;
+            background: #0f3460;
+            border: 1px solid #1a5276;
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: white;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95em;
+            outline: none;
+        }
+
+        .key-row input:focus { border-color: #F5A96E; }
+
+        .btn-small {
+            background: #0f3460;
+            border: 1px solid #1a5276;
+            border-radius: 10px;
+            padding: 10px 16px;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 0.85em;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .btn-small:hover { border-color: #F5A96E; color: #F5A96E; }
+
+        .key-status {
+            font-size: 0.82em;
+            margin-top: 8px;
+            color: #27ae60;
+        }
+        .key-status.missing { color: #e74c3c; }
+
+        /* MODE TABS */
+        .tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #0f3460;
+            background: transparent;
+            color: #888;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1em;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            border-color: #F5A96E;
+            color: #F5A96E;
+            background: rgba(245,169,110,0.08);
+        }
+
+        /* PROMPT */
+        textarea {
+            width: 100%;
+            background: #0f3460;
+            border: 1px solid #1a5276;
+            border-radius: 10px;
+            padding: 14px;
+            color: white;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95em;
+            resize: vertical;
+            min-height: 110px;
+            outline: none;
+            line-height: 1.6;
+        }
+        textarea:focus { border-color: #F5A96E; }
+
+        .prompt-hint {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        /* PARAMS */
+        .params-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .param-group label {
+            display: block;
+            font-size: 0.82em;
+            color: #888;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .param-group select {
+            width: 100%;
+            background: #0f3460;
+            border: 1px solid #1a5276;
+            border-radius: 10px;
+            padding: 10px 12px;
+            color: white;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.9em;
+            outline: none;
+            cursor: pointer;
+        }
+        .param-group select:focus { border-color: #F5A96E; }
+
+        /* GENERATE BUTTON */
+        .btn-generate {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #e67e22, #F5A96E);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3em;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 20px rgba(230,126,34,0.4);
+        }
+
+        .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(230,126,34,0.5); }
+        .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* STATUS */
+        .status-area {
+            display: none;
+            background: #0f3460;
+            border-radius: 12px;
+            padding: 16px 20px;
+            border-left: 4px solid #F5A96E;
+        }
+
+        .status-area.visible { display: block; }
+
+        .status-text {
+            font-size: 0.95em;
+            color: #ccc;
+        }
+
+        .progress-bar-wrap {
+            height: 6px;
+            background: #1a3a6b;
+            border-radius: 3px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #e67e22, #F5A96E);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-bar.indeterminate {
+            width: 40%;
+            animation: slide 1.4s infinite ease-in-out;
+        }
+
+        @keyframes slide {
+            0% { margin-left: -40%; }
+            100% { margin-left: 100%; }
+        }
+
+        /* RESULT */
+        .result-area {
+            display: none;
+        }
+
+        .result-area.visible { display: block; }
+
+        .result-preview {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .result-preview img, .result-preview video {
+            max-width: 100%;
+            max-height: 480px;
+            border-radius: 12px;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-download {
+            background: #27ae60;
+            color: white;
+        }
+        .btn-download:hover { background: #2ecc71; }
+
+        .btn-copy {
+            background: #2980b9;
+            color: white;
+        }
+        .btn-copy:hover { background: #3498db; }
+
+        /* HISTORY */
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .history-item {
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .history-item:hover { border-color: #F5A96E; }
+
+        .history-item img, .history-item video {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .history-item .hist-label {
+            background: rgba(0,0,0,0.7);
+            font-size: 0.72em;
+            padding: 4px 6px;
+            color: #ccc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-empty {
+            color: #555;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+
+        /* COST BADGE */
+        .cost-badge {
+            display: inline-block;
+            background: rgba(245,169,110,0.15);
+            border: 1px solid rgba(245,169,110,0.3);
+            border-radius: 20px;
+            padding: 3px 12px;
+            font-size: 0.8em;
+            color: #F5A96E;
+            margin-top: 8px;
+        }
+
+        /* ERROR */
+        .error-box {
+            background: rgba(231,76,60,0.15);
+            border: 1px solid rgba(231,76,60,0.4);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #e74c3c;
+            font-size: 0.9em;
+            display: none;
+            margin-top: 10px;
+        }
+        .error-box.visible { display: block; }
+
+        .section-hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<h1>⚡ Generator AI</h1>
+<p class="subtitle">Imagini & Filme pentru Șah Mat Animat — rulează local, fișierele vin direct pe disc</p>
+
+<div class="container">
+
+    <!-- API KEY -->
+    <div class="card">
+        <div class="card-title">🔑 Cheie API — fal.ai</div>
+        <div class="key-row">
+            <input type="password" id="apiKeyInput" placeholder="fal_key_xxxxxxxxxxxxxxxx">
+            <button class="btn-small" onclick="toggleKeyVisibility()">👁 Arată</button>
+            <button class="btn-small" onclick="saveKey()">💾 Salvează</button>
+        </div>
+        <div id="keyStatus" class="key-status missing">⚠ Nicio cheie salvată. Creează cont pe fal.ai → Dashboard → API Keys</div>
+    </div>
+
+    <!-- MODE -->
+    <div class="card">
+        <div class="card-title">🎨 Tip generare</div>
+        <div class="tabs">
+            <button class="tab active" onclick="setMode('image')" id="tab-image">🖼 Imagine</button>
+            <button class="tab" onclick="setMode('video')" id="tab-video">🎬 Film / Animație</button>
+        </div>
+    </div>
+
+    <!-- BATCH GENERATOR -->
+    <div class="card" id="batchCard">
+        <div class="card-title">⚡ Generare în batch — toate personajele</div>
+        <div style="font-size:0.82em;color:#888;margin-bottom:16px;">
+            Selectează epocile, piesele și culorile dorite → browserul generează automat și salvează fișierele redenumite direct în folderul ales.
+            <br><strong style="color:#F5A96E;">Necesită Chrome sau Edge.</strong>
+        </div>
+
+        <!-- Folder picker -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+            <button class="btn-small" onclick="pickFolder()" style="border-color:#27ae60;color:#27ae60;padding:10px 18px;">
+                📁 Alege folderul de salvare
+            </button>
+            <span id="folderName" style="color:#555;font-size:0.85em;font-style:italic;">Niciun folder ales</span>
+        </div>
+
+        <!-- Epoci -->
+        <div style="margin-bottom:14px;">
+            <div style="font-size:0.8em;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Epoci</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;" id="batchEpochs"></div>
+        </div>
+
+        <!-- Piese -->
+        <div style="margin-bottom:14px;">
+            <div style="font-size:0.8em;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Piese</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;" id="batchPieces"></div>
+        </div>
+
+        <!-- Culori -->
+        <div style="margin-bottom:18px;">
+            <div style="font-size:0.8em;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Culori</div>
+            <div style="display:flex;gap:6px;">
+                <button class="btn-small batch-color-btn active-color" data-color="white" onclick="toggleColor('white')" style="border-color:#F5A96E;color:#F5A96E;">⬜ Alb</button>
+                <button class="btn-small batch-color-btn active-color" data-color="black" onclick="toggleColor('black')" style="border-color:#F5A96E;color:#F5A96E;">⬛ Negru</button>
+            </div>
+        </div>
+
+        <!-- Cost + buton -->
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;">
+            <span id="batchCost" style="color:#F5A96E;font-size:0.88em;">💰 Cost estimat: calculez...</span>
+            <button class="btn-generate" id="btnBatch" onclick="startBatch()"
+                style="flex:1;min-width:200px;padding:12px;font-size:1.1em;">
+                🚀 Generează și salvează tot
+            </button>
+        </div>
+
+        <!-- Progress batch -->
+        <div id="batchProgress" style="display:none;">
+            <div style="display:flex;justify-content:space-between;font-size:0.82em;color:#888;margin-bottom:6px;">
+                <span id="batchStatusText">Se pregătește...</span>
+                <span id="batchCounter">0 / 0</span>
+            </div>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar" id="batchBar" style="width:0%;transition:width 0.3s;"></div>
+            </div>
+            <div id="batchLog" style="margin-top:10px;max-height:140px;overflow-y:auto;font-size:0.78em;color:#666;line-height:1.8;"></div>
+        </div>
+    </div>
+
+    <!-- PERSONAJE PER EPOCĂ -->
+    <div class="card">
+        <div class="card-title">🎭 Generator personaj individual</div>
+        <div style="font-size:0.82em;color:#888;margin-bottom:12px;">Selectează epoca și piesa — promptul se completează automat cu stilul Pixar potrivit.</div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;" id="epochBtns"></div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;" id="pieceBtns"></div>
+
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <div style="flex:1;min-width:180px;">
+                <label style="font-size:0.8em;color:#888;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Culoare personaj</label>
+                <select id="charColor" style="width:100%;background:#0f3460;border:1px solid #1a5276;border-radius:10px;padding:8px 12px;color:white;font-family:'Nunito',sans-serif;font-size:0.9em;outline:none;">
+                    <option value="white">⬜ Alb</option>
+                    <option value="black">⬛ Negru</option>
+                </select>
+            </div>
+            <button class="btn-small" onclick="buildCharPrompt()" style="margin-top:18px;padding:10px 20px;border-color:#F5A96E;color:#F5A96E;">
+                ✨ Construiește prompt
+            </button>
+        </div>
+    </div>
+
+    <!-- PROMPT -->
+    <div class="card">
+        <div class="card-title">✍ Prompt</div>
+        <textarea id="promptInput" placeholder="Descrie ce vrei să generezi... (în engleză pentru rezultate mai bune)"></textarea>
+        <div class="prompt-hint">💡 Sfat: prompturile în engleză dau rezultate mai bune. Exemplu: &ldquo;medieval chess pieces on a stone table, dramatic torch lighting, epic fantasy art&rdquo;</div>
+
+        <!-- Prompturi rapide -->
+        <div style="margin-top: 14px;">
+            <div style="font-size:0.82em;color:#666;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Prompturi rapide:</div>
+            <div id="quick-prompts" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        </div>
+    </div>
+
+    <!-- PARAMETRI -->
+    <div class="card">
+        <div class="card-title">⚙ Parametri</div>
+        <div class="params-grid" id="params-image">
+            <div class="param-group">
+                <label>Model</label>
+                <select id="imgModel">
+                    <option value="fal-ai/flux/schnell">Flux Schnell — rapid, ieftin (~$0.003)</option>
+                    <option value="fal-ai/flux/dev">Flux Dev — calitate bună (~$0.025)</option>
+                    <option value="fal-ai/flux-pro">Flux Pro — cel mai bun (~$0.05)</option>
+                </select>
+            </div>
+            <div class="param-group">
+                <label>Format</label>
+                <select id="imgSize">
+                    <option value="landscape_16_9">16:9 — Peisaj (recomandat site)</option>
+                    <option value="portrait_16_9">9:16 — Portret / mobil</option>
+                    <option value="square_hd">1:1 — Pătrat HD</option>
+                    <option value="landscape_4_3">4:3 — Clasic</option>
+                </select>
+            </div>
+            <div class="param-group">
+                <label>Număr imagini</label>
+                <select id="imgCount">
+                    <option value="1">1 imagine</option>
+                    <option value="2">2 imagini</option>
+                    <option value="4">4 imagini</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="params-grid section-hidden" id="params-video">
+            <div class="param-group">
+                <label>Model</label>
+                <select id="vidModel">
+                    <option value="fal-ai/ltx-video">LTX Video — rapid, ieftin (~$0.02/sec)</option>
+                    <option value="fal-ai/minimax-video/text-to-video">Minimax/Hailuo — bun (~$0.06/sec)</option>
+                    <option value="fal-ai/kling-video/v1.5/pro/text-to-video">Kling Pro — cel mai bun (~$0.14/sec)</option>
+                </select>
+            </div>
+            <div class="param-group">
+                <label>Durată</label>
+                <select id="vidDuration">
+                    <option value="5">5 secunde</option>
+                    <option value="10">10 secunde</option>
+                </select>
+            </div>
+            <div class="param-group">
+                <label>Format</label>
+                <select id="vidAspect">
+                    <option value="16:9">16:9 — Peisaj</option>
+                    <option value="9:16">9:16 — Portret</option>
+                    <option value="1:1">1:1 — Pătrat</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="costEstimate" class="cost-badge">💰 Cost estimat: ~$0.003</div>
+    </div>
+
+    <!-- BUTON GENERATE -->
+    <button class="btn-generate" id="btnGenerate" onclick="generate()">⚡ Generează</button>
+
+    <!-- STATUS -->
+    <div class="status-area" id="statusArea">
+        <div class="status-text" id="statusText">Se pregătește...</div>
+        <div class="progress-bar-wrap">
+            <div class="progress-bar indeterminate" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="error-box" id="errorBox"></div>
+
+    <!-- RESULT -->
+    <div class="result-area card" id="resultArea">
+        <div class="card-title">✅ Rezultat</div>
+        <div class="result-preview" id="resultPreview"></div>
+        <div class="result-actions" id="resultActions"></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="card">
+        <div class="card-title">🕐 Istoric generări (sesiune curentă)</div>
+        <div class="history-grid" id="historyGrid">
+            <div class="history-empty">Nicio generare încă.</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+/* ===== STATE ===== */
+let currentMode = 'image';
+let isGenerating = false;
+let sessionHistory = [];
+
+/* Promptul de bază pentru personaje Pixar — se combină cu costumul epocii */
+const BASE_CHAR = 'Pixar Disney 3D animation style chess character, tall slim powerful figure, expressive noble face, full body standing pose, pure white background, no shadow, clean cutout, studio lighting, high quality render';
+
+const EPOCHS = [
+    {
+        id: 'stone',
+        label: '🗿 Epoca de Piatră',
+        color: '#8B7355',
+        pieces: {
+            king:   'chess KING, tribal chieftain, animal fur cape, bone crown with obsidian gems, stone axe scepter, ritual face paint, barefoot on rock',
+            queen:  'chess QUEEN, shaman priestess, white animal hide dress, antler headdress, glowing spirit orbs floating around her, mystical',
+            bishop: 'chess BISHOP, cave painter elder, ochre-stained robes, carved totem staff, cave bear skull helmet',
+            knight: 'chess KNIGHT, mammoth rider warrior, bone armor, stone spear, wild hair, fierce expression',
+            rook:   'chess ROOK, stone fortress guardian, massive rock shield, granite armor, immovable stance',
+            pawn:   'chess PAWN, young tribe member, simple fur tunic, wooden club, curious determined face',
+        }
+    },
+    {
+        id: 'iron',
+        label: '🔥 Epoca Fierului',
+        color: '#B85C38',
+        pieces: {
+            king:   'chess KING, iron age warlord, hammered iron crown, bear pelt cloak, blazing torch scepter, scarred fierce face, powerful commanding stance',
+            queen:  'chess QUEEN, iron age warrior queen, iron circlet, chainmail and leather armor, shield with wolf emblem, battle-ready but regal',
+            bishop: 'chess BISHOP, druid elder, antler headdress, iron-tipped staff, glowing rune tattoos, mysterious smoky aura',
+            knight: 'chess KNIGHT, chariot warrior, bronze helmet with horsehair plume, javelins, leather greaves, battle-ready pose',
+            rook:   'chess ROOK, iron fortress keeper, tower-shaped iron helmet, heavy iron shield, fire brazier behind him',
+            pawn:   'chess PAWN, young iron age warrior, simple iron helmet, wooden round shield, short spear',
+        }
+    },
+    {
+        id: 'antique',
+        label: '🏛 Antichitate',
+        color: '#C9A84C',
+        pieces: {
+            king:   'chess KING, Greek/Roman emperor, white toga with gold trim, laurel wreath crown, marble scepter, noble commanding pose',
+            queen:  'chess QUEEN, goddess-like empress, flowing white and gold silk chiton, diadem with sapphires, serene powerful expression',
+            bishop: 'chess BISHOP, philosopher oracle, simple toga, olive branch staff, scroll in hand, wise expression',
+            knight: 'chess KNIGHT, Greek hoplite hero, bronze breastplate, plumed helmet, spear and shield with Medusa crest',
+            rook:   'chess ROOK, Colosseum gate guardian, pillar-like armor, ornate tower shield',
+            pawn:   'chess PAWN, young Roman legionary, simple tunic and sandals, small round shield, gladius',
+        }
+    },
+    {
+        id: 'medieval',
+        label: '⚔️ Ev Mediu',
+        color: '#6B4226',
+        pieces: {
+            king:   'chess KING, medieval king, gleaming silver plate armor, royal crimson cape, jeweled crown, longsword scepter, commanding stance',
+            queen:  'chess QUEEN, medieval queen, royal blue velvet gown, golden crown, magical glowing orb, fierce elegant expression',
+            bishop: 'chess BISHOP, bishop in white and gold vestments, ornate mitre hat, golden crozier staff, blessing gesture',
+            knight: 'chess KNIGHT, armored knight on no horse, full plate armor, sword raised, visor up showing brave face, heraldic cape',
+            rook:   'chess ROOK, castle tower guardian, tower-shaped helmet, heavy stone-textured armor, drawbridge key',
+            pawn:   'chess PAWN, young squire, chainmail shirt, simple helmet, kite shield and short sword',
+        }
+    },
+    {
+        id: 'renaissance',
+        label: '🎨 Renaștere',
+        color: '#9B59B6',
+        pieces: {
+            king:   'chess KING, Renaissance king, velvet doublet in deep purple and gold, feathered hat, rapier sword, elegant powerful posture, portrait-like face',
+            queen:  'chess QUEEN, Renaissance noblewoman, silk brocade gown, pearl necklace, jeweled crown, holding a rose and a dagger, sophisticated and deadly',
+            bishop: 'chess BISHOP, Renaissance cardinal, scarlet robes, gold chain, illuminated manuscript, wise calculating expression',
+            knight: 'chess KNIGHT, Renaissance fencer, light rapier armor, plumed helmet, dueling pose, nimble and precise',
+            rook:   'chess ROOK, castle architect, blueprint scroll, measuring compass, stone tower behind him, intellectual but imposing',
+            pawn:   'chess PAWN, young Renaissance apprentice, workshop apron, small sword at hip, curious clever face',
+        }
+    },
+    {
+        id: 'industrial',
+        label: '⚙️ Industrial',
+        color: '#7F8C8D',
+        pieces: {
+            king:   'chess KING, steampunk emperor, brass crown with gears, elaborate clockwork armor, steam vents on shoulders, monocle, commanding and eccentric',
+            queen:  'chess QUEEN, steampunk empress, copper and bronze corset armor, clockwork wings, tesla coil scepter, brilliant and powerful',
+            bishop: 'chess BISHOP, steam age inventor, goggles on forehead, gear-covered coat, mechanical arm, blueprint scroll, eccentric genius',
+            knight: 'chess KNIGHT, mechanical cavalry rider, iron horse legs as prosthetics, steam-powered lance, coal-smoke exhaust',
+            rook:   'chess ROOK, iron factory foreman, industrial tower armor, giant wrench, chimney smoke behind him, massive and immovable',
+            pawn:   'chess PAWN, factory worker, soot-stained uniform, safety goggles, small gear-gun, determined young face',
+        }
+    },
+    {
+        id: 'future',
+        label: '🚀 Viitor',
+        color: '#1A8FE3',
+        pieces: {
+            king:   'chess KING, futuristic commander, sleek matte black exosuit, glowing blue energy crown hologram, plasma scepter, powerful slim silhouette',
+            queen:  'chess QUEEN, AI empress, chrome and white armor, holographic cape of light particles, star diadem, floating orbs of data',
+            bishop: 'chess BISHOP, neural network oracle, long flowing data-stream robes, third eye scanner, quantum staff',
+            knight: 'chess KNIGHT, cybernetic mech pilot, sleek robot horse legs as armor, energy lance, jet boosters',
+            rook:   'chess ROOK, orbital defense station commander, angular titanium armor, force field projector',
+            pawn:   'chess PAWN, young android recruit, slim white suit with glowing blue lines, compact plasma pistol',
+        }
+    },
+];
+
+const QUICK_PROMPTS = {
+    image: [
+        { label: '♟ Evul Mediu', text: 'Medieval chess pieces on ancient stone table, dramatic torch lighting, epic fantasy painting, dark castle background, golden hour, cinematic' },
+        { label: '🔥 Epoca Fierului', text: 'Chess pieces forged from glowing iron, blacksmith forge background, fire and sparks, steam, dark metallic fantasy art, epic' },
+        { label: '🌌 Cosmic', text: 'Chess pieces made of pure energy and light, cosmic nebula background, electric blue and gold auras, floating in space, epic digital art' },
+        { label: '🗿 Preistoric', text: 'Chess pieces carved from stone and bone, prehistoric cave background, torch light, primitive ancient art style, mystical' },
+        { label: '👑 Rege epic', text: 'Majestic chess king piece with glowing red aura, epic fantasy art, dramatic lighting, gold and crimson, cinematic composition' },
+        { label: '🏰 Castel', text: 'Chess board inside a medieval castle great hall, torches on stone walls, knights and queens as living figures, epic fantasy scene' },
+    ],
+    video: [
+        { label: '🎬 Deschidere epică', text: 'Chess pieces flying from all directions toward a glowing golden energy sphere at center, rotating faster, sphere explodes with light, pieces scatter as glowing confetti, cosmic mystic background, seamless loop, epic cinematic, fluid energy painting style, 15 seconds' },
+        { label: '🏰 Evul Mediu', text: 'Medieval chess pieces coming to life on an ancient stone board in a castle, torches flickering, knights and queens moving dramatically, epic fantasy atmosphere, cinematic' },
+        { label: '🌌 Cosmos', text: 'Chess pieces made of stars and nebulae floating in deep space, rotating slowly, glowing with golden and blue energy, cosmic epic atmosphere, seamless loop' },
+        { label: '🔥 Forjă', text: 'Chess pieces being forged from molten iron in an ancient forge, fire and sparks, steam rising, dramatic lighting, dark epic fantasy, cinematic' },
+    ]
+};
+
+/* ===== BATCH ===== */
+const EPOCH_SLUG = {
+    stone: 'piatra', iron: 'fier', antique: 'antichitate',
+    medieval: 'medieval', renaissance: 'renastere',
+    industrial: 'industrial', future: 'viitor'
+};
+
+let batchFolder    = null;
+let batchEpochSel  = new Set(EPOCHS.map(e => e.id));
+let batchPieceSel  = new Set(['king','queen','bishop','knight','rook','pawn']);
+let batchColorSel  = new Set(['white','black']);
+let batchRunning   = false;
+
+function renderBatchControls() {
+    // Epoci
+    document.getElementById('batchEpochs').innerHTML = EPOCHS.map(e =>
+        `<button class="btn-small batch-epoch-btn" data-id="${e.id}"
+            onclick="toggleBatchEpoch('${e.id}')"
+            style="border-color:${e.color};color:${e.color};background:${e.color}22;">${e.label}</button>`
+    ).join('');
+    // Piese
+    document.getElementById('batchPieces').innerHTML = Object.entries(PIECE_LABELS).map(([k,v]) =>
+        `<button class="btn-small batch-piece-btn" data-piece="${k}"
+            onclick="toggleBatchPiece('${k}')"
+            style="border-color:#F5A96E;color:#F5A96E;">${v}</button>`
+    ).join('');
+    updateBatchCost();
+}
+
+function toggleBatchEpoch(id) {
+    batchEpochSel.has(id) ? batchEpochSel.delete(id) : batchEpochSel.add(id);
+    document.querySelectorAll('.batch-epoch-btn').forEach(b => {
+        const e = EPOCHS.find(ep => ep.id === b.dataset.id);
+        const on = batchEpochSel.has(b.dataset.id);
+        b.style.background = on ? `${e.color}22` : 'transparent';
+        b.style.opacity = on ? '1' : '0.35';
+    });
+    updateBatchCost();
+}
+
+function toggleBatchPiece(p) {
+    batchPieceSel.has(p) ? batchPieceSel.delete(p) : batchPieceSel.add(p);
+    document.querySelectorAll('.batch-piece-btn').forEach(b => {
+        const on = batchPieceSel.has(b.dataset.piece);
+        b.style.background = on ? 'rgba(245,169,110,0.15)' : 'transparent';
+        b.style.opacity = on ? '1' : '0.35';
+    });
+    updateBatchCost();
+}
+
+function toggleColor(c) {
+    batchColorSel.has(c) ? batchColorSel.delete(c) : batchColorSel.add(c);
+    document.querySelectorAll('.batch-color-btn').forEach(b => {
+        const on = batchColorSel.has(b.dataset.color);
+        b.style.background = on ? 'rgba(245,169,110,0.15)' : 'transparent';
+        b.style.opacity = on ? '1' : '0.35';
+    });
+    updateBatchCost();
+}
+
+function batchTotal() {
+    return batchEpochSel.size * batchPieceSel.size * batchColorSel.size;
+}
+
+function updateBatchCost() {
+    const n = batchTotal();
+    document.getElementById('batchCost').textContent =
+        `💰 ${n} imagini · cost estimat ~$${(n * 0.003).toFixed(2)} (Flux Schnell)`;
+}
+
+async function pickFolder() {
+    try {
+        batchFolder = await window.showDirectoryPicker({ mode: 'readwrite' });
+        document.getElementById('folderName').textContent = '📂 ' + batchFolder.name;
+        document.getElementById('folderName').style.color = '#27ae60';
+    } catch(e) { /* user cancelled */ }
+}
+
+function batchLog(msg, color) {
+    const log = document.getElementById('batchLog');
+    const line = document.createElement('div');
+    line.textContent = msg;
+    if (color) line.style.color = color;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+}
+
+async function startBatch() {
+    if (batchRunning) return;
+    const key = getKey();
+    if (!key) { showError('Introdu cheia API mai întâi!'); return; }
+    if (!batchFolder) { alert('Alege folderul de salvare mai întâi!'); return; }
+    if (batchTotal() === 0) { alert('Selectează cel puțin o epocă, piesă și culoare!'); return; }
+
+    batchRunning = true;
+    document.getElementById('btnBatch').disabled = true;
+    document.getElementById('batchProgress').style.display = 'block';
+    document.getElementById('batchLog').innerHTML = '';
+
+    const jobs = [];
+    for (const epoch of EPOCHS) {
+        if (!batchEpochSel.has(epoch.id)) continue;
+        for (const [pieceKey, pieceDesc] of Object.entries(epoch.pieces)) {
+            if (!batchPieceSel.has(pieceKey)) continue;
+            for (const color of ['white','black']) {
+                if (!batchColorSel.has(color)) continue;
+                jobs.push({ epoch, pieceKey, pieceDesc, color });
+            }
+        }
+    }
+
+    const total = jobs.length;
+    let done = 0;
+
+    document.getElementById('batchCounter').textContent = `0 / ${total}`;
+
+    for (const job of jobs) {
+        const { epoch, pieceKey, pieceDesc, color } = job;
+        const colorDesc = color === 'white'
+            ? 'white/silver color scheme, light team, heroic warm lighting'
+            : 'dark/obsidian color scheme, shadow team, cool dramatic lighting';
+        const prompt = `${BASE_CHAR}, ${pieceDesc}, ${colorDesc}, ${epoch.label.replace(/[^\w\s]/g,'')} era aesthetic`;
+        const slug = EPOCH_SLUG[epoch.id] || epoch.id;
+        const colorSuffix = color === 'black' ? '_negru' : '';
+        const filename = `${pieceKey.replace('bishop','nebun').replace('knight','cal').replace('rook','turn').replace('queen','regina').replace('king','rege').replace('pawn','pion')}_${slug}${colorSuffix}.jpg`;
+
+        document.getElementById('batchStatusText').textContent = `Generez: ${filename}`;
+        batchLog(`⏳ ${filename}...`);
+
+        try {
+            const resp = await fetch('https://fal.run/fal-ai/flux/schnell', {
+                method: 'POST',
+                headers: { 'Authorization': `Key ${key}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, image_size: 'portrait_16_9', num_images: 1, num_inference_steps: 4, enable_safety_checker: false })
+            });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            const imgUrl = data.images?.[0]?.url;
+            if (!imgUrl) throw new Error('Nicio imagine returnată');
+
+            // Fetch imagine și salvează în folder
+            const imgResp = await fetch(imgUrl);
+            const blob = await imgResp.blob();
+            const fileHandle = await batchFolder.getFileHandle(filename, { create: true });
+            const writable = await fileHandle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+
+            done++;
+            batchLog(`✅ ${filename}`, '#27ae60');
+        } catch(err) {
+            done++;
+            batchLog(`❌ ${filename} — ${err.message}`, '#e74c3c');
+        }
+
+        document.getElementById('batchCounter').textContent = `${done} / ${total}`;
+        document.getElementById('batchBar').style.width = `${Math.round(done/total*100)}%`;
+        await sleep(300); // pauză mică între cereri
+    }
+
+    document.getElementById('batchStatusText').textContent = `✅ Gata! ${done}/${total} imagini salvate în "${batchFolder.name}"`;
+    batchRunning = false;
+    document.getElementById('btnBatch').disabled = false;
+}
+
+/* ===== PERSONAJE ===== */
+let selectedEpoch = null;
+let selectedPiece = null;
+
+const PIECE_LABELS = {
+    king: '👑 Rege', queen: '👸 Regină', bishop: '⛪ Nebun',
+    knight: '🐴 Cal', rook: '🏰 Turn', pawn: '🪖 Pion'
+};
+
+function renderEpochBtns() {
+    const container = document.getElementById('epochBtns');
+    container.innerHTML = EPOCHS.map(e =>
+        `<button class="btn-small epoch-btn" data-id="${e.id}" onclick="selectEpoch('${e.id}')"
+            style="border-color:${e.color};color:${e.color};">${e.label}</button>`
+    ).join('');
+}
+
+function renderPieceBtns() {
+    const container = document.getElementById('pieceBtns');
+    if (!selectedEpoch) { container.innerHTML = '<span style="color:#555;font-size:0.85em;">← Alege mai întâi epoca</span>'; return; }
+    const epoch = EPOCHS.find(e => e.id === selectedEpoch);
+    container.innerHTML = Object.keys(epoch.pieces).map(p =>
+        `<button class="btn-small piece-btn" data-piece="${p}" onclick="selectPiece('${p}')"
+            style="${selectedPiece===p ? 'border-color:#F5A96E;color:#F5A96E;' : ''}">${PIECE_LABELS[p]}</button>`
+    ).join('');
+}
+
+function selectEpoch(id) {
+    selectedEpoch = id;
+    selectedPiece = null;
+    document.querySelectorAll('.epoch-btn').forEach(b => {
+        const epoch = EPOCHS.find(e => e.id === b.dataset.id);
+        b.style.background = b.dataset.id === id ? `${epoch.color}33` : 'transparent';
+        b.style.fontWeight = b.dataset.id === id ? '900' : '400';
+    });
+    renderPieceBtns();
+}
+
+function selectPiece(p) {
+    selectedPiece = p;
+    renderPieceBtns();
+}
+
+function buildCharPrompt() {
+    if (!selectedEpoch || !selectedPiece) {
+        alert('Alege epoca și piesa mai întâi!'); return;
+    }
+    const epoch = EPOCHS.find(e => e.id === selectedEpoch);
+    const color = document.getElementById('charColor').value;
+    const colorDesc = color === 'white'
+        ? 'white/silver color scheme, light team, heroic warm lighting'
+        : 'dark/obsidian color scheme, shadow team, cool dramatic lighting';
+    const pieceDesc = epoch.pieces[selectedPiece];
+    const prompt = `${BASE_CHAR}, ${pieceDesc}, ${colorDesc}, ${epoch.label.replace(/[^a-zA-Z ]/g,'')} era aesthetic`;
+    document.getElementById('promptInput').value = prompt;
+    document.getElementById('promptInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/* ===== INIT ===== */
+window.onload = function() {
+    loadKey();
+    renderQuickPrompts();
+    renderEpochBtns();
+    renderPieceBtns();
+    renderBatchControls();
+    updateCostEstimate();
+
+    document.getElementById('imgModel').addEventListener('change', updateCostEstimate);
+    document.getElementById('vidModel').addEventListener('change', updateCostEstimate);
+    document.getElementById('vidDuration').addEventListener('change', updateCostEstimate);
+    document.getElementById('imgCount').addEventListener('change', updateCostEstimate);
+};
+
+/* ===== API KEY ===== */
+function saveKey() {
+    const key = document.getElementById('apiKeyInput').value.trim();
+    if (!key) return;
+    localStorage.setItem('fal_api_key', key);
+    updateKeyStatus(key);
+}
+
+function loadKey() {
+    const key = localStorage.getItem('fal_api_key') || '';
+    if (key) {
+        document.getElementById('apiKeyInput').value = key;
+        updateKeyStatus(key);
+    }
+}
+
+function updateKeyStatus(key) {
+    const el = document.getElementById('keyStatus');
+    if (key && key.length > 10) {
+        el.textContent = '✅ Cheie salvată: ' + key.substring(0, 12) + '...';
+        el.className = 'key-status';
+    } else {
+        el.textContent = '⚠ Nicio cheie salvată.';
+        el.className = 'key-status missing';
+    }
+}
+
+function toggleKeyVisibility() {
+    const input = document.getElementById('apiKeyInput');
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function getKey() {
+    return localStorage.getItem('fal_api_key') || document.getElementById('apiKeyInput').value.trim();
+}
+
+/* ===== MODE ===== */
+function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('tab-image').classList.toggle('active', mode === 'image');
+    document.getElementById('tab-video').classList.toggle('active', mode === 'video');
+    document.getElementById('params-image').classList.toggle('section-hidden', mode !== 'image');
+    document.getElementById('params-video').classList.toggle('section-hidden', mode !== 'video');
+    renderQuickPrompts();
+    updateCostEstimate();
+}
+
+/* ===== QUICK PROMPTS ===== */
+function renderQuickPrompts() {
+    const container = document.getElementById('quick-prompts');
+    const prompts = QUICK_PROMPTS[currentMode];
+    container.innerHTML = prompts.map(p =>
+        `<button class="btn-small" onclick="setPrompt(${JSON.stringify(p.text)})">${p.label}</button>`
+    ).join('');
+}
+
+function setPrompt(text) {
+    document.getElementById('promptInput').value = text;
+}
+
+/* ===== COST ESTIMATE ===== */
+function updateCostEstimate() {
+    const el = document.getElementById('costEstimate');
+    let cost = 0;
+
+    if (currentMode === 'image') {
+        const modelCosts = {
+            'fal-ai/flux/schnell': 0.003,
+            'fal-ai/flux/dev': 0.025,
+            'fal-ai/flux-pro': 0.05
+        };
+        const model = document.getElementById('imgModel').value;
+        const count = parseInt(document.getElementById('imgCount').value);
+        cost = (modelCosts[model] || 0.003) * count;
+    } else {
+        const modelCosts = {
+            'fal-ai/ltx-video': 0.02,
+            'fal-ai/minimax-video/text-to-video': 0.06,
+            'fal-ai/kling-video/v1.5/pro/text-to-video': 0.14
+        };
+        const model = document.getElementById('vidModel').value;
+        const duration = parseInt(document.getElementById('vidDuration').value);
+        cost = (modelCosts[model] || 0.02) * duration;
+    }
+
+    el.textContent = `💰 Cost estimat: ~$${cost.toFixed(3)}`;
+}
+
+/* ===== GENERATE ===== */
+async function generate() {
+    const key = getKey();
+    if (!key) {
+        showError('Introdu cheia API mai întâi!');
+        return;
+    }
+
+    const prompt = document.getElementById('promptInput').value.trim();
+    if (!prompt) {
+        showError('Scrie un prompt mai întâi!');
+        return;
+    }
+
+    if (isGenerating) return;
+    isGenerating = true;
+
+    hideError();
+    showStatus('Se trimite cererea...');
+    document.getElementById('btnGenerate').disabled = true;
+    document.getElementById('resultArea').classList.remove('visible');
+
+    try {
+        if (currentMode === 'image') {
+            await generateImage(key, prompt);
+        } else {
+            await generateVideo(key, prompt);
+        }
+    } catch (err) {
+        showError('Eroare: ' + (err.message || JSON.stringify(err)));
+        hideStatus();
+    }
+
+    isGenerating = false;
+    document.getElementById('btnGenerate').disabled = false;
+}
+
+/* ===== IMAGE ===== */
+async function generateImage(key, prompt) {
+    const model = document.getElementById('imgModel').value;
+    const imageSize = document.getElementById('imgSize').value;
+    const numImages = parseInt(document.getElementById('imgCount').value);
+    const isSchnell = model.includes('schnell');
+
+    showStatus('⏳ Generare imagine... (câteva secunde)');
+
+    const body = {
+        prompt,
+        image_size: imageSize,
+        num_images: numImages,
+        enable_safety_checker: false
+    };
+
+    if (isSchnell) {
+        body.num_inference_steps = 4;
+    }
+
+    const resp = await fetch(`https://fal.run/${model}`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Key ${key}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    });
+
+    if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ message: resp.statusText }));
+        throw new Error(err.detail || err.message || `HTTP ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const images = data.images || [];
+
+    if (!images.length) throw new Error('Nicio imagine returnată.');
+
+    hideStatus();
+    showImageResults(images, prompt);
+}
+
+function showImageResults(images, prompt) {
+    const preview = document.getElementById('resultPreview');
+    const actions = document.getElementById('resultActions');
+
+    if (images.length === 1) {
+        preview.innerHTML = `<img src="${images[0].url}" alt="Generated">`;
+    } else {
+        preview.innerHTML = images.map((img, i) =>
+            `<img src="${img.url}" alt="Generated ${i+1}" style="max-width:${100/images.length - 1}%;margin:2px;">`
+        ).join('');
+    }
+
+    actions.innerHTML = images.map((img, i) =>
+        `<a href="${img.url}" download="imagine_${Date.now()}_${i+1}.png" class="btn-action btn-download" target="_blank">
+            ⬇ Descarcă${images.length > 1 ? ' ' + (i+1) : ''}
+        </a>`
+    ).join('') +
+    `<button class="btn-action btn-copy" onclick="copyUrl('${images[0].url}')">📋 Copiază URL</button>`;
+
+    document.getElementById('resultArea').classList.add('visible');
+
+    images.forEach((img, i) => addToHistory('image', img.url, prompt));
+}
+
+/* ===== VIDEO ===== */
+async function generateVideo(key, prompt) {
+    const model = document.getElementById('vidModel').value;
+    const duration = document.getElementById('vidDuration').value;
+    const aspectRatio = document.getElementById('vidAspect').value;
+
+    showStatus('📤 Se trimite cererea video...');
+
+    const body = { prompt };
+
+    // Parametri diferiți per model
+    if (model.includes('kling')) {
+        body.duration = duration;
+        body.aspect_ratio = aspectRatio;
+    } else if (model.includes('minimax')) {
+        body.prompt_optimizer = true;
+    } else {
+        // LTX
+        body.num_frames = parseInt(duration) * 24;
+        body.aspect_ratio = aspectRatio;
+    }
+
+    // Submit la queue
+    const submitResp = await fetch(`https://queue.fal.run/${model}`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Key ${key}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    });
+
+    if (!submitResp.ok) {
+        const err = await submitResp.json().catch(() => ({ message: submitResp.statusText }));
+        throw new Error(err.detail || err.message || `HTTP ${submitResp.status}`);
+    }
+
+    const { request_id } = await submitResp.json();
+    if (!request_id) throw new Error('Nu s-a primit request_id.');
+
+    showStatus('⏳ Se procesează video-ul... (poate dura 1-3 minute)');
+    setProgressIndeterminate(true);
+
+    // Poll pentru rezultat
+    const result = await pollForResult(key, model, request_id);
+
+    hideStatus();
+    showVideoResult(result, prompt);
+}
+
+async function pollForResult(key, model, requestId) {
+    const maxWait = 10 * 60 * 1000; // 10 minute
+    const interval = 3000;
+    let elapsed = 0;
+
+    while (elapsed < maxWait) {
+        await sleep(interval);
+        elapsed += interval;
+
+        const statusResp = await fetch(
+            `https://queue.fal.run/${model}/requests/${requestId}/status`,
+            { headers: { 'Authorization': `Key ${key}` } }
+        );
+
+        if (!statusResp.ok) continue;
+
+        const status = await statusResp.json();
+        const minutes = Math.floor(elapsed / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        showStatus(`⏳ Se procesează... ${minutes}:${String(seconds).padStart(2,'0')} — Status: ${status.status || 'în curs'}`);
+
+        if (status.status === 'COMPLETED') {
+            const resultResp = await fetch(
+                `https://queue.fal.run/${model}/requests/${requestId}`,
+                { headers: { 'Authorization': `Key ${key}` } }
+            );
+            return await resultResp.json();
+        }
+
+        if (status.status === 'FAILED') {
+            throw new Error('Generarea a eșuat pe server: ' + (status.error || 'motiv necunoscut'));
+        }
+    }
+
+    throw new Error('Timeout — generarea a durat prea mult.');
+}
+
+function showVideoResult(data, prompt) {
+    const video = data.video || (data.videos && data.videos[0]);
+    if (!video) throw new Error('Niciun video returnat.');
+
+    const url = video.url || video;
+    const preview = document.getElementById('resultPreview');
+    const actions = document.getElementById('resultActions');
+
+    preview.innerHTML = `<video controls autoplay loop style="max-width:100%;border-radius:12px;">
+        <source src="${url}">
+    </video>`;
+
+    actions.innerHTML =
+        `<a href="${url}" download="film_${Date.now()}.mp4" class="btn-action btn-download" target="_blank">⬇ Descarcă MP4</a>` +
+        `<button class="btn-action btn-copy" onclick="copyUrl('${url}')">📋 Copiază URL</button>`;
+
+    document.getElementById('resultArea').classList.add('visible');
+    addToHistory('video', url, prompt);
+}
+
+/* ===== HISTORY ===== */
+function addToHistory(type, url, prompt) {
+    sessionHistory.unshift({ type, url, prompt, time: Date.now() });
+    if (sessionHistory.length > 20) sessionHistory.pop();
+    renderHistory();
+}
+
+function renderHistory() {
+    const grid = document.getElementById('historyGrid');
+    if (!sessionHistory.length) {
+        grid.innerHTML = '<div class="history-empty">Nicio generare încă.</div>';
+        return;
+    }
+
+    grid.innerHTML = sessionHistory.map((item, i) => {
+        const media = item.type === 'image'
+            ? `<img src="${item.url}" alt="">`
+            : `<video src="${item.url}" muted></video>`;
+        const label = item.prompt.substring(0, 40) + (item.prompt.length > 40 ? '…' : '');
+        return `<div class="history-item" onclick="loadHistoryItem(${i})">
+            ${media}
+            <div class="hist-label">${label}</div>
+        </div>`;
+    }).join('');
+}
+
+function loadHistoryItem(i) {
+    const item = sessionHistory[i];
+    document.getElementById('promptInput').value = item.prompt;
+
+    const preview = document.getElementById('resultPreview');
+    const actions = document.getElementById('resultActions');
+
+    if (item.type === 'image') {
+        preview.innerHTML = `<img src="${item.url}" alt="Generated">`;
+        actions.innerHTML = `<a href="${item.url}" download="imagine_${Date.now()}.png" class="btn-action btn-download" target="_blank">⬇ Descarcă</a>
+            <button class="btn-action btn-copy" onclick="copyUrl('${item.url}')">📋 Copiază URL</button>`;
+    } else {
+        preview.innerHTML = `<video controls autoplay loop style="max-width:100%;border-radius:12px;"><source src="${item.url}"></video>`;
+        actions.innerHTML = `<a href="${item.url}" download="film_${Date.now()}.mp4" class="btn-action btn-download" target="_blank">⬇ Descarcă MP4</a>
+            <button class="btn-action btn-copy" onclick="copyUrl('${item.url}')">📋 Copiază URL</button>`;
+    }
+
+    document.getElementById('resultArea').classList.add('visible');
+    window.scrollTo({ top: document.getElementById('resultArea').offsetTop - 20, behavior: 'smooth' });
+}
+
+/* ===== HELPERS ===== */
+function showStatus(text) {
+    document.getElementById('statusText').textContent = text;
+    document.getElementById('statusArea').classList.add('visible');
+}
+
+function hideStatus() {
+    document.getElementById('statusArea').classList.remove('visible');
+    setProgressIndeterminate(false);
+}
+
+function setProgressIndeterminate(on) {
+    document.getElementById('progressBar').classList.toggle('indeterminate', on);
+}
+
+function showError(msg) {
+    const el = document.getElementById('errorBox');
+    el.textContent = '❌ ' + msg;
+    el.classList.add('visible');
+}
+
+function hideError() {
+    document.getElementById('errorBox').classList.remove('visible');
+}
+
+function copyUrl(url) {
+    navigator.clipboard.writeText(url).then(() => alert('URL copiat!'));
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+</script>
+
+</body>
+</html>
