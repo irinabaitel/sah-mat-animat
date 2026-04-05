@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India – Cufărul cu Șah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=IM+Fell+English:ital@1&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: #1a0e05;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* ===== IMAGINE FUNDAL ===== */
+        #scene-img {
+            position: fixed;
+            inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            z-index: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        /* ===== OVERLAY GRADIENT (jos, pentru text) ===== */
+        #gradient-overlay {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 52%;
+            background: linear-gradient(
+                to top,
+                rgba(15,8,2,0.92) 0%,
+                rgba(15,8,2,0.75) 40%,
+                rgba(15,8,2,0.3) 70%,
+                transparent 100%
+            );
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ===== HEADER: INDIA + progres ===== */
+        #header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: linear-gradient(to bottom, rgba(15,8,2,0.7), transparent);
+        }
+        #header-loc {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(0.85em, 1.8vw, 1.1em);
+            color: #f5d97a;
+            letter-spacing: 2px;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #progress-dots {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(245,217,122,0.35);
+            transition: all 0.4s ease;
+        }
+        .dot.active {
+            background: #f5d97a;
+            width: 24px;
+            border-radius: 4px;
+            box-shadow: 0 0 8px rgba(245,200,50,0.6);
+        }
+        .dot.done {
+            background: rgba(245,217,122,0.6);
+        }
+
+        /* ===== BULĂ PERSONAJ (cine vorbește) ===== */
+        #speaker {
+            position: fixed;
+            bottom: 175px;
+            left: 32px;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        #speaker.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #speaker-icon {
+            font-size: 1.8em;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+        }
+        #speaker-name {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(0.8em, 1.6vw, 1em);
+            color: #f5d97a;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+        }
+
+        /* ===== TEXTUL NARATIV ===== */
+        #text-box {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(820px, 92vw);
+            z-index: 5;
+            text-align: center;
+        }
+        #scene-text {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: clamp(1.1em, 2.4vw, 1.55em);
+            color: #f5e8c8;
+            line-height: 1.65;
+            text-shadow:
+                0 1px 3px rgba(0,0,0,0.9),
+                0 2px 12px rgba(0,0,0,0.7);
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+        }
+        #scene-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== BUTON AUDIO (🔊 per replică) ===== */
+        #btn-audio {
+            position: fixed;
+            bottom: 175px;
+            right: 32px;
+            z-index: 6;
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(245,217,122,0.35);
+            background: rgba(245,217,122,0.1);
+            color: #f5d97a;
+            font-size: 1.3em;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+        }
+        #btn-audio:hover { background: rgba(245,217,122,0.22); transform: scale(1.08); }
+        #btn-audio.playing {
+            background: rgba(245,217,122,0.25);
+            animation: audio-pulse 1.2s ease-in-out infinite;
+        }
+        @keyframes audio-pulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(245,200,50,0.4); }
+            50%      { box-shadow: 0 0 0 8px rgba(245,200,50,0); }
+        }
+
+        /* ===== HINT CLICK ===== */
+        #hint-click {
+            position: fixed;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            font-size: clamp(0.7em, 1.3vw, 0.85em);
+            color: rgba(245,217,122,0.5);
+            letter-spacing: 1px;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        /* ===== BUTON ÎNAPOI LA HARTĂ ===== */
+        #btn-harta {
+            position: fixed;
+            top: 14px; left: 22px;
+            z-index: 10;
+            background: rgba(245,217,122,0.15);
+            border: 1.5px solid rgba(245,217,122,0.35);
+            border-radius: 20px;
+            padding: 7px 16px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.78em;
+            color: #f5d97a;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: none; /* apare doar la prima scenă */
+        }
+        #btn-harta:hover { background: rgba(245,217,122,0.28); }
+
+        /* ===== SĂGEȚI NAVIGARE ===== */
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 5;
+            font-size: 2em;
+            color: rgba(245,217,122,0.4);
+            cursor: pointer;
+            padding: 20px 14px;
+            transition: color 0.2s;
+            pointer-events: all;
+        }
+        .nav-arrow:hover { color: rgba(245,217,122,0.85); }
+        #arrow-prev { left: 8px; }
+        #arrow-next { right: 8px; }
+        .nav-arrow.hidden { opacity: 0; pointer-events: none; }
+
+        /* ===== SEPARATOR SCENIC (între scene) ===== */
+        #scene-fade {
+            position: fixed;
+            inset: 0;
+            background: #1a0e05;
+            z-index: 8;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        #scene-fade.active { opacity: 1; }
+
+        /* ===== BADGE PARTE (A/B/C...) ===== */
+        #parte-badge {
+            position: fixed;
+            top: 14px; right: 22px;
+            z-index: 5;
+            font-family: 'Cinzel', serif;
+            font-size: 0.75em;
+            color: rgba(245,217,122,0.55);
+            letter-spacing: 1px;
+        }
+
+        /* ===== BUTON CONTINUĂ (după ultima scenă) ===== */
+        #btn-continua {
+            position: fixed;
+            bottom: 50px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            z-index: 6;
+            padding: 14px 50px;
+            background: linear-gradient(135deg, #c47a00, #e8a820);
+            color: white;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1em;
+            font-weight: 700;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            box-shadow: 0 4px 20px rgba(180,100,0,0.5);
+        }
+        #btn-continua.visible {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(-50%) translateY(0);
+        }
+        #btn-continua:hover { filter: brightness(1.1); }
+
+        /* ===== FADE GENERAL ===== */
+        #fade-out {
+            position: fixed; inset: 0;
+            background: #1a0e05;
+            z-index: 100;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+        #fade-out.active { opacity: 1; pointer-events: all; }
+
+    </style>
+</head>
+<body>
+
+<div id="scene-fade"></div>
+<div id="fade-out"></div>
+
+<img id="scene-img" src="" alt="">
+<div id="gradient-overlay"></div>
+
+<!-- Header -->
+<div id="header">
+    <div id="header-loc">🐘 &nbsp;India · Anul 600 d.Hr.</div>
+    <div id="progress-dots"></div>
+</div>
+
+<div id="parte-badge"></div>
+
+<!-- Cine vorbește -->
+<div id="speaker">
+    <div id="speaker-icon"></div>
+    <div id="speaker-name"></div>
+</div>
+
+<!-- Text narativ -->
+<div id="text-box">
+    <div id="scene-text"></div>
+</div>
+
+<!-- Hint click -->
+<div id="hint-click">▼ &nbsp;apasă oriunde pentru a continua &nbsp;▼</div>
+
+<!-- Buton audio -->
+<button id="btn-audio" onclick="toggleAudio(event)" title="Ascultă">🔊</button>
+
+
+<!-- Săgeți navigare -->
+<div class="nav-arrow hidden" id="arrow-prev" onclick="replicaIndex > 0 ? mergeReplica(replicaIndex - 1) : mergeScena(scenaIndex - 1)">‹</div>
+<div class="nav-arrow" id="arrow-next" onclick="replicaIndex < SCENE[scenaIndex].replici.length - 1 ? mergeReplica(replicaIndex + 1) : mergeScena(scenaIndex + 1)">›</div>
+
+<!-- Buton continuă (după ultima scenă) -->
+<button id="btn-continua" onclick="mergeInainte()">Lecția Chaturanga ▶</button>
+
+<script>
+/* ============================================================
+   SCENE
+============================================================ */
+const SCENE = [
+    {
+        img: 'piese_sah/india/scene_finale/scena_1.png',
+        parte: 'Partea A · Descoperirea',
+        replici: [
+            { speaker: { icon: '👦', name: 'Kibo' },
+              text: 'Tusk, privește! Cufărul strălucește! Oare ce e înăuntru?' },
+            { speaker: { icon: '🐘', name: 'Tusk' },
+              text: 'Elefant-astic! Sunt piesele magice ale armatei Chaturanga! Kibo, cred că am găsit piesa mea preferată...' },
+        ]
+    },
+    {
+        img: 'piese_sah/india/scene_finale/scena_2.png',
+        parte: 'Partea A · Gaja — Elefantul',
+        replici: [
+            { speaker: { icon: '🐘', name: 'Tusk' },
+              text: 'Acesta este Gaja — Elefantul! El este un luptător puternic. Vezi cum stă mândru?' },
+            { speaker: { icon: '👦', name: 'Kibo' },
+              text: 'Pare greu, Tusk. Cum se mișcă o piesă așa de mare?' },
+            { speaker: { icon: '🐘', name: 'Tusk' },
+              text: 'E un pic săltăreț, ca mine! Gaja sare exact două pătrate pe diagonală. Vrei să încerci?' },
+        ]
+    },
+    {
+        img: 'piese_sah/india/scene_finale/scena_3.png',
+        parte: 'Partea C · Armata Chaturanga',
+        replici: [
+            { speaker: { icon: '👦', name: 'Kibo' },
+              text: 'Uau, sunt atât de mulți! Fiecare piesă arată diferit.' },
+            { speaker: { icon: '🐘', name: 'Tusk' },
+              text: 'Exact! Avem Raja (Regele), Mantri (Sfătuitorul), Ashva (Calul) și Ratha (Carul de luptă). Și nu-i uita pe micii Padati — Soldații!' },
+            { speaker: { icon: '👦', name: 'Kibo' },
+              text: 'Toți sunt gata de aventură?' },
+            { speaker: { icon: '🐘', name: 'Tusk' },
+              text: 'Toți! Dar au nevoie de un căpitan iscusit. Adică de TINE!' },
+        ]
+    },
+    {
+        img: 'piese_sah/india/scene_finale/scena_4.png',
+        parte: 'Partea C · Prima mutare',
+        replici: [
+            { speaker: { icon: '🐘', name: 'Tusk' },
+              text: 'Pentru început, soldații mici — Padati — fac drumul liber. Ei înaintează încet, pas cu pas.' },
+            { speaker: { icon: '👦', name: 'Kibo' },
+              text: 'Am înțeles! Un singur pătrat înainte pentru micul soldat.' },
+            { speaker: { icon: '🐘', name: 'Tusk' },
+              text: 'Perfect! Ești un strateg înnăscut, Kibo. Hai să vedem cum arată tabla noastră de luptă!' },
+        ]
+    },
+];
+
+let scenaIndex = 0;
+let replicaIndex = 0;
+let inTransition = false;
+
+/* ============================================================
+   INIȚIALIZARE
+============================================================ */
+function init() {
+    // Creează dots de progres
+    const dotsContainer = document.getElementById('progress-dots');
+    SCENE.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'dot';
+        d.id = 'dot-' + i;
+        dotsContainer.appendChild(d);
+    });
+
+    // Preîncarcă imaginile
+    SCENE.forEach(s => { const img = new Image(); img.src = s.img; });
+
+    afiseazaScena(0, 0, false);
+}
+
+/* ============================================================
+   AFIȘARE SCENĂ + REPLICĂ
+============================================================ */
+function afiseazaScena(sIdx, rIdx, animate = true) {
+    const s = SCENE[sIdx];
+    if (!s) return;
+
+    const imgEl     = document.getElementById('scene-img');
+    const textEl    = document.getElementById('scene-text');
+    const speakerEl = document.getElementById('speaker');
+    const badge     = document.getElementById('parte-badge');
+    const fade      = document.getElementById('scene-fade');
+    const continua  = document.getElementById('btn-continua');
+    const hint      = document.getElementById('hint-click');
+    const arrowPrev = document.getElementById('arrow-prev');
+    const arrowNext = document.getElementById('arrow-next');
+
+    const eUltimaScena   = sIdx === SCENE.length - 1;
+    const eUltimaReplica = rIdx === s.replici.length - 1;
+    const arataContinua  = eUltimaScena && eUltimaReplica;
+
+    if (animate) {
+        fade.classList.add('active');
+        setTimeout(() => {
+            incarcaScena(s, rIdx, imgEl, textEl, speakerEl, badge);
+            fade.classList.remove('active');
+        }, 450);
+    } else {
+        incarcaScena(s, rIdx, imgEl, textEl, speakerEl, badge);
+    }
+
+    // Progress dots — bazat pe scenă
+    document.querySelectorAll('.dot').forEach((d, i) => {
+        d.className = 'dot' + (i === sIdx ? ' active' : i < sIdx ? ' done' : '');
+    });
+
+    // Săgeți: stânga dacă nu suntem la replica 0 a scenei 0; dreapta dacă nu e ultima replică a ultimei scene
+    const eInceput = sIdx === 0 && rIdx === 0;
+    arrowPrev.className = 'nav-arrow' + (eInceput ? ' hidden' : '');
+    arrowNext.className = 'nav-arrow' + (arataContinua ? ' hidden' : '');
+
+    // Buton Continuă + hint
+    continua.className = arataContinua ? 'visible' : '';
+    hint.style.opacity = arataContinua ? '0' : '1';
+}
+
+function incarcaScena(s, rIdx, imgEl, textEl, speakerEl, badge) {
+    const replică = s.replici[rIdx];
+
+    // Imagine — schimbă doar dacă e replică 0 (prima din scenă)
+    if (rIdx === 0) {
+        imgEl.style.opacity = '0';
+        imgEl.src = s.img;
+        imgEl.onload = () => { imgEl.style.opacity = '1'; };
+        if (imgEl.complete) imgEl.style.opacity = '1';
+    }
+
+    // Text
+    textEl.className = '';
+    textEl.textContent = replică.text;
+    setTimeout(() => textEl.className = 'visible', 100);
+
+    // Speaker
+    document.getElementById('speaker-icon').textContent = replică.speaker.icon;
+    document.getElementById('speaker-name').textContent = replică.speaker.name;
+    speakerEl.className = '';
+    setTimeout(() => speakerEl.className = 'visible', 200);
+
+    // Badge parte
+    badge.textContent = s.parte;
+}
+
+/* ============================================================
+   NAVIGARE
+============================================================ */
+function mergeScena(sIdx) {
+    if (inTransition) return;
+    if (sIdx < 0 || sIdx >= SCENE.length) return;
+    opresteAudioLaNavigare();
+    inTransition = true;
+    scenaIndex = sIdx;
+    replicaIndex = 0;
+    afiseazaScena(sIdx, 0);
+    setTimeout(() => inTransition = false, 700);
+}
+
+function mergeReplica(rIdx) {
+    if (inTransition) return;
+    opresteAudioLaNavigare();
+    inTransition = true;
+    replicaIndex = rIdx;
+    afiseazaScena(scenaIndex, rIdx);
+    setTimeout(() => inTransition = false, 600);
+}
+
+// Click oriunde → replica/scena următoare
+document.addEventListener('click', (e) => {
+    // Ignoră click pe butoane/săgeți
+    if (e.target.closest('#arrow-prev') ||
+        e.target.closest('#arrow-next') ||
+        e.target.closest('#btn-continua') ||
+        e.target.closest('#btn-harta')) return;
+
+    const s = SCENE[scenaIndex];
+    if (replicaIndex < s.replici.length - 1) {
+        // Mai sunt replici în scena curentă
+        mergeReplica(replicaIndex + 1);
+    } else if (scenaIndex < SCENE.length - 1) {
+        // Trece la scena următoare
+        mergeScena(scenaIndex + 1);
+    }
+    // Dacă suntem la ultima replică a ultimei scene — nimic, butonul Continuă e vizibil
+});
+
+// Taste săgeți
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+        const s = SCENE[scenaIndex];
+        if (replicaIndex < s.replici.length - 1) mergeReplica(replicaIndex + 1);
+        else mergeScena(scenaIndex + 1);
+    }
+    if (e.key === 'ArrowLeft') {
+        if (replicaIndex > 0) mergeReplica(replicaIndex - 1);
+        else mergeScena(scenaIndex - 1);
+    }
+});
+
+/* ============================================================
+   CONTINUĂ → Școala lui Tusk (Partea B)
+============================================================ */
+function mergeInainte() {
+    document.getElementById('fade-out').classList.add('active');
+    setTimeout(() => {
+        window.location.href = 'india_reguli.html';
+    }, 800);
+}
+
+/* ===========================================================
+   SISTEM AUDIO HIBRID
+   - Dacă există fișier audio/india/s{scenă}_r{replică}.mp3 → îl redă
+   - Altfel → Web Speech API (voce sintetică browser)
+
+   Convenție fișiere: audio/india/s1_r0.mp3, s1_r1.mp3, s2_r0.mp3 ...
+   (scenă 0-based, replică 0-based)
+=========================================================== */
+const AUDIO_DIR = 'audio/india/';
+let audioEl = null;
+let speechUtt = null;
+
+// Voci Web Speech — române sau fallback
+function getVoice(speakerName) {
+    const voices = window.speechSynthesis?.getVoices() || [];
+    // Caută voce română
+    const ro = voices.find(v => v.lang.startsWith('ro'));
+    if (ro) return ro;
+    // Fallback: prima voce disponibilă
+    return voices[0] || null;
+}
+
+// Parametri voce per personaj
+function speechParams(speakerName) {
+    return speakerName === 'Tusk'
+        ? { pitch: 0.82, rate: 0.88 }   // Tusk: mai grav, mai rar
+        : { pitch: 1.18, rate: 1.05 };   // Kibo: mai subțire, mai alert
+}
+
+function opresteAudio() {
+    if (audioEl) { audioEl.pause(); audioEl.currentTime = 0; }
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    document.getElementById('btn-audio').classList.remove('playing');
+    document.getElementById('btn-audio').textContent = '🔊';
+    speechUtt = null;
+}
+
+function redeaReplica(scenaIdx, replicaIdx) {
+    opresteAudio();
+    const replică = SCENE[scenaIdx].replici[replicaIdx];
+    const fisier  = `${AUDIO_DIR}s${scenaIdx}_r${replicaIdx}.mp3`;
+    const btn     = document.getElementById('btn-audio');
+
+    // Încearcă fișierul audio mai întâi
+    const test = new Audio(fisier);
+    test.addEventListener('canplaythrough', () => {
+        // Fișierul există → redă-l
+        audioEl = test;
+        audioEl.play();
+        btn.classList.add('playing');
+        btn.textContent = '⏸';
+        audioEl.addEventListener('ended', () => {
+            btn.classList.remove('playing');
+            btn.textContent = '🔊';
+        });
+    }, { once: true });
+
+    test.addEventListener('error', () => {
+        // Fișierul nu există → Web Speech API
+        if (!window.speechSynthesis) return;
+        const utt = new SpeechSynthesisUtterance(replică.text);
+        utt.lang  = 'ro-RO';
+        const params = speechParams(replică.speaker.name);
+        utt.pitch = params.pitch;
+        utt.rate  = params.rate;
+        const voce = getVoice(replică.speaker.name);
+        if (voce) utt.voice = voce;
+        utt.onstart = () => { btn.classList.add('playing'); btn.textContent = '⏸'; };
+        utt.onend   = () => { btn.classList.remove('playing'); btn.textContent = '🔊'; speechUtt = null; };
+        speechUtt = utt;
+        window.speechSynthesis.speak(utt);
+    }, { once: true });
+
+    // Forțăm detectarea erorii (unele browsere nu fire-uiesc 'error' fără load)
+    test.load();
+}
+
+function toggleAudio(e) {
+    e.stopPropagation();
+    const btn = document.getElementById('btn-audio');
+    if (btn.classList.contains('playing')) {
+        opresteAudio();
+    } else {
+        redeaReplica(scenaIndex, replicaIndex);
+    }
+}
+
+// Oprește audio la schimbarea scenei/replicii
+function opresteAudioLaNavigare() { opresteAudio(); }
+
+init();
+</script>
+</body>
+</html>

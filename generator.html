@@ -639,7 +639,7 @@ let isGenerating = false;
 let sessionHistory = [];
 
 /* Promptul de bază pentru personaje Pixar — se combină cu costumul epocii */
-const BASE_CHAR = 'A cheerful friendly character, Pixar-Disney 3D animation style, expressive eyes with light reflections, warm smile, slightly larger head than body, NOT a baby NOT a toddler, age 20-30 years old, athletic proportions, smooth shapes, warm skin tones, soft subsurface lighting, rich saturated colors, standing with feet directly on ground, PURE WHITE BACKGROUND, absolutely nothing in background, isolated single character, nothing around them, no objects nearby, no other characters, NO pedestal, NO base, NO platform, full body fits entirely in frame, no shadows on background, clean crisp 3D render, consistent character design, exactly two arms, correct anatomy';
+const BASE_CHAR = 'A cheerful friendly character, Walt Disney animation style, modern Disney 3D render like Moana or Frozen, expressive large eyes with light reflections, warm smile, normal human proportions, normal round human ears, NOT a baby NOT a toddler, age 20-30 years old, athletic proportions, smooth shapes, warm skin tones, soft lighting, rich saturated colors, standing with feet directly on ground, PURE WHITE BACKGROUND, absolutely nothing in background, isolated single character, nothing around them, no objects nearby, no other characters, NO pedestal, NO base, NO platform, full body fits entirely in frame, no shadows on background, clean crisp 3D render, consistent character design, exactly two arms, correct anatomy';
 
 const EPOCHS = [
     {
@@ -647,12 +647,12 @@ const EPOCHS = [
         label: '🗿 Epoca de Piatră',
         color: '#8B7355',
         pieces: {
-            king:   'chess KING, tribal chieftain, animal fur cape, bone crown with obsidian gems, stone axe scepter, ritual face paint, barefoot on rock',
-            queen:  'chess QUEEN, shaman priestess, white animal hide dress, antler headdress, glowing spirit orbs floating around her, mystical',
-            bishop: 'chess BISHOP, cave painter elder, ochre-stained robes, carved totem staff, cave bear skull helmet',
-            knight: 'brave young tribal warrior, mammoth skull helmet, bone armor, stone spear, wild hair, cheerful expression, standing upright',
-            rook:   'chess ROOK, stone fortress guardian, massive rock shield, granite armor, immovable stance',
-            pawn:   'chess PAWN, young tribe member, simple fur tunic, wooden club, curious determined face',
+            king:   'adult man in animal fur, holding two big colorful balloons, one balloon in each hand, arms raised with balloons, big happy smile, barefoot, feet on white ground',
+            queen:  'shaman priestess, white animal hide dress, antler headdress, glowing spirit orbs floating around her, arms outstretched, NO weapons, mystical joyful expression',
+            bishop: 'cave painter elder, ochre-stained robe, holding a painting brush and small rock canvas, big warm smile, NO weapons, NO staff with skull',
+            knight: { white: 'cheerful tribal child sitting on the back of a single saber-tooth tiger, the tiger has exactly one head, child waving hand and smiling, simple fur tunic, empty hands, absolutely no weapons, no spear, no club, no stick', black: 'cheerful tribal child sitting on the back of a single giant wolf, the wolf has exactly one head, child waving hand and smiling, dark fur tunic, empty hands, absolutely no weapons, no spear, no club, no stick' },
+            rook:   'stone age guardian, massive round rock shield held with both hands, granite-textured fur armor, sturdy cheerful expression, NO weapons, NO sword',
+            pawn:   'young tribe child, simple fur tunic, holding a big colorful feather, curious happy face, NO weapons, NO club',
         }
     },
     {
@@ -929,7 +929,8 @@ function batchLog(msg, color) {
 }
 
 function buildPrompt(epoch, pieceKey, color) {
-    const pieceDesc = epoch.pieces[pieceKey];
+    const pieceRaw = epoch.pieces[pieceKey];
+    const pieceDesc = (pieceRaw && typeof pieceRaw === 'object') ? (pieceRaw[color] || pieceRaw.white) : pieceRaw;
 
     // Culoare
     const colorDesc = color === 'white'
@@ -938,17 +939,17 @@ function buildPrompt(epoch, pieceKey, color) {
 
     // Extras per tip piesă
     const pieceExtras = {
-        queen:  'FEMALE character, woman, feminine face and figure, clearly female',
-        king:   'male character, king',
-        bishop: 'male character, no crown on head',
-        knight: 'ONE human character, ONE head, two arms, two legs, standing upright on ground, NOT a chess piece shape, NO horse heads, NO horses, NO animals, NOT riding, NOT mounted, human warrior person',
-        rook:   'male character',
-        pawn:   'young character',
+        queen:  'FEMALE character, woman, feminine face and figure, clearly female, mature adult, friendly warm expression, NOT scary, small round human ears flat against head',
+        king:   'male character, mature adult, friendly expression, NOT scary, small round human ears flat against head, feet standing directly on white floor, NO pedestal, NO stone base, NO platform beneath feet',
+        bishop: 'male character, no crown on head, mature adult, friendly expression, NOT scary, small round human ears flat against head',
+        knight: epoch.id === 'stone' ? 'ONE human rider, ONE human head, exactly two arms, ONE animal beneath him with ONE head, single saber-tooth tiger, NOT two tigers, NOT two heads, NOT a chess piece shape, small round human ears flat against head' : 'ONE human character, ONE head, two arms, two legs, standing upright on ground, NOT a chess piece shape, NO horse heads, NO horses, NO animals, NOT riding, NOT mounted, human warrior person, mature adult, small round human ears flat against head',
+        rook:   'male character, mature adult, friendly expression, NOT scary, small round human ears flat against head',
+        pawn:   'child character, age 10 to 15 years old, NOT a baby, NOT a toddler, young kid, small round human ears flat against head, cheerful expression',
     }[pieceKey] || '';
 
     // Extras per epocă
     const epochExtras = {
-        stone: 'ONLY stone bone wood fur materials, NO metal, NO jewelry, NO gems, NO cape, NO red fabric, NO elaborate clothing, simple primitive animal fur wrap only, human character NOT an elf',
+        stone: 'ONLY stone bone wood fur materials, NO metal, NO jewelry, NO gems, NO cape, NO red fabric, NO elaborate clothing, simple primitive animal fur wrap only, absolutely NO weapons, NO spears, NO clubs, NO axes, NO knives',
         iron:  'iron and bronze materials, NO other eras accessories',
         antique: 'Greek Roman style, NO pedestal, human character NOT an elf',
         medieval: 'medieval style only',
@@ -996,14 +997,30 @@ async function startBatch() {
         const colorSuffix = color === 'black' ? '_negru' : '';
         const filename = `${pieceKey.replace('bishop','nebun').replace('knight','cal').replace('rook','turn').replace('queen','regina').replace('king','rege').replace('pawn','pion')}_${slug}${colorSuffix}.jpg`;
 
+        // Fișiere protejate — nu se suprascriu niciodată
+        const PROTECTED = new Set([
+            'rege_medieval.jpg','rege_medieval_negru.jpg',
+            'regina_medieval.jpg','regina_medieval_negru.jpg',
+            'nebun_medieval.jpg','nebun_medieval_negru.jpg',
+            'cal_medieval.jpg','cal_medieval_negru.jpg',
+            'turn_medieval.jpg','turn_medieval_negru.jpg',
+            'pion_medieval.jpg','pion_medieval_negru.jpg',
+        ]);
+        if (PROTECTED.has(filename)) {
+            done++;
+            batchLog(`🔒 ${filename} — protejat, sărit`, '#e67e22');
+            document.getElementById('batchCounter').textContent = `${done} / ${total}`;
+            continue;
+        }
+
         document.getElementById('batchStatusText').textContent = `Generez: ${filename}`;
         batchLog(`⏳ ${filename}...`);
 
         try {
-            const resp = await fetch('https://fal.run/fal-ai/flux/schnell', {
+            const resp = await fetch('https://fal.run/fal-ai/flux/dev', {
                 method: 'POST',
                 headers: { 'Authorization': `Key ${key}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt, image_size: 'portrait_16_9', num_images: 1, num_inference_steps: 4, enable_safety_checker: false })
+                body: JSON.stringify({ prompt, image_size: 'portrait_16_9', num_images: 1, num_inference_steps: 28, guidance_scale: 7.5, enable_safety_checker: false })
             });
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
             const data = await resp.json();

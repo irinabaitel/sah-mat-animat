@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practică Liberă — Cufărul cu Șah</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: #F5A96E;
+    font-family: 'Nunito', sans-serif;
+    color: #1a1a2e;
+    min-height: 100vh;
+    padding: 20px 16px 40px;
+}
+
+h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.8em;
+    color: #1a3a6b;
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+    text-shadow: 2px 2px 0 rgba(255,255,255,0.3);
+}
+.subtitle {
+    text-align: center;
+    color: rgba(26,26,46,0.6);
+    font-size: 0.88em;
+    margin-bottom: 22px;
+}
+
+/* LAYOUT */
+.page {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    gap: 22px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* BOARD COLUMN */
+.board-col { flex: 0 0 auto; }
+
+#board-wrap {
+    width: min(480px, calc(100vw - 32px));
+}
+#board { width: 100%; }
+
+/* Spare pieces styling */
+.board-wrap-outer {
+    position: relative;
+    display: inline-block;
+}
+
+/* MODE BADGE */
+#mode-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.82em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    transition: all 0.3s;
+}
+#mode-badge.edit { background: rgba(26,58,107,0.12); color: #1a3a6b; border: 1px solid rgba(26,58,107,0.3); }
+#mode-badge.play { background: rgba(39,174,96,0.2);  color: #1a5c35; border: 1px solid rgba(39,174,96,0.5); }
+
+/* PANEL */
+.panel {
+    flex: 0 0 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 220px;
+}
+
+.card {
+    background: rgba(255,255,255,0.45);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+.card-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.8em;
+    color: rgba(26,58,107,0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+}
+
+/* TOGGLE BUTTONS */
+.toggle-row {
+    display: flex;
+    gap: 8px;
+}
+.tog {
+    flex: 1;
+    padding: 8px 6px;
+    border-radius: 8px;
+    border: 1px solid rgba(26,58,107,0.2);
+    background: rgba(255,255,255,0.4);
+    color: #1a3a6b;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.88em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+.tog:hover { background: rgba(255,255,255,0.65); }
+.tog.active-w { background: white; color: #1a1a2e; border-color: #1a3a6b; box-shadow: 0 2px 8px rgba(26,58,107,0.2); }
+.tog.active-b { background: #1a1a2e; color: #f0f0f0; border-color: #1a1a2e; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+/* LEVEL SELECTOR */
+.level-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+    margin-top: 4px;
+}
+.lv {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    border: 1px solid rgba(26,58,107,0.2);
+    background: rgba(255,255,255,0.4);
+    color: rgba(26,58,107,0.6);
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.85em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+}
+.lv:hover { background: rgba(26,58,107,0.15); color: #1a3a6b; }
+.lv.active { background: #1a3a6b; color: white; border-color: #1a3a6b; }
+
+.level-label {
+    font-size: 0.78em;
+    color: rgba(26,26,46,0.55);
+    text-align: center;
+    margin-top: 6px;
+}
+
+/* STATUS BOX */
+#status-box {
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 0.88em;
+    line-height: 1.55;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.7);
+    border-left: 4px solid #1a3a6b;
+    min-height: 48px;
+    color: #1a1a2e;
+}
+#status-box.ok  { background:rgba(220,255,230,0.75); border-left-color:#27ae60; color:#1a5c35; }
+#status-box.err { background:rgba(255,220,220,0.75); border-left-color:#c0392b; color:#7a1a1a; }
+#status-box.inf { background:rgba(210,230,255,0.75); border-left-color:#1a3a6b; color:#1a3a6b; }
+
+/* MOVE LIST */
+#move-list {
+    background: rgba(255,255,255,0.45);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 0.82em;
+    line-height: 1.9;
+    max-height: 160px;
+    overflow-y: auto;
+    color: #1a1a2e;
+    display: none;
+}
+#move-list .mn { color: rgba(26,58,107,0.45); font-weight:700; margin-right:3px; }
+#move-list .mw { color: #1a3a6b; font-weight:700; margin-right:5px; }
+#move-list .mb { color: #333; margin-right:10px; }
+
+/* ACTION BUTTONS */
+.btn {
+    display: block; width: 100%;
+    padding: 10px;
+    border: none; border-radius: 10px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.95em; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 6px;
+}
+.btn:last-child { margin-bottom: 0; }
+
+.btn-edit-action {
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(26,58,107,0.2);
+    color: #1a3a6b;
+}
+.btn-edit-action:hover { background: rgba(255,255,255,0.75); }
+
+.btn-play {
+    background: #1a3a6b;
+    color: white;
+    box-shadow: 0 3px 16px rgba(26,58,107,0.4);
+}
+.btn-play:hover { background: #2a5aab; transform:translateY(-2px); box-shadow:0 5px 24px rgba(26,58,107,0.5); }
+.btn-play:disabled { opacity:0.4; cursor:default; transform:none; box-shadow:none; }
+
+.btn-stop {
+    background: rgba(192,57,43,0.15);
+    border: 1px solid rgba(192,57,43,0.35);
+    color: #7a1a1a;
+    display: none;
+}
+.btn-stop:hover { background: rgba(192,57,43,0.25); }
+
+/* CONFETTI */
+@keyframes cf { 0%{opacity:1;transform:translate(0,0)rotate(0deg);}100%{opacity:0;transform:translate(var(--dx),var(--dy))rotate(var(--rot));} }
+.cf{position:fixed;pointer-events:none;z-index:9999;border-radius:2px;animation:cf var(--dur) ease-in forwards;}
+
+@media (max-width:640px){
+    .panel { width: calc(100vw - 32px); }
+    #board-wrap { width: calc(100vw - 32px); }
+}
+</style>
+</head>
+<body>
+
+<h1>🎯 Practică Liberă</h1>
+<p class="subtitle">Aşează piesele cum vrei, alege nivelul robotului și joacă!</p>
+
+<div class="page">
+
+    <!-- BOARD -->
+    <div class="board-col">
+        <div style="text-align:center">
+            <span id="mode-badge" class="edit">✏️ MOD EDITARE</span>
+        </div>
+        <div id="board-wrap"><div id="board"></div></div>
+    </div>
+
+    <!-- PANEL -->
+    <div class="panel">
+
+        <!-- STATUS -->
+        <div id="status-box" class="inf">
+            Trage piesele pe tablă, apoi apasă <strong>Joacă!</strong>
+        </div>
+
+        <!-- CINE MUTA -->
+        <div class="card" id="card-turn">
+            <div class="card-title">Cine mută primul?</div>
+            <div class="toggle-row">
+                <button class="tog active-w" id="tog-w" onclick="setTurn('w')">♔ Albele</button>
+                <button class="tog"          id="tog-b" onclick="setTurn('b')">♚ Negrele</button>
+            </div>
+        </div>
+
+        <!-- JOCI CU -->
+        <div class="card" id="card-side">
+            <div class="card-title">Tu joci cu</div>
+            <div class="toggle-row">
+                <button class="tog active-w" id="side-w" onclick="setSide('w')">♔ Albele</button>
+                <button class="tog"          id="side-b" onclick="setSide('b')">♚ Negrele</button>
+            </div>
+        </div>
+
+        <!-- NIVEL -->
+        <div class="card">
+            <div class="card-title">Forța robotului</div>
+            <div class="level-grid" id="level-grid"></div>
+            <div class="level-label" id="level-label">Nivel 4 — Jucător</div>
+        </div>
+
+        <!-- EDIT BUTTONS -->
+        <div id="edit-btns">
+            <button class="btn btn-edit-action" onclick="clearBoard()">🗑 Curăță tabla</button>
+            <button class="btn btn-edit-action" onclick="resetToStart()">♟ Poziție inițială</button>
+            <button class="btn btn-edit-action" onclick="flipBoard()">🔄 Inversează tabla</button>
+            <button class="btn btn-play" id="btn-play" onclick="startGame()">▶ Joacă!</button>
+        </div>
+
+        <!-- MOVE LIST (shown during game) -->
+        <div id="move-list"><em style="color:rgba(232,224,208,0.3)">Nicio mutare încă.</em></div>
+
+        <!-- STOP BUTTON -->
+        <button class="btn btn-stop" id="btn-stop" onclick="stopGame()">⏹ Oprește jocul</button>
+
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+/* =====================================================
+   LEVEL CONFIG  (8 niveluri ca pe Lichess)
+===================================================== */
+const LEVELS = [
+    { label:'Pui de găină',  skill:1,  movetime:80   },
+    { label:'Începător',     skill:3,  movetime:150  },
+    { label:'Elev',          skill:5,  movetime:300  },
+    { label:'Jucător',       skill:7,  movetime:500  },
+    { label:'Experimentat',  skill:10, movetime:900  },
+    { label:'Avansat',       skill:14, movetime:1500 },
+    { label:'Expert',        skill:17, movetime:2500 },
+    { label:'Maestru',       skill:20, movetime:4000 },
+];
+
+/* =====================================================
+   STATE
+===================================================== */
+let board, chess;
+let mode        = 'edit';   // 'edit' | 'play'
+let turnFirst   = 'w';      // who moves first in custom position
+let humanSide   = 'w';      // which side human controls
+let currentLevel= 3;        // 0-indexed → level 4 default
+let stockfish   = null;
+let sfReady     = false;
+let gameOver    = false;
+let moveHistory = [];       // { white: san, black: san }
+
+/* =====================================================
+   LEVEL UI
+===================================================== */
+(function buildLevelGrid() {
+    const grid = document.getElementById('level-grid');
+    LEVELS.forEach((lv, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'lv' + (i === currentLevel ? ' active' : '');
+        btn.textContent = i + 1;
+        btn.title = lv.label;
+        btn.onclick = () => selectLevel(i);
+        grid.appendChild(btn);
+    });
+})();
+
+function selectLevel(i) {
+    currentLevel = i;
+    document.querySelectorAll('.lv').forEach((el, idx) => {
+        el.classList.toggle('active', idx === i);
+    });
+    document.getElementById('level-label').textContent =
+        `Nivel ${i+1} — ${LEVELS[i].label}`;
+}
+
+/* =====================================================
+   TURN & SIDE TOGGLES
+===================================================== */
+function setTurn(t) {
+    turnFirst = t;
+    document.getElementById('tog-w').className = 'tog' + (t==='w' ? ' active-w' : '');
+    document.getElementById('tog-b').className = 'tog' + (t==='b' ? ' active-b' : '');
+}
+function setSide(s) {
+    humanSide = s;
+    document.getElementById('side-w').className = 'tog' + (s==='w' ? ' active-w' : '');
+    document.getElementById('side-b').className = 'tog' + (s==='b' ? ' active-b' : '');
+    board.orientation(s === 'w' ? 'white' : 'black');
+}
+
+/* =====================================================
+   BOARD — EDIT MODE
+===================================================== */
+board = Chessboard('board', {
+    position:     'start',
+    sparePieces:  true,
+    draggable:    true,
+    dropOffBoard: 'trash',
+    pieceTheme:   'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+    onDragStart:  onDragStart,
+    onDrop:       onDrop,
+    onSnapEnd:    onSnapEnd,
+});
+
+function onDragStart(source, piece) {
+    if (mode === 'edit') return true;
+    /* Play mode: only human's pieces, only when not game over */
+    if (gameOver) return false;
+    if (chess.turn() !== humanSide) return false;
+    if (humanSide === 'w' && piece[0] === 'b') return false;
+    if (humanSide === 'b' && piece[0] === 'w') return false;
+    return true;
+}
+
+function onDrop(source, target, piece, newPos, oldPos) {
+    if (mode === 'edit') {
+        /* Let chessboard.js handle position freely */
+        return;
+    }
+    /* ---- PLAY MODE ---- */
+    if (gameOver || chess.turn() !== humanSide) return 'snapback';
+    const move = chess.move({ from: source, to: target, promotion: 'q' });
+    if (!move) return 'snapback';
+    recordMove(move);
+    checkEndGame();
+    if (!gameOver) setTimeout(stockfishMove, 300);
+}
+
+function onSnapEnd() {
+    if (mode === 'play') board.position(chess.fen(), false);
+}
+
+/* =====================================================
+   BOARD ACTIONS (edit mode)
+===================================================== */
+function clearBoard()   { board.position('empty'); }
+function resetToStart() { board.position('start'); }
+function flipBoard()    {
+    board.flip();
+    humanSide = board.orientation() === 'white' ? 'w' : 'b';
+    document.getElementById('side-w').className = 'tog' + (humanSide==='w' ? ' active-w' : '');
+    document.getElementById('side-b').className = 'tog' + (humanSide==='b' ? ' active-b' : '');
+}
+
+/* =====================================================
+   START GAME
+===================================================== */
+function startGame() {
+    /* Build FEN from current board position */
+    const pos = board.position();
+    const fenPos = Chessboard.objToFen(pos);
+    const fen = `${fenPos} ${turnFirst} - - 0 1`;
+
+    /* Validate */
+    const tempChess = new Chess();
+    if (!tempChess.load(fen)) {
+        setStatus('❌ Poziție invalidă! Verifică să existe câte un Rege pe fiecare parte.', 'err');
+        return;
+    }
+
+    /* Switch to play mode */
+    mode      = 'play';
+    gameOver  = false;
+    moveHistory = [];
+    chess     = new Chess(fen);
+
+    /* Update UI */
+    document.getElementById('mode-badge').textContent = '⚔️ MOD JOC';
+    document.getElementById('mode-badge').className   = 'mode-badge play';
+    document.getElementById('edit-btns').style.display = 'none';
+    document.getElementById('btn-stop').style.display  = 'block';
+    document.getElementById('move-list').style.display = 'block';
+    document.getElementById('move-list').innerHTML = '<em style="color:rgba(232,224,208,0.3)">Nicio mutare încă.</em>';
+    document.getElementById('card-turn').style.opacity = '0.4';
+    document.getElementById('card-side').style.opacity = '0.4';
+
+    /* Re-init board (hide spare pieces) */
+    board.destroy && board.destroy();
+    board = Chessboard('board', {
+        position:   fen,
+        draggable:  true,
+        orientation: humanSide === 'w' ? 'white' : 'black',
+        pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+        onDragStart, onDrop, onSnapEnd,
+    });
+
+    initStockfish();
+
+    /* If computer moves first */
+    if (chess.turn() !== humanSide) {
+        setStatus('🤖 Robotul gândește...', 'inf');
+        setTimeout(stockfishMove, 600);
+    } else {
+        setStatus(`♟ Mutarea ta! Joci cu ${humanSide==='w'?'Albele ♔':'Negrele ♚'}`, '');
+    }
+}
+
+/* =====================================================
+   STOP GAME
+===================================================== */
+function stopGame() {
+    mode = 'edit';
+    gameOver = false;
+    if (stockfish) { stockfish.terminate(); stockfish = null; sfReady = false; }
+
+    /* Re-init board with spare pieces */
+    const pos = chess ? chess.fen() : 'start';
+    board.destroy && board.destroy();
+    board = Chessboard('board', {
+        position:     pos,
+        sparePieces:  true,
+        draggable:    true,
+        dropOffBoard: 'trash',
+        orientation:  humanSide === 'w' ? 'white' : 'black',
+        pieceTheme:   'https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/img/chesspieces/wikipedia/{piece}.png',
+        onDragStart, onDrop, onSnapEnd,
+    });
+
+    document.getElementById('mode-badge').textContent = '✏️ MOD EDITARE';
+    document.getElementById('mode-badge').className   = 'mode-badge edit';
+    document.getElementById('edit-btns').style.display = 'block';
+    document.getElementById('btn-stop').style.display  = 'none';
+    document.getElementById('move-list').style.display = 'none';
+    document.getElementById('card-turn').style.opacity = '1';
+    document.getElementById('card-side').style.opacity = '1';
+    setStatus('Trage piesele pe tablă, apoi apasă <strong>Joacă!</strong>', 'inf');
+}
+
+/* =====================================================
+   STOCKFISH
+===================================================== */
+function initStockfish() {
+    try {
+        const code = `importScripts('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js')`;
+        const blob = new Blob([code], { type:'application/javascript' });
+        stockfish  = new Worker(URL.createObjectURL(blob));
+    } catch(e) {
+        try { stockfish = new Worker('stockfish.js'); } catch(e2) { stockfish = null; }
+    }
+    if (!stockfish) return;
+
+    stockfish.onmessage = function(e) {
+        const msg = e.data;
+        if (msg === 'uciok') {
+            stockfish.postMessage(`setoption name Skill Level value ${LEVELS[currentLevel].skill}`);
+            stockfish.postMessage('isready');
+        }
+        if (msg === 'readyok') { sfReady = true; }
+        if (msg.startsWith('bestmove') && !gameOver) {
+            const parts = msg.split(' ');
+            const mv    = parts[1];
+            if (!mv || mv === '(none)') return;
+            const move  = chess.move({ from:mv.slice(0,2), to:mv.slice(2,4), promotion: mv[4] || 'q' });
+            if (!move) return;
+            board.position(chess.fen(), false);
+            recordMove(move);
+            checkEndGame();
+            if (!gameOver) setStatus(`♟ Mutarea ta! Joci cu ${humanSide==='w'?'Albele ♔':'Negrele ♚'}`, '');
+        }
+    };
+    stockfish.postMessage('uci');
+}
+
+function stockfishMove() {
+    if (!stockfish || gameOver) return;
+    setStatus('🤖 Robotul gândește...', 'inf');
+
+    const ask = () => {
+        stockfish.postMessage(`setoption name Skill Level value ${LEVELS[currentLevel].skill}`);
+        stockfish.postMessage(`position fen ${chess.fen()}`);
+        stockfish.postMessage(`go movetime ${LEVELS[currentLevel].movetime}`);
+    };
+
+    if (sfReady) ask();
+    else setTimeout(ask, 400);
+}
+
+/* =====================================================
+   MOVE LIST & END GAME
+===================================================== */
+function recordMove(move) {
+    const ml = document.getElementById('move-list');
+    const moveNum = Math.ceil(chess.history().length / 2);
+
+    if (chess.history().length % 2 === 1) {
+        /* White just moved */
+        const row = document.createElement('span');
+        row.id    = `mn-${moveNum}`;
+        row.innerHTML = `<span class="mn">${moveNum}.</span><span class="mw">${move.san}</span><span class="mb" id="mb-${moveNum}"></span> `;
+        if (ml.querySelector('em')) ml.innerHTML = '';
+        ml.appendChild(row);
+    } else {
+        /* Black just moved */
+        const bSpan = document.getElementById(`mb-${moveNum}`);
+        if (bSpan) bSpan.textContent = move.san;
+    }
+    ml.scrollTop = ml.scrollHeight;
+}
+
+function checkEndGame() {
+    if (chess.in_checkmate()) {
+        gameOver = true;
+        const winner = chess.turn() === 'w' ? 'Negrele' : 'Albele';
+        const humanWon = (chess.turn() !== humanSide);
+        if (humanWon) {
+            setStatus(`🎉 Șah-mat! Ai câștigat! Felicitări!`, 'ok');
+            confetti();
+        } else {
+            setStatus(`🤖 Șah-mat! Robotul a câștigat. Mai încearcă!`, 'err');
+        }
+    } else if (chess.in_draw()) {
+        gameOver = true;
+        const reason = chess.in_stalemate() ? 'Pat!' :
+                       chess.in_threefold_repetition() ? 'Remiză prin repetiție' :
+                       chess.insufficient_material() ? 'Material insuficient' : 'Remiză';
+        setStatus(`🤝 ${reason}`, 'inf');
+    } else if (chess.in_check()) {
+        setStatus(`⚠️ Șah! Protejează Regele!`, '');
+    }
+}
+
+/* =====================================================
+   HELPERS
+===================================================== */
+function setStatus(html, cls) {
+    const el = document.getElementById('status-box');
+    el.innerHTML = html;
+    el.className = cls ? cls : '';
+}
+
+function confetti() {
+    const colors = ['#f5c842','#e6a817','#ffe680','#ff6b6b','#7de888','#80c8ff'];
+    for (let i = 0; i < 80; i++) {
+        setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = 'cf';
+            el.style.cssText = `
+                left:${Math.random()*100}vw; top:-10px;
+                width:${6+Math.random()*9}px; height:${6+Math.random()*9}px;
+                background:${colors[Math.floor(Math.random()*colors.length)]};
+                --dx:${(Math.random()-.5)*400}px;
+                --dy:${280+Math.random()*520}px;
+                --rot:${Math.random()*720}deg;
+                --dur:${1.3+Math.random()*1.8}s;
+            `;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3300);
+        }, i * 35);
+    }
+}
+</script>
+</body>
+</html>

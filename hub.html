@@ -1,511 +1,409 @@
-in<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Șah Mat Animat – Cuprins</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Să Învățăm Șah — Cufărul cu Șah</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            min-height: 100vh;
-            background: #F5A96E;
-            font-family: 'Nunito', sans-serif;
-            padding: 40px 20px 60px;
-        }
+body {
+    background: #F5A96E;
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+}
 
-        h1 {
-            font-family: 'Baloo 2', cursive;
-            font-size: 2.6em;
-            color: #1a3a6b;
-            text-align: center;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 0 rgba(255,255,255,0.4);
-            margin-bottom: 8px;
-            line-height: 1.2;
-        }
+/* HEADER */
+header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 960px;
+    margin: 0 auto 32px;
+}
+.back-btn {
+    background: rgba(255,255,255,0.55);
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 50px;
+    padding: 7px 18px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.9em;
+    color: #1a3a6b;
+    text-decoration: none;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+.back-btn:hover { background: rgba(255,255,255,0.8); }
 
-        .subtitle {
-            text-align: center;
-            color: #1a3a6b;
-            opacity: 0.7;
-            font-size: 1.05em;
-            margin-bottom: 44px;
-            font-style: italic;
-        }
+.header-text { flex: 1; }
+h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(1.6em, 5vw, 2.4em);
+    color: #1a3a6b;
+    text-shadow: 2px 2px 0 rgba(255,255,255,0.35);
+    line-height: 1.15;
+}
+.header-sub {
+    font-size: 0.88em;
+    color: rgba(26,26,46,0.6);
+    margin-top: 2px;
+}
 
-        /* ── SECȚIUNI ── */
-        .section {
-            max-width: 1000px;
-            margin: 0 auto 48px;
-        }
+/* GRID */
+.grid {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+}
 
-        .section-title {
-            font-family: 'Baloo 2', cursive;
-            font-size: 1.15em;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: #1a3a6b;
-            letter-spacing: 2px;
-            margin-bottom: 18px;
-            padding-bottom: 8px;
-            border-bottom: 3px solid rgba(26,58,107,0.25);
-        }
+/* LEVEL CARD */
+.level-card {
+    background: rgba(255,255,255,0.55);
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.level-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
 
-        /* ── GRID CARDURI ── */
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 18px;
-        }
+.stripe { height: 8px; width: 100%; }
+.c1 { background: linear-gradient(90deg,#1a3a6b,#2a6ab0); }
+.c2 { background: linear-gradient(90deg,#7d3c98,#a569bd); }
+.c3 { background: linear-gradient(90deg,#1a6b4a,#27ae60); }
+.c4 { background: linear-gradient(90deg,#b7770d,#e6a817); }
+.c5 { background: linear-gradient(90deg,#c0392b,#e74c3c); }
+.c6 { background: linear-gradient(90deg,#1a5276,#2980b9); }
+.c7 { background: linear-gradient(90deg,#4a235a,#7d3c98); }
 
-        .card {
-            background: rgba(255,255,255,0.55);
-            border-radius: 20px;
-            padding: 22px 18px 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-            transition: transform 0.18s, box-shadow 0.18s;
-            text-decoration: none;
-            color: inherit;
-            position: relative;
-        }
+.card-body {
+    padding: 18px 18px 14px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
 
-        .card:hover:not(.card-soon) {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 28px rgba(0,0,0,0.18);
-        }
+.level-num {
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.72em;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.l1 .level-num { color: #1a3a6b; }
+.l2 .level-num { color: #7d3c98; }
+.l3 .level-num { color: #1a6b4a; }
+.l4 .level-num { color: #b7770d; }
+.l5 .level-num { color: #c0392b; }
+.l6 .level-num { color: #1a5276; }
+.l7 .level-num { color: #4a235a; }
 
-        /* ── LOCKED STATE ── */
-        .card-locked, .intro-card-locked {
-            position: relative;
-            pointer-events: none;
-            filter: grayscale(60%) brightness(0.75);
-        }
+.level-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.18em;
+    color: #1a1a2e;
+    line-height: 1.25;
+    margin-bottom: 12px;
+}
 
-        .card-soon {
-            opacity: 0.55;
-            cursor: default;
-        }
+.topics {
+    list-style: none;
+    flex: 1;
+    margin-bottom: 14px;
+}
+.topics li {
+    font-size: 0.82em;
+    color: rgba(26,26,46,0.72);
+    line-height: 1.5;
+    padding: 3px 0 3px 16px;
+    position: relative;
+    border-bottom: 1px solid rgba(26,26,46,0.06);
+}
+.topics li:last-child { border-bottom: none; }
+.topics li::before {
+    content: '·';
+    position: absolute;
+    left: 4px;
+    font-weight: 900;
+    font-size: 1.2em;
+    line-height: 1.3;
+}
+.l1 .topics li::before { color: #1a3a6b; }
+.l2 .topics li::before { color: #7d3c98; }
+.l3 .topics li::before { color: #1a6b4a; }
+.l4 .topics li::before { color: #b7770d; }
+.l5 .topics li::before { color: #c0392b; }
+.l6 .topics li::before { color: #1a5276; }
+.l7 .topics li::before { color: #4a235a; }
 
-        .card-pieces {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 12px;
-        }
+.topics.long { max-height: 220px; overflow-y: auto; padding-right: 4px; }
+.topics.long::-webkit-scrollbar { width: 4px; }
+.topics.long::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
+.topics.long::-webkit-scrollbar-thumb { background: rgba(26,26,46,0.2); border-radius: 4px; }
 
-        .card-pieces img {
-            width: 38px;
-            height: 38px;
-        }
-        .card-pieces img.illus {
-            width: auto;
-            height: 58px;
-            max-width: 54px;
-            object-fit: contain;
-            mix-blend-mode: multiply;
-        }
+.topic-link {
+    color: #1a3a6b;
+    text-decoration: none;
+    font-weight: 700;
+    border-bottom: 2px solid rgba(26,58,107,0.25);
+    transition: border-color 0.2s, color 0.2s;
+}
+.topic-link:hover { color: #2a5aab; border-bottom-color: #2a5aab; }
+.l2 .topic-link { color: #7d3c98; border-bottom-color: rgba(125,60,152,0.25); }
+.l2 .topic-link:hover { color: #9b59b6; border-bottom-color: #9b59b6; }
+.l3 .topic-link { color: #1a6b4a; border-bottom-color: rgba(26,107,74,0.25); }
+.l3 .topic-link:hover { color: #27ae60; border-bottom-color: #27ae60; }
+.l4 .topic-link { color: #b7770d; border-bottom-color: rgba(183,119,13,0.25); }
+.l4 .topic-link:hover { color: #e6a817; border-bottom-color: #e6a817; }
+.l5 .topic-link { color: #c0392b; border-bottom-color: rgba(192,57,43,0.25); }
+.l5 .topic-link:hover { color: #e74c3c; border-bottom-color: #e74c3c; }
+.l6 .topic-link { color: #1a5276; border-bottom-color: rgba(26,82,118,0.25); }
+.l6 .topic-link:hover { color: #2980b9; border-bottom-color: #2980b9; }
+.l7 .topic-link { color: #4a235a; border-bottom-color: rgba(74,35,90,0.25); }
+.l7 .topic-link:hover { color: #7d3c98; border-bottom-color: #7d3c98; }
 
-        .card-title {
-            font-family: 'Baloo 2', cursive;
-            font-size: 1em;
-            font-weight: 900;
-            color: #1a3a6b;
-            text-transform: uppercase;
-            line-height: 1.25;
-            margin-bottom: 6px;
-        }
+.topics li.soon { opacity: 0.45; }
+.topics li.soon::after {
+    content: ' ⏳';
+    font-size: 0.85em;
+}
 
-        .card-desc {
-            font-size: 0.82em;
-            color: #444;
-            line-height: 1.5;
-            flex: 1;
-            margin-bottom: 14px;
-        }
+.card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.topic-count {
+    font-size: 0.75em;
+    color: rgba(26,26,46,0.4);
+}
 
-        .card-btn {
-            display: inline-block;
-            background: #1a3a6b;
-            color: white;
-            font-family: 'Baloo 2', cursive;
-            font-size: 0.9em;
-            padding: 7px 22px;
-            border-radius: 50px;
-            box-shadow: 0 3px 10px rgba(26,58,107,0.35);
-        }
+.card-btn {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.88em;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.l1 .card-btn { background: #1a3a6b; color: white; }
+.l1 .card-btn:hover { background: #2a5aab; }
+.l2 .card-btn { background: #7d3c98; color: white; }
+.l2 .card-btn:hover { background: #9b59b6; }
+.l3 .card-btn { background: #1a6b4a; color: white; }
+.l3 .card-btn:hover { background: #27ae60; }
+.l4 .card-btn { background: #b7770d; color: white; }
+.l4 .card-btn:hover { background: #e6a817; }
+.l5 .card-btn { background: #c0392b; color: white; }
+.l5 .card-btn:hover { background: #e74c3c; }
+.l6 .card-btn { background: #1a5276; color: white; }
+.l6 .card-btn:hover { background: #2980b9; }
+.l7 .card-btn { background: #4a235a; color: white; }
+.l7 .card-btn:hover { background: #7d3c98; }
 
-        .card-soon-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(26,58,107,0.18);
-            color: #1a3a6b;
-            font-size: 0.7em;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+.badge-curand {
+    display: inline-block;
+    background: rgba(26,26,46,0.09);
+    color: rgba(26,26,46,0.45);
+    font-size: 0.75em;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
 
-        /* ── INTRO CARD (orizontal) ── */
-        .intro-card {
-            background: rgba(255,255,255,0.55);
-            border-radius: 20px;
-            padding: 20px 28px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.18s, box-shadow 0.18s;
-            max-width: 1000px;
-            margin: 0 auto 48px;
-        }
-
-        .intro-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 28px rgba(0,0,0,0.18);
-        }
-
-        .intro-card-icon {
-            font-size: 2.2em;
-            flex-shrink: 0;
-        }
-
-        .intro-card-body { flex: 1; }
-
-        .intro-card-title {
-            font-family: 'Baloo 2', cursive;
-            font-size: 1.1em;
-            font-weight: 900;
-            color: #1a3a6b;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .intro-card-desc {
-            font-size: 0.9em;
-            color: #444;
-            line-height: 1.5;
-        }
-
-        .intro-card-btn {
-            background: #1a3a6b;
-            color: white;
-            font-family: 'Baloo 2', cursive;
-            font-size: 0.9em;
-            padding: 8px 24px;
-            border-radius: 50px;
-            white-space: nowrap;
-            box-shadow: 0 3px 10px rgba(26,58,107,0.35);
-            flex-shrink: 0;
-        }
-
-        /* ── PARADĂ PIESE ── */
-        .piece-parade, .pawn-row {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            flex-wrap: nowrap;
-            gap: 4px;
-            margin: 0 auto;
-            width: 100%;
-            max-width: 1100px;
-        }
-        .piece-parade { margin-top: 20px; }
-        .pawn-row     { margin-top: -12px; margin-bottom: 10px; }
-
-        .piece-parade img, .pawn-row img {
-            flex: 1 1 0;
-            min-width: 0;
-            object-fit: contain;
-            object-position: bottom center;
-            mix-blend-mode: multiply;
-        }
-        .piece-parade img { height: 170px; max-width: 108px; }
-        .pawn-row img     { height: 128px; max-width:  88px; }
-
-        @media (max-width: 600px) {
-            body { padding: 8px 4px; }
-            h1 { font-size: 1.7em; }
-            .cards { grid-template-columns: 1fr 1fr; }
-            .intro-card { flex-direction: column; text-align: center; }
-            .intro-card-btn { width: 100%; text-align: center; }
-            .piece-parade img { height: 100px; max-width: 66px; }
-            .pawn-row img     { height:  76px; max-width: 52px; }
-        }
-    </style>
+@media (max-width: 500px) {
+    .grid { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body>
 
-    <h1>&#9822; &#350;ah Mat Animat</h1>
-
-    <!-- Rând piese: alternat alb-negru -->
-    <div class="piece-parade">
-        <img src="piese_sah/turn_medieval.jpg"      alt="Turn alb">
-        <img src="piese_sah/cal_medieval_negru.jpg" alt="Cal negru" style="transform:scaleX(-1);">
-        <img src="piese_sah/nebun_medieval.jpg"     alt="Nebun alb">
-        <img src="piese_sah/regina_medieval_negru.jpg"    alt="Regina neagra">
-        <img src="piese_sah/rege_medieval.jpg" alt="Rege alb" style="max-width:118px; filter:brightness(1.18);">
-        <img src="piese_sah/nebun_medieval_negru.jpg"     alt="Nebun negru">
-        <img src="piese_sah/cal_medieval.jpg"       alt="Cal alb">
-        <img src="piese_sah/turn_medieval_negru.jpg" alt="Turn negru">
+<header>
+    <a href="index.html" class="back-btn">← Acasă</a>
+    <div class="header-text">
+        <h1>👑 Să Învățăm Șah</h1>
+        <div class="header-sub">6 niveluri · de la zero la campion</div>
     </div>
+</header>
 
-    <!-- Rând pioni: 8 pioni alternați alb-negru -->
-    <div class="pawn-row">
-        <img src="piese_sah/pion_medieval.jpg"     alt="">
-        <img src="piese_sah/pion_medieval_negru.jpg" alt="">
-        <img src="piese_sah/pion_medieval.jpg"     alt="">
-        <img src="piese_sah/pion_medieval_negru.jpg" alt="">
-        <img src="piese_sah/pion_medieval.jpg"     alt="">
-        <img src="piese_sah/pion_medieval_negru.jpg" alt="">
-        <img src="piese_sah/pion_medieval.jpg"     alt="">
-        <img src="piese_sah/pion_medieval_negru.jpg" alt="">
-    </div>
+<div class="grid">
 
-    <p class="subtitle">Alege un capitol &#351;i &#238;ncepe s&#259; &#238;nve&#539;i!</p>
-
-    <!-- Noțiuni de bază -->
-    <div class="section">
-        <div class="section-title">&#128218; No&#539;iuni de baz&#259;</div>
-        <div class="cards">
-
-            <a href="pagina1.html" class="card" data-unlock="pagina1">
-                <div class="card-pieces">
-                    <img src="piese_sah/rege_medieval.jpg" class="illus" alt="" style="filter:brightness(1.18);">
-                </div>
-                <div class="card-title">Introducere</div>
-                <div class="card-desc">Primii pa&#351;i &#238;n lumea &#351;ahului.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina2.html" class="card" data-unlock="pagina1">
-                <div class="card-pieces">
-                    <img src="piese_sah/regina_medieval.jpg" class="illus" alt="">
-                    <img src="piese_sah/rege_medieval_negru.jpg"   class="illus" alt="">
-                </div>
-                <div class="card-title">&#350;ah-Mat!</div>
-                <div class="card-desc">Scopul suprem al jocului &#8212; regele advers nu poate scăpa.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina3.html" class="card" data-unlock="pagina1">
-                <div class="card-pieces">
-                    <img src="piese_sah/rege_medieval_negru.jpg" class="illus" alt="">
-                </div>
-                <div class="card-title">Ap&#259;rarea regelui</div>
-                <div class="card-desc">Cum &#238;&#351;i poate ap&#259;ra regele via&#539;a &#238;n fa&#539;a atacurilor.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina4.html" class="card" data-unlock="pagina1">
-                <div class="card-pieces">
-                    <img src="piese_sah/turn_medieval.jpg"  class="illus" alt="">
-                    <img src="piese_sah/nebun_medieval.jpg" class="illus" alt="">
-                </div>
-                <div class="card-title">&#350;ahul Dublu</div>
-                <div class="card-desc">Dou&#259; piese atac&#259; regele deodat&#259; &#8212; cea mai puternic&#259; form&#259; de &#351;ah.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina5.html" class="card" data-unlock="pagina1">
-                <div class="card-pieces">
-                    <img src="piese_sah/regina_medieval.jpg" class="illus" alt="">
-                </div>
-                <div class="card-title">Matul</div>
-                <div class="card-desc">Ce &#238;nseamn&#259; matul &#351;i exemple simple de mat cu dama.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina7.html" class="card" data-unlock="pagina1">
-                <div class="card-pieces">
-                    <img src="piese_sah/rege_medieval.jpg" class="illus" alt="" style="filter:brightness(1.18);">
-                    <img src="piese_sah/rege_medieval_negru.jpg"  class="illus" alt="">
-                </div>
-                <div class="card-title">Patul</div>
-                <div class="card-desc">C&#226;nd juc&#259;torul la mutare nu e &#238;n &#351;ah, dar nu poate muta &#8212; remiz&#259;, cu exemple.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="sah_etern.html" class="card" data-unlock="pagina1">
-                <div class="card-pieces">
-                    <img src="piese_sah/regina_medieval.jpg" class="illus" alt="">
-                </div>
-                <div class="card-title">&#350;ahul Etern</div>
-                <div class="card-desc">&#350;ah repetat la nesfâr&#351;it &#8212; o alt&#259; cale spre remiz&#259;.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
+    <div class="level-card l1">
+        <div class="stripe c1"></div>
+        <div class="card-body">
+            <div class="level-num">Nivelul I</div>
+            <div class="level-title">Bazele jocului</div>
+            <ul class="topics long">
+                <li><a href="nivel1_lectia1.html" class="topic-link">Tabla de șah</a></li>
+                <li><a href="nivel1_lectia2.html" class="topic-link">Deplasarea pieselor (toate)</a></li>
+                <li><a href="nivel1_lectia3.html" class="topic-link">Mutări speciale</a></li>
+                <li><a href="nivel1_lectia4.html" class="topic-link">Valoarea pieselor</a></li>
+                <li><a href="nivel1_lectia5.html" class="topic-link">Atacul, captura, apărarea</a></li>
+                <li><a href="nivel1_lectia6.html" class="topic-link">Atacul asupra regelui</a></li>
+                <li><a href="pagina4.html" class="topic-link">Șahul dublu</a></li>
+                <li><a href="pagina5.html" class="topic-link">Matul</a></li>
+                <li><a href="pagina7.html" class="topic-link">Patul</a></li>
+                <li><a href="sah_etern.html" class="topic-link">Șahul etern</a></li>
+                <li><a href="nivel1_lectia12.html" class="topic-link">Câștig, egal și pierdere — toate variantele</a></li>
+                <li><a href="nivel1_lectia13.html" class="topic-link">Numărarea atacatorilor și apărătorilor</a></li>
+                <li><a href="nivel1_lectia14.html" class="topic-link">Cooperarea dintre piese</a></li>
+            </ul>
+            <div class="card-footer">
+                <span class="topic-count">13 lecții · 13 disponibile</span>
+            </div>
         </div>
     </div>
 
-    <!-- Maturi -->
-    <div class="section">
-        <div class="section-title">&#9820; Maturi simple cu figuri</div>
-        <div class="cards">
-
-            <a href="pagina10.html" class="card" data-unlock="pagina10">
-                <div class="card-pieces">
-                    <img src="piese_sah/rege_medieval.jpg" class="illus" alt="" style="filter:brightness(1.18);">
-                    <img src="piese_sah/regina_medieval.jpg" class="illus" alt="">
-                    <img src="piese_sah/turn_medieval.jpg"   class="illus" alt="">
-                    <img src="piese_sah/rege_medieval_negru.jpg"   class="illus" alt="">
-                </div>
-                <div class="card-title">Rege + Dam&#259; + Turn<br>vs. Rege</div>
-                <div class="card-desc">V&#226;n&#259;torul &#351;i gardianul colaboreaz&#259; pentru a da mat.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina12.html" class="card" data-unlock="pagina12">
-                <div class="card-pieces">
-                    <img src="piese_sah/rege_medieval.jpg" class="illus" alt="" style="filter:brightness(1.18);">
-                    <img src="piese_sah/turn_medieval.jpg"  class="illus" alt="">
-                    <img src="piese_sah/turn_medieval.jpg"  class="illus" alt="">
-                    <img src="piese_sah/rege_medieval_negru.jpg"  class="illus" alt="">
-                </div>
-                <div class="card-title">Rege + Dou&#259; Turnuri<br>vs. Rege</div>
-                <div class="card-desc">Matul clasic cu dou&#259; turnuri &#8212; simplu &#351;i eficient.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina16.html" class="card" data-unlock="pagina16">
-                <div class="card-pieces">
-                    <img src="piese_sah/rege_medieval.jpg" class="illus" alt="" style="filter:brightness(1.18);">
-                    <img src="piese_sah/regina_medieval.jpg" class="illus" alt="">
-                    <img src="piese_sah/nebun_medieval.jpg"  class="illus" alt="">
-                    <img src="piese_sah/rege_medieval_negru.jpg"   class="illus" alt="">
-                </div>
-                <div class="card-title">Rege + Dam&#259; + Nebun<br>vs. Rege</div>
-                <div class="card-desc">Regina are putere, nebunul ajut&#259; cu precizie.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina22.html" class="card" data-unlock="pagina22">
-                <div class="card-pieces">
-                    <img src="piese_sah/rege_medieval.jpg" class="illus" alt="" style="filter:brightness(1.18);">
-                    <img src="piese_sah/regina_medieval.jpg" class="illus" alt="">
-                    <img src="piese_sah/cal_medieval.jpg"    class="illus" alt="">
-                    <img src="piese_sah/rege_medieval_negru.jpg"   class="illus" alt="">
-                </div>
-                <div class="card-title">Rege + Dam&#259; + Cal<br>vs. Rege</div>
-                <div class="card-desc">Un cal imprevizibil al&#259;turi de regina puternic&#259;.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina24.html" class="card" data-unlock="pagina24">
-                <div class="card-pieces">
-                    <img src="piese_sah/regina_medieval.jpg" class="illus" alt="">
-                    <img src="piese_sah/rege_medieval.jpg" class="illus" alt="" style="filter:brightness(1.18);">
-                    <img src="piese_sah/rege_medieval_negru.jpg"   class="illus" alt="">
-                </div>
-                <div class="card-title">Rege + Dam&#259;<br>vs. Rege</div>
-                <div class="card-desc">Metoda Cu&#351;tii, Echipa de &#350;oc, capcana PAT &#351;i exerci&#539;ii &#8212; tot ce trebuie s&#259; &#351;tii.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina19.html" class="card" data-unlock="pagina19">
-                <div class="card-pieces">
-                    <img src="piese_sah/rege_medieval.jpg" class="illus" alt="" style="filter:brightness(1.18);">
-                    <img src="piese_sah/nebun_medieval.jpg" class="illus" alt="">
-                    <img src="piese_sah/nebun_medieval.jpg" class="illus" alt="">
-                    <img src="piese_sah/rege_medieval_negru.jpg"  class="illus" alt="">
-                </div>
-                <div class="card-title">Rege + Doi Nebuni<br>vs. Rege</div>
-                <div class="card-desc">Doi nebuni care colaboreaz&#259; pentru a controla tabla.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
-            <a href="pagina30.html" class="card" data-unlock="pagina30">
-                <div class="card-pieces">
-                    <img src="piese_sah/turn_medieval.jpg"  class="illus" alt="">
-                    <img src="piese_sah/rege_medieval.jpg" class="illus" alt="" style="filter:brightness(1.18);">
-                    <img src="piese_sah/rege_medieval_negru.jpg"  class="illus" alt="">
-                </div>
-                <div class="card-title">Rege + Turn<br>vs. Rege</div>
-                <div class="card-desc">Dou&#259; abord&#259;ri: Metoda Cu&#351;tii &#351;i Echipa de &#350;oc &mdash; hart&#259; mental&#259; &#351;i exerci&#539;iu interactiv.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </a>
-
+    <div class="level-card l2">
+        <div class="stripe c2"></div>
+        <div class="card-body">
+            <div class="level-num">Nivelul II</div>
+            <div class="level-title">Planuri și principii</div>
+            <ul class="topics">
+                <li>Fazele jocului și obiectivele lor</li>
+                <li>Principiile deschiderii</li>
+                <li>Reguli empirice pentru șah</li>
+                <li>Pioni liberi, promovare și tactici ale pionului</li>
+                <li>Opoziția și finaluri Rege + Pion</li>
+            </ul>
+            <div class="card-footer">
+                <span class="topic-count">5 lecții</span>
+                <span class="badge-curand">⏳ În curând</span>
+            </div>
         </div>
     </div>
 
-    <!-- Exerciții -->
-    <div class="section">
-        <div class="section-title">&#9733; Exerci&#539;ii interactive</div>
-        <div class="cards">
-
-            <a href="exercitii.html" class="card">
-                <div class="card-pieces">
-                    <img src="piese_sah/regina_medieval.jpg" class="illus" alt="">
-                    <img src="piese_sah/turn_medieval.jpg"   class="illus" alt="">
-                </div>
-                <div class="card-title">G&#259;se&#351;te Matul!</div>
-                <div class="card-desc">3 puzzle-uri mat &#238;n 1 mutare &#8212; mut&#259; piesele direct pe tabl&#259;.</div>
-                <span class="card-btn">Joac&#259; &#9654;</span>
-            </a>
-
-
+    <div class="level-card l3">
+        <div class="stripe c3"></div>
+        <div class="card-body">
+            <div class="level-num">Nivelul III</div>
+            <div class="level-title">Finaluri esențiale</div>
+            <ul class="topics">
+                <li><a href="pagina34.html" class="topic-link">Damă + Turn</a></li>
+                <li><a href="pagina12.html" class="topic-link">Turn + Turn</a></li>
+                <li><a href="pagina16.html" class="topic-link">Damă + Nebun</a></li>
+                <li><a href="pagina22.html" class="topic-link">Damă + Cal</a></li>
+                <li><a href="pagina24.html" class="topic-link">Damă singură</a></li>
+                <li><a href="pagina19.html" class="topic-link">Nebun + Nebun</a></li>
+                <li>Nebun + Cal</li>
+                <li><a href="pagina30.html" class="topic-link">Turn singur</a></li>
+            </ul>
+            <div class="card-footer">
+                <span class="topic-count">8 finaluri</span>
+                <a href="pagina10.html" class="card-btn">Deschide ▶</a>
+            </div>
         </div>
     </div>
 
-    <!-- Tactici -->
-    <div class="section">
-        <div class="section-title">&#9889; Tactici</div>
-        <div class="cards">
-
-            <div class="card card-soon">
-                <span class="card-soon-badge">&#206;n cur&#226;nd</span>
-                <div class="card-pieces">
-                    <img src="piese_sah/cal_medieval.jpg" class="illus" alt="">
-                </div>
-                <div class="card-title">Furculița</div>
-                <div class="card-desc">Calul atac&#259; dou&#259; piese deodat&#259;.</div>
-                <span class="card-btn">Deschide &#9654;</span>
+    <div class="level-card l4">
+        <div class="stripe c4"></div>
+        <div class="card-body">
+            <div class="level-num">Nivelul IV</div>
+            <div class="level-title">Tactici și combinații</div>
+            <ul class="topics long">
+                <li>Legătura (pinning)</li>
+                <li>Frigăruia — atacul laser</li>
+                <li>Atacul dublu — furculița</li>
+                <li>Atacul prin descoperire</li>
+                <li>Atacul în raze X</li>
+                <li>Piese supraîncărcate</li>
+                <li>Atragerea</li>
+                <li>Devierea</li>
+                <li>Interferența</li>
+                <li>Zugzwang</li>
+                <li>Calul troian (+ legenda)</li>
+                <li>Subpromovarea</li>
+                <li>Desperado</li>
+                <li>Contrasah</li>
+                <li>Îndepărtarea apărătorului</li>
+            </ul>
+            <div class="card-footer">
+                <span class="topic-count">15 tactici</span>
+                <span class="badge-curand">⏳ În curând</span>
             </div>
-
-            <div class="card card-soon">
-                <span class="card-soon-badge">&#206;n cur&#226;nd</span>
-                <div class="card-pieces">
-                    <img src="piese_sah/nebun_medieval.jpg" class="illus" alt="">
-                </div>
-                <div class="card-title">&#206;n&#539;ep&#259;tura</div>
-                <div class="card-desc">O pies&#259; este atacat&#259; &#351;i nu se poate retrage.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </div>
-
-            <div class="card card-soon">
-                <span class="card-soon-badge">&#206;n cur&#226;nd</span>
-                <div class="card-pieces">
-                    <img src="piese_sah/turn_medieval.jpg" class="illus" alt="">
-                </div>
-                <div class="card-title">&#350;trengarul</div>
-                <div class="card-desc">O pies&#259; valoroas&#259; este &#238;n spatele uneia mai pu&#539;in valoroase.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </div>
-
-            <div class="card card-soon">
-                <span class="card-soon-badge">&#206;n cur&#226;nd</span>
-                <div class="card-pieces">
-                    <img src="piese_sah/regina_medieval.jpg" class="illus" alt="">
-                </div>
-                <div class="card-title">Descoperirea</div>
-                <div class="card-desc">O pies&#259; se mut&#259; &#351;i descoper&#259; atacul alteia.</div>
-                <span class="card-btn">Deschide &#9654;</span>
-            </div>
-
         </div>
     </div>
 
-<script>
-const PAGE_ID = 'em_msf_hub';
-</script>
+    <div class="level-card l5">
+        <div class="stripe c5"></div>
+        <div class="card-body">
+            <div class="level-num">Nivelul V</div>
+            <div class="level-title">Modele de mat</div>
+            <ul class="topics long">
+                <li>Matul pe ultima linie</li>
+                <li>Matul cârlig</li>
+                <li>Matul Anastasia</li>
+                <li>Matul Porcului Orb (Blind Swine)</li>
+                <li>Matul sufocat</li>
+                <li>Matul cu 2 nebuni</li>
+                <li>Matul lui Boden</li>
+                <li>Matul Arab</li>
+                <li>Matul în colț</li>
+                <li>Matul lui Morphy</li>
+                <li>Matul lui Pillsbury</li>
+                <li>Matul lui Damiano</li>
+                <li>Matul lui Lolli</li>
+                <li>Matul de la Operă</li>
+                <li>Matul lui Anderssen</li>
+                <li>Matul coadă de rândunică</li>
+                <li>Matul lui Cozio</li>
+                <li>Matul potrivit (Dovetail)</li>
+                <li>Matul cu epoleți</li>
+                <li>Matul cu pionii</li>
+                <li>Matul lui Greco</li>
+                <li>Matul lui Max Lange</li>
+                <li>Matul lui Blackburne</li>
+                <li>Matul lui Réti</li>
+                <li>Matul lui Légal</li>
+                <li>Killbox</li>
+                <li>Matul triunghi</li>
+                <li>Matul lui Vuković</li>
+            </ul>
+            <div class="card-footer">
+                <span class="topic-count">28 modele</span>
+                <span class="badge-curand">⏳ În curând</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="level-card l6">
+        <div class="stripe c6"></div>
+        <div class="card-body">
+            <div class="level-num">Nivelul VI</div>
+            <div class="level-title">Capcane și miniaturi</div>
+            <ul class="topics">
+                <li>Matul prostului</li>
+                <li>Matul școlarului</li>
+                <li>Matul lui Légal</li>
+                <li>Alte capcane clasice</li>
+            </ul>
+            <div class="card-footer">
+                <span class="topic-count">4+ lecții</span>
+                <span class="badge-curand">⏳ În curând</span>
+            </div>
+        </div>
+    </div>
+
+</div>
 </body>
 </html>

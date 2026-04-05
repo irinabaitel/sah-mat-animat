@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regulile de Aur – Chaturanga</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=IM+Fell+English:ital@1&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0e05 0%, #2e1505 60%, #1a0e05 100%);
+            font-family: 'Nunito', sans-serif;
+            color: #f0ddb0;
+            user-select: none;
+        }
+
+        /* ===== FIXED TOP NAV BAR ===== */
+        #nav-top {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 20px;
+            background: rgba(26,14,5,0.92);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(196,122,0,0.3);
+        }
+        #nav-top .nav-top-btn {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            padding: 7px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            border: 1px solid rgba(196,122,0,0.35);
+            background: rgba(255,255,255,0.07);
+            color: #c8a86a;
+            transition: all 0.2s;
+            letter-spacing: 0.4px;
+        }
+        #nav-top .nav-top-btn:hover {
+            background: rgba(255,255,255,0.13);
+            color: #f5d97a;
+            border-color: rgba(196,122,0,0.6);
+        }
+        #nav-top .nav-top-center {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+        #nav-top .nav-top-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-top-harta {
+            background: linear-gradient(135deg, #c47a00, #f5d97a, #c47a00) !important;
+            color: #1a0e05 !important;
+            font-weight: 700 !important;
+            border: none !important;
+            box-shadow: 0 2px 12px rgba(196,122,0,0.5);
+        }
+        .nav-top-harta:hover {
+            box-shadow: 0 2px 20px rgba(245,217,122,0.7) !important;
+            transform: translateY(-1px);
+        }
+        #mute-btn {
+            font-size: 1.15rem;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(196,122,0,0.3);
+            border-radius: 7px;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #f0ddb0;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+        #mute-btn:hover {
+            background: rgba(196,122,0,0.18);
+            border-color: rgba(196,122,0,0.6);
+        }
+        #volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 80px;
+            height: 4px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #c47a00, #f5d97a);
+            outline: none;
+            cursor: pointer;
+            opacity: 0.85;
+        }
+        #volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #f5d97a;
+            cursor: pointer;
+            box-shadow: 0 0 4px rgba(196,122,0,0.6);
+        }
+
+        /* ===== HEADER ===== */
+        #header {
+            text-align: center;
+            padding: 28px 20px 14px;
+            padding-top: 80px;
+            position: relative;
+        }
+        #header .era-label {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            color: #c47a00;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        #header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.4rem, 3vw, 2.1rem);
+            color: #f5d97a;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 12px rgba(196,122,0,0.5);
+        }
+        #header .subtitle {
+            font-size: 0.9rem;
+            color: #c8a86a;
+            margin-top: 6px;
+            font-style: italic;
+        }
+        .gold-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c47a00, #f5d97a, #c47a00, transparent);
+            margin: 14px auto;
+            max-width: 600px;
+        }
+
+        /* ===== MAIN SPLIT LAYOUT ===== */
+        #main {
+            display: flex;
+            flex-direction: row;
+            gap: 0;
+            min-height: calc(100vh - 160px);
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 16px 20px;
+        }
+
+        /* ===== LEFT PANEL: piece cards ===== */
+        #left-panel {
+            width: 40%;
+            min-width: 280px;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 18px;
+            overflow-y: auto;
+            max-height: calc(100vh - 180px);
+            padding-bottom: 20px;
+        }
+        #left-panel::-webkit-scrollbar { width: 5px; }
+        #left-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }
+        #left-panel::-webkit-scrollbar-thumb { background: #c47a00; border-radius: 3px; }
+
+        .piece-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(255,255,255,0.04);
+            border: 1.5px solid rgba(196,122,0,0.25);
+            border-radius: 12px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+        }
+        .piece-card:hover {
+            background: rgba(196,122,0,0.1);
+            border-color: rgba(196,122,0,0.5);
+            transform: translateX(3px);
+        }
+        .piece-card.active {
+            background: rgba(196,122,0,0.18);
+            border-color: #f5d97a;
+            box-shadow: 0 0 18px rgba(245,217,122,0.2);
+        }
+        .piece-card-img {
+            width: 68px;
+            height: 68px;
+            object-fit: contain;
+            flex-shrink: 0;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+        }
+        .piece-card-info {
+            flex: 1;
+        }
+        .piece-card-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #f5d97a;
+            line-height: 1.2;
+        }
+        .piece-card-sanskrit {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: 0.78rem;
+            color: #c47a00;
+            margin-bottom: 5px;
+        }
+        .piece-card-desc {
+            font-size: 0.78rem;
+            color: #c8a86a;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+        .piece-card-rule {
+            font-size: 0.78rem;
+            color: #f0ddb0;
+            background: rgba(196,122,0,0.15);
+            border-left: 2px solid #f5d97a;
+            padding: 4px 8px;
+            border-radius: 0 6px 6px 0;
+            line-height: 1.4;
+        }
+
+        /* ===== EXTRA SECTIONS (below cards) ===== */
+        .extra-section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(196,122,0,0.2);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-top: 4px;
+        }
+        .extra-section h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.88rem;
+            color: #f5d97a;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        .extra-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .extra-section ul li {
+            font-size: 0.78rem;
+            color: #c8a86a;
+            padding: 4px 0 4px 18px;
+            position: relative;
+            line-height: 1.45;
+        }
+        .extra-section ul li::before {
+            content: '◆';
+            position: absolute;
+            left: 0;
+            color: #c47a00;
+            font-size: 0.6rem;
+            top: 6px;
+        }
+        .extra-section ul li strong {
+            color: #f0ddb0;
+        }
+        .no-tag {
+            display: inline-block;
+            background: rgba(180,60,60,0.2);
+            border: 1px solid rgba(200,80,80,0.35);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 0.72rem;
+            color: #e89090;
+            margin-right: 4px;
+        }
+
+        /* ===== RIGHT PANEL: board ===== */
+        #right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-left: 10px;
+            position: sticky;
+            top: 70px;
+            align-self: flex-start;
+        }
+
+        #board-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            color: #c47a00;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        #board-subtitle {
+            font-size: 0.8rem;
+            color: #8a6a40;
+            margin-bottom: 14px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        #board-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        #ashtapada {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            border: 4px solid #7a4a10;
+            box-shadow:
+                0 0 0 1px #5a3008,
+                0 0 30px rgba(196,122,0,0.3),
+                inset 0 0 20px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            width: min(56vw, 480px);
+            height: min(56vw, 480px);
+        }
+
+        .sq {
+            position: relative;
+            background: #d4a85c;
+            border: 0.5px solid rgba(120,70,10,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+            transition: background 0.18s;
+        }
+        .sq.highlight-move {
+            background: #d4a85c;
+        }
+        .sq.highlight-move::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(60,200,80,0.4);
+            border-radius: 50%;
+            width: 45%;
+            height: 45%;
+            margin: auto;
+            pointer-events: none;
+        }
+        .sq.highlight-capture::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(220,80,60,0.45);
+            border-radius: 50%;
+            width: 45%;
+            height: 45%;
+            margin: auto;
+            pointer-events: none;
+        }
+        .sq.piece-here {
+            background: rgba(245,217,122,0.18);
+        }
+
+        .sq-x-mark {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .piece-on-board {
+            width: auto;
+            height: 90%;
+            object-fit: contain;
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.55));
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Legend */
+        #board-legend {
+            display: flex;
+            gap: 18px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.73rem;
+            color: #9a7a4a;
+        }
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+        }
+        .legend-dot.move { background: rgba(60,200,80,0.6); border: 1px solid rgba(60,200,80,0.9); }
+        .legend-dot.capture { background: rgba(220,80,60,0.6); border: 1px solid rgba(220,80,60,0.9); }
+
+        #piece-label {
+            margin-top: 14px;
+            text-align: center;
+            min-height: 50px;
+        }
+        #piece-label .pl-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: #f5d97a;
+        }
+        #piece-label .pl-hint {
+            font-size: 0.8rem;
+            color: #9a7a4a;
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        /* ===== BOTTOM NAV BUTTONS ===== */
+        #nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px 30px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .nav-btn {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            padding: 10px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .nav-btn.back {
+            background: rgba(255,255,255,0.07);
+            color: #c8a86a;
+            border: 1px solid rgba(196,122,0,0.35);
+        }
+        .nav-btn.back:hover {
+            background: rgba(255,255,255,0.12);
+            color: #f5d97a;
+        }
+        .nav-btn.forward {
+            background: linear-gradient(135deg, #c47a00, #f5d97a, #c47a00);
+            color: #1a0e05;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(196,122,0,0.4);
+        }
+        .nav-btn.forward:hover {
+            box-shadow: 0 4px 30px rgba(245,217,122,0.5);
+            transform: translateY(-1px);
+        }
+
+        /* ===== FADE OVERLAY ===== */
+        #fade-overlay {
+            position: fixed;
+            inset: 0;
+            background: #fff;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+        #fade-overlay.active { opacity: 1; pointer-events: all; }
+
+        /* ===== SCENA FINAL ===== */
+        #scena-final {
+            position: fixed;
+            inset: 0;
+            z-index: 150;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            overflow: hidden;
+        }
+        #scena-final.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        #scena-final-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            display: block;
+        }
+        #scena-final-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(10,5,0,0.95) 0%, rgba(10,5,0,0.7) 55%, transparent 100%);
+            padding: 32px 28px 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+        #scena-final-replica {
+            max-width: 680px;
+            text-align: center;
+        }
+        #scena-final-speaker {
+            display: inline-block;
+            font-family: 'Cinzel', serif;
+            font-size: 0.78rem;
+            letter-spacing: 1px;
+            color: #c47a00;
+            background: rgba(196,122,0,0.15);
+            border: 1px solid rgba(196,122,0,0.35);
+            border-radius: 20px;
+            padding: 3px 14px;
+            margin-bottom: 8px;
+        }
+        #scena-final-text {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: clamp(0.92rem, 2vw, 1.15rem);
+            color: #f0ddb0;
+            line-height: 1.55;
+            cursor: pointer;
+        }
+        #scena-final-text:hover {
+            color: #f5d97a;
+        }
+        #scena-final-hint {
+            font-size: 0.72rem;
+            color: #7a5a30;
+            font-style: italic;
+        }
+        #btn-back-lectie {
+            position: absolute;
+            top: 14px;
+            left: 18px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.78rem;
+            padding: 6px 14px;
+            border-radius: 7px;
+            border: 1px solid rgba(196,122,0,0.4);
+            background: rgba(255,255,255,0.07);
+            color: #c8a86a;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        #btn-back-lectie:hover {
+            background: rgba(255,255,255,0.14);
+            color: #f5d97a;
+        }
+        #scena-final-nav {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        #btn-prev-replica {
+            font-family: 'Cinzel', serif;
+            font-size: 0.82rem;
+            padding: 7px 16px;
+            border-radius: 7px;
+            border: 1px solid rgba(196,122,0,0.4);
+            background: rgba(255,255,255,0.07);
+            color: #c8a86a;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        #btn-prev-replica:hover {
+            background: rgba(255,255,255,0.14);
+            color: #f5d97a;
+        }
+        #btn-persia {
+            font-family: 'Cinzel', serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            padding: 14px 36px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, #c47a00, #f5d97a, #c47a00);
+            color: #1a0e05;
+            box-shadow: 0 6px 28px rgba(196,122,0,0.55);
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+        }
+        #btn-persia:hover {
+            box-shadow: 0 8px 36px rgba(245,217,122,0.65);
+            transform: translateY(-2px);
+        }
+
+        /* ===== MOBILE ===== */
+        @media (max-width: 700px) {
+            #main {
+                flex-direction: column;
+                padding: 0 10px 16px;
+            }
+            #left-panel {
+                width: 100%;
+                max-width: 100%;
+                max-height: none;
+                padding-right: 0;
+                overflow-y: visible;
+            }
+            #right-panel {
+                position: static;
+                padding-left: 0;
+                width: 100%;
+            }
+            #ashtapada {
+                width: min(90vw, 400px);
+                height: min(90vw, 400px);
+            }
+            #header h1 { font-size: 1.3rem; }
+            #volume-slider { width: 60px; }
+            #scena-final { height: 55vh; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- FIXED TOP NAV BAR -->
+<div id="nav-top">
+    <button class="nav-top-btn" onclick="location.href='india.html'">← Poveste</button>
+    <div class="nav-top-center"></div>
+    <div class="nav-top-right">
+        <button id="mute-btn" onclick="toggleMute()">🔊</button>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.8" oninput="setVolume(this.value)">
+        <button class="nav-top-btn nav-top-harta" onclick="location.href='harta_magica.html'">🗺 Hartă</button>
+    </div>
+</div>
+
+<!-- HEADER -->
+<div id="header">
+    <div class="era-label">India · 600 d.Hr.</div>
+    <h1>✦ Regulile de Aur ✦</h1>
+    <div class="subtitle">Chaturanga — Jocul celor patru armate</div>
+    <div class="gold-line"></div>
+</div>
+
+<!-- MAIN SPLIT -->
+<div id="main">
+
+    <!-- LEFT: piece cards -->
+    <div id="left-panel">
+
+        <!-- Cards generated by JS -->
+        <div id="cards-container"></div>
+
+        <!-- Scopul Jocului -->
+        <div class="extra-section" style="margin-top:14px;">
+            <h3>⚑ Scopul Jocului</h3>
+            <ul>
+                <li><strong>Prinderea Regelui (Shah):</strong> încolțești Regele astfel încât să nu mai aibă unde fugi</li>
+                <li><strong>Victoria prin Singurătate:</strong> capturezi toate piesele — o armată nimicită = victorie</li>
+            </ul>
+        </div>
+
+        <!-- Ce NU exista -->
+        <div class="extra-section">
+            <h3>✗ Ce NU exista în Chaturanga</h3>
+            <ul>
+                <li><span class="no-tag">Fără</span> <strong>Rocadă</strong> — regele nu se mișcă niciodată cu turnul împreună</li>
+                <li><span class="no-tag">Fără</span> <strong>En Passant</strong> — pionul capturează doar pe diagonală obișnuită</li>
+                <li><span class="no-tag">Altfel</span> <strong>Promovarea:</strong> pionul devine Mantri (sfetnic), nu Regină</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- RIGHT: board -->
+    <div id="right-panel">
+        <div id="board-title">ASHTAPADA</div>
+        <div id="board-subtitle">Apasă o piesă ca să vezi cum se mișcă</div>
+        <div id="board-container">
+            <div id="ashtapada"></div>
+        </div>
+        <div id="board-legend">
+            <div class="legend-item"><div class="legend-dot move"></div> Mișcare</div>
+            <div class="legend-item"><div class="legend-dot capture"></div> Captură (pion)</div>
+        </div>
+        <div id="piece-label">
+            <div class="pl-name" id="pl-name">—</div>
+            <div class="pl-hint" id="pl-hint">Selectează o piesă din stânga</div>
+        </div>
+    </div>
+</div>
+
+<!-- FADE OVERLAY -->
+<div id="fade-overlay"></div>
+
+<!-- BOTTOM NAV BAR -->
+<div id="nav-bar">
+    <button class="nav-btn back" onclick="location.href='india.html'">← Poveste</button>
+    <button class="nav-btn forward" onclick="deschideScenaFinala()">Continuă ▶ Poveste finală</button>
+</div>
+
+<!-- SCENA FINAL -->
+<div id="scena-final">
+    <img id="scena-final-img" src="piese_sah/india/scene_finale/scena_5.png" alt="Scena finala" onerror="this.style.opacity=0.15">
+    <div id="scena-final-overlay">
+        <button id="btn-back-lectie" onclick="inchideScenaFinala()">← Lecție</button>
+        <div id="scena-final-replica">
+            <div id="scena-final-speaker"></div>
+            <div id="scena-final-text" onclick="advanceReplica()" title="Click pentru replica următoare"></div>
+        </div>
+        <div id="scena-final-nav">
+            <button id="btn-prev-replica" onclick="prevReplica()" style="display:none">◀ Înapoi</button>
+            <div id="scena-final-hint">Apasă pe text pentru replica următoare</div>
+            <button id="btn-persia" onclick="location.href='harta_magica.html'" style="display:none">Spre Persia ▶</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* =====================================================
+   VOICE SYSTEM
+   ===================================================== */
+let isMuted = false;
+let masterVolume = 0.8;
+let currentUtterance = null;
+
+function speakText(text, voiceType) {
+    if (isMuted || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = 'ro-RO';
+    utt.volume = masterVolume;
+    if (voiceType === 'tusk') { utt.pitch = 0.82; utt.rate = 0.88; }
+    else { utt.pitch = 1.18; utt.rate = 1.02; }
+    // Try to find Romanian voice
+    const voices = window.speechSynthesis.getVoices();
+    const ro = voices.find(v => v.lang.startsWith('ro'));
+    if (ro) utt.voice = ro;
+    currentUtterance = utt;
+    window.speechSynthesis.speak(utt);
+}
+
+function toggleMute() {
+    isMuted = !isMuted;
+    document.getElementById('mute-btn').textContent = isMuted ? '🔇' : '🔊';
+    if (isMuted && window.speechSynthesis) window.speechSynthesis.cancel();
+}
+
+function setVolume(val) {
+    masterVolume = parseFloat(val);
+    if (currentUtterance) currentUtterance.volume = masterVolume;
+}
+
+/* =====================================================
+   DATA
+   ===================================================== */
+const PIECES = [
+    {
+        id: 'raja',
+        file: 'rege_raja.png',
+        nameRo: 'Regele',
+        nameSanskrit: 'Raja',
+        desc: 'Conducătorul suprem al armatei. Dacă este prins, jocul s-a terminat!',
+        rule: 'Se mișcă un singur pătrat în orice direcție (sus, jos, diagonale).',
+        voice: 'tusk',
+        boardPx: 180,
+        startRow: 7, startCol: 4,
+        getMoves(r, c) {
+            const moves = [];
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    if (dr === 0 && dc === 0) continue;
+                    moves.push({ r: r + dr, c: c + dc, type: 'move' });
+                }
+            }
+            return moves;
+        }
+    },
+    {
+        id: 'mantri',
+        file: 'sfetnic_mantri.png',
+        nameRo: 'Sfetnicul',
+        nameSanskrit: 'Mantri',
+        desc: 'Paznicul bătrân și înțelept al regelui. Mai slab decât Regina modernă.',
+        rule: 'Se mișcă doar un singur pătrat pe diagonală (4 direcții). O singură poziție!',
+        voice: 'kibo',
+        boardPx: 160,
+        startRow: 7, startCol: 3,
+        getMoves(r, c) {
+            return [
+                { r: r - 1, c: c - 1, type: 'move' },
+                { r: r - 1, c: c + 1, type: 'move' },
+                { r: r + 1, c: c - 1, type: 'move' },
+                { r: r + 1, c: c + 1, type: 'move' },
+            ];
+        }
+    },
+    {
+        id: 'gaja',
+        file: 'elefantul_gaja.png',
+        nameRo: 'Elefantul',
+        nameSanskrit: 'Gaja',
+        desc: 'Un tanc uriaș care sare ca un trambulinist! Poate sări peste alte piese.',
+        rule: 'Sare exact 2 pătrate pe diagonală — poate trece peste alte piese!',
+        voice: 'kibo',
+        boardPx: 150,
+        startRow: 7, startCol: 2,
+        getMoves(r, c) {
+            return [
+                { r: r - 2, c: c - 2, type: 'move' },
+                { r: r - 2, c: c + 2, type: 'move' },
+                { r: r + 2, c: c - 2, type: 'move' },
+                { r: r + 2, c: c + 2, type: 'move' },
+            ];
+        }
+    },
+    {
+        id: 'ashva',
+        file: 'calul_ashva.png',
+        nameRo: 'Calul',
+        nameSanskrit: 'Ashva',
+        desc: 'Cel mai agil luptător — singurul care poate sări peste orice piesă.',
+        rule: 'Se mișcă în formă de L: 2 pătrate într-o direcție + 1 în lateral (8 posibilități).',
+        voice: 'tusk',
+        boardPx: 150,
+        startRow: 7, startCol: 1,
+        getMoves(r, c) {
+            const jumps = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+            return jumps.map(([dr, dc]) => ({ r: r + dr, c: c + dc, type: 'move' }));
+        }
+    },
+    {
+        id: 'ratha',
+        file: 'caruldelupta_ratha.png',
+        nameRo: 'Carul de Luptă',
+        nameSanskrit: 'Ratha',
+        desc: 'Cel mai puternic luptător! Rulează prin câmp fără să se oprească.',
+        rule: 'Se mișcă oricâte pătrate în linie dreaptă — sus, jos, stânga, dreapta.',
+        voice: 'tusk',
+        boardPx: 150,
+        startRow: 7, startCol: 0,
+        getMoves(r, c) {
+            const moves = [];
+            for (let i = 0; i < 8; i++) {
+                if (i !== c) moves.push({ r: r, c: i, type: 'move' });
+                if (i !== r) moves.push({ r: i, c: c, type: 'move' });
+            }
+            return moves;
+        }
+    },
+    {
+        id: 'padati',
+        file: 'pion_padati.png',
+        nameRo: 'Pionul',
+        nameSanskrit: 'Padati',
+        desc: 'Soldatul de rând. Merge înainte și capturează pe diagonală. Poate deveni Mantri!',
+        rule: 'Merge 1 pătrat înainte. Capturează pe diagonală. La capătul tablei → devine Mantri.',
+        voice: 'kibo',
+        boardPx: 100,
+        startRow: 6, startCol: 3,
+        getMoves(r, c) {
+            // White-side pawn: moves "up" = row - 1
+            const moves = [];
+            if (r - 1 >= 0) moves.push({ r: r - 1, c: c, type: 'move' });
+            if (r - 1 >= 0 && c - 1 >= 0) moves.push({ r: r - 1, c: c - 1, type: 'capture' });
+            if (r - 1 >= 0 && c + 1 < 8) moves.push({ r: r - 1, c: c + 1, type: 'capture' });
+            return moves;
+        }
+    }
+];
+
+/* =====================================================
+   X-MARKED SQUARES (Ashtapada special squares)
+   Corners: (0,0),(0,7),(7,0),(7,7)
+   Centre-adjacent: (3,3),(3,4),(4,3),(4,4)
+   ===================================================== */
+const X_SQUARES = new Set([
+    '0-0','0-7','7-0','7-7',
+    '3-3','3-4','4-3','4-4'
+]);
+
+/* =====================================================
+   BOARD BUILD
+   ===================================================== */
+const boardEl = document.getElementById('ashtapada');
+const squares = {}; // key: "r-c"
+
+function buildBoard() {
+    boardEl.innerHTML = '';
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const sq = document.createElement('div');
+            sq.className = 'sq';
+            sq.dataset.r = r;
+            sq.dataset.c = c;
+
+            // X mark for special squares
+            if (X_SQUARES.has(`${r}-${c}`)) {
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('class', 'sq-x-mark');
+                svg.setAttribute('viewBox', '0 0 100 100');
+                svg.setAttribute('preserveAspectRatio', 'none');
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', 'M20,20 L80,80 M80,20 L20,80');
+                path.setAttribute('stroke', 'rgba(120,60,10,0.55)');
+                path.setAttribute('stroke-width', '8');
+                path.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(path);
+                sq.appendChild(svg);
+            }
+
+            squares[`${r}-${c}`] = sq;
+            boardEl.appendChild(sq);
+        }
+    }
+}
+
+/* =====================================================
+   STATE
+   ===================================================== */
+let activePieceIdx = -1;
+let animTimer = null;
+let animStep = 0;
+let floatingImg = null;
+let currentMoves = [];
+
+/* =====================================================
+   PIECE CARDS BUILD
+   ===================================================== */
+function buildCards() {
+    const container = document.getElementById('cards-container');
+    PIECES.forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = 'piece-card';
+        card.id = `card-${idx}`;
+        card.innerHTML = `
+            <img class="piece-card-img" src="piese_sah/india/piese_chaturanga/set_deschis/${p.file}" alt="${p.nameRo}" onerror="this.style.opacity=0.3">
+            <div class="piece-card-info">
+                <div class="piece-card-name">${p.nameRo}</div>
+                <div class="piece-card-sanskrit">${p.nameSanskrit}</div>
+                <div class="piece-card-desc">${p.desc}</div>
+                <div class="piece-card-rule">${p.rule}</div>
+            </div>
+        `;
+        card.addEventListener('click', () => selectPiece(idx));
+        container.appendChild(card);
+    });
+}
+
+/* =====================================================
+   CLEAR BOARD STATE
+   ===================================================== */
+function clearHighlights() {
+    Object.values(squares).forEach(sq => {
+        sq.classList.remove('highlight-move', 'highlight-capture', 'piece-here');
+        // Remove any piece image
+        const img = sq.querySelector('.piece-on-board');
+        if (img) img.remove();
+    });
+}
+
+/* =====================================================
+   SELECT PIECE
+   ===================================================== */
+function selectPiece(idx) {
+    // Stop animation and immediately remove any floating piece
+    if (animTimer) { clearTimeout(animTimer); animTimer = null; }
+    if (floatingImg) { floatingImg.remove(); floatingImg = null; }
+
+    // Deactivate previous card
+    if (activePieceIdx >= 0) {
+        document.getElementById(`card-${activePieceIdx}`).classList.remove('active');
+    }
+    activePieceIdx = idx;
+    document.getElementById(`card-${idx}`).classList.add('active');
+
+    clearHighlights();
+
+    const p = PIECES[idx];
+    const r = p.startRow;
+    const c = p.startCol;
+
+    // Place piece on its start square
+    const demoSq = squares[`${r}-${c}`];
+    demoSq.classList.add('piece-here');
+    const img = document.createElement('img');
+    img.className = 'piece-on-board';
+    img.src = `piese_sah/india/piese_chaturanga/set_deschis/${p.file}`;
+    img.alt = p.nameRo;
+    demoSq.appendChild(img);
+
+    // Compute moves
+    const rawMoves = p.getMoves(r, c);
+    currentMoves = rawMoves.filter(m => m.r >= 0 && m.r < 8 && m.c >= 0 && m.c < 8);
+
+    // Highlight
+    currentMoves.forEach(m => {
+        const sq = squares[`${m.r}-${m.c}`];
+        if (sq) {
+            sq.classList.add(m.type === 'capture' ? 'highlight-capture' : 'highlight-move');
+        }
+    });
+
+    // Update label
+    document.getElementById('pl-name').textContent = `${p.nameRo} · ${p.nameSanskrit}`;
+    document.getElementById('pl-hint').textContent = p.rule;
+
+    // Voice narration
+    speakText(p.desc + '. ' + p.rule, p.voice);
+
+    // Start animation
+    animStep = 0;
+    if (currentMoves.length > 0) {
+        scheduleAnim(p, r, c);
+    }
+}
+
+/* =====================================================
+   ANIMATION: piece slides to destinations and back
+   ===================================================== */
+function scheduleAnim(p, originR, originC) {
+    const moveMoves = currentMoves.filter(m => m.type === 'move');
+    if (moveMoves.length === 0) return;
+
+    const boardRect = boardEl.getBoundingClientRect();
+
+    // We'll move the image by adjusting CSS transform translate offset
+    // since the image is positioned absolute within its parent square,
+    // we need to teleport the img element to a float layer instead.
+    // Simpler: remove img from sq, place it on a float layer.
+
+    const originSq = squares[`${originR}-${originC}`];
+    const img = originSq.querySelector('.piece-on-board');
+    if (!img) return;
+
+    // Make img position fixed relative to board container
+    const container = document.getElementById('board-container');
+
+    function getSquareCenter(r, c) {
+        // relative to board container
+        const bRect = boardEl.getBoundingClientRect();
+        const cRect = container.getBoundingClientRect();
+        const sqW = bRect.width / 8;
+        const sqH = bRect.height / 8;
+        return {
+            x: (bRect.left - cRect.left) + c * sqW + sqW / 2,
+            y: (bRect.top - cRect.top) + r * sqH + sqH / 2
+        };
+    }
+
+    // Detach img from sq and append to container with absolute positioning
+    img.remove();
+    img.style.position = 'absolute';
+    img.style.width = 'auto';
+    img.style.height = (boardRect.height / 8 * 0.90) + 'px';
+    img.style.transform = 'translate(-50%, -50%)';
+    img.style.transition = 'left 0.55s cubic-bezier(.4,0,.2,1), top 0.55s cubic-bezier(.4,0,.2,1)';
+    img.style.zIndex = '20';
+    img.style.pointerEvents = 'none';
+
+    const orig = getSquareCenter(originR, originC);
+    img.style.left = orig.x + 'px';
+    img.style.top = orig.y + 'px';
+    container.appendChild(img);
+    floatingImg = img;
+
+    let step = 0;
+    const totalTargets = moveMoves.length;
+
+    function doStep() {
+        if (activePieceIdx < 0 || PIECES[activePieceIdx].id !== p.id) {
+            img.remove(); floatingImg = null;
+            return;
+        }
+        const target = moveMoves[step % totalTargets];
+        const tPos = getSquareCenter(target.r, target.c);
+        img.style.left = tPos.x + 'px';
+        img.style.top = tPos.y + 'px';
+
+        // After move, return to origin
+        animTimer = setTimeout(() => {
+            if (activePieceIdx < 0 || PIECES[activePieceIdx].id !== p.id) {
+                img.remove(); floatingImg = null;
+                return;
+            }
+            img.style.left = orig.x + 'px';
+            img.style.top = orig.y + 'px';
+
+            step++;
+            animTimer = setTimeout(doStep, 900);
+        }, 900);
+    }
+
+    // Small delay before first move
+    animTimer = setTimeout(doStep, 800);
+}
+
+/* =====================================================
+   SCENA FINAL – dialogue cycling
+   ===================================================== */
+const REPLICAS = [
+    {
+        speaker: 'Tusk',
+        text: 'Bravo, Kibo! Ai învățat cum se mișcă armata și ai făcut primele tale mutări de căpitan!'
+    },
+    {
+        speaker: 'Kibo',
+        text: 'A fost uimitor, Tusk! Acum știu că fiecare soldat are rolul lui. Sunt gata să văd unde a plecat cufărul mai departe!'
+    },
+    {
+        speaker: 'Tusk',
+        text: 'Spre Persia, prietene! Acolo unde regulile se schimbă și magia crește.'
+    }
+];
+
+let replicaIdx = 0;
+let scenaFinalStarted = false;
+
+function showReplica(idx) {
+    const r = REPLICAS[idx];
+    document.getElementById('scena-final-speaker').textContent = r.speaker;
+    document.getElementById('scena-final-text').textContent = r.text;
+    const voiceType = r.speaker.toLowerCase() === 'tusk' ? 'tusk' : 'kibo';
+    speakText(r.text, voiceType);
+    const isLast = idx >= REPLICAS.length - 1;
+    document.getElementById('scena-final-hint').style.display = isLast ? 'none' : '';
+    document.getElementById('btn-persia').style.display = isLast ? 'inline-block' : 'none';
+    document.getElementById('btn-prev-replica').style.display = idx > 0 ? 'inline-block' : 'none';
+}
+
+function advanceReplica() {
+    if (replicaIdx < REPLICAS.length - 1) {
+        replicaIdx++;
+        showReplica(replicaIdx);
+    }
+}
+
+function prevReplica() {
+    if (replicaIdx > 0) {
+        replicaIdx--;
+        showReplica(replicaIdx);
+    }
+}
+
+function deschideScenaFinala() {
+    const fade = document.getElementById('fade-overlay');
+    const sf   = document.getElementById('scena-final');
+    fade.classList.add('active');
+    setTimeout(() => {
+        sf.classList.add('visible');
+        fade.classList.remove('active');
+        if (!scenaFinalStarted) {
+            scenaFinalStarted = true;
+            replicaIdx = 0;
+            showReplica(0);
+        }
+    }, 620);
+}
+
+function inchideScenaFinala() {
+    const fade = document.getElementById('fade-overlay');
+    const sf   = document.getElementById('scena-final');
+    fade.classList.add('active');
+    setTimeout(() => {
+        sf.classList.remove('visible');
+        fade.classList.remove('active');
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+    }, 620);
+}
+
+/* =====================================================
+   INIT
+   ===================================================== */
+buildBoard();
+buildCards();
+
+// Auto-select Raja on load
+setTimeout(() => selectPiece(0), 400);
+
+// Ensure voices are loaded for Web Speech API
+if (window.speechSynthesis) {
+    window.speechSynthesis.onvoiceschanged = function() {};
+    // Trigger voice list load
+    window.speechSynthesis.getVoices();
+}
+</script>
+</body>
+</html>

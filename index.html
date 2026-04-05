@@ -1,227 +1,224 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Șah Mat Animat</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cufărul cu Șah</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-        html, body {
-            width: 100%; height: 100%;
-            overflow: hidden;
-            background: #000;
-        }
+body {
+    background: #F5A96E;
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding: 32px 16px 48px;
+}
 
-        /* ===== VIDEO BACKGROUND ===== */
-        #bg-video {
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            min-width: 100%;
-            min-height: 100%;
-            width: auto; height: auto;
-            object-fit: cover;
-            z-index: 0;
-        }
+/* HEADER */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.logo { font-size: 3em; margin-bottom: 8px; }
+h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(2em, 6vw, 3.2em);
+    color: #1a3a6b;
+    text-shadow: 3px 3px 0 rgba(255,255,255,0.35);
+    line-height: 1.1;
+    margin-bottom: 10px;
+}
+.tagline {
+    font-size: clamp(0.95em, 2.5vw, 1.15em);
+    color: rgba(26,26,46,0.65);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
 
-        /* ===== DARK OVERLAY (readability) ===== */
-        #overlay {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(
-                ellipse at center,
-                rgba(0,0,0,0.25) 0%,
-                rgba(0,0,0,0.60) 100%
-            );
-            z-index: 1;
-        }
+/* GRID */
+.grid {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
 
-        /* ===== LOOP FADE (maschează restart-ul) ===== */
-        #loop-fade {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 2;
-            pointer-events: none;
-            opacity: 0;
-            animation: loop-mask 8s linear infinite;
-        }
+/* CARD */
+.card {
+    background: rgba(255,255,255,0.55);
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 22px;
+    padding: 28px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 36px rgba(0,0,0,0.14);
+}
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    border-radius: 22px 22px 0 0;
+}
+.card-1::before { background: #1a3a6b; }
+.card-2::before { background: #7d3c98; }
+.card-3::before { background: #27ae60; }
+.card-4::before { background: #e67e22; }
+.card-5::before { background: #c0392b; }
 
-        @keyframes loop-mask {
-            0%   { opacity: 0; }
-            82%  { opacity: 0; }
-            91%  { opacity: 1; }
-            100% { opacity: 0; }
-        }
+.card-icon {
+    font-size: 2.4em;
+    line-height: 1;
+}
+.card-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.25em;
+    line-height: 1.25;
+    color: #1a1a2e;
+}
+.card-desc {
+    font-size: 0.88em;
+    color: rgba(26,26,46,0.65);
+    line-height: 1.6;
+    flex: 1;
+}
 
-        /* ===== CONTENT ===== */
-        #content {
-            position: fixed;
-            inset: 0;
-            z-index: 3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 30px 20px;
-        }
+/* BUTTON */
+.card-btn {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 9px 22px;
+    border-radius: 50px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.92em;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+}
+.card-1 .card-btn { background: #1a3a6b; color: white; }
+.card-1 .card-btn:hover { background: #2a5aab; }
+.card-2 .card-btn { background: #7d3c98; color: white; }
+.card-2 .card-btn:hover { background: #9b59b6; }
+.card-3 .card-btn { background: #27ae60; color: white; }
+.card-3 .card-btn:hover { background: #2ecc71; }
+.card-4 .card-btn { background: #e67e22; color: white; }
+.card-4 .card-btn:hover { background: #f39c12; }
+.card-5 .card-btn { background: #c0392b; color: white; }
+.card-5 .card-btn:hover { background: #e74c3c; }
 
-        .chess-icon {
-            font-size: 3.5em;
-            margin-bottom: 10px;
-            filter: drop-shadow(0 0 20px rgba(255,200,50,0.8));
-            animation: float 3s ease-in-out infinite;
-        }
+/* CURÂND badge */
+.badge-curand {
+    display: inline-block;
+    background: rgba(26,26,46,0.1);
+    color: rgba(26,26,46,0.5);
+    font-size: 0.72em;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 6px;
+}
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-12px); }
-        }
+/* CARD 5 — full width on large screens */
+@media (min-width: 800px) {
+    .card-5 {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        align-items: center;
+        gap: 24px;
+    }
+    .card-5 .card-icon { font-size: 3em; }
+    .card-5 .card-content { flex: 1; }
+}
 
-        h1 {
-            font-family: 'Baloo 2', cursive;
-            font-size: clamp(2.8em, 8vw, 6em);
-            font-weight: 900;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            line-height: 1.1;
-            text-shadow:
-                0 0 20px rgba(255,180,50,0.9),
-                0 0 60px rgba(255,140,0,0.6),
-                0 0 120px rgba(255,100,0,0.3),
-                2px 3px 0px rgba(0,0,0,0.5);
-            margin-bottom: 16px;
-            animation: title-pulse 4s ease-in-out infinite;
-        }
-
-        @keyframes title-pulse {
-            0%, 100% { text-shadow:
-                0 0 20px rgba(255,180,50,0.9),
-                0 0 60px rgba(255,140,0,0.6),
-                0 0 120px rgba(255,100,0,0.3),
-                2px 3px 0px rgba(0,0,0,0.5); }
-            50% { text-shadow:
-                0 0 30px rgba(255,200,80,1),
-                0 0 80px rgba(255,160,20,0.8),
-                0 0 160px rgba(255,120,0,0.5),
-                2px 3px 0px rgba(0,0,0,0.5); }
-        }
-
-        .tagline {
-            font-family: 'Nunito', sans-serif;
-            font-size: clamp(1em, 2.5vw, 1.4em);
-            font-weight: 700;
-            color: rgba(255,230,180,0.92);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: 0 0 20px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.6);
-            margin-bottom: 50px;
-        }
-
-        .btn-enter {
-            display: inline-block;
-            padding: 18px 60px;
-            background: linear-gradient(135deg, #e67e22, #f39c12);
-            color: white;
-            font-family: 'Baloo 2', cursive;
-            font-size: clamp(1.1em, 3vw, 1.5em);
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-decoration: none;
-            border-radius: 60px;
-            box-shadow:
-                0 0 30px rgba(230,126,34,0.7),
-                0 0 60px rgba(230,126,34,0.3),
-                0 6px 20px rgba(0,0,0,0.4);
-            transition: all 0.3s ease;
-            animation: btn-glow 2.5s ease-in-out infinite;
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-
-        @keyframes btn-glow {
-            0%, 100% { box-shadow: 0 0 30px rgba(230,126,34,0.7), 0 0 60px rgba(230,126,34,0.3), 0 6px 20px rgba(0,0,0,0.4); }
-            50%       { box-shadow: 0 0 45px rgba(255,160,50,0.9), 0 0 90px rgba(230,126,34,0.5), 0 6px 20px rgba(0,0,0,0.4); }
-        }
-
-        .btn-enter:hover {
-            transform: translateY(-4px) scale(1.04);
-            box-shadow:
-                0 0 50px rgba(255,160,50,1),
-                0 0 100px rgba(230,126,34,0.6),
-                0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        /* ===== PARTICLES (stele) ===== */
-        .star {
-            position: fixed;
-            border-radius: 50%;
-            background: white;
-            z-index: 2;
-            animation: twinkle var(--dur) ease-in-out infinite var(--delay);
-            opacity: 0;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0; transform: scale(1); }
-            50%       { opacity: var(--bright); transform: scale(1.4); }
-        }
-
-        /* ===== WATERMARK VIDEO ===== */
-        /* ascunde watermark-ul Veo din colțul dreapta-jos */
-        #wm-cover {
-            position: fixed;
-            bottom: 0; right: 0;
-            width: 80px; height: 32px;
-            background: #000;
-            z-index: 4;
-        }
-    </style>
+footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.78em;
+    color: rgba(26,26,46,0.4);
+}
+</style>
 </head>
 <body>
 
-    <video id="bg-video" autoplay muted loop playsinline>
-        <source src="Filme/Video_Generat_Piese_Galactice_Convergente.mp4" type="video/mp4">
-    </video>
+<header>
+    <div class="logo">♟</div>
+    <h1>Cufărul cu Șah</h1>
+    <p class="tagline">Descoperă cel mai frumos joc din lume — pas cu pas, piesă cu piesă!</p>
+</header>
 
-    <div id="overlay"></div>
-    <div id="loop-fade"></div>
-    <div id="wm-cover"></div>
+<div class="grid">
 
-    <div id="content">
-        <div class="chess-icon">♟</div>
-        <h1>Șah Mat Animat</h1>
-        <div class="tagline">Aventura ta în lumea șahului începe aici</div>
-        <a href="hub_epoci.html" class="btn-enter">Intră în Joc ▶</a>
+    <!-- 1. Să învățăm șah -->
+    <div class="card card-1">
+        <div class="card-icon">👑</div>
+        <div class="card-title">Să învățăm șah</div>
+        <div class="card-desc">
+            De la prima mutare până la strategii avansate. Lecții interactive cu exerciții și un robot cu care să exersezi.
+        </div>
+        <a href="hub.html" class="card-btn">Începe lecțiile ▶</a>
     </div>
 
-    <script>
-const PAGE_ID = 'landing';
+    <!-- 2. Istoria șahului -->
+    <div class="card card-2">
+        <div class="card-icon">🏺</div>
+        <div class="card-title">Istoria șahului</div>
+        <div class="card-desc">
+            De la Chaturanga în India antică, prin Shatranj persan și Xiangqi chinezesc, până la Magnus Carlsen.
+        </div>
+        <span class="badge-curand">⏳ În curând</span>
+    </div>
 
-/* Generează stele decorative */
-(function() {
-    const count = 60;
-    for (let i = 0; i < count; i++) {
-        const s = document.createElement('div');
-        s.className = 'star';
-        const size = Math.random() * 3 + 1;
-        s.style.cssText = `
-            width: ${size}px;
-            height: ${size}px;
-            top: ${Math.random() * 100}%;
-            left: ${Math.random() * 100}%;
-            --dur: ${2 + Math.random() * 4}s;
-            --delay: ${-Math.random() * 6}s;
-            --bright: ${0.3 + Math.random() * 0.7};
-        `;
-        document.body.appendChild(s);
-    }
-})();
-    </script>
+    <!-- 3. Reguli -->
+    <div class="card card-3">
+        <div class="card-icon">📋</div>
+        <div class="card-title">Reguli pentru micii șahiști</div>
+        <div class="card-desc">
+            Regulile oficiale de competiție explicate pe înțelesul tuturor — cum te comporți la tablă, cum cronometrezi, ce e permis.
+        </div>
+        <span class="badge-curand">⏳ În curând</span>
+    </div>
+
+    <!-- 4. Termeni -->
+    <div class="card card-4">
+        <div class="card-icon">📖</div>
+        <div class="card-title">Termeni șahiști</div>
+        <div class="card-desc">
+            Gambitu, furculița, clești, mansub, en passant — toți termenii importanți explicați simplu cu exemple vizuale.
+        </div>
+        <span class="badge-curand">⏳ În curând</span>
+    </div>
+
+    <!-- 5. Arena -->
+    <div class="card card-5">
+        <div class="card-icon">🎯</div>
+        <div class="card-content">
+            <div class="card-title">Arena de antrenament</div>
+            <div class="card-desc">
+                Aşează piesele cum vrei pe tablă și joacă împotriva robotului. Alege nivelul — de la începător până la maestru!
+            </div>
+        </div>
+        <a href="practica.html" class="card-btn">Deschide arena ▶</a>
+    </div>
+
+</div>
+
+<footer>Cufărul cu Șah · un proiect educațional pentru copii</footer>
 
 </body>
 </html>

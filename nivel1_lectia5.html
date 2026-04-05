@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecția 5 — Atacul, Captura și Apărarea</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+
+#nav {
+    position: sticky; top: 0; background: rgba(245,169,110,0.92);
+    backdrop-filter: blur(8px); display: flex; align-items: center;
+    justify-content: space-between; padding: 10px 20px;
+    z-index: 100; border-bottom: 2px solid rgba(255,255,255,0.4);
+}
+.nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
+.nav-btn:hover { background: rgba(255,255,255,0.85); }
+.nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
+.nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; padding: 3px 12px; border-radius: 20px; }
+
+.content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
+
+.lesson-title { text-align: center; margin-bottom: 8px; }
+.lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
+.lesson-title .subtitle { font-size: 0.92em; color: rgba(26,26,46,0.6); margin-top: 4px; }
+
+.card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+.card-icon { font-size: 1.6em; margin-bottom: 8px; display: block; }
+.card h2 { font-family: 'Baloo 2', cursive; font-size: 1.2em; color: #1a3a6b; margin-bottom: 10px; line-height: 1.3; }
+.card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; }
+.card p:last-child { margin-bottom: 0; }
+
+.board-card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+.sec-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.sec-icon { font-size: 1.8em; }
+.sec-title { font-family: 'Baloo 2', cursive; font-size: 1.25em; color: #1a3a6b; }
+.sec-intro { font-size: 0.93em; color: #2a2a3e; line-height: 1.7; margin-bottom: 0; }
+
+.board-area { display: flex; gap: 20px; align-items: flex-start; flex-wrap: nowrap; margin-top: 16px; }
+.board-wrap { flex: 1 1 auto; min-width: 0; max-width: 340px; position: relative; }
+.board-wrap > div { width: 100%; }
+
+.demo-panel { flex: 0 0 210px; width: 210px; display: flex; flex-direction: column; gap: 10px; }
+.demo-badge { display: inline-block; align-self: flex-start; font-family: 'Baloo 2', cursive; font-size: 0.73em; font-weight: 700; padding: 3px 12px; border-radius: 20px; }
+.badge-red   { background: rgba(200,50,30,0.12); color: #8b1a00; }
+.badge-blue  { background: rgba(40,80,200,0.12); color: #1a3a8b; }
+.badge-gray  { background: rgba(26,58,107,0.12); color: #1a3a6b; }
+.demo-title { font-family: 'Baloo 2', cursive; font-size: 0.98em; color: #1a3a6b; line-height: 1.3; min-height: 2em; }
+.demo-text  { background: rgba(26,58,107,0.09); border: 2px solid rgba(26,58,107,0.18); border-radius: 12px; padding: 12px 14px; font-size: 0.84em; line-height: 1.7; color: #1a1a2e; min-height: 110px; }
+.step-btns  { display: flex; gap: 8px; flex-wrap: wrap; }
+.step-btn   { flex: 1; min-width: 0; padding: 8px 6px; border-radius: 10px; border: 2px solid rgba(26,58,107,0.3); background: rgba(255,255,255,0.6); font-family: 'Baloo 2', cursive; font-size: 0.8em; color: #1a3a6b; cursor: pointer; transition: all 0.18s; }
+.step-btn:hover:not(:disabled) { background: rgba(26,58,107,0.15); }
+.step-btn:disabled { opacity: 0.35; cursor: default; }
+.step-btn.red-btn { border-color: rgba(200,50,30,0.4); color: #8b1a00; }
+.step-btn.red-btn:hover:not(:disabled) { background: rgba(200,50,30,0.12); }
+.step-btn.blue-btn { border-color: rgba(40,80,200,0.4); color: #1a3a8b; }
+.step-btn.blue-btn:hover:not(:disabled) { background: rgba(40,80,200,0.1); }
+
+.highlight-box { background: rgba(26,58,107,0.1); border-left: 4px solid #1a3a6b; border-radius: 0 12px 12px 0; padding: 12px 16px; margin: 14px 0 0; font-size: 0.93em; line-height: 1.7; color: #1a1a2e; }
+.highlight-box strong { color: #1a3a6b; }
+.highlight-box.warn { background: rgba(200,80,0,0.09); border-left-color: #c05000; }
+.highlight-box.warn strong { color: #8b3000; }
+.highlight-box.ok { background: rgba(40,160,80,0.1); border-left-color: #28a050; }
+.highlight-box.ok strong { color: #1a6035; }
+
+/* DEF SECTIONS */
+.def-section { border-top: 2px solid rgba(26,58,107,0.12); padding-top: 18px; margin-top: 18px; }
+.def-section:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+.def-type-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.def-type-icon { font-size: 1.5em; }
+.def-type-title { font-family: 'Baloo 2', cursive; font-size: 1.1em; color: #1a3a6b; font-weight: 700; }
+.def-type-desc { font-size: 0.88em; color: rgba(26,26,46,0.6); }
+.def-board-row { display: flex; gap: 16px; align-items: flex-start; }
+.def-board-wrap { flex: 0 0 220px; width: 220px; position: relative; }
+.def-board-wrap > div { width: 100%; }
+.def-panel { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.def-atk-text { background: rgba(40,80,200,0.08); border: 2px solid rgba(40,80,200,0.2); border-radius: 10px; padding: 10px 12px; font-size: 0.84em; line-height: 1.65; color: #1a1a2e; }
+.def-def-text { background: rgba(40,180,80,0.1); border: 2px solid rgba(40,180,80,0.3); border-radius: 10px; padding: 10px 12px; font-size: 0.84em; line-height: 1.65; color: #1a2e1a; }
+.def-show-btn { padding: 8px 16px; border-radius: 50px; border: 2px solid #1a3a6b; background: rgba(255,255,255,0.7); font-family: 'Baloo 2', cursive; font-size: 0.85em; color: #1a3a6b; cursor: pointer; transition: all 0.18s; align-self: flex-start; }
+.def-show-btn:hover { background: #1a3a6b; color: white; }
+.def-nav { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.def-nav-btn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(26,58,107,0.3); background: rgba(255,255,255,0.6); font-family: 'Baloo 2', cursive; font-size: 0.85em; color: #1a3a6b; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.def-nav-btn:hover:not(:disabled) { background: rgba(26,58,107,0.15); }
+.def-nav-btn:disabled { opacity: 0.3; cursor: default; }
+.def-nav-cnt { font-family: 'Baloo 2', cursive; font-size: 0.82em; color: rgba(26,26,46,0.5); }
+@media (max-width: 600px) {
+    .def-board-row { flex-wrap: wrap; }
+    .def-board-wrap { flex: 0 0 100%; width: 100%; }
+}
+
+/* EXERCISES */
+.ex-counter { text-align: center; font-family: 'Baloo 2', cursive; font-size: 0.88em; color: rgba(26,26,46,0.55); background: rgba(26,58,107,0.1); border-radius: 20px; padding: 3px 18px; display: inline-block; }
+.ex-area { display: flex; gap: 16px; align-items: flex-start; margin: 0 auto; }
+.ex-board-wrap { position: relative; flex: 0 0 280px; width: 280px; }
+.ex-panel { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 10px; background: rgba(26,58,107,0.07); border: 1px solid rgba(26,58,107,0.15); border-radius: 14px; padding: 14px 16px; }
+.ex-label { background: rgba(26,58,107,0.09); border: 2px solid rgba(26,58,107,0.18); border-radius: 12px; padding: 12px 14px; font-size: 0.87em; line-height: 1.7; color: #1a1a2e; min-height: 70px; }
+.ex-prompt { font-family: 'Baloo 2', cursive; font-size: 1em; color: #1a3a6b; line-height: 1.4; }
+.ex-feedback { margin: 4px 0 0; padding: 12px 14px; border-radius: 12px; font-size: 0.88em; line-height: 1.75; display: none; }
+.ex-feedback.ok  { background: rgba(40,160,80,0.12);  border: 2px solid #28a050; color: #1a4a2a; display: block; }
+.ex-feedback.err { background: rgba(200,40,40,0.09);  border: 2px solid #cc3030; color: #4a1010; display: block; }
+.ex-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; min-height: 42px; }
+.ex-next-btn { padding: 9px 22px; border-radius: 50px; border: none; background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.92em; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
+.ex-next-btn:hover { background: #2a5aab; transform: translateY(-2px); }
+.ex-prev-btn { padding: 9px 20px; border-radius: 50px; border: none; background: rgba(26,58,107,0.35); color: white; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; cursor: pointer; }
+.ex-prev-btn:hover { background: rgba(26,58,107,0.55); }
+.ex-prev-btn:disabled { opacity: 0.3; cursor: default; }
+
+.drag-hint { font-size: 0.78em; color: rgba(26,26,46,0.45); text-align: center; margin-top: 6px; }
+
+/* PROGRESS DOTS */
+.progress-dots { display: flex; gap: 7px; align-items: center; justify-content: center; }
+.pd { width: 10px; height: 10px; border-radius: 50%; background: rgba(26,58,107,0.15); transition: all 0.25s; }
+.pd.done { background: rgba(26,58,107,0.4); }
+.pd.active { background: #1a3a6b; transform: scale(1.25); box-shadow: 0 0 0 2px rgba(26,58,107,0.2); }
+
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-10px)} 40%,80%{transform:translateX(10px)} }
+.shake { animation: shake 0.5s ease; }
+@keyframes confetti-fall { 0%{opacity:1;transform:translate(0,0) rotate(0deg)} 80%{opacity:1} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot))} }
+.confetti-page { position: fixed; pointer-events: none; z-index: 9999; border-radius: 3px; animation: confetti-fall var(--dur,2s) ease-in forwards; }
+
+.sq-h1 { background: rgba(80,160,255,0.38) !important; }
+.sq-h2 { background: rgba(255,185,15,0.65) !important; }
+.sq-h3 { background: rgba(40,200,80,0.60) !important; }
+.sq-h4 { background: rgba(220,60,60,0.50) !important; }
+
+.bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
+.nav-prev { background: rgba(255,255,255,0.55); color: #1a3a6b; border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 12px 24px; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; text-decoration: none; transition: all 0.2s; }
+.nav-prev:hover { background: rgba(255,255,255,0.85); }
+.nav-next { background: #1a3a6b; color: white; border: none; border-radius: 50px; padding: 12px 28px; font-family: 'Baloo 2', cursive; font-size: 1em; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 14px rgba(26,58,107,0.35); }
+.nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
+
+@media (max-width: 600px) {
+    .card, .board-card { padding: 16px; }
+    .board-area { flex-wrap: wrap; }
+    .board-wrap { max-width: 100%; }
+    .demo-panel { flex: 0 0 100%; width: 100%; }
+    .ex-area { flex-wrap: wrap; }
+    .ex-board-wrap { flex: 0 0 100%; width: 100%; }
+    .ex-panel { flex: 0 0 100%; }
+}
+</style>
+</head>
+<body>
+
+<div id="nav">
+    <a href="hub.html" class="nav-btn">← Niveluri</a>
+    <div class="nav-title">Nivelul I · Bazele jocului</div>
+    <span class="nav-badge">Lecția 5</span>
+</div>
+
+<div class="content">
+
+    <!-- TITLE -->
+    <div class="lesson-title">
+        <h1>⚔️ Atacul, Captura și Apărarea</h1>
+        <div class="subtitle">Duel pe tabla de șah — cine pe cine amenință?</div>
+    </div>
+
+    <!-- 1. ATAC & CAPTURĂ -->
+    <div class="card">
+        <span class="card-icon">🎯</span>
+        <h2>Ce înseamnă Atacul?</h2>
+        <p><strong>Atacul (sau amenințarea)</strong> este o situație în care o piesă se află în calea de atac a unei piese adverse — adică adversarul ar putea, la mutarea lui, să o captureze.</p>
+        <p><strong>Captura</strong> este manevra prin care piesa atacatoare se deplasează și elimină de pe tablă piesa care îi iese în cale.</p>
+        <div class="highlight-box warn" style="margin-top:14px;">
+            <strong>⚠️ Captura nu este obligatorie!</strong><br>
+            Orice jucător poate alege dacă să facă sau nu o captură. Singura excepție: când captura este singura mutare posibilă pentru a ieși din șah.
+        </div>
+    </div>
+
+    <!-- 2. DEMO POSITION -->
+    <div class="board-card">
+        <div class="sec-header">
+            <span class="sec-icon">🔍</span>
+            <span class="sec-title">Cine pe cine atacă?</span>
+        </div>
+        <p class="sec-intro">În această poziție, <strong>Turnul alb atacă Nebunul negru</strong> de pe c6, iar <strong>Nebunul negru atacă Calul alb</strong> de pe f4. Armata care mută prima poate captura prima!</p>
+
+        <div class="board-area">
+            <div class="board-wrap"><div id="demo-board"></div></div>
+            <div class="demo-panel">
+                <div class="step-btns">
+                    <button class="step-btn red-btn" id="d-alb-btn" onclick="demoCapture('alb')">♖ Alb: Txc6</button>
+                    <button class="step-btn blue-btn" id="d-negru-btn" onclick="demoCapture('negru')">♝ Negru: Nxf4</button>
+                    <button class="step-btn" id="d-reset-btn" onclick="demoReset()" disabled>↺ Resetează</button>
+                </div>
+                <span class="demo-badge badge-gray" id="d-badge">Poziție inițială</span>
+                <div class="demo-title" id="d-title">Ambele armate au câte o piesă atacată. Cine mută primul?</div>
+                <div class="demo-text" id="d-text">
+                    <b>🔴 Roșu:</b> Turnul alb (c3) atacă Nebunul negru (c6) — sunt pe aceeași coloană!<br><br>
+                    <b>🔵 Albastru:</b> Nebunul negru (h6) atacă Calul alb (f4) — sunt pe aceeași diagonală!<br><br>
+                    Apasă un buton să vezi ce se întâmplă când una din armate mută.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. APĂRAREA -->
+    <div class="board-card">
+        <div class="sec-header">
+            <span class="sec-icon">🛡️</span>
+            <span class="sec-title">Apărarea — Cum reacționezi când ești atacat?</span>
+        </div>
+        <p class="sec-intro">Când o piesă a ta este atacată, ai mai multe opțiuni. Apasă <strong>„Arată apărarea"</strong> să vezi soluția, apoi navighează prin exemple cu ◀ ▶.</p>
+
+        <!-- FUGI -->
+        <div class="def-section">
+            <div class="def-type-header">
+                <span class="def-type-icon">🏃</span>
+                <div><div class="def-type-title">Fugi!</div><div class="def-type-desc">Mută piesa atacată într-un loc sigur.</div></div>
+            </div>
+            <div class="def-board-row">
+                <div class="def-board-wrap"><div id="def-board-fugi"></div></div>
+                <div class="def-panel">
+                    <div class="def-atk-text" id="def-atk-fugi">…</div>
+                    <button class="def-show-btn" id="def-show-fugi" onclick="showDefense('fugi')">Arată apărarea →</button>
+                    <div class="def-def-text" id="def-def-fugi" style="display:none">…</div>
+                    <div class="def-nav">
+                        <button class="def-nav-btn" id="def-prev-fugi" onclick="prevDefEx('fugi')" disabled>◀</button>
+                        <div class="progress-dots" id="def-cnt-fugi"></div>
+                        <button class="def-nav-btn" id="def-next-fugi" onclick="nextDefEx('fugi')">▶</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APĂRĂ -->
+        <div class="def-section">
+            <div class="def-type-header">
+                <span class="def-type-icon">🛡️</span>
+                <div><div class="def-type-title">Adaugă un apărător</div><div class="def-type-desc">Mută o altă piesă să apere piesa atacată — dacă o capturează, recapturezi.</div></div>
+            </div>
+            <div class="def-board-row">
+                <div class="def-board-wrap"><div id="def-board-apara"></div></div>
+                <div class="def-panel">
+                    <div class="def-atk-text" id="def-atk-apara">…</div>
+                    <button class="def-show-btn" id="def-show-apara" onclick="showDefense('apara')">Arată apărarea →</button>
+                    <div class="def-def-text" id="def-def-apara" style="display:none">…</div>
+                    <div class="def-nav">
+                        <button class="def-nav-btn" id="def-prev-apara" onclick="prevDefEx('apara')" disabled>◀</button>
+                        <div class="progress-dots" id="def-cnt-apara"></div>
+                        <button class="def-nav-btn" id="def-next-apara" onclick="nextDefEx('apara')">▶</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOCHEAZĂ -->
+        <div class="def-section">
+            <div class="def-type-header">
+                <span class="def-type-icon">🚫</span>
+                <div><div class="def-type-title">Blochează</div><div class="def-type-desc">Interpune o piesă între atacator și piesa atacată (funcționează contra turnurilor, nebunilor, reginei).</div></div>
+            </div>
+            <div class="def-board-row">
+                <div class="def-board-wrap"><div id="def-board-blocheaza"></div></div>
+                <div class="def-panel">
+                    <div class="def-atk-text" id="def-atk-blocheaza">…</div>
+                    <button class="def-show-btn" id="def-show-blocheaza" onclick="showDefense('blocheaza')">Arată apărarea →</button>
+                    <div class="def-def-text" id="def-def-blocheaza" style="display:none">…</div>
+                    <div class="def-nav">
+                        <button class="def-nav-btn" id="def-prev-blocheaza" onclick="prevDefEx('blocheaza')" disabled>◀</button>
+                        <div class="progress-dots" id="def-cnt-blocheaza"></div>
+                        <button class="def-nav-btn" id="def-next-blocheaza" onclick="nextDefEx('blocheaza')">▶</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTRAATACĂ -->
+        <div class="def-section">
+            <div class="def-type-header">
+                <span class="def-type-icon">⚡</span>
+                <div><div class="def-type-title">Contraatacă!</div><div class="def-type-desc">Atacă ceva mai valoros al adversarului — câștigul tău e mai mare decât pierderea.</div></div>
+            </div>
+            <div class="def-board-row">
+                <div class="def-board-wrap"><div id="def-board-contraataca"></div></div>
+                <div class="def-panel">
+                    <div class="def-atk-text" id="def-atk-contraataca">…</div>
+                    <button class="def-show-btn" id="def-show-contraataca" onclick="showDefense('contraataca')">Arată apărarea →</button>
+                    <div class="def-def-text" id="def-def-contraataca" style="display:none">…</div>
+                    <div class="def-nav">
+                        <button class="def-nav-btn" id="def-prev-contraataca" onclick="prevDefEx('contraataca')" disabled>◀</button>
+                        <div class="progress-dots" id="def-cnt-contraataca"></div>
+                        <button class="def-nav-btn" id="def-next-contraataca" onclick="nextDefEx('contraataca')">▶</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box ok" style="margin-top:18px;">
+            <strong>💡 Regula de aur:</strong> Înainte de orice captură, întreabă-te: <em>„Dacă capturez, poate adversarul să recaptureze? Și dacă da, cine câștigă din schimb?"</em>
+        </div>
+    </div>
+
+    <!-- 4. EXERCISES -->
+    <div class="board-card">
+        <div class="sec-header">
+            <span class="sec-icon">🏋️</span>
+            <span class="sec-title">Exerciții — Mută piesa și fă captura!</span>
+        </div>
+        <p class="sec-intro" style="margin-bottom:16px;">Săgeata îți arată atacul. Trage piesa atacatoare pe câmpul unde se află piesa adversă și captur-o!</p>
+
+        <div style="text-align:center; margin-bottom:14px;">
+            <div class="progress-dots" id="ex-progress"></div>
+        </div>
+
+        <div class="ex-area">
+            <div class="ex-board-wrap">
+                <div id="ex-main-board"></div>
+            </div>
+            <div class="ex-panel">
+                <div class="ex-label" id="ex-label">…</div>
+                <div class="ex-prompt" id="ex-prompt">…</div>
+                <div class="ex-feedback" id="ex-feedback"></div>
+            </div>
+        </div>
+        <div class="drag-hint">Trage piesa cu mouse-ul (sau atinge și glisează pe mobil)</div>
+
+        <div class="ex-nav">
+            <button class="ex-prev-btn" id="ex-prev-btn" onclick="prevEx()" disabled>◀ Anterior</button>
+            <button class="ex-next-btn" id="ex-next-btn" onclick="nextEx()">Următorul ▶</button>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+        <a href="nivel1_lectia4.html" class="nav-prev">← Valoarea Pieselor</a>
+        <a href="hub.html" class="nav-next">Înapoi la hub →</a>
+    </div>
+
+</div><!-- /content -->
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+
+/* ── PROGRESS DOTS ── */
+function updateDots(id, total, idx) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var h = '';
+    for (var i = 0; i < total; i++) {
+        h += '<div class="pd' + (i < idx ? ' done' : i === idx ? ' active' : '') + '"></div>';
+    }
+    el.innerHTML = h;
+}
+
+/* ── ARROW FUNCTIONS ── */
+function clearArrows(boardId) {
+    var el = document.getElementById(boardId);
+    if (!el) return;
+    var s = el.querySelector('.ex-arr-svg');
+    if (s) s.remove();
+}
+
+function drawArrowsMulti(boardId, arrows) {
+    if (!arrows || !arrows.length) return;
+    var boardEl = document.getElementById(boardId);
+    if (!boardEl) return;
+    clearArrows(boardId);
+    var size = boardEl.offsetWidth;
+    var sq = size / 8;
+    function ctr(s) {
+        var col = 'abcdefgh'.indexOf(s[0]);
+        var row = parseInt(s[1]) - 1;
+        return { x: col*sq + sq/2, y: (7-row)*sq + sq/2 };
+    }
+    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('class','ex-arr-svg');
+    svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:20;';
+    var defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+    svg.appendChild(defs);
+    var lw = Math.max(4, sq*0.13);
+    arrows.forEach(function(arr, i) {
+        var col = arr.color || 'rgba(200,30,30,0.85)';
+        var markerId = 'arrm-' + boardId + '-' + i;
+        var marker = document.createElementNS('http://www.w3.org/2000/svg','marker');
+        marker.setAttribute('id', markerId);
+        marker.setAttribute('markerWidth','10'); marker.setAttribute('markerHeight','4');
+        marker.setAttribute('refX','9'); marker.setAttribute('refY','2');
+        marker.setAttribute('orient','auto');
+        var mp = document.createElementNS('http://www.w3.org/2000/svg','path');
+        mp.setAttribute('d','M0,0 L0,4 L10,2 z'); mp.setAttribute('fill', col);
+        marker.appendChild(mp); defs.appendChild(marker);
+        var f = ctr(arr.from), t = ctr(arr.to);
+        var dx=t.x-f.x, dy=t.y-f.y, len=Math.sqrt(dx*dx+dy*dy);
+        if (len < 1) return;
+        var ux=dx/len, uy=dy/len;
+        var line = document.createElementNS('http://www.w3.org/2000/svg','line');
+        line.setAttribute('x1', f.x + ux*sq*0.3); line.setAttribute('y1', f.y + uy*sq*0.3);
+        line.setAttribute('x2', t.x - ux*sq*0.35); line.setAttribute('y2', t.y - uy*sq*0.35);
+        line.setAttribute('stroke', col); line.setAttribute('stroke-width', lw);
+        line.setAttribute('marker-end', 'url(#'+markerId+')');
+        svg.appendChild(line);
+    });
+    boardEl.style.position = 'relative';
+    boardEl.appendChild(svg);
+}
+
+/* ── DEMO BOARD ── */
+var demoBoard;
+var DEMO_INITIAL = {c3:'wR', f4:'wN', c6:'bB', h6:'bB'};
+var demoState = 'initial';
+
+function demoReset() {
+    demoState = 'initial';
+    demoBoard.position(DEMO_INITIAL);
+    document.getElementById('d-badge').className = 'demo-badge badge-gray';
+    document.getElementById('d-badge').textContent = 'Poziție inițială';
+    document.getElementById('d-title').textContent = 'Ambele armate au câte o piesă atacată. Cine mută primul?';
+    document.getElementById('d-text').innerHTML =
+        '<b>🔴 Roșu:</b> Turnul alb (c3) atacă Nebunul negru (c6) — sunt pe aceeași coloană!<br><br>' +
+        '<b>🔵 Albastru:</b> Nebunul negru (h6) atacă Calul alb (f4) — sunt pe aceeași diagonală!<br><br>' +
+        'Apasă un buton să vezi ce se întâmplă când una din armate mută.';
+    document.getElementById('d-alb-btn').disabled = false;
+    document.getElementById('d-negru-btn').disabled = false;
+    document.getElementById('d-reset-btn').disabled = true;
+    setTimeout(function() {
+        drawArrowsMulti('demo-board', [
+            {from:'c3', to:'c6', color:'rgba(200,40,30,0.88)'},
+            {from:'h6', to:'f4', color:'rgba(40,80,200,0.88)'}
+        ]);
+    }, 200);
+}
+
+function demoCapture(side) {
+    if (side === 'alb') {
+        demoBoard.position({c6:'wR', f4:'wN', h6:'bB'});
+        document.getElementById('d-badge').className = 'demo-badge badge-red';
+        document.getElementById('d-badge').textContent = 'Alb mută: Txc6';
+        document.getElementById('d-title').textContent = 'Turnul alb a capturat Nebunul negru pe c6!';
+        document.getElementById('d-text').innerHTML =
+            'Turnul s-a deplasat de pe c3 pe c6 și a eliminat Nebunul negru de pe tablă.<br><br>' +
+            '<b>Rezultat:</b> Alb a câștigat un Nebun (3 puncte)!<br><br>' +
+            'Observă că Nebunul negru de pe h6 încă îl atacă pe Calul de pe f4 — Negrul poate captura și el la mutarea următoare.';
+        setTimeout(function() {
+            drawArrowsMulti('demo-board', [{from:'c3', to:'c6', color:'rgba(200,40,30,0.88)'}]);
+        }, 200);
+    } else {
+        demoBoard.position({c3:'wR', f4:'bB', c6:'bB'});
+        document.getElementById('d-badge').className = 'demo-badge badge-blue';
+        document.getElementById('d-badge').textContent = 'Negru mută: Nxf4';
+        document.getElementById('d-title').textContent = 'Nebunul negru a capturat Calul alb pe f4!';
+        document.getElementById('d-text').innerHTML =
+            'Nebunul s-a deplasat de pe h6 pe f4 și a eliminat Calul alb de pe tablă.<br><br>' +
+            '<b>Rezultat:</b> Negru a câștigat un Cal (3 puncte)!<br><br>' +
+            'Observă că Turnul alb de pe c3 încă atacă Nebunul de pe c6 — Albul poate captura și el la mutarea următoare.';
+        setTimeout(function() {
+            drawArrowsMulti('demo-board', [{from:'h6', to:'f4', color:'rgba(40,80,200,0.88)'}]);
+        }, 200);
+    }
+    document.getElementById('d-alb-btn').disabled = true;
+    document.getElementById('d-negru-btn').disabled = true;
+    document.getElementById('d-reset-btn').disabled = false;
+}
+
+/* ── EXERCISE DATA ── */
+var EX_ATAC = [
+    {
+        fen: '4k3/8/2b5/8/8/2R5/8/4K3 w - - 0 1',
+        arrows: [{from:'c3', to:'c6', color:'rgba(200,40,30,0.88)'}],
+        from: 'c3', to: 'c6',
+        label: 'Turnul alb de pe <b>c3</b> atacă Nebunul negru de pe <b>c6</b>. Sunt pe aceeași coloană — Turnul poate glisa direct spre el!',
+        prompt: '🎯 Trage Turnul alb pe c6 și capturează Nebunul!',
+        resultPos: {c6:'wR', e8:'bK', e1:'wK'},
+        fb: '✅ Excelent! Turnul a capturat Nebunul. Alb câștigă 3 puncte!'
+    },
+    {
+        fen: '4k3/8/7b/8/5N2/8/8/4K3 b - - 0 1',
+        arrows: [{from:'h6', to:'f4', color:'rgba(40,80,200,0.88)'}],
+        from: 'h6', to: 'f4',
+        label: 'Nebunul negru de pe <b>h6</b> atacă Calul alb de pe <b>f4</b>. Sunt pe aceeași diagonală — diagonala h6-f4!',
+        prompt: '🎯 Trage Nebunul negru pe f4 și capturează Calul!',
+        resultPos: {f4:'bB', e8:'bK', e1:'wK'},
+        fb: '✅ Bravo! Nebunul a capturat Calul. Negru câștigă 3 puncte!'
+    },
+    {
+        fen: '4k3/8/4n3/3P4/8/8/8/4K3 w - - 0 1',
+        arrows: [{from:'d5', to:'e6', color:'rgba(200,40,30,0.88)'}],
+        from: 'd5', to: 'e6',
+        label: 'Pionul alb de pe <b>d5</b> atacă Calul negru de pe <b>e6</b>. Pionii capturează în diagonală, spre față!',
+        prompt: '🎯 Trage Pionul alb pe e6 și capturează Calul!',
+        resultPos: {e6:'wP', e8:'bK', e1:'wK'},
+        fb: '✅ Perfect! Pionul a capturat Calul. Alb câștigă 3 puncte cu o piesă de 1 punct — super schimb!'
+    },
+    {
+        fen: '4k2r/8/8/8/3Q4/8/8/4K3 w - - 0 1',
+        arrows: [{from:'d4', to:'h8', color:'rgba(200,40,30,0.88)'}],
+        from: 'd4', to: 'h8',
+        label: 'Regina albă de pe <b>d4</b> atacă Turnul negru de pe <b>h8</b> pe diagonală (d4-e5-f6-g7-h8). Diagonala este liberă!',
+        prompt: '🎯 Trage Regina albă pe h8 și capturează Turnul!',
+        resultPos: {h8:'wQ', e8:'bK', e1:'wK'},
+        fb: '✅ Minunat! Regina a capturat Turnul. Alb câștigă 5 puncte — avantaj mare!'
+    },
+    {
+        fen: '4k3/8/8/4n3/8/3B4/8/4K3 b - - 0 1',
+        arrows: [{from:'e5', to:'d3', color:'rgba(40,80,200,0.88)'}],
+        from: 'e5', to: 'd3',
+        label: 'Calul negru de pe <b>e5</b> atacă Nebunul alb de pe <b>d3</b>. Calul sare în L: 2 pași + 1 pas lateral!',
+        prompt: '🎯 Trage Calul negru pe d3 și capturează Nebunul!',
+        resultPos: {d3:'bN', e8:'bK', e1:'wK'},
+        fb: '✅ Excelent! Calul a capturat Nebunul. Un schimb egal (3 puncte pentru 3 puncte).'
+    },
+    {
+        fen: '4k3/6r1/8/8/8/8/1B6/4K3 w - - 0 1',
+        arrows: [{from:'b2', to:'g7', color:'rgba(200,40,30,0.88)'}],
+        from: 'b2', to: 'g7',
+        label: 'Nebunul alb de pe <b>b2</b> atacă Turnul negru de pe <b>g7</b> pe diagonala lungă (b2-c3-d4-e5-f6-g7). Calea e liberă!',
+        prompt: '🎯 Trage Nebunul alb pe g7 și capturează Turnul!',
+        resultPos: {g7:'wB', e8:'bK', e1:'wK'},
+        fb: '✅ Superb! Nebunul a capturat Turnul. Alb câștigă 5 puncte cu o piesă de 3 — câștig net de 2 puncte!'
+    }
+];
+
+/* ── EXERCISE LOGIC ── */
+var exBoard, exIdx = 0, exAnswered = false;
+var pieceTheme = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+
+function loadEx(idx) {
+    exIdx = idx;
+    exAnswered = false;
+    var ex = EX_ATAC[idx];
+
+    if (!exBoard) {
+        $('#ex-main-board').css('width', '280px');
+        exBoard = Chessboard('ex-main-board', {
+            position: ex.fen,
+            draggable: true,
+            pieceTheme: pieceTheme,
+            onDrop: onExDrop,
+            onSnapEnd: function() {
+                if (!exAnswered) setTimeout(function() {
+                    drawArrowsMulti('ex-main-board', EX_ATAC[exIdx].arrows);
+                }, 50);
+            }
+        });
+        exBoard.resize();
+    } else {
+        exBoard.position(ex.fen);
+    }
+
+    document.getElementById('ex-label').innerHTML = ex.label;
+    document.getElementById('ex-prompt').innerHTML = ex.prompt;
+    document.getElementById('ex-feedback').className = 'ex-feedback';
+    document.getElementById('ex-feedback').textContent = '';
+    updateDots('ex-progress', EX_ATAC.length, idx);
+    document.getElementById('ex-prev-btn').disabled = (idx === 0);
+    document.getElementById('ex-next-btn').disabled = (idx === EX_ATAC.length - 1);
+
+    setTimeout(function() {
+        drawArrowsMulti('ex-main-board', ex.arrows);
+    }, 250);
+}
+
+function onExDrop(src, tgt) {
+    if (exAnswered) return 'snapback';
+    var ex = EX_ATAC[exIdx];
+    if (src === ex.from && tgt === ex.to) {
+        exAnswered = true;
+        setTimeout(function() {
+            exBoard.position(ex.resultPos);
+            clearArrows('ex-main-board');
+            var fb = document.getElementById('ex-feedback');
+            fb.className = 'ex-feedback ok';
+            if (exIdx === EX_ATAC.length - 1) {
+                fb.textContent = ex.fb + ' 🎉 Ai terminat toate exercițiile!';
+                spawnExConfetti();
+            } else {
+                fb.textContent = ex.fb;
+            }
+            spawnExConfetti();
+        }, 300);
+        return; // allow move
+    }
+    return 'snapback';
+}
+
+function nextEx() {
+    if (exIdx < EX_ATAC.length - 1) loadEx(exIdx + 1);
+}
+function prevEx() {
+    if (exIdx > 0) loadEx(exIdx - 1);
+}
+
+/* ── CONFETTI ── */
+function spawnExConfetti() {
+    var colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb','#ffffff'];
+    var end = Date.now() + 2000;
+    (function batch(){
+        if (Date.now() >= end) return;
+        for (var i = 0; i < 8; i++) {
+            var p = document.createElement('div');
+            p.className = 'confetti-page';
+            var w = 7 + Math.random()*7;
+            p.style.cssText = 'width:'+w+'px;height:'+(w*(0.4+Math.random()*0.6))+'px;'
+                +'background:'+colors[Math.floor(Math.random()*colors.length)]+';'
+                +'left:'+(Math.random()*100)+'vw;top:-12px;';
+            var dist = window.innerHeight*(0.6+Math.random()*0.5);
+            p.style.setProperty('--dx',(Math.random()-0.5)*180+'px');
+            p.style.setProperty('--dy', dist+'px');
+            p.style.setProperty('--rot',(Math.random()*720)+'deg');
+            p.style.setProperty('--dur',(1.4+Math.random()*1.2)+'s');
+            document.body.appendChild(p);
+            setTimeout(function(el){ document.body.removeChild(el); }, 3000, p);
+        }
+        setTimeout(batch, 120);
+    })();
+}
+
+/* ── DEFENSE SECTIONS ── */
+var DEF_DATA = {
+    fugi: { examples: [
+        { pos:{e3:'wR',e8:'bR',g1:'wK',g8:'bK'},
+          atkArr:[{from:'e8',to:'e3',color:'rgba(40,80,200,0.88)'}],
+          defArr:[{from:'e3',to:'a3',color:'rgba(40,180,80,0.88)'}],
+          resultPos:{a3:'wR',e8:'bR',g1:'wK',g8:'bK'},
+          atkText:'Turnul negru (e8) atacă Turnul alb (e3) pe coloana e.',
+          defText:'Turnul alb fuge lateral pe a3 — ieșit de pe coloana atacată!' },
+        { pos:{d4:'wB',d8:'bR',g1:'wK',g8:'bK'},
+          atkArr:[{from:'d8',to:'d4',color:'rgba(40,80,200,0.88)'}],
+          defArr:[{from:'d4',to:'b6',color:'rgba(40,180,80,0.88)'}],
+          resultPos:{b6:'wB',d8:'bR',g1:'wK',g8:'bK'},
+          atkText:'Turnul negru (d8) atacă Nebunul alb (d4) pe coloana d.',
+          defText:'Nebunul fuge pe diagonală la b6 — ieșit de pe coloana d și în siguranță!' },
+        { pos:{c5:'wQ',c1:'bR',g1:'wK',g8:'bK'},
+          atkArr:[{from:'c1',to:'c5',color:'rgba(40,80,200,0.88)'}],
+          defArr:[{from:'c5',to:'g5',color:'rgba(40,180,80,0.88)'},{from:'g5',to:'g8',color:'rgba(200,40,30,0.88)'},{from:'g5',to:'c1',color:'rgba(200,120,0,0.88)'}],
+          resultPos:{g5:'wQ',c1:'bR',g1:'wK',g8:'bK'},
+          atkText:'Turnul negru (c1) atacă Regina albă (c5) pe coloana c.',
+          defText:'Dg5! Atac dublu: Regina dă șah Regelui negru pe g8 (coloana g) ȘI amenință Turnul negru pe c1 (diagonala g5-c1). Negrul trebuie să scape din șah — Turnul se pierde!' }
+    ]},
+    apara: { examples: [
+        { pos:{d5:'wN',d8:'bQ',a1:'wR',g1:'wK',g8:'bK'},
+          atkArr:[{from:'d8',to:'d5',color:'rgba(40,80,200,0.88)'}],
+          defArr:[{from:'a1',to:'d1',color:'rgba(40,180,80,0.88)'}],
+          resultPos:{d5:'wN',d8:'bQ',d1:'wR',g1:'wK',g8:'bK'},
+          atkText:'Regina neagră (d8) atacă Calul alb (d5) pe coloana d.',
+          defText:'Turnul alb se mută pe d1 — dacă Rxd5, atunci Txd5! Calul este apărat.' },
+        { pos:{e5:'wP',e8:'bQ',a3:'wR',g1:'wK',g8:'bK'},
+          atkArr:[{from:'e8',to:'e5',color:'rgba(40,80,200,0.88)'}],
+          defArr:[{from:'a3',to:'e3',color:'rgba(40,180,80,0.88)'}],
+          resultPos:{e5:'wP',e8:'bQ',e3:'wR',g1:'wK',g8:'bK'},
+          atkText:'Regina neagră (e8) atacă Pionul alb (e5) pe coloana e.',
+          defText:'Turnul alb se mută pe e3 — dacă Rxe5, atunci Txe5! Pionul este apărat.' },
+        { pos:{g4:'wR',c8:'bB',a1:'wR',h1:'wK',g8:'bK'},
+          atkArr:[{from:'c8',to:'g4',color:'rgba(40,80,200,0.88)'}],
+          defArr:[{from:'a1',to:'g1',color:'rgba(40,180,80,0.88)'}],
+          resultPos:{g4:'wR',c8:'bB',g1:'wR',h1:'wK',g8:'bK'},
+          atkText:'Nebunul negru (c8) atacă Turnul alb (g4) pe diagonală (c8-g4).',
+          defText:'Al doilea Turn alb se mută pe g1 — dacă Nxg4, atunci Txg4! 💡 Notă: deși Turnul valorează mai mult decât Nebunul, Albul poate chiar să lase Nebunul să captureze — cu Rege+Turn față de Rege+Nebun, Albul poate da mat!' }
+    ]},
+    blocheaza: { examples: [
+        { pos:{e8:'bQ',h2:'wR',e1:'wK',g8:'bK'},
+          atkArr:[{from:'e8',to:'e1',color:'rgba(40,80,200,0.88)'}],
+          defArr:[{from:'h2',to:'e2',color:'rgba(40,180,80,0.88)'}],
+          resultPos:{e8:'bQ',e2:'wR',e1:'wK',g8:'bK'},
+          atkText:'Regina neagră (e8) amenință Regele alb (e1) pe coloana e — șah!',
+          defText:'Turnul alb se interpune pe e2 — blochează Regina și este apărat de Rege! Dacă Rxe2, atunci Rexe2.' },
+        { pos:{g7:'bB',c2:'wP',a1:'wQ',h1:'wK',g8:'bK'},
+          atkArr:[{from:'g7',to:'a1',color:'rgba(40,80,200,0.88)'}],
+          defArr:[{from:'c2',to:'c3',color:'rgba(40,180,80,0.88)'}],
+          resultPos:{g7:'bB',c3:'wP',a1:'wQ',h1:'wK',g8:'bK'},
+          atkText:'Nebunul negru (g7) atacă Regina albă (a1) pe diagonala lungă (g7-f6-e5-d4-c3-b2-a1).',
+          defText:'Pionul alb înaintează pe c3 — blochează diagonala Nebunului! Chiar dacă Nxc3, Albul pierde doar un Pion (1 pt) și salvează Regina.' },
+        { pos:{a1:'bR',c5:'wR',d1:'wK',g8:'bK'},
+          atkArr:[{from:'a1',to:'d1',color:'rgba(40,80,200,0.88)'}],
+          defArr:[{from:'c5',to:'c1',color:'rgba(40,180,80,0.88)'}],
+          resultPos:{a1:'bR',c1:'wR',d1:'wK',g8:'bK'},
+          atkText:'Turnul negru (a1) atacă Regele alb (d1) pe rândul 1 — șah!',
+          defText:'Turnul alb coboară pe c1 — se interpune și este apărat de Rege! Dacă Txc1, atunci Rexc1.' }
+    ]},
+    contraataca: { examples: [
+        { pos:{e4:'bN',d2:'wP',b4:'wN',b5:'wP',e7:'bQ',h8:'bK',h1:'wK'},
+          atkArr:[{from:'e4',to:'d2',color:'rgba(40,80,200,0.88)'}],
+          defArr:[{from:'b4',to:'c6',color:'rgba(200,120,0,0.88)'}],
+          resultPos:{e4:'bN',d2:'wP',c6:'wN',b5:'wP',e7:'bQ',h8:'bK',h1:'wK'},
+          atkText:'Calul negru (e4) amenință Pionul alb (d2).',
+          defText:'Calul alb sare pe c6 — atacă Regina neagră (e7)! Pionul de pe b5 apără Calul: dacă Rxc6, atunci Pxc6. Negrul trebuie să salveze Regina în loc să captureze Pionul.' },
+        { pos:{a7:'wR',h8:'bK',h5:'bB',f3:'wN',a1:'bQ',h1:'wK'},
+          atkArr:[{from:'h5',to:'f3',color:'rgba(40,80,200,0.88)'}],
+          defArr:[{from:'a7',to:'a1',color:'rgba(200,120,0,0.88)'}],
+          resultPos:{a1:'wR',h8:'bK',h5:'bB',h1:'wK'},
+          atkText:'Nebunul negru (h5) amenință Calul alb (f3).',
+          defText:'Turnul capturează Regina neagră (a1)! Chiar dacă pierdem Calul (3 pt), câștigăm Regina (9 pt) — net +6!' },
+        { pos:{f6:'wQ',c5:'bR',c3:'wB',f2:'bR',h8:'bK',h1:'wK'},
+          atkArr:[{from:'c5',to:'c3',color:'rgba(40,80,200,0.88)'}],
+          defArr:[{from:'f6',to:'f2',color:'rgba(200,120,0,0.88)'}],
+          resultPos:{f2:'wQ',c5:'bR',c3:'wB',h8:'bK',h1:'wK'},
+          atkText:'Turnul negru (c5) atacă Nebunul alb (c3).',
+          defText:'Regina albă capturează Turnul negru (f2)! Câștigăm un Turn (5 pt) cu prețul Nebunului (3 pt) — net +2!' }
+    ]}
+};
+
+var defBoards = {};
+var defIdx = {fugi:0, apara:0, blocheaza:0, contraataca:0};
+
+function loadDefEx(sid, idx) {
+    defIdx[sid] = idx;
+    var ex = DEF_DATA[sid].examples[idx];
+    if (!defBoards[sid]) {
+        $('#def-board-' + sid).css('width', '220px');
+        defBoards[sid] = Chessboard('def-board-' + sid, {
+            position: ex.pos, draggable: false, pieceTheme: pieceTheme
+        });
+        defBoards[sid].resize();
+    } else {
+        defBoards[sid].position(ex.pos);
+    }
+    document.getElementById('def-atk-' + sid).textContent = ex.atkText;
+    var defEl = document.getElementById('def-def-' + sid);
+    defEl.style.display = 'none';
+    defEl.textContent = ex.defText;
+    document.getElementById('def-show-' + sid).style.display = 'inline-block';
+    updateDots('def-cnt-' + sid, 3, idx);
+    document.getElementById('def-prev-' + sid).disabled = (idx === 0);
+    document.getElementById('def-next-' + sid).disabled = (idx === 2);
+    setTimeout(function() { drawArrowsMulti('def-board-' + sid, ex.atkArr); }, 250);
+}
+
+function showDefense(sid) {
+    var ex = DEF_DATA[sid].examples[defIdx[sid]];
+    document.getElementById('def-show-' + sid).style.display = 'none';
+    document.getElementById('def-def-' + sid).style.display = 'block';
+    defBoards[sid].position(ex.resultPos);
+    clearArrows('def-board-' + sid);
+    setTimeout(function() { drawArrowsMulti('def-board-' + sid, ex.defArr); }, 250);
+}
+
+function prevDefEx(sid) { if (defIdx[sid] > 0) loadDefEx(sid, defIdx[sid]-1); }
+function nextDefEx(sid) { if (defIdx[sid] < 2) loadDefEx(sid, defIdx[sid]+1); }
+
+/* ── INIT ── */
+$(document).ready(function() {
+    // demo board
+    $('#demo-board').css('width', '320px');
+    demoBoard = Chessboard('demo-board', {
+        position: DEMO_INITIAL,
+        draggable: false,
+        pieceTheme: pieceTheme
+    });
+    demoBoard.resize();
+    setTimeout(function() {
+        drawArrowsMulti('demo-board', [
+            {from:'c3', to:'c6', color:'rgba(200,40,30,0.88)'},
+            {from:'h6', to:'f4', color:'rgba(40,80,200,0.88)'}
+        ]);
+    }, 300);
+
+    // defense section boards
+    ['fugi','apara','blocheaza','contraataca'].forEach(function(sid) {
+        loadDefEx(sid, 0);
+    });
+
+    // exercise board
+    loadEx(0);
+});
+</script>
+</body>
+</html>

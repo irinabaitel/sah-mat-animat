@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecția 1 — Tabla de Șah</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: #F5A96E;
+    font-family: 'Nunito', sans-serif;
+    color: #1a1a2e;
+    padding: 0 0 60px;
+}
+
+/* TOP NAV */
+#nav {
+    position: sticky; top: 0;
+    background: rgba(245,169,110,0.92);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px;
+    z-index: 100;
+    border-bottom: 2px solid rgba(255,255,255,0.4);
+}
+.nav-btn {
+    background: rgba(255,255,255,0.55);
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.88em; font-weight: 700;
+    color: #1a3a6b;
+    text-decoration: none;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.85); }
+.nav-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.9em; color: #1a3a6b;
+    text-align: center;
+}
+.nav-badge {
+    background: #1a3a6b; color: white;
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.75em; font-weight: 700;
+    padding: 3px 12px; border-radius: 20px;
+    letter-spacing: 0.06em;
+}
+
+/* CONTENT */
+.content {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 28px 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* LESSON TITLE */
+.lesson-title {
+    text-align: center;
+    margin-bottom: 8px;
+}
+.lesson-title h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(1.7em, 5vw, 2.4em);
+    color: #1a3a6b;
+    text-shadow: 2px 2px 0 rgba(255,255,255,0.4);
+    line-height: 1.2;
+}
+.lesson-title .subtitle {
+    font-size: 0.92em;
+    color: rgba(26,26,46,0.6);
+    margin-top: 4px;
+}
+
+/* CARD */
+.card {
+    background: rgba(255,255,255,0.58);
+    border: 2px solid rgba(255,255,255,0.85);
+    border-radius: 20px;
+    padding: 22px 24px;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.07);
+}
+.card-icon {
+    font-size: 1.6em;
+    margin-bottom: 8px;
+    display: block;
+}
+.card h2 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.2em;
+    color: #1a3a6b;
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
+.card p {
+    font-size: 0.96em;
+    line-height: 1.75;
+    color: #2a2a3e;
+    margin-bottom: 10px;
+}
+.card p:last-child { margin-bottom: 0; }
+
+/* HIGHLIGHT BOX */
+.highlight-box {
+    background: rgba(26,58,107,0.1);
+    border-left: 4px solid #1a3a6b;
+    border-radius: 0 12px 12px 0;
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-size: 0.93em;
+    line-height: 1.7;
+    color: #1a1a2e;
+}
+.highlight-box strong { color: #1a3a6b; }
+
+/* TERMS GRID */
+.terms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+.term-card {
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 14px;
+    padding: 14px 16px;
+    text-align: center;
+}
+.term-card .term-icon { font-size: 1.5em; margin-bottom: 6px; }
+.term-card .term-name {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1em;
+    color: #1a3a6b;
+    margin-bottom: 4px;
+}
+.term-card .term-desc {
+    font-size: 0.78em;
+    color: rgba(26,26,46,0.65);
+    line-height: 1.5;
+}
+
+/* BOARD SECTION */
+.board-card {
+    background: rgba(255,255,255,0.58);
+    border: 2px solid rgba(255,255,255,0.85);
+    border-radius: 20px;
+    padding: 22px 24px;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.07);
+}
+.board-card h2 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.2em; color: #1a3a6b;
+    margin-bottom: 6px;
+}
+.board-card .board-intro {
+    font-size: 0.9em; color: rgba(26,26,46,0.65);
+    margin-bottom: 18px; line-height: 1.6;
+}
+
+.board-area {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+}
+#board-wrap {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 420px;
+}
+#board { width: 100%; }
+
+/* BOARD HIGHLIGHTS — applied in priority order (higher = last applied = wins) */
+.sq-row     { background: rgba(80,200,100,0.42) !important; }
+.sq-col     { background: rgba(80,160,255,0.42) !important; }
+.sq-diag    { background: rgba(180,80,220,0.42) !important; }
+.sq-excenter{ background: rgba(255,185,15,0.38) !important; }
+.sq-center  { background: rgba(255,155,10,0.72) !important; }
+.sq-cross   { background: rgba(255,80,50,0.78) !important; }
+
+/* LEGEND + INFO */
+.board-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 0 0 190px;
+    width: 190px;
+}
+.legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.legend-item {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.88em; color: #2a2a3e;
+}
+.legend-dot {
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+.dot-col     { background: rgba(80,160,255,0.55);  border: 2px solid rgba(80,160,255,0.8); }
+.dot-row     { background: rgba(80,200,100,0.55); border: 2px solid rgba(80,200,100,0.8); }
+.dot-cross   { background: rgba(255,80,50,0.8);   border: 2px solid rgba(255,80,50,1); }
+.dot-diag    { background: rgba(180,80,220,0.55); border: 2px solid rgba(180,80,220,0.9); }
+.dot-center  { background: rgba(255,155,10,0.8);  border: 2px solid rgba(255,155,10,1); }
+.dot-excenter{ background: rgba(255,185,15,0.5);  border: 2px solid rgba(255,185,15,0.85); }
+
+/* CLICK INFO / QUIZ BOX */
+#square-info {
+    background: rgba(26,58,107,0.1);
+    border: 2px solid rgba(26,58,107,0.2);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 0.88em;
+    line-height: 1.6;
+    color: #1a1a2e;
+    min-height: 80px;
+    transition: background 0.3s, border-color 0.3s;
+}
+#square-info.ok  { background: rgba(40,180,80,0.18);  border-color: rgba(40,180,80,0.5); }
+#square-info.err { background: rgba(200,50,50,0.15);  border-color: rgba(200,50,50,0.4); }
+#square-info.done { background: rgba(245,200,66,0.2); border-color: rgba(245,200,66,0.6); }
+#square-name {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.8em;
+    color: #1a3a6b;
+    display: block;
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+}
+/* Quiz highlights */
+.sq-correct { background: rgba(40,200,80,0.7) !important; }
+.sq-wrong   { background: rgba(220,50,50,0.6) !important; }
+
+/* TOGGLE BUTTONS */
+.toggle-group {
+    display: flex; flex-direction: column; gap: 6px;
+}
+.tog-btn {
+    padding: 7px 14px;
+    border-radius: 10px;
+    border: 2px solid;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82em; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+.tog-col { border-color: rgba(80,160,255,0.6); background: rgba(80,160,255,0.15); color: #1a3a6b; }
+.tog-col:hover, .tog-col.on { background: rgba(80,160,255,0.4); }
+.tog-row { border-color: rgba(80,200,100,0.6); background: rgba(80,200,100,0.15); color: #1a5c35; }
+.tog-row:hover, .tog-row.on { background: rgba(80,200,100,0.4); }
+.tog-cross   { border-color: rgba(255,80,50,0.6);   background: rgba(255,80,50,0.15);   color: #7a1a1a; }
+.tog-cross:hover, .tog-cross.on { background: rgba(255,80,50,0.4); }
+.tog-diag    { border-color: rgba(180,80,220,0.6);  background: rgba(180,80,220,0.12);  color: #5a1a7a; }
+.tog-diag:hover, .tog-diag.on { background: rgba(180,80,220,0.35); }
+.tog-center  { border-color: rgba(220,130,5,0.7);   background: rgba(255,155,10,0.18);  color: #6b4200; }
+.tog-center:hover, .tog-center.on { background: rgba(255,155,10,0.45); }
+.tog-excenter{ border-color: rgba(200,160,10,0.55); background: rgba(255,185,15,0.12);  color: #5a4800; }
+.tog-excenter:hover, .tog-excenter.on { background: rgba(255,185,15,0.38); }
+
+/* BOTTOM NAV */
+.bottom-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+}
+.nav-next {
+    background: #1a3a6b; color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 28px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1em; font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 3px 14px rgba(26,58,107,0.35);
+}
+.nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
+.progress {
+    font-size: 0.82em;
+    color: rgba(26,26,46,0.5);
+    text-align: center;
+}
+
+/* ── SETUP SECTION ── */
+#setup-board-wrap { flex: 1 1 auto; min-width: 0; max-width: 380px; }
+#setup-board { width: 100%; }
+.setup-panel {
+    flex: 0 0 200px; width: 200px;
+    display: flex; flex-direction: column; gap: 10px;
+}
+.setup-badge {
+    display: inline-block; align-self: flex-start;
+    background: rgba(26,58,107,0.12); color: #1a3a6b;
+    font-family: 'Baloo 2', cursive; font-size: 0.73em; font-weight: 700;
+    padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em;
+}
+#setup-title {
+    font-family: 'Baloo 2', cursive; font-size: 1em;
+    color: #1a3a6b; font-weight: 700; line-height: 1.3;
+}
+#setup-text {
+    background: rgba(26,58,107,0.09); border: 2px solid rgba(26,58,107,0.18);
+    border-radius: 12px; padding: 12px 14px;
+    font-size: 0.84em; line-height: 1.7; color: #1a1a2e;
+    flex: 1; min-height: 130px; transition: background 0.3s;
+}
+#setup-btn {
+    padding: 10px; border-radius: 12px; border: none;
+    background: #1a3a6b; color: white;
+    font-family: 'Baloo 2', cursive; font-size: 0.9em; font-weight: 700;
+    cursor: pointer; transition: background 0.2s;
+    box-shadow: 0 2px 10px rgba(26,58,107,0.28);
+}
+#setup-btn:hover { background: #2a5aab; }
+#setup-done {
+    display: none; background: rgba(40,180,80,0.18);
+    border: 2px solid rgba(40,180,80,0.45); border-radius: 12px;
+    padding: 10px 12px; font-family: 'Baloo 2', cursive;
+    font-size: 0.88em; color: #1a5c35; text-align: center; line-height: 1.5;
+}
+/* Setup board highlights */
+.sq-new   { background: rgba(245,200,50,0.72) !important; }
+.sq-fq    { background: rgba(60,120,220,0.35) !important; }
+.sq-fk    { background: rgba(220,60,60,0.32)  !important; }
+.sq-hw    { background: rgba(60,180,100,0.28) !important; }
+.sq-hb    { background: rgba(80,80,170,0.28)  !important; }
+.sq-ww    { background: rgba(255,195,20,0.68) !important; }
+.sq-wb    { background: rgba(30,30,30,0.42)   !important; }
+
+@media (max-width: 520px) {
+    .card { padding: 16px; }
+    .board-card { padding: 16px; }
+    #board-wrap { width: calc(100vw - 64px); }
+    #setup-board-wrap { width: calc(100vw - 64px); }
+    .setup-panel { flex: 0 0 auto; width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div id="nav">
+    <a href="hub.html" class="nav-btn">← Niveluri</a>
+    <div class="nav-title">Nivelul I · Bazele jocului</div>
+    <span class="nav-badge">Lecția 1</span>
+</div>
+
+<div class="content">
+
+    <!-- TITLU -->
+    <div class="lesson-title">
+        <h1>♟ Tabla de Șah</h1>
+        <div class="subtitle">Câmpul de bătălie al celor mai deștepți generali</div>
+    </div>
+
+    <!-- INTRODUCERE -->
+    <div class="card">
+        <span class="card-icon">🏛️</span>
+        <h2>O aventură veche de 1400 de ani</h2>
+        <p>Șahul este o aventură extraordinară care a început acum multă vreme, în jurul anului <strong>600 d.Hr.</strong> (adică acum mai bine de 1400 de ani!). Primul strămoș al șahului se numea <strong>Chaturanga</strong> și a apărut în îndepărtata Indie.</p>
+        <p>Imaginați-vă că sunteți <strong>comandantul unei armate curajoase</strong>. De partea cealaltă a mesei, un alt prieten conduce o armată rivală. Scopul vostru? Să folosiți tactici deștepte pentru a-l <strong>încolți pe Regele adversarului</strong>.</p>
+        <p>Dar, înainte de a trimite soldații la antrenament, trebuie să cunoaștem perfect <strong>terenul de luptă!</strong></p>
+    </div>
+
+    <!-- TABLA -->
+    <div class="card">
+        <span class="card-icon">🗺️</span>
+        <h2>Câmpul de Bătălie: Tabla de Șah</h2>
+        <p>Lumea noastră de joc este un <strong>pătrat mare, împărțit în 64 de pătrățele mici</strong>, albe și negre (sau de culori deschise și închise). Acestea sunt așezate alternativ — exact ca o tablă de șah!</p>
+        <div class="highlight-box">
+            <strong>🚩 Regula de Aur — Cum așezăm tabla?</strong><br>
+            Înainte de a striga „Start Joc!", verificăm dacă tabla este pusă corect.<br><br>
+            <strong>Regula colțului:</strong> Fiecare jucător trebuie să aibă în <strong>colțul din dreapta</strong> lui un <strong>pătrățel alb</strong>. Dacă în dreapta ta e unul negru — întoarce tabla!
+        </div>
+    </div>
+
+    <!-- COORDONATE -->
+    <div class="card">
+        <span class="card-icon">📏</span>
+        <h2>Cum citim harta? (Linii, Coloane și Diagonale)</h2>
+        <p>Pentru ca generalii să poată da ordine clare, fiecare pătrățel are un <strong>nume unic</strong> — exact ca o adresă poștală. Pe marginile tablei vei vedea litere și cifre.</p>
+
+        <div class="terms">
+            <div class="term-card">
+                <div class="term-icon">🧱</div>
+                <div class="term-name">Coloanele</div>
+                <div class="term-desc">Drumuri drepte spre adversar. Notate cu litere: <strong>a, b, c, d, e, f, g, h</strong></div>
+            </div>
+            <div class="term-card">
+                <div class="term-icon">🔢</div>
+                <div class="term-name">Liniile</div>
+                <div class="term-desc">Rânduri de la stânga la dreapta. Notate cu cifre: <strong>1, 2, 3... 8</strong></div>
+            </div>
+            <div class="term-card">
+                <div class="term-icon">📐</div>
+                <div class="term-name">Diagonalele</div>
+                <div class="term-desc">Poteci <em>pieziș</em> — formate din pătrățele de aceeași culoare. Pe o tablă sunt <strong>26 de diagonale</strong>. Numele unei diagonale e dat de <strong>câmpurile de la capetele ei</strong>: ex. diagonala <strong>a1–h8</strong>, diagonala <strong>g1–h2</strong>, diagonala <strong>c8–h3</strong>.</div>
+            </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top:14px;">
+            <strong>📍 Adresa Secretă a unui pătrățel</strong><br>
+            Fiecare pătrățel se numește folosind <strong>litera coloanei</strong> și <strong>cifra liniei</strong>, în această ordine.<br>
+            Exemplu: coloana <strong>e</strong> + linia <strong>4</strong> = pătrățelul <strong style="color:#c0392b">e4</strong>!
+        </div>
+
+        <div style="margin-top:10px;">
+            <p style="font-size:0.88em; color:rgba(26,26,46,0.6)">
+                <strong>Linia 1</strong> = chiar în fața armatei albe &nbsp;·&nbsp;
+                <strong>Linia 8</strong> = departe, unde stă armata neagră.<br>
+                Pe o diagonală neagră — rămâi mereu pe negru!
+            </p>
+        </div>
+    </div>
+
+    <!-- CENTRUL TABLEI -->
+    <div class="card">
+        <span class="card-icon">🎯</span>
+        <h2>Cel mai important loc: Centrul tablei</h2>
+        <p>Pe tabla de șah, <strong>nu toate pătrățelele sunt la fel de valoroase</strong>.</p>
+        <div class="highlight-box" style="border-left-color:#c87d00; background:rgba(255,185,15,0.1);">
+            Ne imaginăm că centrul tablei este un <strong>deal înalt</strong>, iar cine stă în vârful lui vede toate mișcările din jur.
+        </div>
+
+        <div class="terms" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));">
+            <div class="term-card" style="border: 2px solid rgba(255,155,10,0.5); background: rgba(255,155,10,0.1);">
+                <div class="term-icon">🟠</div>
+                <div class="term-name" style="color:#8B4500;">Centrul mic</div>
+                <div class="term-desc">Cele <strong>4 pătrățele</strong> din inima tablei: <strong>d4, e4, d5, e5</strong>. Cine controlează centrul mic, controlează partida!</div>
+            </div>
+            <div class="term-card" style="border: 2px solid rgba(200,160,10,0.45); background: rgba(255,185,15,0.09);">
+                <div class="term-icon">🟡</div>
+                <div class="term-name" style="color:#5a4800;">Centrul extins</div>
+                <div class="term-desc">Toate pătrățelele care <strong>se ating de centrul mic</strong> — un pătrat de 4×4 în jurul inimii tablei. 12 pătrățele în plus față de centrul mic.</div>
+            </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top:14px; border-left-color: #c87d00;">
+            <strong>💡 De ce contează centrul?</strong><br>
+            O piesă plasată în centru atacă mai multe pătrățele decât una în colț. De exemplu, un cal în centru atacă <strong>8 câmpuri</strong>, pe când un cal în colț atacă doar <strong>2</strong>!
+        </div>
+    </div>
+
+    <!-- BOARD INTERACTIV -->
+    <div class="board-card">
+        <h2>🎯 Hai să vedem pe tablă!</h2>
+        <p class="board-intro">
+            Apasă butoanele pentru a vedea coloana, linia, diagonalele, <strong style="color:#8B4500">centrul mic</strong> și <strong style="color:#5a4800">centrul extins</strong>. Poți activa orice combinație! Apoi apasă pe orice pătrățel ca să-i afli adresa.
+        </p>
+
+        <div class="board-area">
+            <div id="board-wrap"><div id="board"></div></div>
+
+            <div class="board-info">
+                <div class="toggle-group">
+                    <button class="tog-btn tog-col on"      id="btn-col"      onclick="toggleHighlight('col')">👁 Coloana e</button>
+                    <button class="tog-btn tog-row on"      id="btn-row"      onclick="toggleHighlight('row')">👁 Linia 4</button>
+                    <button class="tog-btn tog-diag on"     id="btn-diag"     onclick="toggleHighlight('diag')">👁 Diagonalele b1–h7 și h1–a8</button>
+                    <button class="tog-btn tog-excenter on" id="btn-excenter" onclick="toggleHighlight('excenter')">👁 Centrul extins</button>
+                    <button class="tog-btn tog-center on"   id="btn-center"   onclick="toggleHighlight('center')">👁 Centrul mic</button>
+                    <button class="tog-btn tog-cross on"    id="btn-cross"    onclick="toggleHighlight('cross')">👁 Pătrățelul e4</button>
+                </div>
+
+                <div id="square-info">
+                    Apasă pe un pătrățel ca să afli adresa lui!
+                </div>
+
+                <a href="https://lichess.org/training/coordinate" target="_blank"
+                   style="display:block; text-align:center; font-size:0.8em; color:#1a3a6b;
+                          background:rgba(255,255,255,0.6); border:2px solid rgba(255,255,255,0.9);
+                          border-radius:10px; padding:7px 10px; text-decoration:none;
+                          transition:background 0.2s;"
+                   onmouseover="this.style.background='rgba(255,255,255,0.9)'"
+                   onmouseout="this.style.background='rgba(255,255,255,0.6)'">
+                    🔗 Exersează coordonatele pe Lichess
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ASEZAREA PIESELOR -->
+    <div class="board-card">
+        <h2>🏰 Armata pe tablă — Cum aşezăm piesele</h2>
+        <p class="board-intro">Înainte de prima mutare, fiecare piesă are locul ei exact. Apasă <strong>Următor</strong> ca să plasezi piesele rând pe rând!</p>
+        <div class="board-area">
+            <div id="setup-board-wrap"><div id="setup-board"></div></div>
+            <div class="setup-panel">
+                <span class="setup-badge" id="setup-badge">Pas 1 din 10</span>
+                <div id="setup-title"></div>
+                <div id="setup-text"></div>
+                <button id="setup-btn" onclick="nextSetupStep()"></button>
+                <div id="setup-done">🎉 Ai parcurs toată aşezarea!<br>Acum ştii cum arată tabla la startul oricărei partide.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+        <a href="hub.html" class="nav-btn">← Niveluri</a>
+        <div class="progress">Lecția 1 din 7 · Nivelul I</div>
+        <a href="nivel1_lectia2.html" class="nav-next">Lecția 2 ▶</a>
+    </div>
+
+</div><!-- /.content -->
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+const COLS = ['a','b','c','d','e','f','g','h'];
+const ROWS = ['1','2','3','4','5','6','7','8'];
+
+const board = Chessboard('board', {
+    position: 'empty',
+    showNotation: true,
+    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+});
+
+/* ── TOGGLE HIGHLIGHTS ── */
+const state = { col:true, row:true, diag:true, excenter:true, center:true, cross:true };
+
+/* Both diagonals through e4 (excluding e4 itself) */
+const DIAG_E4 = ['a8','b7','c6','d5','f3','g2','h1','h7','g6','f5','d3','c2','b1'];
+
+/* Center squares */
+const CENTER_SQ   = ['d4','e4','d5','e5'];
+const EXCENTER_SQ = ['c3','c4','c5','c6','d3','d6','e3','e6','f3','f4','f5','f6'];
+
+const ALL_CLASSES = 'sq-col sq-row sq-diag sq-excenter sq-center sq-cross';
+
+function applyHighlights() {
+    const b = $('#board');
+    /* Clear everything */
+    COLS.forEach(c => ROWS.forEach(r => b.find(`.square-${c}${r}`).removeClass(ALL_CLASSES)));
+
+    /* Apply in ascending priority — last applied wins on any given square */
+    if (state.row)      COLS.forEach(c => b.find(`.square-${c}4`).addClass('sq-row'));
+    if (state.col)      ROWS.forEach(r => b.find(`.square-e${r}`).addClass('sq-col'));
+    if (state.diag)     DIAG_E4.forEach(sq => b.find(`.square-${sq}`).addClass('sq-diag'));
+    if (state.excenter) EXCENTER_SQ.forEach(sq => b.find(`.square-${sq}`).addClass('sq-excenter'));
+    if (state.center)   CENTER_SQ.forEach(sq => b.find(`.square-${sq}`).addClass('sq-center'));
+    if (state.cross)    b.find('.square-e4').addClass('sq-cross');
+}
+
+function toggleHighlight(type) {
+    state[type] = !state[type];
+    const btn = document.getElementById('btn-' + type);
+    btn.classList.toggle('on', state[type]);
+    btn.textContent = (state[type] ? '👁 ' : '🚫 ') + btn.textContent.slice(2);
+    applyHighlights();
+}
+
+/* ── QUIZ ── */
+const CHALLENGES = [
+    { sq:'f6', msg:'Coloana <strong>f</strong>, linia <strong>6</strong> — găsește <strong>f6</strong>!' },
+    { sq:'a1', msg:'Colțul <strong>din stânga-jos</strong> — prima literă, prima cifră!' },
+    { sq:'h8', msg:'Colțul <strong>opus</strong> — ultima literă, ultima cifră!' },
+    { sq:'d4', msg:'Inima tablei — unul din cele 4 câmpuri ale centrului mic: <strong>d4</strong>.' },
+    { sq:'b3', msg:'Coloana <strong>b</strong>, linia <strong>3</strong> — unde e <strong>b3</strong>?' },
+    { sq:'g7', msg:'Coloana <strong>g</strong>, linia <strong>7</strong> — aproape de armata neagră: <strong>g7</strong>.' },
+    { sq:'c5', msg:'Coloana <strong>c</strong>, linia <strong>5</strong> — găsește <strong>c5</strong>!' },
+    { sq:'e2', msg:'Ultimul: coloana <strong>e</strong>, linia <strong>2</strong> — chiar în fața regelui alb: <strong>e2</strong>!' },
+];
+
+let qIdx    = 0;
+let qActive = false;
+let qLocked = false;
+
+function setBox(cls, html) {
+    const box = document.getElementById('square-info');
+    box.className = cls;
+    box.innerHTML = html;
+}
+
+function showChallenge(i) {
+    qIdx    = i;
+    qActive = true;
+    qLocked = false;
+    setBox('', `🎯 <strong>Provocarea ${i + 1}:</strong><br>${CHALLENGES[i].msg}`);
+}
+
+function quizCorrect(sq) {
+    qLocked = true;
+    applyHighlights();
+    $('#board').find(`.square-${sq}`).addClass('sq-correct');
+    setBox('ok', `✅ <strong>Bravo!</strong> Ai găsit <strong>${sq}</strong>! &nbsp;
+        Coloana <strong>${sq[0]}</strong> + Linia <strong>${sq[1]}</strong>`);
+    setTimeout(() => {
+        $('#board').find(`.square-${sq}`).removeClass('sq-correct');
+        if (qIdx + 1 < CHALLENGES.length) {
+            showChallenge(qIdx + 1);
+        } else {
+            quizDone();
+        }
+    }, 1200);
+}
+
+function quizWrong(sq) {
+    qLocked = true;
+    $('#board').find(`.square-${sq}`).addClass('sq-wrong');
+    setBox('err', `❌ Nu e acela... încearcă din nou!<br>${CHALLENGES[qIdx].msg}`);
+    setTimeout(() => {
+        $('#board').find(`.square-${sq}`).removeClass('sq-wrong');
+        setBox('', `🎯 <strong>Provocarea ${qIdx + 1}:</strong><br>${CHALLENGES[qIdx].msg}`);
+        qLocked = false;
+    }, 1000);
+}
+
+function quizDone() {
+    qActive = false;
+    setBox('done', `🏆 <strong>Felicitări!</strong> Ai găsit toate cele ${CHALLENGES.length} adrese!<br>
+        Acum știi să citești orice câmp de pe tablă! ⭐`);
+}
+
+/* ── CLICK HANDLER (scoped to #board only) ── */
+$(document).on('click', function(e) {
+    if (!$(e.target).closest('#board').length) return;
+    const sq_el = $(e.target).closest('[class*="square-"]');
+    if (!sq_el.length) return;
+    const match = (sq_el.attr('class') || '').match(/square-([a-h][1-8])/);
+    if (!match) return;
+    if (qActive && !qLocked) {
+        const sq = match[1];
+        if (sq === CHALLENGES[qIdx].sq) quizCorrect(sq);
+        else quizWrong(sq);
+    }
+});
+
+/* ── SETUP BOARD ── */
+const POS_R = { a1:'wR',h1:'wR',a8:'bR',h8:'bR' };
+const POS_N = { ...POS_R, b1:'wN',g1:'wN',b8:'bN',g8:'bN' };
+const POS_B = { ...POS_N, c1:'wB',f1:'wB',c8:'bB',f8:'bB' };
+const POS_Q = { ...POS_B, d1:'wQ',d8:'bQ' };
+const POS_K = { ...POS_Q, e1:'wK',e8:'bK' };
+const POS_P = { ...POS_K,
+    a2:'wP',b2:'wP',c2:'wP',d2:'wP',e2:'wP',f2:'wP',g2:'wP',h2:'wP',
+    a7:'bP',b7:'bP',c7:'bP',d7:'bP',e7:'bP',f7:'bP',g7:'bP',h7:'bP'
+};
+
+const SETUP_STEPS = [
+    {
+        pos: {},
+        title: 'Tabla goală!',
+        text: 'Avem tabla pregătită. Vom plasa piesele pe rând — chiar ca la începutul unei partide adevărate!',
+        newSq: [], hl: null,
+        btn: '♖ Pune Turnurile ▶'
+    },
+    {
+        pos: POS_R,
+        title: '♖ Turnurile — în colțuri!',
+        text: 'Turnurile stau în cele patru <strong>colțuri ale tablei</strong>.<br><br>🟡 Alb: <strong>a1</strong> și <strong>h1</strong><br>⬛ Negru: <strong>a8</strong> și <strong>h8</strong><br><br>Ușor de ținut minte: pornești mereu din colțuri!',
+        newSq: ['a1','h1','a8','h8'], hl: null,
+        btn: '♘ Pune Caii ▶'
+    },
+    {
+        pos: POS_N,
+        title: '♘ Caii — lângă turnuri!',
+        text: 'Caii stau <strong>lângă turnuri</strong>, câte unul de fiecare parte.<br><br>🟡 Alb: <strong>b1</strong> și <strong>g1</strong><br>⬛ Negru: <strong>b8</strong> și <strong>g8</strong>',
+        newSq: ['b1','g1','b8','g8'], hl: null,
+        btn: '♗ Pune Nebunii ▶'
+    },
+    {
+        pos: POS_B,
+        title: '♗ Nebunii — unul pe alb, unul pe negru!',
+        text: 'Fiecare armată are doi Nebuni:<br><br>🟡 Alb: <strong>c1</strong> și <strong>f1</strong><br>⬛ Negru: <strong>c8</strong> și <strong>f8</strong><br><br>🔍 Unul stă pe câmp alb, celălalt pe câmp negru. <strong>Vor lupta toată partida pe aceeași culoare!</strong> Un Nebun nu poate trece vreodată pe culoarea celuilalt.',
+        newSq: ['c1','f1','c8','f8'], hl: null,
+        btn: '♛ Pune Reginele ▶'
+    },
+    {
+        pos: POS_Q,
+        title: '♛ Regina — pe câmpul de culoarea ei!',
+        text: '🔑 <strong>Regula de aur:</strong><br><em>„Regina stă pe un câmpel de culoarea ei!"</em><br><br>🟡 Regina albă → câmp alb → <strong>d1</strong><br>⬛ Regina neagră → câmp negru → <strong>d8</strong><br><br>💡 <strong>Truc simplu:</strong> dacă ai dubii, ține minte că Regina stă mereu pe <strong>coloana d</strong>!',
+        newSq: ['d1','d8'], hl: null,
+        btn: '♚ Pune Regii ▶'
+    },
+    {
+        pos: POS_K,
+        title: '♚ Regele — pe ultimul câmp liber!',
+        text: 'Regele ia câmpul rămas liber: <strong>e1</strong> (alb) și <strong>e8</strong> (negru) — coloana e.<br><br>Linia 1 completă:<br><strong>♖ ♘ ♗ ♛ ♚ ♗ ♘ ♖</strong>',
+        newSq: ['e1','e8'], hl: null,
+        btn: '♟ Pune Pionii ▶'
+    },
+    {
+        pos: POS_P,
+        title: '♟ Pionii — soldații din față!',
+        text: 'Cei 8 Pioni ai fiecărei armate ocupă un rând întreg:<br><br>🟡 Alb: <strong>linia 2</strong> (a2–h2)<br>⬛ Negru: <strong>linia 7</strong> (a7–h7)<br><br>🎉 <strong>Armata e completă!</strong> 32 de piese pe tablă — 16 de fiecare parte.',
+        newSq: ['a2','b2','c2','d2','e2','f2','g2','h2','a7','b7','c7','d7','e7','f7','g7','h7'],
+        hl: null,
+        btn: '⚔️ Flancurile ▶'
+    },
+    {
+        pos: POS_P,
+        title: '⚔️ Flancul Damei și Flancul Regelui',
+        text: 'Tabla se împarte pe verticală în două jumătăți:<br><br>🔵 <strong>Flancul Damei</strong> — coloanele <strong>a, b, c, d</strong> (stânga)<br>🔴 <strong>Flancul Regelui</strong> — coloanele <strong>e, f, g, h</strong> (dreapta)<br><br>Veți auzi des: „atac pe flancul regelui" sau „apărare pe flancul damei".',
+        newSq: [], hl: 'flanks',
+        btn: '🏠 Jumătățile ▶'
+    },
+    {
+        pos: POS_P,
+        title: '🏠 Jumătatea Albului și a Negrului',
+        text: 'Tabla se împarte și pe orizontală:<br><br>🟩 <strong>Jumătatea Albului</strong> — liniile <strong>1, 2, 3, 4</strong><br>🟦 <strong>Jumătatea Negrului</strong> — liniile <strong>5, 6, 7, 8</strong><br><br>Dacă piesele tale trec de linia 4 — ești pe teritoriul adversarului!',
+        newSq: [], hl: 'halves',
+        btn: '⚠️ Regula de bază ▶'
+    },
+    {
+        pos: POS_P,
+        title: '⚠️ Albul pe liniile 1–2, Negrul pe 7–8!',
+        text: '⚠️ <strong>Reține mereu:</strong><br><br>🟡 <strong>Albul</strong> îşi aşază piesele pe <strong>liniile 1 și 2</strong><br>⬛ <strong>Negrul</strong> îşi aşază piesele pe <strong>liniile 7 și 8</strong><br><br>Verifică înainte de fiecare partidă — o tablă greșit aşezată e invalidă!',
+        newSq: [], hl: 'warning',
+        btn: null
+    },
+];
+
+let setupIdx = 0;
+const SU_ALL = 'sq-new sq-fq sq-fk sq-hw sq-hb sq-ww sq-wb';
+
+function clearSetupHL() {
+    const b = $('#setup-board');
+    COLS.forEach(c => ROWS.forEach(r => b.find(`.square-${c}${r}`).removeClass(SU_ALL)));
+}
+
+function applySetupHL(step) {
+    clearSetupHL();
+    const b = $('#setup-board');
+    if (step.hl === 'flanks') {
+        ROWS.forEach(r => {
+            ['a','b','c','d'].forEach(c => b.find(`.square-${c}${r}`).addClass('sq-fq'));
+            ['e','f','g','h'].forEach(c => b.find(`.square-${c}${r}`).addClass('sq-fk'));
+        });
+    } else if (step.hl === 'halves') {
+        COLS.forEach(c => {
+            ['1','2','3','4'].forEach(r => b.find(`.square-${c}${r}`).addClass('sq-hw'));
+            ['5','6','7','8'].forEach(r => b.find(`.square-${c}${r}`).addClass('sq-hb'));
+        });
+    } else if (step.hl === 'warning') {
+        COLS.forEach(c => {
+            ['1','2'].forEach(r => b.find(`.square-${c}${r}`).addClass('sq-ww'));
+            ['7','8'].forEach(r => b.find(`.square-${c}${r}`).addClass('sq-wb'));
+        });
+    } else {
+        step.newSq.forEach(sq => b.find(`.square-${sq}`).addClass('sq-new'));
+    }
+}
+
+function renderSetupStep(idx) {
+    const step = SETUP_STEPS[idx];
+    setupBoard.position(step.pos, false);
+    document.getElementById('setup-badge').textContent = `Pas ${idx + 1} din ${SETUP_STEPS.length}`;
+    document.getElementById('setup-title').textContent = step.title;
+    document.getElementById('setup-text').innerHTML = step.text;
+    const btn = document.getElementById('setup-btn');
+    const done = document.getElementById('setup-done');
+    if (step.btn) {
+        btn.textContent = step.btn;
+        btn.style.display = 'block';
+        done.style.display = 'none';
+    } else {
+        btn.style.display = 'none';
+        done.style.display = 'block';
+    }
+    setTimeout(() => applySetupHL(step), 50);
+}
+
+function nextSetupStep() {
+    if (setupIdx < SETUP_STEPS.length - 1) {
+        setupIdx++;
+        renderSetupStep(setupIdx);
+    }
+}
+
+const setupBoard = Chessboard('setup-board', {
+    position: 'empty',
+    showNotation: true,
+    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+    draggable: false,
+});
+
+/* ── INIT ── */
+setTimeout(() => {
+    applyHighlights();
+    showChallenge(0);
+    renderSetupStep(0);
+}, 200);
+</script>
+</body>
+</html>

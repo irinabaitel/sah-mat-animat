@@ -1,121 +1,77 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sah Mat Animat - Patul</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            min-height: 100vh;
-            background: #F5A96E;
-            font-family: 'Nunito', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px;
-        }
-        .page {
-            max-width: 1000px;
-            width: 100%;
-            padding: 40px 44px 50px;
-            position: relative;
-        }
-        .corner-piece { position: absolute; width: 80px; height: 80px; }
-        .corner-tl { top: 0; left: 0; }
-        .corner-tr { top: 0; right: 0; transform: scaleX(-1); }
-        h1 {
-            font-family: 'Baloo 2', cursive;
-            font-size: 2.4em;
-            color: #1a3a6b;
-            text-transform: uppercase;
-            margin-bottom: 30px;
-            margin-top: 10px;
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
-            text-align: center;
-        }
-        .text-block {
-            font-size: 1.3em;
-            line-height: 1.75;
-            color: #1a1a1a;
-            margin-bottom: 22px;
-            text-align: justify;
-        }
-        .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 10px; }
-        .nav-btn {
-            display: inline-block;
-            background: #1a3a6b;
-            color: white;
-            font-family: 'Baloo 2', cursive;
-            font-size: 1.3em;
-            padding: 13px 40px;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: all 0.2s;
-            box-shadow: 0 5px 20px rgba(26,58,107,0.4);
-        }
-        .nav-btn:hover { background: #2a5aab; transform: translateY(-3px); }
-        .nav-btn.back { background: rgba(26,58,107,0.5); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecția 9 — Patul</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+
+#nav { position: sticky; top: 0; background: rgba(245,169,110,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; z-index: 100; border-bottom: 2px solid rgba(255,255,255,0.4); }
+.nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
+.nav-btn:hover { background: rgba(255,255,255,0.85); }
+.nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
+.nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; padding: 3px 12px; border-radius: 20px; text-decoration: none; }
+
+.content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
+
+.lesson-title { text-align: center; margin-bottom: 8px; }
+.lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
+.lesson-title .subtitle { font-size: 0.92em; color: rgba(26,26,46,0.6); margin-top: 4px; }
+
+.card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+.card-icon { font-size: 1.6em; margin-bottom: 8px; display: block; }
+.card h2 { font-family: 'Baloo 2', cursive; font-size: 1.2em; color: #1a3a6b; margin-bottom: 10px; }
+.card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; }
+.card p:last-child { margin-bottom: 0; }
+.tip-box { background: rgba(231,76,60,0.08); border-left: 4px solid #e74c3c; border-radius: 0 12px 12px 0; padding: 12px 16px; margin-top: 12px; font-size: 0.94em; line-height: 1.7; color: #1a1a2e; }
+.tip-box-green { background: rgba(39,174,96,0.08); border-left: 4px solid #27ae60; border-radius: 0 12px 12px 0; padding: 12px 16px; margin-top: 12px; font-size: 0.94em; line-height: 1.7; color: #1a1a2e; }
+
+.nav-bottom { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; }
+.nav-bottom a { display: inline-block; background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 1em; padding: 10px 28px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 16px rgba(26,58,107,0.35); }
+.nav-bottom a:hover { background: #2a5aab; transform: translateY(-2px); }
+.nav-bottom a.back { background: rgba(26,58,107,0.45); }
+</style>
 </head>
 <body>
-<div class="page">
-    <img src="piese_sah/rega 1.jpg"  style="position:absolute;top:0;left:0;height:105px;width:auto;mix-blend-mode:multiply;" alt="">
-    <img src="piese_sah/rege 2.png" style="position:absolute;top:0;right:0;height:105px;width:auto;mix-blend-mode:multiply;" alt="">
 
-    <h1>Patul</h1>
+<nav id="nav">
+    <a href="pagina5.html" class="nav-btn">← Înapoi</a>
+    <div class="nav-title">Lecția 9</div>
+    <a href="hub.html" class="nav-badge">Nivelul I</a>
+</nav>
 
-    <div class="text-block">
-        O partid&#259; de &#351;ah se poate termina cu <strong>&#8222;PAT&#8221;</strong> atunci c&#226;nd un juc&#259;tor este la mutare
-        &#351;i nu este &#238;n &#351;ah, dar nici nu poate muta o alt&#259; pies&#259; sau regele.
+<div class="content">
+
+    <div class="lesson-title">
+        <h1>Patul</h1>
+        <div class="subtitle">Lecția 9 · Nivelul I</div>
     </div>
 
-    <div class="text-block">
-        Piesele nu pot fi mutate pentru c&#259; fie sunt blocate (de exemplu pioni bloca&#539;i de alte piese care stau
-        &#238;n fa&#539;a lor), sau, dac&#259; aceste piese s-ar muta, ar l&#259;sa regele &#238;n &#351;ah.
+    <div class="card">
+        <span class="card-icon">🤝</span>
+        <h2>Ce este patul?</h2>
+        <p>O partidă de șah se poate termina cu <strong>„PAT"</strong> atunci când un jucător este la mutare și nu este în șah, dar nici nu poate muta o altă piesă sau regele.</p>
+        <p>Piesele nu pot fi mutate pentru că fie sunt blocate (de exemplu pioni blocați de alte piese care stau în fața lor), sau, dacă aceste piese s-ar muta, ar lăsa regele în șah.</p>
+        <p>De asemenea, se consideră că regele nu poate muta dacă este blocat de piesele proprii sau de piese ale adversarului care sunt apărate, sau dacă acolo unde are câmpuri libere, ar intra în șah.</p>
+        <p>Cu alte cuvinte, când jucătorul care este la mutare nu este în șah și nu poate muta nicio piesă, se spune că este <strong>pat</strong>, iar acest lucru este echivalent cu o <strong>remiză</strong>, adică fiecare jucător câștigă o jumătate de punct.</p>
     </div>
 
-    <div class="text-block">
-        De asemenea, se consider&#259; c&#259; regele nu poate muta dac&#259; este blocat de piesele proprii sau de piese
-        ale adversarului care sunt ap&#259;rate, sau dac&#259; acolo unde are c&#226;mpuri libere, ar intra &#238;n &#351;ah.
+    <div class="card">
+        <span class="card-icon">⚠️</span>
+        <h2>Când evităm patul, când îl căutăm?</h2>
+        <p>Atunci când jucăm șah și suntem în avantaj, trebuie să fim atenți să nu facem o mutare prin care adversarul nostru să facă pat. Nu ne dorim ca în loc de punctul victoriei să obținem doar o jumătate de punct.</p>
+        <div class="tip-box">⚠️ <strong>Atenție când ești în avantaj!</strong> Verifică mereu dacă adversarul poate scăpa prin pat înainte de a muta.</div>
+        <div class="tip-box-green" style="margin-top:10px;">✅ <strong>Folosește patul în apărare!</strong> Atunci când ești în dezavantaj, cu piese mai puține, un scor egal e mai bun decât o înfrângere — caută activ posibilitatea de pat.</div>
     </div>
 
-    <div class="text-block">
-        Cu alte cuvinte, c&#226;nd juc&#259;torul care este la mutare nu este &#238;n &#351;ah &#351;i nu poate muta nicio pies&#259;,
-        se spune c&#259; este <strong>pat</strong>, iar acest lucru este echivalent cu o <strong>remiz&#259;</strong>,
-        adic&#259; fiecare juc&#259;tor c&#226;&#351;tig&#259; o jum&#259;tate de punct.
+    <div class="nav-bottom">
+        <a href="pagina5.html" class="back">◀ Lecția 8</a>
+        <a href="sah_etern.html">Lecția 10 ▶</a>
     </div>
 
-    <div class="text-block">
-        Atunci c&#226;nd juc&#259;m &#351;ah &#351;i suntem &#238;n avantaj, trebuie s&#259; fim aten&#539;i s&#259; nu facem o mutare prin care
-        adversarul nostru s&#259; fac&#259; pat. Nu ne dorim ca &#238;n loc de punctul victoriei s&#259; ob&#539;inem doar o jum&#259;tate de punct.
-    </div>
-
-    <div class="text-block">
-        Totu&#351;i, atunci c&#226;nd suntem &#238;n dezavantaj, c&#226;nd avem piese mai pu&#539;ine, ne convine un scor egal,
-        astfel &#238;nc&#226;t este bine s&#259; c&#259;ut&#259;m s&#259; ob&#539;inem pat.
-    </div>
-
-    <div class="nav-buttons">
-        <a href="pagina6.html" class="nav-btn back">&#9664; &#206;napoi</a>
-        <a href="pagina8.html" class="nav-btn">&#206;nainte &#9654;</a>
-    </div>
 </div>
-<style>
-.hub-btn {
-    position: fixed; top: 16px; right: 16px;
-    background: #1a3a6b; color: white;
-    font-family: "Baloo 2", cursive; font-size: .85em;
-    padding: 8px 18px; border-radius: 50px;
-    text-decoration: none; box-shadow: 0 3px 12px rgba(26,58,107,.4);
-    z-index: 100; transition: background .2s;
-}
-.hub-btn:hover { background: #2a5aab; }
-</style>
-<a href="hub.html" class="hub-btn">&#9776; Cuprins</a>
-<script>
-const PAGE_ID = 'intro_pat';
-</script>
 </body>
 </html>

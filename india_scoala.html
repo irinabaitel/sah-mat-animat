@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Școala lui Tusk – India</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Cinzel:wght@700&family=IM+Fell+English:ital@1&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: #12080200;
+            font-family: 'Nunito', sans-serif;
+            user-select: none;
+        }
+
+        /* ===== FUNDAL ===== */
+        #bg {
+            position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(120,60,10,0.4) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 20%, rgba(80,40,5,0.35) 0%, transparent 55%),
+                linear-gradient(160deg, #1f0f03 0%, #2e1505 40%, #1a0c02 100%);
+        }
+
+        /* ===== LAYOUT PRINCIPAL ===== */
+        #main {
+            position: fixed; inset: 0; z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 16px 16px;
+            gap: 0;
+        }
+
+        /* ===== HEADER ===== */
+        #header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 8px 8px;
+            flex-shrink: 0;
+        }
+        #header-loc {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(0.75em, 1.6vw, 0.95em);
+            color: #f5d97a;
+            letter-spacing: 2px;
+        }
+        #btn-back {
+            background: rgba(245,217,122,0.12);
+            border: 1.5px solid rgba(245,217,122,0.3);
+            border-radius: 18px;
+            padding: 5px 14px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.75em;
+            color: #f5d97a;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        #btn-back:hover { background: rgba(245,217,122,0.22); }
+
+        /* ===== ZONA JUCĂRIEI (mesaj + tablă + panou) ===== */
+        #joc-wrapper {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(12px, 2.5vw, 30px);
+            min-height: 0;
+        }
+
+        /* ===== PANOU STÂNGA: TASk + speaker ===== */
+        #panou-stanga {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: clamp(160px, 22vw, 260px);
+            flex-shrink: 0;
+        }
+        #tusk-bubble {
+            background: rgba(245,217,122,0.08);
+            border: 1.5px solid rgba(245,217,122,0.2);
+            border-radius: 16px;
+            padding: 14px 16px;
+        }
+        #tusk-speaker {
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 8px;
+        }
+        #tusk-icon { font-size: 1.5em; }
+        #tusk-name {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8em; color: #f5d97a;
+        }
+        #tusk-text {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: clamp(0.82em, 1.5vw, 1em);
+            color: #f5e8c8;
+            line-height: 1.6;
+        }
+        #task-badge {
+            background: linear-gradient(135deg, #8B4500, #c47a00);
+            border-radius: 12px;
+            padding: 10px 14px;
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(0.75em, 1.3vw, 0.9em);
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(180,100,0,0.4);
+        }
+        #scor {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(0.8em, 1.4vw, 1em);
+            color: rgba(245,217,122,0.7);
+        }
+        #scor span { color: #f5d97a; font-weight: 700; }
+
+        /* ===== TABLA DE ȘAH ===== */
+        #tabla-wrapper {
+            position: relative;
+            flex-shrink: 0;
+        }
+        #tabla {
+            display: grid;
+            /* dimensiunea pătratelor se calculează din viewport */
+            --sq: min(calc((100vh - 120px) / 8), calc((100vw - 520px) / 8), 72px);
+            grid-template-columns: repeat(8, var(--sq));
+            grid-template-rows: repeat(8, var(--sq));
+            border: 3px solid #8B5E1A;
+            box-shadow:
+                0 0 0 2px #c47a00,
+                0 0 30px rgba(180,100,0,0.5),
+                0 8px 40px rgba(0,0,0,0.7);
+            border-radius: 4px;
+        }
+        .sq {
+            position: relative;
+            display: flex; align-items: center; justify-content: center;
+            cursor: default;
+        }
+        .sq.alb { background: #f0d9b5; }
+        .sq.negru { background: #b58863; }
+        .sq.highlight-move {
+            background: radial-gradient(circle, rgba(100,200,100,0.55) 40%, transparent 75%) !important;
+            cursor: pointer;
+        }
+        .sq.highlight-target {
+            outline: 3px solid rgba(255,220,50,0.8);
+            outline-offset: -3px;
+        }
+        .sq.highlight-ban {
+            background: radial-gradient(circle, rgba(220,60,60,0.45) 40%, transparent 75%) !important;
+        }
+
+        /* Coordonate litere/cifre */
+        .coord-file {
+            position: absolute; bottom: 2px; right: 3px;
+            font-size: calc(var(--sq) * 0.18);
+            color: rgba(0,0,0,0.3);
+            font-weight: 700; pointer-events: none;
+        }
+        .sq.negru .coord-file { color: rgba(255,255,255,0.3); }
+        .coord-rank {
+            position: absolute; top: 2px; left: 3px;
+            font-size: calc(var(--sq) * 0.18);
+            color: rgba(0,0,0,0.3);
+            font-weight: 700; pointer-events: none;
+        }
+        .sq.negru .coord-rank { color: rgba(255,255,255,0.3); }
+
+        /* ===== PIESE ===== */
+        .piesa {
+            position: absolute;
+            width: 88%; height: 88%;
+            object-fit: contain;
+            cursor: grab;
+            transition: transform 0.15s ease, filter 0.15s ease;
+            filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5));
+            z-index: 3;
+            touch-action: none;
+        }
+        .piesa:hover {
+            transform: scale(1.08);
+            filter: drop-shadow(0 5px 14px rgba(0,0,0,0.7)) brightness(1.05);
+        }
+        .piesa.selected {
+            transform: scale(1.14);
+            filter: drop-shadow(0 6px 18px rgba(245,200,50,0.8)) brightness(1.1);
+            cursor: grabbing;
+        }
+        .piesa.dragging {
+            position: fixed;
+            z-index: 999;
+            pointer-events: none;
+            cursor: grabbing;
+            transform: scale(1.18);
+            filter: drop-shadow(0 10px 24px rgba(0,0,0,0.8)) brightness(1.1);
+            transition: none;
+        }
+
+        /* ===== BANANA / FRUCT REWARD ===== */
+        .banana {
+            position: absolute;
+            font-size: calc(var(--sq) * 0.5);
+            pointer-events: none;
+            z-index: 2;
+            animation: banana-pulse 1.2s ease-in-out infinite;
+        }
+        @keyframes banana-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        .banana.colectat {
+            animation: banana-collect 0.4s ease-out forwards;
+        }
+        @keyframes banana-collect {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2.5) translateY(-20px); opacity: 0; }
+        }
+
+        /* ===== LINIE DE FINISH (marș soldați) ===== */
+        .sq.finish-line {
+            background: rgba(100,200,100,0.18) !important;
+            outline: 2px dashed rgba(100,220,100,0.5);
+            outline-offset: -2px;
+        }
+
+        /* ===== TOAST FEEDBACK ===== */
+        #toast {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            z-index: 50;
+            background: linear-gradient(135deg, #1a0e05, #2e1a05);
+            border: 2px solid #c47a00;
+            border-radius: 20px;
+            padding: 20px 40px;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #toast.visible {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: all;
+        }
+        #toast-emoji { font-size: 2.5em; margin-bottom: 6px; }
+        #toast-text {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1em, 2vw, 1.3em);
+            color: #f5d97a;
+            font-weight: 700;
+        }
+        #toast-sub {
+            font-family: 'Nunito', sans-serif;
+            font-size: clamp(0.8em, 1.4vw, 0.95em);
+            color: rgba(245,217,122,0.7);
+            margin-top: 6px;
+        }
+        #toast-btn {
+            margin-top: 14px;
+            padding: 10px 30px;
+            background: linear-gradient(135deg, #c47a00, #e8a820);
+            border: none; border-radius: 30px;
+            font-family: 'Cinzel', serif; font-size: 0.9em;
+            color: white; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(180,100,0,0.5);
+        }
+
+        /* ===== FADE ===== */
+        #fade-out {
+            position: fixed; inset: 0; z-index: 200;
+            background: #1a0e05; opacity: 0; pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+        #fade-out.active { opacity: 1; pointer-events: all; }
+
+        /* ===== INDICATOR ANIMAT MUTARE ===== */
+        .move-hint-dot {
+            position: absolute;
+            width: 28%; height: 28%;
+            border-radius: 50%;
+            background: rgba(100,210,100,0.55);
+            pointer-events: none; z-index: 2;
+        }
+    </style>
+</head>
+<body>
+<div id="bg"></div>
+<div id="fade-out"></div>
+
+<div id="main">
+    <div id="header">
+        <div id="header-loc">🐘 &nbsp;Școala lui Tusk · India 600</div>
+        <button id="btn-back" onclick="mergeInapoi()">← Poveste</button>
+    </div>
+
+    <div id="joc-wrapper">
+        <!-- Panou stânga -->
+        <div id="panou-stanga">
+            <div id="tusk-bubble">
+                <div id="tusk-speaker">
+                    <div id="tusk-icon">🐘</div>
+                    <div id="tusk-name">Tusk</div>
+                </div>
+                <div id="tusk-text">Bine ai venit în școala mea!</div>
+            </div>
+            <div id="task-badge" id="task-badge">Lecția 1</div>
+            <div id="scor">Colectate: <span id="scor-val">0</span> / <span id="scor-total">0</span></div>
+        </div>
+
+        <!-- Tabla -->
+        <div id="tabla-wrapper">
+            <div id="tabla"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast feedback -->
+<div id="toast">
+    <div id="toast-emoji">🎉</div>
+    <div id="toast-text">Bravo!</div>
+    <div id="toast-sub"></div>
+    <button id="toast-btn" onclick="urmatoareaLectie()">Înainte! ▶</button>
+</div>
+
+<script>
+/* ===========================================================
+   CONFIGURARE LECȚII
+=========================================================== */
+const P_D = 'piese_sah/india/piese_chaturanga/set_deschis/';
+const P_I = 'piese_sah/india/piese_chaturanga/set_inchis/';
+
+// Tipuri piese Chaturanga
+const TIPURI = {
+    gaja:   { src_d: P_D+'elefantul_gaja.png',     src_i: P_I+'elefantul_gaja.png',     label: 'Gaja' },
+    padati: { src_d: P_D+'pion_padati.png',         src_i: P_I+'pion_padati.png',         label: 'Padati' },
+    raja:   { src_d: P_D+'rege_raja.png',           src_i: P_I+'rege_raja.png',           label: 'Raja' },
+    ashva:  { src_d: P_D+'calul_ashva.png',         src_i: P_I+'calul_ashva.png',         label: 'Ashva' },
+    ratha:  { src_d: P_D+'caruldelupta_ratha.png',  src_i: P_I+'caruldelupta_ratha.png',  label: 'Ratha' },
+    mantri: { src_d: P_D+'sfetnic_mantri.png',      src_i: P_I+'sfetnic_mantri.png',      label: 'Mantri' },
+};
+
+/* -----------------------------------------------------------
+   LECȚIILE
+-----------------------------------------------------------
+   tip: 'banana'  — mută Gaja pe toate pătratele cu banane
+   tip: 'mars'    — mută 3 pioni până pe rândul 8
+   Fiecare lecție definește:
+   - pieseSursa: [{ tip, culoare, col, row }]  (1-based, row 1 = jos)
+   - bananePe (banana): [{col, row}]
+   - finishRow (mars): numărul rândului de finish
+*/
+const LECTII = [
+    {
+        id: 1,
+        tip: 'banana',
+        titlu: 'Culege Bananele!',
+        tusk: 'Gaja sare EXACT 2 pătrate pe diagonală. Mută-l să culeagă toate bananele! 🍌',
+        task: '🍌 Culege bananele cu Gaja',
+        pieseSursa: [
+            { tip: 'gaja', culoare: 'deschis', col: 4, row: 4 },
+        ],
+        bananePe: [
+            { col: 2, row: 2 },
+            { col: 6, row: 2 },
+            { col: 2, row: 6 },
+            { col: 6, row: 6 },
+        ],
+        toast: { emoji: '🐘🍌', text: 'Elefant-astic!', sub: 'Gaja a cules toate bananele! Sare ca un campion pe diagonală!' },
+    },
+    {
+        id: 2,
+        tip: 'mars',
+        titlu: 'Marșul Soldaților!',
+        tusk: 'Padati merge doar ÎNAINTE, câte un pătrat. Du-i pe toți 3 soldați până la linia verde! ⚔️',
+        task: '⚔️ Du soldații la linia verde',
+        pieseSursa: [
+            { tip: 'padati', culoare: 'deschis', col: 2, row: 2 },
+            { tip: 'padati', culoare: 'deschis', col: 4, row: 2 },
+            { tip: 'padati', culoare: 'deschis', col: 6, row: 2 },
+        ],
+        finishRow: 7,
+        toast: { emoji: '⚔️🎖️', text: 'Marș victorios!', sub: 'Toți soldații au ajuns! Ești un adevărat căpitan Kibo!' },
+    },
+    {
+        id: 3,
+        tip: 'banana',
+        titlu: 'Gaja cel Isteț!',
+        tusk: 'Acum bananele sunt mai ascunse. Planifică bine ruta lui Gaja! 🍌🍌',
+        task: '🍌 Rută mai lungă cu Gaja',
+        pieseSursa: [
+            { tip: 'gaja', culoare: 'deschis', col: 1, row: 1 },
+        ],
+        bananePe: [
+            { col: 3, row: 3 },
+            { col: 5, row: 5 },
+            { col: 7, row: 7 },
+            { col: 5, row: 1 },
+        ],
+        toast: { emoji: '🌟🐘', text: 'Strateg desăvârșit!', sub: 'Ai planificat perfect ruta lui Gaja!' },
+    },
+];
+
+/* ===========================================================
+   STARE JOC
+=========================================================== */
+let lectiaIdx = 0;
+let piese = [];        // [{tip, culoare, col, row, el}]
+let bananePe = [];     // [{col, row, el, colectata}]
+let finishRow = null;
+let selectedPiesa = null;
+let scorCurent = 0;
+let scorTotal = 0;
+let jocFinalizat = false;
+
+/* ===========================================================
+   CONSTRUIEȘTE TABLA
+=========================================================== */
+function construiesteTabla() {
+    const tabla = document.getElementById('tabla');
+    tabla.innerHTML = '';
+    const files = ['a','b','c','d','e','f','g','h'];
+    for (let row = 8; row >= 1; row--) {
+        for (let col = 1; col <= 8; col++) {
+            const sq = document.createElement('div');
+            sq.className = 'sq ' + ((row + col) % 2 === 0 ? 'alb' : 'negru');
+            sq.dataset.col = col;
+            sq.dataset.row = row;
+            sq.id = `sq-${col}-${row}`;
+
+            // Coordonate
+            if (col === 8) {
+                const r = document.createElement('span');
+                r.className = 'coord-rank';
+                r.textContent = row;
+                sq.appendChild(r);
+            }
+            if (row === 1) {
+                const f = document.createElement('span');
+                f.className = 'coord-file';
+                f.textContent = files[col - 1];
+                sq.appendChild(f);
+            }
+
+            sq.addEventListener('click', () => onClickPatrat(col, row));
+            tabla.appendChild(sq);
+        }
+    }
+}
+
+/* ===========================================================
+   ÎNCARCĂ LECȚIA
+=========================================================== */
+function incarcaLectie(idx) {
+    jocFinalizat = false;
+    scorCurent = 0;
+    piese = [];
+    bananePe = [];
+    finishRow = null;
+    selectedPiesa = null;
+
+    const lectie = LECTII[idx];
+
+    // Reset tabla
+    document.querySelectorAll('.sq').forEach(sq => {
+        sq.className = sq.className.replace(/highlight-\S+|finish-line/g, '').trim();
+        // Scoate piese și banane din pătrate
+        sq.querySelectorAll('.piesa, .banana').forEach(el => el.remove());
+    });
+
+    // UI
+    document.getElementById('tusk-text').textContent = lectie.tusk;
+    document.getElementById('task-badge').textContent = lectie.task;
+
+    // Piese
+    lectie.pieseSursa.forEach(p => {
+        const tip = TIPURI[p.tip];
+        const src = p.culoare === 'deschis' ? tip.src_d : tip.src_i;
+        const el = creeazaPiesa(src, p.col, p.row);
+        piese.push({ ...p, el, label: tip.label });
+    });
+
+    if (lectie.tip === 'banana') {
+        // Banane
+        scorTotal = lectie.bananePe.length;
+        lectie.bananePe.forEach(b => {
+            const el = creeazaBanana(b.col, b.row);
+            bananePe.push({ col: b.col, row: b.row, el, colectata: false });
+        });
+    } else if (lectie.tip === 'mars') {
+        // Linie de finish
+        finishRow = lectie.finishRow;
+        scorTotal = lectie.pieseSursa.length;
+        for (let col = 1; col <= 8; col++) {
+            const sq = getSq(col, finishRow);
+            if (sq) sq.classList.add('finish-line');
+        }
+    }
+
+    document.getElementById('scor-val').textContent = scorCurent;
+    document.getElementById('scor-total').textContent = scorTotal;
+}
+
+function creeazaPiesa(src, col, row) {
+    const sq = getSq(col, row);
+    const img = document.createElement('img');
+    img.src = src;
+    img.className = 'piesa';
+    img.draggable = false;
+    img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        onClickPiesa(img, col, row);
+    });
+    img.addEventListener('mousedown', (e) => startDrag(e, img));
+    img.addEventListener('touchstart', (e) => startDragTouch(e, img), { passive: false });
+    sq.appendChild(img);
+    return img;
+}
+
+function creeazaBanana(col, row) {
+    const sq = getSq(col, row);
+    const el = document.createElement('div');
+    el.className = 'banana';
+    el.textContent = '🍌';
+    sq.appendChild(el);
+    return el;
+}
+
+function getSq(col, row) {
+    return document.getElementById(`sq-${col}-${row}`);
+}
+
+function gasestePiesaLa(col, row) {
+    return piese.find(p => p.col === col && p.row === row);
+}
+
+/* ===========================================================
+   LOGICA MUTĂRILOR
+=========================================================== */
+function mutariValide(piesa) {
+    const lectie = LECTII[lectiaIdx];
+    const mut = [];
+
+    if (piesa.tip === 'gaja') {
+        // Gaja sare exact 2 diagonale
+        [[-2,-2],[-2,2],[2,-2],[2,2]].forEach(([dc, dr]) => {
+            const nc = piesa.col + dc;
+            const nr = piesa.row + dr;
+            if (nc >= 1 && nc <= 8 && nr >= 1 && nr <= 8) {
+                if (!gasestePiesaLa(nc, nr)) mut.push({ col: nc, row: nr });
+            }
+        });
+    } else if (piesa.tip === 'padati') {
+        // Padati: 1 înainte (pentru alb = row crește)
+        const nr = piesa.row + 1;
+        if (nr <= 8 && !gasestePiesaLa(piesa.col, nr)) {
+            mut.push({ col: piesa.col, row: nr });
+        }
+    }
+    return mut;
+}
+
+function selecteazaPiesa(piesa) {
+    // Deselectează orice anterior
+    if (selectedPiesa) {
+        selectedPiesa.el.classList.remove('selected');
+        curataHighlights();
+    }
+    if (selectedPiesa === piesa) { selectedPiesa = null; return; }
+
+    selectedPiesa = piesa;
+    piesa.el.classList.add('selected');
+
+    // Arată mutări valide
+    mutariValide(piesa).forEach(({ col, row }) => {
+        const sq = getSq(col, row);
+        if (sq) sq.classList.add('highlight-move');
+    });
+}
+
+function curataHighlights() {
+    document.querySelectorAll('.sq').forEach(sq => {
+        sq.classList.remove('highlight-move', 'highlight-target', 'highlight-ban');
+    });
+}
+
+function onClickPiesa(el, col, row) {
+    if (jocFinalizat) return;
+    const p = gasestePiesaLa(col, row);
+    if (!p) return;
+    selecteazaPiesa(p);
+}
+
+function onClickPatrat(col, row) {
+    if (jocFinalizat || !selectedPiesa) return;
+    const valid = mutariValide(selectedPiesa).some(m => m.col === col && m.row === row);
+    if (!valid) {
+        // animație shake pe piesă
+        selectedPiesa.el.style.animation = 'none';
+        setTimeout(() => selectedPiesa.el.style.animation = '', 50);
+        return;
+    }
+    mutaPiesa(selectedPiesa, col, row);
+}
+
+function mutaPiesa(piesa, col, row) {
+    // Scoate din pătrat vechi
+    const sqVechi = getSq(piesa.col, piesa.row);
+    if (sqVechi) sqVechi.querySelector('.piesa')?.remove();
+
+    piesa.col = col;
+    piesa.row = row;
+
+    // Pune în pătrat nou
+    const sqNou = getSq(col, row);
+    piesa.el = creeazaPiesaLa(piesa, col, row, sqNou);
+
+    selectedPiesa = null;
+    curataHighlights();
+
+    // Verifică colectare/finish
+    verificaEveniment(piesa);
+}
+
+function creeazaPiesaLa(piesa, col, row, sq) {
+    const tip = TIPURI[piesa.tip];
+    const src = piesa.culoare === 'deschis' ? tip.src_d : tip.src_i;
+    const img = document.createElement('img');
+    img.src = src;
+    img.className = 'piesa';
+    img.draggable = false;
+    img.addEventListener('click', (e) => { e.stopPropagation(); onClickPiesa(img, col, row); });
+    img.addEventListener('mousedown', (e) => startDrag(e, img));
+    img.addEventListener('touchstart', (e) => startDragTouch(e, img), { passive: false });
+    sq.appendChild(img);
+    return img;
+}
+
+function verificaEveniment(piesa) {
+    const lectie = LECTII[lectiaIdx];
+
+    if (lectie.tip === 'banana') {
+        const banana = bananePe.find(b => b.col === piesa.col && b.row === piesa.row && !b.colectata);
+        if (banana) {
+            banana.colectata = true;
+            banana.el.classList.add('colectat');
+            setTimeout(() => banana.el.remove(), 400);
+            scorCurent++;
+            document.getElementById('scor-val').textContent = scorCurent;
+            if (scorCurent >= scorTotal) setTimeout(arataToast, 500);
+        }
+    } else if (lectie.tip === 'mars') {
+        if (piesa.row === finishRow) {
+            scorCurent++;
+            document.getElementById('scor-val').textContent = scorCurent;
+            // Celebrare mică
+            const sq = getSq(piesa.col, piesa.row);
+            sq.classList.add('highlight-target');
+            if (scorCurent >= scorTotal) setTimeout(arataToast, 500);
+        }
+    }
+}
+
+/* ===========================================================
+   DRAG & DROP (mouse + touch)
+=========================================================== */
+let dragPiesa = null;
+let dragEl = null;
+let dragOffX = 0, dragOffY = 0;
+
+function startDrag(e, img) {
+    if (jocFinalizat) return;
+    e.preventDefault();
+    const rect = img.getBoundingClientRect();
+    dragOffX = e.clientX - rect.left - rect.width / 2;
+    dragOffY = e.clientY - rect.top - rect.height / 2;
+
+    const col = parseInt(img.parentElement.dataset.col);
+    const row = parseInt(img.parentElement.dataset.row);
+    dragPiesa = gasestePiesaLa(col, row);
+    if (!dragPiesa) return;
+
+    selecteazaPiesa(dragPiesa);
+
+    dragEl = img.cloneNode();
+    dragEl.className = 'piesa dragging';
+    dragEl.style.width = rect.width + 'px';
+    dragEl.style.height = rect.height + 'px';
+    dragEl.style.left = (e.clientX - rect.width / 2) + 'px';
+    dragEl.style.top  = (e.clientY - rect.height / 2) + 'px';
+    document.body.appendChild(dragEl);
+
+    document.addEventListener('mousemove', onDragMove);
+    document.addEventListener('mouseup', onDragEnd);
+}
+
+function startDragTouch(e, img) {
+    if (jocFinalizat) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = img.getBoundingClientRect();
+
+    const col = parseInt(img.parentElement.dataset.col);
+    const row = parseInt(img.parentElement.dataset.row);
+    dragPiesa = gasestePiesaLa(col, row);
+    if (!dragPiesa) return;
+
+    selecteazaPiesa(dragPiesa);
+
+    dragEl = img.cloneNode();
+    dragEl.className = 'piesa dragging';
+    dragEl.style.width = rect.width + 'px';
+    dragEl.style.height = rect.height + 'px';
+    dragEl.style.left = (touch.clientX - rect.width / 2) + 'px';
+    dragEl.style.top  = (touch.clientY - rect.height / 2) + 'px';
+    document.body.appendChild(dragEl);
+
+    document.addEventListener('touchmove', onDragMoveTouch, { passive: false });
+    document.addEventListener('touchend', onDragEndTouch);
+}
+
+function onDragMove(e) {
+    if (!dragEl) return;
+    const w = parseFloat(dragEl.style.width);
+    const h = parseFloat(dragEl.style.height);
+    dragEl.style.left = (e.clientX - w / 2) + 'px';
+    dragEl.style.top  = (e.clientY - h / 2) + 'px';
+}
+
+function onDragMoveTouch(e) {
+    e.preventDefault();
+    if (!dragEl) return;
+    const touch = e.touches[0];
+    const w = parseFloat(dragEl.style.width);
+    const h = parseFloat(dragEl.style.height);
+    dragEl.style.left = (touch.clientX - w / 2) + 'px';
+    dragEl.style.top  = (touch.clientY - h / 2) + 'px';
+}
+
+function onDragEnd(e) {
+    document.removeEventListener('mousemove', onDragMove);
+    document.removeEventListener('mouseup', onDragEnd);
+    finalizeDrag(e.clientX, e.clientY);
+}
+
+function onDragEndTouch(e) {
+    document.removeEventListener('touchmove', onDragMoveTouch);
+    document.removeEventListener('touchend', onDragEndTouch);
+    const touch = e.changedTouches[0];
+    finalizeDrag(touch.clientX, touch.clientY);
+}
+
+function finalizeDrag(cx, cy) {
+    if (dragEl) { dragEl.remove(); dragEl = null; }
+
+    // Găsește pătratul de sub cursor
+    const el = document.elementFromPoint(cx, cy);
+    const sq = el?.closest('.sq');
+    if (sq && dragPiesa) {
+        const col = parseInt(sq.dataset.col);
+        const row = parseInt(sq.dataset.row);
+        const valid = mutariValide(dragPiesa).some(m => m.col === col && m.row === row);
+        if (valid) {
+            mutaPiesa(dragPiesa, col, row);
+            dragPiesa = null;
+            return;
+        }
+    }
+    // Mutare invalidă — deselectează
+    if (dragPiesa) {
+        dragPiesa.el.classList.remove('selected');
+        curataHighlights();
+        selectedPiesa = null;
+        dragPiesa = null;
+    }
+}
+
+/* ===========================================================
+   TOAST & NAVIGARE LECȚII
+=========================================================== */
+function arataToast() {
+    jocFinalizat = true;
+    const lectie = LECTII[lectiaIdx];
+    document.getElementById('toast-emoji').textContent = lectie.toast.emoji;
+    document.getElementById('toast-text').textContent  = lectie.toast.text;
+    document.getElementById('toast-sub').textContent   = lectie.toast.sub;
+
+    const eUltima = lectiaIdx >= LECTII.length - 1;
+    document.getElementById('toast-btn').textContent = eUltima ? 'Continuă aventura ▶' : 'Lecția următoare ▶';
+    document.getElementById('toast').classList.add('visible');
+}
+
+function urmatoareaLectie() {
+    document.getElementById('toast').classList.remove('visible');
+    if (lectiaIdx < LECTII.length - 1) {
+        lectiaIdx++;
+        incarcaLectie(lectiaIdx);
+    } else {
+        // Toate lecțiile terminate — mergi mai departe
+        document.getElementById('fade-out').classList.add('active');
+        setTimeout(() => { window.location.href = 'harta_magica.html'; }, 800);
+    }
+}
+
+function mergeInapoi() {
+    document.getElementById('fade-out').classList.add('active');
+    setTimeout(() => { window.location.href = 'india.html'; }, 800);
+}
+
+/* ===========================================================
+   INIT
+=========================================================== */
+construiesteTabla();
+incarcaLectie(lectiaIdx);
+</script>
+</body>
+</html>

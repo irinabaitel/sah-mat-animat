@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mansub-a lui Sa'id — Persia 800 AD</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    background:
+        linear-gradient(rgba(10,3,25,0.58), rgba(10,3,25,0.58)),
+        url('piese_sah/Persia/exercitiu_persia_bg.jpg') center/cover no-repeat fixed;
+    color: #F5E6C8;
+}
+
+/* NAV */
+#nav-top {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 52px;
+    background: rgba(15,5,35,0.88);
+    backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px;
+    z-index: 100;
+    border-bottom: 1px solid rgba(200,150,12,0.3);
+}
+.nav-btn {
+    background: rgba(200,150,12,0.18);
+    border: 1px solid rgba(200,150,12,0.45);
+    color: #E6A817;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.88em; font-weight: 700;
+    padding: 6px 16px; border-radius: 20px;
+    cursor: pointer; transition: background 0.2s;
+}
+.nav-btn:hover { background: rgba(200,150,12,0.38); }
+.nav-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1em; color: #E6A817; letter-spacing: 0.06em;
+}
+
+/* MAIN */
+#main {
+    padding-top: 68px; padding-bottom: 40px;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 18px;
+}
+
+/* DIALOGUE */
+#dialogue-box {
+    background: rgba(15,5,35,0.82);
+    border: 1px solid rgba(200,150,12,0.35);
+    border-radius: 16px;
+    padding: 14px 24px;
+    max-width: 680px; width: calc(100% - 32px);
+    text-align: center;
+}
+#dialogue-speaker {
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.82em; color: #C8960C;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 5px;
+}
+#dialogue-text { font-size: 0.97em; line-height: 1.65; color: #F5E6C8; }
+
+/* BOARD AREA */
+#board-area {
+    display: flex; gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap; justify-content: center;
+}
+#board-wrap {
+    width: min(440px, calc(100vw - 32px));
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+}
+#board { width: 100%; }
+
+/* INFO PANEL */
+#info-panel {
+    background: rgba(15,5,35,0.82);
+    border: 1px solid rgba(200,150,12,0.3);
+    border-radius: 16px;
+    padding: 18px 16px;
+    width: 250px; min-width: 200px;
+    display: flex; flex-direction: column; gap: 12px;
+}
+#status-box {
+    background: rgba(200,150,12,0.12);
+    border: 1px solid rgba(200,150,12,0.35);
+    border-radius: 10px;
+    padding: 11px 13px;
+    font-size: 0.9em; line-height: 1.6; color: #F5E6C8;
+    min-height: 56px;
+}
+#status-box.ok  { background: rgba(40,180,80,0.18); border-color: rgba(40,180,80,0.45); }
+#status-box.err { background: rgba(200,50,50,0.18); border-color: rgba(200,50,50,0.45); }
+
+/* MOVE TRACKER */
+#moves-display {
+    font-size: 0.88em; line-height: 2;
+    color: rgba(245,230,200,0.55);
+    background: rgba(0,0,0,0.25);
+    border-radius: 8px; padding: 8px 12px;
+}
+.mv-cur  { color: #E6A817; font-weight: 800; }
+.mv-done { color: #7DCC88; font-weight: 700; }
+.mv-pend { color: rgba(245,230,200,0.3); }
+
+/* BUTTONS */
+.btn {
+    display: block; width: 100%;
+    padding: 9px 12px;
+    border: none; border-radius: 10px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.93em; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+}
+.btn-secondary {
+    background: rgba(200,150,12,0.22);
+    border: 1px solid rgba(200,150,12,0.5);
+    color: #E6A817;
+}
+.btn-secondary:hover { background: rgba(200,150,12,0.42); }
+.btn-hint {
+    background: rgba(80,80,180,0.25);
+    border: 1px solid rgba(120,120,220,0.45);
+    color: #AAB4FF;
+}
+.btn-hint:hover { background: rgba(80,80,180,0.45); }
+.btn-gold {
+    background: linear-gradient(135deg, #B8860B, #DAA520, #B8860B);
+    color: #1A0A00; display: none; margin-top: 4px;
+    box-shadow: 0 3px 16px rgba(200,150,12,0.4);
+}
+.btn-gold.show { display: block; }
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 5px 24px rgba(200,150,12,0.6); }
+
+/* CONFETTI */
+@keyframes cf { 0%{opacity:1;transform:translate(0,0) rotate(0deg);} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot));} }
+.cf { position:fixed; pointer-events:none; z-index:9999; border-radius:2px; animation:cf var(--dur) ease-in forwards; }
+
+@media (max-width: 600px) {
+    #info-panel { width: calc(100% - 32px); }
+}
+</style>
+</head>
+<body>
+
+<div id="nav-top">
+    <button class="nav-btn" onclick="location.href='india_reguli.html'">← Lecție</button>
+    <span class="nav-title">⚔️ Persia · 800 AD</span>
+    <button class="nav-btn" onclick="location.href='harta_magica.html'">🗺 Hartă</button>
+</div>
+
+<div id="main">
+
+    <div id="dialogue-box">
+        <div id="dialogue-speaker">🐘 Tusk</div>
+        <div id="dialogue-text">Sa'id a lăsat această problemă pentru cei mai curajoși. Albele mută primele — găsește calea spre șah-mat în 3 mutări!</div>
+    </div>
+
+    <div id="board-area">
+        <div id="board-wrap"><div id="board"></div></div>
+
+        <div id="info-panel">
+            <div id="status-box">♟ Mutarea ta! Albe mută primele.</div>
+
+            <div id="moves-display">
+                <div>1. <span id="m1w" class="mv-cur">?</span> <span id="m1b" class="mv-pend"></span></div>
+                <div>2. <span id="m2w" class="mv-pend">?</span> <span id="m2b" class="mv-pend"></span></div>
+                <div>3. <span id="m3w" class="mv-pend">?</span></div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="restartPuzzle()">↺ Reîncearcă</button>
+            <button class="btn btn-hint"      onclick="showHint()">💡 Indiciu</button>
+            <button class="btn btn-gold" id="btn-continue" onclick="location.href='harta_magica.html'">Continuă spre Persia ▶</button>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+/* =====================================================
+   PUZZLE: Mansub-a lui Sa'id — Șah-mat în 3 mutări
+   FEN: 7k/6p1/8/8/8/8/6PP/4Q1RK w - - 0 1
+   Solution (forced):
+     1. Qe8+!  Kh7  (forced — g8 covered, g7 blocked)
+     2. Rg7+!  Kh6  (forced — all other squares covered)
+     3. Qg6#         (all escape squares covered)
+===================================================== */
+const START_FEN = '7k/6p1/8/8/8/8/6PP/4Q1RK w - - 0 1';
+
+const SOLUTION = [
+    { from:'e1', to:'e8' },   // 1. Qe8+
+    { from:'g1', to:'g7' },   // 2. Rg7+
+    { from:'e8', to:'g6' },   // 3. Qg6#
+];
+const BLACK_REPLY = [
+    { from:'h8', to:'h7' },   // 1... Kh7
+    { from:'h7', to:'h6' },   // 2... Kh6
+];
+const HINTS = [
+    'Privește Regina — poate face o mutare spectaculoasă pe ultima linie!',
+    'Acum Turnul are un rol important pe coloana g.',
+    'Regina caută pătratul perfect pentru a-l încolți pe Rege!',
+];
+
+let chess   = new Chess(START_FEN);
+let board;
+let step    = 0;   // which white move (0,1,2)
+let solved  = false;
+let hintIdx = 0;
+
+/* ---- Board init ---- */
+board = Chessboard('board', {
+    position: START_FEN,
+    pieceTheme: 'https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/img/chesspieces/wikipedia/{piece}.png',
+    draggable: true,
+    onDragStart(source, piece) {
+        if (solved || chess.turn() !== 'w' || piece[0] === 'b') return false;
+    },
+    onDrop(source, target) {
+        const move = chess.move({ from: source, to: target, promotion: 'q' });
+        if (!move) return 'snapback';
+
+        const exp = SOLUTION[step];
+        if (source !== exp.from || target !== exp.to) {
+            chess.undo();
+            setStatus('❌ Nu e mutarea corectă. Încearcă din nou!', 'err');
+            setTimeout(() => setStatus('♟ Mutarea ta!', ''), 1300);
+            return 'snapback';
+        }
+
+        /* Correct white move */
+        markMove(step, 'w', move.san);
+        setStatus('✓ ' + move.san + ' — excelent!', 'ok');
+
+        if (step < BLACK_REPLY.length) {
+            /* Play black's forced response */
+            setTimeout(() => {
+                const br   = BLACK_REPLY[step];
+                const bMov = chess.move({ from: br.from, to: br.to });
+                markMove(step, 'b', bMov ? bMov.san : '');
+                step++;
+                board.position(chess.fen(), false);
+                if (!solved) setStatus('♟ Mutarea ta!', '');
+            }, 680);
+        } else {
+            /* Move 3 — checkmate */
+            step++;
+            solved = true;
+            setTimeout(() => {
+                setStatus("🎉 Șah-mat! Ai rezolvat Mansub-a lui Sa'id!", 'ok');
+                document.getElementById('btn-continue').classList.add('show');
+                setDialogue('kibo', "Bravo! Sa'id ar fi fost mândru de tine! Acum mergem mai departe în Persia! 🎊");
+                confetti();
+            }, 420);
+        }
+    },
+    onSnapEnd() { board.position(chess.fen(), false); },
+});
+
+/* ---- Helpers ---- */
+function setStatus(msg, cls) {
+    const el = document.getElementById('status-box');
+    el.textContent = msg;
+    el.className = cls ? `${cls}` : '';
+}
+
+function markMove(s, color, san) {
+    const id = `m${s+1}${color}`;
+    const el = document.getElementById(id);
+    if (el) { el.textContent = san; el.className = 'mv-done'; }
+    /* Advance "current" marker */
+    if (color === 'b' && s + 1 < SOLUTION.length) {
+        const nxt = document.getElementById(`m${s+2}w`);
+        if (nxt) nxt.className = 'mv-cur';
+    }
+}
+
+function setDialogue(who, text) {
+    document.getElementById('dialogue-speaker').textContent =
+        who === 'tusk' ? '🐘 Tusk' : '👦 Kibo';
+    document.getElementById('dialogue-text').textContent = text;
+}
+
+function showHint() {
+    setDialogue('tusk', HINTS[Math.min(hintIdx, HINTS.length - 1)]);
+    hintIdx++;
+}
+
+function restartPuzzle() {
+    chess  = new Chess(START_FEN);
+    step   = 0; solved = false; hintIdx = 0;
+    board.position(START_FEN, false);
+    setStatus('♟ Mutarea ta! Albe mută primele.', '');
+    document.getElementById('btn-continue').classList.remove('show');
+    /* Reset move display */
+    [1,2,3].forEach(n => {
+        const w = document.getElementById(`m${n}w`);
+        const b = document.getElementById(`m${n}b`);
+        if (w) { w.textContent = '?'; w.className = n === 1 ? 'mv-cur' : 'mv-pend'; }
+        if (b) { b.textContent = ''; b.className = 'mv-pend'; }
+    });
+    setDialogue('tusk', "Sa'id a lăsat această problemă pentru cei mai curajoși. Albele mută primele — găsește calea spre șah-mat în 3 mutări!");
+}
+
+function confetti() {
+    const colors = ['#C8960C','#E6A817','#F5E6C8','#FF8C42','#7DCC88','#FF6B6B'];
+    for (let i = 0; i < 70; i++) {
+        setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = 'cf';
+            el.style.cssText = `
+                left:${Math.random()*100}vw; top:-10px;
+                width:${6+Math.random()*8}px; height:${6+Math.random()*8}px;
+                background:${colors[Math.floor(Math.random()*colors.length)]};
+                --dx:${(Math.random()-.5)*350}px;
+                --dy:${250+Math.random()*500}px;
+                --rot:${Math.random()*720}deg;
+                --dur:${1.4+Math.random()*1.6}s;
+            `;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3200);
+        }, i * 38);
+    }
+}
+</script>
+</body>
+</html>

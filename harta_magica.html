@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Harta Magică – Cufărul cu Șah</title>
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@700;900&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { width: 100%; height: 100%; overflow: hidden; touch-action: none; }
+
+        body { background: #1a0e05; }
+
+        /* ===== CONTAINER ZOOM/PAN ===== */
+        #viewport {
+            position: fixed; inset: 0;
+            cursor: grab;
+            user-select: none;
+        }
+        #viewport:active { cursor: grabbing; }
+
+        #map-stage {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform-origin: center center;
+            /* dimensiunea hărții — pergament + ramă */
+            width: 1200px; height: 820px;
+            margin-left: -600px;
+            margin-top: -410px;
+        }
+
+        /* ===== PERGAMENT ===== */
+        #parchment {
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+        }
+
+        /* ===== SVG HARTĂ ===== */
+        #map-svg {
+            position: absolute;
+            inset: 60px 55px 55px 60px; /* spațiu pentru ramă */
+            width: calc(100% - 115px);
+            height: calc(100% - 115px);
+        }
+
+        /* ===== RAMĂ DECORATIVĂ ===== */
+        #frame-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+        }
+
+        /* ===== STOPURI ===== */
+        .stop-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            z-index: 10;
+            transition: transform 0.2s;
+        }
+        .stop-marker:hover { transform: translate(-50%,-50%) scale(1.18); }
+
+        .stop-dot {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            border: 2.5px solid #3a1800;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1em;
+            animation: dot-pulse 2.5s ease-in-out infinite;
+        }
+        @keyframes dot-pulse {
+            0%,100% { box-shadow: 0 0 0 3px rgba(255,200,50,0.3), 0 2px 10px rgba(0,0,0,0.4); }
+            50%      { box-shadow: 0 0 0 7px rgba(255,200,50,0.12), 0 0 22px rgba(255,160,0,0.7); }
+        }
+        #stop-india  .stop-dot { background: #e87800; }
+        #stop-persia .stop-dot { background: #7a35a0; }
+        #stop-europa .stop-dot { background: #1850a8; }
+
+        .stop-marker.locked { opacity: 0.4; cursor: not-allowed; }
+        .stop-marker.locked .stop-dot { animation: none; }
+
+        .stop-label {
+            font-family: 'Cinzel', serif;
+            font-size: 11px; font-weight: 700;
+            color: #2a0e00;
+            background: rgba(245,220,130,0.92);
+            padding: 2px 7px; border-radius: 3px;
+            border: 1px solid rgba(90,45,0,0.4);
+            white-space: nowrap;
+        }
+        .stop-year {
+            font-family: 'IM Fell English', serif;
+            font-style: italic; font-size: 9px; color: #6a3a08;
+        }
+
+        /* ===== URME ===== */
+        .urma {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+            animation: apare-urma 0.5s ease forwards;
+            filter: sepia(1) brightness(0.4) saturate(1.2);
+            transform-origin: center;
+        }
+        @keyframes apare-urma {
+            from { opacity: 0; transform: scale(0.1) rotate(var(--rot)); }
+            to   { opacity: 0.65; transform: scale(1) rotate(var(--rot)); }
+        }
+
+        /* ===== UI DE ZOOM (butoane) ===== */
+        #zoom-controls {
+            position: fixed; bottom: 22px; right: 22px;
+            z-index: 50;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .zoom-btn {
+            width: 40px; height: 40px;
+            background: rgba(245,220,130,0.9);
+            border: 2px solid rgba(90,45,0,0.5);
+            border-radius: 8px;
+            font-size: 1.3em; font-weight: 700;
+            cursor: pointer; color: #3a1800;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: background 0.15s;
+        }
+        .zoom-btn:hover { background: rgba(245,210,100,1); }
+
+        /* ===== HINT SCROLL ===== */
+        #hint {
+            position: fixed; bottom: 22px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            font-family: 'IM Fell English', serif;
+            font-style: italic; font-size: 0.85em;
+            color: rgba(245,220,130,0.75);
+            pointer-events: none;
+            animation: fade-hint 3s ease 2s forwards;
+        }
+        @keyframes fade-hint {
+            0% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; }
+        }
+
+        /* ===== PANEL INFO ===== */
+        #stop-panel {
+            position: fixed; bottom: 0; left: 50%;
+            transform: translateX(-50%) translateY(110%);
+            z-index: 100;
+            background: rgba(245,228,148,0.97);
+            border: 3px solid #5a2d00; border-bottom: none;
+            border-radius: 20px 20px 0 0;
+            padding: 26px 40px 30px;
+            width: min(580px, 96vw);
+            text-align: center;
+            transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 -6px 40px rgba(0,0,0,0.4);
+        }
+        #stop-panel.open { transform: translateX(-50%) translateY(0); }
+        #panel-flag { font-size: 2.4em; margin-bottom: 6px; }
+        #panel-title { font-family: 'Cinzel', serif; font-size: 1.5em; color: #3a1800; margin-bottom: 4px; }
+        #panel-year  { font-family: 'IM Fell English', serif; font-style: italic; color: #7a4a10; font-size: 1em; margin-bottom: 10px; }
+        #panel-desc  { font-size: 0.96em; color: #4a2800; line-height: 1.65; margin-bottom: 18px; }
+        #panel-btn {
+            padding: 12px 44px;
+            background: linear-gradient(135deg, #c47a00, #e8a820);
+            color: white; font-family: 'Cinzel', serif; font-size: 1em; font-weight: 700;
+            border: none; border-radius: 30px; cursor: pointer;
+            box-shadow: 0 4px 16px rgba(180,100,0,0.4);
+            transition: transform 0.2s;
+        }
+        #panel-btn:hover { transform: translateY(-2px); }
+        #panel-close {
+            position: absolute; top: 12px; right: 16px;
+            font-size: 1.3em; cursor: pointer; color: #7a4a10;
+            background: none; border: none;
+        }
+
+        /* ===== BUTON ÎNAPOI ===== */
+        #btn-back {
+            position: fixed; bottom: 22px; left: 22px; z-index: 50;
+            background: rgba(245,220,130,0.88); border: 2px solid rgba(90,45,0,0.45);
+            border-radius: 24px; padding: 9px 20px;
+            font-family: 'Cinzel', serif; font-size: 0.85em; color: #3a1800;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: background 0.2s;
+        }
+        #btn-back:hover { background: rgba(245,210,100,1); }
+
+        /* ===== TITLU ===== */
+        #map-title {
+            position: fixed; top: 16px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 50; text-align: center;
+            pointer-events: none;
+        }
+        #map-title h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.1em, 2.5vw, 1.9em);
+            color: #f5e090;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(200,140,0,0.8), 2px 2px 4px rgba(0,0,0,0.6);
+        }
+        #map-title p {
+            font-family: 'IM Fell English', serif; font-style: italic;
+            color: rgba(245,220,130,0.75); font-size: clamp(0.75em, 1.3vw, 0.95em);
+            margin-top: 2px;
+        }
+
+        /* ===== FADE ===== */
+        #fade-out {
+            position: fixed; inset: 0; background: #1a0e05;
+            z-index: 200; opacity: 0; pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+        #fade-out.active { opacity: 1; pointer-events: all; }
+    </style>
+</head>
+<body>
+
+<div id="fade-out"></div>
+<div id="map-title">
+    <h1>✦ Harta Magică ✦</h1>
+    <p>Rotița mouse-ului pentru zoom · Trage pentru a explora</p>
+</div>
+
+<div id="viewport">
+  <div id="map-stage">
+
+    <!-- ===== PERGAMENT SVG ===== -->
+    <svg id="parchment" viewBox="0 0 1200 820" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <!-- Textură hârtie veche -->
+            <filter id="paper-texture" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="4" seed="2" result="noise"/>
+                <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise"/>
+                <feBlend in="SourceGraphic" in2="grayNoise" mode="multiply" result="blended"/>
+                <feComponentTransfer in="blended">
+                    <feFuncR type="linear" slope="0.95" intercept="0.05"/>
+                    <feFuncG type="linear" slope="0.88" intercept="0.04"/>
+                    <feFuncB type="linear" slope="0.70" intercept="0.02"/>
+                </feComponentTransfer>
+            </filter>
+
+            <!-- Textură uzură margini -->
+            <filter id="edge-worn" x="-5%" y="-5%" width="110%" height="110%">
+                <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="5" seed="8" result="noise"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+
+            <!-- Gradient pergament -->
+            <radialGradient id="parch-grad" cx="50%" cy="45%" r="70%">
+                <stop offset="0%"   stop-color="#f5e8c0"/>
+                <stop offset="40%"  stop-color="#edd898"/>
+                <stop offset="75%"  stop-color="#d4b868"/>
+                <stop offset="100%" stop-color="#a07830"/>
+            </radialGradient>
+
+            <!-- Vigneta întunecată pe margini -->
+            <radialGradient id="vignette" cx="50%" cy="50%" r="60%">
+                <stop offset="50%"  stop-color="transparent"/>
+                <stop offset="100%" stop-color="rgba(60,30,5,0.55)"/>
+            </radialGradient>
+
+            <!-- Pete de cerneală/umiditate -->
+            <filter id="stain-blur">
+                <feGaussianBlur stdDeviation="8"/>
+            </filter>
+
+            <!-- Clip rotunjit pentru pergament -->
+            <clipPath id="parch-clip">
+                <rect x="8" y="8" width="1184" height="804" rx="12" ry="12"/>
+            </clipPath>
+        </defs>
+
+        <!-- Baza pergamentului -->
+        <rect x="0" y="0" width="1200" height="820" rx="14" ry="14"
+              fill="url(#parch-grad)" filter="url(#paper-texture)" clip-path="url(#parch-clip)"/>
+
+        <!-- Pete de umiditate (stains) -->
+        <ellipse cx="180" cy="150" rx="90" ry="55" fill="rgba(120,80,20,0.08)" filter="url(#stain-blur)"/>
+        <ellipse cx="980" cy="620" rx="70" ry="45" fill="rgba(100,60,15,0.07)" filter="url(#stain-blur)"/>
+        <ellipse cx="600" cy="400" rx="120" ry="80" fill="rgba(140,90,20,0.05)" filter="url(#stain-blur)"/>
+        <ellipse cx="300" cy="650" rx="55" ry="35" fill="rgba(90,50,10,0.08)" filter="url(#stain-blur)"/>
+        <ellipse cx="900" cy="180" rx="65" ry="40" fill="rgba(110,70,15,0.07)" filter="url(#stain-blur)"/>
+
+        <!-- Linii de pliere (creaturi vechi pe hartă) -->
+        <line x1="600" y1="0" x2="600" y2="820" stroke="rgba(100,60,15,0.08)" stroke-width="2"/>
+        <line x1="0" y1="410" x2="1200" y2="410" stroke="rgba(100,60,15,0.07)" stroke-width="1.5"/>
+
+        <!-- Vigneta margini întunecate -->
+        <rect x="0" y="0" width="1200" height="820" rx="14" fill="url(#vignette)"/>
+
+        <!-- Efect margini uzate -->
+        <rect x="0" y="0" width="1200" height="820" rx="14" ry="14"
+              fill="none"
+              stroke="rgba(80,40,5,0.4)" stroke-width="16"
+              filter="url(#edge-worn)"/>
+
+        <!-- Umbre interioare colțuri -->
+        <radialGradient id="corner-tl" cx="0%" cy="0%" r="40%">
+            <stop offset="0%" stop-color="rgba(60,25,5,0.35)"/>
+            <stop offset="100%" stop-color="transparent"/>
+        </radialGradient>
+        <radialGradient id="corner-br" cx="100%" cy="100%" r="40%">
+            <stop offset="0%" stop-color="rgba(50,20,5,0.3)"/>
+            <stop offset="100%" stop-color="transparent"/>
+        </radialGradient>
+        <rect width="1200" height="820" fill="url(#corner-tl)" rx="14"/>
+        <rect width="1200" height="820" fill="url(#corner-br)" rx="14"/>
+    </svg>
+
+    <!-- ===== RAMA DECORATIVĂ SVG ===== -->
+    <svg id="frame-svg" viewBox="0 0 1200 820" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <filter id="ink-rough">
+                <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="5" result="n"/>
+                <feDisplacementMap in="SourceGraphic" in2="n" scale="3"/>
+            </filter>
+        </defs>
+
+        <!-- Rama exterioară dublă -->
+        <rect x="20" y="18" width="1160" height="784" rx="6"
+              fill="none" stroke="rgba(80,40,5,0.7)" stroke-width="3.5"
+              filter="url(#ink-rough)"/>
+        <rect x="30" y="28" width="1140" height="764" rx="5"
+              fill="none" stroke="rgba(80,40,5,0.5)" stroke-width="1.5"
+              filter="url(#ink-rough)"/>
+
+        <!-- Ornamente colțuri (cruce medievală) -->
+        <!-- Colț stânga-sus -->
+        <g transform="translate(25,23)" opacity="0.65" fill="rgba(80,40,5,0.7)">
+            <circle cx="0" cy="0" r="6"/>
+            <rect x="-2" y="0" width="4" height="22"/>
+            <rect x="0" y="-2" width="22" height="4"/>
+            <circle cx="22" cy="0" r="3"/>
+            <circle cx="0" cy="22" r="3"/>
+        </g>
+        <!-- Colț dreapta-sus -->
+        <g transform="translate(1175,23) scale(-1,1)" opacity="0.65" fill="rgba(80,40,5,0.7)">
+            <circle cx="0" cy="0" r="6"/>
+            <rect x="-2" y="0" width="4" height="22"/>
+            <rect x="0" y="-2" width="22" height="4"/>
+            <circle cx="22" cy="0" r="3"/>
+            <circle cx="0" cy="22" r="3"/>
+        </g>
+        <!-- Colț stânga-jos -->
+        <g transform="translate(25,797) scale(1,-1)" opacity="0.65" fill="rgba(80,40,5,0.7)">
+            <circle cx="0" cy="0" r="6"/>
+            <rect x="-2" y="0" width="4" height="22"/>
+            <rect x="0" y="-2" width="22" height="4"/>
+            <circle cx="22" cy="0" r="3"/>
+            <circle cx="0" cy="22" r="3"/>
+        </g>
+        <!-- Colț dreapta-jos -->
+        <g transform="translate(1175,797) scale(-1,-1)" opacity="0.65" fill="rgba(80,40,5,0.7)">
+            <circle cx="0" cy="0" r="6"/>
+            <rect x="-2" y="0" width="4" height="22"/>
+            <rect x="0" y="-2" width="22" height="4"/>
+            <circle cx="22" cy="0" r="3"/>
+            <circle cx="0" cy="22" r="3"/>
+        </g>
+
+        <!-- Titlu în ramă (sus, centrat) -->
+        <text x="600" y="48" text-anchor="middle"
+              font-family="Cinzel, serif" font-size="18" font-weight="700"
+              fill="rgba(70,30,5,0.75)" filter="url(#ink-rough)"
+              letter-spacing="5">MAPPA MUNDI</text>
+
+        <!-- Ornament centru sus -->
+        <path d="M 480,42 L 510,42 M 690,42 L 720,42" stroke="rgba(80,40,5,0.5)" stroke-width="1.5"/>
+        <circle cx="475" cy="42" r="3" fill="rgba(80,40,5,0.5)"/>
+        <circle cx="725" cy="42" r="3" fill="rgba(80,40,5,0.5)"/>
+
+        <!-- Roza vânturilor (colț dreapta-jos) -->
+        <g transform="translate(1080, 700)" opacity="0.55" fill="rgba(70,30,5,0.7)" font-family="IM Fell English, serif">
+            <!-- Cerc exterior -->
+            <circle cx="0" cy="0" r="42" fill="none" stroke="rgba(70,30,5,0.5)" stroke-width="1.5"/>
+            <circle cx="0" cy="0" r="28" fill="none" stroke="rgba(70,30,5,0.35)" stroke-width="1"/>
+            <!-- Săgeți -->
+            <polygon points="0,-42 -5,-28 0,-32 5,-28" fill="rgba(70,30,5,0.75)"/>
+            <polygon points="0,42 -5,28 0,32 5,28" fill="rgba(70,30,5,0.5)"/>
+            <polygon points="-42,0 -28,-5 -32,0 -28,5" fill="rgba(70,30,5,0.5)"/>
+            <polygon points="42,0 28,-5 32,0 28,5" fill="rgba(70,30,5,0.5)"/>
+            <!-- Puncte diagonale -->
+            <circle cx="0" cy="0" r="5" fill="rgba(70,30,5,0.6)"/>
+            <!-- N S E V -->
+            <text x="0" y="-48" text-anchor="middle" font-size="12" font-weight="700">N</text>
+            <text x="0" y="60" text-anchor="middle" font-size="10">S</text>
+            <text x="50" y="4" text-anchor="middle" font-size="10">E</text>
+            <text x="-50" y="4" text-anchor="middle" font-size="10">V</text>
+        </g>
+
+        <!-- Scara distanțelor (stânga-jos) -->
+        <g transform="translate(45,768)" opacity="0.55" stroke="rgba(70,30,5,0.7)" fill="rgba(70,30,5,0.7)">
+            <text x="0" y="-8" font-family="IM Fell English, serif" font-style="italic" font-size="9">Scala Milliarium</text>
+            <rect x="0"  y="0" width="20" height="6" fill="rgba(70,30,5,0.7)"/>
+            <rect x="20" y="0" width="20" height="6" fill="none" stroke="rgba(70,30,5,0.7)" stroke-width="1"/>
+            <rect x="40" y="0" width="20" height="6" fill="rgba(70,30,5,0.7)"/>
+            <rect x="60" y="0" width="20" height="6" fill="none" stroke="rgba(70,30,5,0.7)" stroke-width="1"/>
+            <text x="0"  y="18" font-size="8">0</text>
+            <text x="38" y="18" font-size="8">500</text>
+            <text x="74" y="18" font-size="8">1000 km</text>
+        </g>
+
+        <!-- Corabie decorativă (în ocean Atlantic) -->
+        <text x="120" y="370" font-size="32" opacity="0.25">⛵</text>
+        <!-- Balenă -->
+        <text x="860" y="450" font-size="24" opacity="0.2">🐋</text>
+        <!-- Delfin -->
+        <text x="72" y="480" font-size="18" opacity="0.22" transform="rotate(15,72,480)">🐬</text>
+    </svg>
+
+    <!-- ===== HARTA GEOGRAFICĂ SVG ===== -->
+    <!--
+        Proiecție Mercator simplificată în viewBox 1080x700
+        Formula: x = 540 + lon*3.0  |  y = 350 - lat*3.2
+        (Continente + regiuni cheie)
+    -->
+    <svg id="map-svg" viewBox="0 0 1080 700" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <filter id="map-ink">
+                <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="3" result="n"/>
+                <feDisplacementMap in="SourceGraphic" in2="n" scale="2.5"/>
+            </filter>
+        </defs>
+
+        <!-- Ocean (ușor albăstrui pe pergament) -->
+        <rect width="1080" height="700" fill="rgba(90,140,190,0.12)"/>
+
+        <!-- Linii longitudine/latitudine -->
+        <g stroke="rgba(80,50,15,0.1)" stroke-width="0.8" fill="none">
+            <line x1="0" y1="350" x2="1080" y2="350"/> <!-- Ecuator -->
+            <line x1="0" y1="190" x2="1080" y2="190"/> <!-- 50°N -->
+            <line x1="0" y1="510" x2="1080" y2="510"/> <!-- 50°S -->
+            <line x1="540" y1="0" x2="540" y2="700"/> <!-- 0° lon -->
+            <line x1="690" y1="0" x2="690" y2="700"/> <!-- 50°E -->
+            <line x1="840" y1="0" x2="840" y2="700"/> <!-- 100°E -->
+            <line x1="390" y1="0" x2="390" y2="700"/> <!-- 50°W -->
+        </g>
+
+        <!-- ======= HIGHLIGHT INDIA (sub continent) ======= -->
+        <path fill="rgba(232,120,0,0.38)" stroke="none"
+              d="M 728,258 L 736,244 L 744,234 L 752,226 L 760,220
+                 L 770,216 L 782,215 L 794,218 L 804,224 L 812,232
+                 L 818,242 L 820,254 L 815,266 L 806,275 L 795,282
+                 L 782,288 L 770,292 L 758,294 L 748,292 L 740,286
+                 L 733,278 L 728,268 Z"/>
+
+        <!-- ======= HIGHLIGHT PERSIA ======= -->
+        <path fill="rgba(130,55,185,0.32)" stroke="none"
+              d="M 650,224 L 663,218 L 678,214 L 694,213
+                 L 708,215 L 720,220 L 728,228 L 728,240
+                 L 722,250 L 712,257 L 700,262 L 686,264
+                 L 672,262 L 659,256 L 650,248 L 646,238 Z"/>
+
+        <!-- ======= HIGHLIGHT EUROPA APUSEANA ======= -->
+        <path fill="rgba(25,80,190,0.22)" stroke="none"
+              d="M 490,200 L 508,192 L 524,186 L 540,182
+                 L 555,180 L 566,184 L 572,194 L 568,206
+                 L 558,215 L 544,222 L 528,226 L 512,226
+                 L 496,222 L 484,214 L 480,206 Z"/>
+
+        <!-- ======= CONTINENTE ======= -->
+        <g fill="rgba(148,112,52,0.38)" stroke="rgba(70,40,10,0.75)" stroke-width="1.4"
+           stroke-linejoin="round" filter="url(#map-ink)">
+
+            <!-- GROENLANDA -->
+            <path d="M 300,58 L 325,48 L 355,52 L 372,68 L 368,90 L 348,105
+                     L 322,108 L 300,95 L 290,78 Z"/>
+
+            <!-- AMERICA DE NORD (simplificată) -->
+            <path d="M 68,108 L 90,95 L 116,85 L 148,85 L 178,92 L 205,100
+                     L 230,102 L 255,96 L 275,102 L 288,115 L 285,130
+                     L 275,148 L 278,165 L 290,180 L 298,196 L 300,215
+                     L 295,232 L 285,248 L 272,260 L 258,270 L 248,282
+                     L 238,295 L 225,302 L 212,296 L 200,286 L 188,292
+                     L 175,300 L 162,298 L 150,288 L 140,275 L 128,262
+                     L 116,250 L 106,235 L 96,218 L 85,200 L 76,180
+                     L 68,158 L 62,135 Z"/>
+
+            <!-- AMERICA DE SUD -->
+            <path d="M 228,308 L 248,300 L 265,305 L 278,318 L 288,335
+                     L 294,355 L 296,378 L 292,400 L 286,422 L 276,442
+                     L 262,458 L 246,468 L 230,470 L 215,462 L 205,448
+                     L 198,430 L 196,410 L 195,388 L 192,365 L 190,342
+                     L 192,320 L 202,310 Z"/>
+
+            <!-- EUROPA MASĂ PRINCIPALĂ -->
+            <path d="M 476,238 L 470,228 L 466,218 L 468,208 L 472,200
+                     L 478,192 L 484,186 L 490,180 L 498,174 L 508,168
+                     L 518,163 L 528,159 L 538,156 L 550,154 L 562,152
+                     L 572,152 L 584,152 L 596,155 L 608,160 L 616,168
+                     L 614,180 L 606,190 L 596,198 L 584,205 L 574,212
+                     L 568,222 L 575,232 L 568,240 L 558,246 L 545,250
+                     L 532,250 L 520,248 L 508,244 L 496,242 L 484,242 Z"/>
+
+            <!-- PENINSULA IBERICĂ -->
+            <path d="M 476,200 L 484,194 L 490,188 L 492,178 L 488,168
+                     L 480,160 L 470,158 L 460,162 L 453,172 L 450,184
+                     L 454,196 L 462,206 L 472,210 Z"/>
+
+            <!-- INSULELE BRITANICE (Marea Britanie) -->
+            <path d="M 468,164 L 476,158 L 482,162 L 482,173 L 474,180
+                     L 464,178 L 460,170 Z"/>
+            <!-- Irlanda -->
+            <path d="M 452,162 L 458,158 L 464,160 L 465,168 L 460,174
+                     L 452,172 Z"/>
+
+            <!-- SCANDINAVIA -->
+            <path d="M 504,152 L 512,142 L 520,132 L 522,118 L 516,108
+                     L 506,104 L 498,110 L 494,122 L 496,135 L 500,144 Z"/>
+            <!-- Nordul Scandinaviei -->
+            <path d="M 520,132 L 530,120 L 540,112 L 548,108 L 554,112
+                     L 552,124 L 542,134 L 528,140 L 520,138 Z"/>
+
+            <!-- PENINSULA ITALICĂ -->
+            <path d="M 516,222 L 524,216 L 532,212 L 538,220 L 542,230
+                     L 544,242 L 540,252 L 532,258 L 524,252 L 518,242
+                     L 514,232 Z"/>
+            <!-- Sicilia -->
+            <ellipse cx="534" cy="265" rx="12" ry="7"/>
+
+            <!-- GRECIA/BALKANI -->
+            <path d="M 560,240 L 568,238 L 574,244 L 572,254 L 564,260
+                     L 555,257 L 552,248 Z"/>
+
+            <!-- AFRICA -->
+            <path d="M 466,238 L 480,238 L 498,238 L 516,238 L 534,236
+                     L 550,234 L 566,232 L 582,232 L 598,235 L 612,240
+                     L 624,248 L 634,256 L 642,268 L 648,282 L 650,298
+                     L 648,315 L 642,332 L 634,350 L 624,368 L 612,386
+                     L 598,402 L 582,416 L 564,426 L 545,432 L 526,432
+                     L 508,426 L 492,414 L 478,400 L 466,384 L 456,366
+                     L 450,348 L 446,328 L 444,308 L 445,288 L 448,268
+                     L 455,252 Z"/>
+
+            <!-- PENINSULA ARABICĂ -->
+            <path d="M 618,242 L 628,240 L 640,242 L 650,248 L 658,258
+                     L 662,270 L 660,284 L 654,296 L 644,305 L 632,310
+                     L 620,308 L 610,300 L 604,288 L 602,274 L 605,262
+                     L 612,252 Z"/>
+
+            <!-- IRAN / PERSIA -->
+            <path d="M 632,228 L 645,222 L 660,218 L 676,216 L 692,217
+                     L 706,222 L 716,228 L 724,238 L 724,250 L 716,260
+                     L 704,267 L 690,272 L 675,274 L 660,272 L 646,266
+                     L 636,258 L 630,248 L 630,238 Z"/>
+
+            <!-- INDIA -->
+            <path d="M 726,240 L 734,228 L 742,218 L 752,210 L 763,206
+                     L 776,204 L 790,206 L 802,212 L 812,221 L 820,232
+                     L 824,246 L 822,260 L 816,273 L 806,284 L 793,292
+                     L 778,298 L 764,300 L 751,298 L 740,292 L 732,283
+                     L 726,272 L 724,260 Z"/>
+            <!-- Sri Lanka -->
+            <ellipse cx="789" cy="312" rx="6" ry="9"/>
+
+            <!-- ASIA CENTRALĂ + SIBERIA -->
+            <path d="M 618,162 L 640,155 L 665,150 L 692,147 L 720,145
+                     L 748,143 L 776,141 L 804,141 L 832,143 L 858,148
+                     L 880,155 L 896,165 L 900,178 L 890,192 L 872,204
+                     L 850,214 L 826,222 L 800,228 L 774,232 L 750,234
+                     L 726,238 L 716,228 L 706,220 L 692,215 L 676,214
+                     L 660,216 L 645,220 L 632,228 L 620,238 L 614,228
+                     L 612,215 L 614,202 L 616,188 L 618,174 Z"/>
+
+            <!-- CHINA / ASIA DE EST -->
+            <path d="M 838,148 L 870,140 L 904,135 L 938,133 L 968,135
+                     L 990,142 L 1005,152 L 1010,165 L 1005,180 L 990,193
+                     L 970,205 L 946,215 L 920,222 L 895,228 L 870,232
+                     L 850,232 L 836,226 L 826,218 L 838,205 L 854,195
+                     L 866,182 L 868,168 L 856,158 Z"/>
+
+            <!-- ASIA DE SUD-EST (simplificată) -->
+            <path d="M 898,232 L 918,226 L 936,224 L 952,226 L 964,232
+                     L 968,245 L 960,258 L 944,266 L 924,270 L 906,268
+                     L 896,260 L 893,248 Z"/>
+
+            <!-- INDOCHINA / MALAEZIA (simplificată) -->
+            <path d="M 930,268 L 940,260 L 950,262 L 956,272 L 952,285
+                     L 940,292 L 928,290 L 922,280 Z"/>
+
+            <!-- AUSTRALIA -->
+            <path d="M 882,410 L 906,398 L 932,392 L 958,390 L 980,394
+                     L 998,404 L 1008,418 L 1008,435 L 1000,450 L 984,462
+                     L 962,470 L 938,472 L 914,466 L 895,454 L 882,438
+                     L 876,422 Z"/>
+
+            <!-- MADAGASCAR -->
+            <ellipse cx="628" cy="418" rx="10" ry="22" transform="rotate(-15,628,418)"/>
+        </g>
+
+        <!-- ======= RUTA: India → Persia → Europa ======= -->
+        <path d="M 775,270 C 760,258 745,250 728,244 C 710,236 694,232 676,228
+                 C 658,224 642,224 625,228 C 606,232 590,238 572,240
+                 C 552,242 534,242 516,238 C 498,234 482,226 466,218
+                 C 450,210 438,202 426,196"
+              fill="none"
+              stroke="rgba(100,48,5,0.65)"
+              stroke-width="2.5"
+              stroke-dasharray="10,8"
+              stroke-linecap="round"/>
+
+        <!-- ======= ETICHETE GEOGRAFICE ======= -->
+        <g font-family="IM Fell English, serif" font-style="italic" fill="rgba(55,28,5,0.55)">
+            <!-- Mări/oceane -->
+            <text x="155" y="310" font-size="12" transform="rotate(-8,155,310)">Oceanul Atlantic</text>
+            <text x="490" y="280" font-size="10" transform="rotate(-6,490,280)">Marea Mediterană</text>
+            <text x="634" y="288" font-size="9" transform="rotate(-10,634,288)">M. Arabiei</text>
+            <text x="660" y="238" font-size="8">G. Persic</text>
+            <text x="814" y="340" font-size="10">Golful Bengal</text>
+            <text x="900" y="380" font-size="12">Oceanul Indian</text>
+            <text x="550" y="400" font-size="10" transform="rotate(-5,550,400)">Sahara</text>
+            <!-- Regiuni -->
+            <text x="764" y="258" font-size="9" fill="rgba(140,60,0,0.7)" font-style="normal">INDIA</text>
+            <text x="668" y="248" font-size="9" fill="rgba(90,30,130,0.7)" font-style="normal">PERSIA</text>
+            <text x="496" y="212" font-size="9" fill="rgba(20,55,140,0.7)" font-style="normal">EUROPA</text>
+            <text x="542" y="340" font-size="10" font-style="normal" fill="rgba(55,28,5,0.5)">AFRICA</text>
+            <text x="850" y="185" font-size="10" font-style="normal" fill="rgba(55,28,5,0.5)">CHINA</text>
+            <text x="700" y="185" font-size="10" font-style="normal" fill="rgba(55,28,5,0.5)">ASIA CENTRALĂ</text>
+        </g>
+    </svg>
+
+    <!-- ===== STOP MARKERS ===== -->
+    <!-- INDIA -->
+    <div class="stop-marker" id="stop-india" onclick="deschideStop('india')">
+        <div class="stop-dot">🐘</div>
+        <div class="stop-label">India</div>
+        <div class="stop-year">anul 600</div>
+    </div>
+
+    <!-- PERSIA -->
+    <div class="stop-marker locked" id="stop-persia" onclick="deschideStop('persia')">
+        <div class="stop-dot">🌙</div>
+        <div class="stop-label">Persia</div>
+        <div class="stop-year">800 – 1000</div>
+    </div>
+
+    <!-- EUROPA -->
+    <div class="stop-marker locked" id="stop-europa" onclick="deschideStop('europa')">
+        <div class="stop-dot">👑</div>
+        <div class="stop-label">Europa</div>
+        <div class="stop-year">anul 1500</div>
+    </div>
+
+  </div><!-- end map-stage -->
+</div><!-- end viewport -->
+
+<!-- ===== PANEL INFO ===== -->
+<div id="stop-panel">
+    <button id="panel-close" onclick="inchidePanel()">✕</button>
+    <div id="panel-flag"></div>
+    <div id="panel-title"></div>
+    <div id="panel-year"></div>
+    <div id="panel-desc"></div>
+    <button id="panel-btn" onclick="mergeAici()">Pornim! ▶</button>
+</div>
+
+<!-- ===== ZOOM CONTROLS ===== -->
+<div id="zoom-controls">
+    <button class="zoom-btn" onclick="zoom(1.25)" title="Zoom in">+</button>
+    <button class="zoom-btn" onclick="zoom(0.8)"  title="Zoom out">−</button>
+    <button class="zoom-btn" onclick="resetView()" title="Reset" style="font-size:0.9em">⌂</button>
+</div>
+
+<div id="hint">🖱 Rotița mouse: zoom · Trage: panoramare</div>
+<button id="btn-back" onclick="mergeInapoi()">← Înapoi</button>
+
+<script>
+/* ============================================================
+   ZOOM & PAN
+============================================================ */
+const stage   = document.getElementById('map-stage');
+const viewport = document.getElementById('viewport');
+
+let scale = 0.72;   // zoom inițial (harta se vede toată)
+let tx = 0, ty = 0; // translație
+let dragging = false, startX, startY, startTX, startTY;
+
+function applyTransform() {
+    stage.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+}
+applyTransform();
+
+// Mouse wheel → zoom
+viewport.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.12 : 0.89;
+    // Zoom centrat pe cursorul mouse-ului
+    const rect = viewport.getBoundingClientRect();
+    const mx = e.clientX - rect.left - rect.width / 2;
+    const my = e.clientY - rect.top - rect.height / 2;
+    tx = mx + (tx - mx) * factor;
+    ty = my + (ty - my) * factor;
+    scale = Math.min(Math.max(scale * factor, 0.35), 4);
+    applyTransform();
+}, { passive: false });
+
+// Drag → pan
+viewport.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.stop-marker') || e.target.closest('#stop-panel')) return;
+    dragging = true;
+    startX = e.clientX; startY = e.clientY;
+    startTX = tx; startTY = ty;
+});
+window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    tx = startTX + (e.clientX - startX);
+    ty = startTY + (e.clientY - startY);
+    applyTransform();
+});
+window.addEventListener('mouseup', () => dragging = false);
+
+// Touch → pinch zoom + pan
+let lastDist = 0, lastTX = 0, lastTY = 0;
+viewport.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+        lastDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
+                              e.touches[0].clientY - e.touches[1].clientY);
+    } else if (e.touches.length === 1) {
+        startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+        startTX = tx; startTY = ty;
+    }
+}, { passive: true });
+viewport.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (e.touches.length === 2) {
+        const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
+                                e.touches[0].clientY - e.touches[1].clientY);
+        if (lastDist > 0) { scale = Math.min(Math.max(scale * dist / lastDist, 0.35), 4); }
+        lastDist = dist;
+        applyTransform();
+    } else if (e.touches.length === 1) {
+        tx = startTX + (e.touches[0].clientX - startX);
+        ty = startTY + (e.touches[0].clientY - startY);
+        applyTransform();
+    }
+}, { passive: false });
+viewport.addEventListener('touchend', () => lastDist = 0);
+
+function zoom(factor) {
+    scale = Math.min(Math.max(scale * factor, 0.35), 4);
+    applyTransform();
+}
+function resetView() {
+    scale = 0.72; tx = 0; ty = 0;
+    applyTransform();
+}
+
+/* ============================================================
+   STOP MARKERS — poziție pe hartă (% din map-stage)
+============================================================ */
+// Harta e în map-stage (1200x820), zona SVG = 1080x700 offset (60px, 60px)
+// Proiecție: x_svg = 540 + lon*3.0 | y_svg = 350 - lat*3.2
+// x_stage = 60 + x_svg * (1080/1080) = 60 + x_svg
+// y_stage = 60 + y_svg * (700/700)  = 60 + y_svg
+
+// India center: lon=78, lat=25 → x_svg=774, y_svg=270 → x_stage=834, y_stage=330
+// Persia center: lon=53, lat=33 → x_svg=699, y_svg=244 → x_stage=759, y_stage=304
+// Europa center: lon=5,  lat=48 → x_svg=555, y_svg=196 → x_stage=615, y_stage=256
+
+function pozitioneazaStopuri() {
+    pozStop('stop-india',  834, 330);
+    pozStop('stop-persia', 759, 304);
+    pozStop('stop-europa', 615, 256);
+}
+function pozStop(id, x, y) {
+    const el = document.getElementById(id);
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
+}
+pozitioneazaStopuri();
+
+/* ============================================================
+   URME PE HARTĂ
+============================================================ */
+// Coordonate în px pe map-stage (India → Persia → Europa)
+const TRASEU = [
+    // India → Persia
+    { x: 810, y: 322, tip: 'elefant', rot: -155 },
+    { x: 800, y: 316, tip: 'copil',   rot: -150 },
+    { x: 790, y: 312, tip: 'elefant', rot: -148 },
+    { x: 780, y: 308, tip: 'copil',   rot: -145 },
+    { x: 770, y: 306, tip: 'elefant', rot: -142 },
+    { x: 760, y: 304, tip: 'copil',   rot: -140 },
+    // Persia → Europa
+    { x: 746, y: 300, tip: 'elefant', rot: -155 },
+    { x: 730, y: 296, tip: 'copil',   rot: -150 },
+    { x: 714, y: 292, tip: 'elefant', rot: -152 },
+    { x: 697, y: 288, tip: 'copil',   rot: -148 },
+    { x: 680, y: 283, tip: 'elefant', rot: -150 },
+    { x: 663, y: 278, tip: 'copil',   rot: -148 },
+    { x: 645, y: 272, tip: 'elefant', rot: -152 },
+    { x: 628, y: 266, tip: 'copil',   rot: -150 },
+];
+
+let urmeCurente = 0;
+
+function arata_urme_pana(n) {
+    document.querySelectorAll('.urma').forEach(u => u.remove());
+    TRASEU.slice(0, n).forEach((p, i) => {
+        setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = 'urma';
+            el.textContent = p.tip === 'elefant' ? '🐾' : '👣';
+            el.style.cssText = `
+                left: ${p.x}px; top: ${p.y}px;
+                font-size: ${p.tip === 'elefant' ? '1.4em' : '0.95em'};
+                --rot: ${p.rot}deg;
+                transform: translate(-50%,-50%) rotate(${p.rot}deg);
+            `;
+            stage.appendChild(el);
+        }, i * 200);
+    });
+}
+
+setTimeout(() => { urmeCurente = 6; arata_urme_pana(6); }, 800);
+
+/* ============================================================
+   PANEL INFO
+============================================================ */
+const DATE_STOP = {
+    india: {
+        flag: '🐘', titlu: 'India', an: 'Anul 600 d.Hr.',
+        desc: 'Totul începe aici! Tusk și Kibo deschid cufărul și găsesc piesele de Chaturanga — strămoșul șahului. Elefantul de pe tablă e chiar vărul lui Tusk!',
+        link: 'india.html'
+    },
+    persia: {
+        flag: '🌙', titlu: 'Persia', an: '800 – 1000 d.Hr.',
+        desc: 'Pe Drumul Mătăsii, jocul ajunge la Persia. Aici apar cuvintele "Șah!" și "Șah Mat!" — din persanul Shah Mat: Regele e mort.',
+        link: 'pagina6.html'
+    },
+    europa: {
+        flag: '👑', titlu: 'Europa', an: 'Anul 1500 d.Hr.',
+        desc: 'La curțile regale europene, Regina devine cea mai puternică piesă. Șahul capătă regulile pe care le știm azi.',
+        link: 'pagina11.html'
+    }
+};
+let stopCurent = null;
+
+function deschideStop(stop) {
+    if (document.getElementById('stop-' + stop).classList.contains('locked')) return;
+    stopCurent = stop;
+    const d = DATE_STOP[stop];
+    document.getElementById('panel-flag').textContent  = d.flag;
+    document.getElementById('panel-title').textContent = d.titlu;
+    document.getElementById('panel-year').textContent  = d.an;
+    document.getElementById('panel-desc').textContent  = d.desc;
+    document.getElementById('stop-panel').classList.add('open');
+}
+function inchidePanel() { document.getElementById('stop-panel').classList.remove('open'); }
+function mergeAici() {
+    if (!stopCurent) return;
+    document.getElementById('fade-out').classList.add('active');
+    setTimeout(() => window.location.href = DATE_STOP[stopCurent].link, 800);
+}
+
+/* ============================================================
+   DEBLOCARE (test cu taste)
+============================================================ */
+function deblocheazaStop(stop, nrUrme) {
+    document.getElementById('stop-' + stop).classList.remove('locked');
+    urmeCurente = nrUrme;
+    arata_urme_pana(nrUrme);
+}
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'p') deblocheazaStop('persia', 6);
+    if (e.key === 'e') { deblocheazaStop('persia', 6); deblocheazaStop('europa', 14); }
+});
+
+/* ============================================================
+   ÎNAPOI
+============================================================ */
+function mergeInapoi() {
+    document.getElementById('fade-out').classList.add('active');
+    setTimeout(() => window.location.href = 'index.html', 800);
+}
+</script>
+</body>
+</html>
