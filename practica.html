@@ -44,13 +44,58 @@ h1 {
     justify-content: center;
 }
 
+/* TOP NAV */
+#top-nav {
+    position: sticky; top: 0;
+    background: rgba(245,169,110,0.92);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px; margin: -20px -16px 20px;
+    z-index: 200;
+    border-bottom: 2px solid rgba(255,255,255,0.4);
+}
+.tnav-btn {
+    background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 50px; padding: 6px 16px;
+    font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700;
+    color: #1a3a6b; text-decoration: none; transition: background 0.2s;
+}
+.tnav-btn:hover { background: rgba(255,255,255,0.85); }
+.tnav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; }
+.tnav-badge {
+    background: #1a3a6b; color: white;
+    font-family: 'Baloo 2', cursive; font-size: 0.75em;
+    padding: 3px 12px; border-radius: 20px; text-decoration: none;
+}
+
 /* BOARD COLUMN */
 .board-col { flex: 0 0 auto; }
 
 #board-wrap {
     width: min(480px, calc(100vw - 32px));
+    position: relative;
 }
 #board { width: 100%; }
+
+/* PROMOTION POPUP */
+#promo-popup {
+    display: none;
+    position: absolute;
+    z-index: 30;
+    background: #fff;
+    border: 2px solid #1a3a6b;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    overflow: hidden;
+}
+.pp-piece {
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    padding: 4px;
+    transition: background 0.15s;
+}
+.pp-piece:hover { background: rgba(26,58,107,0.15); }
+.pp-piece img { width: 44px; height: 44px; display: block; }
 
 /* Spare pieces styling */
 .board-wrap-outer {
@@ -58,20 +103,6 @@ h1 {
     display: inline-block;
 }
 
-/* MODE BADGE */
-#mode-badge {
-    display: inline-block;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-family: 'Baloo 2', cursive;
-    font-size: 0.82em;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    margin-bottom: 10px;
-    transition: all 0.3s;
-}
-#mode-badge.edit { background: rgba(26,58,107,0.12); color: #1a3a6b; border: 1px solid rgba(26,58,107,0.3); }
-#mode-badge.play { background: rgba(39,174,96,0.2);  color: #1a5c35; border: 1px solid rgba(39,174,96,0.5); }
 
 /* PANEL */
 .panel {
@@ -183,6 +214,56 @@ h1 {
 #move-list .mw { color: #1a3a6b; font-weight:700; margin-right:5px; }
 #move-list .mb { color: #333; margin-right:10px; }
 
+/* PIECE STRIP (beside board) */
+.board-row { display: flex; align-items: stretch; gap: 4px; }
+#piece-strip {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    width: 38px;
+    flex-shrink: 0;
+}
+.strip-piece {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    object-fit: contain;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 2px solid transparent;
+    transition: all 0.15s;
+    box-sizing: border-box;
+}
+.strip-piece:hover { background: rgba(26,58,107,0.1); border-color: rgba(26,58,107,0.3); }
+.strip-piece.pal-active { border-color: #1a3a6b; background: rgba(26,58,107,0.18); box-shadow: 0 0 0 2px rgba(26,58,107,0.25); }
+.pal-cursor #board-wrap { cursor: cell; }
+
+/* CLOCK */
+.clock-row { display: flex; gap: 8px; margin-top: 8px; }
+.clk-box {
+    flex: 1; text-align: center;
+    background: rgba(255,255,255,0.4);
+    border-radius: 10px; padding: 6px 4px;
+    border: 2px solid transparent;
+    transition: border-color 0.2s, background 0.2s;
+}
+.clk-box.active { border-color: #1a3a6b; background: rgba(255,255,255,0.75); }
+.clk-lbl { font-size: 0.68em; font-weight: 700; text-transform: uppercase; color: rgba(26,58,107,0.55); margin-bottom: 2px; }
+.clk-val { font-family: 'Baloo 2', cursive; font-size: 1.4em; color: #1a3a6b; letter-spacing: 1px; }
+.clk-box.active .clk-val { color: #e67e22; }
+.time-btns { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+.tbtn {
+    flex: 1; min-width: 36px;
+    padding: 5px 4px; border-radius: 8px;
+    border: 1px solid rgba(26,58,107,0.2);
+    background: rgba(255,255,255,0.4);
+    color: #1a3a6b; font-family: 'Nunito', sans-serif;
+    font-size: 0.82em; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.tbtn:hover { background: rgba(255,255,255,0.7); }
+.tbtn.active { background: #1a3a6b; color: white; border-color: #1a3a6b; }
+
 /* ACTION BUTTONS */
 .btn {
     display: block; width: 100%;
@@ -231,6 +312,12 @@ h1 {
 </head>
 <body>
 
+<nav id="top-nav">
+    <a href="index.html" class="tnav-btn">&#9776; Cuprins</a>
+    <div class="tnav-title">Practic&#259; Liber&#259;</div>
+    <a href="index.html" class="tnav-badge">Acas&#259;</a>
+</nav>
+
 <h1>🎯 Practică Liberă</h1>
 <p class="subtitle">Aşează piesele cum vrei, alege nivelul robotului și joacă!</p>
 
@@ -238,10 +325,28 @@ h1 {
 
     <!-- BOARD -->
     <div class="board-col">
-        <div style="text-align:center">
-            <span id="mode-badge" class="edit">✏️ MOD EDITARE</span>
+        <div class="board-row">
+            <!-- Piece strip -->
+            <div id="piece-strip">
+                <img class="strip-piece" data-piece="wK" src="https://lichess1.org/assets/piece/caliente/wK.svg" title="Rege alb"      onclick="selectPiece('wK')">
+                <img class="strip-piece" data-piece="wQ" src="https://lichess1.org/assets/piece/caliente/wQ.svg" title="Dam&#259; alb&#259;" onclick="selectPiece('wQ')">
+                <img class="strip-piece" data-piece="wR" src="https://lichess1.org/assets/piece/caliente/wR.svg" title="Turn alb"      onclick="selectPiece('wR')">
+                <img class="strip-piece" data-piece="wB" src="https://lichess1.org/assets/piece/caliente/wB.svg" title="Nebun alb"     onclick="selectPiece('wB')">
+                <img class="strip-piece" data-piece="wN" src="https://lichess1.org/assets/piece/caliente/wN.svg" title="Cal alb"       onclick="selectPiece('wN')">
+                <img class="strip-piece" data-piece="wP" src="https://lichess1.org/assets/piece/caliente/wP.svg" title="Pion alb"      onclick="selectPiece('wP')">
+                <img class="strip-piece" data-piece="bK" src="https://lichess1.org/assets/piece/caliente/bK.svg" title="Rege negru"    onclick="selectPiece('bK')">
+                <img class="strip-piece" data-piece="bQ" src="https://lichess1.org/assets/piece/caliente/bQ.svg" title="Dam&#259; neagr&#259;" onclick="selectPiece('bQ')">
+                <img class="strip-piece" data-piece="bR" src="https://lichess1.org/assets/piece/caliente/bR.svg" title="Turn negru"    onclick="selectPiece('bR')">
+                <img class="strip-piece" data-piece="bB" src="https://lichess1.org/assets/piece/caliente/bB.svg" title="Nebun negru"   onclick="selectPiece('bB')">
+                <img class="strip-piece" data-piece="bN" src="https://lichess1.org/assets/piece/caliente/bN.svg" title="Cal negru"     onclick="selectPiece('bN')">
+                <img class="strip-piece" data-piece="bP" src="https://lichess1.org/assets/piece/caliente/bP.svg" title="Pion negru"    onclick="selectPiece('bP')">
+            </div>
+            <!-- Board -->
+            <div id="board-wrap">
+                <div id="board"></div>
+                <div id="promo-popup"></div>
+            </div>
         </div>
-        <div id="board-wrap"><div id="board"></div></div>
     </div>
 
     <!-- PANEL -->
@@ -277,12 +382,33 @@ h1 {
             <div class="level-label" id="level-label">Nivel 4 — Jucător</div>
         </div>
 
+        <!-- CLOCK CARD -->
+        <div class="card" id="card-clock">
+            <div class="card-title">Ceas</div>
+            <div class="time-btns" id="time-btns">
+                <button class="tbtn active" onclick="setTimeControl(0,this)">&#8734;</button>
+                <button class="tbtn" onclick="setTimeControl(60000,this)">1 min</button>
+                <button class="tbtn" onclick="setTimeControl(180000,this)">3 min</button>
+                <button class="tbtn" onclick="setTimeControl(300000,this)">5 min</button>
+                <button class="tbtn" onclick="setTimeControl(600000,this)">10 min</button>
+            </div>
+            <div class="clock-row" id="clock-displays" style="display:none">
+                <div class="clk-box" id="clk-you">
+                    <div class="clk-lbl">Tu</div>
+                    <div class="clk-val" id="clk-you-val">--:--</div>
+                </div>
+                <div class="clk-box" id="clk-bot">
+                    <div class="clk-lbl">Robot</div>
+                    <div class="clk-val" id="clk-bot-val">--:--</div>
+                </div>
+            </div>
+        </div>
+
         <!-- EDIT BUTTONS -->
         <div id="edit-btns">
-            <button class="btn btn-edit-action" onclick="clearBoard()">🗑 Curăță tabla</button>
-            <button class="btn btn-edit-action" onclick="resetToStart()">♟ Poziție inițială</button>
-            <button class="btn btn-edit-action" onclick="flipBoard()">🔄 Inversează tabla</button>
-            <button class="btn btn-play" id="btn-play" onclick="startGame()">▶ Joacă!</button>
+            <button class="btn btn-edit-action" onclick="resetToStart()">&#9823; Pozi&#539;ie ini&#539;ial&#259;</button>
+            <button class="btn btn-edit-action" onclick="flipBoard()">&#8635; Inverseaz&#259; tabla</button>
+            <button class="btn btn-play" id="btn-play" onclick="startGame()">&#9654; Joac&#259;!</button>
         </div>
 
         <!-- MOVE LIST (shown during game) -->
@@ -316,14 +442,118 @@ const LEVELS = [
    STATE
 ===================================================== */
 let board, chess;
-let mode        = 'edit';   // 'edit' | 'play'
-let turnFirst   = 'w';      // who moves first in custom position
-let humanSide   = 'w';      // which side human controls
-let currentLevel= 3;        // 0-indexed → level 4 default
-let stockfish   = null;
-let sfReady     = false;
-let gameOver    = false;
-let moveHistory = [];       // { white: san, black: san }
+let mode         = 'edit';  // 'edit' | 'play'
+let turnFirst    = 'w';     // who moves first in custom position
+let humanSide    = 'w';     // which side human controls
+let currentLevel = 3;       // 0-indexed → level 4 default
+let stockfish    = null;
+let sfReady      = false;
+let gameOver     = false;
+let moveHistory  = [];      // { white: san, black: san }
+let pendingPromo = null;    // { from, to } when awaiting promotion choice
+let selectedPiece = null;   // piece code selected from palette, e.g. 'wQ'
+
+function selectPiece(code) {
+    selectedPiece = code;
+    document.querySelectorAll('.strip-piece').forEach(function(el) {
+        el.classList.toggle('pal-active', el.dataset.piece === code);
+    });
+    document.getElementById('board-wrap').closest('.board-row').parentElement
+        .classList.toggle('pal-cursor', !!code);
+}
+
+/* =====================================================
+   CLOCK
+===================================================== */
+let initialTime = 0;  // ms; 0 = unlimited (count-up)
+let youTime = 0, botTime = 0;
+let clockSide = null, clockInterval = null, clockLastTick = null;
+
+function setTimeControl(ms, btn) {
+    initialTime = ms;
+    document.querySelectorAll('.tbtn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+}
+
+function formatTime(ms) {
+    const s = Math.floor(Math.abs(ms) / 1000);
+    return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}
+
+function updateClockDisplay() {
+    document.getElementById('clk-you-val').textContent = formatTime(youTime);
+    document.getElementById('clk-bot-val').textContent = formatTime(botTime);
+}
+
+function applyClockDelta(side, delta) {
+    if (initialTime > 0) {
+        if (side === 'you') { youTime = Math.max(0, youTime - delta); }
+        else                { botTime = Math.max(0, botTime - delta); }
+    } else {
+        if (side === 'you') youTime += delta;
+        else                botTime += delta;
+    }
+}
+
+function startClock(side) {
+    if (clockInterval) clearInterval(clockInterval);
+    if (clockLastTick && clockSide) applyClockDelta(clockSide, Date.now() - clockLastTick);
+    clockSide = side;
+    clockLastTick = Date.now();
+    clockInterval = setInterval(function() {
+        const now = Date.now();
+        const delta = now - clockLastTick;
+        clockLastTick = now;
+        applyClockDelta(clockSide, delta);
+        updateClockDisplay();
+        if (initialTime > 0) {
+            if (clockSide === 'you' && youTime <= 0) { onFlag('you'); return; }
+            if (clockSide === 'bot' && botTime <= 0)  { onFlag('bot'); return; }
+        }
+        const youEl = document.getElementById('clk-you');
+        const botEl = document.getElementById('clk-bot');
+        youEl.classList.toggle('active', clockSide === 'you');
+        botEl.classList.toggle('active', clockSide === 'bot');
+    }, 100);
+    document.getElementById('clk-you').classList.toggle('active', side === 'you');
+    document.getElementById('clk-bot').classList.toggle('active', side === 'bot');
+}
+
+function stopClock() {
+    if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
+    if (clockLastTick && clockSide) applyClockDelta(clockSide, Date.now() - clockLastTick);
+    clockSide = null; clockLastTick = null;
+    document.getElementById('clk-you').classList.remove('active');
+    document.getElementById('clk-bot').classList.remove('active');
+    updateClockDisplay();
+}
+
+function resetClock() {
+    stopClock();
+    youTime = initialTime; botTime = initialTime;
+    updateClockDisplay();
+}
+
+function onFlag(who) {
+    stopClock();
+    gameOver = true;
+    if (who === 'you') {
+        setStatus('&#9200; Timp epuizat! Ai r&#259;mas f&#259;r&#259; timp.', 'err');
+    } else {
+        setStatus('&#9200; Robotul a r&#259;mas f&#259;r&#259; timp! Ai c&#226;&#351;tigat!', 'ok');
+        confetti();
+    }
+}
+
+/* Compute castling rights from a board position object */
+function buildCastlingRights(pos) {
+    let r = '';
+    if (pos['e1'] === 'wK' && pos['h1'] === 'wR') r += 'K';
+    if (pos['e1'] === 'wK' && pos['a1'] === 'wR') r += 'Q';
+    if (pos['e8'] === 'bK' && pos['h8'] === 'bR') r += 'k';
+    if (pos['e8'] === 'bK' && pos['a8'] === 'bR') r += 'q';
+    return r || '-';
+}
 
 /* =====================================================
    LEVEL UI
@@ -369,13 +599,27 @@ function setSide(s) {
 ===================================================== */
 board = Chessboard('board', {
     position:     'start',
-    sparePieces:  true,
     draggable:    true,
     dropOffBoard: 'trash',
     pieceTheme:   'https://lichess1.org/assets/piece/caliente/{piece}.svg',
     onDragStart:  onDragStart,
     onDrop:       onDrop,
     onSnapEnd:    onSnapEnd,
+});
+
+/* Click on board square to place selected piece */
+document.getElementById('board').addEventListener('click', function(e) {
+    if (mode !== 'edit' || !selectedPiece) return;
+    const squareEl = e.target.closest('[data-square]');
+    if (!squareEl) return;
+    const sq = squareEl.getAttribute('data-square');
+    const pos = board.position();
+    if (pos[sq] === selectedPiece) {
+        delete pos[sq]; // click same piece again → remove
+    } else {
+        pos[sq] = selectedPiece;
+    }
+    board.position(pos, false);
 });
 
 function onDragStart(source, piece) {
@@ -395,8 +639,71 @@ function onDrop(source, target, piece, newPos, oldPos) {
     }
     /* ---- PLAY MODE ---- */
     if (gameOver || chess.turn() !== humanSide) return 'snapback';
+
+    /* Check for promotion */
+    const isPromo = (piece === 'wP' && target[1] === '8') || (piece === 'bP' && target[1] === '1');
+    if (isPromo) {
+        /* Validate move first */
+        const tmp = new Chess(chess.fen());
+        if (!tmp.move({ from: source, to: target, promotion: 'q' })) return 'snapback';
+        pendingPromo = { from: source, to: target, color: piece[0].toLowerCase() };
+        showPromoPopup();
+        return 'snapback';
+    }
+
     const move = chess.move({ from: source, to: target, promotion: 'q' });
     if (!move) return 'snapback';
+    if (initialTime > 0) startClock('bot');
+    recordMove(move);
+    checkEndGame();
+    if (!gameOver) setTimeout(stockfishMove, 300);
+}
+
+function showPromoPopup() {
+    if (!pendingPromo) return;
+    const { from: src, to: tgt, color } = pendingPromo;
+    const popup = document.getElementById('promo-popup');
+    const boardEl = document.getElementById('board');
+    const boardSize = boardEl.offsetWidth;
+    const sqSize = boardSize / 8;
+
+    const col = tgt.charCodeAt(0) - 97; // 0-7
+    const rank = tgt[1];
+    const isWhiteOri = board.orientation() === 'white';
+    let colFromLeft = isWhiteOri ? col : (7 - col);
+    let leftPx = colFromLeft * sqSize;
+    const popupW = sqSize * 4;
+    if (leftPx + popupW > boardSize) leftPx = boardSize - popupW;
+    if (leftPx < 0) leftPx = 0;
+
+    const atTop = (rank === '8' && isWhiteOri) || (rank === '1' && !isWhiteOri);
+    popup.style.left = leftPx + 'px';
+    popup.style.width = popupW + 'px';
+    if (atTop) { popup.style.top = '0'; popup.style.bottom = 'auto'; }
+    else        { popup.style.bottom = '0'; popup.style.top = 'auto'; }
+
+    const pieces = ['q','r','b','n'];
+    popup.innerHTML = pieces.map(p => {
+        const pc = (color === 'w' ? 'w' : 'b') + p.toUpperCase();
+        return `<div class="pp-piece" style="flex:1" onclick="selectPromo('${p}')">` +
+               `<img src="https://lichess1.org/assets/piece/caliente/${pc}.svg" alt="${p}"></div>`;
+    }).join('');
+    popup.style.display = 'flex';
+}
+
+function hidePromoPopup() {
+    document.getElementById('promo-popup').style.display = 'none';
+    pendingPromo = null;
+}
+
+function selectPromo(piece) {
+    if (!pendingPromo) return;
+    const { from, to } = pendingPromo;
+    hidePromoPopup();
+    const move = chess.move({ from, to, promotion: piece });
+    if (!move) return;
+    board.position(chess.fen(), false);
+    if (initialTime > 0) startClock('bot');
     recordMove(move);
     checkEndGame();
     if (!gameOver) setTimeout(stockfishMove, 300);
@@ -425,7 +732,8 @@ function startGame() {
     /* Build FEN from current board position */
     const pos = board.position();
     const fenPos = Chessboard.objToFen(pos);
-    const fen = `${fenPos} ${turnFirst} - - 0 1`;
+    const castling = buildCastlingRights(pos);
+    const fen = `${fenPos} ${turnFirst} ${castling} - 0 1`;
 
     /* Validate */
     const tempChess = new Chess();
@@ -441,10 +749,14 @@ function startGame() {
     chess     = new Chess(fen);
 
     /* Update UI */
-    document.getElementById('mode-badge').textContent = '⚔️ MOD JOC';
-    document.getElementById('mode-badge').className   = 'mode-badge play';
     document.getElementById('edit-btns').style.display = 'none';
+    document.getElementById('piece-strip').style.display = 'none';
     document.getElementById('btn-stop').style.display  = 'block';
+    if (initialTime > 0) {
+        document.getElementById('clock-displays').style.display = 'flex';
+        resetClock();
+    }
+    selectPiece(null);
     document.getElementById('move-list').style.display = 'block';
     document.getElementById('move-list').innerHTML = '<em style="color:rgba(232,224,208,0.3)">Nicio mutare încă.</em>';
     document.getElementById('card-turn').style.opacity = '0.4';
@@ -465,9 +777,11 @@ function startGame() {
     /* If computer moves first */
     if (chess.turn() !== humanSide) {
         setStatus('🤖 Robotul gândește...', 'inf');
+        if (initialTime > 0) startClock('bot');
         setTimeout(stockfishMove, 600);
     } else {
         setStatus(`♟ Mutarea ta! Joci cu ${humanSide==='w'?'Albele ♔':'Negrele ♚'}`, '');
+        if (initialTime > 0) startClock('you');
     }
 }
 
@@ -484,18 +798,18 @@ function stopGame() {
     board.destroy && board.destroy();
     board = Chessboard('board', {
         position:     pos,
-        sparePieces:  true,
         draggable:    true,
         dropOffBoard: 'trash',
         orientation:  humanSide === 'w' ? 'white' : 'black',
-        pieceTheme:   'https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/img/chesspieces/wikipedia/{piece}.png',
+        pieceTheme:   'https://lichess1.org/assets/piece/caliente/{piece}.svg',
         onDragStart, onDrop, onSnapEnd,
     });
 
-    document.getElementById('mode-badge').textContent = '✏️ MOD EDITARE';
-    document.getElementById('mode-badge').className   = 'mode-badge edit';
-    document.getElementById('edit-btns').style.display = 'block';
-    document.getElementById('btn-stop').style.display  = 'none';
+    stopClock();
+    document.getElementById('edit-btns').style.display    = 'block';
+    document.getElementById('piece-strip').style.display  = '';
+    document.getElementById('clock-displays').style.display = 'none';
+    document.getElementById('btn-stop').style.display    = 'none';
     document.getElementById('move-list').style.display = 'none';
     document.getElementById('card-turn').style.opacity = '1';
     document.getElementById('card-side').style.opacity = '1';
@@ -529,6 +843,7 @@ function initStockfish() {
             const move  = chess.move({ from:mv.slice(0,2), to:mv.slice(2,4), promotion: mv[4] || 'q' });
             if (!move) return;
             board.position(chess.fen(), false);
+            if (initialTime > 0) startClock('you');
             recordMove(move);
             checkEndGame();
             if (!gameOver) setStatus(`♟ Mutarea ta! Joci cu ${humanSide==='w'?'Albele ♔':'Negrele ♚'}`, '');
@@ -576,7 +891,7 @@ function recordMove(move) {
 function checkEndGame() {
     if (chess.in_checkmate()) {
         gameOver = true;
-        const winner = chess.turn() === 'w' ? 'Negrele' : 'Albele';
+        stopClock();
         const humanWon = (chess.turn() !== humanSide);
         if (humanWon) {
             setStatus(`🎉 Șah-mat! Ai câștigat! Felicitări!`, 'ok');
@@ -586,6 +901,7 @@ function checkEndGame() {
         }
     } else if (chess.in_draw()) {
         gameOver = true;
+        stopClock();
         const reason = chess.in_stalemate() ? 'Pat!' :
                        chess.in_threefold_repetition() ? 'Remiză prin repetiție' :
                        chess.insufficient_material() ? 'Material insuficient' : 'Remiză';
