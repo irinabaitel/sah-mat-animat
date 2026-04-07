@@ -36,6 +36,10 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
 .turn-indicator { font-family: 'Baloo 2', cursive; font-size: 1em; color: #1a3a6b; background: rgba(26,58,107,0.08); border-radius: 50px; padding: 6px 20px; }
 
 #board { width: 380px; max-width: calc(100vw - 72px); }
+/* Click-to-move highlight */
+#board .square-55d63.sq-selected,
+#board .square-55d63.sq-selected { background: rgba(255,214,0,0.55) !important; }
+.sq-selected { background: rgba(255,214,0,0.55) !important; }
 
 .feedback { font-family: 'Baloo 2', cursive; font-size: 1.05em; min-height: 32px; text-align: center; padding: 6px 16px; border-radius: 12px; transition: all 0.2s; }
 .feedback.correct { background: rgba(39,174,96,0.15); color: #1a7a40; }
@@ -292,6 +296,8 @@ var currentIdx = 0;
 var wrongAttempts = 0;
 var solvedPuzzles = new Set();
 var game, board;
+var selectedSquare = null;
+var lastDropTime = 0;
 
 // --- Init dots ---
 (function initDots() {
@@ -395,11 +401,41 @@ function makePromotion(piece) {
   }
 }
 
-function onDrop(source, target) {
-  if (solvedPuzzles.has(currentIdx)) return 'snapback';
+// --- Logica comună de mutare (folosită atât de drag cât și de click) ---
+function processMove(source, target) {
+  if (source === target) return false;
+  if (solvedPuzzles.has(currentIdx)) return false;
 
   if (isPawnPromotion(source, target)) {
-    // Test legality with queen promo before showing panel
+    var test = game.move({ from: source, to: target, promotion: 'q' });
+    if (test === null) return false;
+    game.undo();
+    pendingPromo = { source: source, target: target };
+    showPromoPanel(game.turn());
+    return true;
+  }
+
+  var move = game.move({ from: source, to: target });
+  if (move === null) return false;
+
+  board.position(game.fen());
+  if (game.in_checkmate()) {
+    onSolved();
+  } else {
+    game.undo();
+    board.position(game.fen());
+    onWrong();
+  }
+  return true;
+}
+
+function onDrop(source, target) {
+  lastDropTime = Date.now();
+  clearSelection();
+  if (solvedPuzzles.has(currentIdx)) return 'snapback';
+  if (source === target) return 'snapback';
+
+  if (isPawnPromotion(source, target)) {
     var test = game.move({ from: source, to: target, promotion: 'q' });
     if (test === null) return 'snapback';
     game.undo();
@@ -423,6 +459,58 @@ function onDrop(source, target) {
 function onSnapEnd() {
   board.position(game.fen());
 }
+
+// --- Click-to-move ---
+function clearSelection() {
+  selectedSquare = null;
+  document.querySelectorAll('#board .sq-selected').forEach(function(el) {
+    el.classList.remove('sq-selected');
+  });
+}
+
+function selectSquare(square) {
+  selectedSquare = square;
+  var el = document.querySelector('#board [data-square="' + square + '"]');
+  if (el) el.classList.add('sq-selected');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('board').addEventListener('click', function(e) {
+    // Ignora click-urile imediat dupa un drag
+    if (Date.now() - lastDropTime < 300) return;
+    if (solvedPuzzles.has(currentIdx)) return;
+
+    var squareEl = e.target.closest('[data-square]');
+    if (!squareEl) return;
+    var square = squareEl.getAttribute('data-square');
+    if (!square) return;
+
+    var piece = game.get(square);
+    var turn = game.turn();
+
+    if (!selectedSquare) {
+      // Selectează piesa dacă e de culoarea corectă
+      if (piece && piece.color === turn) {
+        selectSquare(square);
+      }
+    } else {
+      if (square === selectedSquare) {
+        clearSelection();
+        return;
+      }
+      // Dacă a dat click pe o altă piesă proprie, schimbă selecția
+      if (piece && piece.color === turn) {
+        clearSelection();
+        selectSquare(square);
+        return;
+      }
+      // Încearcă mutarea
+      var src = selectedSquare;
+      clearSelection();
+      processMove(src, square);
+    }
+  });
+});
 
 function onSolved() {
   solvedPuzzles.add(currentIdx);
