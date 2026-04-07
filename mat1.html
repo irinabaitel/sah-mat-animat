@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mat în 1 mutare — 140 puzzle-uri</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+
+#nav { position: sticky; top: 0; background: rgba(245,169,110,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; z-index: 100; border-bottom: 2px solid rgba(255,255,255,0.4); }
+.nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
+.nav-btn:hover { background: rgba(255,255,255,0.85); }
+.nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
+.nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; padding: 3px 12px; border-radius: 20px; text-decoration: none; }
+
+.content { max-width: 520px; margin: 0 auto; padding: 24px 16px 0; display: flex; flex-direction: column; gap: 16px; }
+
+/* Progress card */
+.progress-card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 16px 20px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+.progress-header { display: flex; justify-content: space-between; font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; margin-bottom: 10px; }
+.progress-bar-wrap { background: rgba(26,58,107,0.12); border-radius: 50px; height: 12px; overflow: hidden; margin-bottom: 14px; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #27ae60, #2ecc71); border-radius: 50px; transition: width 0.4s ease; }
+.dots-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.dot { width: 22px; height: 22px; border-radius: 50%; background: rgba(26,58,107,0.15); cursor: pointer; transition: all 0.2s; border: 2px solid transparent; font-family: 'Baloo 2', cursive; font-size: 0.55em; color: transparent; display: flex; align-items: center; justify-content: center; }
+.dot:hover { background: rgba(26,58,107,0.25); }
+.dot.current { border-color: #1a3a6b; background: rgba(26,58,107,0.2); }
+.dot.solved { background: #27ae60; }
+.dot.solved::after { content: '✓'; color: white; font-size: 0.85em; }
+
+/* Puzzle card */
+.puzzle-card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 20px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); display: flex; flex-direction: column; align-items: center; gap: 14px; }
+
+.turn-indicator { font-family: 'Baloo 2', cursive; font-size: 1em; color: #1a3a6b; background: rgba(26,58,107,0.08); border-radius: 50px; padding: 6px 20px; }
+
+#board { width: 380px; max-width: calc(100vw - 72px); }
+
+.feedback { font-family: 'Baloo 2', cursive; font-size: 1.05em; min-height: 32px; text-align: center; padding: 6px 16px; border-radius: 12px; transition: all 0.2s; }
+.feedback.correct { background: rgba(39,174,96,0.15); color: #1a7a40; }
+.feedback.wrong { background: rgba(231,76,60,0.12); color: #c0392b; }
+.feedback.hint { background: rgba(52,152,219,0.12); color: #1a5a8b; }
+
+.puzzle-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.hint-btn { background: rgba(52,152,219,0.15); border: 2px solid rgba(52,152,219,0.4); border-radius: 50px; padding: 8px 20px; font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a5a8b; cursor: pointer; transition: all 0.2s; }
+.hint-btn:hover { background: rgba(52,152,219,0.25); }
+.next-btn { background: #27ae60; border: none; border-radius: 50px; padding: 8px 24px; font-family: 'Baloo 2', cursive; font-size: 0.95em; color: white; cursor: pointer; box-shadow: 0 4px 12px rgba(39,174,96,0.35); transition: all 0.2s; }
+.next-btn:hover { background: #219a52; transform: translateY(-1px); }
+
+.nav-puzzles { display: flex; justify-content: space-between; }
+.nav-puzzles button { background: rgba(26,58,107,0.45); border: none; border-radius: 50px; padding: 8px 22px; font-family: 'Baloo 2', cursive; font-size: 0.9em; color: white; cursor: pointer; transition: all 0.2s; }
+.nav-puzzles button:hover { background: rgba(26,58,107,0.65); }
+
+/* Completion screen */
+.completion { text-align: center; padding: 20px; }
+.completion .big-emoji { font-size: 3em; margin-bottom: 12px; display: block; }
+.completion h2 { font-family: 'Baloo 2', cursive; font-size: 1.6em; color: #1a3a6b; margin-bottom: 8px; }
+.completion p { font-size: 0.95em; color: #2a2a3e; line-height: 1.7; }
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.shake { animation: shake 0.4s ease; }
+
+/* Promotion panel */
+#promoOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: center; justify-content: center; }
+#promoOverlay.active { display: flex; }
+.promo-box { background: white; border-radius: 20px; padding: 20px 24px; box-shadow: 0 8px 40px rgba(0,0,0,0.25); text-align: center; }
+.promo-box h3 { font-family: 'Baloo 2', cursive; font-size: 1.1em; color: #1a3a6b; margin-bottom: 16px; }
+.promo-pieces { display: flex; gap: 10px; }
+.promo-piece { width: 72px; height: 72px; cursor: pointer; border-radius: 12px; border: 3px solid transparent; padding: 6px; transition: all 0.15s; background: rgba(26,58,107,0.06); }
+.promo-piece:hover { border-color: #1a3a6b; background: rgba(26,58,107,0.12); transform: scale(1.08); }
+.promo-label { font-family: 'Baloo 2', cursive; font-size: 0.75em; color: #1a3a6b; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="pagina5.html" class="nav-btn">← Lecția 8</a>
+  <div class="nav-title">Mat în 1 mutare</div>
+  <a href="aparare_mat.html" class="nav-btn">Lecția 9 →</a>
+</nav>
+
+<div class="content">
+
+  <div class="progress-card">
+    <div class="progress-header">
+      <span>Puzzle <strong id="puzzleNum">1</strong> din 140</span>
+      <span><strong id="solvedCount">0</strong> / 140 rezolvate</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="dots-wrap" id="dotsWrap"></div>
+  </div>
+
+  <div class="puzzle-card" id="puzzleCard">
+    <div class="turn-indicator" id="turnIndicator"></div>
+    <div id="board"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="puzzle-actions">
+      <button class="hint-btn" id="hintBtn" onclick="showHint()">💡 Arată soluția</button>
+      <button class="next-btn" id="nextBtn" onclick="nextPuzzle()">Puzzle următor →</button>
+    </div>
+  </div>
+
+  <div class="nav-puzzles">
+    <button onclick="prevPuzzle()">◀ Anterior</button>
+    <button onclick="nextPuzzle()">Următor ▶</button>
+  </div>
+
+</div>
+
+<!-- Promotion overlay -->
+<div id="promoOverlay">
+  <div class="promo-box">
+    <h3>Alege piesa pentru promovare</h3>
+    <div class="promo-pieces">
+      <div onclick="makePromotion('q')">
+        <img class="promo-piece" id="promoQ" src="" alt="Damă">
+        <div class="promo-label">Damă</div>
+      </div>
+      <div onclick="makePromotion('r')">
+        <img class="promo-piece" id="promoR" src="" alt="Turn">
+        <div class="promo-label">Turn</div>
+      </div>
+      <div onclick="makePromotion('b')">
+        <img class="promo-piece" id="promoB" src="" alt="Nebun">
+        <div class="promo-label">Nebun</div>
+      </div>
+      <div onclick="makePromotion('n')">
+        <img class="promo-piece" id="promoN" src="" alt="Cal">
+        <div class="promo-label">Cal</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+var puzzles = [
+  { fen: 'k1B5/4Q3/8/8/8/4K3/8/8 w - - 0 1',                                   sol: 'Db7#',     turn: 'w' },
+  { fen: 'k7/8/3b4/8/K7/2q5/8/8 b - - 0 1',                                    sol: 'Db4#',     turn: 'b' },
+  { fen: 'k7/8/4n3/7K/8/8/8/2q5 b - - 0 1',                                    sol: 'Dg5#',     turn: 'b' },
+  { fen: 'k7/1q6/8/8/8/2p5/8/K7 b - - 0 1',                                    sol: 'Db2#',     turn: 'b' },
+  { fen: 'kr6/P2N4/8/8/8/8/8/2K5 w - - 0 1',                                   sol: 'axb8=D#',  turn: 'w' },
+  { fen: '3k4/3r4/8/5B2/Q7/8/8/2K5 w - - 0 1',                                 sol: 'Dxd7#',   turn: 'w' },
+  { fen: '1b6/8/8/7k/8/8/3q3P/7K b - - 0 1',                                   sol: 'Dxh2#',   turn: 'b' },
+  { fen: 'k7/8/n7/8/8/8/1Q5P/1R5K w - - 0 1',                                  sol: 'Db7#',     turn: 'w' },
+  { fen: 'k7/p7/8/5Q2/8/8/8/6K1 w - - 0 1',                                    sol: 'Dc8#',     turn: 'w' },
+  { fen: 'k7/8/8/5Q2/8/8/8/1R4K1 w - - 0 1',                                   sol: 'Da5#',     turn: 'w' },
+  { fen: '6k1/7p/7B/8/8/8/8/K4R2 w - - 0 1',                                    sol: 'Tf8#',     turn: 'w' },
+  { fen: '3rkn2/R6p/5P1B/8/8/8/8/K7 w - - 0 1',                                 sol: 'f7#',      turn: 'w' },
+  { fen: '1k6/1b6/2q5/8/8/4N1P1/5P1P/6K1 b - - 0 1',                           sol: 'Da8#',     turn: 'b' },
+  { fen: 'kn6/p6R/1P6/8/8/8/2P5/6K1 w - - 0 1',                                sol: 'b7#',      turn: 'w' },
+  { fen: '5r1k/pp1R3p/3p3Q/5q2/8/5P2/P5PK/8 w - - 0 1',                        sol: 'Dg7#',     turn: 'w' },
+  { fen: '7k/5P2/Q7/8/8/8/8/2K5 w - - 0 1',                                    sol: 'Dh6#',     turn: 'w' },
+  { fen: '8/8/2r5/8/8/4k3/8/4K3 b - - 0 1',                                    sol: 'Tc1#',     turn: 'b' },
+  { fen: '5rk1/5p1p/2n3p1/8/6N1/2B5/8/4K3 w - - 0 1',                          sol: 'Ch6#',     turn: 'w' },
+  { fen: '8/8/4b3/4b3/8/8/5k2/7K b - - 0 1',                                   sol: 'Nd5#',     turn: 'b' },
+  { fen: '1r5k/8/8/3b4/3n4/8/8/K7 b - - 0 1',                                   sol: 'Cc2#',     turn: 'b' },
+  { fen: '1r5k/8/8/3b4/K1n5/8/8/8 b - - 0 1',                                   sol: 'Nc3#',     turn: 'b' },
+  { fen: '8/8/4k1K1/8/8/8/3R4/2R5 w - - 0 1',                                  sol: 'Te1#',     turn: 'w' },
+  { fen: '8/1b4k1/8/1P6/8/1N5p/r7/5QK1 b - - 0 1',                             sol: 'h2#',      turn: 'b' },
+  { fen: '7k/4N1pp/8/2n3N1/6K1/8/8/8 w - - 0 1',                               sol: 'Cf7#',     turn: 'w' },
+  { fen: '8/4p3/8/P4N2/KP6/8/nk6/8 b - - 0 1',                                 sol: 'e8=D#',    turn: 'b' },
+  { fen: '6k1/6p1/5q2/8/8/6Q1/r7/4K1R1 b - - 0 1',                             sol: 'Da1#',     turn: 'b' },
+  { fen: '8/P4r2/K7/1P6/2Nb4/2p5/2k5/7R b - - 0 1',                            sol: 'Txa7#',    turn: 'b' },
+  { fen: '5r1k/5p1p/5p2/r7/8/2B3R1/7P/7K w - - 0 1',                           sol: 'Nxf6#',    turn: 'w' },
+  { fen: '5rk1/6p1/8/8/1n6/qPN3Q1/P7/KR6 b - - 0 1',                           sol: 'Cc2#',     turn: 'b' },
+  { fen: '5r1k/r1b3p1/8/4n1R1/2B5/1P3P2/5K2/8 w - - 0 1',                      sol: 'Th5#',     turn: 'w' },
+  { fen: '8/6k1/8/5p2/8/1P4PK/r2q4/7R b - - 0 1',                              sol: 'Dh6#',     turn: 'b' },
+  { fen: '7k/p5bp/6p1/8/2B4P/1PN1nR2/P5r1/4K3 b - - 0 1',                      sol: 'Nxc3#',    turn: 'b' },
+  { fen: 'r2q1rk1/pp6/2npnpp1/2p1p3/4P3/P1PPP3/1P5Q/RN2K1NR w KQ - 0 1',      sol: 'Dh7#',     turn: 'w' },
+  { fen: '6rk/p5b1/1p1Q3p/4B1pP/3Pp3/4q2P/KP6/5n2 w - - 0 1',                  sol: 'Dh6#',     turn: 'w' },
+  { fen: 'r3k2r/ppp2Np1/2q2n2/2b1p2p/2B5/3P2KP/PPP4P/RNB1QR2 b kq - 0 1',     sol: 'h4#',      turn: 'b' },
+  { fen: '2b5/4k3/2p2pp1/1P5p/P1B1KB1P/5PP1/5b2/8 b - - 0 1',                  sol: 'Nf5#',     turn: 'b' },
+  { fen: '5k2/3Rbp2/2p2Np1/2n1P3/5B1p/8/1Pr2PK1/8 w - - 0 1',                  sol: 'Nh6#',     turn: 'w' },
+  { fen: '5k2/1q4R1/1p2BB1p/pP1pP3/1n1P4/8/1Pr2r2/3R2K1 w - - 0 1',            sol: 'Tg8#',     turn: 'w' },
+  { fen: '8/1p3Qpp/p4b1k/P1pPp3/2P3B1/8/1P1q3P/7K w - - 0 1',                  sol: 'Dh5#',     turn: 'w' },
+  { fen: '8/1R6/1P4pk/4pp2/3nP3/2NPK3/2r2P2/8 b - - 0 1',                      sol: 'f4#',      turn: 'b' },
+{ fen: 'r2q1rk1/1ppbbpp1/2np3p/1B6/4n3/2Q1PN2/PBP2PPP/R3K2R w KQ - 0 13', sol: 'c3g7', turn: 'w' },
+  { fen: 'r3kb1r/p4pp1/b1p4p/n3pQ2/4N3/2Nq4/PP1P1PPP/R1B2RK1 b kq - 1 14', sol: 'd3f1', turn: 'b' },
+  { fen: 'rn2q1k1/pp3ppp/2pb4/3p1B2/2PN4/1Q6/PP3PPP/R1B4K b - - 0 15', sol: 'e8e1', turn: 'b' },
+  { fen: 'rn3rk1/1bp2ppp/p3pb2/3q4/3P4/2PQ4/P1B1NPPP/R1B2RK1 b - - 4 14', sol: 'd5g2', turn: 'b' },
+  { fen: '1R6/R5p1/p1b1k3/2P5/8/2n1P3/5PpP/6K1 b - - 0 31', sol: 'c3e2', turn: 'b' },
+  { fen: '2q1rbk1/5p1p/2p2nP1/3p4/1p1P4/3BP2P/1PQ1NP2/6RK b - - 0 24', sol: 'c8h3', turn: 'b' },
+  { fen: 'rb3rk1/5ppp/p1pqbn2/2Np4/1P2p3/P3P2P/1B1PBPP1/2RQ1RK1 b - - 0 18', sol: 'd6h2', turn: 'b' },
+  { fen: '1nkr1b1r/pppb4/4p1p1/PP3p1q/2PP1Bp1/6P1/5PBP/RN1Q1RK1 b - - 3 19', sol: 'h5h2', turn: 'b' },
+  { fen: 'r1b2rk1/ppb5/2p4p/2Ppqpp1/1P6/2NBP3/P4PPP/2RQ1RK1 b - - 1 16', sol: 'e5h2', turn: 'b' },
+  { fen: '4kb2/2p4p/ppN1P1p1/2n5/2P5/r5P1/2K4P/3R4 w - - 4 35', sol: 'd1d8', turn: 'w' },
+  { fen: 'r1b4k/1pp1b1pp/p1np2q1/3Qp3/1PB1P3/P3Br1P/2P2PP1/R2R3K w - - 0 18', sol: 'd5g8', turn: 'w' },
+  { fen: 'k4n2/p2r1pp1/P1rBp2p/4P3/2P5/2K4P/5PP1/1R6 w - - 0 35', sol: 'b1b8', turn: 'w' },
+  { fen: 'r1b1k2r/pp3ppp/2p1p3/4P1B1/Pbp1n3/2N1P3/1P3PPP/3RKB1R w Kkq - 1 11', sol: 'd1d8', turn: 'w' },
+  { fen: '6k1/p1p3pp/4N3/1p6/2q1r1n1/2B5/PP4PP/3R1R1K w - - 0 29', sol: 'f1f8', turn: 'w' },
+  { fen: 'r2q2k1/ppp3p1/2np1n1B/2bbp3/4P3/3P2Q1/PPP2PPP/R4RK1 w - - 0 14', sol: 'g3g7', turn: 'w' },
+  { fen: 'R7/8/2p2r1k/P4p1p/3PpP1q/6p1/3B3Q/6RK b - - 0 43', sol: 'h4h2', turn: 'b' },
+  { fen: '6N1/1R5p/3pk1p1/6n1/4P1P1/7r/8/5K2 w - - 0 40', sol: 'b7e7', turn: 'w' },
+  { fen: '3k4/8/6Q1/7p/p1q1P1pP/P1B5/1P5P/7K b - - 0 39', sol: 'c4f1', turn: 'b' },
+  { fen: 'r4r2/1pp1Nppk/3p4/p3n3/4P3/1PPP2P1/1P1K2P1/3R4 w - - 0 23', sol: 'd1h1', turn: 'w' },
+  { fen: 'rn2qrk1/ppp2N2/3pPpp1/3n4/6b1/8/P1QN1PPP/R4RK1 w - - 0 19', sol: 'c2g6', turn: 'w' },
+  { fen: '8/6p1/4k1N1/5R1P/4n1PK/5P2/8/r7 b - - 0 60', sol: 'a1h1', turn: 'b' },
+  { fen: 'r4rk1/pb3ppp/1p2p3/3q4/3N4/2P4P/PPQ2PP1/R4RK1 b - - 2 18', sol: 'd5g2', turn: 'b' },
+  { fen: 'rn2k2r/ppq2p2/2p1pp2/8/2BN2p1/3P4/PPPB1P2/R2Q1RK1 b kq - 0 16', sol: 'c7h2', turn: 'b' },
+  { fen: '2rq1rk1/1p3p1p/p1pn2p1/P1Np4/1P1PnP2/4P3/5PBP/R1Q3RK b - - 3 22', sol: 'e4f2', turn: 'b' },
+  { fen: '2r3k1/1Q3ppp/8/8/4B3/2q1P3/R4PPP/4R1K1 b - - 0 24', sol: 'c3e1', turn: 'b' },
+  { fen: 'N4rk1/pp3ppp/5n2/3pq3/8/2P2Q2/PP3PPP/R1B3K1 b - - 1 18', sol: 'e5e1', turn: 'b' },
+  { fen: '8/2r5/1b5k/1P1Pp1R1/4Q2p/6pP/6P1/2r2B1K b - - 0 41', sol: 'c1f1', turn: 'b' },
+  { fen: 'r3kb1r/pR1n1ppp/2p1p3/8/2q2P2/4BR2/2P3PP/3Q2K1 w kq - 0 15', sol: 'd1d7', turn: 'w' },
+  { fen: '4r3/3R1pkp/6p1/1P6/1b6/5B2/1P1R1PPP/6K1 b - - 0 36', sol: 'e8e1', turn: 'b' },
+  { fen: '8/pp4p1/2b1p1k1/3q1n2/3P1Q2/4B3/5PPP/R5K1 b - - 4 28', sol: 'd5g2', turn: 'b' },
+  { fen: 'r2q1rk1/ppp2ppp/2n5/3p2N1/3P4/1B5P/P1Q2PP1/R1B2bK1 w - - 0 17', sol: 'c2h7', turn: 'w' },
+  { fen: 'r2q1rk1/1b3pp1/p3p3/6b1/1pnN1n2/3Q4/PPP1NB2/1K1R1B1R w - - 0 21', sol: 'd3h7', turn: 'w' },
+  { fen: '8/5k2/1P4RK/6P1/1r6/8/8/8 b - - 2 58', sol: 'b4h4', turn: 'b' },
+  { fen: 'r1b1k2r/pp1p1ppp/1qn1pB2/8/4P3/5N2/PPPNKbPP/R2Q1B1R b kq - 1 9', sol: 'b6e3', turn: 'b' },
+  { fen: 'rn2kb1r/pQ2pppp/2p2n2/8/3q2b1/8/PPP2PPP/RNB1KBNR b KQkq - 0 7', sol: 'd4d1', turn: 'b' },
+  { fen: 'rnbq3r/ppp1n2k/3p3p/4P1p1/4Pp2/1QP5/PP4PP/RNB2RK1 w - - 2 12', sol: 'b3f7', turn: 'w' },
+  { fen: 'r1bq1rk1/pp2npp1/4p3/3p4/3P2n1/2P2NP1/PPQN1PP1/R3K2R w KQ - 0 14', sol: 'c2h7', turn: 'w' },
+  { fen: '2r4k/5p2/4pNp1/6Pp/qQ5P/7r/2P5/1RKN4 b - - 3 37', sol: 'c8c2', turn: 'b' },
+  { fen: 'r2q1rk1/pp1b1pp1/2n1p1n1/2b1P1NQ/3p4/P7/1P3PPP/RNB2RK1 w - - 4 14', sol: 'h5h7', turn: 'w' },
+  { fen: '4k3/4p2R/1pp1P1p1/8/3pN3/4b3/1rP3PP/5K2 w - - 0 26', sol: 'h7h8', turn: 'w' },
+  { fen: '6rk/7p/R2N3P/3r4/1P5K/P7/8/8 w - - 5 51', sol: 'd6f7', turn: 'w' },
+  { fen: '5kr1/ppR3p1/3R3p/1n6/1r6/8/1P3PPP/2K5 w - - 5 32', sol: 'd6d8', turn: 'w' },
+  { fen: '2R5/7k/1p2pBq1/3bP2p/8/5P2/5KP1/8 w - - 2 46', sol: 'c8h8', turn: 'w' },
+  { fen: '7k/1pq3p1/2p2r1p/3pPQ2/1p1P4/7P/1rB4K/5R2 w - - 0 36', sol: 'f5h7', turn: 'w' },
+  { fen: '1rb1k2r/1pq1bp2/p1n1p3/3P2pp/6n1/1BN2Q2/PPP1NPPP/2BR1RK1 b k - 0 15', sol: 'c7h2', turn: 'b' },
+  { fen: 'r1b1kb1r/pp2pppp/1qnp4/6B1/4P1n1/1NN5/PPP2PPP/R2QKB1R b KQkq - 7 8', sol: 'b6f2', turn: 'b' },
+  { fen: '6R1/p4q2/2p4p/6p1/6Pk/8/P4r1P/6QK w - - 1 43', sol: 'g1g3', turn: 'w' },
+  { fen: 'r1r3k1/2p3p1/p2p3p/Pp1Pp3/4P3/3P1p1q/R1Q2P1N/4R2K b - - 1 28', sol: 'h3g2', turn: 'b' },
+  { fen: '2r3k1/7p/6q1/p1Np4/Qp2pr2/P4P2/1PR2P1K/6R1 b - - 1 36', sol: 'f4h4', turn: 'b' },
+  { fen: 'r4rk1/ppp2pn1/3p4/q2N4/1n1PP3/5P2/PPP5/1K1R1B1R w - - 3 19', sol: 'd5f6', turn: 'w' },
+  { fen: 'r4rk1/pbp1n1pp/1p1p4/3Pp1N1/2B4P/2PQ4/PP4q1/R2K3R w - - 0 18', sol: 'd3h7', turn: 'w' },
+  { fen: 'r3k2r/ppp2p1p/2n1pp2/7q/2PN2P1/2BP2b1/PP2B1P1/R2Q1RK1 b kq - 0 16', sol: 'h5h2', turn: 'b' },
+  { fen: 'r2N2r1/p2P1p2/1p1Q1p1k/6qp/5R2/P2B3P/1P3PP1/6K1 b - - 0 28', sol: 'g5g2', turn: 'b' },
+  { fen: '2r5/p3b1k1/8/4pp1K/2Pp2p1/6P1/P1P2R1P/R2Q4 b - - 0 29', sol: 'c8h8', turn: 'b' },
+  { fen: 'r1bq3r/pppkn1p1/2np1p1p/4pP1Q/2B1P3/2b3N1/PPPP2PP/R1B2RK1 w - - 2 10', sol: 'c4e6', turn: 'w' },
+  { fen: 'r5k1/6p1/2N3pp/3p4/P2P4/1P5n/6PP/6RK b - - 0 34', sol: 'h3f2', turn: 'b' },
+  { fen: '7k/6p1/8/4p3/Pp1Q4/1P3b1q/6P1/5RK1 b - - 0 45', sol: 'h3g2', turn: 'b' },
+  { fen: '3r1r1k/ppp2pnp/3b3Q/7q/2B1N1R1/P4P2/1P5P/2K5 w - - 3 23', sol: 'h6g7', turn: 'w' },
+  { fen: 'r6k/ppp2B2/3p1b1p/4p2r/2P1Pp2/P2P1n2/1P3P1R/R4Q1K b - - 0 27', sol: 'h5h2', turn: 'b' },
+  { fen: '4R3/4R3/1k1K2p1/1P6/1P6/2rp3r/8/8 w - - 4 46', sol: 'e8b8', turn: 'w' },
+  { fen: 'r3qrk1/pb2p1b1/1p1pNnQ1/2p4p/3P3P/2P1P1B1/PP3P2/R3K1R1 w Q - 3 18', sol: 'g6g7', turn: 'w' },
+  { fen: 'r5k1/pp4pp/4p1q1/4p3/3n4/P3Q1P1/1PP4P/2KR1R2 b - - 5 24', sol: 'g6c2', turn: 'b' },
+  { fen: 'r6r/1q2bpk1/7p/p1p1pPpn/Pp2P1nP/1P1B1N2/1BP3P1/3RR1QK b - - 8 30', sol: 'h5g3', turn: 'b' },
+  { fen: 'r4bkr/pppqp1pp/6B1/7Q/2PP4/2N1P2P/PP4P1/R5K1 w - - 1 16', sol: 'g6f7', turn: 'w' },
+  { fen: '8/8/3p1k2/R2P3K/5PP1/3r4/8/8 b - - 0 63', sol: 'd3h3', turn: 'b' },
+  { fen: '3q1k2/nbp3p1/4PpQp/pp6/6P1/P3p3/1P2BbP1/1K5R w - - 0 30', sol: 'g6f7', turn: 'w' },
+  { fen: '7r/1p6/2p3R1/2PpR3/7k/6b1/p4P1K/8 w - - 0 40', sol: 'f2g3', turn: 'w' },
+  { fen: '1Q6/5p1k/4b1pp/5B2/3p2KP/6P1/P3R3/5r2 b - - 0 45', sol: 'e6f5', turn: 'b' },
+  { fen: 'r1bqkn1r/ppb1n2p/2p1pp2/4N3/3PN3/3B4/PPPQ1PPP/R3K2R w KQkq - 0 13', sol: 'e4f6', turn: 'w' },
+  { fen: 'q5kr/p4p2/4b1p1/4B2p/5n2/2P5/P1Q2PPP/3R1RK1 b - - 0 21', sol: 'a8g2', turn: 'b' },
+  { fen: 'r6k/4qp1p/p4NrQ/1p2p3/3pP3/1P1P3P/1PP3P1/5RK1 w - - 3 24', sol: 'h6h7', turn: 'w' },
+  { fen: '4b2k/R7/p4q2/2P1r2p/3QP1pP/1B6/P5pR/6K1 b - - 1 36', sol: 'f6f1', turn: 'b' },
+  { fen: 'r3r1k1/p1p2ppp/4b3/7q/6n1/2BP4/PPP1R1PP/RN3QK1 b - - 11 17', sol: 'h5h2', turn: 'b' },
+  { fen: 'rnb1k2r/ppp2p1p/4p3/8/3N2Bq/2NP2b1/PPP2PP1/R1BQ1RK1 b kq - 2 13', sol: 'h4h2', turn: 'b' },
+  { fen: 'r2q1r1k/pbpn1p1n/1p1pp2Q/7P/4P3/2NP2R1/PPP1BPP1/R3K3 w Q - 7 18', sol: 'h6g7', turn: 'w' },
+  { fen: '1r5r/3b4/pk2P3/1p2Q1Np/4BP2/1P5n/P5PP/6RK b - - 0 36', sol: 'h3f2', turn: 'b' },
+  { fen: '8/p2R2pp/1p2Bp2/4pP2/6P1/4k2P/P1P4r/3K4 b - - 3 34', sol: 'h2h1', turn: 'b' },
+  { fen: '7k/p4R1p/3p3B/2pN1n2/2PbB1b1/3P2P1/P3r3/5R1K b - - 0 28', sol: 'f5g3', turn: 'b' },
+  { fen: '5rk1/1q3r2/3p2pQ/3p4/3B4/2P2P2/P5PP/6K1 w - - 0 31', sol: 'h6h8', turn: 'w' },
+  { fen: 'r1q2rk1/1p1b1pbp/p2p4/2p2N2/P3Pn2/2NP2QP/1PP3BK/R7 w - - 0 21', sol: 'g3g7', turn: 'w' },
+  { fen: 'r4q1k/7p/p3p1BQ/1p2P3/P7/2p2b2/1P3P1K/6R1 w - - 1 32', sol: 'h6h7', turn: 'w' },
+  { fen: '2r1r1k1/1bpn1ppp/p4n2/1p6/1P1N2q1/P3P3/1BB1QPPP/3R1RK1 b - - 7 18', sol: 'g4g2', turn: 'b' },
+  { fen: 'r5k1/ppp1p1b1/4N1Q1/3pq1Bp/7P/5N2/PPP2rP1/2KR4 b - - 2 17', sol: 'e5b2', turn: 'b' },
+  { fen: '1Q5R/5pk1/5rpp/8/8/4P1PK/4qPQP/8 b - - 0 41', sol: 'e2h5', turn: 'b' },
+  { fen: 'r3k2r/pp3pp1/4p3/3Pqnp1/PP6/8/4NPPP/R2Q1RK1 b kq - 0 21', sol: 'e5h2', turn: 'b' },
+  { fen: '4rBk1/pb4pp/1pq2p2/4p3/2Pb4/3P3P/P3QPPN/1R2R1K1 b - - 0 24', sol: 'c6g2', turn: 'b' },
+  { fen: 'r1bqkb1r/pp1pnppp/2n5/1N2p3/5B2/8/PPP1PPPP/R2QKBNR w KQkq - 0 7', sol: 'b5d6', turn: 'w' },
+  { fen: 'r3r1k1/p4ppp/2p5/3p4/3QbPP1/2N4q/PPP4N/4RRK1 b - - 0 22', sol: 'h3g2', turn: 'b' },
+  { fen: '7q/1r2pQ2/2p5/p1B1P1pB/3Pk3/2p1b3/P1P3P1/7K w - - 2 38', sol: 'f7f3', turn: 'w' },
+  { fen: '8/8/8/8/8/4K3/5Q2/1qk5 w - - 6 54', sol: 'f2d2', turn: 'w' },
+  { fen: 'k2r3r/pp6/6R1/3P2Pp/2P2B1n/P1N4q/1P3P2/R4QK1 b - - 2 24', sol: 'h4f3', turn: 'b' },
+  { fen: 'b4b1r/3k1ppp/p2p4/1p2p3/3Pq3/N3B3/PP3PPP/R2Q1RK1 b - - 0 16', sol: 'e4g2', turn: 'b' },
+  { fen: 'r2qkbnr/pp1npppb/2p4p/7P/2P1N3/3B1N2/PP2QPP1/R1B1K2R w KQkq - 1 11', sol: 'e4d6', turn: 'w' },
+  { fen: 'r2qrk2/p2n2p1/b1pb1n1p/8/1p1P1N2/1Q3N1P/PP3PP1/R1B1R1K1 w - - 2 17', sol: 'f4g6', turn: 'w' },
+  { fen: 'r3kb1r/pp1qp1p1/2npNp2/8/4Q2p/6P1/PPP1PPKP/R1B2R2 w kq - 0 14', sol: 'e4g6', turn: 'w' },
+  { fen: '5r2/1p2k1p1/2p3R1/p2pP1R1/3P4/2PK4/PP3r2/8 b - - 8 39', sol: 'f8f3', turn: 'b' },
+  { fen: 'r4bnr/ppq2Qp1/2pkPn1p/3p4/3P3P/8/PPP5/RNB1K1NR w KQ - 5 15', sol: 'c1f4', turn: 'w' },
+  { fen: 'r3k2r/ppp2p1p/3b1p2/4p3/8/1PPB4/b1PQ1PPP/2KR3R b kq - 0 14', sol: 'd6a3', turn: 'b' },
+  { fen: '6k1/pQ3pp1/7p/8/3P4/6Pb/PPR2r1P/6K1 b - - 0 25', sol: 'f2f1', turn: 'b' },
+  { fen: '4k3/5r2/p7/1p3p1P/3Q1PPB/P1n4K/1b1p4/3q4 w - - 11 56', sol: 'd4d8', turn: 'w' },
+];
+
+var currentIdx = 0;
+var wrongAttempts = 0;
+var solvedPuzzles = new Set();
+var game, board;
+
+// --- Init dots ---
+(function initDots() {
+  var wrap = document.getElementById('dotsWrap');
+  for (var i = 0; i < puzzles.length; i++) {
+    var dot = document.createElement('div');
+    dot.className = 'dot';
+    dot.id = 'dot-' + i;
+    dot.title = 'Puzzle ' + (i + 1);
+    (function(idx) { dot.onclick = function() { loadPuzzle(idx); }; })(i);
+    wrap.appendChild(dot);
+  }
+})();
+
+function updateDots() {
+  for (var i = 0; i < puzzles.length; i++) {
+    var dot = document.getElementById('dot-' + i);
+    dot.className = 'dot' +
+      (solvedPuzzles.has(i) ? ' solved' : '') +
+      (i === currentIdx ? ' current' : '');
+  }
+}
+
+function updateProgress() {
+  var count = solvedPuzzles.size;
+  document.getElementById('solvedCount').textContent = count;
+  document.getElementById('progressFill').style.width = (count / puzzles.length * 100) + '%';
+}
+
+function loadPuzzle(idx) {
+  currentIdx = idx;
+  wrongAttempts = 0;
+
+  var p = puzzles[idx];
+  game = new Chess(p.fen);
+
+  var orientation = p.turn === 'w' ? 'white' : 'black';
+  var isSolved = solvedPuzzles.has(idx);
+
+  if (board) { board.destroy(); }
+  board = Chessboard('board', {
+    position: p.fen,
+    orientation: orientation,
+    draggable: !isSolved,
+    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+    onDrop: onDrop,
+    onSnapEnd: onSnapEnd
+  });
+
+  document.getElementById('puzzleNum').textContent = idx + 1;
+  document.getElementById('turnIndicator').textContent =
+    p.turn === 'w' ? '⬜ Albul mută — găsește matul în 1!' : '⬛ Negrul mută — găsește matul în 1!';
+
+  var fb = document.getElementById('feedback');
+  fb.textContent = isSolved ? '✅ Deja rezolvat!' : '';
+  fb.className = 'feedback' + (isSolved ? ' correct' : '');
+
+  document.getElementById('hintBtn').style.display = (!isSolved) ? 'none' : 'none';
+  document.getElementById('nextBtn').style.display = isSolved && idx < puzzles.length - 1 ? 'inline-block' : 'none';
+
+  updateProgress();
+  updateDots();
+
+  setTimeout(function() {
+    document.getElementById('puzzleCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 50);
+}
+
+var pendingPromo = null;
+
+function isPawnPromotion(source, target) {
+  var piece = game.get(source);
+  if (!piece || piece.type !== 'p') return false;
+  var rank = target.charAt(1);
+  return (piece.color === 'w' && rank === '8') || (piece.color === 'b' && rank === '1');
+}
+
+function showPromoPanel(color) {
+  var c = color === 'w' ? 'w' : 'b';
+  var base = 'https://lichess1.org/assets/piece/caliente/';
+  document.getElementById('promoQ').src = base + c + 'Q.svg';
+  document.getElementById('promoR').src = base + c + 'R.svg';
+  document.getElementById('promoB').src = base + c + 'B.svg';
+  document.getElementById('promoN').src = base + c + 'N.svg';
+  document.getElementById('promoOverlay').classList.add('active');
+}
+
+function makePromotion(piece) {
+  document.getElementById('promoOverlay').classList.remove('active');
+  if (!pendingPromo) return;
+  var move = game.move({ from: pendingPromo.source, to: pendingPromo.target, promotion: piece });
+  pendingPromo = null;
+  if (move === null) { onWrong(); return; }
+  board.position(game.fen());
+  if (game.in_checkmate()) {
+    onSolved();
+  } else {
+    game.undo();
+    board.position(game.fen());
+    onWrong();
+  }
+}
+
+function onDrop(source, target) {
+  if (solvedPuzzles.has(currentIdx)) return 'snapback';
+
+  if (isPawnPromotion(source, target)) {
+    // Test legality with queen promo before showing panel
+    var test = game.move({ from: source, to: target, promotion: 'q' });
+    if (test === null) return 'snapback';
+    game.undo();
+    pendingPromo = { source: source, target: target };
+    showPromoPanel(game.turn());
+    return 'snapback';
+  }
+
+  var move = game.move({ from: source, to: target });
+  if (move === null) return 'snapback';
+
+  if (game.in_checkmate()) {
+    onSolved();
+  } else {
+    game.undo();
+    onWrong();
+    return 'snapback';
+  }
+}
+
+function onSnapEnd() {
+  board.position(game.fen());
+}
+
+function onSolved() {
+  solvedPuzzles.add(currentIdx);
+  var fb = document.getElementById('feedback');
+  fb.textContent = '✅ Excelent! Mat în 1!';
+  fb.className = 'feedback correct';
+
+  var nextBtn = document.getElementById('nextBtn');
+  nextBtn.style.display = currentIdx < puzzles.length - 1 ? 'inline-block' : 'none';
+  document.getElementById('hintBtn').style.display = 'none';
+
+  updateProgress();
+  updateDots();
+
+  if (solvedPuzzles.size === puzzles.length) {
+    setTimeout(showCompletion, 800);
+  }
+}
+
+function onWrong() {
+  wrongAttempts++;
+  var fb = document.getElementById('feedback');
+  fb.textContent = '❌ Nu e mat. Mai încearcă!';
+  fb.className = 'feedback wrong';
+
+  // Shake board
+  var boardEl = document.getElementById('board');
+  boardEl.classList.remove('shake');
+  void boardEl.offsetWidth;
+  boardEl.classList.add('shake');
+
+  if (wrongAttempts >= 3) {
+    document.getElementById('hintBtn').style.display = 'inline-block';
+  }
+}
+
+function showHint() {
+  var p = puzzles[currentIdx];
+  var fb = document.getElementById('feedback');
+  fb.textContent = '💡 Soluția: ' + p.sol;
+  fb.className = 'feedback hint';
+}
+
+function nextPuzzle() {
+  if (currentIdx < puzzles.length - 1) loadPuzzle(currentIdx + 1);
+}
+
+function prevPuzzle() {
+  if (currentIdx > 0) loadPuzzle(currentIdx - 1);
+}
+
+function showCompletion() {
+  var card = document.getElementById('puzzleCard');
+  card.innerHTML =
+    '<div class="completion">' +
+    '<span class="big-emoji">🏆</span>' +
+    '<h2>Felicitări! Toate 140 de puzzle-uri rezolvate!</h2>' +
+    '<p>Ai demonstrat că știi să recunoști matul în 1 din orice poziție.<br>Ești pregătit pentru mat în 2 mutări!</p>' +
+    '</div>';
+}
+
+loadPuzzle(0);
+</script>
+</body>
+</html>
