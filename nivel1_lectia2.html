@@ -197,9 +197,10 @@ body {
 #board { width: 100%; }
 
 /* Highlights */
-.sq-move   { background: rgba(80,200,100,0.55) !important; }
-.sq-piece  { background: rgba(26,120,255,0.35) !important; }
-.sq-capture { background: rgba(230,60,50,0.55) !important; }
+.sq-move    { background-image: linear-gradient(rgba(80,200,100,0.45), rgba(80,200,100,0.45)) !important; }
+.sq-piece   { background-image: linear-gradient(rgba(26,120,255,0.35), rgba(26,120,255,0.35)) !important; }
+.sq-capture { background-image: linear-gradient(rgba(230,60,50,0.45), rgba(230,60,50,0.45))   !important; }
+.sq-ask     { background-image: linear-gradient(rgba(255,200,0,0.60), rgba(255,200,0,0.60))   !important; }
 
 /* PIECE INFO PANEL */
 #piece-info {
@@ -266,9 +267,8 @@ body {
     box-shadow: 0 3px 14px rgba(26,58,107,0.35);
 }
 .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
-.progress {
-    font-size: 0.82em; color: rgba(26,26,46,0.5); text-align: center;
-}
+.nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
+.nav-prev:hover { background: rgba(255,255,255,0.75); }
 
 @media (max-width: 520px) {
     .card { padding: 16px; }
@@ -282,8 +282,8 @@ body {
 <body>
 
 <div id="nav">
-    <a href="nivel1_lectia1.html" class="nav-btn">← Lecția 1</a>
-    <div class="nav-title">Nivelul I · Bazele jocului</div>
+    <a href="hub.html" class="nav-btn">☰ Cuprins</a>
+    <div class="nav-title">Deplasarea Pieselor</div>
     <span class="nav-badge">Lecția 2</span>
 </div>
 
@@ -441,9 +441,8 @@ body {
 
     <!-- BOTTOM NAV -->
     <div class="bottom-nav">
-        <a href="nivel1_lectia1.html" class="nav-btn">← Lecția 1</a>
-        <div class="progress">Lecția 2 din 7 · Nivelul I</div>
-        <a href="nivel1_lectia3.html" class="nav-next">Lecția 3 ▶</a>
+        <a href="nivel1_lectia1.html" class="nav-prev">◀ Tabla de Șah</a>
+        <a href="nivel1_lectia3.html" class="nav-next">Mutări Speciale ▶</a>
     </div>
 
 </div>
@@ -766,15 +765,120 @@ function answerQuiz(code, btn) {
 function quizFinished() {
     document.getElementById('quiz-question').innerHTML =
         `🏆 <strong>Bravo!</strong> Ai răspuns corect la ${quizCorrectCount}/${QUIZ_QUESTIONS.length} întrebări!`;
-    document.getElementById('quiz-buttons').innerHTML = '';
     const fb = document.getElementById('quiz-feedback');
     fb.style.background = 'rgba(245,200,66,0.2)';
     fb.style.borderColor = 'rgba(245,200,66,0.6)';
     fb.innerHTML = quizCorrectCount >= 5
         ? '⭐⭐⭐ Excelent! Cunoști toți soldații din armată! Poți trece la lecția 3.'
         : '💡 Mai exersează cu butoanele de mai sus, apoi revino la test!';
-    // show the quiz board empty
     quizBoard.position('empty', false);
+    document.getElementById('quiz-buttons').innerHTML =
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+        '<button onclick="restartQuiz()" style="flex:1;min-width:140px;padding:10px;border-radius:12px;border:2px solid rgba(26,58,107,0.3);background:rgba(255,255,255,0.6);font-family:\'Baloo 2\',cursive;font-size:0.88em;font-weight:700;color:#1a3a6b;cursor:pointer;">🔄 Reia testul mutări</button>' +
+        '<button onclick="startPositionQuiz()" style="flex:1;min-width:140px;padding:10px;border-radius:12px;border:none;background:#1a3a6b;color:white;font-family:\'Baloo 2\',cursive;font-size:0.88em;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(26,58,107,0.3);">📍 Test: Piese pe tablă</button>' +
+        '</div>';
+}
+
+function restartQuiz() {
+    quizCorrectCount = 0;
+    document.getElementById('quiz-feedback').style.background = '';
+    document.getElementById('quiz-feedback').style.borderColor = '';
+    document.getElementById('quiz-feedback').innerHTML = '';
+    showQuizQuestion(0);
+}
+
+/* ── POSITION QUIZ ── */
+const PIECE_NAMES   = { Q:'Regină', K:'Rege', R:'Turn', B:'Nebun', N:'Cal', P:'Pion' };
+const PIECE_SYMBOLS = { Q:'♛', K:'♚', R:'♜', B:'♝', N:'♞', P:'♟' };
+
+const POS_START = {
+    a1:'wR',b1:'wN',c1:'wB',d1:'wQ',e1:'wK',f1:'wB',g1:'wN',h1:'wR',
+    a2:'wP',b2:'wP',c2:'wP',d2:'wP',e2:'wP',f2:'wP',g2:'wP',h2:'wP',
+    a7:'bP',b7:'bP',c7:'bP',d7:'bP',e7:'bP',f7:'bP',g7:'bP',h7:'bP',
+    a8:'bR',b8:'bN',c8:'bB',d8:'bQ',e8:'bK',f8:'bB',g8:'bN',h8:'bR'
+};
+
+const POS_QUIZ_QUESTIONS = [
+    { sq:'e1', answer:'K' }, { sq:'d1', answer:'Q' },
+    { sq:'h1', answer:'R' }, { sq:'b1', answer:'N' },
+    { sq:'f1', answer:'B' }, { sq:'g2', answer:'P' },
+    { sq:'d8', answer:'Q' }, { sq:'e8', answer:'K' },
+    { sq:'a8', answer:'R' }, { sq:'g8', answer:'N' },
+];
+
+let posQuizIdx = 0, posQuizAnswered = false, posQuizCorrectCount = 0;
+
+function startPositionQuiz() {
+    posQuizIdx = 0; posQuizCorrectCount = 0;
+    showPosQuestion(0);
+}
+
+function showPosQuestion(i) {
+    if (i >= POS_QUIZ_QUESTIONS.length) { posQuizFinished(); return; }
+    posQuizIdx = i; posQuizAnswered = false;
+    const q = POS_QUIZ_QUESTIONS[i];
+
+    quizBoard.position(POS_START, false);
+    setTimeout(() => {
+        $('.quiz-board [class*="square-"]').removeClass('sq-ask');
+        $(`.quiz-board .square-${q.sq}`).addClass('sq-ask');
+    }, 50);
+
+    document.getElementById('quiz-question').innerHTML =
+        `Întrebarea ${i+1}/${POS_QUIZ_QUESTIONS.length}: <strong>Ce piesă se află pe ${q.sq}?</strong>`;
+    const fb = document.getElementById('quiz-feedback');
+    fb.innerHTML = ''; fb.style.background = ''; fb.style.borderColor = '';
+
+    const container = document.getElementById('quiz-buttons');
+    container.innerHTML = '';
+    const keys = ['Q','K','R','B','N','P'].sort(() => Math.random() - 0.5);
+    keys.forEach(code => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-choice';
+        btn.textContent = PIECE_SYMBOLS[code] + ' ' + PIECE_NAMES[code];
+        btn.onclick = () => answerPosQuiz(code, btn);
+        container.appendChild(btn);
+    });
+}
+
+function answerPosQuiz(code, btn) {
+    if (posQuizAnswered) return;
+    posQuizAnswered = true;
+    const q = POS_QUIZ_QUESTIONS[posQuizIdx];
+    const fb = document.getElementById('quiz-feedback');
+    document.querySelectorAll('#quiz-buttons .quiz-choice').forEach(b => b.disabled = true);
+
+    if (code === q.answer) {
+        posQuizCorrectCount++;
+        btn.style.background = 'rgba(40,180,80,0.3)'; btn.style.borderColor = 'rgba(40,180,80,0.7)';
+        fb.style.background = 'rgba(40,180,80,0.15)'; fb.style.borderColor = 'rgba(40,180,80,0.5)';
+        fb.innerHTML = '✅ Corect!';
+    } else {
+        btn.style.background = 'rgba(200,50,50,0.2)'; btn.style.borderColor = 'rgba(200,50,50,0.5)';
+        fb.style.background = 'rgba(200,50,50,0.12)'; fb.style.borderColor = 'rgba(200,50,50,0.4)';
+        fb.innerHTML = `❌ Nu e corect. Pe ${q.sq} se află ${PIECE_SYMBOLS[q.answer]} <strong>${PIECE_NAMES[q.answer]}</strong>.`;
+        document.querySelectorAll('#quiz-buttons .quiz-choice').forEach(b => {
+            if (b.textContent.startsWith(PIECE_SYMBOLS[q.answer]))
+                { b.style.background = 'rgba(40,180,80,0.3)'; b.style.borderColor = 'rgba(40,180,80,0.7)'; }
+        });
+    }
+    setTimeout(() => showPosQuestion(posQuizIdx + 1), 1800);
+}
+
+function posQuizFinished() {
+    document.getElementById('quiz-question').innerHTML =
+        `🏆 <strong>Bravo!</strong> Ai răspuns corect la ${posQuizCorrectCount}/${POS_QUIZ_QUESTIONS.length} întrebări!`;
+    const fb = document.getElementById('quiz-feedback');
+    fb.style.background = 'rgba(245,200,66,0.2)'; fb.style.borderColor = 'rgba(245,200,66,0.6)';
+    fb.innerHTML = posQuizCorrectCount >= 8
+        ? '⭐⭐⭐ Excelent! Cunoști perfect aşezarea pieselor!'
+        : '💡 Reia testul și încearcă să obții un scor mai mare!';
+    quizBoard.position('empty', false);
+    document.getElementById('quiz-buttons').innerHTML =
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+        '<button onclick="startPositionQuiz()" style="flex:1;min-width:140px;padding:10px;border-radius:12px;border:2px solid rgba(26,58,107,0.3);background:rgba(255,255,255,0.6);font-family:\'Baloo 2\',cursive;font-size:0.88em;font-weight:700;color:#1a3a6b;cursor:pointer;">🔄 Reia testul poziții</button>' +
+        '<button onclick="restartQuiz()" style="flex:1;min-width:140px;padding:10px;border-radius:12px;border:none;background:#1a3a6b;color:white;font-family:\'Baloo 2\',cursive;font-size:0.88em;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(26,58,107,0.3);">♟ Test mutări</button>' +
+        '</div>';
 }
 
 /* =====================================================

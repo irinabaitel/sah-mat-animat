@@ -180,12 +180,12 @@ body {
 #board { width: 100%; }
 
 /* BOARD HIGHLIGHTS — applied in priority order (higher = last applied = wins) */
-.sq-row     { background: rgba(80,200,100,0.42) !important; }
-.sq-col     { background: rgba(80,160,255,0.42) !important; }
-.sq-diag    { background: rgba(180,80,220,0.42) !important; }
-.sq-excenter{ background: rgba(255,185,15,0.38) !important; }
-.sq-center  { background: rgba(255,155,10,0.72) !important; }
-.sq-cross   { background: rgba(255,80,50,0.78) !important; }
+.sq-row     { background-image: linear-gradient(rgba(80,200,100,0.40), rgba(80,200,100,0.40)) !important; }
+.sq-col     { background-image: linear-gradient(rgba(80,160,255,0.40), rgba(80,160,255,0.40)) !important; }
+.sq-diag    { background-image: linear-gradient(rgba(180,80,220,0.40), rgba(180,80,220,0.40)) !important; }
+.sq-excenter{ background-image: linear-gradient(rgba(255,185,15,0.38), rgba(255,185,15,0.38)) !important; }
+.sq-center  { background-image: linear-gradient(rgba(255,155,10,0.52), rgba(255,155,10,0.52)) !important; }
+.sq-cross   { background-image: linear-gradient(rgba(255,80,50,0.55), rgba(255,80,50,0.55)) !important; }
 
 /* LEGEND + INFO */
 .board-info {
@@ -290,25 +290,23 @@ body {
     box-shadow: 0 3px 14px rgba(26,58,107,0.35);
 }
 .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
-.progress {
-    font-size: 0.82em;
-    color: rgba(26,26,46,0.5);
-    text-align: center;
-}
+.nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
+.nav-prev:hover { background: rgba(255,255,255,0.75); }
 
 /* ── SETUP SECTION ── */
-#setup-board-wrap { flex: 1 1 auto; min-width: 0; max-width: 380px; }
-#setup-board { width: 100%; }
+.setup-left {
+    flex: 0 0 auto;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+}
+#setup-board-wrap { width: 340px; }
+#setup-board { width: 340px; }
 .setup-panel {
-    flex: 0 0 200px; width: 200px;
+    flex: 1 1 auto; min-width: 0;
+    height: 340px;
     display: flex; flex-direction: column; gap: 10px;
 }
-.setup-badge {
-    display: inline-block; align-self: flex-start;
-    background: rgba(26,58,107,0.12); color: #1a3a6b;
-    font-family: 'Baloo 2', cursive; font-size: 0.73em; font-weight: 700;
-    padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em;
-}
+#setup-text { flex: 1 1 auto; overflow-y: auto; }
+#setup-btn, #setup-done { margin-top: auto; flex-shrink: 0; }
 #setup-title {
     font-family: 'Baloo 2', cursive; font-size: 1em;
     color: #1a3a6b; font-weight: 700; line-height: 1.3;
@@ -317,8 +315,16 @@ body {
     background: rgba(26,58,107,0.09); border: 2px solid rgba(26,58,107,0.18);
     border-radius: 12px; padding: 12px 14px;
     font-size: 0.84em; line-height: 1.7; color: #1a1a2e;
-    flex: 1; min-height: 130px; transition: background 0.3s;
+    transition: background 0.3s;
 }
+#setup-prev {
+    align-self: flex-start;
+    padding: 7px 16px; border-radius: 50px; border: 2px solid rgba(26,58,107,0.3);
+    background: rgba(255,255,255,0.55); color: #1a3a6b;
+    font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700;
+    cursor: pointer; transition: background 0.2s;
+}
+#setup-prev:hover { background: rgba(255,255,255,0.85); }
 #setup-btn {
     padding: 10px; border-radius: 12px; border: none;
     background: #1a3a6b; color: white;
@@ -334,13 +340,13 @@ body {
     font-size: 0.88em; color: #1a5c35; text-align: center; line-height: 1.5;
 }
 /* Setup board highlights */
-.sq-new   { background: rgba(245,200,50,0.72) !important; }
-.sq-fq    { background: rgba(60,120,220,0.35) !important; }
-.sq-fk    { background: rgba(220,60,60,0.32)  !important; }
-.sq-hw    { background: rgba(60,180,100,0.28) !important; }
-.sq-hb    { background: rgba(80,80,170,0.28)  !important; }
-.sq-ww    { background: rgba(255,195,20,0.68) !important; }
-.sq-wb    { background: rgba(30,30,30,0.42)   !important; }
+.sq-new   { background-image: linear-gradient(rgba(245,200,50,0.50), rgba(245,200,50,0.50)) !important; }
+.sq-fq    { background-image: linear-gradient(rgba(60,120,220,0.35), rgba(60,120,220,0.35)) !important; }
+.sq-fk    { background-image: linear-gradient(rgba(220,60,60,0.35), rgba(220,60,60,0.35))   !important; }
+.sq-hw    { background-image: linear-gradient(rgba(60,180,100,0.32), rgba(60,180,100,0.32)) !important; }
+.sq-hb    { background-image: linear-gradient(rgba(80,80,170,0.32), rgba(80,80,170,0.32))   !important; }
+.sq-ww    { background-image: linear-gradient(rgba(255,195,20,0.48), rgba(255,195,20,0.48)) !important; }
+.sq-wb    { background-image: linear-gradient(rgba(30,30,30,0.40), rgba(30,30,30,0.40))     !important; }
 
 @media (max-width: 600px) {
     .card { padding: 16px; }
@@ -348,7 +354,9 @@ body {
     .board-area { flex-direction: column; align-items: center; }
     #board-wrap { width: calc(100vw - 48px); max-width: 100%; }
     .board-info { flex: 0 0 auto; width: 100%; max-width: calc(100vw - 48px); }
-    #setup-board-wrap { width: calc(100vw - 48px); max-width: 100%; }
+    .setup-left { width: calc(100vw - 48px); }
+    #setup-board-wrap { width: 100%; }
+    #setup-board { width: 100%; }
     .setup-panel { flex: 0 0 auto; width: 100%; }
 }
 </style>
@@ -356,8 +364,8 @@ body {
 <body>
 
 <div id="nav">
-    <a href="hub.html" class="nav-btn">← Niveluri</a>
-    <div class="nav-title">Nivelul I · Bazele jocului</div>
+    <a href="hub.html" class="nav-btn">☰ Cuprins</a>
+    <div class="nav-title">Tabla de Șah</div>
     <span class="nav-badge">Lecția 1</span>
 </div>
 
@@ -366,7 +374,7 @@ body {
     <!-- TITLU -->
     <div class="lesson-title">
         <h1>♟ Tabla de Șah</h1>
-        <div class="subtitle">Câmpul de bătălie al celor mai deștepți generali</div>
+        <div class="subtitle">Câmpul de bătălie al celor mai pricepuți generali</div>
     </div>
 
     <!-- INTRODUCERE -->
@@ -499,9 +507,11 @@ body {
         <h2>🏰 Armata pe tablă — Cum aşezăm piesele</h2>
         <p class="board-intro">Înainte de prima mutare, fiecare piesă are locul ei exact. Apasă <strong>Următor</strong> ca să plasezi piesele rând pe rând!</p>
         <div class="board-area">
-            <div id="setup-board-wrap"><div id="setup-board"></div></div>
+            <div class="setup-left">
+                <div id="setup-board-wrap"><div id="setup-board"></div></div>
+                <button id="setup-prev" onclick="prevSetupStep()">◀ Înapoi</button>
+            </div>
             <div class="setup-panel">
-                <span class="setup-badge" id="setup-badge">Pas 1 din 10</span>
                 <div id="setup-title"></div>
                 <div id="setup-text"></div>
                 <button id="setup-btn" onclick="nextSetupStep()"></button>
@@ -512,9 +522,8 @@ body {
 
     <!-- BOTTOM NAV -->
     <div class="bottom-nav">
-        <a href="hub.html" class="nav-btn">← Niveluri</a>
-        <div class="progress">Lecția 1 din 7 · Nivelul I</div>
-        <a href="nivel1_lectia2.html" class="nav-next">Lecția 2 ▶</a>
+        <a href="hub.html" class="nav-prev">◀ Cuprins</a>
+        <a href="nivel1_lectia2.html" class="nav-next">Deplasarea Pieselor ▶</a>
     </div>
 
 </div><!-- /.content -->
@@ -760,11 +769,12 @@ function applySetupHL(step) {
 function renderSetupStep(idx) {
     const step = SETUP_STEPS[idx];
     setupBoard.position(step.pos, false);
-    document.getElementById('setup-badge').textContent = `Pas ${idx + 1} din ${SETUP_STEPS.length}`;
     document.getElementById('setup-title').textContent = step.title;
     document.getElementById('setup-text').innerHTML = step.text;
     const btn = document.getElementById('setup-btn');
+    const prev = document.getElementById('setup-prev');
     const done = document.getElementById('setup-done');
+    prev.style.display = idx > 0 ? 'block' : 'none';
     if (step.btn) {
         btn.textContent = step.btn;
         btn.style.display = 'block';
@@ -779,6 +789,13 @@ function renderSetupStep(idx) {
 function nextSetupStep() {
     if (setupIdx < SETUP_STEPS.length - 1) {
         setupIdx++;
+        renderSetupStep(setupIdx);
+    }
+}
+
+function prevSetupStep() {
+    if (setupIdx > 0) {
+        setupIdx--;
         renderSetupStep(setupIdx);
     }
 }
