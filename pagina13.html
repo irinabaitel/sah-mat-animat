@@ -9,19 +9,28 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            background: #F5A96E;
-            font-family: 'Nunito', sans-serif;
-            padding: 24px 16px;
-            min-height: 100vh;
-        }
+        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
 
-        .page {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 44px 50px;
-            position: relative;
+        #nav {
+            position: sticky; top: 0;
+            background: rgba(245,169,110,0.92);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 20px; z-index: 100;
+            border-bottom: 2px solid rgba(255,255,255,0.4);
         }
+        .nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
+        .nav-btn:hover { background: rgba(255,255,255,0.85); }
+        .nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
+        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em; }
+
+        .content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
+
+        .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
+        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
+        .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
+        .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
+        .nav-prev:hover { background: rgba(255,255,255,0.75); }
 
         .chapter-tabs {
             display: flex;
@@ -178,160 +187,22 @@
             margin-top: 10px;
         }
 
-        .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 28px; }
-        .nav-btn {
-            display: inline-block;
-            background: #1a3a6b;
-            color: white;
-            font-family: 'Baloo 2', cursive;
-            font-size: 1.3em;
-            padding: 13px 40px;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: all 0.2s;
-            box-shadow: 0 5px 20px rgba(26,58,107,0.4);
-        }
-        .nav-btn:hover { background: #2a5aab; transform: translateY(-3px); }
-        .nav-btn.back { background: rgba(26,58,107,0.5); }
-
-        @media (max-width: 680px) {
-            .side-col { display: none; }
-            .title-row { gap: 8px; }
-            .title-piece { width: 52px; height: 75px; }
-
-            .page { padding: 40px 20px 50px; }
+        @media (max-width: 560px) {
             .main-content { flex-direction: column; }
-            #board { width: 300px; }
             .board-section { margin: 0 auto; }
         }
-
-        /* ===== COLOANE LATERALE CU PIESE ===== */
-        .page-wrapper {
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .side-col {
-            flex: 0 0 120px;
-            width: 120px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            padding-top: 40px;
-            align-self: flex-start;
-        }
-
-        .side-col img {
-            width: 120px;
-            height: 180px;
-            object-fit: fill;
-            mix-blend-mode: multiply;
-            display: block;
-        }
-
-        /* ===== TITLU CU PIESE FLANC ===== */
-        .title-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 20px;
-            margin-top: 10px;
-        }
-
-        .title-piece {
-            width: clamp(38px, 4.5vw, 62px);
-            aspect-ratio: 2 / 3;
-            object-fit: fill;
-            mix-blend-mode: multiply;
-            flex-shrink: 0;
-        }
-
-        .title-row h1 { margin-bottom: 0; margin-top: 0; }
-        .title-row + .text-block { margin-top: 18px; }
     </style>
-<style>
-/* ===== COLOANE FIXE ===== */
-body { padding-left: 224px !important; padding-right: 224px !important; }
-.page-wrapper { display: block !important; }
-.side-col {
-    position: fixed !important;
-    top: 0 !important;
-    width: 200px !important;
-    height: 100vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 4px !important;
-    padding: 6px 0 !important;
-    overflow: hidden !important;
-    mix-blend-mode: multiply !important;
-    z-index: 10 !important;
-}
-.page-wrapper > .side-col:first-child { left: 24px !important; right: auto !important; }
-.page-wrapper > .side-col:last-child  { right: 24px !important; left: auto !important; }
-.piece-row {
-    flex: 1 1 0 !important;
-    display: flex !important;
-    min-height: 0 !important;
-    align-items: flex-end !important;
-}
-.side-col .fig-img {
-    flex: 0 0 120px !important;
-    width: 120px !important;
-    height: 100% !important;
-    object-fit: contain !important;
-    object-position: bottom !important;
-    display: block !important;
-}
-.side-col .pion-img {
-    flex: 0 0 80px !important;
-    width: 80px !important;
-    height: 100% !important;
-    object-fit: contain !important;
-    object-position: bottom !important;
-    display: block !important;
-}
-/* text justify global */
-p, li, .text-block, .node-branch ul li { text-align: justify !important; }
-.intro { max-width: 100% !important; margin-left: 0 !important; margin-right: 0 !important; }
-h1, h2, h3, .bt, .nav-btn, .node-center { text-align: center !important; }
-
-@media (max-width: 900px) {
-    body { padding-left: 10px !important; padding-right: 10px !important; }
-    .side-col { display: none !important; }
-}
 </style>
 </head>
 <body>
 
-<div class="page-wrapper">
-<div class="side-col">
-    <div class="piece-row">
-        <img class="fig-img"  src="piese_sah/rege_medieval.jpg"  alt="Rege alb" style="filter:brightness(1.18);">
-        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
-    </div>
-    <div class="piece-row">
-        <img class="fig-img"  src="piese_sah/regina_medieval.jpg"  alt="Regina albă">
-        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
-    </div>
-    <div class="piece-row">
-        <img class="fig-img"  src="piese_sah/nebun_medieval.jpg"  alt="Nebun alb">
-        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
-    </div>
-    <div class="piece-row">
-        <img class="fig-img"  src="piese_sah/turn_medieval.jpg"  alt="Turn alb">
-        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
-    </div>
-    <div class="piece-row">
-        <img class="fig-img"  src="piese_sah/cal_medieval.jpg"  alt="Cal alb">
-        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
-    </div>
-</div>
+<nav id="nav">
+    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
+    <div class="nav-title">Dou&#259; Turnuri vs. Rege</div>
+    <span class="nav-badge">Nivelul III</span>
+</nav>
 
-<div class="page">
+<div class="content">
     <div class="chapter-tabs">
         <button class="tab-btn active" onclick="loadChapter(0)">Dou&#259; Turnuri 1</button>
         <button class="tab-btn"        onclick="loadChapter(1)">Dou&#259; Turnuri 2</button>
@@ -364,36 +235,11 @@ h1, h2, h3, .bt, .nav-btn, .node-center { text-align: center !important; }
         </div>
     </div>
 
-    <div class="nav-buttons">
-        <a href="pagina12.html" class="nav-btn back">&#9664; &#206;napoi</a>
-        <a href="pagina14.html" class="nav-btn">&#206;nainte &#9654;</a>
-    </div>
-</div><!-- /.page -->
-
-<div class="side-col">
-    <div class="piece-row">
-        <img class="pion-img" src="piese_sah/pion_medieval_negru.jpg" alt="Pion negru">
-        <img class="fig-img"  src="piese_sah/rege_medieval_negru.jpg"  alt="Rege negru">
-    </div>
-    <div class="piece-row">
-        <img class="pion-img" src="piese_sah/pion_medieval_negru.jpg" alt="Pion negru">
-        <img class="fig-img"  src="piese_sah/regina_medieval_negru.jpg"  alt="Regina neagră">
-    </div>
-    <div class="piece-row">
-        <img class="pion-img" src="piese_sah/pion_medieval_negru.jpg" alt="Pion negru">
-        <img class="fig-img"  src="piese_sah/nebun_medieval_negru.jpg"  alt="Nebun negru">
-    </div>
-    <div class="piece-row">
-        <img class="pion-img" src="piese_sah/pion_medieval_negru.jpg" alt="Pion negru">
-        <img class="fig-img"  src="piese_sah/turn_medieval_negru.jpg"  alt="Turn negru">
-    </div>
-    <div class="piece-row">
-        <img class="pion-img" src="piese_sah/pion_medieval_negru.jpg" alt="Pion negru">
-        <img class="fig-img"  src="piese_sah/cal_medieval_negru.jpg"  alt="Cal negru">
+    <div class="bottom-nav">
+        <a href="pagina12.html" class="nav-prev">&#9664; &#206;napoi</a>
+        <a href="pagina14.html" class="nav-next">&#206;nainte &#9654;</a>
     </div>
 </div>
-
-</div><!-- /.page-wrapper -->
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
@@ -584,17 +430,5 @@ document.addEventListener('keydown', e => {
 
 loadChapter(0);
 </script>
-<style>
-.hub-btn {
-    position: fixed; top: 16px; right: 152px;
-    background: #1a3a6b; color: white;
-    font-family: "Baloo 2", cursive; font-size: .85em;
-    padding: 8px 18px; border-radius: 50px;
-    text-decoration: none; box-shadow: 0 3px 12px rgba(26,58,107,.4);
-    z-index: 100; transition: background .2s;
-}
-.hub-btn:hover { background: #2a5aab; }
-</style>
-<a href="hub.html" class="hub-btn">&#9776; Cuprins</a>
 </body>
 </html>
