@@ -9,43 +9,35 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            background: #F5A96E;
-            font-family: 'Nunito', sans-serif;
-            padding: 0 16px 40px;
-            min-height: 100vh;
-        }
+        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
 
-        .page {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 44px 50px;
-            position: relative;
+        #nav {
+            position: sticky; top: 0;
+            background: rgba(245,169,110,0.92);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 20px; z-index: 100;
+            border-bottom: 2px solid rgba(255,255,255,0.4);
         }
+        .nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
+        .nav-btn:hover { background: rgba(255,255,255,0.85); }
+        .nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
+        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em; }
 
-        /* ===== TITLU ===== */
-        .title-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 20px;
-            margin-top: 10px;
-        }
-        .title-row h1 { margin-bottom: 0; margin-top: 0; }
-        .title-row + .text-block { margin-top: 18px; }
+        .content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
 
-        h1 {
-            font-family: 'Baloo 2', cursive;
-            font-size: 2.2em;
-            color: #1a3a6b;
-            text-transform: uppercase;
-            margin-bottom: 0;
-            margin-top: 0;
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
-            text-align: center;
-            line-height: 1.25;
-        }
+        .lesson-title { text-align: center; margin-bottom: 8px; }
+        .lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
+
+        .card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+        .card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; text-align: justify; }
+        .card p:last-child { margin-bottom: 0; }
+
+        .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
+        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
+        .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
+        .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
+        .nav-prev:hover { background: rgba(255,255,255,0.75); }
 
         .text-block {
             font-size: 1.1em;
@@ -55,7 +47,7 @@
             text-align: justify;
         }
 
-        .lesson-title {
+        .section-title {
             font-family: 'Baloo 2', cursive;
             font-size: 1.35em;
             font-weight: 900;
@@ -340,75 +332,23 @@
             animation: confetti-fly 1.5s ease-out forwards;
         }
 
-        .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 28px; }
-        .nav-btn {
-            display: inline-block;
-            background: #1a3a6b;
-            color: white;
-            font-family: 'Baloo 2', cursive;
-            font-size: 1.3em;
-            padding: 13px 40px;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: all 0.2s;
-            box-shadow: 0 5px 20px rgba(26,58,107,0.4);
-        }
-        .nav-btn:hover { background: #2a5aab; transform: translateY(-3px); }
-        .nav-btn.back { background: rgba(26,58,107,0.5); }
-        .nav-btn.disabled { background: rgba(26,58,107,0.2); pointer-events: none; }
-
-        /* ===== TOP NAV ===== */
-        #top-nav {
-            position: sticky; top: 0;
-            background: rgba(245,169,110,0.92);
-            backdrop-filter: blur(8px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 20px;
-            z-index: 200;
-            border-bottom: 2px solid rgba(255,255,255,0.4);
-        }
-        .tnav-btn {
-            background: rgba(255,255,255,0.55);
-            border: 2px solid rgba(255,255,255,0.8);
-            border-radius: 50px; padding: 6px 16px;
-            font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700;
-            color: #1a3a6b; text-decoration: none; transition: background 0.2s;
-        }
-        .tnav-btn:hover { background: rgba(255,255,255,0.85); }
-        .tnav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-        .tnav-badge {
-            background: #1a3a6b; color: white;
-            font-family: 'Baloo 2', cursive; font-size: 0.75em;
-            padding: 3px 12px; border-radius: 20px; text-decoration: none;
-        }
-
-        /* text justify global */
-        p, li, .text-block { text-align: justify; }
-        h1, h2, h3 { text-align: center; }
-
-        @media (max-width: 680px) {
-            body { padding: 0 4px 28px; }
-            .page { padding: 12px 10px 28px; }
-            h1 { font-size: 1.6em; margin-top: 0; }
-            .main-content { flex-direction: column; }
-            .board-section { margin: 0 auto; }
-        }
+        @media (max-width: 560px) { .card { padding: 16px; } .main-content { flex-direction: column; } .board-section { margin: 0 auto; } }
     </style>
 </head>
 <body>
 
-<nav id="top-nav">
-    <a href="hub.html" class="tnav-btn">&#9776; Cuprins</a>
-    <div class="tnav-title">Turn singur vs. Rege</div>
-    <a href="hub.html" class="tnav-badge">Nivelul III</a>
+<nav id="nav">
+    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
+    <div class="nav-title">Turn singur vs. Rege</div>
+    <span class="nav-badge">Nivelul III</span>
 </nav>
 
-<div class="page">
-    <div class="title-row">
+<div class="content">
+    <div class="lesson-title">
         <h1>Maturi Simple cu Figuri<br>Rege + Turn vs. Rege</h1>
     </div>
 
-    <div class="text-block">
+    <div class="card"><p>
         Ai &#238;nv&#259;&#539;at s&#259; c&#226;&#351;tigi cu Regina. Acum e r&#226;ndul Turnului!
         Turnul este mai pu&#539;in puternic dec&#226;t Regina &mdash; nu poate controla
         att de multe c&#226;mpuri deodat&#259;. Dar cu ajutorul Regelui, turnul poate
@@ -416,16 +356,16 @@
         la fiecare mutare, turnul construie&#351;te un nou zid, iar regele alb &#238;l
         urm&#259;re&#351;te &#238;ndeaproape. Pas cu pas, r&#226;nd cu r&#226;nd, spa&#539;iul
         regelui negru se mic&#351;oreaz&#259; &mdash; p&#226;n&#259; la matul inevitabil!
-    </div>
+    </p></div>
 
-    <div class="lesson-title">Lec&#539;ia: Se Str&#226;nge Cu&#351;ca &mdash; Turn + Rege</div>
-    <div class="text-block">
+    <div class="section-title">Lec&#539;ia: Se Str&#226;nge Cu&#351;ca &mdash; Turn + Rege</div>
+    <div class="card"><p>
         Observ&#259; cum turnul construie&#351;te un zid orizontal la fiecare mutare
         important&#259;: r&#226;ndul 3, r&#226;ndul 4, r&#226;ndul 5, r&#226;ndul 6 &mdash; cu&#351;ca
         invizibil&#259; se str&#226;nge treptat. Regele alb &#238;l urm&#259;re&#351;te
         pe regele negru ca o umbr&#259;, t&#259;indu-i toate c&#259;ile de &#238;ntoarcere.
         Rezultatul: mat &#238;n <strong>18 mut&#259;ri</strong> din pozi&#539;ia de start!
-    </div>
+    </p></div>
 
     <div class="chapter-subtitle">S&#259;geata portocalie = Turnul &nbsp;|&nbsp; S&#259;geata verde = Regele alb</div>
 
@@ -458,11 +398,11 @@
         </div>
     </div>
 
-    <div class="nav-buttons">
-        <a href="pagina29.html" class="nav-btn back">&#9664; &#206;napoi</a>
-        <a href="pagina31.html" class="nav-btn">&#206;nainte &#9654;</a>
+    <div class="bottom-nav">
+        <a href="pagina29.html" class="nav-prev">&#9664; &#206;napoi</a>
+        <a href="pagina31.html" class="nav-next">&#206;nainte &#9654;</a>
     </div>
-</div><!-- /.page -->
+</div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>

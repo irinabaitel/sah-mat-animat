@@ -7,140 +7,82 @@
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            min-height: 100vh;
-            background: #F5A96E;
-            font-family: 'Nunito', sans-serif;
-            padding: 0 0 40px;
-        }
-        .page {
-            max-width: 1000px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 40px 44px 50px;
-            position: relative;
-        }
-        h1 {
-            font-family: 'Baloo 2', cursive;
-            font-size: 2.2em;
-            color: #1a3a6b;
-            text-transform: uppercase;
-            margin-bottom: 0;
-            margin-top: 0;
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
-            text-align: center;
-            line-height: 1.25;
-        }
-        .text-block {
-            font-size: 1.3em;
-            line-height: 1.75;
-            color: #1a1a1a;
-            margin-bottom: 22px;
-            text-align: justify;
-        }
-        .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 10px; }
-        .nav-btn {
-            display: inline-block;
-            background: #1a3a6b;
-            color: white;
-            font-family: 'Baloo 2', cursive;
-            font-size: 1.3em;
-            padding: 13px 40px;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: all 0.2s;
-            box-shadow: 0 5px 20px rgba(26,58,107,0.4);
-        }
-        .nav-btn:hover { background: #2a5aab; transform: translateY(-3px); }
-        .nav-btn.back { background: rgba(26,58,107,0.5); }
+        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
 
-        /* ===== TITLU ===== */
-        .title-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 20px;
-            margin-top: 10px;
-        }
-        .title-row h1 { margin-bottom: 0; margin-top: 0; }
-        .title-row + .text-block { margin-top: 18px; }
-
-        /* ===== TOP NAV ===== */
-        #top-nav {
+        #nav {
             position: sticky; top: 0;
             background: rgba(245,169,110,0.92);
             backdrop-filter: blur(8px);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 20px;
-            z-index: 200;
+            padding: 10px 20px; z-index: 100;
             border-bottom: 2px solid rgba(255,255,255,0.4);
         }
-        .tnav-btn {
-            background: rgba(255,255,255,0.55);
-            border: 2px solid rgba(255,255,255,0.8);
-            border-radius: 50px; padding: 6px 16px;
-            font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700;
-            color: #1a3a6b; text-decoration: none; transition: background 0.2s;
-        }
-        .tnav-btn:hover { background: rgba(255,255,255,0.85); }
-        .tnav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-        .tnav-badge {
-            background: #1a3a6b; color: white;
-            font-family: 'Baloo 2', cursive; font-size: 0.75em;
-            padding: 3px 12px; border-radius: 20px; text-decoration: none;
-        }
+        .nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
+        .nav-btn:hover { background: rgba(255,255,255,0.85); }
+        .nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
+        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em; }
 
-        /* text justify global */
-        p, li, .text-block { text-align: justify; }
-        h1, h2, h3 { text-align: center; }
+        .content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
 
-        @media (max-width: 640px) {
-            body { padding: 0 0 28px; }
-            .page { padding: 12px 10px 28px; }
-            h1 { font-size: 1.5em; }
+        .lesson-title { text-align: center; margin-bottom: 8px; }
+        .lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
+
+        .card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+        .card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; text-align: justify; }
+        .card p:last-child { margin-bottom: 0; }
+
+        .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
+        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
+        .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
+        .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
+        .nav-prev:hover { background: rgba(255,255,255,0.75); }
+
+        @media (max-width: 560px) {
+            .card { padding: 16px; }
         }
     </style>
 </head>
 <body>
 
-<nav id="top-nav">
-    <a href="hub.html" class="tnav-btn">&#9776; Cuprins</a>
-    <div class="tnav-title">Două Turnuri vs. Rege</div>
-    <a href="hub.html" class="tnav-badge">Nivelul III</a>
+<nav id="nav">
+    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
+    <div class="nav-title">Dou&#259; Turnuri vs. Rege</div>
+    <span class="nav-badge">Nivelul III</span>
 </nav>
 
-<div class="page">
-    <div class="title-row">
+<div class="content">
+
+    <div class="lesson-title">
         <h1>Maturi Simple cu Figuri<br>Rege + Dou&#259; Turnuri vs. Rege</h1>
     </div>
 
-    <div class="text-block">
-        Pentru cine &#238;n&#539;elege ce are de f&#259;cut, matul cu dou&#259; turnuri versus rege este foarte simplu.
+    <div class="card">
+        <p>Pentru cine &#238;n&#539;elege ce are de f&#259;cut, matul cu dou&#259; turnuri versus rege este foarte simplu.
         De obicei, nici nu este nevoie s&#259; fie folosit regele &#8212; cele dou&#259; turnuri se descurc&#259;
-        foarte bine &#351;i foarte repede s&#259; &#238;&#351;i fac&#259; treaba.
+        foarte bine &#351;i foarte repede s&#259; &#238;&#351;i fac&#259; treaba.</p>
     </div>
 
-    <div class="text-block">
-        Regele advers trebuie s&#259; fie for&#539;at s&#259; ajung&#259; pe o margine a tablei &#8212; nu conteaz&#259;
+    <div class="card">
+        <p>Regele advers trebuie s&#259; fie for&#539;at s&#259; ajung&#259; pe o margine a tablei &#8212; nu conteaz&#259;
         dac&#259; este linia 1, linia 8, coloana a sau coloana h. Turnurile lucreaz&#259; &#238;mpreun&#259; ca o
         scar&#259;: unul taie o linie, cel&#259;lalt taie urm&#259;toarea, &#351;i tot a&#351;a, p&#226;n&#259; c&#226;nd regele
-        advers nu mai are unde fugi.
+        advers nu mai are unde fugi.</p>
     </div>
 
-    <div class="text-block">
-        Dar ce ar trebui s&#259; fac&#259; cel care r&#259;m&#226;ne doar cu regele? Cea mai bun&#259; strategie este
+    <div class="card">
+        <p>Dar ce ar trebui s&#259; fac&#259; cel care r&#259;m&#226;ne doar cu regele? Cea mai bun&#259; strategie este
         s&#259; se apropie de unul dintre turnuri &#8212; dac&#259; reu&#351;e&#351;te s&#259;-l captureze, finalul
         devine mult mai dificil de c&#226;&#351;tigat. Acesta este un aspect pe care &#238;nceput&#259;torii
         &#238;l ignor&#259; deseori: ei se concentreaz&#259; exclusiv pe executarea &bdquo;sc&#259;ri&#539;ei&rdquo;
-        &#351;i uit&#259; s&#259; verifice dac&#259; regele advers se apropie periculos de vreunul dintre turnuri.
+        &#351;i uit&#259; s&#259; verifice dac&#259; regele advers se apropie periculos de vreunul dintre turnuri.</p>
     </div>
 
-    <div class="nav-buttons">
-        <a href="pagina11.html" class="nav-btn back">&#9664; &#206;napoi</a>
-        <a href="pagina13.html" class="nav-btn">&#206;nainte &#9654;</a>
+    <div class="bottom-nav">
+        <a href="pagina11.html" class="nav-prev">&#9664; &#206;napoi</a>
+        <a href="pagina13.html" class="nav-next">&#206;nainte &#9654;</a>
     </div>
-</div><!-- /.page -->
+
+</div>
 
 <script>
 const PAGE_ID = 'em_msf_2t_l1';
