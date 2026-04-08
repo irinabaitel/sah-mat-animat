@@ -12,7 +12,7 @@
         body {
             background: #F5A96E;
             font-family: 'Nunito', sans-serif;
-            padding: 24px 16px;
+            padding: 0 16px 40px;
             min-height: 100vh;
         }
 
@@ -174,6 +174,7 @@
             font-size: 0.85em;
             line-height: 1.9;
             max-height: 180px;
+            min-height: 140px;
             overflow-y: auto;
             color: #222;
         }
@@ -226,7 +227,7 @@
         @keyframes dots { 0%{content:'.';} 33%{content:'..';} 66%{content:'...';} 100%{content:'';} }
         .dots::after { content: ''; animation: dots 1.2s steps(3,end) infinite; }
 
-        /* ===== NAV ===== */
+        /* ===== BOTTOM NAV ===== */
         .nav-buttons { display: flex; justify-content: space-between; gap: 20px; margin-top: 28px; }
         .nav-btn {
             display: inline-block;
@@ -243,42 +244,7 @@
         .nav-btn:hover { background: #2a5aab; transform: translateY(-3px); }
         .nav-btn.back { background: rgba(26,58,107,0.5); }
 
-        @media (max-width: 640px) {
-            body { padding: 8px 4px; }
-            .page { padding: 12px 10px 28px; }
-            h1 { font-size: 1.5em; margin-top: 0; }
-            .main-content { flex-direction: column; align-items: center; }
-            #board-wrap { width: min(480px, calc(100vw - 40px)); height: min(480px, calc(100vw - 40px)); }
-        }
-
-        /* ===== COLOANE LATERALE CU PIESE ===== */
-        .page-wrapper {
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .side-col {
-            flex: 0 0 120px;
-            width: 120px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            padding-top: 40px;
-            align-self: flex-start;
-        }
-
-        .side-col img {
-            width: 120px;
-            height: 180px;
-            object-fit: fill;
-            mix-blend-mode: multiply;
-            display: block;
-        }
-
-        /* ===== TITLU CU PIESE FLANC ===== */
+        /* ===== TITLU ===== */
         .title-row {
             display: flex;
             align-items: center;
@@ -287,98 +253,53 @@
             margin-bottom: 20px;
             margin-top: 10px;
         }
+        .title-row h1 { margin-bottom: 0; margin-top: 0; }
+        .title-row + .intro { margin-top: 0; }
 
-        .title-piece {
-            width: clamp(38px, 4.5vw, 62px);
-            aspect-ratio: 2 / 3;
-            object-fit: fill;
-            mix-blend-mode: multiply;
-            flex-shrink: 0;
+        /* ===== TOP NAV ===== */
+        #top-nav {
+            position: sticky; top: 0;
+            background: rgba(245,169,110,0.92);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 20px;
+            z-index: 200;
+            border-bottom: 2px solid rgba(255,255,255,0.4);
+        }
+        .tnav-btn {
+            background: rgba(255,255,255,0.55);
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 50px; padding: 6px 16px;
+            font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700;
+            color: #1a3a6b; text-decoration: none; transition: background 0.2s;
+        }
+        .tnav-btn:hover { background: rgba(255,255,255,0.85); }
+        .tnav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
+        .tnav-badge {
+            background: #1a3a6b; color: white;
+            font-family: 'Baloo 2', cursive; font-size: 0.75em;
+            padding: 3px 12px; border-radius: 20px; text-decoration: none;
         }
 
-        .title-row h1 { margin-bottom: 0; margin-top: 0; }
-        .title-row + .text-block { margin-top: 18px; }
+        @media (max-width: 640px) {
+            body { padding: 0 4px 28px; }
+            .page { padding: 12px 10px 28px; }
+            h1 { font-size: 1.5em; margin-top: 0; }
+            .main-content { flex-direction: column; align-items: center; }
+            #board-wrap { width: min(480px, calc(100vw - 40px)); height: min(480px, calc(100vw - 40px)); }
+        }
     </style>
-<style>
-/* ===== COLOANE FIXE ===== */
-body { padding-left: 224px !important; padding-right: 224px !important; }
-.page-wrapper { display: block !important; }
-.side-col {
-    position: fixed !important;
-    top: 0 !important;
-    width: 200px !important;
-    height: 100vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 4px !important;
-    padding: 6px 0 !important;
-    overflow: hidden !important;
-    mix-blend-mode: multiply !important;
-    z-index: 10 !important;
-}
-.page-wrapper > .side-col:first-child { left: 24px !important; right: auto !important; }
-.page-wrapper > .side-col:last-child  { right: 24px !important; left: auto !important; }
-.piece-row {
-    flex: 1 1 0 !important;
-    display: flex !important;
-    min-height: 0 !important;
-    align-items: flex-end !important;
-}
-.side-col .fig-img {
-    flex: 0 0 120px !important;
-    width: 120px !important;
-    height: 100% !important;
-    object-fit: contain !important;
-    object-position: bottom !important;
-    display: block !important;
-}
-.side-col .pion-img {
-    flex: 0 0 80px !important;
-    width: 80px !important;
-    height: 100% !important;
-    object-fit: contain !important;
-    object-position: bottom !important;
-    display: block !important;
-}
-/* text justify global */
-p, li, .text-block, .node-branch ul li { text-align: justify !important; }
-.intro { max-width: 100% !important; margin-left: 0 !important; margin-right: 0 !important; }
-h1, h2, h3, .bt, .nav-btn, .node-center { text-align: center !important; }
-
-@media (max-width: 900px) {
-    body { padding-left: 10px !important; padding-right: 10px !important; }
-    .side-col { display: none !important; }
-}
-</style>
 </head>
 <body>
 
-<div class="page-wrapper">
-<div class="side-col">
-    <div class="piece-row">
-        <img class="fig-img"  src="piese_sah/rege_medieval.jpg"  alt="Rege alb" style="filter:brightness(1.18);">
-        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
-    </div>
-    <div class="piece-row">
-        <img class="fig-img"  src="piese_sah/regina_medieval.jpg"  alt="Regina albă">
-        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
-    </div>
-    <div class="piece-row">
-        <img class="fig-img"  src="piese_sah/nebun_medieval.jpg"  alt="Nebun alb">
-        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
-    </div>
-    <div class="piece-row">
-        <img class="fig-img"  src="piese_sah/turn_medieval.jpg"  alt="Turn alb">
-        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
-    </div>
-    <div class="piece-row">
-        <img class="fig-img"  src="piese_sah/cal_medieval.jpg"  alt="Cal alb">
-        <img class="pion-img" src="piese_sah/pion_medieval.jpg" alt="Pion alb">
-    </div>
-</div>
+<nav id="top-nav">
+    <a href="hub.html" class="tnav-btn">&#9776; Cuprins</a>
+    <div class="tnav-title">Damă + Turn vs. Rege</div>
+    <a href="hub.html" class="tnav-badge">Nivelul III</a>
+</nav>
 
 <div class="page">
-        <div class="title-row">        <h1>Arena de Antrenament: Rege + Dam&#259; + Turn vs. Rege</h1>    </div>
+    <div class="title-row">        <h1>Arena de Antrenament: Rege + Dam&#259; + Turn vs. Rege</h1>    </div>
 
     <p class="intro">
         Echipa format&#259; din Rege, Dam&#259; &#351;i Turn este una dintre cele mai puternice combina&#539;ii de atac din &#351;ah!
@@ -428,31 +349,6 @@ h1, h2, h3, .bt, .nav-btn, .node-center { text-align: center !important; }
         <a href="pagina12.html" class="nav-btn">&#206;nainte &#9654;</a>
     </div>
 </div><!-- /.page -->
-
-<div class="side-col">
-    <div class="piece-row">
-        <img class="pion-img" src="piese_sah/pion_medieval_negru.jpg" alt="Pion negru">
-        <img class="fig-img"  src="piese_sah/rege_medieval_negru.jpg"  alt="Rege negru">
-    </div>
-    <div class="piece-row">
-        <img class="pion-img" src="piese_sah/pion_medieval_negru.jpg" alt="Pion negru">
-        <img class="fig-img"  src="piese_sah/regina_medieval_negru.jpg"  alt="Regina neagră">
-    </div>
-    <div class="piece-row">
-        <img class="pion-img" src="piese_sah/pion_medieval_negru.jpg" alt="Pion negru">
-        <img class="fig-img"  src="piese_sah/nebun_medieval_negru.jpg"  alt="Nebun negru">
-    </div>
-    <div class="piece-row">
-        <img class="pion-img" src="piese_sah/pion_medieval_negru.jpg" alt="Pion negru">
-        <img class="fig-img"  src="piese_sah/turn_medieval_negru.jpg"  alt="Turn negru">
-    </div>
-    <div class="piece-row">
-        <img class="pion-img" src="piese_sah/pion_medieval_negru.jpg" alt="Pion negru">
-        <img class="fig-img"  src="piese_sah/cal_medieval_negru.jpg"  alt="Cal negru">
-    </div>
-</div>
-
-</div><!-- /.page-wrapper -->
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
@@ -844,7 +740,7 @@ document.getElementById('moveList').addEventListener('click', function(e) {
     item.classList.add('active');
 });
 
-/* ===== RESTART / REVAN&#350;&#258; ===== */
+/* ===== RESTART / REVANȘĂ ===== */
 function enableReview() {
     gameOver = true;
     document.getElementById('moveList').classList.add('review-ready');
@@ -890,19 +786,6 @@ function startRevansa() {
 /* ===== START ===== */
 initStockfish();
 </script>
-
-<style>
-.hub-btn {
-    position: fixed; top: 16px; right: 152px;
-    background: #1a3a6b; color: white;
-    font-family: "Baloo 2", cursive; font-size: .85em;
-    padding: 8px 18px; border-radius: 50px;
-    text-decoration: none; box-shadow: 0 3px 12px rgba(26,58,107,.4);
-    z-index: 100; transition: background .2s;
-}
-.hub-btn:hover { background: #2a5aab; }
-</style>
-<a href="hub.html" class="hub-btn">&#9776; Cuprins</a>
 
 </body>
 </html>
