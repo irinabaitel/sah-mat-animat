@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Șah Mat Animat - Cal și Nebun vs Rege</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+
+        /* ===== NAV ===== */
+        #nav {
+            position: sticky; top: 0;
+            background: rgba(245,169,110,0.92);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 20px; z-index: 100;
+            border-bottom: 2px solid rgba(255,255,255,0.4);
+        }
+        .nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
+        .nav-btn:hover { background: rgba(255,255,255,0.85); }
+        .nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
+        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em; }
+
+        /* ===== LAYOUT ===== */
+        .content { max-width: 820px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
+
+        .lesson-title { text-align: center; margin-bottom: 4px; }
+        .lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.5em,4.5vw,2.1em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
+
+        /* ===== CARDS ===== */
+        .card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+
+        /* ===== RULE CARDS ===== */
+        .rule-card { display: flex; gap: 18px; align-items: flex-start; padding: 18px 22px; }
+        .rule-nr {
+            flex: 0 0 40px; height: 40px;
+            background: #1a3a6b; color: white;
+            font-family: 'Baloo 2', cursive; font-size: 1.2em; font-weight: 900;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(26,58,107,0.35);
+        }
+        .rule-text { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; }
+
+        /* ===== VIEWER TITLE ===== */
+        .viewer-title {
+            font-family: 'Baloo 2', cursive; font-size: 1em; font-weight: 700;
+            color: #1a3a6b; margin-bottom: 16px; text-align: center;
+            text-transform: uppercase; letter-spacing: 0.04em;
+        }
+
+        /* ===== BOARD+INFO TWO-COL ===== */
+        .main-content { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+        .board-section { flex: 0 0 auto; }
+        .info-section { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 10px; }
+
+        #board-wrap { display: inline-block; width: min(360px, calc(100vw - 56px)); }
+        #board { width: 100%; }
+
+        /* ===== BOARD CONTROLS ===== */
+        .board-controls { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px; }
+        .ctrl-btn {
+            background: #1a3a6b; color: white; border: none;
+            border-radius: 50%; width: 38px; height: 38px;
+            font-size: 1em; cursor: pointer; transition: background 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ctrl-btn:hover:not(:disabled) { background: #2a5aab; }
+        .ctrl-btn:disabled { background: rgba(26,58,107,0.22); cursor: not-allowed; }
+        #move-counter {
+            font-family: 'Baloo 2', cursive; font-size: 0.88em;
+            color: #1a3a6b; min-width: 64px; text-align: center;
+        }
+
+        /* ===== COMMENT BOX ===== */
+        .comment-box {
+            background: rgba(255,255,255,0.55);
+            border-radius: 12px; padding: 14px 16px;
+            font-size: 0.93em; line-height: 1.65; color: #2a2a3e;
+            min-height: 72px; border-left: 4px solid #1a3a6b;
+        }
+        .comment-box.no-comment { border-left-color: rgba(26,58,107,0.25); color: rgba(42,42,62,0.5); }
+        .comment-box.is-mate { border-left-color: #27ae60; background: rgba(220,255,230,0.75); font-weight: 700; font-size: 1em; }
+
+        /* ===== MOVE LIST ===== */
+        .move-list {
+            background: rgba(255,255,255,0.45); border-radius: 10px;
+            padding: 8px 10px; font-size: 0.83em; line-height: 2;
+            max-height: 220px; overflow-y: auto; color: #222;
+        }
+        .move-row { display: flex; align-items: baseline; gap: 2px; }
+        .mn { color: rgba(26,58,107,0.5); font-weight: 700; min-width: 26px; }
+        .mply {
+            padding: 1px 5px; border-radius: 4px; cursor: pointer;
+            transition: background 0.15s; font-weight: 600;
+            min-width: 48px;
+        }
+        .mply:hover { background: rgba(26,58,107,0.12); }
+        .mply.active { background: #1a3a6b; color: white; }
+        .mply.white { color: #1a3a6b; margin-right: 4px; }
+        .mply.black { color: #333; margin-right: 8px; }
+        .mply.has-comment::after { content: '●'; font-size: 0.5em; vertical-align: super; margin-left: 2px; color: #e67e22; }
+
+        /* ===== BOTTOM NAV ===== */
+        .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
+        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
+        .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
+        .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
+        .nav-prev:hover { background: rgba(255,255,255,0.75); }
+
+        @media (max-width: 600px) {
+            .main-content { flex-direction: column; }
+            #board-wrap { width: min(360px, calc(100vw - 56px)); margin: 0 auto; }
+        }
+    </style>
+</head>
+<body>
+
+<nav id="nav">
+    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
+    <div class="nav-title">Cal + Nebun vs. Rege</div>
+    <span class="nav-badge">Nivelul III</span>
+</nav>
+
+<div class="content">
+
+    <div class="lesson-title">
+        <h1>Ce trebuie să știi pentru a reuși matul cu Cal și Nebun?</h1>
+    </div>
+
+    <!-- Regula 1 -->
+    <div class="card rule-card">
+        <div class="rule-nr">1</div>
+        <div class="rule-text">Regele trebuie adus la marginea tablei.</div>
+    </div>
+
+    <!-- Regula 2 -->
+    <div class="card rule-card">
+        <div class="rule-nr">2</div>
+        <div class="rule-text">
+            Piesele tale trebuie așezate într-o anumită poziție: Regii în opoziție, Calul între Regi, Nebunul în spatele Regelui propriu sau oriunde pe diagonala care se termină în pătrățelul care restricționează accesul Regelui Advers spre colțul sigur. Din această poziție, prima mutare va fi cea de restricționare.
+        </div>
+    </div>
+
+    <!-- Regula 3 -->
+    <div class="card rule-card">
+        <div class="rule-nr">3</div>
+        <div class="rule-text">
+            Pentru a duce Regele Advers în colțul bun pentru mat (colțul de culoarea Nebunului), Calul va face o manevră în formă de W.
+        </div>
+    </div>
+
+    <!-- Regula 4 -->
+    <div class="card rule-card">
+        <div class="rule-nr">4</div>
+        <div class="rule-text">Livrarea matului.</div>
+    </div>
+
+    <!-- Board viewer -->
+    <div class="card">
+        <div class="main-content">
+            <div class="board-section">
+                <div id="board-wrap">
+                    <div id="board"></div>
+                </div>
+                <div class="board-controls">
+                    <button class="ctrl-btn" id="btn-first" title="Început" disabled>&#9612;&#9664;</button>
+                    <button class="ctrl-btn" id="btn-prev"  title="Înapoi"  disabled>&#9664;</button>
+                    <span id="move-counter">Start</span>
+                    <button class="ctrl-btn" id="btn-next"  title="Înainte">&#9654;</button>
+                    <button class="ctrl-btn" id="btn-last"  title="Sfârșit">&#9654;&#9612;</button>
+                </div>
+            </div>
+            <div class="info-section">
+                <div class="comment-box no-comment" id="comment-box">
+                    Apasă &#9654; pentru a urmări partida comentată.
+                </div>
+                <div class="move-list" id="move-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="exercitiu_doi_nebuni.html" class="nav-prev">&#9664; Înapoi</a>
+        <a href="pagina41.html" class="nav-next">Înainte &#9654;</a>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+const START_FEN = '8/8/8/4k3/8/8/8/2B1K1N1 w - - 0 1';
+
+// Fiecare ply: mutarea SAN și comentariul (dacă există)
+const MOVES = [
+    { san: 'Ke2',  comment: 'Mă apropii de Regele Negru pentru a-l putea dirija.' },
+    { san: 'Ke4',  comment: '' },
+    { san: 'Be3',  comment: 'Am creat o opoziție pe steroizi: Nebunul în această poziție forțează Regele Advers să se retragă, nu se mai poate deplasa în lateral.' },
+    { san: 'Kd5',  comment: '' },
+    { san: 'Kd3',  comment: 'Iau opoziția. Regele și Nebunul ridică un zid pe care Regele Negru nu îl poate depăși.' },
+    { san: 'Ke5',  comment: '' },
+    { san: 'Ne2',  comment: 'Până aici nu este știință exactă, faci lucrurile bine pentru a duce Regele la o margine.' },
+    { san: 'Kd5',  comment: '' },
+    { san: 'Bd4',  comment: 'Opoziția pe steroizi... Regele Negru se retrage.' },
+    { san: 'Kc6',  comment: '' },
+    { san: 'Kc4',  comment: 'Avansez și împing zidul.' },
+    { san: 'Kb7',  comment: '' },
+    { san: 'Kd5',  comment: 'Regele Negru caută colțul de culoare opusă Nebunului pentru că știe că acolo nu poate fi făcut mat.' },
+    { san: 'Ka8',  comment: '' },
+    { san: 'Nf4',  comment: '' },
+    { san: 'Kb8',  comment: '' },
+    { san: 'Kc6',  comment: 'Avansez cu Regele pentru a-l ține pe Negru pe margine.' },
+    { san: 'Ka8',  comment: '' },
+    { san: 'Nd5',  comment: 'Nu uit de ideea mea cu Calul, vreau să îl așez pe un pătrățel de unde să controleze colțul pentru a-l goni pe Negru de acolo.' },
+    { san: 'Kb8',  comment: '' },
+    { san: 'Nc7',  comment: 'Acum ne apropiem de realizarea poziției cheie. Calul interzice accesul Regelui Negru în colț, iar Nebunul îl împiedică să treacă pe cealaltă latură.' },
+    { san: 'Kc8',  comment: '' },
+    { san: 'Ba7',  comment: 'Nebunul taie calea înapoi, Regele ține opoziția, Negrul are o singură mutare posibilă, spre colțul în care va fi făcut mat. Oficial am intrat în faza a III-a — începem manevra W.' },
+    { san: 'Kd8',  comment: '' },
+    { san: 'Nd5',  comment: 'Este momentul să începem manevrarea Calului în W pentru a nu permite Regelui Negru să scape prin e7. Zidul e acolo.' },
+    { san: 'Ke8',  comment: '' },
+    { san: 'Kd6',  comment: 'Apărăm pătrățelul pe care se va așeza Calul în manevra W.' },
+    { san: 'Kf7',  comment: '' },
+    { san: 'Ne7',  comment: 'Continuăm cu încredere manevra W și controlăm g6.' },
+    { san: 'Kg7',  comment: '' },
+    { san: 'Be3',  comment: 'Nebunul nu dă șah — îi taie accesul Regelui Negru la h6.' },
+    { san: 'Kf6',  comment: '' },
+    { san: 'Bf4',  comment: 'Mutare de așteptare. Nebunul păstrează controlul pe g6, Regele Negru e obligat să se retragă.' },
+    { san: 'Kf7',  comment: '' },
+    { san: 'Be5',  comment: 'Regele Negru e cam înghesuit.' },
+    { san: 'Ke8',  comment: '' },
+    { san: 'Ke6',  comment: 'Cu toate aceste mutări de Nebun am forțat Regele Negru să revină la marginea tablei. Este momentul să avansez cu Regele pentru a putea proteja Calul și la următoarea manevră.' },
+    { san: 'Kd8',  comment: '' },
+    { san: 'Bf4',  comment: 'Albul nu îl lasă, face o mutare de așteptare cu Nebunul, care păstrează controlul pe c7. Calul nu pleacă încă, pentru a păstra controlul pe c8.' },
+    { san: 'Ke8',  comment: '' },
+    { san: 'Bc7',  comment: 'Albul previne reîntoarcerea Regelui Negru pe d8.' },
+    { san: 'Kf8',  comment: '' },
+    { san: 'Nf5',  comment: 'Este momentul să continuăm manevra W — mai avem două checkpoint-uri!' },
+    { san: 'Ke8',  comment: '' },
+    { san: 'Ng7+', comment: 'Ultimul punct din W. Calul dă șah și îl trage pe Regele Negru spre colț.' },
+    { san: 'Kf8',  comment: '' },
+    { san: 'Kf6',  comment: 'Regele Alb la datorie — vine și apără Calul. Restricția pe e7 și f7 rămâne.' },
+    { san: 'Kg8',  comment: '' },
+    { san: 'Kg6',  comment: 'Regele Alb se așează în poziția finală.' },
+    { san: 'Kf8',  comment: '' },
+    { san: 'Bd6+', comment: 'Nebunul trimite Regele Negru spre colț.' },
+    { san: 'Kg8',  comment: '' },
+    { san: 'Nf5',  comment: 'Calul Alb deja știe de unde vrea să participe la mat și pornește spre acel loc.' },
+    { san: 'Kh8',  comment: '' },
+    { san: 'Be7',  comment: 'Albul face o mutare de așteptare, păstrând controlul pe f8.' },
+    { san: 'Kg8',  comment: '' },
+    { san: 'Nh6+', comment: 'Calul atacă, forțând Regele Negru la h8.' },
+    { san: 'Kh8',  comment: '' },
+    { san: 'Bf6#', comment: 'Mat!' },
+];
+
+// Pre-calculăm toate pozițiile
+const positions = [START_FEN];
+(function () {
+    const g = new Chess(START_FEN);
+    MOVES.forEach(function (m) { g.move(m.san); positions.push(g.fen()); });
+})();
+
+let currentPly = 0;
+let board;
+
+function initBoard() {
+    board = Chessboard('board', {
+        position: START_FEN,
+        pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+        draggable: false
+    });
+    renderMoveList();
+    updateDisplay();
+}
+
+function renderMoveList() {
+    const list = document.getElementById('move-list');
+    let html = '';
+    for (let i = 0; i < MOVES.length; i += 2) {
+        const moveNum = Math.floor(i / 2) + 1;
+        const w = MOVES[i];
+        const b = MOVES[i + 1];
+        const wHasComment = w && w.comment ? ' has-comment' : '';
+        const bHasComment = b && b.comment ? ' has-comment' : '';
+        html += '<div class="move-row">';
+        html += '<span class="mn">' + moveNum + '.</span>';
+        html += '<span class="mply white' + wHasComment + '" data-ply="' + (i + 1) + '">' + (w ? w.san : '') + '</span>';
+        if (b) {
+            html += '<span class="mply black' + bHasComment + '" data-ply="' + (i + 2) + '">' + b.san + '</span>';
+        }
+        html += '</div>';
+    }
+    list.innerHTML = html;
+    list.querySelectorAll('.mply').forEach(function (el) {
+        el.addEventListener('click', function () { goTo(parseInt(el.dataset.ply)); });
+    });
+}
+
+function goTo(ply) {
+    currentPly = Math.max(0, Math.min(ply, MOVES.length));
+    board.position(positions[currentPly], false);
+    updateDisplay();
+}
+
+function updateDisplay() {
+    // comment
+    const commentBox = document.getElementById('comment-box');
+    const isMate = currentPly === MOVES.length && MOVES[MOVES.length - 1].san.endsWith('#');
+    let comment = '';
+    if (currentPly === 0) {
+        comment = 'Apasă ▶ pentru a urmări partida comentată.';
+        commentBox.className = 'comment-box no-comment';
+    } else {
+        comment = MOVES[currentPly - 1].comment;
+        if (isMate && comment) {
+            commentBox.className = 'comment-box is-mate';
+        } else if (comment) {
+            commentBox.className = 'comment-box';
+        } else {
+            commentBox.className = 'comment-box no-comment';
+            comment = '—';
+        }
+    }
+    commentBox.textContent = comment;
+
+    // counter
+    const counter = document.getElementById('move-counter');
+    if (currentPly === 0) {
+        counter.textContent = 'Start';
+    } else {
+        const moveNum = Math.ceil(currentPly / 2);
+        const side = (currentPly % 2 === 1) ? 'Alb' : 'Negru';
+        counter.textContent = moveNum + '. ' + side;
+    }
+
+    // buttons
+    document.getElementById('btn-first').disabled = currentPly === 0;
+    document.getElementById('btn-prev').disabled  = currentPly === 0;
+    document.getElementById('btn-next').disabled  = currentPly === MOVES.length;
+    document.getElementById('btn-last').disabled  = currentPly === MOVES.length;
+
+    // highlight move in list
+    document.querySelectorAll('.mply').forEach(function (el) {
+        el.classList.toggle('active', parseInt(el.dataset.ply) === currentPly);
+    });
+    const active = document.querySelector('.mply.active');
+    if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+document.getElementById('btn-first').addEventListener('click', function () { goTo(0); });
+document.getElementById('btn-prev' ).addEventListener('click', function () { goTo(currentPly - 1); });
+document.getElementById('btn-next' ).addEventListener('click', function () { goTo(currentPly + 1); });
+document.getElementById('btn-last' ).addEventListener('click', function () { goTo(MOVES.length); });
+
+// Keyboard support
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft')  goTo(currentPly - 1);
+    if (e.key === 'ArrowRight') goTo(currentPly + 1);
+    if (e.key === 'Home')       goTo(0);
+    if (e.key === 'End')        goTo(MOVES.length);
+});
+
+$(document).ready(initBoard);
+
+const PAGE_ID = 'em_msf_cn_teorie';
+</script>
+</body>
+</html>

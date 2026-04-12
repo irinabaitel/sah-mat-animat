@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Șah Mat Animat - Cal și Nebun vs Rege</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            height: 100vh;
+            background: #F5A96E;
+            font-family: 'Nunito', sans-serif;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        #nav {
+            width: 100%;
+            background: rgba(245,169,110,0.92);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 20px; z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        .nav-btn { background: rgba(255,255,255,0.5); border-radius: 50px; padding: 5px 15px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; }
+        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; padding: 2px 12px; border-radius: 20px; text-transform: uppercase; }
+
+        .page {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: clamp(1.5em, 4vh, 2.2em);
+            color: #1a3a6b;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
+        }
+
+        /* ===== MIND MAP ===== */
+        .mindmap-wrap {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            max-height: 550px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .mm-svg {
+            position: absolute;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .node {
+            position: absolute;
+            border-radius: 15px;
+            padding: 12px 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        .node-center {
+            width: 170px;
+            height: 90px;
+            background: #e67e22;
+            border: 4px solid #ca6f1e;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-family: 'Baloo 2', cursive;
+            font-size: 0.95em;
+            font-weight: 900;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .node-branch { width: 300px; }
+        .node-branch .bt {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.05em;
+            font-weight: 900;
+            margin-bottom: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 4px;
+        }
+        .node-branch ul { list-style: none; font-size: 0.85em; line-height: 1.4; }
+        .node-branch ul li { position: relative; padding-left: 15px; margin-bottom: 2px; text-align: justify; }
+        .node-branch ul li::before { content: '•'; position: absolute; left: 0; color: white; }
+
+        .node-blue   { top: 5%; left: 5%; background: #2471a3; border: 2px solid #1a5276; color: white; }
+        .node-green  { top: 5%; right: 5%; background: #1e8449; border: 2px solid #145a32; color: white; }
+        .node-red    { bottom: 5%; left: 5%; background: #b03a2e; border: 2px solid #7b241c; color: white; }
+        .node-purple { bottom: 5%; right: 5%; background: #7d3c98; border: 2px solid #5b2c6f; color: white; }
+
+        .bottom-nav {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+        }
+        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; padding: 8px 25px; border-radius: 50px; text-decoration: none; font-size: 0.95em; }
+        .nav-prev { background: rgba(255,255,255,0.4); padding: 8px 20px; border-radius: 50px; text-decoration: none; color: #1a3a6b; font-family: 'Baloo 2', cursive; font-size: 0.9em; }
+
+        @media (max-width: 900px) {
+            body { height: auto; }
+            .mindmap-wrap { flex-direction: column; height: auto; max-height: none; }
+            .mm-svg { display: none; }
+            .node { position: relative; top: auto!important; left: auto!important; right: auto!important; bottom: auto!important; transform: none!important; width: 100%; margin-bottom: 15px; }
+            .node-center { order: -1; margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav id="nav">
+    <a href="hub.html" class="nav-btn">☰ Cuprins</a>
+    <span class="nav-badge">Nivelul III</span>
+</nav>
+
+<div class="page">
+    <h1>Cal + Nebun vs. Rege</h1>
+
+    <div class="mindmap-wrap">
+        <svg class="mm-svg" id="svg-canvas"></svg>
+
+        <div class="node node-center" id="center">MAT CU<br>CAL + NEBUN<br>VS. REGE</div>
+
+        <div class="node node-branch node-blue" id="n1">
+            <div class="bt">🎯 Faza 1 — Regele la margine</div>
+            <ul>
+                <li>Regele, Calul și Nebunul formează un zid.</li>
+                <li>Împinge Regele Advers spre orice latură a tablei.</li>
+            </ul>
+        </div>
+
+        <div class="node node-branch node-green" id="n2">
+            <div class="bt">🔑 Faza 2 — Poziția cheie</div>
+            <ul>
+                <li>Regii în opoziție, Calul între Regi.</li>
+                <li>Nebunul blochează accesul spre colțul sigur.</li>
+                <li>Prima mutare din această poziție: restricționarea.</li>
+            </ul>
+        </div>
+
+        <div class="node node-branch node-red" id="n3">
+            <div class="bt">🐴 Faza 3 — Manevra W</div>
+            <ul>
+                <li>Calul desenează litera W pe tablă.</li>
+                <li>Gonește Regele Advers spre colțul de culoarea Nebunului.</li>
+                <li>Nebunul taie diagonalele de scăpare.</li>
+            </ul>
+        </div>
+
+        <div class="node node-branch node-purple" id="n4">
+            <div class="bt">💡 De reținut!</div>
+            <ul>
+                <li>Matul e posibil DOAR în colțul de culoarea Nebunului.</li>
+                <li>Fii atent la pat — Regele Advers nu trebuie blocat fără șah!</li>
+                <li>Cal + Nebun: cel mai dificil mat elementar.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="pagina40.html" class="nav-prev">◀ Înapoi</a>
+        <a href="pagina42.html" class="nav-next">Înainte ▶</a>
+    </div>
+</div>
+
+<script>
+    function drawLines() {
+        const svg = document.getElementById('svg-canvas');
+        const center = document.getElementById('center');
+        const nodes = ['n1','n2','n3','n4'].map(function(id) { return document.getElementById(id); });
+
+        if (window.innerWidth <= 900) { svg.innerHTML = ''; return; }
+
+        const wrapRect = document.querySelector('.mindmap-wrap').getBoundingClientRect();
+        const centerRect = center.getBoundingClientRect();
+        const cX = (centerRect.left + centerRect.right) / 2 - wrapRect.left;
+        const cY = (centerRect.top  + centerRect.bottom) / 2 - wrapRect.top;
+
+        let linesHtml = '';
+        nodes.forEach(function(node) {
+            const nodeRect = node.getBoundingClientRect();
+            const nX = (nodeRect.left + nodeRect.right) / 2 - wrapRect.left;
+            const nY = (nodeRect.top  + nodeRect.bottom) / 2 - wrapRect.top;
+            const color = window.getComputedStyle(node).borderColor;
+            linesHtml += '<line x1="' + cX + '" y1="' + cY + '" x2="' + nX + '" y2="' + nY + '" stroke="' + color + '" stroke-width="3" stroke-dasharray="6,4" opacity="0.6"/>';
+        });
+        svg.innerHTML = linesHtml;
+    }
+    window.addEventListener('load', drawLines);
+    window.addEventListener('resize', drawLines);
+</script>
+
+</body>
+</html>
