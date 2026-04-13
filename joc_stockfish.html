@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joc Liber contra Calculatorului</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet"
+      href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+
+#nav {
+    position: sticky; top: 0;
+    background: rgba(245,169,110,0.92);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px; z-index: 100;
+    border-bottom: 2px solid rgba(255,255,255,0.4);
+}
+.nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
+.nav-btn:hover { background: rgba(255,255,255,0.85); }
+.nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
+
+#muteBtn {
+    background: rgba(255,255,255,0.5);
+    border: none; border-radius: 50px;
+    padding: 5px 12px; font-size: 1.1em; cursor: pointer;
+}
+
+.content { max-width: 820px; margin: 0 auto; padding: 24px 16px 0; display: flex; flex-direction: column; gap: 18px; }
+
+h1.page-title { font-family: 'Baloo 2', cursive; font-size: clamp(1.4em,4vw,2em); color: #1a3a6b; text-align: center; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
+
+/* difficulty selector */
+.difficulty-panel {
+    background: rgba(255,255,255,0.6);
+    border: 2px solid rgba(255,255,255,0.85);
+    border-radius: 20px;
+    padding: 16px 20px;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.07);
+}
+.difficulty-label {
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.9em;
+    color: #1a3a6b;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-align: center;
+}
+.animal-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+.animal-btn {
+    background: rgba(255,255,255,0.5);
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 14px;
+    padding: 8px 6px;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: #1a3a6b;
+    text-align: center;
+    transition: all 0.18s;
+    line-height: 1.4;
+}
+.animal-btn:hover { background: rgba(255,255,255,0.82); transform: translateY(-2px); }
+.animal-btn.active {
+    background: #1a3a6b;
+    color: white;
+    border-color: #1a3a6b;
+    box-shadow: 0 3px 12px rgba(26,58,107,0.4);
+}
+.animal-btn .emoji { font-size: 1.5em; display: block; }
+.animal-btn .name  { display: block; margin-top: 2px; }
+
+/* color selector */
+.color-panel {
+    background: rgba(255,255,255,0.6);
+    border: 2px solid rgba(255,255,255,0.85);
+    border-radius: 20px;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.07);
+}
+.color-label {
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.88em; font-weight: 900; color: #1a3a6b; white-space: nowrap;
+}
+.color-opts { display: flex; gap: 8px; flex: 1; }
+.color-opt {
+    flex: 1; padding: 8px 6px;
+    border-radius: 12px; border: 2px solid rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.5);
+    font-family: 'Baloo 2', cursive; font-size: 0.82em; font-weight: 700;
+    color: #1a3a6b; cursor: pointer; text-align: center; transition: all 0.18s;
+}
+.color-opt:hover { background: rgba(255,255,255,0.82); }
+.color-opt.active { background: #1a3a6b; color: white; border-color: #1a3a6b; }
+
+/* start button */
+.start-btn {
+    display: block; width: 100%; max-width: 260px; margin: 0 auto;
+    background: #1a3a6b; color: white;
+    font-family: 'Baloo 2', cursive; font-size: 1.1em; font-weight: 900;
+    border: none; border-radius: 50px; padding: 12px 24px;
+    cursor: pointer; text-align: center;
+    box-shadow: 0 4px 16px rgba(26,58,107,0.4);
+    transition: all 0.2s;
+}
+.start-btn:hover { background: #2a5aab; transform: translateY(-2px); }
+
+/* game area */
+#game-area { display: none; flex-direction: column; gap: 16px; }
+#game-area.visible { display: flex; }
+
+.board-wrapper {
+    display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+}
+
+#board-container { width: min(480px, 90vw); flex-shrink: 0; }
+#board-container .board-b72b1 { border-radius: 6px; overflow: hidden; }
+
+/* pieces */
+.board-b72b1 img { width: 100%; height: 100%; }
+
+.side-panel {
+    flex: 1; min-width: 200px; max-width: 280px;
+    display: flex; flex-direction: column; gap: 12px;
+}
+
+.status-box {
+    background: rgba(255,255,255,0.65);
+    border: 2px solid rgba(255,255,255,0.85);
+    border-radius: 16px; padding: 14px 16px;
+    font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700;
+    color: #1a3a6b; text-align: center; min-height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.status-box.danger { background: rgba(255,200,200,0.8); color: #8b0000; border-color: rgba(192,57,43,0.4); }
+.status-box.success { background: rgba(200,255,220,0.8); color: #155724; border-color: rgba(39,174,96,0.4); }
+.status-box.draw { background: rgba(255,248,210,0.9); color: #7d6608; border-color: rgba(230,184,0,0.4); }
+.status-box.thinking { background: rgba(230,240,255,0.8); color: #1a3a6b; border-color: rgba(26,58,107,0.25); }
+
+.move-list-box {
+    background: rgba(255,255,255,0.55);
+    border: 2px solid rgba(255,255,255,0.85);
+    border-radius: 16px; padding: 12px 14px;
+    flex: 1; overflow-y: auto; max-height: 280px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.move-list-title {
+    font-family: 'Baloo 2', cursive; font-size: 0.82em; font-weight: 900;
+    color: #1a3a6b; margin-bottom: 8px;
+}
+.move-list { font-size: 0.82em; line-height: 1.8; color: #2a2a3e; }
+.move-pair { display: flex; gap: 4px; }
+.move-nr { color: rgba(26,58,107,0.5); font-weight: 700; min-width: 22px; }
+.mv-w, .mv-b { flex: 1; }
+
+.action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.action-btn {
+    flex: 1; min-width: 80px;
+    background: rgba(255,255,255,0.55);
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 50px; padding: 8px 10px;
+    font-family: 'Baloo 2', cursive; font-size: 0.82em; font-weight: 700;
+    color: #1a3a6b; cursor: pointer; transition: background 0.2s; text-align: center;
+}
+.action-btn:hover { background: rgba(255,255,255,0.82); }
+.action-btn.danger { border-color: rgba(192,57,43,0.4); color: #922b21; }
+.action-btn.danger:hover { background: rgba(255,200,200,0.6); }
+
+/* difficulty display */
+.diff-display {
+    font-family: 'Baloo 2', cursive; font-size: 0.78em; color: #1a3a6b;
+    text-align: center; opacity: 0.75;
+}
+
+/* promotion dialog */
+#promo-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55); z-index: 999;
+    align-items: center; justify-content: center;
+}
+#promo-overlay.visible { display: flex; }
+#promo-box {
+    background: #fff; border-radius: 20px; padding: 28px 32px; text-align: center;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+}
+#promo-box p { font-family: 'Baloo 2', cursive; font-size: 1.1em; color: #1a3a6b; margin-bottom: 16px; font-weight: 900; }
+.promo-pieces { display: flex; gap: 14px; justify-content: center; }
+.promo-piece {
+    width: 64px; height: 64px; cursor: pointer; border-radius: 12px;
+    border: 2px solid rgba(26,58,107,0.2); padding: 4px;
+    transition: all 0.15s; background: rgba(26,58,107,0.06);
+}
+.promo-piece:hover { border-color: #1a3a6b; background: rgba(26,58,107,0.15); transform: scale(1.08); }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
+    <div class="nav-title">Joc Liber</div>
+    <button id="muteBtn" onclick="toggleMute()">&#128266;</button>
+</nav>
+
+<div class="content">
+    <h1 class="page-title">Joc contra Calculatorului &#9876;</h1>
+
+    <!-- difficulty -->
+    <div class="difficulty-panel">
+        <div class="difficulty-label">Alege adversarul:</div>
+        <div class="animal-grid" id="animalGrid">
+            <button class="animal-btn active" data-skill="1" onclick="selectAnimal(this)">
+                <span class="emoji">&#128423;</span><span class="name">Pui de găină</span>
+            </button>
+            <button class="animal-btn" data-skill="3" onclick="selectAnimal(this)">
+                <span class="emoji">&#128037;</span><span class="name">Boboc</span>
+            </button>
+            <button class="animal-btn" data-skill="5" onclick="selectAnimal(this)">
+                <span class="emoji">&#128049;</span><span class="name">Pisoi</span>
+            </button>
+            <button class="animal-btn" data-skill="8" onclick="selectAnimal(this)">
+                <span class="emoji">&#128054;</span><span class="name">Cățel</span>
+            </button>
+            <button class="animal-btn" data-skill="11" onclick="selectAnimal(this)">
+                <span class="emoji">&#128014;</span><span class="name">Mânz</span>
+            </button>
+            <button class="animal-btn" data-skill="14" onclick="selectAnimal(this)">
+                <span class="emoji">&#128021;</span><span class="name">Dulău</span>
+            </button>
+            <button class="animal-btn" data-skill="17" onclick="selectAnimal(this)">
+                <span class="emoji">&#128047;</span><span class="name">Tigru</span>
+            </button>
+            <button class="animal-btn" data-skill="20" onclick="selectAnimal(this)">
+                <span class="emoji">&#128009;</span><span class="name">Dragon</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- color -->
+    <div class="color-panel">
+        <div class="color-label">Joc cu:</div>
+        <div class="color-opts">
+            <button class="color-opt active" data-color="white" onclick="selectColor(this)">&#9823; Albe</button>
+            <button class="color-opt" data-color="black" onclick="selectColor(this)">&#9819; Negre</button>
+            <button class="color-opt" data-color="random" onclick="selectColor(this)">&#127922; Aleator</button>
+        </div>
+    </div>
+
+    <button class="start-btn" onclick="startGame()">&#9654; Pornește jocul</button>
+
+    <!-- game area -->
+    <div id="game-area">
+        <div class="board-wrapper">
+            <div id="board-container">
+                <div id="board"></div>
+            </div>
+            <div class="side-panel">
+                <div id="status" class="status-box">&#8987; Pornește un joc</div>
+                <div class="diff-display" id="diffDisplay"></div>
+                <div class="move-list-box">
+                    <div class="move-list-title">&#128221; Mutări</div>
+                    <div class="move-list" id="moveList"></div>
+                </div>
+                <div class="action-btns">
+                    <button class="action-btn" onclick="undoMove()">&#8630; Retrage</button>
+                    <button class="action-btn" onclick="startGame()">&#8635; Nou</button>
+                    <button class="action-btn danger" onclick="resignGame()">&#9873; Abandonez</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- promotion dialog -->
+<div id="promo-overlay">
+    <div id="promo-box">
+        <p>Alege piesa pentru promovare:</p>
+        <div class="promo-pieces" id="promoPieces"></div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+
+/* ====== SOUNDS ====== */
+var sndMove    = new Audio('Sounds/Move.mp3');
+var sndCapture = new Audio('Sounds/Capture.mp3');
+var sndMate    = new Audio('Sounds/Mate.mp3');
+var soundMuted = false;
+
+function playSound(snd) {
+    if (soundMuted) return;
+    snd.currentTime = 0;
+    snd.play().catch(function(){});
+}
+function playSoundForMove(mv) {
+    if (!mv) return;
+    if (chess.in_checkmate()) { playSound(sndMate); return; }
+    if (mv.flags && mv.flags.indexOf('c') !== -1) playSound(sndCapture);
+    else playSound(sndMove);
+}
+function toggleMute() {
+    soundMuted = !soundMuted;
+    document.getElementById('muteBtn').textContent = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
+}
+
+/* ====== STATE ====== */
+var chess = new Chess();
+var board  = null;
+var playerColor = 'w';   // 'w' or 'b'
+var selectedSkill = 1;
+var gameOver = false;
+var stockfish = null;
+var pendingPromoMove = null;
+
+var PIECE_CDN = 'https://lichess1.org/assets/piece/caliente/';
+var PIECE_MAP = {
+    wK:'wK', wQ:'wQ', wR:'wR', wB:'wB', wN:'wN', wP:'wP',
+    bK:'bK', bQ:'bQ', bR:'bR', bB:'bB', bN:'bN', bP:'bP'
+};
+
+/* ====== PIECE IMAGES ====== */
+function pieceImg(code) {
+    return PIECE_CDN + code + '.svg';
+}
+
+/* ====== DIFFICULTY ====== */
+function selectAnimal(btn) {
+    document.querySelectorAll('.animal-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    selectedSkill = parseInt(btn.dataset.skill);
+}
+
+function selectColor(btn) {
+    document.querySelectorAll('.color-opt').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+}
+
+function getSelectedColor() {
+    var active = document.querySelector('.color-opt.active');
+    if (!active) return 'w';
+    var c = active.dataset.color;
+    if (c === 'random') return Math.random() < 0.5 ? 'w' : 'b';
+    return c === 'black' ? 'b' : 'w';
+}
+
+/* ====== STOCKFISH ====== */
+function initStockfish() {
+    if (stockfish) { stockfish.terminate(); stockfish = null; }
+    stockfish = new Worker('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
+    stockfish.onmessage = function(e) { handleStockfishMsg(e.data); };
+    stockfish.postMessage('uci');
+    stockfish.postMessage('setoption name Skill Level value ' + selectedSkill);
+    stockfish.postMessage('isready');
+}
+
+function askStockfish() {
+    if (!stockfish || gameOver) return;
+    setStatus('&#129302; Calculatorul se gândește...', 'thinking');
+    stockfish.postMessage('position fen ' + chess.fen());
+    var thinkMs = 300 + selectedSkill * 40;
+    stockfish.postMessage('go movetime ' + thinkMs);
+}
+
+function handleStockfishMsg(msg) {
+    if (typeof msg !== 'string') return;
+    if (msg.indexOf('bestmove') === 0) {
+        var parts = msg.split(' ');
+        var move  = parts[1];
+        if (!move || move === '(none)') return;
+        var from = move.substring(0,2);
+        var to   = move.substring(2,4);
+        var promo = move.length > 4 ? move[4] : undefined;
+        var mv = chess.move({ from: from, to: to, promotion: promo || 'q' });
+        if (!mv) return;
+        board.position(chess.fen());
+        playSoundForMove(mv);
+        addMoveToList(mv);
+        checkGameOver();
+        if (!gameOver) setStatus(turnStatus(), '');
+    }
+}
+
+/* ====== BOARD SETUP ====== */
+function startGame() {
+    chess.reset();
+    gameOver = false;
+    playerColor = getSelectedColor();
+    document.getElementById('moveList').innerHTML = '';
+    document.getElementById('game-area').classList.add('visible');
+
+    var activeAnimal = document.querySelector('.animal-btn.active');
+    var animalName = activeAnimal ? activeAnimal.querySelector('.name').textContent : '';
+    document.getElementById('diffDisplay').textContent = 'Adversar: ' + animalName;
+
+    initStockfish();
+
+    var orientation = playerColor === 'w' ? 'white' : 'black';
+    var cfg = {
+        draggable: true,
+        position: 'start',
+        orientation: orientation,
+        pieceTheme: function(piece) { return pieceImg(piece); },
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onSnapEnd: onSnapEnd
+    };
+
+    if (board) { board.destroy(); }
+    board = Chessboard('board', cfg);
+
+    $('#board-container').css('width', Math.min(480, window.innerWidth * 0.9) + 'px');
+    board.resize();
+
+    setStatus(turnStatus(), '');
+
+    // If player is black, computer plays first
+    if (playerColor === 'b') {
+        setTimeout(askStockfish, 400);
+    }
+}
+
+/* ====== DRAG & DROP ====== */
+function onDragStart(source, piece) {
+    if (gameOver) return false;
+    var turn = chess.turn();
+    if (turn !== playerColor) return false;
+    if ((playerColor === 'w' && piece.search(/^b/) !== -1)) return false;
+    if ((playerColor === 'b' && piece.search(/^w/) !== -1)) return false;
+    return true;
+}
+
+function onDrop(source, target) {
+    if (source === target) return 'snapback';
+
+    // check promotion
+    var piece = chess.get(source);
+    if (piece && piece.type === 'p') {
+        var rank = target[1];
+        if ((piece.color === 'w' && rank === '8') || (piece.color === 'b' && rank === '1')) {
+            pendingPromoMove = { from: source, to: target };
+            showPromoDialog(piece.color);
+            return 'snapback';
+        }
+    }
+
+    var mv = chess.move({ from: source, to: target });
+    if (!mv) return 'snapback';
+    playSoundForMove(mv);
+    addMoveToList(mv);
+    if (checkGameOver()) return;
+    setStatus('', 'thinking');
+    setTimeout(askStockfish, 150);
+}
+
+function onSnapEnd() {
+    board.position(chess.fen());
+}
+
+/* ====== PROMOTION ====== */
+function showPromoDialog(color) {
+    var overlay = document.getElementById('promo-overlay');
+    var container = document.getElementById('promoPieces');
+    container.innerHTML = '';
+    var pieces = ['q','r','b','n'];
+    pieces.forEach(function(p) {
+        var code = (color === 'w' ? 'w' : 'b') + p.toUpperCase();
+        var img = document.createElement('img');
+        img.src = pieceImg(code);
+        img.className = 'promo-piece';
+        img.title = p;
+        img.onclick = function() { doPromotion(p); };
+        container.appendChild(img);
+    });
+    overlay.classList.add('visible');
+}
+
+function doPromotion(piece) {
+    document.getElementById('promo-overlay').classList.remove('visible');
+    if (!pendingPromoMove) return;
+    var mv = chess.move({ from: pendingPromoMove.from, to: pendingPromoMove.to, promotion: piece });
+    pendingPromoMove = null;
+    if (!mv) return;
+    board.position(chess.fen());
+    playSoundForMove(mv);
+    addMoveToList(mv);
+    if (checkGameOver()) return;
+    setStatus('', 'thinking');
+    setTimeout(askStockfish, 150);
+}
+
+/* ====== GAME STATE ====== */
+function checkGameOver() {
+    if (chess.in_checkmate()) {
+        var winner = chess.turn() !== playerColor ? 'Tu ai câștigat! &#127942;' : 'Calculatorul a câștigat! &#129302;';
+        setStatus(winner, chess.turn() !== playerColor ? 'success' : 'danger');
+        gameOver = true;
+        return true;
+    }
+    if (chess.in_stalemate()) {
+        setStatus('Pat — remiză! &#9878;', 'draw');
+        gameOver = true;
+        return true;
+    }
+    if (chess.in_draw()) {
+        var why = '';
+        if (chess.insufficient_material()) why = ' (material insuficient)';
+        else why = ' (50 mutări / repetare)';
+        setStatus('Remiză!' + why + ' &#9878;', 'draw');
+        gameOver = true;
+        return true;
+    }
+    return false;
+}
+
+function turnStatus() {
+    var t = chess.turn() === 'w' ? 'Albele' : 'Negrele';
+    var you = chess.turn() === playerColor;
+    if (chess.in_check()) return (you ? '&#9888; Ești în șah! ' : '&#9888; ' + t + ' în șah! ') + 'Mută!';
+    return you ? '&#9654; Rândul tău!' : '&#9832; Adversarul mută...';
+}
+
+function setStatus(txt, cls) {
+    var el = document.getElementById('status');
+    el.innerHTML = txt || turnStatus();
+    el.className = 'status-box' + (cls ? ' ' + cls : '');
+}
+
+/* ====== MOVE LIST ====== */
+var lastMoveNr = 0;
+var lastMoveEl = null;
+
+function addMoveToList(mv) {
+    var list = document.getElementById('moveList');
+    var moveNr = Math.ceil(chess.history().length / 2);
+
+    if (chess.history().length % 2 === 1) {
+        // white move — new pair
+        lastMoveNr = moveNr;
+        var pair = document.createElement('div');
+        pair.className = 'move-pair';
+        pair.id = 'mp' + moveNr;
+        pair.innerHTML = '<span class="move-nr">' + moveNr + '.</span>' +
+                         '<span class="mv-w" id="mw' + moveNr + '">' + mv.san + '</span>' +
+                         '<span class="mv-b" id="mb' + moveNr + '"></span>';
+        list.appendChild(pair);
+    } else {
+        // black move
+        var el = document.getElementById('mb' + lastMoveNr);
+        if (el) el.textContent = mv.san;
+    }
+    list.scrollTop = list.scrollHeight;
+}
+
+/* ====== ACTIONS ====== */
+function undoMove() {
+    if (gameOver) { gameOver = false; }
+    // undo both computer and player moves
+    chess.undo(); chess.undo();
+    board.position(chess.fen());
+    // rebuild move list
+    var list = document.getElementById('moveList');
+    list.innerHTML = '';
+    chess.history({ verbose: true }).forEach(function(mv) { addMoveToList(mv); });
+    setStatus(turnStatus(), '');
+}
+
+function resignGame() {
+    if (gameOver) return;
+    gameOver = true;
+    setStatus('Ai abandonat. &#9873; Calculator câștigă!', 'danger');
+}
+
+/* ====== RESIZE ====== */
+window.addEventListener('resize', function() {
+    if (board) {
+        var w = Math.min(480, window.innerWidth * 0.9);
+        $('#board-container').css('width', w + 'px');
+        board.resize();
+    }
+});
+</script>
+</body>
+</html>

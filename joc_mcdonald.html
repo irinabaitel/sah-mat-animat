@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Old McDonald Has a Farm</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+
+#nav { position: sticky; top: 0; background: rgba(245,169,110,0.92); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px; z-index: 100; border-bottom: 2px solid rgba(255,255,255,0.4); }
+.nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive;
+    font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
+.nav-btn:hover { background: rgba(255,255,255,0.85); }
+.nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; }
+#muteBtn { background: rgba(255,255,255,0.5); border: none; border-radius: 50px;
+    padding: 5px 12px; font-size: 1.1em; cursor: pointer; }
+
+.content { max-width: 820px; margin: 0 auto; padding: 24px 16px 0;
+    display: flex; flex-direction: column; gap: 18px; }
+h1.page-title { font-family: 'Baloo 2', cursive; font-size: clamp(1.5em,4.5vw,2.1em);
+    color: #1a3a6b; text-align: center; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); }
+
+.panel { background: rgba(255,255,255,0.6); border: 2px solid rgba(255,255,255,0.85);
+    border-radius: 20px; padding: 16px 20px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+.panel-title { font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 900;
+    color: #1a3a6b; margin-bottom: 10px; text-align: center; }
+.panel p { font-size: 0.88em; line-height: 1.7; color: #2a2a3e; }
+
+.animal-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 7px; }
+.animal-btn { background: rgba(255,255,255,0.5); border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 12px; padding: 7px 4px; cursor: pointer; font-family: 'Nunito', sans-serif;
+    font-size: 0.74em; font-weight: 700; color: #1a3a6b; text-align: center;
+    transition: all 0.18s; line-height: 1.4; }
+.animal-btn:hover { background: rgba(255,255,255,0.82); transform: translateY(-2px); }
+.animal-btn.active { background: #1a3a6b; color: white; border-color: #1a3a6b;
+    box-shadow: 0 3px 10px rgba(26,58,107,0.4); }
+.animal-btn .emoji { font-size: 1.4em; display: block; }
+.animal-btn .name  { display: block; margin-top: 2px; }
+
+.setup-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.setup-row .panel { flex: 1; min-width: 180px; }
+
+.time-opts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.time-opt { background: rgba(255,255,255,0.5); border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 10px; padding: 6px 11px; cursor: pointer; font-family: 'Baloo 2', cursive;
+    font-size: 0.8em; font-weight: 700; color: #1a3a6b; transition: all 0.18s; }
+.time-opt:hover { background: rgba(255,255,255,0.82); }
+.time-opt.active { background: #1a3a6b; color: white; border-color: #1a3a6b; }
+
+.helper-pieces { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.helper-piece { width: 58px; height: 58px; border-radius: 12px;
+    border: 2px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.5);
+    cursor: pointer; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; transition: all 0.18s; }
+.helper-piece img { width: 36px; height: 36px; }
+.helper-piece .hlabel { font-size: 0.62em; font-weight: 700; color: #1a3a6b; margin-top: 2px; }
+.helper-piece:hover { background: rgba(255,255,255,0.82); transform: translateY(-2px); }
+.helper-piece.selected { border-color: #1a3a6b; background: rgba(26,58,107,0.15);
+    box-shadow: 0 0 0 2px #1a3a6b; }
+
+.start-btn { display: block; width: 100%; max-width: 280px; margin: 0 auto;
+    background: linear-gradient(135deg,#1a3a6b,#2a5aab); color: white;
+    font-family: 'Baloo 2', cursive; font-size: 1.1em; font-weight: 900;
+    border: none; border-radius: 50px; padding: 13px 24px; cursor: pointer;
+    box-shadow: 0 4px 18px rgba(26,58,107,0.4); transition: all 0.2s; }
+.start-btn:hover { transform: translateY(-2px); }
+
+/* ── GAME ── */
+.round-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.round-indicator { font-family: 'Baloo 2', cursive; font-size: 1em; font-weight: 900; color: #1a3a6b; }
+.round-role { font-size: 0.78em; font-weight: 400; color: rgba(26,58,107,0.65); }
+.score-badges { display: flex; gap: 8px; }
+.score-badge { background: rgba(255,255,255,0.7); border: 2px solid rgba(255,255,255,0.9);
+    border-radius: 12px; padding: 5px 12px; font-family: 'Baloo 2', cursive;
+    font-size: 0.82em; font-weight: 900; color: #1a3a6b; }
+.score-badge.active { background: #1a3a6b; color: white; }
+
+.game-layout { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+#board-wrap { flex-shrink: 0; width: min(460px, calc(100vw - 40px)); }
+#mcBoard { width: 100%; }
+#mcBoard .sq-sel { box-shadow: inset 0 0 0 5px rgba(255,200,0,0.9)  !important; }
+#mcBoard .sq-mv  { box-shadow: inset 0 0 0 5px rgba(40,180,40,0.85) !important; }
+#mcBoard .sq-cap { box-shadow: inset 0 0 0 5px rgba(220,40,40,0.85) !important; }
+
+.side-panel { flex: 1; min-width: 200px; max-width: 280px; display: flex; flex-direction: column; gap: 10px; }
+
+.status-box { background: rgba(255,255,255,0.65); border: 2px solid rgba(255,255,255,0.85);
+    border-radius: 16px; padding: 14px 16px; font-family: 'Baloo 2', cursive;
+    font-size: 0.9em; font-weight: 700; color: #1a3a6b; min-height: 56px;
+    display: flex; align-items: center; justify-content: center; text-align: center; }
+.status-box.thinking { background: rgba(230,240,255,0.8); }
+.status-box.success  { background: rgba(200,255,220,0.85); color: #155724; border-color: rgba(39,174,96,0.4); }
+.status-box.danger   { background: rgba(255,210,210,0.85); color: #8b0000; border-color: rgba(192,57,43,0.4); }
+.status-box.check    { background: rgba(255,235,150,0.9);  color: #7d4600; border-color: rgba(230,150,0,0.4); }
+
+.clocks { display: flex; gap: 8px; }
+.clock-box { flex: 1; border-radius: 12px; border: 2px solid rgba(255,255,255,0.8);
+    padding: 8px 6px; text-align: center; background: rgba(255,255,255,0.55); transition: all 0.3s; }
+.clock-box.active { background: #1a3a6b; color: white; border-color: #1a3a6b; }
+.clock-box.low    { background: rgba(210,30,30,0.85); color: white; border-color: rgba(180,30,30,0.5); }
+.clock-lbl  { font-size: 0.68em; font-weight: 700; font-family: 'Baloo 2', cursive; }
+.clock-time { font-family: 'Baloo 2', cursive; font-size: 1.15em; font-weight: 900; }
+
+.stats-box { background: rgba(255,255,255,0.5); border-radius: 12px; padding: 10px 14px;
+    font-family: 'Baloo 2', cursive; font-size: 0.82em; display: flex; flex-direction: column; gap: 4px; }
+.stat-row { display: flex; justify-content: space-between; }
+.stat-label { color: rgba(26,58,107,0.65); }
+.stat-val   { font-weight: 900; color: #1a3a6b; }
+
+.action-btns { display: flex; gap: 8px; }
+.action-btn { flex: 1; background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 50px; padding: 8px 6px; font-family: 'Baloo 2', cursive;
+    font-size: 0.8em; font-weight: 700; color: #1a3a6b; cursor: pointer;
+    transition: background 0.2s; text-align: center; }
+.action-btn:hover { background: rgba(255,255,255,0.82); }
+.action-btn.danger { color: #922b21; }
+.action-btn.danger:hover { background: rgba(255,200,200,0.6); }
+
+/* ── RESULT CARD ── */
+.result-card { background: rgba(255,255,255,0.78); border: 2px solid rgba(255,255,255,0.9);
+    border-radius: 24px; padding: 32px 24px; text-align: center; box-shadow: 0 4px 22px rgba(0,0,0,0.09); }
+.result-title { font-family: 'Baloo 2', cursive; font-size: 1.25em; font-weight: 900;
+    color: #1a3a6b; margin-bottom: 14px; }
+.result-big   { font-family: 'Baloo 2', cursive; font-size: 2.6em; font-weight: 900;
+    color: #1a3a6b; line-height: 1.1; margin: 8px 0; }
+.result-big span { display: block; font-size: 0.38em; font-weight: 700; color: rgba(26,58,107,0.6); }
+.result-sub { font-size: 0.9em; color: rgba(26,58,107,0.7); margin: 10px 0 18px; line-height: 1.6; }
+
+@keyframes dots { 0%{content:'.';} 33%{content:'..';} 66%{content:'...';} 100%{content:'';} }
+.dots::after { content:''; animation: dots 1.2s steps(3,end) infinite; }
+
+@keyframes confetti-fall { 0%{opacity:1;transform:translate(0,0) rotate(0deg);} 80%{opacity:1;}
+    100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot));} }
+.confetti-p { position:fixed; pointer-events:none; z-index:9999; border-radius:3px;
+    animation:confetti-fall var(--dur,2s) ease-in forwards; }
+
+@media (max-width:600px) {
+    .setup-row { flex-direction: column; }
+    .game-layout { flex-direction: column; align-items: center; }
+    .side-panel { max-width: 100%; width: min(460px,calc(100vw - 40px)); }
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
+    <div class="nav-title">Old McDonald Has a Farm</div>
+    <button id="muteBtn" onclick="toggleMute()">&#128266;</button>
+</nav>
+
+<div class="content">
+<h1 class="page-title">&#127823; Old McDonald Has a Farm &#9812;</h1>
+
+<!-- ══════════ SETUP ══════════ -->
+<div id="setup-section">
+
+<div class="panel">
+    <p style="margin-bottom:12px">Pionii albi (purceii) încearcă să ajungă la <strong>hambar (linia 8)</strong>. Regele negru (Bătrânul McDonald) trebuie să-i prindă. Odata ajunși la hambar, purceii sunt în siguranță! <strong>Repriza 1:</strong> tu ești purceii, robotul e McDonald. <strong>Repriza 2:</strong> roluri inversate. Câștigă cine a trecut mai mulți purcei la hambar!</p>
+</div>
+
+<div class="panel">
+    <div class="panel-title">Dificultatea Bătrânului McDonald:</div>
+    <div class="animal-grid">
+        <button class="animal-btn active" data-depth="0" onclick="selectAnimal(this)"><span class="emoji">&#128423;</span><span class="name">Pui de găină</span></button>
+        <button class="animal-btn" data-depth="1" onclick="selectAnimal(this)"><span class="emoji">&#128037;</span><span class="name">Boboc</span></button>
+        <button class="animal-btn" data-depth="2" onclick="selectAnimal(this)"><span class="emoji">&#128049;</span><span class="name">Pisoi</span></button>
+        <button class="animal-btn" data-depth="3" onclick="selectAnimal(this)"><span class="emoji">&#128054;</span><span class="name">Cățel</span></button>
+        <button class="animal-btn" data-depth="4" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
+        <button class="animal-btn" data-depth="5" onclick="selectAnimal(this)"><span class="emoji">&#128021;</span><span class="name">Dulău</span></button>
+        <button class="animal-btn" data-depth="6" onclick="selectAnimal(this)"><span class="emoji">&#128047;</span><span class="name">Tigru</span></button>
+        <button class="animal-btn" data-depth="7" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
+    </div>
+</div>
+
+<div class="setup-row">
+    <div class="panel">
+        <div class="panel-title">&#9203; Timp per jucător:</div>
+        <div class="time-opts">
+            <button class="time-opt active" data-secs="0"   onclick="selectTime(this)">&#8734; Liber</button>
+            <button class="time-opt" data-secs="60"  onclick="selectTime(this)">1 min</button>
+            <button class="time-opt" data-secs="120" onclick="selectTime(this)">2 min</button>
+            <button class="time-opt" data-secs="300" onclick="selectTime(this)">5 min</button>
+        </div>
+    </div>
+    <div class="panel">
+        <div class="panel-title">&#127942; Ajutoare McDonald (max 2):</div>
+        <div class="helper-pieces">
+            <div class="helper-piece" data-piece="bn" onclick="toggleHelper(this)">
+                <img src="https://lichess1.org/assets/piece/caliente/bN.svg"><span class="hlabel">Cal</span>
+            </div>
+            <div class="helper-piece" data-piece="bb" onclick="toggleHelper(this)">
+                <img src="https://lichess1.org/assets/piece/caliente/bB.svg"><span class="hlabel">Nebun</span>
+            </div>
+            <div class="helper-piece" data-piece="br" onclick="toggleHelper(this)">
+                <img src="https://lichess1.org/assets/piece/caliente/bR.svg"><span class="hlabel">Turn</span>
+            </div>
+            <div class="helper-piece" data-piece="bq" onclick="toggleHelper(this)">
+                <img src="https://lichess1.org/assets/piece/caliente/bQ.svg"><span class="hlabel">Regină</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="start-btn" onclick="startGame()">&#127823; Pornește jocul!</button>
+</div>
+
+<!-- ══════════ GAME ══════════ -->
+<div id="game-section" style="display:none">
+    <div class="round-bar">
+        <div class="round-indicator">
+            <span id="roundNum">Repriza 1</span>
+            <span class="round-role" id="roundRole"> — Tu: purceii ♙</span>
+        </div>
+        <div class="score-badges">
+            <div class="score-badge" id="badge1">Tu: 0 &#127823;</div>
+            <div class="score-badge" id="badge2">Robot: 0 &#127823;</div>
+        </div>
+    </div>
+
+    <div class="game-layout">
+        <div id="board-wrap"><div id="mcBoard"></div></div>
+        <div class="side-panel">
+            <div class="status-box" id="statusBox">&#8987;</div>
+            <div class="clocks">
+                <div class="clock-box" id="clockW">
+                    <div class="clock-lbl">&#127823; Purcei</div>
+                    <div class="clock-time" id="cwTime">&#8734;</div>
+                </div>
+                <div class="clock-box" id="clockB">
+                    <div class="clock-lbl">&#9812; McDonald</div>
+                    <div class="clock-time" id="cbTime">&#8734;</div>
+                </div>
+            </div>
+            <div class="stats-box">
+                <div class="stat-row"><span class="stat-label">&#127979; Hambar:</span><span class="stat-val" id="statBarned">0 / 8</span></div>
+                <div class="stat-row"><span class="stat-label">&#10060; Prinși:</span><span class="stat-val" id="statCaught">0</span></div>
+                <div class="stat-row"><span class="stat-label">&#127823; În joc:</span><span class="stat-val" id="statLeft">8</span></div>
+            </div>
+            <div class="action-btns">
+                <button class="action-btn danger" onclick="giveUp()">&#9873; Renunț</button>
+                <button class="action-btn" onclick="restartAll()">&#8635; Restart</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════ RESULT ══════════ -->
+<div id="result-section" style="display:none">
+    <div class="result-card" id="resultCard"></div>
+</div>
+
+</div><!-- /content -->
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════
+   SOUNDS
+═══════════════════════════════════════════════════ */
+var sndMove    = new Audio('Sounds/Move.mp3');
+var sndCapture = new Audio('Sounds/Capture.mp3');
+var sndMate    = new Audio('Sounds/Mate.mp3');
+var soundMuted = false;
+function playSound(s){ if(!soundMuted){s.currentTime=0;s.play().catch(function(){});} }
+function toggleMute(){ soundMuted=!soundMuted; document.getElementById('muteBtn').textContent=soundMuted?'\uD83D\uDD07':'\uD83D\uDD0A'; }
+
+/* ═══════════════════════════════════════════════════
+   BOARD REPRESENTATION
+   b[r][c]: '' | 'wp' | 'bk' | 'bn' | 'bb' | 'br' | 'bq'
+   r=0 → rank 8 (hambar), r=7 → rank 1
+═══════════════════════════════════════════════════ */
+function sqToRC(sq){ return [8-parseInt(sq[1]), sq.charCodeAt(0)-97]; }
+function rcToSq(r,c){ return String.fromCharCode(97+c)+(8-r); }
+function cloneBoard(b){ return b.map(function(row){return row.slice();}); }
+
+var PIECE_MAP = {wp:'wP',bk:'bK',bn:'bN',bb:'bB',br:'bR',bq:'bQ'};
+function boardToPos(b){
+    var pos={};
+    for(var r=0;r<8;r++) for(var c=0;c<8;c++) if(b[r][c]) pos[rcToSq(r,c)]=PIECE_MAP[b[r][c]];
+    return pos;
+}
+
+// King starts e5 (row 3, col 4). Helpers start c8 and f8.
+var KING_START  = [3,4];
+var HELPER_POS  = [[0,2],[0,5]];
+
+function freshBoard(helpers){
+    var b = Array.from({length:8},function(){return Array(8).fill('');});
+    for(var c=0;c<8;c++) b[6][c]='wp';
+    b[KING_START[0]][KING_START[1]]='bk';
+    helpers.forEach(function(h,i){ if(i<HELPER_POS.length) b[HELPER_POS[i][0]][HELPER_POS[i][1]]=h; });
+    return b;
+}
+
+/* ═══════════════════════════════════════════════════
+   MOVE GENERATION
+═══════════════════════════════════════════════════ */
+function pawnAttacked(b){
+    var a={};
+    for(var r=0;r<8;r++) for(var c=0;c<8;c++)
+        if(b[r][c]==='wp'&&r>0){
+            if(c>0) a[(r-1)+','+(c-1)]=true;
+            if(c<7) a[(r-1)+','+(c+1)]=true;
+        }
+    return a;
+}
+
+function isInCheck(b){
+    var a=pawnAttacked(b);
+    for(var r=0;r<8;r++) for(var c=0;c<8;c++)
+        if(b[r][c]==='bk'&&a[r+','+c]) return true;
+    return false;
+}
+
+function kingMoves(b,r,c,attacked){
+    var mv=[],dirs=[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+    for(var i=0;i<dirs.length;i++){
+        var nr=r+dirs[i][0],nc=c+dirs[i][1];
+        if(nr<0||nr>7||nc<0||nc>7) continue;
+        if(attacked[nr+','+nc]) continue;        // cannot enter pawn attack
+        var t=b[nr][nc];
+        if(t&&t[0]==='b') continue;              // friendly piece
+        mv.push({from:[r,c],to:[nr,nc],piece:'bk',capture:t||null});
+    }
+    return mv;
+}
+
+function knightMoves(b,r,c,p){
+    var mv=[],j=[[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+    for(var i=0;i<j.length;i++){
+        var nr=r+j[i][0],nc=c+j[i][1];
+        if(nr<0||nr>7||nc<0||nc>7) continue;
+        var t=b[nr][nc]; if(t&&t[0]==='b') continue;
+        mv.push({from:[r,c],to:[nr,nc],piece:p,capture:t||null});
+    }
+    return mv;
+}
+
+function slideMoves(b,r,c,dirs,p){
+    var mv=[];
+    for(var i=0;i<dirs.length;i++){
+        var nr=r+dirs[i][0],nc=c+dirs[i][1];
+        while(nr>=0&&nr<=7&&nc>=0&&nc<=7){
+            var t=b[nr][nc];
+            if(t){ if(t[0]!=='b') mv.push({from:[r,c],to:[nr,nc],piece:p,capture:t}); break; }
+            mv.push({from:[r,c],to:[nr,nc],piece:p,capture:null});
+            nr+=dirs[i][0]; nc+=dirs[i][1];
+        }
+    }
+    return mv;
+}
+function bishopMoves(b,r,c,p){return slideMoves(b,r,c,[[-1,-1],[-1,1],[1,-1],[1,1]],p);}
+function rookMoves(b,r,c,p)  {return slideMoves(b,r,c,[[-1,0],[1,0],[0,-1],[0,1]],p);}
+function queenMoves(b,r,c,p) {return slideMoves(b,r,c,[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]],p);}
+
+function pawnMoves(b,r,c){
+    var mv=[];
+    if(r-1>=0&&!b[r-1][c]){
+        mv.push({from:[r,c],to:[r-1,c],piece:'wp',capture:null});
+        if(r===6&&!b[r-2][c]) mv.push({from:[r,c],to:[r-2,c],piece:'wp',capture:null});
+    }
+    [-1,1].forEach(function(dc){
+        var nc=c+dc;
+        if(nc<0||nc>7||r-1<0) return;
+        var t=b[r-1][nc];
+        if(t&&t[0]==='b'&&t!=='bk') mv.push({from:[r,c],to:[r-1,nc],piece:'wp',capture:t});
+        // pawns cannot capture the king (king avoids pawn attacks)
+    });
+    return mv;
+}
+
+function applyRaw(b,m){
+    var nb=cloneBoard(b);
+    nb[m.to[0]][m.to[1]]=nb[m.from[0]][m.from[1]];
+    nb[m.from[0]][m.from[1]]='';
+    return nb;
+}
+
+function allMoves(b,color){
+    var mv=[];
+    if(color==='b'){
+        var attacked=pawnAttacked(b);
+        var inChk=isInCheck(b);
+        for(var r=0;r<8;r++) for(var c=0;c<8;c++){
+            var p=b[r][c]; if(!p||p[0]!=='b') continue;
+            var pm;
+            if(p==='bk')      pm=kingMoves(b,r,c,attacked);
+            else if(p==='bn') pm=knightMoves(b,r,c,p);
+            else if(p==='bb') pm=bishopMoves(b,r,c,p);
+            else if(p==='br') pm=rookMoves(b,r,c,p);
+            else if(p==='bq') pm=queenMoves(b,r,c,p);
+            else pm=[];
+            mv=mv.concat(pm);
+        }
+        // If in check, only moves that resolve check are legal
+        if(inChk) mv=mv.filter(function(m){ return !isInCheck(applyRaw(b,m)); });
+    } else {
+        for(var r=0;r<8;r++) for(var c=0;c<8;c++)
+            if(b[r][c]==='wp') mv=mv.concat(pawnMoves(b,r,c));
+    }
+    return mv;
+}
+
+function applyMove(b,m){
+    var nb=applyRaw(b,m);
+    var barned=0;
+    if(m.piece==='wp'&&m.to[0]===0){ nb[m.to[0]][m.to[1]]=''; barned=1; }
+    return {board:nb,barned:barned};
+}
+
+function countPawns(b){ var n=0; for(var r=0;r<8;r++) for(var c=0;c<8;c++) if(b[r][c]==='wp') n++; return n; }
+
+/* ═══════════════════════════════════════════════════
+   MINIMAX AI
+   +score = good for white (piglets advancing)
+   -score = good for black (McDonald catching)
+═══════════════════════════════════════════════════ */
+function evaluate(b,barned){
+    var s=barned*1000;
+    for(var r=0;r<8;r++) for(var c=0;c<8;c++) if(b[r][c]==='wp') s+=(6-r)*14;
+    return s;
+}
+
+function minimax(b,depth,alpha,beta,maxing,barned){
+    if(countPawns(b)===0) return barned*1000;
+    if(depth===0) return evaluate(b,barned);
+    var color=maxing?'w':'b';
+    var mv=allMoves(b,color);
+    if(!mv.length) return maxing?(barned*1000-400):(barned*1000+400);
+    var best=maxing?-Infinity:Infinity;
+    for(var i=0;i<mv.length;i++){
+        var res=applyMove(b,mv[i]);
+        var val=minimax(res.board,depth-1,alpha,beta,!maxing,barned+res.barned);
+        if(maxing){if(val>best)best=val; if(val>alpha)alpha=val;}
+        else      {if(val<best)best=val; if(val<beta)beta=val;}
+        if(beta<=alpha) break;
+    }
+    return best;
+}
+
+function getBest(b,color,depth,barned){
+    var mv=allMoves(b,color);
+    if(!mv.length) return null;
+    mv.sort(function(){return Math.random()-0.5;});
+    if(depth===0) return mv[0];
+    var max=(color==='w');
+    var best=null,bv=max?-Infinity:Infinity;
+    for(var i=0;i<mv.length;i++){
+        var res=applyMove(b,mv[i]);
+        var val=minimax(res.board,depth-1,-Infinity,Infinity,!max,barned+res.barned);
+        if(max?(val>bv):(val<bv)){bv=val;best=mv[i];}
+    }
+    return best;
+}
+
+/* ═══════════════════════════════════════════════════
+   GAME STATE
+═══════════════════════════════════════════════════ */
+var G={
+    board:null, barned:0, turn:'w', over:false, thinking:false,
+    round:1, scores:[0,0], humanColor:'w', helpers:[], depth:0,
+    clockMax:0, clock:{w:0,b:0}, clockTick:null,
+    selRC:null, validMv:[]
+};
+var cbBoard=null;
+
+/* ═══════════════════════════════════════════════════
+   SETUP HANDLERS
+═══════════════════════════════════════════════════ */
+function selectAnimal(btn){
+    document.querySelectorAll('.animal-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+}
+function selectTime(btn){
+    document.querySelectorAll('.time-opt').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+}
+function toggleHelper(el){
+    var n=document.querySelectorAll('.helper-piece.selected').length;
+    if(el.classList.contains('selected')) el.classList.remove('selected');
+    else if(n<2) el.classList.add('selected');
+}
+
+/* ═══════════════════════════════════════════════════
+   CLOCK
+═══════════════════════════════════════════════════ */
+function fmtClock(s){ var m=Math.floor(s/60),ss=s%60; return m+':'+(ss<10?'0':'')+ss; }
+
+function updateClocks(){
+    var cwEl=document.getElementById('cwTime'), cbEl=document.getElementById('cbTime');
+    var wBox=document.getElementById('clockW'), bBox=document.getElementById('clockB');
+    if(G.clockMax===0){
+        cwEl.textContent='∞'; cbEl.textContent='∞';
+        wBox.className='clock-box'+(G.turn==='w'?' active':'');
+        bBox.className='clock-box'+(G.turn==='b'?' active':'');
+        return;
+    }
+    cwEl.textContent=fmtClock(G.clock.w); cbEl.textContent=fmtClock(G.clock.b);
+    var wLow=G.clock.w<=15, bLow=G.clock.b<=15;
+    wBox.className='clock-box'+(G.turn==='w'?(wLow?' low':' active'):'');
+    bBox.className='clock-box'+(G.turn==='b'?(bLow?' low':' active'):'');
+}
+
+function startClock(){
+    if(G.clockMax===0) return;
+    if(G.clockTick) clearInterval(G.clockTick);
+    G.clockTick=setInterval(function(){
+        if(G.over){ clearInterval(G.clockTick); G.clockTick=null; return; }
+        G.clock[G.turn]--;
+        updateClocks();
+        if(G.clock[G.turn]<=0){ clearInterval(G.clockTick); G.clockTick=null; endRound('timeout'); }
+    },1000);
+}
+function stopClock(){ if(G.clockTick){clearInterval(G.clockTick);G.clockTick=null;} }
+
+/* ═══════════════════════════════════════════════════
+   GAME START / ROUND
+═══════════════════════════════════════════════════ */
+function startGame(){
+    var ab=document.querySelector('.animal-btn.active');
+    G.depth=ab?parseInt(ab.dataset.depth):0;
+    var tb=document.querySelector('.time-opt.active');
+    G.clockMax=tb?parseInt(tb.dataset.secs):0;
+    G.helpers=[];
+    document.querySelectorAll('.helper-piece.selected').forEach(function(el){G.helpers.push(el.dataset.piece);});
+    G.scores=[0,0]; G.round=1; G.humanColor='w';
+    document.getElementById('setup-section').style.display='none';
+    document.getElementById('result-section').style.display='none';
+    document.getElementById('game-section').style.display='block';
+    initBoard('white');
+    startRound();
+}
+
+function initBoard(orientation){
+    if(cbBoard){cbBoard.destroy();cbBoard=null;}
+    var bw=Math.min(460,window.innerWidth-40);
+    $('#board-wrap').css('width',bw+'px');
+    cbBoard=Chessboard('mcBoard',{
+        draggable:true, position:'empty',
+        orientation: orientation||'white',
+        pieceTheme:'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+        onDragStart:onDragStart, onDrop:onDrop, onSnapEnd:onSnapEnd
+    });
+}
+
+function startRound(){
+    G.board=freshBoard(G.helpers);
+    G.barned=0; G.over=false; G.thinking=false; G.selRC=null; G.validMv=[];
+    G.turn='w';
+    G.clock={w:G.clockMax,b:G.clockMax};
+    stopClock();
+    updateRoundUI(); updateStats(); renderBoard(); clearHL();
+    if(G.clockMax>0) startClock();
+    // Round 2: robot plays piglets (white) and goes first
+    if(G.humanColor==='b'){
+        setStatus('Robotul pornește cu purceii<span class="dots"></span>','thinking');
+        G.thinking=true; setTimeout(aiMove,600);
+    } else {
+        setStatus('&#9654; Mutarea ta! Mișcă un pion.','');
+    }
+}
+
+function startRound2(){
+    G.round=2; G.humanColor='b';
+    document.getElementById('result-section').style.display='none';
+    document.getElementById('game-section').style.display='block';
+    initBoard('black'); // flip board: human controls black from bottom
+    startRound();
+}
+
+/* ═══════════════════════════════════════════════════
+   UI HELPERS
+═══════════════════════════════════════════════════ */
+function updateRoundUI(){
+    document.getElementById('roundNum').textContent='Repriza '+G.round;
+    document.getElementById('roundRole').textContent=
+        ' — Tu: '+(G.humanColor==='w'?'purceii \u2659':'McDonald \u2654');
+    document.getElementById('badge1').textContent='Tu: '+G.scores[0]+' \uD83D\uDC37';
+    document.getElementById('badge2').textContent='Robot: '+G.scores[1]+' \uD83D\uDC37';
+    document.getElementById('badge1').className='score-badge'+(G.round===1?' active':'');
+    document.getElementById('badge2').className='score-badge'+(G.round===2?' active':'');
+}
+
+function updateStats(){
+    var onBoard=countPawns(G.board);
+    document.getElementById('statBarned').textContent=G.barned+' / 8';
+    document.getElementById('statCaught').textContent=(8-G.barned-onBoard);
+    document.getElementById('statLeft').textContent=onBoard;
+}
+
+function setStatus(html,cls){
+    var el=document.getElementById('statusBox');
+    el.innerHTML=html; el.className='status-box'+(cls?' '+cls:'');
+}
+
+function renderBoard(){ if(cbBoard) cbBoard.position(boardToPos(G.board),false); }
+function clearHL(){ $('#mcBoard .sq-sel,#mcBoard .sq-mv,#mcBoard .sq-cap').removeClass('sq-sel sq-mv sq-cap'); }
+function showHL(selSq,moves){
+    clearHL();
+    $('#mcBoard .square-'+selSq).addClass('sq-sel');
+    moves.forEach(function(m){
+        $('#mcBoard .square-'+rcToSq(m.to[0],m.to[1])).addClass(m.capture?'sq-cap':'sq-mv');
+    });
+}
+
+/* ═══════════════════════════════════════════════════
+   MOVE EXECUTION
+═══════════════════════════════════════════════════ */
+function execMove(m){
+    var res=applyMove(G.board,m);
+    G.board=res.board;
+    if(res.barned){ G.barned++; playSound(sndMate); }
+    else if(m.capture) playSound(sndCapture);
+    else playSound(sndMove);
+    renderBoard(); updateStats();
+}
+
+function afterMove(){
+    if(countPawns(G.board)===0){ endRound('normal'); return; }
+    G.turn=(G.turn==='w'?'b':'w');
+    updateClocks();
+
+    var inChk=isInCheck(G.board);
+    if(inChk&&G.turn==='b'){
+        var legal=allMoves(G.board,'b');
+        if(!legal.length){
+            // Checkmate — remaining pawns free
+            G.barned+=countPawns(G.board);
+            for(var r=0;r<8;r++) for(var c=0;c<8;c++) if(G.board[r][c]==='wp') G.board[r][c]='';
+            renderBoard(); updateStats();
+            endRound('checkmate'); return;
+        }
+    }
+
+    if(G.turn!==G.humanColor){
+        var msg=G.turn==='w'?'Robotul mută purceii':'Robotul mută McDonald';
+        setStatus(msg+'<span class="dots"></span>','thinking');
+        G.thinking=true; setTimeout(aiMove,400);
+    } else {
+        if(inChk&&G.turn==='b')
+            setStatus('&#9888; Regele e în șah! Trebuie să îl muți!','check');
+        else
+            setStatus(G.turn==='w'?'&#9654; Mișcă un pion!':'&#9654; Mută Regele sau un ajutor!','');
+    }
+}
+
+function aiMove(){
+    var aiColor=(G.humanColor==='w'?'b':'w');
+    var m=getBest(G.board,aiColor,G.depth,G.barned);
+    if(!m){endRound('normal');return;}
+    execMove(m); G.thinking=false; clearHL();
+    afterMove();
+}
+
+function playerMove(m){ execMove(m); clearSel(); afterMove(); }
+
+/* ═══════════════════════════════════════════════════
+   CLICK & DRAG
+═══════════════════════════════════════════════════ */
+function clearSel(){ G.selRC=null; G.validMv=[]; clearHL(); }
+
+function handleClick(sq){
+    if(G.over||G.thinking||G.turn!==G.humanColor) return;
+    var rc=sqToRC(sq),r=rc[0],c=rc[1];
+    if(G.selRC){
+        var mv=null;
+        for(var i=0;i<G.validMv.length;i++){
+            if(G.validMv[i].to[0]===r&&G.validMv[i].to[1]===c){mv=G.validMv[i];break;}
+        }
+        if(mv){playerMove(mv);return;}
+    }
+    var p=G.board[r][c];
+    if(!p||p[0]!==G.humanColor){clearSel();return;}
+    G.selRC=[r,c];
+    G.validMv=allMoves(G.board,G.humanColor).filter(function(m){return m.from[0]===r&&m.from[1]===c;});
+    showHL(sq,G.validMv);
+}
+
+function onDragStart(source,piece){
+    if(G.over||G.thinking||G.turn!==G.humanColor) return false;
+    if(piece[0]==='w'&&G.humanColor!=='w') return false;
+    if(piece[0]==='b'&&G.humanColor!=='b') return false;
+    var rc=sqToRC(source); G.selRC=rc;
+    G.validMv=allMoves(G.board,G.humanColor).filter(function(m){return m.from[0]===rc[0]&&m.from[1]===rc[1];});
+    showHL(source,G.validMv);
+    return true;
+}
+
+function onDrop(source,target){
+    clearHL();
+    if(source===target){clearSel();return 'snapback';}
+    var trc=sqToRC(target),mv=null;
+    for(var i=0;i<G.validMv.length;i++){
+        if(G.validMv[i].to[0]===trc[0]&&G.validMv[i].to[1]===trc[1]){mv=G.validMv[i];break;}
+    }
+    if(!mv){clearSel();return 'snapback';}
+    playerMove(mv);
+}
+
+function onSnapEnd(){ renderBoard(); }
+
+/* ═══════════════════════════════════════════════════
+   ROUND / GAME END
+═══════════════════════════════════════════════════ */
+function endRound(reason){
+    G.over=true; G.thinking=false; stopClock(); clearHL();
+    if(G.round===1) G.scores[0]=G.barned;
+    else            G.scores[1]=G.barned;
+    if(G.round===1) showBetween(reason);
+    else            showFinal(reason);
+}
+
+function showBetween(reason){
+    var why='';
+    if(reason==='checkmate') why=' Mat! Purceii l-au depășit!';
+    else if(reason==='timeout') why=' Timp expirat!';
+    document.getElementById('game-section').style.display='none';
+    document.getElementById('result-section').style.display='block';
+    document.getElementById('resultCard').innerHTML=
+        '<div class="result-title">Repriza 1 terminată!'+why+'</div>'+
+        '<div class="result-big"><span>Purceii tăi ajunși la hambar:</span>'+G.scores[0]+' / 8 &#127823;</div>'+
+        '<p class="result-sub">Acum joci cu <strong>Bătrânul McDonald ♔</strong>.<br>Prinde cât mai mulți purcei înainte să ajungă la hambar!</p>'+
+        '<button class="start-btn" onclick="startRound2()">&#9654; Pornește Repriza 2</button>';
+}
+
+function showFinal(reason){
+    var p=G.scores[0], r=G.scores[1];
+    var msg='', cls='';
+    if(p>r){msg='&#127942; Ai câștigat!';cls='success';spawnConfetti(3500);}
+    else if(r>p){msg='&#129302; Robotul a câștigat.';cls='danger';}
+    else{msg='&#9878; Egalitate!';cls='';}
+    document.getElementById('game-section').style.display='none';
+    document.getElementById('result-section').style.display='block';
+    document.getElementById('resultCard').innerHTML=
+        '<div class="result-title">Joc terminat!</div>'+
+        '<div class="result-big" style="margin:12px 0">'+
+            '<span>Purceii tăi (Repriza 1):</span>'+p+' / 8 &#127823;<br>'+
+            '<span style="margin-top:6px;display:block">Purceii robotului (Repriza 2):</span>'+r+' / 8 &#127823;'+
+        '</div>'+
+        '<div class="result-title" style="font-size:1.6em;margin:10px 0">'+msg+'</div>'+
+        '<button class="start-btn" style="margin-top:16px" onclick="restartAll()">&#8635; Joc nou</button>';
+    playSound(cls==='success'?sndMate:(cls==='danger'?sndCapture:sndMove));
+}
+
+function giveUp(){ if(!G.over) endRound('abandon'); }
+
+function restartAll(){
+    stopClock();
+    document.getElementById('game-section').style.display='none';
+    document.getElementById('result-section').style.display='none';
+    document.getElementById('setup-section').style.display='block';
+}
+
+/* ═══════════════════════════════════════════════════
+   CONFETTI
+═══════════════════════════════════════════════════ */
+function spawnConfetti(dur){
+    var cols=['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#fff'];
+    var end=Date.now()+dur;
+    function batch(){
+        if(Date.now()>=end) return;
+        for(var i=0;i<12;i++){
+            var p=document.createElement('div'); p.className='confetti-p';
+            var w=7+Math.random()*7,h=w*(0.35+Math.random()*0.7);
+            p.style.cssText='width:'+w+'px;height:'+h+'px;background:'+cols[Math.floor(Math.random()*cols.length)]+
+                ';left:'+(Math.random()*100)+'vw;top:-14px;';
+            var fd=window.innerHeight*(0.65+Math.random()*0.45);
+            p.style.setProperty('--dx',((Math.random()-0.5)*180)+'px');
+            p.style.setProperty('--dy',fd+'px');
+            p.style.setProperty('--rot',(Math.random()*900-450)+'deg');
+            var d=1.8+Math.random()*2.4; p.style.setProperty('--dur',d+'s');
+            document.body.appendChild(p); setTimeout(function(){p.remove();},d*1000+200);
+        }
+        setTimeout(batch,110);
+    }
+    batch();
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT — click delegation (survives board redraws)
+═══════════════════════════════════════════════════ */
+$(function(){
+    $(document).on('click','#mcBoard [data-square]',function(){
+        handleClick($(this).data('square'));
+    });
+    window.addEventListener('resize',function(){
+        if(cbBoard){$('#board-wrap').css('width',Math.min(460,window.innerWidth-40)+'px');cbBoard.resize();}
+    });
+});
+</script>
+</body>
+</html>
