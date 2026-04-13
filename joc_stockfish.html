@@ -356,13 +356,23 @@ function getSelectedColor() {
 }
 
 /* ====== STOCKFISH ====== */
+var SF_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js';
+
 function initStockfish() {
     if (stockfish) { stockfish.terminate(); stockfish = null; }
-    stockfish = new Worker('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
-    stockfish.onmessage = function(e) { handleStockfishMsg(e.data); };
-    stockfish.postMessage('uci');
-    stockfish.postMessage('setoption name Skill Level value ' + selectedSkill);
-    stockfish.postMessage('isready');
+    // fetch + blob URL ocolește restricția CORS pentru Web Workers
+    fetch(SF_CDN)
+        .then(function(r) { return r.blob(); })
+        .then(function(blob) {
+            var url = URL.createObjectURL(blob);
+            stockfish = new Worker(url);
+            URL.revokeObjectURL(url);
+            stockfish.onmessage = function(e) { handleStockfishMsg(e.data); };
+            stockfish.postMessage('uci');
+            stockfish.postMessage('setoption name Skill Level value ' + selectedSkill);
+            stockfish.postMessage('isready');
+        })
+        .catch(function(err) { console.warn('Stockfish load error:', err); });
 }
 
 function askStockfish() {
