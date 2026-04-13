@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Șah Mat Animat - Arena: Damă vs Nebun</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+
+        #nav {
+            position: sticky; top: 0;
+            background: rgba(245,169,110,0.92);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 20px; z-index: 100;
+            border-bottom: 2px solid rgba(255,255,255,0.4);
+        }
+        .nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
+        .nav-btn:hover { background: rgba(255,255,255,0.85); }
+        .nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
+        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em; }
+
+        .content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
+
+        .lesson-title { text-align: center; margin-bottom: 8px; }
+        .lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
+
+        .card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+        .card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; text-align: justify; }
+        .card p:last-child { margin-bottom: 0; }
+
+        .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
+        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
+        .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
+        .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
+        .nav-prev:hover { background: rgba(255,255,255,0.75); }
+
+        .main-content { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+        .board-section { flex: 0 0 auto; }
+        .info-section { flex: 1; min-width: 200px; }
+
+        #board-wrap { position: relative; display: inline-block; width: min(480px, calc(100vw - 280px)); height: min(480px, calc(100vw - 280px)); }
+        #board { width: 100%; }
+
+        .status-box { background: rgba(255,255,255,0.5); border-radius: 12px; padding: 14px 16px; font-size: 1em; line-height: 1.6; color: #333; min-height: 70px; border-left: 4px solid #1a3a6b; }
+        .status-box.success { border-left-color: #27ae60; background: rgba(220,255,230,0.75); }
+        .status-box.warning { border-left-color: #e67e22; background: rgba(255,240,210,0.8); }
+        .status-box.danger  { border-left-color: #c0392b; background: rgba(255,220,220,0.8); }
+
+        .restart-btn { background: #1a3a6b; color: white; border: none; border-radius: 50px; font-family: 'Baloo 2', cursive; font-size: 1em; padding: 9px 26px; cursor: pointer; margin-top: 10px; transition: background 0.2s; display: block; }
+        .restart-btn:hover { background: #2a5aab; }
+        .revansa-btn { background: #7d3c98; }
+        .revansa-btn:hover { background: #9b59b6; }
+        .start-btn { background: #27ae60; }
+        .start-btn:hover:not(:disabled) { background: #2ecc71; }
+        .start-btn:disabled { background: rgba(39,174,96,0.35); cursor: default; }
+
+        #settingsPanel { background: rgba(255,255,255,0.45); border-radius: 12px; padding: 10px 14px; margin-bottom: 10px; }
+        .settings-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .settings-row:last-child { margin-bottom: 0; }
+        .settings-label { font-size: 0.78em; font-weight: 700; color: #1a3a6b; min-width: 80px; }
+        .settings-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+        .s-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(26,58,107,0.3); border-radius: 20px; padding: 3px 10px; font-family: 'Nunito', sans-serif; font-size: 0.8em; font-weight: 700; color: #1a3a6b; cursor: pointer; transition: all 0.15s; }
+        .s-btn:hover { background: rgba(255,255,255,0.85); }
+        .s-btn.active { background: #1a3a6b; color: white; border-color: #1a3a6b; }
+
+        .clock-wrap { display: flex; gap: 8px; margin-top: 10px; }
+        .clock-box { flex: 1; background: rgba(255,255,255,0.4); border-radius: 10px; padding: 8px 10px; text-align: center; border: 2px solid transparent; transition: border-color 0.2s, background 0.2s; }
+        .clock-box.active { border-color: #1a3a6b; background: rgba(255,255,255,0.75); }
+        .clock-label { font-size: 0.72em; font-weight: 700; text-transform: uppercase; color: rgba(26,58,107,0.6); margin-bottom: 2px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .clock-dot { width: 7px; height: 7px; border-radius: 50%; background: #e67e22; display: none; animation: pulse-dot 0.8s ease-in-out infinite; }
+        .clock-box.active .clock-dot { display: inline-block; }
+        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(0.7);} }
+        .clock-time { font-family: 'Baloo 2', cursive; font-size: 1.5em; font-weight: 900; color: #1a3a6b; letter-spacing: 1px; }
+        .clock-box.active .clock-time { color: #e67e22; }
+
+        .move-list { background: rgba(255,255,255,0.45); border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 0.85em; line-height: 1.9; max-height: 180px; overflow-y: auto; color: #222; }
+        .move-list .mn { color: rgba(26,58,107,0.5); font-weight: 700; margin-right: 2px; }
+        .move-list .mw { color: #1a3a6b; font-weight: 700; margin-right: 6px; }
+        .move-list .mb { color: #333; margin-right: 10px; }
+        .move-list em { color: rgba(0,0,0,0.35); font-style: italic; }
+        .move-item { border-radius: 3px; padding: 1px 3px; cursor: default; transition: background 0.15s; }
+        .move-list.review-ready .move-item { cursor: pointer; }
+        .move-list.review-ready .move-item:hover { background: rgba(26,58,107,0.15); }
+        .move-item.active { background: rgba(26,58,107,0.28) !important; color: white !important; }
+
+        @keyframes confetti-fall { 0%{opacity:1;transform:translate(0,0) rotate(0deg);} 80%{opacity:1;} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot));} }
+        .confetti-page { position: fixed; pointer-events: none; z-index: 9999; border-radius: 3px; animation: confetti-fall var(--dur,2s) ease-in forwards; }
+
+        .heart-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 1.3em; z-index: 10; pointer-events: none; animation: heartbeat-slow 1.3s ease-in-out infinite; }
+        .heart-badge.hb-fast { animation: heartbeat-fast 0.45s ease-in-out infinite; }
+        @keyframes heartbeat-slow { 0%,100%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.4);} }
+        @keyframes heartbeat-fast { 0%,100%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.5);} }
+
+        @keyframes dots { 0%{content:'.';} 33%{content:'..';} 66%{content:'...';} 100%{content:'';} }
+        .dots::after { content:''; animation: dots 1.2s steps(3,end) infinite; }
+
+        @media (max-width: 640px) {
+            body { padding: 8px 4px; }
+            .main-content { flex-direction: column; align-items: center; }
+            #board-wrap { width: min(480px, calc(100vw - 40px)); height: min(480px, calc(100vw - 40px)); }
+        }
+    </style>
+</head>
+<body>
+
+<nav id="nav">
+    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
+    <div class="nav-title">Dam&#259; vs Nebun &#8212; Exerci&#539;iu</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+        <button id="muteBtn" onclick="toggleMute()" style="background:rgba(255,255,255,0.5);border:none;border-radius:50px;padding:5px 12px;font-size:1.1em;cursor:pointer;">&#128266;</button>
+        <span class="nav-badge">Nivelul III</span>
+    </div>
+</nav>
+
+<div class="content">
+    <div class="lesson-title"><h1>&#127942; Arena: Dam&#259; vs Nebun</h1></div>
+
+    <div class="card">
+        <p>Exerseaz&#259; finalul Dam&#259; vs Nebun! &#206;ncearc&#259; s&#259; c&#226;&#351;tigi Nebunul adversarului prin <strong>furcui&#539;&#259;</strong> &#8212; Regina atacă simultan Regele și Nebunul.
+        Antrenează-te de mai multe ori, până când găsești furcuița din ce în ce mai repede.
+        <strong>Atenție la pat!</strong></p>
+    </div>
+
+    <div class="main-content">
+        <div class="board-section">
+            <div id="board-wrap">
+                <div id="board"></div>
+            </div>
+        </div>
+        <div class="info-section">
+            <div id="settingsPanel">
+                <div class="settings-row">
+                    <span class="settings-label">Nivel robot:</span>
+                    <div class="settings-btns" id="diffBtns">
+                        <button class="s-btn active" onclick="setDiff(3,this)">U&#351;or</button>
+                        <button class="s-btn" onclick="setDiff(10,this)">Mediu</button>
+                        <button class="s-btn" onclick="setDiff(17,this)">Greu</button>
+                        <button class="s-btn" onclick="setDiff(20,this)">Max</button>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label">Timp:</span>
+                    <div class="settings-btns" id="timeBtns">
+                        <button class="s-btn" onclick="setTime(60000,this)">1 min</button>
+                        <button class="s-btn" onclick="setTime(180000,this)">3 min</button>
+                        <button class="s-btn" onclick="setTime(300000,this)">5 min</button>
+                        <button class="s-btn" onclick="setTime(600000,this)">10 min</button>
+                        <button class="s-btn active" onclick="setTime(0,this)">&#8734;</button>
+                    </div>
+                </div>
+            </div>
+            <div class="status-box" id="statusBox">Ap&#259;sa&#539;i <strong>Start!</strong> pentru a &#238;ncepe.</div>
+            <div class="clock-wrap">
+                <div class="clock-box" id="clockWhite">
+                    <div class="clock-label"><span class="clock-dot"></span>&#9812; <span id="labelWhite">Tu</span></div>
+                    <div class="clock-time" id="clockWhiteTime">00:00</div>
+                </div>
+                <div class="clock-box" id="clockBlack">
+                    <div class="clock-label"><span class="clock-dot"></span>&#9818; <span id="labelBlack">Robot</span></div>
+                    <div class="clock-time" id="clockBlackTime">00:00</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+                <button class="restart-btn" style="margin-top:0;flex:1;" onclick="restartGame()">&#8635; Reia</button>
+                <button class="restart-btn start-btn" id="startBtn" style="margin-top:0;flex:1;" onclick="startGame()">&#9654; Start!</button>
+                <button class="restart-btn revansa-btn" style="margin-top:0;flex:1;" onclick="startRevansa()">&#9818; Revan&#351;&#259;!</button>
+            </div>
+            <div class="move-list" id="moveList"><em>Nicio mutare &#238;nc&#259;.</em></div>
+            <p id="reviewHint" style="display:none;font-size:0.8em;color:rgba(26,58,107,0.6);margin-top:6px;">&#9432; Apas&#259; pe o mutare pentru a revedea pozi&#539;ia.</p>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="pagina43.html" class="nav-prev">&#9664; &#206;napoi</a>
+        <a href="pagina45.html" class="nav-next">&#206;nainte &#9654;</a>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+
+<script>
+/* ===== SOUNDS ===== */
+const sndMove    = new Audio('Sounds/Move.mp3');
+const sndCapture = new Audio('Sounds/Capture.mp3');
+const sndMate    = new Audio('Sounds/Mate.mp3');
+let soundMuted = false;
+function playSound(snd) { if (!soundMuted) { snd.currentTime = 0; snd.play().catch(function(){}); } }
+function playSoundForMove(mv) {
+    if (!mv) return;
+    if (chess.in_checkmate()) { playSound(sndMate); return; }
+    if (mv.flags && mv.flags.includes('c')) playSound(sndCapture);
+    else playSound(sndMove);
+}
+function toggleMute() {
+    soundMuted = !soundMuted;
+    document.getElementById('muteBtn').textContent = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
+}
+
+const PAGE_ID   = 'em_dama_nebun';
+const startFen  = '3k4/8/3b4/8/8/8/8/Q3K3 w - - 0 1';
+const chess     = new Chess(startFen);
+const statusBox = document.getElementById('statusBox');
+
+let skillLevel  = 3;
+let initialTime = 0;
+
+function setDiff(level, btn) {
+    skillLevel = level;
+    document.querySelectorAll('#diffBtns .s-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    if (stockfish && sfReady) stockfish.postMessage('setoption name Skill Level value ' + skillLevel);
+}
+function setTime(ms, btn) {
+    initialTime = ms;
+    document.querySelectorAll('#timeBtns .s-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    whiteTime = ms; blackTime = ms;
+    updateClockDisplay();
+}
+
+/* ===== STOCKFISH ===== */
+let stockfish = null, sfCallback = null, sfBestForWhite = null, sfReady = false, sfMateIn = null;
+let playerSide = 'w', positionHistory = [], gameOver = false, gameStarted = false;
+
+function initStockfish() {
+    try {
+        const code = "importScripts('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js')";
+        const blob = new Blob([code], { type: 'application/javascript' });
+        stockfish = new Worker(URL.createObjectURL(blob));
+    } catch(e) { try { stockfish = new Worker('stockfish.js'); } catch(e2) { stockfish = null; } }
+    if (!stockfish) return;
+    stockfish.onmessage = function(e) {
+        const msg = e.data;
+        if (msg === 'uciok') { stockfish.postMessage('setoption name Skill Level value ' + skillLevel); stockfish.postMessage('isready'); }
+        if (msg === 'readyok') { sfReady = true; }
+        if (typeof msg === 'string' && msg.includes('score mate')) {
+            const m = msg.match(/score mate (-?\d+)/);
+            if (m) { const n = parseInt(m[1]); if (n > 0) sfMateIn = n; }
+        }
+        if (typeof msg === 'string' && msg.startsWith('bestmove')) {
+            const mv = msg.split(' ')[1];
+            if (sfCallback) { const cb = sfCallback; sfCallback = null; cb(mv); }
+        }
+    };
+    stockfish.postMessage('uci');
+}
+
+function askStockfish(fen, depth, callback) {
+    if (!stockfish || !sfReady) { callback(null); return; }
+    sfCallback = callback;
+    stockfish.postMessage('stop');
+    stockfish.postMessage('position fen ' + fen);
+    stockfish.postMessage('go depth ' + depth);
+}
+
+function prepareWhiteBest() {
+    if (playerSide !== 'w') return;
+    if (chess.turn() !== 'w' || chess.game_over()) return;
+    sfBestForWhite = null; sfMateIn = null;
+    askStockfish(chess.fen(), 14, function(mv) { sfBestForWhite = mv; updateHeart(); });
+}
+
+function stockfishPlayWhite() {
+    if (chess.game_over()) return;
+    sfMateIn = null;
+    startClock('w');
+    statusBox.innerHTML = 'Robotul se g&#226;nde&#351;te<span class="dots"></span>';
+    statusBox.className = 'status-box';
+    askStockfish(chess.fen(), 15, function(mv) {
+        if (!mv || mv === '(none)') { startClock('b'); statusBox.innerHTML = 'E r&#226;ndul t&#259;u!'; statusBox.className = 'status-box'; updateHeart(); return; }
+        const sfMv = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+        playSoundForMove(sfMv);
+        board.position(chess.fen());
+        positionHistory.push(chess.fen());
+        updateMoveList();
+        if (chess.in_checkmate()) {
+            const survived = Math.floor(chess.history().length / 2);
+            statusBox.innerHTML = '&#128128; <strong>&#350;ah mat!</strong> Ai rezistat <strong>' + survived + ' mut&#259;ri</strong>. Po&#539;i mai bine?';
+            statusBox.className = 'status-box danger';
+            stopClock(); setTimeout(removeHeart, 1000); enableReview(); return;
+        }
+        if (chess.in_stalemate() || chess.in_draw()) {
+            statusBox.innerHTML = '&#127881; <strong>Pat!</strong> Ai ob&#539;inut remiza &#8212; excep&#539;ional!';
+            statusBox.className = 'status-box success';
+            stopClock(); spawnPageConfetti(5000); enableReview(); return;
+        }
+        startClock('b');
+        statusBox.innerHTML = 'E r&#226;ndul t&#259;u! Caut&#259; furcui&#539;a regal&#259;!';
+        statusBox.className = 'status-box';
+        updateHeart();
+    });
+}
+
+/* ===== CONFETTI ===== */
+function spawnPageConfetti(duration) {
+    const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb','#ffffff'];
+    const endTime = Date.now() + duration;
+    function batch() {
+        if (Date.now() >= endTime) return;
+        for (let i = 0; i < 12; i++) {
+            const p = document.createElement('div'); p.className = 'confetti-page';
+            const w = 7 + Math.random() * 7; const h = w * (0.35 + Math.random() * 0.7);
+            p.style.width = w + 'px'; p.style.height = h + 'px';
+            p.style.background = colors[Math.floor(Math.random() * colors.length)];
+            p.style.left = (Math.random() * 100) + 'vw'; p.style.top = '-14px';
+            const fallDist = window.innerHeight * (0.65 + Math.random() * 0.45);
+            p.style.setProperty('--dx', ((Math.random() - 0.5) * 180) + 'px');
+            p.style.setProperty('--dy', fallDist + 'px');
+            p.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
+            const dur = 1.8 + Math.random() * 2.4; p.style.setProperty('--dur', dur + 's');
+            document.body.appendChild(p); setTimeout(function() { p.remove(); }, dur * 1000 + 200);
+        }
+        setTimeout(batch, 110);
+    }
+    batch();
+}
+
+/* ===== MOVE LIST ===== */
+function updateMoveList() {
+    const el = document.getElementById('moveList');
+    if (!el) return;
+    const hist = chess.history();
+    if (hist.length === 0) { el.innerHTML = '<em>Nicio mutare &#238;nc&#259;.</em>'; return; }
+    let html = '';
+    for (let i = 0; i < hist.length; i += 2) {
+        html += '<span class="mn">' + (i/2+1) + '.</span>'
+              + '<span class="mw move-item" data-idx="' + i + '">' + hist[i] + '</span>'
+              + (hist[i+1] ? '<span class="mb move-item" data-idx="' + (i+1) + '">' + hist[i+1] + '</span>' : '');
+    }
+    el.innerHTML = html; el.scrollTop = el.scrollHeight;
+}
+
+/* ===== CLOCK ===== */
+let whiteTime = 0, blackTime = 0, clockInterval = null, clockSide = null, clockLastTick = null;
+function formatTime(ms) { const s = Math.floor(Math.abs(ms)/1000); const m = Math.floor(s/60); return (m<10?'0':'')+m+':'+(s%60<10?'0':'')+(s%60); }
+function updateClockDisplay() { document.getElementById('clockWhiteTime').textContent = formatTime(whiteTime); document.getElementById('clockBlackTime').textContent = formatTime(blackTime); }
+function applyDelta(side, delta) {
+    if (initialTime > 0) { if (side==='w') { whiteTime -= delta; if(whiteTime<0)whiteTime=0; } else { blackTime -= delta; if(blackTime<0)blackTime=0; } }
+    else { if (side==='w') whiteTime += delta; else blackTime += delta; }
+}
+function onFlag(side) {
+    stopClock();
+    if (side === playerSide) { statusBox.innerHTML = '&#9200; <strong>Timp epuizat!</strong>'; statusBox.className = 'status-box danger'; }
+    else { statusBox.innerHTML = '&#9200; <strong>Robotul a r&#259;mas f&#259;r&#259; timp!</strong>'; statusBox.className = 'status-box success'; }
+    enableReview();
+}
+function startClock(side) {
+    if (clockInterval) clearInterval(clockInterval);
+    if (clockLastTick && clockSide) applyDelta(clockSide, Date.now() - clockLastTick);
+    clockSide = side; clockLastTick = Date.now();
+    clockInterval = setInterval(function() {
+        const now = Date.now(); const delta = now - clockLastTick; clockLastTick = now;
+        applyDelta(clockSide, delta); updateClockDisplay();
+        if (initialTime > 0) { if (clockSide==='w' && whiteTime<=0){onFlag('w');return;} if (clockSide==='b' && blackTime<=0){onFlag('b');return;} }
+    }, 100);
+    document.getElementById('clockWhite').classList.toggle('active', side==='w');
+    document.getElementById('clockBlack').classList.toggle('active', side==='b');
+}
+function stopClock() {
+    if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
+    if (clockLastTick && clockSide) applyDelta(clockSide, Date.now() - clockLastTick);
+    clockSide = null; clockLastTick = null;
+    document.getElementById('clockWhite').classList.remove('active');
+    document.getElementById('clockBlack').classList.remove('active');
+    updateClockDisplay();
+}
+function resetClocks() { stopClock(); whiteTime = initialTime; blackTime = initialTime; updateClockDisplay(); }
+
+/* ===== HEART ===== */
+function blackKingSquare() {
+    const b = chess.board(); const files = 'abcdefgh';
+    for (let r=0;r<8;r++) for (let c=0;c<8;c++) if (b[r][c]&&b[r][c].type==='k'&&b[r][c].color==='b') return files[c]+(8-r);
+    return null;
+}
+function removeHeart() { const h = document.getElementById('king-heart'); if (h) h.remove(); }
+function showHeart(square, fast) {
+    removeHeart();
+    const el = document.querySelector('#board .square-' + square); if (!el) return;
+    const h = document.createElement('div'); h.id = 'king-heart'; h.className = 'heart-badge' + (fast?' hb-fast':'');
+    h.textContent = '\u2764\ufe0f'; el.style.position = 'relative'; el.appendChild(h);
+}
+function updateHeart() {
+    if (chess.game_over()) { removeHeart(); return; }
+    const sq = blackKingSquare(); if (!sq || sfMateIn === null) { removeHeart(); return; }
+    if (sfMateIn <= 3) showHeart(sq, true); else if (sfMateIn <= 8) showHeart(sq, false); else removeHeart();
+}
+
+/* ===== START ===== */
+function startGame() {
+    if (gameStarted) return;
+    gameStarted = true;
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('settingsPanel').style.display = 'none';
+    if (playerSide === 'w') {
+        startClock('w'); prepareWhiteBest();
+        statusBox.innerHTML = 'Mutarea ta! C&#226;&#351;tig&#259; Nebunul adversarului prin furcui&#539;&#259;!';
+        statusBox.className = 'status-box';
+    } else {
+        statusBox.innerHTML = 'Robotul se g&#226;nde&#351;te<span class="dots"></span>'; statusBox.className = 'status-box';
+        setTimeout(stockfishPlayWhite, 1000);
+    }
+}
+
+/* ===== BOARD CALLBACKS ===== */
+function onDragStart(source, piece) {
+    if (!gameStarted || chess.game_over()) return false;
+    if (chess.turn() !== playerSide) return false;
+    if (playerSide==='w' && piece.startsWith('b')) return false;
+    if (playerSide==='b' && piece.startsWith('w')) return false;
+    return true;
+}
+
+function onDrop(source, target) {
+    if (chess.turn() !== playerSide) return 'snapback';
+    const uciMove = source + target;
+    const move = chess.move({ from: source, to: target, promotion: 'q' });
+    if (!move) return 'snapback';
+    playSoundForMove(move);
+
+    if (playerSide === 'b') {
+        positionHistory.push(chess.fen()); updateMoveList();
+        setTimeout(stockfishPlayWhite, 350); return;
+    }
+
+    if (chess.in_stalemate()) {
+        statusBox.innerHTML = '&#9888;&#65039; <strong>Pat!</strong> Regele negru nu mai are mut&#259;ri &#8212; e remiz&#259;! &#206;ncerc&#259; alt&#259; mutare.';
+        statusBox.className = 'status-box warning';
+        chess.undo(); board.position(chess.fen()); prepareWhiteBest(); return 'snapback';
+    }
+
+    positionHistory.push(chess.fen()); updateMoveList(); startClock('b');
+
+    if (chess.in_checkmate()) {
+        const whiteMoves = Math.ceil(chess.history().length / 2);
+        statusBox.innerHTML = '&#127942; <strong>&#350;ah mat!</strong> Ai reu&#351;it din <strong>' + whiteMoves + ' mut&#259;ri</strong>. Po&#539;i mai bine?';
+        statusBox.className = 'status-box danger';
+        stopClock(); spawnPageConfetti(5000); setTimeout(removeHeart, 1000); enableReview(); return;
+    }
+
+    const isGood = sfBestForWhite && uciMove === sfBestForWhite;
+    if (isGood) { statusBox.innerHTML = '&#9989; Mutare excelent&#259;! Acum r&#259;spunde Nebunul<span class="dots"></span>'; statusBox.className = 'status-box success'; }
+    else { statusBox.innerHTML = 'Nebunul r&#259;spunde<span class="dots"></span>'; statusBox.className = 'status-box'; }
+
+    setTimeout(function() {
+        askStockfish(chess.fen(), 15, function(mv) {
+            if (!mv || mv === '(none)') { statusBox.innerHTML = 'E r&#226;ndul t&#259;u!'; statusBox.className = 'status-box'; prepareWhiteBest(); return; }
+            const sfMv = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+            playSoundForMove(sfMv);
+            board.position(chess.fen()); positionHistory.push(chess.fen()); updateMoveList();
+            if (chess.in_checkmate()) {
+                statusBox.innerHTML = '&#10060; &#350;ah mat! Nebunul a c&#226;&#351;tigat. Mai &#238;ncerc&#259;!';
+                statusBox.className = 'status-box danger'; stopClock(); enableReview(); return;
+            }
+            if (chess.insufficient_material()) {
+                statusBox.innerHTML = '&#9967; Remiz&#259; &#8212; material insuficient!';
+                statusBox.className = 'status-box warning'; stopClock(); enableReview(); return;
+            }
+            if (chess.in_stalemate()) {
+                statusBox.innerHTML = '&#9888;&#65039; <strong>Pat!</strong> Ai ob&#539;inut remiza &#8212; bine jucat!';
+                statusBox.className = 'status-box success'; stopClock(); spawnPageConfetti(5000); enableReview(); return;
+            }
+            if (chess.in_draw()) {
+                statusBox.innerHTML = '&#9888;&#65039; Remiz&#259;! Mai &#238;ncerc&#259;.';
+                statusBox.className = 'status-box warning'; stopClock(); enableReview(); return;
+            }
+            startClock('w');
+            statusBox.innerHTML = isGood ? '&#9989; Mutare excelent&#259;! Acum e r&#226;ndul t&#259;u.' : 'E r&#226;ndul t&#259;u. Caut&#259; furcui&#539;a!';
+            statusBox.className = isGood ? 'status-box success' : 'status-box';
+            prepareWhiteBest();
+        });
+    }, 350);
+}
+
+function onSnapEnd() { board.position(chess.fen()); }
+
+const board = Chessboard('board', {
+    position: startFen, pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+    draggable: true, onDragStart: onDragStart, onDrop: onDrop, onSnapEnd: onSnapEnd
+});
+window.addEventListener('resize', function() { board.resize(); });
+
+document.getElementById('moveList').addEventListener('click', function(e) {
+    if (!gameOver) return;
+    const item = e.target.closest('.move-item'); if (!item) return;
+    const idx = parseInt(item.dataset.idx); const pos = positionHistory[idx + 1]; if (!pos) return;
+    board.position(pos, false);
+    document.querySelectorAll('#moveList .move-item').forEach(function(el) { el.classList.remove('active'); });
+    item.classList.add('active');
+});
+
+function enableReview() {
+    gameOver = true;
+    document.getElementById('moveList').classList.add('review-ready');
+    const rh = document.getElementById('reviewHint'); if (rh) rh.style.display = 'block';
+}
+
+function resetBoard() {
+    chess.load(startFen); board.position(startFen, false);
+    sfBestForWhite = null; sfMateIn = null; gameOver = false; gameStarted = false;
+    positionHistory = [startFen]; removeHeart(); resetClocks();
+    document.getElementById('moveList').classList.remove('review-ready');
+    const rh = document.getElementById('reviewHint'); if (rh) rh.style.display = 'none';
+    document.getElementById('startBtn').disabled = false; updateMoveList();
+}
+
+function restartGame() {
+    playerSide = 'w';
+    document.getElementById('labelWhite').textContent = 'Tu';
+    document.getElementById('labelBlack').textContent = 'Robot';
+    resetBoard(); document.getElementById('settingsPanel').style.display = '';
+    statusBox.innerHTML = 'Ap&#259;sa&#539;i <strong>Start!</strong> pentru a &#238;ncepe.'; statusBox.className = 'status-box';
+}
+
+function startRevansa() {
+    playerSide = 'b';
+    document.getElementById('labelWhite').textContent = 'Robot';
+    document.getElementById('labelBlack').textContent = 'Tu';
+    resetBoard(); document.getElementById('settingsPanel').style.display = '';
+    statusBox.innerHTML = 'Ap&#259;sa&#539;i <strong>Start!</strong> &#8212; Ap&#259;r&#259;-te cu Nebunul!'; statusBox.className = 'status-box';
+}
+
+initStockfish();
+</script>
+</body>
+</html>
