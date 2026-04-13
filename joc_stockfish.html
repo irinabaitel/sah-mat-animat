@@ -403,8 +403,10 @@ function handleStockfishMsg(msg) {
 }
 
 /* ====== BOARD SETUP ====== */
+var START_FEN = '4k3/pppppppp/8/8/8/8/PPPPPPPP/4K3 w - - 0 1';
+
 function startGame() {
-    chess.reset();
+    chess.load(START_FEN);
     gameOver = false;
     playerColor = getSelectedColor();
     document.getElementById('moveList').innerHTML = '';
@@ -424,7 +426,7 @@ function startGame() {
 
         var cfg = {
             draggable: true,
-            position: 'start',
+            position: START_FEN,
             orientation: orientation,
             pieceTheme: function(piece) { return pieceImg(piece); },
             onDragStart: onDragStart,
