@@ -331,10 +331,20 @@ function stockfishPlayWhite() {
             statusBox.className = 'status-box danger';
             stopClock(); setTimeout(removeHeart, 1000); enableReview(); return;
         }
-        if (chess.in_stalemate() || chess.in_draw()) {
-            statusBox.innerHTML = '&#127881; <strong>Pat!</strong> Ai obținut remiza — excepțional!';
-            statusBox.className = 'status-box success';
-            stopClock(); spawnPageConfetti(5000); enableReview(); return;
+        if (chess.insufficient_material()) {
+            statusBox.innerHTML = '&#9878; Remiză — material insuficient!';
+            statusBox.className = 'status-box warning';
+            stopClock(); enableReview(); return;
+        }
+        if (chess.in_stalemate()) {
+            statusBox.innerHTML = '&#9888;&#65039; <strong>Pat!</strong> Atenție la pat!';
+            statusBox.className = 'status-box warning';
+            stopClock(); enableReview(); return;
+        }
+        if (chess.in_draw()) {
+            statusBox.innerHTML = '&#9878; Remiză!';
+            statusBox.className = 'status-box warning';
+            stopClock(); enableReview(); return;
         }
         startClock('b');
         statusBox.innerHTML = 'E rândul tău! Nu te apropia de margine.';
@@ -564,8 +574,18 @@ function onDrop(source, target) {
                 statusBox.className = 'status-box danger';
                 stopClock(); enableReview(); return;
             }
-            if (chess.in_stalemate() || chess.in_draw()) {
-                statusBox.innerHTML = '&#9888;&#65039; Remiză! Atenție la pat data viitoare.';
+            if (chess.insufficient_material()) {
+                statusBox.innerHTML = '&#9878; Remiză — material insuficient!';
+                statusBox.className = 'status-box warning';
+                stopClock(); enableReview(); return;
+            }
+            if (chess.in_stalemate()) {
+                statusBox.innerHTML = '&#9888;&#65039; <strong>Pat!</strong> Atenție la pat!';
+                statusBox.className = 'status-box warning';
+                stopClock(); enableReview(); return;
+            }
+            if (chess.in_draw()) {
+                statusBox.innerHTML = '&#9878; Remiză!';
                 statusBox.className = 'status-box warning';
                 stopClock(); enableReview(); return;
             }
