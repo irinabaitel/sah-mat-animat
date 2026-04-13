@@ -282,19 +282,22 @@
 <nav id="nav">
     <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
     <div class="nav-title">Turn + Rege — Exercițiu</div>
-    <span class="nav-badge">Nivelul III</span>
+    <div style="display:flex;align-items:center;gap:8px;">
+        <button id="muteBtn" onclick="toggleMute()" style="background:rgba(255,255,255,0.5);border:none;border-radius:50px;padding:5px 12px;font-size:1.1em;cursor:pointer;">&#128266;</button>
+        <span class="nav-badge">Nivelul III</span>
+    </div>
 </nav>
 
 <div class="content">
         <div class="lesson-title">        <h1>&#127941; Arena de Antrenament</h1>    </div>
 
-    <p class="intro">
-        Este momentul s&#259; verifici c&#226;t de bine ai &#238;n&#539;eles cum lucreaz&#259; Echipa de &#350;oc Rege + Turn!
+    <div class="card">
+        <p>Este momentul s&#259; verifici c&#226;t de bine ai &#238;n&#539;eles cum lucreaz&#259; Echipa de &#350;oc Rege + Turn!
         Exerseaz&#259; de mai multe ori, p&#226;n&#259; c&#226;nd pare c&#259; merge de la sine.
-        Cu c&#226;t reu&#351;e&#351;ti s&#259; dai mat din mai pu&#539;ine mut&#259;ri, cu at&#226;t e&#351;ti mai aproape de a deveni maestru!
-        Atunci c&#226;nd joci cu negrele, &#238;ncerc&#259; s&#259; rezis&#539;i c&#226;t mai mult &mdash; acest lucru este posibil dac&#259; nu te duci de bun&#259;voie la marginea tablei.
-        <strong>Robotul joac&#259; cele mai bune mut&#259;ri pentru adversar!</strong>
-    </p>
+        Cu c&#226;t reu&#351;e&#351;ti s&#259; dai mat din mai pu&#539;ine mut&#259;ri, cu at&#226;t e&#351;ti mai aproape de a deveni maestru!</p>
+        <p>Atunci c&#226;nd joci cu negrele, &#238;ncerc&#259; s&#259; rezis&#539;i c&#226;t mai mult &mdash; acest lucru este posibil dac&#259; nu te duci de bun&#259;voie la marginea tablei.
+        <strong>Robotul joac&#259; cele mai bune mut&#259;ri pentru adversar!</strong></p>
+    </div>
 
     <div class="main-content">
 
@@ -363,6 +366,23 @@
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 
 <script>
+/* ===== SOUNDS ===== */
+const sndMove    = new Audio('Sounds/Move.mp3');
+const sndCapture = new Audio('Sounds/Capture.mp3');
+const sndMate    = new Audio('Sounds/Mate.mp3');
+let soundMuted = false;
+function playSound(snd) { if (!soundMuted) { snd.currentTime = 0; snd.play().catch(function(){}); } }
+function playSoundForMove(mv) {
+    if (!mv) return;
+    if (chess.in_checkmate()) { playSound(sndMate); return; }
+    if (mv.flags && mv.flags.includes('c')) playSound(sndCapture);
+    else playSound(sndMove);
+}
+function toggleMute() {
+    soundMuted = !soundMuted;
+    document.getElementById('muteBtn').textContent = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
+}
+
 const PAGE_ID = 'em_msf_turn_ex';
 const startFen = '8/8/8/4k3/8/8/8/R3K3 w Q - 0 1';
 const chess    = new Chess(startFen);
@@ -468,7 +488,8 @@ function stockfishPlayWhite() {
             updateHeart();
             return;
         }
-        chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+        const sfWhiteMove = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+        playSoundForMove(sfWhiteMove);
         board.position(chess.fen());
         positionHistory.push(chess.fen());
         updateMoveList();
@@ -694,6 +715,7 @@ function onDrop(source, target) {
     const uciMove = source + target;
     const move = chess.move({ from: source, to: target, promotion: 'q' });
     if (!move) return 'snapback';
+    playSoundForMove(move);
 
     /* ---- REVANȘĂ MODE: user plays black ---- */
     if (playerSide === 'b') {
@@ -723,7 +745,7 @@ function onDrop(source, target) {
     if (chess.in_checkmate()) {
         const whiteMoves = Math.ceil(chess.history().length / 2);
         statusBox.innerHTML = '&#127942; <strong>&#350;ah mat!</strong> Ai reu&#351;it din <strong>' + whiteMoves + ' mut&#259;ri</strong>. Po&#539;i mai bine?';
-        statusBox.className = 'status-box success';
+        statusBox.className = 'status-box danger';
         stopClock();
         spawnPageConfetti(5000);
         setTimeout(removeHeart, 1000);
@@ -750,7 +772,8 @@ function onDrop(source, target) {
                 prepareWhiteBest();
                 return;
             }
-            chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+            const sfBlackMove = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+            playSoundForMove(sfBlackMove);
             board.position(chess.fen());
             positionHistory.push(chess.fen());
             updateMoveList();

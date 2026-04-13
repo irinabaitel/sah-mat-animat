@@ -362,12 +362,14 @@
     <div class="card"><p>
         Observ&#259; cum turnul construie&#351;te un zid orizontal la fiecare mutare
         important&#259;: r&#226;ndul 3, r&#226;ndul 4, r&#226;ndul 5, r&#226;ndul 6 &mdash; cu&#351;ca
-        invizibil&#259; se str&#226;nge treptat. Regele alb &#238;l urm&#259;re&#351;te
+        invizibil&#259; se str&#226;nge treptat. Regele alb &#238;l urmeaz&#259;
         pe regele negru ca o umbr&#259;, t&#259;indu-i toate c&#259;ile de &#238;ntoarcere.
         Rezultatul: mat &#238;n <strong>18 mut&#259;ri</strong> din pozi&#539;ia de start!
     </p></div>
 
-    <div class="chapter-subtitle">S&#259;geata portocalie = Turnul &nbsp;|&nbsp; S&#259;geata verde = Regele alb</div>
+    <div style="text-align:right;margin-bottom:6px;">
+        <button id="volBtn2" onclick="toggleMute()" title="Sunet" style="background:rgba(255,255,255,0.55);border:2px solid rgba(255,255,255,0.8);border-radius:50px;padding:5px 14px;font-size:1.1em;cursor:pointer;">&#128266;</button>
+    </div>
 
     <div class="main-content">
         <div class="board-section">
@@ -554,14 +556,19 @@ function showHeart(squareSel, fast) {
 let soundVolume = 0.7;
 let soundMuted  = false;
 
+function syncVolBtns() {
+    var icon = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
+    document.getElementById('volBtn').textContent  = icon;
+    document.getElementById('volBtn2').textContent = icon;
+}
 function setVolume(val) {
     soundVolume = val / 100;
     soundMuted  = (val == 0);
-    document.getElementById('volBtn').textContent = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
+    syncVolBtns();
 }
 function toggleMute() {
     soundMuted = !soundMuted;
-    document.getElementById('volBtn').textContent = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
+    syncVolBtns();
     document.getElementById('volSlider').value = soundMuted ? 0 : soundVolume * 100;
 }
 
