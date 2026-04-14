@@ -346,7 +346,7 @@ function startGame(opponentName) {
   board = Chessboard('board', {
     position: 'start',
     orientation: myColor === 'w' ? 'white' : 'black',
-    draggable: true,
+    draggable: !isTouch,   // pe mobil: doar click/tap; pe desktop: drag + click
     pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
     onDrop: onDrop,
     onSnapEnd: function() { board.position(game.fen()); },
@@ -375,7 +375,10 @@ function updateTurnBar() {
   }
 }
 
-// --- DRAG & DROP ---
+// Detectăm dispozitiv touch
+var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+// --- DRAG & DROP (doar desktop) ---
 function onDrop(source, target) {
   lastDropTime = Date.now();
   clearSelection();
@@ -403,7 +406,6 @@ function clearSelection() {
 }
 
 function highlightSquare(sq) {
-  // chessboard.js pune clasa .square-e4 etc. pe fiecare pătrat
   var el = document.querySelector('#board .square-' + sq);
   if (el) el.classList.add('sq-sel');
 }
@@ -415,21 +417,18 @@ function handleSquareClick(sq) {
   var turn  = game.turn();
 
   if (!selectedSq) {
-    // Selectează piesa dacă e rândul tău
     if (piece && piece.color === turn) {
       selectedSq = sq;
       highlightSquare(sq);
     }
   } else {
     if (sq === selectedSq) { clearSelection(); return; }
-    // Altă piesă proprie → schimbă selecția
     if (piece && piece.color === turn) {
       clearSelection();
       selectedSq = sq;
       highlightSquare(sq);
       return;
     }
-    // Încearcă mutarea
     var src = selectedSq;
     clearSelection();
     var srcPiece = game.get(src);
@@ -446,18 +445,71 @@ function handleSquareClick(sq) {
   }
 }
 
-// Atașăm pe click ȘI pe touchend (pentru mobil fără lag)
+function sqFromPoint(x, y) {
+  var el = document.elementFromPoint(x, y);
+  if (!el) return null;
+  var sqEl = el.closest('[data-square]');
+  return sqEl ? sqEl.getAttribute('data-square') : null;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   var boardEl = document.getElementById('board');
+  var touchStartSq = null;
 
-  boardEl.addEventListener('click', function(e) {
-    if (Date.now() - lastDropTime < 400) return; // ignoră dacă tocmai a fost drag
-    var sqEl = e.target.closest('[data-square]');
-    if (!sqEl) return;
-    var sq = sqEl.getAttribute('data-square');
-    if (sq) handleSquareClick(sq);
-  });
+  if (isTouch) {
+    // ── MOBIL: touch events cu passive:false → preventDefault() oprește scroll-ul ──
+    boardEl.addEventListener('touchstart', function(e) {
+      e.preventDefault(); // ← CHEIE: oprește scroll-ul paginii
+      var t = e.touches[0];
+      touchStartSq = sqFromPoint(t.clientX, t.clientY);
+    }, { passive: false });
+
+    boardEl.addEventListener('touchmove', function(e) {
+      e.preventDefault(); // împiedică scroll și în timpul mișcării
+    }, { passive: false });
+
+    boardEl.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      var t = e.changedTouches[0];
+      var sq = sqFromPoint(t.clientX, t.clientY);
+      // Tratăm ca tap doar dacă touchend e pe același pătrat (nu swipe)
+      if (sq && sq === touchStartSq) {
+        handleSquareClick(sq);
+      } else if (sq && touchStartSq && sq !== touchStartSq) {
+        // Swipe scurt între 2 pătrate = mutare directă
+        handleSquareClickFrom(touchStartSq, sq);
+      }
+      touchStartSq = null;
+    }, { passive: false });
+
+  } else {
+    // ── DESKTOP: click normal ──
+    boardEl.addEventListener('click', function(e) {
+      if (Date.now() - lastDropTime < 400) return;
+      var sqEl = e.target.closest('[data-square]');
+      if (!sqEl) return;
+      var sq = sqEl.getAttribute('data-square');
+      if (sq) handleSquareClick(sq);
+    });
+  }
 });
+
+// Permite și mutare directă prin swipe (touchStartSq → sq)
+function handleSquareClickFrom(src, dest) {
+  if (!isMyTurn() || !game) return;
+  var srcPiece = game.get(src);
+  if (!srcPiece || srcPiece.color !== game.turn()) return;
+  clearSelection();
+  var isPromo = srcPiece.type === 'p' &&
+    ((srcPiece.color === 'w' && dest[1] === '8') || (srcPiece.color === 'b' && dest[1] === '1'));
+  var move = game.move({ from: src, to: dest, promotion: isPromo ? 'q' : undefined });
+  if (move) {
+    board.position(game.fen());
+    sendMove(src, dest, isPromo ? 'q' : null);
+    updateTurnBar();
+    checkGameEnd();
+  }
+}
 
 function sendMove(from, to, promotion) {
   socket.emit('make_move', {
