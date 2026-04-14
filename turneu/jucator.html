@@ -95,6 +95,18 @@ input[type=text]:focus { border-color: #1a3a6b; }
 .dot-pulse:nth-child(3) { animation-delay: 0.4s; }
 @keyframes pulse { 0%,80%,100%{transform:scale(0.6);opacity:0.5} 40%{transform:scale(1);opacity:1} }
 
+/* CEAS */
+.player-row { display:flex; align-items:center; justify-content:space-between; gap:8px;
+  width:360px; max-width:calc(100vw - 48px); }
+.clock-box { font-family:'Baloo 2',cursive; font-size:1.65em; font-weight:900;
+  background:rgba(26,58,107,0.1); color:rgba(26,26,46,0.45);
+  border-radius:10px; padding:4px 14px; min-width:88px; text-align:center;
+  transition:background 0.15s,color 0.15s; white-space:nowrap; }
+.clock-box.active { background:#1a3a6b; color:white; }
+.clock-box.low    { background:#c0392b !important; color:white !important; }
+@keyframes clock-pulse { 0%,100%{opacity:1} 50%{opacity:0.65} }
+.clock-box.low { animation:clock-pulse 0.7s infinite; }
+
 /* DRAW OFFER */
 #draw-offer-banner { display: none; background: rgba(255,220,80,0.5); border: 2px solid rgba(183,119,13,0.4);
   border-radius: 14px; padding: 14px 20px; text-align: center; font-family: 'Baloo 2', cursive;
@@ -148,11 +160,21 @@ input[type=text]:focus { border-color: #1a3a6b; }
   <div class="card">
     <div id="opponent-bar" class="opponent-bar" style="margin-bottom:10px;"></div>
     <div id="board-wrap">
-      <div id="turn-bar" class="turn-bar"></div>
+      <!-- Rând adversar: nume + ceas -->
+      <div class="player-row">
+        <div id="opponent-bar" class="opponent-bar" style="text-align:left;flex:1;"></div>
+        <div id="clock-opp" class="clock-box" style="display:none;"></div>
+      </div>
+      <!-- Tablă -->
       <div id="board-container" style="position:relative;display:inline-block;">
         <div id="board"></div>
         <!-- Overlay transparent deasupra tablei — interceptează touch pe mobil -->
         <div id="touch-overlay" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;z-index:50;"></div>
+      </div>
+      <!-- Rândul meu: indicatorul de tură + ceas -->
+      <div class="player-row">
+        <div id="turn-bar" class="turn-bar" style="flex:1;text-align:left;"></div>
+        <div id="clock-mine" class="clock-box" style="display:none;"></div>
       </div>
       <div id="feedback-box" class="feedback-box"></div>
     </div>
@@ -224,6 +246,93 @@ var board = null;  // Chessboard instance
 var selectedSq = null;
 var lastDropTime = 0;
 
+// ─── CLOCK ───────────────────────────────────────────────────
+var clockSettings  = { time: 0, increment: 0 };
+var clockW_ms      = 0;
+var clockB_ms      = 0;
+var clockRunning   = null;   // 'w' | 'b' | null
+var clockInterval  = null;
+var clockLastTick  = 0;
+
+function initClock(settings) {
+  stopClock();
+  clockSettings = settings || { time: 0, increment: 0 };
+  clockW_ms = clockSettings.time * 1000;
+  clockB_ms = clockSettings.time * 1000;
+  var hasClock = clockSettings.time > 0;
+  document.getElementById('clock-mine').style.display = hasClock ? '' : 'none';
+  document.getElementById('clock-opp').style.display  = hasClock ? '' : 'none';
+  renderClock();
+  if (hasClock) startClock('w');   // Alb mută primul — ceasul lui pornește
+}
+
+function startClock(color) {
+  stopClock();
+  clockRunning  = color;
+  clockLastTick = Date.now();
+  clockInterval = setInterval(tickClock, 100);
+}
+
+function stopClock() {
+  if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
+  clockRunning = null;
+  renderClock();
+}
+
+function tickClock() {
+  var now = Date.now();
+  var dt  = now - clockLastTick;
+  clockLastTick = now;
+  if (clockRunning === 'w') clockW_ms = Math.max(0, clockW_ms - dt);
+  else if (clockRunning === 'b') clockB_ms = Math.max(0, clockB_ms - dt);
+  renderClock();
+  if (clockRunning === 'w' && clockW_ms <= 0) { stopClock(); handleTimeout('w'); }
+  else if (clockRunning === 'b' && clockB_ms <= 0) { stopClock(); handleTimeout('b'); }
+}
+
+function handleTimeout(colorOut) {
+  var result = colorOut === 'w' ? '0-1' : '1-0';
+  socket.emit('out_of_time',  { gameId: myGameId });
+  socket.emit('game_result',  { gameId: myGameId, result: result, reason: 'timp' });
+}
+
+function afterMyMove() {
+  if (!clockSettings.time) return;
+  if (myColor === 'w') { clockW_ms += clockSettings.increment * 1000; startClock('b'); }
+  else                 { clockB_ms += clockSettings.increment * 1000; startClock('w'); }
+}
+
+function afterOpponentMove() {
+  if (!clockSettings.time) return;
+  var opp = myColor === 'w' ? 'b' : 'w';
+  if (opp === 'w') clockW_ms += clockSettings.increment * 1000;
+  else             clockB_ms += clockSettings.increment * 1000;
+  startClock(myColor);
+}
+
+function formatClock(ms) {
+  if (ms <= 0) return '0.0';
+  var s = ms / 1000;
+  if (s < 10) return s.toFixed(1);
+  var m = Math.floor(s / 60);
+  var r = Math.floor(s % 60);
+  return m + ':' + (r < 10 ? '0' : '') + r;
+}
+
+function renderClock() {
+  var myMs  = myColor === 'w' ? clockW_ms : clockB_ms;
+  var oppMs = myColor === 'w' ? clockB_ms : clockW_ms;
+  var myEl  = document.getElementById('clock-mine');
+  var oppEl = document.getElementById('clock-opp');
+  if (!myEl || !oppEl) return;
+  myEl.textContent  = formatClock(myMs);
+  oppEl.textContent = formatClock(oppMs);
+  var myActive  = clockRunning === myColor;
+  var oppActive = clockRunning !== null && !myActive;
+  myEl.className  = 'clock-box' + (myActive  ? ' active' : '') + (myMs  > 0 && myMs  < 10000 ? ' low' : '');
+  oppEl.className = 'clock-box' + (oppActive ? ' active' : '') + (oppMs > 0 && oppMs < 10000 ? ' low' : '');
+}
+
 // ─── SOCKET ──────────────────────────────────────────────────
 var socket = io();
 
@@ -257,6 +366,7 @@ socket.on('game_start', function(data) {
   myGameId  = data.gameId;
   myColor   = data.yourColor;
   currentRound = data.round;
+  clockSettings = data.clock || { time: 0, increment: 0 };
   document.getElementById('nav-round-badge').style.display = '';
   document.getElementById('nav-round-badge').textContent = 'Runda ' + data.round;
   startGame(data.opponentName);
@@ -276,6 +386,7 @@ socket.on('opponent_move', function(data) {
   var move = game.move({ from: data.from, to: data.to, promotion: data.promotion || 'q' });
   if (move) {
     board.position(game.fen());
+    afterOpponentMove();
     checkGameEnd();
     updateTurnBar();
   }
@@ -362,6 +473,7 @@ function startGame(opponentName) {
   // Pe mobil: overlay activ deasupra tablei
   document.getElementById('touch-overlay').style.display = 'block';
 
+  initClock(clockSettings);
   updateTurnBar();
   showScreen('game');
 }
@@ -399,6 +511,7 @@ function doMove(src, dest) {
   if (!move) return false;
   board.position(game.fen());
   sendMove(src, dest, isPromo ? 'q' : null);
+  afterMyMove();
   updateTurnBar();
   checkGameEnd();
   return true;
@@ -541,6 +654,7 @@ function checkGameEnd() {
   }
 
   if (result) {
+    stopClock();
     socket.emit('game_result', { gameId: myGameId, result: result, reason: reason });
   }
 }
@@ -548,6 +662,7 @@ function checkGameEnd() {
 // --- ACȚIUNI ---
 function resign() {
   if (!confirm('Ești sigur că vrei să abandonezi?')) return;
+  stopClock();
   document.getElementById('resign-btn').disabled = true;
   document.getElementById('draw-btn').disabled   = true;
   socket.emit('resign', { gameId: myGameId });
@@ -560,6 +675,7 @@ function offerDraw() {
 }
 
 function acceptDraw() {
+  stopClock();
   document.getElementById('draw-offer-banner').style.display = 'none';
   socket.emit('accept_draw', { gameId: myGameId });
 }
@@ -577,17 +693,19 @@ function setFeedback(msg, type) {
 
 // ─── REZULTAT JOC ────────────────────────────────────────────
 function showGameResult(yourResult, result, reason, opponentName) {
+  stopClock();
   var emoji, title, sub;
   if (yourResult === 'win')  { emoji = '🎉'; title = 'Ai câștigat!';   sub = 'Felicitări, ' + myName + '!'; }
   else if (yourResult === 'loss') { emoji = '😔'; title = 'Ai pierdut!'; sub = 'Mai mult succes în runda viitoare!'; }
   else                       { emoji = '🤝'; title = 'Remiză!';         sub = 'Meci echilibrat!'; }
 
-  var reasonStr = reason === 'șah mat' ? 'prin șah mat' :
-                  reason === 'abandon' ? opponentName + ' a abandonat' :
-                  reason === 'pat'     ? 'prin pat' :
-                  reason === 'acord_remiță' ? 'prin acord' :
+  var reasonStr = reason === 'șah mat'     ? 'prin șah mat' :
+                  reason === 'abandon'     ? opponentName + ' a abandonat' :
+                  reason === 'pat'         ? 'prin pat' :
+                  reason === 'acord_remiță'? 'prin acord' :
                   reason === 'deconectare' ? opponentName + ' s-a deconectat' :
-                  reason === 'admin'   ? 'decizie profesor' : '';
+                  reason === 'timp'        ? 'timp expirat' :
+                  reason === 'admin'       ? 'decizie profesor' : '';
 
   document.getElementById('result-content').innerHTML =
     '<span class="result-emoji">' + emoji + '</span>' +

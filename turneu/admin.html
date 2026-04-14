@@ -128,6 +128,32 @@ body { background: #1a3a6b; font-family: 'Nunito', sans-serif; color: #e8eaf0; m
         </button>
       </div>
 
+      <!-- CONTROL TIMP -->
+      <div class="panel" style="margin-bottom:16px;">
+        <div class="panel-title">⏱ Control Timp</div>
+        <div id="clock-current" style="font-family:'Baloo 2',cursive;font-size:0.95em;color:#7ec8f0;margin-bottom:10px;">Fără ceas</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+          <button class="btn btn-gray btn-sm" onclick="setClock(0,0)">∞ Fără</button>
+          <button class="btn btn-gray btn-sm" onclick="setClock(180,2)">3+2</button>
+          <button class="btn btn-gray btn-sm" onclick="setClock(300,0)">5+0</button>
+          <button class="btn btn-gray btn-sm" onclick="setClock(300,3)">5+3</button>
+          <button class="btn btn-gray btn-sm" onclick="setClock(600,0)">10+0</button>
+          <button class="btn btn-gray btn-sm" onclick="setClock(600,5)">10+5</button>
+          <button class="btn btn-gray btn-sm" onclick="setClock(900,0)">15+0</button>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+          <input type="number" id="clock-min" min="1" max="180" placeholder="min"
+            style="width:58px;padding:5px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);
+                   background:rgba(255,255,255,0.1);color:#fff;font-size:0.88em;text-align:center;">
+          <span style="font-size:0.8em;color:rgba(255,255,255,0.5);">min +</span>
+          <input type="number" id="clock-inc" min="0" max="60" placeholder="inc" value="0"
+            style="width:58px;padding:5px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);
+                   background:rgba(255,255,255,0.1);color:#fff;font-size:0.88em;text-align:center;">
+          <span style="font-size:0.8em;color:rgba(255,255,255,0.5);">s</span>
+          <button class="btn btn-gray btn-sm" onclick="setClockCustom()">Aplică</button>
+        </div>
+      </div>
+
       <!-- JUCATORI ÎNREGISTRAȚI -->
       <div class="panel">
         <div class="panel-title">Jucători (<span id="player-count">0</span>)</div>
@@ -228,6 +254,9 @@ function removePlayer(playerId, name) {
 
 // ─── RENDER ──────────────────────────────────────────────────
 function renderAdminState(data) {
+  // Ceas
+  if (data.clock !== undefined) updateClockDisplay(data.clock);
+
   // Jucători
   var playerCount = data.players.length;
   document.getElementById('player-count').textContent = playerCount;
@@ -311,6 +340,30 @@ function renderAdminState(data) {
       '</tr>';
   });
   document.getElementById('standings-body').innerHTML = standHtml || '<tr><td colspan="4" style="color:rgba(255,255,255,0.3);font-size:0.85em;">—</td></tr>';
+}
+
+// ─── CEAS ─────────────────────────────────────────────────────
+function setClock(time, increment) {
+  socket.emit('admin_set_clock', { time: time, increment: increment });
+}
+function setClockCustom() {
+  var min = parseInt(document.getElementById('clock-min').value)  || 0;
+  var inc = parseInt(document.getElementById('clock-inc').value)  || 0;
+  if (min < 1) { alert('Introdu cel puțin 1 minut.'); return; }
+  setClock(min * 60, inc);
+}
+function updateClockDisplay(clock) {
+  var el = document.getElementById('clock-current');
+  if (!clock || clock.time === 0) {
+    el.textContent = 'Fără ceas (timp nelimitat)';
+    el.style.color = 'rgba(255,255,255,0.35)';
+  } else {
+    var m = Math.floor(clock.time / 60);
+    var s = clock.time % 60;
+    var timeStr = s > 0 ? m + ':' + (s < 10 ? '0' : '') + s : m;
+    el.textContent = timeStr + ' min + ' + clock.increment + 's increment';
+    el.style.color = '#7ec8f0';
+  }
 }
 
 function escHtml(str) {

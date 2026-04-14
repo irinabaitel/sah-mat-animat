@@ -32,6 +32,7 @@ const T = {
   games:   new Map(),  // gameId   → Game
   rounds:  [],         // [Round]
   status:  'lobby',    // 'lobby' | 'active' | 'finished'
+  clock:   { time: 0, increment: 0 },  // 0 = fără ceas
 };
 
 let _seq = 0;
@@ -156,6 +157,7 @@ function broadcastAdmin() {
     rounds:    roundsInfo,
     standings: getStandings(),
     status:    T.status,
+    clock:     T.clock,
   });
 }
 
@@ -294,8 +296,8 @@ io.on('connection', (socket) => {
 
       const wSock = io.sockets.sockets.get(p.whiteId);
       const bSock = io.sockets.sockets.get(p.blackId);
-      if (wSock) wSock.emit('game_start', { gameId: p.gameId, yourColor: 'w', opponentName: black?.name || '?', round: round.num });
-      if (bSock) bSock.emit('game_start', { gameId: p.gameId, yourColor: 'b', opponentName: white?.name || '?', round: round.num });
+      if (wSock) wSock.emit('game_start', { gameId: p.gameId, yourColor: 'w', opponentName: black?.name || '?', round: round.num, clock: T.clock });
+      if (bSock) bSock.emit('game_start', { gameId: p.gameId, yourColor: 'b', opponentName: white?.name || '?', round: round.num, clock: T.clock });
     }
 
     broadcastLobby();
@@ -381,6 +383,24 @@ io.on('connection', (socket) => {
     broadcastLobby();
     broadcastAdmin();
     console.log('[ADMIN] Turneu resetat.');
+  });
+
+  // ── ADMIN: setare ceas ──
+  socket.on('admin_set_clock', ({ time, increment }) => {
+    if (!socket.rooms.has('admin')) return;
+    const t   = Math.max(0, parseInt(time)      || 0);
+    const inc = Math.max(0, parseInt(increment) || 0);
+    T.clock = { time: t, increment: inc };
+    broadcastAdmin();
+    console.log(`[ADMIN] Ceas setat: ${t}s + ${inc}s increment`);
+  });
+
+  // ── JUCĂTOR: timp expirat ──
+  socket.on('out_of_time', ({ gameId }) => {
+    const game = T.games.get(gameId);
+    if (!game || game.result) return;
+    const result = game.whiteId === socket.id ? '0-1' : '1-0';
+    finishGame(gameId, result, 'timp');
   });
 
   // ── ADMIN: finalizare turneu ──
