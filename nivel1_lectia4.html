@@ -121,13 +121,18 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
 .nav-prev:hover { background: rgba(255,255,255,0.75); }
 
 @media (max-width: 600px) {
-    .card, .board-card { padding: 16px; }
+    .card, .board-card { padding: 14px 12px; }
     .board-area { flex-wrap: wrap; }
     .board-wrap { max-width: 100%; }
     .demo-panel { flex: 0 0 100%; width: 100%; }
-    .value-grid { grid-template-columns: repeat(2, 1fr); }
-    .ex-area { flex-wrap: wrap; }
-    .ex-val-panel { flex: 0 0 100%; }
+    .value-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .value-card { padding: 10px 8px; gap: 4px; }
+    .ex-area { flex-wrap: wrap; gap: 10px; }
+    .ex-val-panel { flex: 0 0 100%; padding: 10px 12px; gap: 8px; }
+    .ex-val-btns { gap: 6px; }
+    .ex-val-btns button { padding: 8px 12px; font-size: 0.88em; }
+    .ex-progress-wrap { margin-bottom: 10px !important; }
+    .content { gap: 14px; padding-top: 18px; }
 }
 </style>
 </head>
@@ -219,6 +224,36 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
                 <div class="vc-pts-label">de neprețuit</div>
                 <div class="vc-bar">
                     <span class="vc-inf">♾</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. EXERCIȚII -->
+    <div class="board-card" id="ex-section">
+        <div class="sec-header">
+            <span class="sec-icon">🧩</span>
+            <span class="sec-title">Exerciții — Este schimbul avantajos pentru Alb?</span>
+        </div>
+
+        <div class="ex-progress-wrap" style="margin-bottom:14px;">
+            <div class="ex-progress-bar"><div class="ex-progress-fill" id="ex-progress-fill"></div></div>
+            <div class="ex-progress-label" id="ex-progress-label">Exercițiul 1 din 8</div>
+        </div>
+
+        <div class="ex-area">
+            <div class="ex-board-wrap"><div id="ex-board"></div></div>
+            <div class="ex-val-panel">
+                <div class="ex-question" id="ex-question">Este schimbul avantajos pentru Alb?</div>
+                <div class="ex-val-btns" id="ex-val-btns">
+                    <button onclick="answerVal('avantajos')">✅ Avantajos</button>
+                    <button onclick="answerVal('egal')">⚖️ Egal</button>
+                    <button onclick="answerVal('dezavantajos')">❌ Dezavantajos</button>
+                </div>
+                <div class="ex-feedback" id="ex-feedback" style="display:none"></div>
+                <div style="display:flex; gap:8px; justify-content:center; margin-top:10px;">
+                    <button class="ex-prev-btn" id="ex-prev-btn" onclick="prevValEx()" style="display:none">← Anterior</button>
+                    <button class="ex-next-btn" id="ex-next-btn" onclick="nextValEx()" style="display:none">Următorul ▶</button>
                 </div>
             </div>
         </div>
@@ -352,37 +387,6 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
         </div>
         <div class="highlight-box warn" style="margin-top:10px;">
             <strong>⚠️ Nu schimba totul dacă ai material în plus!</strong> Simplificarea e prietenul tău când ești în avantaj — dar fă-o inteligent! Păstrează piese suficiente pentru a da mat!
-        </div>
-    </div>
-
-    <!-- 5. EXERCIȚII -->
-    <div class="board-card" id="ex-section">
-        <div class="sec-header">
-            <span class="sec-icon">🧩</span>
-            <span class="sec-title">Exerciții — Este schimbul avantajos pentru Alb?</span>
-        </div>
-
-        <div class="ex-progress-wrap" style="margin-bottom:14px;">
-            <div class="ex-progress-bar"><div class="ex-progress-fill" id="ex-progress-fill"></div></div>
-            <div class="ex-progress-label" id="ex-progress-label">Exercițiul 1 din 8</div>
-        </div>
-
-        <div class="ex-area">
-            <div class="ex-board-wrap"><div id="ex-board"></div></div>
-            <div class="ex-val-panel">
-                <div class="ex-val-label" id="ex-val-label"></div>
-                <div class="ex-question" id="ex-question">Este schimbul avantajos pentru Alb?</div>
-                <div class="ex-val-btns" id="ex-val-btns">
-                    <button onclick="answerVal('avantajos')">✅ Avantajos</button>
-                    <button onclick="answerVal('egal')">⚖️ Egal</button>
-                    <button onclick="answerVal('dezavantajos')">❌ Dezavantajos</button>
-                </div>
-                <div class="ex-feedback" id="ex-feedback" style="display:none"></div>
-                <div style="display:flex; gap:8px; justify-content:center; margin-top:10px;">
-                    <button class="ex-prev-btn" id="ex-prev-btn" onclick="prevValEx()" style="display:none">← Anterior</button>
-                    <button class="ex-next-btn" id="ex-next-btn" onclick="nextValEx()" style="display:none">Următorul ▶</button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -603,7 +607,6 @@ function loadValEx(idx) {
     document.getElementById('ex-feedback').style.display = 'none';
     document.getElementById('ex-next-btn').style.display = 'none';
     document.getElementById('ex-prev-btn').style.display = idx > 0 ? '' : 'none';
-    document.getElementById('ex-val-label').textContent = ex.label;
     document.querySelectorAll('.ex-val-btns button').forEach(function(b) { b.disabled = false; });
     clearArrows('ex-board');
     clearHL('ex-board');

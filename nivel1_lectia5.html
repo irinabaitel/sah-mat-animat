@@ -109,6 +109,7 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
 .ex-prev-btn:disabled { opacity: 0.3; cursor: default; }
 
 .drag-hint { font-size: 0.78em; color: rgba(26,26,46,0.45); text-align: center; margin-top: 6px; }
+#ex-main-board, #ex-main-board * { touch-action: none !important; }
 
 /* PROGRESS DOTS */
 .progress-dots { display: flex; gap: 7px; align-items: center; justify-content: center; }
@@ -625,10 +626,10 @@ var DEF_DATA = {
           resultPos:{b6:'wB',d8:'bR',g1:'wK',g8:'bK'},
           atkText:'Turnul negru (d8) atacă Nebunul alb (d4) pe coloana d.',
           defText:'Nebunul fuge pe diagonală la b6 — ieșit de pe coloana d și în siguranță!' },
-        { pos:{c5:'wQ',c1:'bR',g1:'wK',g8:'bK'},
+        { pos:{c5:'wQ',c1:'bR',h2:'wK',g8:'bK'},
           atkArr:[{from:'c1',to:'c5',color:'rgba(40,80,200,0.88)'}],
           defArr:[{from:'c5',to:'g5',color:'rgba(40,180,80,0.88)'},{from:'g5',to:'g8',color:'rgba(200,40,30,0.88)'},{from:'g5',to:'c1',color:'rgba(200,120,0,0.88)'}],
-          resultPos:{g5:'wQ',c1:'bR',g1:'wK',g8:'bK'},
+          resultPos:{g5:'wQ',c1:'bR',h2:'wK',g8:'bK'},
           atkText:'Turnul negru (c1) atacă Regina albă (c5) pe coloana c.',
           defText:'Dg5! Atac dublu: Regina dă șah Regelui negru pe g8 (coloana g) ȘI amenință Turnul negru pe c1 (diagonala g5-c1). Negrul trebuie să scape din șah — Turnul se pierde!' }
     ]},
@@ -678,11 +679,11 @@ var DEF_DATA = {
           defArr:[{from:'b4',to:'c6',color:'rgba(200,120,0,0.88)'}],
           resultPos:{e4:'bN',d2:'wP',c6:'wN',b5:'wP',e7:'bQ',h8:'bK',h1:'wK'},
           atkText:'Calul negru (e4) amenință Pionul alb (d2).',
-          defText:'Calul alb sare pe c6 — atacă Regina neagră (e7)! Pionul de pe b5 apără Calul: dacă Rxc6, atunci Pxc6. Negrul trebuie să salveze Regina în loc să captureze Pionul.' },
+          defText:'Calul alb sare pe c6 — atacă Regina neagră (e7)! Calul negru atacă la d2, dar albul pregătește un atac mai mare cu Cc6. Negrul este nevoit să își apere regina.' },
         { pos:{a7:'wR',h8:'bK',h5:'bB',f3:'wN',a1:'bQ',h1:'wK'},
           atkArr:[{from:'h5',to:'f3',color:'rgba(40,80,200,0.88)'}],
           defArr:[{from:'a7',to:'a1',color:'rgba(200,120,0,0.88)'}],
-          resultPos:{a1:'wR',h8:'bK',h5:'bB',h1:'wK'},
+          resultPos:{a1:'wR',h8:'bK',h5:'bB',f3:'wN',h1:'wK'},
           atkText:'Nebunul negru (h5) amenință Calul alb (f3).',
           defText:'Turnul capturează Regina neagră (a1)! Chiar dacă pierdem Calul (3 pt), câștigăm Regina (9 pt) — net +6!' },
         { pos:{f6:'wQ',c5:'bR',c3:'wB',f2:'bR',h8:'bK',h1:'wK'},

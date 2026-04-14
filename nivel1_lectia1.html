@@ -302,11 +302,10 @@ body {
 #setup-board { width: 340px; }
 .setup-panel {
     flex: 1 1 auto; min-width: 0;
-    height: 340px;
     display: flex; flex-direction: column; gap: 10px;
 }
-#setup-text { flex: 1 1 auto; overflow-y: auto; }
-#setup-btn, #setup-done { margin-top: auto; flex-shrink: 0; }
+#setup-text { height: auto; overflow: visible; }
+#setup-btn, #setup-done { flex-shrink: 0; }
 #setup-title {
     font-family: 'Baloo 2', cursive; font-size: 1em;
     color: #1a3a6b; font-weight: 700; line-height: 1.3;
@@ -358,6 +357,9 @@ body {
     #setup-board-wrap { width: 100%; }
     #setup-board { width: 100%; }
     .setup-panel { flex: 0 0 auto; width: 100%; }
+    /* Pe mobil: butonul apare imediat sub tablă, înaintea textului */
+    #setup-btn  { order: -1; }
+    #setup-done { order: -1; }
 }
 </style>
 </head>
@@ -382,7 +384,7 @@ body {
         <span class="card-icon">🏛️</span>
         <h2>O aventură veche de 1400 de ani</h2>
         <p>Șahul este o aventură extraordinară care a început acum multă vreme, în jurul anului <strong>600 d.Hr.</strong> (adică acum mai bine de 1400 de ani!). Primul strămoș al șahului se numea <strong>Chaturanga</strong> și a apărut în îndepărtata Indie.</p>
-        <p>Imaginați-vă că sunteți <strong>comandantul unei armate curajoase</strong>. De partea cealaltă a mesei, un alt prieten conduce o armată rivală. Scopul vostru? Să folosiți tactici deștepte pentru a-l <strong>încolți pe Regele adversarului</strong>.</p>
+        <p>Imaginați-vă că sunteți <strong>comandantul unei armate curajoase</strong>. De partea cealaltă a mesei, un alt prieten conduce o armată rivală. Scopul vostru? Să folosiți tactici inteligente pentru a-l <strong>încolți pe Regele adversarului</strong>.</p>
         <p>Dar, înainte de a trimite soldații la antrenament, trebuie să cunoaștem perfect <strong>terenul de luptă!</strong></p>
     </div>
 
@@ -393,7 +395,7 @@ body {
         <p>Lumea noastră de joc este un <strong>pătrat mare, împărțit în 64 de pătrățele mici</strong>, albe și negre (sau de culori deschise și închise). Acestea sunt așezate alternativ — exact ca o tablă de șah!</p>
         <div class="highlight-box">
             <strong>🚩 Regula de Aur — Cum așezăm tabla?</strong><br>
-            Înainte de a striga „Start Joc!", verificăm dacă tabla este pusă corect.<br><br>
+            Înainte de a spune „Start Joc!", verificăm dacă tabla este pusă corect.<br><br>
             <strong>Regula colțului:</strong> Fiecare jucător trebuie să aibă în <strong>colțul din dreapta</strong> lui un <strong>pătrățel alb</strong>. Dacă în dreapta ta e unul negru — întoarce tabla!
         </div>
     </div>
@@ -415,9 +417,9 @@ body {
                 <div class="term-name">Liniile</div>
                 <div class="term-desc">Rânduri de la stânga la dreapta. Notate cu cifre: <strong>1, 2, 3... 8</strong></div>
             </div>
-            <div class="term-card">
-                <div class="term-icon">📐</div>
-                <div class="term-name">Diagonalele</div>
+            <div class="term-card" style="text-align:left;">
+                <div class="term-icon" style="text-align:center;">📐</div>
+                <div class="term-name" style="text-align:center;">Diagonalele</div>
                 <div class="term-desc">Poteci <em>pieziș</em> — formate din pătrățele de aceeași culoare. Pe o tablă sunt <strong>26 de diagonale</strong>. Numele unei diagonale e dat de <strong>câmpurile de la capetele ei</strong>: ex. diagonala <strong>a1–h8</strong>, diagonala <strong>g1–h2</strong>, diagonala <strong>c8–h3</strong>.</div>
             </div>
         </div>
@@ -477,12 +479,12 @@ body {
 
             <div class="board-info">
                 <div class="toggle-group">
-                    <button class="tog-btn tog-col on"      id="btn-col"      onclick="toggleHighlight('col')">👁 Coloana e</button>
-                    <button class="tog-btn tog-row on"      id="btn-row"      onclick="toggleHighlight('row')">👁 Linia 4</button>
-                    <button class="tog-btn tog-diag on"     id="btn-diag"     onclick="toggleHighlight('diag')">👁 Diagonalele b1–h7 și h1–a8</button>
-                    <button class="tog-btn tog-excenter on" id="btn-excenter" onclick="toggleHighlight('excenter')">👁 Centrul extins</button>
-                    <button class="tog-btn tog-center on"   id="btn-center"   onclick="toggleHighlight('center')">👁 Centrul mic</button>
-                    <button class="tog-btn tog-cross on"    id="btn-cross"    onclick="toggleHighlight('cross')">👁 Pătrățelul e4</button>
+                    <button class="tog-btn tog-col"      id="btn-col"      onclick="toggleHighlight('col')">🚫 Coloana e</button>
+                    <button class="tog-btn tog-row"      id="btn-row"      onclick="toggleHighlight('row')">🚫 Linia 4</button>
+                    <button class="tog-btn tog-diag"     id="btn-diag"     onclick="toggleHighlight('diag')">🚫 Diagonalele b1–h7 și h1–a8</button>
+                    <button class="tog-btn tog-center"   id="btn-center"   onclick="toggleHighlight('center')">🚫 Centrul mic</button>
+                    <button class="tog-btn tog-excenter" id="btn-excenter" onclick="toggleHighlight('excenter')">🚫 Centrul extins</button>
+                    <button class="tog-btn tog-cross"    id="btn-cross"    onclick="toggleHighlight('cross')">🚫 Pătrățelul e4</button>
                 </div>
 
                 <div id="square-info">
@@ -541,10 +543,10 @@ const board = Chessboard('board', {
 });
 
 /* ── TOGGLE HIGHLIGHTS ── */
-const state = { col:true, row:true, diag:true, excenter:true, center:true, cross:true };
+const state = { col:false, row:false, diag:false, excenter:false, center:false, cross:false };
 
-/* Both diagonals through e4 (excluding e4 itself) */
-const DIAG_E4 = ['a8','b7','c6','d5','f3','g2','h1','h7','g6','f5','d3','c2','b1'];
+/* Both diagonals through e4 (including e4) */
+const DIAG_E4 = ['a8','b7','c6','d5','e4','f3','g2','h1','h7','g6','f5','d3','c2','b1'];
 
 /* Center squares */
 const CENTER_SQ   = ['d4','e4','d5','e5'];

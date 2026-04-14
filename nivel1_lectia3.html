@@ -39,7 +39,7 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
 .mini-card .mc-name { font-family: 'Baloo 2', cursive; font-size: 1em; color: #1a3a6b; margin-bottom: 4px; }
 .mini-card .mc-desc { font-size: 0.78em; color: rgba(26,26,46,0.65); line-height: 1.5; }
 
-.board-card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+.board-card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 16px 20px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
 .sec-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .sec-icon { font-size: 1.8em; }
 .sec-title { font-family: 'Baloo 2', cursive; font-size: 1.25em; color: #1a3a6b; }
@@ -91,25 +91,38 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
 .ex-progress-bar { flex:1; height:9px; background:rgba(26,58,107,0.12); border-radius:5px; overflow:hidden; }
 .ex-progress-fill { height:100%; background:#1a3a6b; border-radius:5px; transition:width 0.4s ease; width:0%; }
 .ex-progress-count { font-family:'Baloo 2',cursive; font-size:0.78em; color:rgba(26,26,46,0.45); width:36px; }
-.ex-board-wrap { position:relative; max-width:300px; margin:0 auto; }
-.ex-question { text-align:center; font-family:'Baloo 2',cursive; font-size:1.05em; color:#1a3a6b; margin:14px 0 12px; line-height:1.4; min-height:2.6em; }
-.ex-ans-btns { display:flex; gap:14px; justify-content:center; margin:10px 0; }
+.ex-board-wrap { position:relative; width:280px; flex-shrink:0; }
+/* Popup promovare — orizontal, deasupra tablei */
+#promo-popup { position:absolute; display:none; flex-direction:row; z-index:20;
+    border-radius:12px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.35);
+    border:2px solid #1a3a6b; bottom:100%; left:50%; transform:translateX(-50%);
+    margin-bottom:6px; background:white; }
+.pp-piece { width:52px; height:52px; cursor:pointer; display:flex; align-items:center; justify-content:center; background:white; transition:background 0.12s; }
+.pp-piece:hover { background:rgba(26,58,107,0.18); }
+.pp-piece img { width:44px; height:44px; pointer-events:none; }
+.ex-left { flex:0 0 auto; display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
+.ex-right { flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:6px; }
+.ex-progress-cur { display:flex; align-items:center; gap:10px; margin-bottom:2px; }
+.ex-progress-cur .ex-progress-name { font-family:'Baloo 2',cursive; font-size:0.78em; color:rgba(26,26,46,0.6); white-space:nowrap; }
+.ex-question { font-family:'Baloo 2',cursive; font-size:1em; color:#1a3a6b; line-height:1.4; min-height:2.8em; }
+.ex-ans-btns { display:flex; gap:10px; justify-content:flex-start; }
+.ex-feedback { min-height:72px; font-size:0.88em; }
+.ex-next-btn, .ex-prev-btn { margin-top:0; }
 .ex-ans-btn { padding:11px 36px; border-radius:50px; border:none; font-family:'Baloo 2',cursive; font-size:1.05em; font-weight:700; cursor:pointer; transition:all 0.18s; }
 .ex-ans-btn.da { background:#28a050; color:white; box-shadow:0 3px 12px rgba(40,160,80,0.4); }
 .ex-ans-btn.nu { background:#cc3030; color:white; box-shadow:0 3px 12px rgba(200,40,40,0.35); }
 .ex-ans-btn:hover:not(:disabled) { transform:translateY(-2px); }
 .ex-ans-btn:disabled { opacity:0.4; cursor:default; transform:none !important; }
-.ex-feedback { margin:12px 0 10px; padding:14px 18px; border-radius:14px; font-size:0.91em; line-height:1.75; }
-.ex-feedback.ok { background:rgba(40,160,80,0.12); border:2px solid #28a050; color:#1a4a2a; }
-.ex-feedback.err { background:rgba(200,40,40,0.09); border:2px solid #cc3030; color:#4a1010; }
+.ex-feedback { min-height:72px; border-radius:14px; font-size:0.88em; line-height:1.65; padding:0; }
+.ex-feedback.ok { background:rgba(40,160,80,0.12); border:2px solid #28a050; color:#1a4a2a; padding:12px 16px; }
+.ex-feedback.err { background:rgba(200,40,40,0.09); border:2px solid #cc3030; color:#4a1010; padding:12px 16px; }
 .ex-next-btn { padding:10px 28px; border-radius:50px; border:none; background:#1a3a6b; color:white; font-family:'Baloo 2',cursive; font-size:0.95em; font-weight:700; cursor:pointer; margin-top:8px; transition:all 0.2s; box-shadow:0 3px 12px rgba(26,58,107,0.35); }
 .ex-next-btn:hover { background:#2a5aab; transform:translateY(-2px); }
 .ex-promo-btns,.ex-choice-btns { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:10px 0; }
 .ex-promo-btn { padding:10px 18px; border-radius:12px; border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.7); font-family:'Baloo 2',cursive; font-size:1em; color:#1a3a6b; cursor:pointer; transition:all 0.18s; }
 .ex-promo-btn:hover:not(:disabled) { background:#1a3a6b; color:white; transform:translateY(-2px); }
 .ex-promo-btn:disabled { opacity:0.4; cursor:default; transform:none !important; }
-.ex-area { display:flex; gap:16px; align-items:flex-start; margin:0 auto; }
-.ex-area .ex-board-wrap { flex:0 0 280px; width:280px; }
+.ex-area { display:flex; gap:16px; align-items:flex-start; }
 .ex-step-panel { flex:1 1 0; min-width:0; background:rgba(26,58,107,0.07); border:1px solid rgba(26,58,107,0.15); border-radius:14px; padding:14px 16px; }
 .ex-step-panel .demo-badge { font-size:0.72em; }
 .ex-step-panel .demo-title { font-family:'Baloo 2',cursive; font-size:0.97em; color:#1a3a6b; line-height:1.3; margin:5px 0 8px; }
@@ -124,10 +137,10 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
 @keyframes confetti-fall { 0%{opacity:1;transform:translate(0,0) rotate(0deg)} 80%{opacity:1} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot))} }
 .confetti-page { position:fixed; pointer-events:none; z-index:9999; border-radius:3px; animation:confetti-fall var(--dur,2s) ease-in forwards; }
 
-.sq-h1 { background: rgba(80,160,255,0.38) !important; }
-.sq-h2 { background: rgba(255,185,15,0.65) !important; }
-.sq-h3 { background: rgba(40,200,80,0.60) !important; }
-.sq-h4 { background: rgba(220,60,60,0.50) !important; }
+.sq-h1 { background-image: linear-gradient(rgba(80,160,255,0.40), rgba(80,160,255,0.40)) !important; }
+.sq-h2 { background-image: linear-gradient(rgba(255,185,15,0.50), rgba(255,185,15,0.50)) !important; }
+.sq-h3 { background-image: linear-gradient(rgba(40,200,80,0.45), rgba(40,200,80,0.45))   !important; }
+.sq-h4 { background-image: linear-gradient(rgba(220,60,60,0.45), rgba(220,60,60,0.45))   !important; }
 
 .mini-card { cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
 .mini-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.13); }
@@ -138,11 +151,8 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
 .ex-prev-btn { padding:10px 28px; border-radius:50px; border:none; background:rgba(26,58,107,0.45); color:white; font-family:'Baloo 2',cursive; font-size:0.95em; font-weight:700; cursor:pointer; margin-top:8px; transition:all 0.2s; }
 .ex-prev-btn:hover { background:rgba(26,58,107,0.65); transform:translateY(-2px); }
 
-.ex-step-panel { min-height: 200px; }
-.ex-step-panel .demo-text { min-height: 100px; }
-.ex-question { min-height: 3em; }
-.ex-feedback { min-height: 60px; }
-.ex-answer-area { min-height: 180px; }
+.ex-step-panel { font-size:0.88em; }
+.ex-step-panel .demo-text { min-height:0 !important; font-size:0.9em; line-height:1.6; padding:8px 12px; }
 
 .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
 .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
@@ -151,13 +161,14 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
 .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
 .progress { font-size: 0.82em; color: rgba(26,26,46,0.5); text-align: center; }
 
-@media (max-width: 520px) {
+@media (max-width: 560px) {
     .card, .board-card { padding: 16px; }
     .board-area { flex-wrap: wrap; }
     .board-wrap { max-width: 100%; }
     .demo-panel { flex: 0 0 100%; width: 100%; }
-    .ex-area { flex-wrap: wrap; }
-    .ex-step-panel { flex: 0 0 100%; }
+    .ex-area { flex-direction: column; }
+    .ex-board-wrap { width: 100%; max-width: 300px; }
+    .ex-right { width: 100%; }
 }
 </style>
 </head>
@@ -361,65 +372,56 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
             <button class="ex-tab"        id="ex-tab-ep"     onclick="setExTab('ep')">↗ En Passant</button>
         </div>
 
-        <div class="ex-progress-all">
-            <div class="ex-progress-row">
-                <span class="ex-progress-name">Rocadă</span>
-                <div class="ex-progress-bar"><div class="ex-progress-fill" id="ex-progress-fill-castle"></div></div>
-                <span class="ex-progress-count" id="ex-progress-count-castle">0 / 4</span>
-            </div>
-            <div class="ex-progress-row">
-                <span class="ex-progress-name">Promovare</span>
-                <div class="ex-progress-bar"><div class="ex-progress-fill" id="ex-progress-fill-promo"></div></div>
-                <span class="ex-progress-count" id="ex-progress-count-promo">0 / 5</span>
-            </div>
-            <div class="ex-progress-row">
-                <span class="ex-progress-name">En Passant</span>
-                <div class="ex-progress-bar"><div class="ex-progress-fill" id="ex-progress-fill-ep"></div></div>
-                <span class="ex-progress-count" id="ex-progress-count-ep">0 / 5</span>
-            </div>
-        </div>
-
-        <!-- board + side panel -->
         <div class="ex-area">
-            <div class="ex-board-wrap">
-                <div id="ex-board"></div>
+            <!-- STÂNGA: tablă + controale navigare -->
+            <div class="ex-left">
+                <div class="ex-board-wrap">
+                    <div id="ex-board"></div>
+                    <div id="promo-popup" style="display:none"></div>
+                </div>
+                <div class="ex-ctrl-row" id="ex-ctrl-row" style="display:none">
+                    <button class="ex-ctrl-btn" id="ex-sp-first" onclick="exSFirst()" title="Prima poziție">&#9198;</button>
+                    <button class="ex-ctrl-btn" id="ex-sp-prev"  onclick="exSPrev()"  title="Înapoi">&#9664;</button>
+                    <div class="ex-ctrl-label" id="ex-sp-label">Start</div>
+                    <button class="ex-ctrl-btn" id="ex-sp-next"  onclick="exSNext()"  title="Înainte">&#9654;</button>
+                    <button class="ex-ctrl-btn" id="ex-sp-last"  onclick="exSLast()"  title="Ultima poziție">&#9197;</button>
+                </div>
             </div>
-            <div id="ex-step-panel" class="ex-step-panel" style="display:none">
-                <span class="demo-badge" id="ex-sp-badge"></span>
-                <div class="demo-title" id="ex-sp-title"></div>
-                <div class="demo-text" id="ex-sp-text"></div>
-            </div>
-        </div>
 
-        <!-- nav buttons — below board -->
-        <div class="ex-ctrl-row" id="ex-ctrl-row" style="display:none">
-            <button class="ex-ctrl-btn" id="ex-sp-first" onclick="exSFirst()" title="Prima poziție">&#9198;</button>
-            <button class="ex-ctrl-btn" id="ex-sp-prev"  onclick="exSPrev()"  title="Înapoi">&#9664;</button>
-            <div class="ex-ctrl-label" id="ex-sp-label">Start</div>
-            <button class="ex-ctrl-btn" id="ex-sp-next"  onclick="exSNext()"  title="Înainte">&#9654;</button>
-            <button class="ex-ctrl-btn" id="ex-sp-last"  onclick="exSLast()"  title="Ultima poziție">&#9197;</button>
-        </div>
+            <!-- DREAPTA: progres + întrebare + butoane -->
+            <div class="ex-right">
+                <div class="ex-progress-cur">
+                    <span class="ex-progress-name" id="ex-pcur-name">Rocadă</span>
+                    <div class="ex-progress-bar"><div class="ex-progress-fill" id="ex-pcur-fill"></div></div>
+                    <span class="ex-progress-count" id="ex-pcur-count">0 / 10</span>
+                </div>
 
-        <div class="ex-answer-area">
-            <div class="ex-question" id="ex-question"></div>
+                <div id="ex-step-panel" class="ex-step-panel" style="display:none">
+                    <span class="demo-badge" id="ex-sp-badge"></span>
+                    <div class="demo-title" id="ex-sp-title"></div>
+                    <div class="demo-text" id="ex-sp-text"></div>
+                </div>
 
-            <div class="ex-ans-btns" id="ex-da-nu-btns">
-                <button class="ex-ans-btn da" id="ex-btn-da" onclick="answerEx(true)">✅ Da</button>
-                <button class="ex-ans-btn nu" id="ex-btn-nu" onclick="answerEx(false)">❌ Nu</button>
-            </div>
-            <div class="ex-promo-btns" id="ex-promo-btns" style="display:none">
-                <button class="ex-promo-btn" id="ex-btn-q" onclick="answerStepEx('q')">♛ Regină</button>
-                <button class="ex-promo-btn" id="ex-btn-r" onclick="answerStepEx('r')">♜ Turn</button>
-                <button class="ex-promo-btn" id="ex-btn-b" onclick="answerStepEx('b')">♝ Nebun</button>
-                <button class="ex-promo-btn" id="ex-btn-n" onclick="answerStepEx('n')">♞ Cal</button>
-            </div>
-            <div class="ex-choice-btns" id="ex-choice-btns" style="display:none"></div>
+                <div class="ex-question" id="ex-question"></div>
 
-            <div class="ex-feedback" id="ex-feedback" style="display:none"></div>
+                <div class="ex-ans-btns" id="ex-da-nu-btns">
+                    <button class="ex-ans-btn da" id="ex-btn-da" onclick="answerEx(true)">✅ Da</button>
+                    <button class="ex-ans-btn nu" id="ex-btn-nu" onclick="answerEx(false)">❌ Nu</button>
+                </div>
+                <div class="ex-promo-btns" id="ex-promo-btns" style="display:none">
+                    <button class="ex-promo-btn" id="ex-btn-q" onclick="answerStepEx('q')">♛ Regină</button>
+                    <button class="ex-promo-btn" id="ex-btn-r" onclick="answerStepEx('r')">♜ Turn</button>
+                    <button class="ex-promo-btn" id="ex-btn-b" onclick="answerStepEx('b')">♝ Nebun</button>
+                    <button class="ex-promo-btn" id="ex-btn-n" onclick="answerStepEx('n')">♞ Cal</button>
+                </div>
+                <div class="ex-choice-btns" id="ex-choice-btns" style="display:none"></div>
 
-            <div style="text-align:center;">
-                <button class="ex-prev-btn" id="ex-prev-btn" onclick="prevEx()" style="display:none">← Exercițiu anterior</button>
-                <button class="ex-next-btn" id="ex-next-btn" onclick="nextEx()" style="display:none">Următorul exercițiu ▶</button>
+                <div class="ex-feedback" id="ex-feedback"></div>
+
+                <div style="display:flex; gap:8px; margin-top:4px;">
+                    <button class="ex-prev-btn" id="ex-prev-btn" onclick="prevEx()" style="visibility:hidden">← Anterior</button>
+                    <button class="ex-next-btn" id="ex-next-btn" onclick="nextEx()" style="visibility:hidden">Următorul ▶</button>
+                </div>
             </div>
         </div>
     </div>
@@ -445,7 +447,7 @@ function applyHL(id, hls) {
 }
 function renderStep(boardId, board, steps, idx, ids) {
     var s = steps[idx];
-    board.position(s.pos, true);
+    board.position(s.pos, false);
     setTimeout(function(){ clearHL(boardId); applyHL(boardId, s.hl); }, 200);
     document.getElementById(ids.badge).textContent = s.badge;
     document.getElementById(ids.title).textContent = s.title;
@@ -837,14 +839,11 @@ var exDone = {castle:0, promo:0, ep:0};
 var EX_SIZES = {castle:10, promo:5, ep:5};
 
 function updateExProgress() {
-    ['castle','promo','ep'].forEach(function(tab) {
-        var total = EX_SIZES[tab];
-        var done  = exDone[tab];
-        var pct   = (done / total * 100).toFixed(0);
-        document.getElementById('ex-progress-fill-'  + tab).style.width = pct + '%';
-        document.getElementById('ex-progress-count-' + tab).textContent =
-            done === total ? '✅' : done + ' / ' + total;
-    });
+    var total = EX_SIZES[exTab];
+    var done  = exDone[exTab];
+    var pct   = (done / total * 100).toFixed(0);
+    document.getElementById('ex-pcur-fill').style.width = pct + '%';
+    document.getElementById('ex-pcur-count').textContent = done === total ? '✅' : done + ' / ' + total;
 }
 
 function currentExSet() {
@@ -1123,8 +1122,9 @@ function exSRender(idx) {
         document.getElementById('ex-choice-btns').style.display = 'none';
     } else if (ex.answerType === 'promo') {
         document.getElementById('ex-da-nu-btns').style.display = 'none';
-        document.getElementById('ex-promo-btns').style.display = showAns ? '' : 'none';
+        document.getElementById('ex-promo-btns').style.display = 'none';
         document.getElementById('ex-choice-btns').style.display = 'none';
+        if (showAns) { showPromoPopup(ex); } else { hidePromoPopup(); }
     } else if (ex.answerType === 'choice') {
         document.getElementById('ex-da-nu-btns').style.display = 'none';
         document.getElementById('ex-promo-btns').style.display = 'none';
@@ -1141,11 +1141,11 @@ function exSRender(idx) {
 
     /* next-exercise button: show only after last step and question answered */
     var lastStep = (idx === ex.steps.length - 1);
-    document.getElementById('ex-next-btn').style.display = (lastStep && exQAnswered) ? '' : 'none';
+    document.getElementById('ex-next-btn').style.visibility = (lastStep && exQAnswered) ? 'visible' : 'hidden';
 
     /* feedback: hide when navigating away from answer step */
     if (!atQ || !exQAnswered) {
-        document.getElementById('ex-feedback').style.display = 'none';
+        document.getElementById('ex-feedback').style.visibility = 'hidden'; document.getElementById('ex-feedback').className = 'ex-feedback';
     }
 }
 
@@ -1153,6 +1153,35 @@ function exSFirst() { exSRender(0); }
 function exSPrev()  { if (exStepIdx > 0) exSRender(exStepIdx - 1); }
 function exSNext()  { var ex = currentExSet()[exIdx]; if (exStepIdx < ex.steps.length - 1) exSRender(exStepIdx + 1); }
 function exSLast()  { var ex = currentExSet()[exIdx]; exSRender(ex.steps.length - 1); }
+
+/* ── PROMOTION POPUP (Lichess style) ── */
+function showPromoPopup(ex) {
+    var step = ex.steps[ex.qStep];
+    var pos = step.pos;
+    var colMap = {a:0,b:1,c:2,d:3,e:4,f:5,g:6,h:7};
+    var promoCol = 3, isWhite = true;
+    for (var sq in pos) {
+        if (pos[sq] === 'wP' && sq[1] === '8') { promoCol = colMap[sq[0]]; isWhite = true; break; }
+        if (pos[sq] === 'bP' && sq[1] === '1') { promoCol = colMap[sq[0]]; isWhite = false; break; }
+    }
+    var sqSize = document.getElementById('ex-board').offsetWidth / 8;
+    var pieces  = isWhite ? ['wQ','wR','wB','wN'] : ['bQ','bR','bB','bN'];
+    var codes   = ['q','r','b','n'];
+    var popup = document.getElementById('promo-popup');
+    popup.innerHTML = '';
+    pieces.forEach(function(p, i) {
+        var div = document.createElement('div');
+        div.className = 'pp-piece';
+        div.innerHTML = '<img src="https://lichess1.org/assets/piece/caliente/' + p + '.svg">';
+        div.onclick = (function(c){ return function(){ hidePromoPopup(); answerStepEx(c); }; })(codes[i]);
+        popup.appendChild(div);
+    });
+    popup.style.display = 'flex';
+}
+
+function hidePromoPopup() {
+    document.getElementById('promo-popup').style.display = 'none';
+}
 
 /* Called by all answer buttons for step exercises */
 function answerStepEx(userVal) {
@@ -1168,19 +1197,20 @@ function answerStepEx(userVal) {
         spawnExConfetti();
         fb.className = 'ex-feedback ok';
         fb.textContent = '✅ Corect! ' + ex.fb_ok;
-        fb.style.display = '';
+        fb.style.visibility = 'visible';
 
         /* hide answer buttons, unlock next step */
         document.getElementById('ex-da-nu-btns').style.display = 'none';
         document.getElementById('ex-promo-btns').style.display = 'none';
         document.getElementById('ex-choice-btns').style.display = 'none';
+        hidePromoPopup();
         document.getElementById('ex-question').style.display = 'none';
 
         /* unlock navigation to see rest of steps */
         var hasMore = (exStepIdx < ex.steps.length - 1);
         document.getElementById('ex-sp-next').disabled = !hasMore;
         document.getElementById('ex-sp-last').disabled = !hasMore;
-        if (!hasMore) document.getElementById('ex-next-btn').style.display = '';
+        if (!hasMore) document.getElementById('ex-next-btn').style.visibility = 'visible';
 
     } else {
         playErrorSound();
@@ -1190,12 +1220,13 @@ function answerStepEx(userVal) {
 
         fb.className = 'ex-feedback err';
         fb.textContent = '❌ Greșit! ' + ex.fb_err;
-        fb.style.display = '';
+        fb.style.visibility = 'visible';
 
         if (retry) {
             /* re-enable answer buttons for retry */
             ['q','r','b','n'].forEach(function(p){ document.getElementById('ex-btn-'+p).disabled = false; });
             document.querySelectorAll('#ex-choice-btns button').forEach(function(b){ b.disabled = false; });
+            if (ex.answerType === 'promo') { setTimeout(function(){ showPromoPopup(ex); }, 900); }
         } else {
             /* no retry (da_nu type): lock and show next */
             exQAnswered = true;
@@ -1204,7 +1235,7 @@ function answerStepEx(userVal) {
             var hasMore2 = (exStepIdx < ex.steps.length - 1);
             document.getElementById('ex-sp-next').disabled = !hasMore2;
             document.getElementById('ex-sp-last').disabled = !hasMore2;
-            if (!hasMore2) document.getElementById('ex-next-btn').style.display = '';
+            if (!hasMore2) document.getElementById('ex-next-btn').style.visibility = 'visible';
         }
     }
 }
@@ -1216,8 +1247,8 @@ function loadExercise(idx) {
     var ex = exSet[idx];
 
     updateExProgress();
-    document.getElementById('ex-feedback').style.display = 'none';
-    document.getElementById('ex-next-btn').style.display = 'none';
+    document.getElementById('ex-feedback').style.visibility = 'hidden'; document.getElementById('ex-feedback').className = 'ex-feedback';
+    document.getElementById('ex-next-btn').style.visibility = 'hidden';
     clearArrows('ex-board'); clearHL('ex-board');
 
     var isSteps = (ex.type === 'steps');
@@ -1239,11 +1270,8 @@ function loadExercise(idx) {
         document.getElementById('ex-ctrl-row').style.display = '';
         exSRender(0);
     } else {
-        /* Castle: simple Da/Nu — step-panel rămâne vizibil dar cu conținut gol */
-        document.getElementById('ex-sp-badge').textContent = '';
-        document.getElementById('ex-sp-title').textContent = '';
-        document.getElementById('ex-sp-text').textContent  = '';
-        document.getElementById('ex-step-panel').style.display = '';
+        /* Castle: simple Da/Nu — ascundem step-panel (nu are conținut) */
+        document.getElementById('ex-step-panel').style.display = 'none';
         document.getElementById('ex-ctrl-row').style.display = 'none';
         document.getElementById('ex-question').textContent = ex.question;
         document.getElementById('ex-question').style.display = '';
@@ -1254,7 +1282,7 @@ function loadExercise(idx) {
         document.getElementById('ex-btn-da').disabled = false;
         document.getElementById('ex-btn-nu').disabled = false;
     }
-    document.getElementById('ex-prev-btn').style.display = (idx > 0) ? '' : 'none';
+    document.getElementById('ex-prev-btn').style.visibility = (idx > 0) ? 'visible' : 'hidden';
 }
 
 function answerEx(userSays) {
@@ -1298,20 +1326,25 @@ function answerEx(userSays) {
             }, 600);
         }
     }
-    fb.style.display = '';
-    document.getElementById('ex-next-btn').style.display = '';
+    fb.style.visibility = 'visible';
+    document.getElementById('ex-next-btn').style.visibility = 'visible';
+}
+
+function scrollToEx() {
+    document.getElementById('ex-section').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function nextEx() {
     var exSet = currentExSet();
     if (exIdx < exSet.length - 1) {
         loadExercise(exIdx + 1);
+        setTimeout(scrollToEx, 80);
     } else {
         spawnExConfetti();
         document.getElementById('ex-feedback').className = 'ex-feedback ok';
         document.getElementById('ex-feedback').innerHTML = '🎉 <strong>Felicitări! Ai terminat toate exercițiile din această categorie!</strong>';
-        document.getElementById('ex-feedback').style.display = '';
-        document.getElementById('ex-next-btn').style.display = 'none';
+        document.getElementById('ex-feedback').style.visibility = 'visible';
+        document.getElementById('ex-next-btn').style.visibility = 'hidden';
     }
 }
 
@@ -1320,11 +1353,13 @@ function setExTab(tab) {
     ['castle','promo','ep'].forEach(function(t){
         document.getElementById('ex-tab-'+t).classList.toggle('active', t===tab);
     });
+    var names = {castle:'Rocadă', promo:'Promovare', ep:'En Passant'};
+    document.getElementById('ex-pcur-name').textContent = names[tab];
     loadExercise(0);
 }
 
 function prevEx() {
-    if (exIdx > 0) loadExercise(exIdx - 1);
+    if (exIdx > 0) { loadExercise(exIdx - 1); setTimeout(scrollToEx, 80); }
 }
 
 function openSection(tab) {
