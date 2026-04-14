@@ -65,6 +65,8 @@ input[type=text]:focus { border-color: #1a3a6b; }
 #board-container, #board-container * { touch-action: none !important; }
 /* Highlight pătrat selectat (click-to-move) */
 #board .sq-sel { background: rgba(255,214,0,0.65) !important; outline: 3px solid rgba(230,170,0,0.8); outline-offset: -3px; }
+/* Premove */
+#board .sq-pre { background: rgba(140,50,200,0.48) !important; outline: 3px solid rgba(140,50,200,0.7); outline-offset: -3px; }
 
 .turn-bar { font-family: 'Baloo 2', cursive; font-size: 1em; color: #1a3a6b;
   background: rgba(26,58,107,0.1); border-radius: 50px; padding: 7px 22px; text-align: center; }
@@ -245,6 +247,8 @@ var game  = null;  // Chess instance
 var board = null;  // Chessboard instance
 var selectedSq = null;
 var lastDropTime = 0;
+var premoveSrc = null;
+var premoveDst = null;
 
 // ─── CLOCK ───────────────────────────────────────────────────
 var clockSettings  = { time: 0, increment: 0 };
@@ -333,6 +337,32 @@ function renderClock() {
   oppEl.className = 'clock-box' + (oppActive ? ' active' : '') + (oppMs > 0 && oppMs < 10000 ? ' low' : '');
 }
 
+// ─── PREMOVE ─────────────────────────────────────────────────
+function setPremove(src, dst) {
+  clearPremove();
+  premoveSrc = src;
+  premoveDst = dst;
+  var srcEl = document.querySelector('#board .square-' + src);
+  var dstEl = document.querySelector('#board .square-' + dst);
+  if (srcEl) srcEl.classList.add('sq-pre');
+  if (dstEl) dstEl.classList.add('sq-pre');
+}
+
+function clearPremove() {
+  premoveSrc = null;
+  premoveDst = null;
+  document.querySelectorAll('#board .sq-pre').forEach(function(el) {
+    el.classList.remove('sq-pre');
+  });
+}
+
+function executePremove() {
+  if (!premoveSrc || !premoveDst) return;
+  var src = premoveSrc, dst = premoveDst;
+  clearPremove();
+  doMove(src, dst);   // dacă e ilegal, doMove returnează false și gata
+}
+
 // ─── SOCKET ──────────────────────────────────────────────────
 var socket = io();
 
@@ -389,6 +419,7 @@ socket.on('opponent_move', function(data) {
     afterOpponentMove();
     checkGameEnd();
     updateTurnBar();
+    executePremove();
   }
 });
 
@@ -523,6 +554,7 @@ function clearSelection() {
   document.querySelectorAll('#board .sq-sel').forEach(function(el) {
     el.classList.remove('sq-sel');
   });
+  clearPremove();
 }
 
 function highlightSquare(sq) {
@@ -531,12 +563,32 @@ function highlightSquare(sq) {
 }
 
 function handleSq(sq) {
-  if (!isMyTurn() || !game) return;
+  if (!game) return;
+
+  // ── Nu e rândul meu: mod premove ──
+  if (!isMyTurn()) {
+    var pp = game.get(sq);
+    if (!premoveSrc) {
+      // Prima atingere: selectează una din piesele mele
+      if (pp && pp.color === myColor) { clearPremove(); premoveSrc = sq; highlightPre(sq); }
+    } else {
+      if (sq === premoveSrc) { clearPremove(); return; }
+      if (pp && pp.color === myColor) {
+        // Schimbă selecția
+        clearPremove(); premoveSrc = sq; highlightPre(sq);
+      } else {
+        // Setează destinația premove-ului
+        setPremove(premoveSrc, sq);
+      }
+    }
+    return;
+  }
+
+  // ── E rândul meu: mutare normală ──
   var piece = game.get(sq);
   var turn  = game.turn();
 
   if (!selectedSq) {
-    // Prima atingere: selectează piesa ta
     if (piece && piece.color === turn) {
       selectedSq = sq;
       highlightSquare(sq);
@@ -544,26 +596,35 @@ function handleSq(sq) {
   } else {
     if (sq === selectedSq) { clearSelection(); return; }
     if (piece && piece.color === turn) {
-      // Altă piesă proprie → schimbă selecția
       clearSelection();
       selectedSq = sq;
       highlightSquare(sq);
       return;
     }
-    // Destinație → încearcă mutarea
     var src = selectedSq;
     clearSelection();
     doMove(src, sq);
   }
 }
 
+function highlightPre(sq) {
+  var el = document.querySelector('#board .square-' + sq);
+  if (el) el.classList.add('sq-pre');
+}
+
 // ─── DRAG & DROP (desktop) ───────────────────────────────────
 // onDrop e chemat de chessboard.js atât la drag real cât și la click (source=target)
 function onDrop(source, target) {
-  if (!isMyTurn()) return 'snapback';
+  if (!isMyTurn()) {
+    // Nu e rândul meu: drag = premove
+    if (source !== target && game) {
+      var p = game.get(source);
+      if (p && p.color === myColor) setPremove(source, target);
+    }
+    return 'snapback';
+  }
   if (source === target) {
-    // Click simplu pe piesă — nu facem nimic aici;
-    // evenimentul 'click' va apela handleSq() imediat după aceasta
+    // Click simplu pe piesă — evenimentul 'click' va apela handleSq()
     return 'snapback';
   }
   // Drag real: mutăm direct
@@ -610,11 +671,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!sq) return;
 
     if (dx < 30 && dy < 30) {
-      // Tap simplu → selecție sau mutare
+      // Tap simplu → selecție / mutare / premove
       handleSq(sq);
     } else if (tSq0 && sq !== tSq0) {
-      // Swipe între două pătrate → mutare directă
-      if (!doMove(tSq0, sq)) handleSq(sq);
+      if (!isMyTurn()) {
+        // Swipe când nu e rândul meu → premove direct
+        var pp = game && game.get(tSq0);
+        if (pp && pp.color === myColor) setPremove(tSq0, sq);
+      } else {
+        // Swipe când e rândul meu → mutare directă
+        if (!doMove(tSq0, sq)) handleSq(sq);
+      }
     }
   }, { passive: false });
 
@@ -694,6 +761,7 @@ function setFeedback(msg, type) {
 // ─── REZULTAT JOC ────────────────────────────────────────────
 function showGameResult(yourResult, result, reason, opponentName) {
   stopClock();
+  clearPremove();
   var emoji, title, sub;
   if (yourResult === 'win')  { emoji = '🎉'; title = 'Ai câștigat!';   sub = 'Felicitări, ' + myName + '!'; }
   else if (yourResult === 'loss') { emoji = '😔'; title = 'Ai pierdut!'; sub = 'Mai mult succes în runda viitoare!'; }
