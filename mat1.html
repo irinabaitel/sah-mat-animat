@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mat în 1 mutare — 140 puzzle-uri</title>
+<title>Mat în 1 mutare</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
 <style>
@@ -29,6 +29,8 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
 .dot.current { border-color: #1a3a6b; background: rgba(26,58,107,0.2); }
 .dot.solved { background: #27ae60; }
 .dot.solved::after { content: '✓'; color: white; font-size: 0.85em; }
+.dot.missed { background: #e74c3c; }
+.dot.missed::after { content: '✗'; color: white; font-size: 0.85em; }
 
 /* Puzzle card */
 .puzzle-card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 20px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); display: flex; flex-direction: column; align-items: center; gap: 14px; }
@@ -92,17 +94,6 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
 
 <div class="content">
 
-  <div class="progress-card">
-    <div class="progress-header">
-      <span>Puzzle <strong id="puzzleNum">1</strong> din 140</span>
-      <span><strong id="solvedCount">0</strong> / 140 rezolvate</span>
-    </div>
-    <div class="progress-bar-wrap">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
-    <div class="dots-wrap" id="dotsWrap"></div>
-  </div>
-
   <div class="puzzle-card" id="puzzleCard">
     <div class="turn-indicator" id="turnIndicator"></div>
     <div id="board"></div>
@@ -111,6 +102,7 @@ body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; p
       <button class="hint-btn" id="hintBtn" onclick="showHint()">💡 Arată soluția</button>
       <button class="next-btn" id="nextBtn" onclick="nextPuzzle()">Puzzle următor →</button>
     </div>
+    <div class="dots-wrap" id="dotsWrap" style="margin-top:10px;"></div>
   </div>
 
   <div class="nav-puzzles">
@@ -295,36 +287,23 @@ var puzzles = [
 var currentIdx = 0;
 var wrongAttempts = 0;
 var solvedPuzzles = new Set();
+var attemptedPuzzles = {};
 var game, board;
 var selectedSquare = null;
 var lastDropTime = 0;
 
-// --- Init dots ---
-(function initDots() {
+function addOrUpdateDot(idx, status) {
   var wrap = document.getElementById('dotsWrap');
-  for (var i = 0; i < puzzles.length; i++) {
-    var dot = document.createElement('div');
-    dot.className = 'dot';
-    dot.id = 'dot-' + i;
-    dot.title = 'Puzzle ' + (i + 1);
-    (function(idx) { dot.onclick = function() { loadPuzzle(idx); }; })(i);
-    wrap.appendChild(dot);
+  var el = document.getElementById('dot-' + idx);
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'dot-' + idx;
+    el.title = 'Puzzle ' + (idx + 1);
+    (function(i) { el.onclick = function() { loadPuzzle(i); }; })(idx);
+    wrap.appendChild(el);
   }
-})();
-
-function updateDots() {
-  for (var i = 0; i < puzzles.length; i++) {
-    var dot = document.getElementById('dot-' + i);
-    dot.className = 'dot' +
-      (solvedPuzzles.has(i) ? ' solved' : '') +
-      (i === currentIdx ? ' current' : '');
-  }
-}
-
-function updateProgress() {
-  var count = solvedPuzzles.size;
-  document.getElementById('solvedCount').textContent = count;
-  document.getElementById('progressFill').style.width = (count / puzzles.length * 100) + '%';
+  el.className = 'dot ' + (status === 'solved' ? 'solved' : 'missed');
+  attemptedPuzzles[idx] = status;
 }
 
 function loadPuzzle(idx) {
@@ -347,7 +326,6 @@ function loadPuzzle(idx) {
     onSnapEnd: onSnapEnd
   });
 
-  document.getElementById('puzzleNum').textContent = idx + 1;
   document.getElementById('turnIndicator').textContent =
     p.turn === 'w' ? '⬜ Albul mută — găsește matul în 1!' : '⬛ Negrul mută — găsește matul în 1!';
 
@@ -355,11 +333,8 @@ function loadPuzzle(idx) {
   fb.textContent = isSolved ? '✅ Deja rezolvat!' : '';
   fb.className = 'feedback' + (isSolved ? ' correct' : '');
 
-  document.getElementById('hintBtn').style.display = (!isSolved) ? 'none' : 'none';
+  document.getElementById('hintBtn').style.display = 'none';
   document.getElementById('nextBtn').style.display = isSolved && idx < puzzles.length - 1 ? 'inline-block' : 'none';
-
-  updateProgress();
-  updateDots();
 
   setTimeout(function() {
     document.getElementById('puzzleCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -514,6 +489,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function onSolved() {
   solvedPuzzles.add(currentIdx);
+  addOrUpdateDot(currentIdx, 'solved');
+
   var fb = document.getElementById('feedback');
   fb.textContent = '✅ Excelent! Mat în 1!';
   fb.className = 'feedback correct';
@@ -521,9 +498,6 @@ function onSolved() {
   var nextBtn = document.getElementById('nextBtn');
   nextBtn.style.display = currentIdx < puzzles.length - 1 ? 'inline-block' : 'none';
   document.getElementById('hintBtn').style.display = 'none';
-
-  updateProgress();
-  updateDots();
 
   if (solvedPuzzles.size === puzzles.length) {
     setTimeout(showCompletion, 800);
@@ -552,6 +526,8 @@ function showHint() {
   var fb = document.getElementById('feedback');
   fb.textContent = '💡 Soluția: ' + p.sol;
   fb.className = 'feedback hint';
+  addOrUpdateDot(currentIdx, 'missed');
+  document.getElementById('nextBtn').style.display = currentIdx < puzzles.length - 1 ? 'inline-block' : 'none';
 }
 
 function nextPuzzle() {
@@ -567,7 +543,7 @@ function showCompletion() {
   card.innerHTML =
     '<div class="completion">' +
     '<span class="big-emoji">🏆</span>' +
-    '<h2>Felicitări! Toate 140 de puzzle-uri rezolvate!</h2>' +
+    '<h2>Felicitări! Toate puzzle-urile rezolvate!</h2>' +
     '<p>Ai demonstrat că știi să recunoști matul în 1 din orice poziție.<br>Ești pregătit pentru mat în 2 mutări!</p>' +
     '</div>';
 }
