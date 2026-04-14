@@ -61,6 +61,8 @@ input[type=text]:focus { border-color: #1a3a6b; }
 #board { width: 360px; max-width: calc(100vw - 48px); touch-action: none; user-select: none; }
 /* Overlay touch — nu permite scroll, prinde toate evenimentele */
 #touch-overlay { touch-action: none; cursor: pointer; }
+/* Blochează scroll pe toată tabla și conținutul ei */
+#board-container, #board-container * { touch-action: none !important; }
 /* Highlight pătrat selectat (click-to-move) */
 #board .sq-sel { background: rgba(255,214,0,0.65) !important; outline: 3px solid rgba(230,170,0,0.8); outline-offset: -3px; }
 
@@ -447,11 +449,11 @@ function handleSq(sq) {
 function onDrop(source, target) {
   if (!isMyTurn()) return 'snapback';
   if (source === target) {
-    // Click pe piesă (fără mișcare) → tratăm ca selecție
-    handleSq(source);
-    return 'snapback'; // chessboard.js să nu mute el singur
+    // Click simplu pe piesă — nu facem nimic aici;
+    // evenimentul 'click' va apela handleSq() imediat după aceasta
+    return 'snapback';
   }
-  // Drag real: mutăm direct fără să mai trecem prin handleSq
+  // Drag real: mutăm direct
   clearSelection();
   return doMove(source, target) ? undefined : 'snapback';
 }
@@ -504,15 +506,13 @@ document.addEventListener('DOMContentLoaded', function() {
   }, { passive: false });
 
   // ─── DESKTOP: click pe tablă ─────────────────────────────
-  // onDrop gestionează click-urile pe PIESE (source=target).
-  // Listener-ul de mai jos gestionează click pe PĂTRATE GOALE
-  // (când ai deja o piesă selectată și dai click pe destinație).
+  // Gestionează ORICE click pe tablă: selecție piesă, schimbare selecție, mutare.
+  // onDrop cu source=target nu mai face nimic — tot ce înseamnă click vine prin listener.
   document.getElementById('board').addEventListener('click', function(e) {
-    if (!selectedSq || !isMyTurn()) return; // relevant doar dacă am o piesă selectată
+    if (!isMyTurn()) return;
     var sqEl = e.target.closest('[data-square]');
     if (!sqEl) return;
-    var sq = sqEl.getAttribute('data-square');
-    if (sq) handleSq(sq);
+    handleSq(sqEl.getAttribute('data-square'));
   });
 });
 

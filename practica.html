@@ -46,6 +46,25 @@
     .premove-square { background: rgba(255, 165, 0, 0.5) !important; }
     #board-wrap { position: relative; display: inline-block; }
     #touch-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 50; touch-action: none; cursor: pointer; }
+    /* Blochează scroll pe toată tabla și conținutul ei */
+    #board-wrap, #board-wrap * { touch-action: none !important; }
+
+    /* ═══ MOBIL ═══ */
+    @media (max-width: 700px) {
+        body { height: auto; min-height: 100vh; overflow-y: auto; }
+        .main-layout { flex-direction: column; align-items: center; padding: 10px 12px 50px; gap: 10px; }
+        .board-section { width: 100%; align-items: center; }
+        #board-wrap { display: block; width: calc(100vw - 24px); max-width: 440px; margin: 0 auto; }
+        #board { width: calc(100vw - 24px); max-width: 440px; height: auto; }
+        .panel { width: 100%; max-width: 500px; }
+        .strip-piece { width: 30px; }
+        .piece-palette-horiz { justify-content: center; gap: 5px; }
+        #move-list { height: 60px; }
+        .level-grid { grid-template-columns: repeat(8, 1fr); }
+        .btn-play { font-size: 1em; padding: 10px; }
+        #top-nav { padding: 5px 10px; }
+        #top-nav > div:nth-child(2) { font-size: 0.85em !important; }
+    }
     
     .danger-check img {
       background: radial-gradient(circle, rgba(255, 0, 0, 0.9) 0%, rgba(255, 0, 0, 0) 70%) !important;
