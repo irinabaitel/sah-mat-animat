@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turneu de Șah</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; min-height: 100vh; }
+
+/* NAV */
+#nav { position: sticky; top: 0; background: rgba(245,169,110,0.95); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: space-between; padding: 10px 20px;
+  z-index: 100; border-bottom: 2px solid rgba(255,255,255,0.4); }
+.nav-title { font-family: 'Baloo 2', cursive; font-size: 1em; color: #1a3a6b; font-weight: 900; }
+.nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive;
+  font-size: 0.75em; padding: 3px 12px; border-radius: 20px; }
+.nav-name  { font-family: 'Baloo 2', cursive; font-size: 0.85em; color: #1a3a6b; }
+
+/* SCREENS */
+.screen { display: none; max-width: 620px; margin: 0 auto; padding: 28px 16px 60px; }
+.screen.active { display: block; }
+
+/* CARD */
+.card { background: rgba(255,255,255,0.6); border: 2px solid rgba(255,255,255,0.85);
+  border-radius: 20px; padding: 24px 28px; box-shadow: 0 3px 16px rgba(0,0,0,0.08); margin-bottom: 16px; }
+.card-title { font-family: 'Baloo 2', cursive; font-size: 1.3em; color: #1a3a6b; margin-bottom: 12px; }
+
+/* BUTOANE */
+.btn { display: inline-block; padding: 11px 28px; border-radius: 50px; border: none;
+  font-family: 'Baloo 2', cursive; font-size: 1em; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.btn-primary { background: #1a3a6b; color: white; box-shadow: 0 3px 14px rgba(26,58,107,0.35); }
+.btn-primary:hover { background: #2a5aab; transform: translateY(-2px); }
+.btn-green  { background: #27ae60; color: white; box-shadow: 0 3px 12px rgba(39,174,96,0.35); }
+.btn-green:hover  { background: #219a52; transform: translateY(-2px); }
+.btn-red    { background: #c0392b; color: white; box-shadow: 0 3px 12px rgba(192,57,43,0.35); }
+.btn-red:hover    { background: #e74c3c; transform: translateY(-2px); }
+.btn-gray   { background: rgba(26,58,107,0.15); color: #1a3a6b; border: 2px solid rgba(26,58,107,0.2); }
+.btn-gray:hover   { background: rgba(26,58,107,0.25); }
+.btn:disabled { opacity: 0.45; cursor: default; transform: none !important; }
+
+/* INPUT */
+.input-group { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+input[type=text] { flex: 1; min-width: 180px; padding: 11px 18px; border-radius: 50px;
+  border: 2px solid rgba(26,58,107,0.2); font-family: 'Nunito', sans-serif; font-size: 1em;
+  background: rgba(255,255,255,0.8); color: #1a1a2e; outline: none; }
+input[type=text]:focus { border-color: #1a3a6b; }
+
+/* CLASAMENT */
+.standings-table { width: 100%; border-collapse: collapse; }
+.standings-table th { font-family: 'Baloo 2', cursive; color: #1a3a6b; padding: 6px 10px;
+  text-align: left; font-size: 0.85em; border-bottom: 2px solid rgba(26,58,107,0.15); }
+.standings-table td { padding: 7px 10px; font-size: 0.9em; border-bottom: 1px solid rgba(26,58,107,0.08); }
+.standings-table tr:first-child td { background: rgba(255,215,0,0.15); font-weight: 700; }
+.standings-table .score-cell { font-family: 'Baloo 2', cursive; font-weight: 900; color: #1a3a6b; }
+
+/* TABLA */
+#board-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+#board { width: 360px; max-width: calc(100vw - 48px); }
+.board-sq-selected { background: rgba(255,214,0,0.55) !important; }
+
+.turn-bar { font-family: 'Baloo 2', cursive; font-size: 1em; color: #1a3a6b;
+  background: rgba(26,58,107,0.1); border-radius: 50px; padding: 7px 22px; text-align: center; }
+.opponent-bar { font-family: 'Baloo 2', cursive; font-size: 1.1em; font-weight: 900;
+  color: #1a3a6b; text-align: center; }
+
+.game-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+/* FEEDBACK */
+.feedback-box { text-align: center; padding: 10px 18px; border-radius: 14px;
+  font-family: 'Baloo 2', cursive; font-size: 1em; min-height: 40px; }
+.feedback-box.ok  { background: rgba(39,174,96,0.15); color: #1a6b3a; }
+.feedback-box.err { background: rgba(192,57,43,0.12); color: #922b21; }
+.feedback-box.info { background: rgba(26,58,107,0.1); color: #1a3a6b; }
+
+/* REZULTAT FINAL */
+.result-big { text-align: center; padding: 24px 16px; }
+.result-emoji { font-size: 3.5em; margin-bottom: 8px; display: block; }
+.result-title { font-family: 'Baloo 2', cursive; font-size: 1.8em; color: #1a3a6b; margin-bottom: 6px; }
+.result-sub   { font-size: 0.95em; color: #2a2a3e; }
+
+/* AȘTEPTARE */
+.waiting-anim { display: flex; align-items: center; gap: 10px; justify-content: center;
+  font-family: 'Baloo 2', cursive; color: #1a3a6b; font-size: 1em; padding: 16px; }
+.dot-pulse { width: 10px; height: 10px; border-radius: 50%; background: #1a3a6b;
+  animation: pulse 1.2s infinite ease-in-out; }
+.dot-pulse:nth-child(2) { animation-delay: 0.2s; }
+.dot-pulse:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse { 0%,80%,100%{transform:scale(0.6);opacity:0.5} 40%{transform:scale(1);opacity:1} }
+
+/* DRAW OFFER */
+#draw-offer-banner { display: none; background: rgba(255,220,80,0.5); border: 2px solid rgba(183,119,13,0.4);
+  border-radius: 14px; padding: 14px 20px; text-align: center; font-family: 'Baloo 2', cursive;
+  color: #7d5a00; font-size: 0.95em; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-title">🏆 Turneu de Șah</div>
+  <div id="nav-info" style="display:flex;gap:8px;align-items:center;">
+    <span class="nav-name" id="nav-player-name"></span>
+    <span class="nav-badge" id="nav-round-badge" style="display:none;">Runda 1</span>
+  </div>
+</nav>
+
+<!-- ═══ SCREEN: LOGIN ═══ -->
+<div class="screen active" id="screen-login">
+  <div class="card" style="text-align:center; padding: 36px 28px;">
+    <div style="font-size:3em;margin-bottom:12px;">♟</div>
+    <div class="card-title" style="font-size:1.6em;">Bun venit la turneu!</div>
+    <p style="font-size:0.95em;color:rgba(26,26,46,0.65);line-height:1.7;margin-bottom:4px;">
+      Introdu numele tău și intri în sala de așteptare.<br>
+      Profesorul va porni turneul când toată lumea e pregătită.
+    </p>
+    <div class="input-group" style="justify-content:center;margin-top:20px;">
+      <input type="text" id="name-input" placeholder="Numele tău..." maxlength="25" autocomplete="off">
+      <button class="btn btn-primary" id="join-btn" onclick="register()">Intru în turneu ▶</button>
+    </div>
+    <div id="login-error" style="color:#c0392b;font-size:0.88em;margin-top:10px;min-height:20px;"></div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: LOBBY / AȘTEPTARE ═══ -->
+<div class="screen" id="screen-lobby">
+  <div class="card">
+    <div class="card-title">Sala de așteptare</div>
+    <div class="waiting-anim">
+      <div class="dot-pulse"></div><div class="dot-pulse"></div><div class="dot-pulse"></div>
+      <span>Așteptăm ca profesorul să pornească runda...</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Clasament 🏅</div>
+    <div id="standings-lobby"></div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: JOC ═══ -->
+<div class="screen" id="screen-game">
+  <div class="card">
+    <div id="opponent-bar" class="opponent-bar" style="margin-bottom:10px;"></div>
+    <div id="board-wrap">
+      <div id="turn-bar" class="turn-bar"></div>
+      <div id="board"></div>
+      <div id="feedback-box" class="feedback-box"></div>
+    </div>
+    <div id="draw-offer-banner">
+      <span id="draw-offer-text"></span>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+        <button class="btn btn-green" onclick="acceptDraw()">✅ Accept remiza</button>
+        <button class="btn btn-gray" onclick="declineDraw()">✗ Refuz</button>
+      </div>
+    </div>
+    <div class="game-actions" style="margin-top:14px;">
+      <button class="btn btn-gray" id="draw-btn" onclick="offerDraw()">½ Ofertă remiză</button>
+      <button class="btn btn-red"  id="resign-btn" onclick="resign()">🏳 Abandonez</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: BYE ═══ -->
+<div class="screen" id="screen-bye">
+  <div class="card" style="text-align:center;padding:36px 28px;">
+    <span style="font-size:3em;display:block;margin-bottom:12px;">☕</span>
+    <div class="card-title">Pauză — ai primit BYE!</div>
+    <p style="font-size:0.95em;line-height:1.7;color:#2a2a3e;">
+      În această rundă nu ai adversar — primești 1 punct automat.<br>
+      Asteaptă runda următoare.
+    </p>
+    <div id="bye-standings" style="margin-top:20px;"></div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: REZULTAT JOC ═══ -->
+<div class="screen" id="screen-result">
+  <div class="card">
+    <div class="result-big" id="result-content"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Clasament după runda <span id="result-round">?</span> 🏅</div>
+    <div id="standings-result"></div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: TURNEU FINAL ═══ -->
+<div class="screen" id="screen-finished">
+  <div class="card" style="text-align:center;padding:36px 28px;">
+    <span style="font-size:3.5em;display:block;margin-bottom:12px;">🏆</span>
+    <div class="card-title" style="font-size:1.8em;">Turneul s-a terminat!</div>
+    <p style="font-size:0.95em;color:#2a2a3e;line-height:1.7;margin-bottom:20px;">
+      Felicitări tuturor participanților!
+    </p>
+    <div id="standings-final"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+// ─── STATE ───────────────────────────────────────────────────
+var myId       = null;
+var myName     = '';
+var myColor    = null;   // 'w' | 'b'
+var myGameId   = null;
+var currentRound = 0;
+var drawOfferedBy = null;
+
+var game  = null;  // Chess instance
+var board = null;  // Chessboard instance
+var selectedSq = null;
+var lastDropTime = 0;
+
+// ─── SOCKET ──────────────────────────────────────────────────
+var socket = io();
+
+socket.on('connect', function() {
+  console.log('Conectat la server.');
+});
+
+socket.on('error_msg', function(msg) {
+  document.getElementById('login-error').textContent = msg;
+});
+
+socket.on('welcome', function(data) {
+  myId   = data.id;
+  myName = data.name;
+  document.getElementById('nav-player-name').textContent = myName;
+  showScreen('lobby');
+});
+
+socket.on('lobby_update', function(data) {
+  currentRound = data.roundNum || 0;
+  renderStandings(data.standings, 'standings-lobby');
+  var badge = document.getElementById('nav-round-badge');
+  if (currentRound > 0) {
+    badge.style.display = '';
+    badge.textContent = 'Runda ' + currentRound;
+  }
+  if (data.status === 'finished') showScreen('finished');
+});
+
+socket.on('game_start', function(data) {
+  myGameId  = data.gameId;
+  myColor   = data.yourColor;
+  currentRound = data.round;
+  document.getElementById('nav-round-badge').style.display = '';
+  document.getElementById('nav-round-badge').textContent = 'Runda ' + data.round;
+  startGame(data.opponentName);
+});
+
+socket.on('got_bye', function(data) {
+  currentRound = data.round;
+  showScreen('bye');
+  document.getElementById('nav-round-badge').style.display = '';
+  document.getElementById('nav-round-badge').textContent = 'Runda ' + data.round + ' — BYE';
+});
+
+socket.on('opponent_move', function(data) {
+  if (data.gameId !== myGameId) return;
+  // Aplicăm mutarea adversarului
+  var parts = data.from + data.to + (data.promotion || '');
+  var move = game.move({ from: data.from, to: data.to, promotion: data.promotion || 'q' });
+  if (move) {
+    board.position(game.fen());
+    checkGameEnd();
+    updateTurnBar();
+  }
+});
+
+socket.on('game_over', function(data) {
+  if (data.gameId !== myGameId) return;
+  showGameResult(data.yourResult, data.result, data.reason, data.opponentName);
+});
+
+socket.on('draw_offered', function(data) {
+  if (data.gameId !== myGameId) return;
+  drawOfferedBy = data.byName;
+  document.getElementById('draw-offer-text').textContent =
+    data.byName + ' îți oferă remiză. Accepți?';
+  document.getElementById('draw-offer-banner').style.display = 'block';
+});
+
+socket.on('round_complete', function(data) {
+  // Dacă eram în lobby/bye, actualizăm standings
+  renderStandings(data.standings, 'standings-result');
+  renderStandings(data.standings, 'standings-bye');
+  document.getElementById('result-round').textContent = currentRound;
+  // Revenim la lobby dacă nu suntem deja pe result screen
+  var cur = document.querySelector('.screen.active');
+  if (cur && cur.id === 'screen-lobby') {
+    renderStandings(data.standings, 'standings-lobby');
+  }
+});
+
+socket.on('tournament_finished', function(data) {
+  renderStandings(data.standings, 'standings-final');
+  showScreen('finished');
+});
+
+socket.on('tournament_reset', function() {
+  myId = null; myName = ''; myColor = null; myGameId = null;
+  document.getElementById('nav-player-name').textContent = '';
+  document.getElementById('nav-round-badge').style.display = 'none';
+  document.getElementById('name-input').value = '';
+  document.getElementById('login-error').textContent = '';
+  showScreen('login');
+});
+
+// ─── ÎNREGISTRARE ────────────────────────────────────────────
+function register() {
+  var name = document.getElementById('name-input').value.trim();
+  if (!name) {
+    document.getElementById('login-error').textContent = 'Introdu numele tău.';
+    return;
+  }
+  document.getElementById('login-error').textContent = '';
+  socket.emit('register', { name: name });
+}
+
+document.getElementById('name-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') register();
+});
+
+// ─── JOC ─────────────────────────────────────────────────────
+function startGame(opponentName) {
+  game = new Chess();
+  selectedSq = null;
+  lastDropTime = 0;
+
+  document.getElementById('opponent-bar').textContent =
+    '⚔️  ' + opponentName + (myColor === 'w' ? ' (Negru)' : ' (Alb)');
+
+  document.getElementById('draw-offer-banner').style.display = 'none';
+  document.getElementById('resign-btn').disabled  = false;
+  document.getElementById('draw-btn').disabled    = false;
+  setFeedback('');
+
+  board = Chessboard('board', {
+    position: 'start',
+    orientation: myColor === 'w' ? 'white' : 'black',
+    draggable: true,
+    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+    onDrop: onDrop,
+    onSnapEnd: function() { board.position(game.fen()); },
+  });
+
+  updateTurnBar();
+  showScreen('game');
+}
+
+function isMyTurn() {
+  if (!game || !myColor) return false;
+  return game.turn() === myColor;
+}
+
+function updateTurnBar() {
+  if (!game) return;
+  var tb = document.getElementById('turn-bar');
+  if (isMyTurn()) {
+    tb.textContent = (myColor === 'w' ? '⬜' : '⬛') + ' Rândul tău — mută!';
+    tb.style.background = 'rgba(39,174,96,0.15)';
+    tb.style.color = '#1a6b3a';
+  } else {
+    tb.textContent = (myColor === 'w' ? '⬛' : '⬜') + ' Adversarul gândește...';
+    tb.style.background = 'rgba(26,58,107,0.08)';
+    tb.style.color = '#1a3a6b';
+  }
+}
+
+// --- DRAG & DROP ---
+function onDrop(source, target) {
+  lastDropTime = Date.now();
+  clearSelection();
+  if (!isMyTurn()) return 'snapback';
+  if (source === target) return 'snapback';
+
+  var piece = game.get(source);
+  var isPromo = piece && piece.type === 'p' &&
+    ((piece.color === 'w' && target[1] === '8') || (piece.color === 'b' && target[1] === '1'));
+
+  var move = game.move({ from: source, to: target, promotion: isPromo ? 'q' : undefined });
+  if (move === null) return 'snapback';
+
+  socket.emit('make_move', { gameId: myGameId, from: source, to: target, promotion: isPromo ? 'q' : null, fen: game.fen() });
+  updateTurnBar();
+  checkGameEnd();
+}
+
+// --- CLICK TO MOVE ---
+function clearSelection() {
+  selectedSq = null;
+  document.querySelectorAll('#board .board-sq-selected').forEach(function(el) {
+    el.classList.remove('board-sq-selected');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('board').addEventListener('click', function(e) {
+    if (Date.now() - lastDropTime < 300) return;
+    if (!isMyTurn()) return;
+
+    var sqEl = e.target.closest('[data-square]');
+    if (!sqEl) return;
+    var sq = sqEl.getAttribute('data-square');
+    if (!sq) return;
+
+    var piece = game.get(sq);
+    var turn  = game.turn();
+
+    if (!selectedSq) {
+      if (piece && piece.color === turn) {
+        selectedSq = sq;
+        sqEl.classList.add('board-sq-selected');
+      }
+    } else {
+      if (sq === selectedSq) { clearSelection(); return; }
+      if (piece && piece.color === turn) {
+        clearSelection();
+        selectedSq = sq;
+        sqEl.classList.add('board-sq-selected');
+        return;
+      }
+      var src = selectedSq;
+      clearSelection();
+
+      var srcPiece = game.get(src);
+      var isPromo = srcPiece && srcPiece.type === 'p' &&
+        ((srcPiece.color === 'w' && sq[1] === '8') || (srcPiece.color === 'b' && sq[1] === '1'));
+
+      var move = game.move({ from: src, to: sq, promotion: isPromo ? 'q' : undefined });
+      if (move) {
+        board.position(game.fen());
+        socket.emit('make_move', { gameId: myGameId, from: src, to: sq, promotion: isPromo ? 'q' : null, fen: game.fen() });
+        updateTurnBar();
+        checkGameEnd();
+      }
+    }
+  });
+});
+
+function checkGameEnd() {
+  if (!game) return;
+  var result = null, reason = '';
+
+  if (game.in_checkmate()) {
+    result = game.turn() === 'w' ? '0-1' : '1-0';
+    reason = 'șah mat';
+  } else if (game.in_stalemate()) {
+    result = '1/2-1/2'; reason = 'pat';
+  } else if (game.in_threefold_repetition()) {
+    result = '1/2-1/2'; reason = 'repetare de 3 ori';
+  } else if (game.insufficient_material()) {
+    result = '1/2-1/2'; reason = 'material insuficient';
+  } else if (game.in_draw()) {
+    result = '1/2-1/2'; reason = 'remiză';
+  }
+
+  if (result) {
+    socket.emit('game_result', { gameId: myGameId, result: result, reason: reason });
+  }
+}
+
+// --- ACȚIUNI ---
+function resign() {
+  if (!confirm('Ești sigur că vrei să abandonezi?')) return;
+  document.getElementById('resign-btn').disabled = true;
+  document.getElementById('draw-btn').disabled   = true;
+  socket.emit('resign', { gameId: myGameId });
+}
+
+function offerDraw() {
+  socket.emit('offer_draw', { gameId: myGameId });
+  setFeedback('Ofertă de remiză trimisă. Așteptăm răspunsul...', 'info');
+  document.getElementById('draw-btn').disabled = true;
+}
+
+function acceptDraw() {
+  document.getElementById('draw-offer-banner').style.display = 'none';
+  socket.emit('accept_draw', { gameId: myGameId });
+}
+
+function declineDraw() {
+  document.getElementById('draw-offer-banner').style.display = 'none';
+  drawOfferedBy = null;
+}
+
+function setFeedback(msg, type) {
+  var fb = document.getElementById('feedback-box');
+  fb.textContent = msg;
+  fb.className = 'feedback-box' + (type ? ' ' + type : '');
+}
+
+// ─── REZULTAT JOC ────────────────────────────────────────────
+function showGameResult(yourResult, result, reason, opponentName) {
+  var emoji, title, sub;
+  if (yourResult === 'win')  { emoji = '🎉'; title = 'Ai câștigat!';   sub = 'Felicitări, ' + myName + '!'; }
+  else if (yourResult === 'loss') { emoji = '😔'; title = 'Ai pierdut!'; sub = 'Mai mult succes în runda viitoare!'; }
+  else                       { emoji = '🤝'; title = 'Remiză!';         sub = 'Meci echilibrat!'; }
+
+  var reasonStr = reason === 'șah mat' ? 'prin șah mat' :
+                  reason === 'abandon' ? opponentName + ' a abandonat' :
+                  reason === 'pat'     ? 'prin pat' :
+                  reason === 'acord_remiță' ? 'prin acord' :
+                  reason === 'deconectare' ? opponentName + ' s-a deconectat' :
+                  reason === 'admin'   ? 'decizie profesor' : '';
+
+  document.getElementById('result-content').innerHTML =
+    '<span class="result-emoji">' + emoji + '</span>' +
+    '<div class="result-title">' + title + '</div>' +
+    '<div class="result-sub" style="margin-top:4px;">' + (reasonStr ? 'Motiv: ' + reasonStr : '') + '</div>' +
+    '<div class="result-sub" style="margin-top:8px;">Rezultat: <strong>' + result + '</strong></div>' +
+    '<p style="margin-top:16px;font-size:0.9em;color:rgba(26,26,46,0.6);">Asteaptă runda următoare...</p>';
+
+  document.getElementById('result-round').textContent = currentRound;
+  showScreen('result');
+}
+
+// ─── CLASAMENT ───────────────────────────────────────────────
+function renderStandings(standings, containerId) {
+  if (!standings || !standings.length) {
+    document.getElementById(containerId).innerHTML =
+      '<p style="color:rgba(26,26,46,0.5);font-size:0.9em;padding:8px 0;">Niciun jucător înregistrat.</p>';
+    return;
+  }
+  var html = '<table class="standings-table">' +
+    '<tr><th>#</th><th>Jucător</th><th>Punctaj</th><th>Jocuri</th></tr>';
+  standings.forEach(function(row) {
+    html += '<tr><td>' + row.rank + '</td><td>' + escHtml(row.name) + '</td>' +
+      '<td class="score-cell">' + row.score + '</td><td>' + row.games + '</td></tr>';
+  });
+  html += '</table>';
+  document.getElementById(containerId).innerHTML = html;
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById('screen-' + id);
+  if (el) el.classList.add('active');
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>

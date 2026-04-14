@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Turneu</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #1a3a6b; font-family: 'Nunito', sans-serif; color: #e8eaf0; min-height: 100vh; }
+
+#nav { background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.nav-title { font-family: 'Baloo 2', cursive; font-size: 1.1em; font-weight: 900; color: #fff; }
+.badge { background: #e67e22; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em;
+  padding: 3px 12px; border-radius: 20px; font-weight: 700; }
+.badge-green { background: #27ae60; }
+.badge-blue  { background: #2980b9; }
+
+.content { max-width: 1100px; margin: 0 auto; padding: 24px 20px 60px; display: grid;
+  grid-template-columns: 280px 1fr; gap: 20px; }
+@media (max-width: 700px) { .content { grid-template-columns: 1fr; } }
+
+.panel { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px; padding: 20px; }
+.panel-title { font-family: 'Baloo 2', cursive; font-size: 1.05em; color: #a8c4f0;
+  margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.8em; }
+
+/* BUTOANE */
+.btn { display: inline-block; padding: 10px 22px; border-radius: 50px; border: none;
+  font-family: 'Baloo 2', cursive; font-size: 0.92em; font-weight: 700; cursor: pointer;
+  transition: all 0.2s; width: 100%; margin-bottom: 8px; text-align: center; }
+.btn-action { background: #27ae60; color: white; box-shadow: 0 3px 12px rgba(39,174,96,0.35); }
+.btn-action:hover { background: #219a52; }
+.btn-action:disabled { opacity: 0.4; cursor: default; }
+.btn-warning { background: #e67e22; color: white; }
+.btn-warning:hover { background: #f39c12; }
+.btn-danger  { background: #c0392b; color: white; }
+.btn-danger:hover  { background: #e74c3c; }
+.btn-gray    { background: rgba(255,255,255,0.1); color: #e8eaf0; }
+.btn-gray:hover    { background: rgba(255,255,255,0.2); }
+.btn-sm { padding: 5px 14px; font-size: 0.78em; width: auto; margin: 0; display: inline-block; }
+
+/* JUCATORI */
+.player-item { display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 10px; border-radius: 8px; margin-bottom: 4px; background: rgba(255,255,255,0.05); }
+.player-name { font-size: 0.92em; }
+.player-score { font-family: 'Baloo 2', cursive; font-size: 1em; color: #7ec8f0; font-weight: 900; }
+
+/* PERECHI */
+.pairing-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+  border-radius: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.06); flex-wrap: wrap; }
+.pairing-white { color: #fff; font-weight: 700; font-size: 0.92em; }
+.pairing-black { color: #aaa; font-size: 0.92em; }
+.pairing-vs    { color: rgba(255,255,255,0.3); font-size: 0.8em; }
+.pairing-result { font-family: 'Baloo 2', cursive; font-size: 0.92em;
+  padding: 3px 12px; border-radius: 20px; }
+.res-white { background: rgba(255,255,255,0.15); color: #fff; }
+.res-black { background: rgba(0,0,0,0.3); color: #ccc; }
+.res-draw  { background: rgba(230,184,0,0.25); color: #f0c040; }
+.res-bye   { background: rgba(39,174,96,0.2); color: #7fdf9f; }
+.res-pending { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.35); font-style: italic; }
+
+/* FORCE RESULT */
+.force-btns { display: flex; gap: 5px; margin-left: auto; flex-wrap: wrap; }
+
+/* CLASAMENT */
+.standings-table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+.standings-table th { color: #a8c4f0; padding: 6px 10px; text-align: left; font-size: 0.8em;
+  border-bottom: 1px solid rgba(255,255,255,0.1); font-family: 'Baloo 2', cursive; }
+.standings-table td { padding: 7px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.standings-table .score-td { font-family: 'Baloo 2', cursive; color: #7ec8f0; font-weight: 900; }
+.standings-table tr:first-child td { color: #f0c040; }
+
+/* STATUS */
+.status-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; background: #27ae60; display: inline-block; }
+.status-dot.orange { background: #e67e22; }
+.status-dot.gray   { background: rgba(255,255,255,0.3); }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-title">🏆 Admin — Turneu Swiss de Șah</div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span id="status-badge" class="badge">LOBBY</span>
+    <span id="round-badge" class="badge badge-blue" style="display:none;">Runda 1</span>
+  </div>
+</nav>
+
+<!-- LOGIN ADMIN -->
+<div id="admin-login" style="max-width:380px;margin:80px auto;padding:20px;">
+  <div class="panel" style="text-align:center;padding:32px 28px;">
+    <div style="font-size:2.5em;margin-bottom:12px;">🔐</div>
+    <div style="font-family:'Baloo 2',cursive;font-size:1.3em;color:#7ec8f0;margin-bottom:16px;">
+      Panou de control profesor
+    </div>
+    <input type="password" id="pass-input" placeholder="Parola..."
+      style="width:100%;padding:11px 18px;border-radius:50px;border:none;font-size:1em;
+             background:rgba(255,255,255,0.1);color:#fff;outline:none;margin-bottom:12px;
+             border:1px solid rgba(255,255,255,0.2);">
+    <button class="btn btn-action" style="width:auto;padding:10px 30px;" onclick="adminLogin()">Intru ▶</button>
+    <div id="login-err" style="color:#e74c3c;font-size:0.85em;margin-top:8px;min-height:18px;"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD ADMIN -->
+<div id="admin-dashboard" style="display:none;">
+  <div class="content">
+
+    <!-- COL STANGA: Jucatori + Actiuni -->
+    <div>
+      <!-- STATUS + ACTIUNI -->
+      <div class="panel" style="margin-bottom:16px;">
+        <div class="panel-title">Acțiuni Turneu</div>
+        <div id="admin-status-text" style="font-size:0.85em;color:rgba(255,255,255,0.5);margin-bottom:12px;">
+          Lobby — așteptăm jucătorii
+        </div>
+        <button class="btn btn-action" id="btn-start-round" onclick="startRound()">
+          ▶ Pornește Runda 1
+        </button>
+        <button class="btn btn-warning" id="btn-finish" onclick="finishTournament()">
+          🏆 Finalizează Turneul
+        </button>
+        <button class="btn btn-danger" onclick="resetTournament()" style="margin-top:4px;">
+          🔄 Reset Complet
+        </button>
+      </div>
+
+      <!-- JUCATORI ÎNREGISTRAȚI -->
+      <div class="panel">
+        <div class="panel-title">Jucători (<span id="player-count">0</span>)</div>
+        <div id="player-list"></div>
+      </div>
+    </div>
+
+    <!-- COL DREAPTA: Perechi + Clasament -->
+    <div>
+      <!-- RUNDE -->
+      <div class="panel" id="rounds-panel" style="margin-bottom:16px;">
+        <div class="panel-title">Perechi — Runda curentă</div>
+        <div id="pairings-list"></div>
+      </div>
+
+      <!-- CLASAMENT -->
+      <div class="panel">
+        <div class="panel-title">Clasament Live</div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>Jucător</th><th>Punctaj</th><th>Jocuri</th></tr></thead>
+          <tbody id="standings-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+var socket = io();
+
+socket.on('connect', function() {
+  console.log('Conectat la server (admin).');
+});
+
+socket.on('admin_ok', function() {
+  document.getElementById('admin-login').style.display = 'none';
+  document.getElementById('admin-dashboard').style.display = 'block';
+});
+
+socket.on('admin_error', function(msg) {
+  document.getElementById('login-err').textContent = msg;
+});
+
+socket.on('admin_state', function(data) {
+  renderAdminState(data);
+});
+
+socket.on('error_msg', function(msg) {
+  alert(msg);
+});
+
+socket.on('lobby_update', function(data) {
+  // Update round badge
+  if (data.roundNum > 0) {
+    document.getElementById('round-badge').style.display = '';
+    document.getElementById('round-badge').textContent = 'Runda ' + data.roundNum;
+  }
+  var sb = document.getElementById('status-badge');
+  if (data.status === 'lobby')    { sb.textContent = 'LOBBY';  sb.className = 'badge'; }
+  else if (data.status === 'active')   { sb.textContent = 'ACTIV';  sb.className = 'badge badge-green'; }
+  else if (data.status === 'finished') { sb.textContent = 'FINAL';  sb.className = 'badge badge-blue'; }
+});
+
+// ─── LOGIN ───────────────────────────────────────────────────
+function adminLogin() {
+  var pass = document.getElementById('pass-input').value;
+  socket.emit('admin_login', { password: pass });
+}
+document.getElementById('pass-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') adminLogin();
+});
+
+// ─── ACȚIUNI ─────────────────────────────────────────────────
+function startRound() {
+  socket.emit('admin_start_round');
+}
+
+function finishTournament() {
+  if (!confirm('Finalizezi turneul? Clasamentul final va fi afișat tuturor.')) return;
+  socket.emit('admin_finish_tournament');
+}
+
+function resetTournament() {
+  if (!confirm('Resetezi COMPLET turneul? Toți jucătorii și rezultatele vor fi șterse.')) return;
+  socket.emit('admin_reset');
+}
+
+function forceResult(gameId, result) {
+  if (!confirm('Forțezi rezultatul ' + result + ' pentru acest joc?')) return;
+  socket.emit('admin_force_result', { gameId: gameId, result: result });
+}
+
+function removePlayer(playerId, name) {
+  if (!confirm('Scoți jucătorul ' + name + ' din turneu?')) return;
+  socket.emit('admin_remove_player', { playerId: playerId });
+}
+
+// ─── RENDER ──────────────────────────────────────────────────
+function renderAdminState(data) {
+  // Jucători
+  var playerCount = data.players.length;
+  document.getElementById('player-count').textContent = playerCount;
+  var playerHtml = '';
+  data.players.forEach(function(p) {
+    playerHtml += '<div class="player-item">' +
+      '<span class="player-name">' + escHtml(p.name) + '</span>' +
+      '<span style="display:flex;gap:6px;align-items:center;">' +
+        '<span class="player-score">' + p.score + 'p</span>' +
+        (data.status === 'lobby' ?
+          '<button class="btn btn-danger btn-sm" onclick="removePlayer(\'' + p.id + '\',\'' + escHtml(p.name) + '\')">×</button>' : '') +
+      '</span>' +
+    '</div>';
+  });
+  document.getElementById('player-list').innerHTML = playerHtml || '<p style="color:rgba(255,255,255,0.3);font-size:0.85em;">Niciun jucător.</p>';
+
+  // Buton start round
+  var btn = document.getElementById('btn-start-round');
+  var lastRound = data.rounds.length ? data.rounds[data.rounds.length - 1] : null;
+  var lastRoundDone = !lastRound || lastRound.status === 'done';
+  btn.disabled = !lastRoundDone || data.status === 'finished';
+  btn.textContent = data.rounds.length === 0 ? '▶ Pornește Runda 1'
+                    : '▶ Pornește Runda ' + (data.rounds.length + 1);
+
+  // Status text
+  if (data.status === 'lobby') {
+    document.getElementById('admin-status-text').textContent =
+      'Lobby — ' + playerCount + ' jucători înregistrați. Poți porni prima rundă.';
+  } else if (data.status === 'active') {
+    var undone = lastRound ? lastRound.pairings.filter(function(p) { return !p.result; }).length : 0;
+    document.getElementById('admin-status-text').textContent =
+      'Runda ' + (data.rounds.length) + ' activă — ' + undone + ' jocuri în desfășurare.';
+  } else {
+    document.getElementById('admin-status-text').textContent = 'Turneu finalizat.';
+  }
+
+  // Perechi — ultima rundă
+  var pairingsHtml = '';
+  if (lastRound) {
+    lastRound.pairings.forEach(function(p) {
+      var resHtml = '';
+      if (p.result === null) {
+        // Buton forțare + status in-progress
+        resHtml = '<span class="pairing-result res-pending">în joc</span>' +
+          (p.gameId ? '<div class="force-btns">' +
+            '<button class="btn btn-gray btn-sm" onclick="forceResult(\'' + p.gameId + '\',\'1-0\')">1-0</button>' +
+            '<button class="btn btn-gray btn-sm" onclick="forceResult(\'' + p.gameId + '\',\'0-1\')">0-1</button>' +
+            '<button class="btn btn-gray btn-sm" onclick="forceResult(\'' + p.gameId + '\',\'1/2-1/2\')">½</button>' +
+          '</div>' : '');
+      } else if (p.result === 'bye') {
+        resHtml = '<span class="pairing-result res-bye">BYE +1</span>';
+      } else if (p.result === '1-0') {
+        resHtml = '<span class="pairing-result res-white">1-0 (Alb câștigă)</span>';
+      } else if (p.result === '0-1') {
+        resHtml = '<span class="pairing-result res-black">0-1 (Negru câștigă)</span>';
+      } else if (p.result === '1/2-1/2') {
+        resHtml = '<span class="pairing-result res-draw">½-½ Remiză</span>';
+      }
+
+      pairingsHtml += '<div class="pairing-row">' +
+        '<span class="pairing-white">⬜ ' + escHtml(p.whiteName) + '</span>' +
+        '<span class="pairing-vs">vs</span>' +
+        '<span class="pairing-black">⬛ ' + escHtml(p.blackName) + '</span>' +
+        resHtml +
+        '</div>';
+    });
+  } else {
+    pairingsHtml = '<p style="color:rgba(255,255,255,0.3);font-size:0.85em;">Prima rundă nu a început.</p>';
+  }
+  document.getElementById('pairings-list').innerHTML = pairingsHtml;
+
+  // Clasament
+  var standHtml = '';
+  (data.standings || []).forEach(function(row) {
+    var medal = row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : row.rank === 3 ? '🥉' : row.rank + '.';
+    standHtml += '<tr>' +
+      '<td>' + medal + '</td>' +
+      '<td>' + escHtml(row.name) + '</td>' +
+      '<td class="score-td">' + row.score + '</td>' +
+      '<td style="color:rgba(255,255,255,0.4);">' + row.games + '</td>' +
+      '</tr>';
+  });
+  document.getElementById('standings-body').innerHTML = standHtml || '<tr><td colspan="4" style="color:rgba(255,255,255,0.3);font-size:0.85em;">—</td></tr>';
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
