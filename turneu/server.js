@@ -118,15 +118,58 @@ function swissPair() {
 // ═══════════════════════════════════════════════════════════════
 //  HELPERS BROADCAST
 // ═══════════════════════════════════════════════════════════════
+
+/** Scorul jucătorului aId în meciurile directe împotriva bId */
+function getDirectScore(aId, bId) {
+  let score = 0;
+  for (const game of T.games.values()) {
+    if (!game.result) continue;
+    if (game.whiteId === aId && game.blackId === bId) {
+      if (game.result === '1-0')         score += 1;
+      else if (game.result === '1/2-1/2') score += 0.5;
+    } else if (game.whiteId === bId && game.blackId === aId) {
+      if (game.result === '0-1')         score += 1;
+      else if (game.result === '1/2-1/2') score += 0.5;
+    }
+  }
+  return score;
+}
+
 function getStandings() {
-  return [...T.players.values()]
-    .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
-    .map((p, i) => ({
-      rank: i + 1,
-      name: p.name,
-      score: p.score,
-      games: p.colors.length + p.byes,
-    }));
+  const players = [...T.players.values()];
+
+  // Buchholz = suma scorurilor actuale ale adversarilor
+  const bh = new Map();
+  for (const p of players) {
+    let sum = 0;
+    for (const oppId of p.opponents) {
+      const opp = T.players.get(oppId);
+      if (opp) sum += opp.score;
+    }
+    bh.set(p.id, Math.round(sum * 10) / 10);
+  }
+
+  players.sort((a, b) => {
+    // 1. Scor total
+    if (b.score !== a.score) return b.score - a.score;
+    // 2. Întâlnire directă (dacă s-au întâlnit, cel care a câștigat e mai sus)
+    const sa = getDirectScore(a.id, b.id);
+    const sb = getDirectScore(b.id, a.id);
+    if (sa + sb > 0 && sa !== sb) return sb - sa;
+    // 3. Buchholz
+    const bhDiff = (bh.get(b.id) || 0) - (bh.get(a.id) || 0);
+    if (bhDiff !== 0) return bhDiff;
+    // 4. Nume (alfabetic)
+    return a.name.localeCompare(b.name);
+  });
+
+  return players.map((p, i) => ({
+    rank:     i + 1,
+    name:     p.name,
+    score:    p.score,
+    games:    p.colors.length + p.byes,
+    buchholz: bh.get(p.id) || 0,
+  }));
 }
 
 function broadcastLobby() {

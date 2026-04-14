@@ -726,10 +726,12 @@ function renderStandings(standings, containerId) {
     return;
   }
   var html = '<table class="standings-table">' +
-    '<tr><th>#</th><th>Jucător</th><th>Punctaj</th><th>Jocuri</th></tr>';
+    '<tr><th>#</th><th>Jucător</th><th>Pct</th><th title="Buchholz">BH</th><th>J</th></tr>';
   standings.forEach(function(row) {
     html += '<tr><td>' + row.rank + '</td><td>' + escHtml(row.name) + '</td>' +
-      '<td class="score-cell">' + row.score + '</td><td>' + row.games + '</td></tr>';
+      '<td class="score-cell">' + row.score + '</td>' +
+      '<td style="font-size:0.82em;color:rgba(26,58,107,0.55);">' + (row.buchholz || 0).toFixed(1) + '</td>' +
+      '<td>' + row.games + '</td></tr>';
   });
   html += '</table>';
   document.getElementById(containerId).innerHTML = html;

@@ -173,7 +173,7 @@ body { background: #1a3a6b; font-family: 'Nunito', sans-serif; color: #e8eaf0; m
       <div class="panel">
         <div class="panel-title">Clasament Live</div>
         <table class="standings-table">
-          <thead><tr><th>#</th><th>Jucător</th><th>Punctaj</th><th>Jocuri</th></tr></thead>
+          <thead><tr><th>#</th><th>Jucător</th><th>Punctaj</th><th title="Buchholz">BH</th><th>Jocuri</th></tr></thead>
           <tbody id="standings-body"></tbody>
         </table>
       </div>
@@ -336,6 +336,7 @@ function renderAdminState(data) {
       '<td>' + medal + '</td>' +
       '<td>' + escHtml(row.name) + '</td>' +
       '<td class="score-td">' + row.score + '</td>' +
+      '<td style="color:#7ec8f0;font-size:0.85em;" title="Buchholz">' + (row.buchholz || 0).toFixed(1) + '</td>' +
       '<td style="color:rgba(255,255,255,0.4);">' + row.games + '</td>' +
       '</tr>';
   });
