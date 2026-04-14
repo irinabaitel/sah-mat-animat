@@ -117,6 +117,14 @@ body { background: #1a3a6b; font-family: 'Nunito', sans-serif; color: #e8eaf0; m
         <div id="admin-status-text" style="font-size:0.85em;color:rgba(255,255,255,0.5);margin-bottom:12px;">
           Lobby — așteptăm jucătorii
         </div>
+        <!-- Mod imperechere -->
+        <div style="margin-bottom:12px;">
+          <div style="font-size:0.75em;color:rgba(255,255,255,0.35);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Mod Imperechere</div>
+          <div style="display:flex;gap:6px;">
+            <button id="mode-btn-swiss"  class="btn btn-action btn-sm" onclick="setPairingMode('swiss')">⚙️ Swiss</button>
+            <button id="mode-btn-manual" class="btn btn-gray  btn-sm" onclick="setPairingMode('manual')">✋ Manual</button>
+          </div>
+        </div>
         <button class="btn btn-action" id="btn-start-round" onclick="startRound()">
           ▶ Pornește Runda 1
         </button>
@@ -163,6 +171,12 @@ body { background: #1a3a6b; font-family: 'Nunito', sans-serif; color: #e8eaf0; m
 
     <!-- COL DREAPTA: Perechi + Clasament -->
     <div>
+      <!-- IMPERECHERE MANUALĂ (vizibil doar în modul manual) -->
+      <div class="panel" id="manual-pairing-panel" style="display:none;margin-bottom:16px;">
+        <div class="panel-title">✋ Imperechere Manuală — Runda <span id="manual-round-num">1</span></div>
+        <div id="manual-pairing-content"></div>
+      </div>
+
       <!-- RUNDE -->
       <div class="panel" id="rounds-panel" style="margin-bottom:16px;">
         <div class="panel-title">Perechi — Runda curentă</div>
@@ -273,13 +287,30 @@ function renderAdminState(data) {
   });
   document.getElementById('player-list').innerHTML = playerHtml || '<p style="color:rgba(255,255,255,0.3);font-size:0.85em;">Niciun jucător.</p>';
 
-  // Buton start round
+  // Buton start round + panou manual
   var btn = document.getElementById('btn-start-round');
   var lastRound = data.rounds.length ? data.rounds[data.rounds.length - 1] : null;
   var lastRoundDone = !lastRound || lastRound.status === 'done';
-  btn.disabled = !lastRoundDone || data.status === 'finished';
+  var canStart = lastRoundDone && data.status !== 'finished';
+  btn.disabled = !canStart;
   btn.textContent = data.rounds.length === 0 ? '▶ Pornește Runda 1'
                     : '▶ Pornește Runda ' + (data.rounds.length + 1);
+
+  if (adminPairingMode === 'manual') {
+    document.getElementById('btn-start-round').style.display = 'none';
+    if (canStart) {
+      document.getElementById('manual-pairing-panel').style.display = '';
+      document.getElementById('rounds-panel').style.display = lastRound ? '' : 'none';
+      maybeInitManualPairing(data.players, data.rounds.length);
+    } else {
+      document.getElementById('manual-pairing-panel').style.display = 'none';
+      document.getElementById('rounds-panel').style.display = '';
+    }
+  } else {
+    document.getElementById('btn-start-round').style.display = '';
+    document.getElementById('manual-pairing-panel').style.display = 'none';
+    document.getElementById('rounds-panel').style.display = '';
+  }
 
   // Status text
   if (data.status === 'lobby') {
@@ -341,6 +372,137 @@ function renderAdminState(data) {
       '</tr>';
   });
   document.getElementById('standings-body').innerHTML = standHtml || '<tr><td colspan="4" style="color:rgba(255,255,255,0.3);font-size:0.85em;">—</td></tr>';
+}
+
+// ─── MOD IMPERECHERE ──────────────────────────────────────────
+var adminPairingMode = 'swiss';
+var manualPool       = [];   // [{id, name, score}] — jucători nepereche
+var manualPairs      = [];   // [{whiteId,whiteName,blackId,blackName}]
+var manualFirstSel   = null; // primul jucător selectat
+var manualInitRound  = -1;   // nr. rundă la care a fost inițializat panel-ul
+
+function setPairingMode(mode) {
+  adminPairingMode = mode;
+  document.getElementById('mode-btn-swiss').className  = 'btn btn-sm ' + (mode === 'swiss'  ? 'btn-action' : 'btn-gray');
+  document.getElementById('mode-btn-manual').className = 'btn btn-sm ' + (mode === 'manual' ? 'btn-action' : 'btn-gray');
+  if (mode === 'swiss') {
+    manualPool = []; manualPairs = []; manualFirstSel = null; manualInitRound = -1;
+    document.getElementById('manual-pairing-panel').style.display = 'none';
+    document.getElementById('rounds-panel').style.display = '';
+    document.getElementById('btn-start-round').style.display = '';
+  } else {
+    // Manual: forțăm re-init la primul renderAdminState
+    manualInitRound = -1;
+    document.getElementById('btn-start-round').style.display = 'none';
+  }
+}
+
+function maybeInitManualPairing(players, currentRoundCount) {
+  if (currentRoundCount !== manualInitRound) {
+    manualInitRound  = currentRoundCount;
+    manualPool       = players.map(function(p) { return { id: p.id, name: p.name, score: p.score }; });
+    manualPairs      = [];
+    manualFirstSel   = null;
+  }
+  document.getElementById('manual-round-num').textContent = currentRoundCount + 1;
+  renderManualContent();
+}
+
+function manualSelectPlayer(playerId) {
+  if (!manualFirstSel) {
+    manualFirstSel = playerId;
+  } else if (manualFirstSel === playerId) {
+    manualFirstSel = null;
+  } else {
+    var a = manualPool.find(function(p) { return p.id === manualFirstSel; });
+    var b = manualPool.find(function(p) { return p.id === playerId; });
+    manualPool = manualPool.filter(function(p) { return p.id !== manualFirstSel && p.id !== playerId; });
+    manualPairs.push({ whiteId: a.id, whiteName: a.name, blackId: b.id, blackName: b.name });
+    manualFirstSel = null;
+  }
+  renderManualContent();
+}
+
+function manualSwapColors(idx) {
+  var p = manualPairs[idx];
+  manualPairs[idx] = { whiteId: p.blackId, whiteName: p.blackName, blackId: p.whiteId, blackName: p.whiteName };
+  renderManualContent();
+}
+
+function manualRemovePair(idx) {
+  var p = manualPairs[idx];
+  var white = { id: p.whiteId, name: p.whiteName, score: 0 };
+  var black = { id: p.blackId, name: p.blackName, score: 0 };
+  manualPool.push(white, black);
+  manualPairs.splice(idx, 1);
+  renderManualContent();
+}
+
+function startManualRound() {
+  var pairings = manualPairs.map(function(p) { return { whiteId: p.whiteId, blackId: p.blackId }; });
+  manualPool.forEach(function(p) { pairings.push({ whiteId: p.id, blackId: 'BYE' }); });
+  socket.emit('admin_start_round_manual', { pairings: pairings });
+}
+
+function renderManualContent() {
+  var html = '';
+
+  // Pool
+  html += '<div style="margin-bottom:14px;">';
+  html += '<div style="font-size:0.75em;color:rgba(255,255,255,0.35);margin-bottom:8px;' +
+          'text-transform:uppercase;letter-spacing:0.06em;">Jucători disponibili</div>';
+  if (manualPool.length === 0) {
+    html += '<div style="color:rgba(255,255,255,0.3);font-size:0.82em;">— Toți jucătorii sunt împerecheați.</div>';
+  } else {
+    manualPool.forEach(function(p) {
+      var sel = manualFirstSel === p.id;
+      html += '<button onclick="manualSelectPlayer(\'' + p.id + '\')" style="' +
+        'margin:3px 3px 3px 0;padding:6px 14px;border-radius:20px;cursor:pointer;' +
+        'border:2px solid ' + (sel ? '#7ec8f0' : 'rgba(255,255,255,0.18)') + ';' +
+        'background:' + (sel ? 'rgba(126,200,240,0.18)' : 'rgba(255,255,255,0.06)') + ';' +
+        'color:' + (sel ? '#7ec8f0' : '#e8eaf0') + ';' +
+        'font-family:\'Nunito\',sans-serif;font-size:0.88em;">' +
+        escHtml(p.name) + (sel ? ' ✓' : '') + '</button>';
+    });
+    if (manualFirstSel) {
+      html += '<div style="margin-top:6px;font-size:0.78em;color:#7ec8f0;">↑ Selectat. Click pe al doilea jucător pentru a forma perechea.</div>';
+    } else if (manualPool.length === 1) {
+      html += '<div style="margin-top:6px;font-size:0.78em;color:#e67e22;">⚠️ ' +
+        escHtml(manualPool[0].name) + ' nu are adversar → va primi BYE (+1p).</div>';
+    }
+  }
+  html += '</div>';
+
+  // Perechi formate
+  html += '<div style="font-size:0.75em;color:rgba(255,255,255,0.35);margin-bottom:8px;' +
+          'text-transform:uppercase;letter-spacing:0.06em;">Perechi formate</div>';
+  if (manualPairs.length === 0) {
+    html += '<div style="color:rgba(255,255,255,0.3);font-size:0.82em;margin-bottom:10px;">' +
+            'Click pe doi jucători pentru a-i asocia.</div>';
+  } else {
+    manualPairs.forEach(function(pair, idx) {
+      html += '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;' +
+        'background:rgba(255,255,255,0.06);border-radius:8px;margin-bottom:6px;flex-wrap:wrap;">' +
+        '<span style="color:#fff;font-size:0.88em;font-weight:700;">⬜ ' + escHtml(pair.whiteName) + '</span>' +
+        '<span style="color:rgba(255,255,255,0.25);font-size:0.78em;">vs</span>' +
+        '<span style="color:#bbb;font-size:0.88em;">⬛ ' + escHtml(pair.blackName) + '</span>' +
+        '<button onclick="manualSwapColors(' + idx + ')" title="Schimbă culorile" style="' +
+          'margin-left:auto;padding:3px 10px;border-radius:16px;border:1px solid rgba(255,255,255,0.18);' +
+          'background:transparent;color:#a8c4f0;font-size:0.78em;cursor:pointer;">↔</button>' +
+        '<button onclick="manualRemovePair(' + idx + ')" style="' +
+          'padding:3px 10px;border-radius:16px;border:1px solid rgba(220,60,60,0.3);' +
+          'background:transparent;color:#e08080;font-size:0.78em;cursor:pointer;">×</button>' +
+        '</div>';
+    });
+  }
+
+  // Buton pornire
+  if (manualPairs.length > 0 && manualPool.length <= 1 && !manualFirstSel) {
+    html += '<button class="btn btn-action" style="width:100%;margin-top:8px;" onclick="startManualRound()">' +
+            '▶ Pornește Runda ' + (manualInitRound + 1) + '</button>';
+  }
+
+  document.getElementById('manual-pairing-content').innerHTML = html;
 }
 
 // ─── CEAS ─────────────────────────────────────────────────────

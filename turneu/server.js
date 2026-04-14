@@ -315,7 +315,8 @@ io.on('connection', (socket) => {
 
     for (const p of pairings) {
       if (p.blackId === 'BYE') {
-        // BYE: punctul se acordă imediat în swissPair() → doar notificăm
+        const byePlayer = T.players.get(p.whiteId);
+        if (byePlayer) { byePlayer.byes++; byePlayer.score += 1; }
         const byeSock = io.sockets.sockets.get(p.whiteId);
         if (byeSock) byeSock.emit('got_bye', {
           round: round.num,
@@ -426,6 +427,66 @@ io.on('connection', (socket) => {
     broadcastLobby();
     broadcastAdmin();
     console.log('[ADMIN] Turneu resetat.');
+  });
+
+  // ── ADMIN: pornire rundă manuală ──
+  socket.on('admin_start_round_manual', ({ pairings }) => {
+    if (!socket.rooms.has('admin')) return;
+    if (T.players.size < 2) {
+      socket.emit('error_msg', 'Trebuie cel puțin 2 jucători înregistrați.'); return;
+    }
+    const lastRound = T.rounds[T.rounds.length - 1];
+    if (lastRound && lastRound.status === 'active') {
+      socket.emit('error_msg', 'Runda curentă nu s-a terminat.'); return;
+    }
+
+    T.status = 'active';
+    const finalPairings = [];
+    const round = { num: T.rounds.length + 1, pairings: finalPairings, status: 'active' };
+    T.rounds.push(round);
+    const seen = new Set();
+
+    for (const p of (pairings || [])) {
+      if (!p.whiteId || !T.players.has(p.whiteId) || seen.has(p.whiteId)) continue;
+      if (p.blackId !== 'BYE' && (!T.players.has(p.blackId) || seen.has(p.blackId))) continue;
+      seen.add(p.whiteId);
+
+      if (p.blackId === 'BYE') {
+        const pl = T.players.get(p.whiteId);
+        if (pl) { pl.byes++; pl.score += 1; }
+        finalPairings.push({ whiteId: p.whiteId, blackId: 'BYE', gameId: null, result: 'bye' });
+        const s = io.sockets.sockets.get(p.whiteId);
+        if (s) s.emit('got_bye', { round: round.num, name: T.players.get(p.whiteId)?.name });
+        continue;
+      }
+
+      seen.add(p.blackId);
+      const white = T.players.get(p.whiteId);
+      const black = T.players.get(p.blackId);
+      const gameId = newId();
+      if (white) { white.colors.push('w'); white.opponents.add(p.blackId); }
+      if (black) { black.colors.push('b'); black.opponents.add(p.whiteId); }
+      T.games.set(gameId, { id: gameId, whiteId: p.whiteId, blackId: p.blackId, result: null, round: round.num });
+      finalPairings.push({ whiteId: p.whiteId, blackId: p.blackId, gameId, result: null });
+      const wSock = io.sockets.sockets.get(p.whiteId);
+      const bSock = io.sockets.sockets.get(p.blackId);
+      if (wSock) wSock.emit('game_start', { gameId, yourColor: 'w', opponentName: black?.name || '?', round: round.num, clock: T.clock });
+      if (bSock) bSock.emit('game_start', { gameId, yourColor: 'b', opponentName: white?.name || '?', round: round.num, clock: T.clock });
+    }
+
+    // Auto-BYE pentru oricine a fost omis
+    for (const [id, pl] of T.players) {
+      if (!seen.has(id)) {
+        pl.byes++; pl.score += 1;
+        finalPairings.push({ whiteId: id, blackId: 'BYE', gameId: null, result: 'bye' });
+        const s = io.sockets.sockets.get(id);
+        if (s) s.emit('got_bye', { round: round.num, name: pl.name });
+      }
+    }
+
+    broadcastLobby();
+    broadcastAdmin();
+    console.log(`[RUNDA ${round.num} MANUALĂ] ${finalPairings.length} perechi`);
   });
 
   // ── ADMIN: setare ceas ──
