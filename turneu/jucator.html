@@ -59,8 +59,8 @@ input[type=text]:focus { border-color: #1a3a6b; }
 /* TABLA */
 #board-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
 #board { width: 360px; max-width: calc(100vw - 48px); touch-action: none; user-select: none; }
-/* Împiedică scroll-ul paginii când atingi tabla pe mobil */
-#board .square-55d63 { touch-action: none; }
+/* Overlay touch — nu permite scroll, prinde toate evenimentele */
+#touch-overlay { touch-action: none; cursor: pointer; }
 /* Highlight pătrat selectat (click-to-move) */
 #board .sq-sel { background: rgba(255,214,0,0.65) !important; outline: 3px solid rgba(230,170,0,0.8); outline-offset: -3px; }
 
@@ -357,9 +357,8 @@ function startGame(opponentName) {
     onSnapEnd: function() { board.position(game.fen()); },
   });
 
-  // Activăm overlay-ul pe touch (apare deasupra tablei, prinde toate touch-urile)
-  var overlay = document.getElementById('touch-overlay');
-  overlay.style.display = isTouch ? 'block' : 'none';
+  // Pe mobil: overlay activ deasupra tablei
+  document.getElementById('touch-overlay').style.display = 'block';
 
   updateTurnBar();
   showScreen('game');
@@ -387,26 +386,23 @@ function updateTurnBar() {
 // Detectăm dispozitiv touch
 var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
-// --- DRAG & DROP (doar desktop) ---
-function onDrop(source, target) {
-  lastDropTime = Date.now();
-  clearSelection();
-  if (!isMyTurn()) return 'snapback';
-  if (source === target) return 'snapback';
-
-  var piece = game.get(source);
-  var isPromo = piece && piece.type === 'p' &&
-    ((piece.color === 'w' && target[1] === '8') || (piece.color === 'b' && target[1] === '1'));
-
-  var move = game.move({ from: source, to: target, promotion: isPromo ? 'q' : undefined });
-  if (move === null) return 'snapback';
-
-  sendMove(source, target, isPromo ? 'q' : null);
+// ─── MUTARE ──────────────────────────────────────────────────
+function doMove(src, dest) {
+  if (!isMyTurn() || !game) return false;
+  var p = game.get(src);
+  if (!p || p.color !== game.turn()) return false;
+  var isPromo = p.type === 'p' &&
+    ((p.color === 'w' && dest[1] === '8') || (p.color === 'b' && dest[1] === '1'));
+  var move = game.move({ from: src, to: dest, promotion: isPromo ? 'q' : undefined });
+  if (!move) return false;
+  board.position(game.fen());
+  sendMove(src, dest, isPromo ? 'q' : null);
   updateTurnBar();
   checkGameEnd();
+  return true;
 }
 
-// --- CLICK / TAP TO MOVE ---
+// ─── SELECȚIE PĂTRAT ─────────────────────────────────────────
 function clearSelection() {
   selectedSq = null;
   document.querySelectorAll('#board .sq-sel').forEach(function(el) {
@@ -419,27 +415,13 @@ function highlightSquare(sq) {
   if (el) el.classList.add('sq-sel');
 }
 
-function tryMove(src, dest) {
-  if (!isMyTurn() || !game) return false;
-  var srcPiece = game.get(src);
-  if (!srcPiece || srcPiece.color !== game.turn()) return false;
-  var isPromo = srcPiece.type === 'p' &&
-    ((srcPiece.color === 'w' && dest[1] === '8') || (srcPiece.color === 'b' && dest[1] === '1'));
-  var move = game.move({ from: src, to: dest, promotion: isPromo ? 'q' : undefined });
-  if (!move) return false;
-  board.position(game.fen());
-  sendMove(src, dest, isPromo ? 'q' : null);
-  updateTurnBar();
-  checkGameEnd();
-  return true;
-}
-
-function handleSquareClick(sq) {
+function handleSq(sq) {
   if (!isMyTurn() || !game) return;
   var piece = game.get(sq);
   var turn  = game.turn();
 
   if (!selectedSq) {
+    // Prima atingere: selectează piesa ta
     if (piece && piece.color === turn) {
       selectedSq = sq;
       highlightSquare(sq);
@@ -447,83 +429,91 @@ function handleSquareClick(sq) {
   } else {
     if (sq === selectedSq) { clearSelection(); return; }
     if (piece && piece.color === turn) {
+      // Altă piesă proprie → schimbă selecția
       clearSelection();
       selectedSq = sq;
       highlightSquare(sq);
       return;
     }
+    // Destinație → încearcă mutarea
     var src = selectedSq;
     clearSelection();
-    tryMove(src, sq);
+    doMove(src, sq);
   }
 }
 
-// Returnează pătratul de sub coordonatele date,
-// ascunzând overlay-ul temporar ca elementFromPoint să funcționeze
-function sqAtPoint(x, y) {
-  var overlay = document.getElementById('touch-overlay');
-  overlay.style.display = 'none';
-  var el = document.elementFromPoint(x, y);
-  overlay.style.display = 'block';
-  if (!el) return null;
-  var sqEl = el.closest('[data-square]');
-  return sqEl ? sqEl.getAttribute('data-square') : null;
+// ─── DRAG & DROP (desktop) ───────────────────────────────────
+// onDrop e chemat de chessboard.js atât la drag real cât și la click (source=target)
+function onDrop(source, target) {
+  if (!isMyTurn()) return 'snapback';
+  if (source === target) {
+    // Click pe piesă (fără mișcare) → tratăm ca selecție
+    handleSq(source);
+    return 'snapback'; // chessboard.js să nu mute el singur
+  }
+  // Drag real: mutăm direct fără să mai trecem prin handleSq
+  clearSelection();
+  return doMove(source, target) ? undefined : 'snapback';
 }
+
+// ─── TOUCH (mobil) ───────────────────────────────────────────
+// Overlay transparent deasupra tablei prinde TOATE touch-urile
+// cu { passive:false } → preventDefault() funcționează garantat
 
 document.addEventListener('DOMContentLoaded', function() {
   var overlay = document.getElementById('touch-overlay');
 
-  if (isTouch) {
-    // ── MOBIL: overlay captează tot, preventDefault() oprește scroll-ul ──
-    var tStartX, tStartY, tStartSq;
-
-    overlay.addEventListener('touchstart', function(e) {
-      e.preventDefault();           // ← oprește scroll
-      e.stopPropagation();
-      var t = e.touches[0];
-      tStartX  = t.clientX;
-      tStartY  = t.clientY;
-      tStartSq = sqAtPoint(t.clientX, t.clientY);
-    }, { passive: false });
-
-    overlay.addEventListener('touchmove', function(e) {
-      e.preventDefault();           // ← oprește scroll în timp ce miști degetul
-      e.stopPropagation();
-    }, { passive: false });
-
-    overlay.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      var t = e.changedTouches[0];
-      var sq = sqAtPoint(t.clientX, t.clientY);
-      var dx = Math.abs(t.clientX - tStartX);
-      var dy = Math.abs(t.clientY - tStartY);
-
-      if (!sq) return;
-
-      if (dx < 25 && dy < 25) {
-        // TAP — click normal pe pătrat
-        handleSquareClick(sq);
-      } else if (tStartSq && sq !== tStartSq) {
-        // SWIPE scurt între 2 pătrate → mutare directă
-        if (!tryMove(tStartSq, sq)) {
-          // Dacă nu e mutare validă, selectăm pătratul destinație
-          clearSelection();
-          handleSquareClick(sq);
-        }
-      }
-    }, { passive: false });
-
-  } else {
-    // ── DESKTOP: click normal pe tablă ──
-    document.getElementById('board').addEventListener('click', function(e) {
-      if (Date.now() - lastDropTime < 400) return;
-      var sqEl = e.target.closest('[data-square]');
-      if (!sqEl) return;
-      var sq = sqEl.getAttribute('data-square');
-      if (sq) handleSquareClick(sq);
-    });
+  // Funcție: găsește pătratul de sub un punct, ignorând overlay-ul
+  function sqAt(x, y) {
+    overlay.style.pointerEvents = 'none';          // ascunde temporar din hit-test
+    var el = document.elementFromPoint(x, y);
+    overlay.style.pointerEvents = 'auto';
+    var sqEl = el && el.closest('[data-square]');
+    return sqEl ? sqEl.getAttribute('data-square') : null;
   }
+
+  var tSq0, tX0, tY0; // pătrat și coordonate la touchstart
+
+  overlay.addEventListener('touchstart', function(e) {
+    e.preventDefault();   // ← CHEIE: oprește scroll-ul paginii
+    var t = e.touches[0];
+    tX0 = t.clientX; tY0 = t.clientY;
+    tSq0 = sqAt(t.clientX, t.clientY);
+  }, { passive: false });
+
+  overlay.addEventListener('touchmove', function(e) {
+    e.preventDefault();   // ← blochează scroll și în timp ce miști degetul
+  }, { passive: false });
+
+  overlay.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    var t = e.changedTouches[0];
+    var sq = sqAt(t.clientX, t.clientY);
+    var dx = Math.abs(t.clientX - tX0);
+    var dy = Math.abs(t.clientY - tY0);
+
+    if (!sq) return;
+
+    if (dx < 30 && dy < 30) {
+      // Tap simplu → selecție sau mutare
+      handleSq(sq);
+    } else if (tSq0 && sq !== tSq0) {
+      // Swipe între două pătrate → mutare directă
+      if (!doMove(tSq0, sq)) handleSq(sq);
+    }
+  }, { passive: false });
+
+  // ─── DESKTOP: click pe tablă ─────────────────────────────
+  // onDrop gestionează click-urile pe PIESE (source=target).
+  // Listener-ul de mai jos gestionează click pe PĂTRATE GOALE
+  // (când ai deja o piesă selectată și dai click pe destinație).
+  document.getElementById('board').addEventListener('click', function(e) {
+    if (!selectedSq || !isMyTurn()) return; // relevant doar dacă am o piesă selectată
+    var sqEl = e.target.closest('[data-square]');
+    if (!sqEl) return;
+    var sq = sqEl.getAttribute('data-square');
+    if (sq) handleSq(sq);
+  });
 });
 
 function sendMove(from, to, promotion) {
