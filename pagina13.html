@@ -57,20 +57,17 @@
             color: white;
         }
 
-        .chapter-title {
-            text-align: center;
-            font-size: 1.2em;
-            font-weight: 700;
-            color: #1a3a6b;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
         .chapter-subtitle {
+            background: #1a3a6b;
+            color: white;
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1em;
+            font-weight: 700;
             text-align: center;
-            color: #1a3a6b;
-            font-size: 0.95em;
-            margin-bottom: 22px;
-            font-style: italic;
+            letter-spacing: 0.03em;
+            margin-bottom: 0;
         }
 
         .main-content {
@@ -115,13 +112,18 @@
             text-align: center;
         }
 
-        .info-section { flex: 1; min-width: 0; }
+        .info-section {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
         .moves-box {
             background: rgba(255,255,255,0.4);
             border-radius: 12px;
             padding: 12px 14px;
-            margin-bottom: 12px;
         }
         .moves-box h3 {
             font-size: 0.8em;
@@ -199,7 +201,10 @@
 <nav id="nav">
     <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
     <div class="nav-title">Dou&#259; Turnuri vs. Rege</div>
-    <span class="nav-badge">Nivelul III</span>
+    <div style="display:flex;align-items:center;gap:8px;">
+        <button id="vol-btn" onclick="toggleVolume()" title="Volum" style="background:rgba(255,255,255,0.55);border:2px solid rgba(255,255,255,0.8);border-radius:50px;padding:5px 12px;font-size:1em;cursor:pointer;color:#1a3a6b;font-family:'Baloo 2',cursive;font-weight:700;transition:background 0.2s;">&#128266;</button>
+        <span class="nav-badge">Nivelul III</span>
+    </div>
 </nav>
 
 <div class="content">
@@ -209,9 +214,6 @@
         <button class="tab-btn"        onclick="loadChapter(2)">Dou&#259; Turnuri 3</button>
         <button class="tab-btn"        onclick="loadChapter(3)">&#9888; Regele se apropie!</button>
     </div>
-
-    <div class="chapter-title"    id="chapterTitle"></div>
-    <div class="chapter-subtitle" id="chapterSubtitle"></div>
 
     <div class="main-content">
         <div class="board-section">
@@ -227,11 +229,12 @@
         </div>
 
         <div class="info-section">
+            <div class="chapter-subtitle" id="chapterSubtitle"></div>
+            <div class="annotation-box" id="annotationBox"></div>
             <div class="moves-box">
                 <h3>Mut&#259;ri</h3>
                 <div class="moves-list" id="movesList"></div>
             </div>
-            <div class="annotation-box" id="annotationBox"></div>
         </div>
     </div>
 
@@ -247,6 +250,45 @@
 
 <script>
 const PAGE_ID = 'em_msf_2t_l2';
+
+/* ===== SUNETE ===== */
+const sndMove    = new Audio('Sounds/Move.mp3');
+const sndCapture = new Audio('Sounds/Capture.mp3');
+const sndMate    = new Audio('Sounds/Mate.mp3');
+let volumeOn = true;
+function playSound(snd) { if (!volumeOn) return; snd.currentTime = 0; snd.play().catch(() => {}); }
+function toggleVolume() {
+    volumeOn = !volumeOn;
+    document.getElementById('vol-btn').textContent = volumeOn ? '\uD83D\uDD0A' : '\uD83D\uDD07';
+}
+
+/* ===== REGE ROȘU LA MAT ===== */
+function matedKingSquare(fen) {
+    const tmp = new Chess(fen);
+    if (!tmp.in_checkmate()) return null;
+    const color = tmp.turn();
+    const b = tmp.board();
+    const files = 'abcdefgh';
+    for (let r = 0; r < 8; r++)
+        for (let c = 0; c < 8; c++)
+            if (b[r][c] && b[r][c].type === 'k' && b[r][c].color === color)
+                return files[c] + (8 - r);
+    return null;
+}
+function removeKingOverlay() {
+    document.querySelectorAll('.king-red-ov').forEach(e => e.remove());
+}
+function redKingOverlay() {
+    const sq = matedKingSquare(positions[currentStep]);
+    if (!sq) return;
+    const el = document.querySelector('#board .square-' + sq);
+    if (!el) return;
+    const ov = document.createElement('div');
+    ov.className = 'king-red-ov';
+    ov.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(220,0,0,0.52);z-index:5;pointer-events:none;border-radius:3px;';
+    el.style.position = 'relative';
+    el.appendChild(ov);
+}
 function toRo(san) {
     const map = { K:'R', Q:'D', R:'T', B:'N', N:'C' };
     return san.replace(/[KQRBN]/g, m => map[m]);
@@ -277,7 +319,7 @@ const chapters = [
     },
     {
         title:    "Dou\u0103 Turnuri \u2014 Exemplul 3",
-        subtitle: "Tehnica sc\u0103rii \u2014 Regele \u00eempins de pe linia 5 pe linia 1",
+        subtitle: "Tehnica sc\u0103rii",
         startFen: "7k/r7/1r6/4K3/8/8/8/8 b - - 0 1",
         sanMoves: ["Ra5+", "Ke4", "Rb4+", "Ke3", "Ra3+", "Ke2", "Rb2+", "Ke1", "Ra1#"],
         annotations: [
@@ -297,10 +339,11 @@ const chapters = [
     {
         title:    "Aten\u0163ie! Regele se apropie de turn",
         subtitle: "Cum reac\u0163ion\u0103m c\u00e2nd regele advers amenin\u0163\u0103 un turn",
-        startFen: "8/5K2/8/R7/1R6/2k5/8/8 w - - 0 1",
-        sanMoves: ["Rh4", "Kb3", "Rg5", "Kc3", "Rg3+", "Kd2", "Rh2+", "Ke1", "Rg1#"],
+        startFen: "8/5K2/8/R7/1R6/3k4/8/8 b - - 0 1",
+        sanMoves: ["Kc3", "Rh4", "Kb3", "Rg5", "Kc3", "Rg3+", "Kd2", "Rh2+", "Ke1", "Rg1#"],
         annotations: [
-            "C\u00e2nd regele se apropie de turn trebuie s\u0103 fim aten\u0163i! Fugim cu turnul departe de rege, dar r\u0103m\u00e2nem pe aceea\u015fi linie.",
+            "Regele negru este pe d3 \u015fi se \u00eendreapt\u0103 spre turnul de pe b4. Aten\u0163ie \u2014 trebuie s\u0103 reac\u0163ion\u0103m la timp!",
+            "Regele negru s-a mutat pe c3 \u2014 amenin\u0163\u0103 direct turnul de pe b4! C\u00e2nd regele se apropie de turn trebuie s\u0103 fim aten\u0163i! Fugim cu turnul departe de rege, dar r\u0103m\u00e2nem pe aceea\u015fi linie.",
             "Turnul de pe b4 mut\u0103 la h4 \u2014 se \u00eendep\u0103rteaz\u0103 de rege, dar r\u0103m\u00e2ne pe linia 4!",
             "Dac\u0103 regele advers ne \u00eempiedic\u0103 s\u0103 p\u0103\u015fim cu turnurile pe sc\u0103ri\u0163a noastr\u0103, mut\u0103m sc\u0103ri\u0163a \u00een siguran\u0163\u0103, departe de atacurile lui.",
             "\u015ei cel\u0103lalt turn se mut\u0103 \u00een siguran\u0163\u0103 pe g5!",
@@ -336,7 +379,6 @@ function loadChapter(idx) {
     positions = computePositions(currentChapter);
     currentStep = 0;
 
-    document.getElementById('chapterTitle').textContent    = currentChapter.title;
     document.getElementById('chapterSubtitle').textContent = currentChapter.subtitle;
 
     if (board) board.destroy();
@@ -378,8 +420,22 @@ function buildMovesList() {
 }
 
 function goToStep(s) {
+    const prevStep = currentStep;
     currentStep = s;
+    removeKingOverlay();
     board.position(positions[s], false);
+
+    if (s > prevStep) {
+        const san = currentChapter.sanMoves[s - 1] || '';
+        if (san.includes('#')) {
+            setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 200);
+        } else if (san.includes('x')) {
+            playSound(sndCapture);
+        } else {
+            playSound(sndMove);
+        }
+    }
+
     updateUI();
 }
 

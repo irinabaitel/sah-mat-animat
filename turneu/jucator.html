@@ -100,14 +100,40 @@ input[type=text]:focus { border-color: #1a3a6b; }
 /* CEAS */
 .player-row { display:flex; align-items:center; justify-content:space-between; gap:8px;
   width:360px; max-width:calc(100vw - 48px); }
-.clock-box { font-family:'Baloo 2',cursive; font-size:1.65em; font-weight:900;
-  background:rgba(26,58,107,0.1); color:rgba(26,26,46,0.45);
-  border-radius:10px; padding:4px 14px; min-width:88px; text-align:center;
-  transition:background 0.15s,color 0.15s; white-space:nowrap; }
-.clock-box.active { background:#1a3a6b; color:white; }
-.clock-box.low    { background:#c0392b !important; color:white !important; }
+
+/* Ceas mare — jucătorul curent */
+.clock-box { font-family:'Baloo 2',cursive; font-weight:900; text-align:center;
+  border-radius:14px; white-space:nowrap; transition:background 0.15s,color 0.15s; }
+#clock-mine {
+  font-size:2.6em; padding:8px 20px; min-width:140px;
+  background:rgba(26,58,107,0.08); color:rgba(26,26,46,0.35);
+  border:2px solid rgba(26,58,107,0.12);
+}
+#clock-opp {
+  font-size:1.3em; padding:4px 14px; min-width:88px;
+  background:rgba(26,58,107,0.06); color:rgba(26,26,46,0.3);
+  border:2px solid transparent;
+}
+.clock-box.active { background:#1a3a6b !important; color:white !important;
+  border-color:#1a3a6b !important; }
+.clock-box.low    { background:#c0392b !important; color:white !important;
+  border-color:#c0392b !important; }
 @keyframes clock-pulse { 0%,100%{opacity:1} 50%{opacity:0.65} }
 .clock-box.low { animation:clock-pulse 0.7s infinite; }
+
+/* REPLAY */
+.replay-nav { display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:14px; }
+.rb { background:rgba(26,58,107,0.12); border:2px solid rgba(26,58,107,0.18); color:#1a3a6b;
+  border-radius:8px; padding:7px 14px; font-size:1.05em; cursor:pointer; line-height:1; }
+.rb:hover { background:rgba(26,58,107,0.22); }
+/* LISTA MUTĂRI */
+#move-list { display:flex; flex-wrap:wrap; gap:1px 0; align-items:baseline;
+  max-height:160px; overflow-y:auto; padding:2px 0; }
+.mn { color:rgba(26,26,46,0.3); font-size:0.8em; padding:2px 2px 2px 6px; min-width:26px; text-align:right; display:inline-block; }
+.mv { cursor:pointer; padding:2px 6px; border-radius:4px; font-family:'Baloo 2',cursive;
+  font-size:0.92em; color:#1a3a6b; display:inline-block; }
+.mv:hover { background:rgba(26,58,107,0.1); }
+.mv.cur   { background:#1a3a6b; color:#fff; }
 
 /* DRAW OFFER */
 #draw-offer-banner { display: none; background: rgba(255,220,80,0.5); border: 2px solid rgba(183,119,13,0.4);
@@ -162,22 +188,25 @@ input[type=text]:focus { border-color: #1a3a6b; }
   <div class="card">
     <div id="opponent-bar" class="opponent-bar" style="margin-bottom:10px;"></div>
     <div id="board-wrap">
-      <!-- Rând adversar: nume + ceas -->
+      <!-- Rând adversar: nume + ceas adversar -->
       <div class="player-row">
         <div id="opponent-bar" class="opponent-bar" style="text-align:left;flex:1;"></div>
         <div id="clock-opp" class="clock-box" style="display:none;"></div>
       </div>
+      <!-- Separator vizual -->
+      <div style="width:360px;max-width:calc(100vw - 48px);height:1px;background:rgba(26,58,107,0.1);"></div>
       <!-- Tablă -->
       <div id="board-container" style="position:relative;display:inline-block;">
         <div id="board"></div>
         <!-- Overlay transparent deasupra tablei — interceptează touch pe mobil -->
         <div id="touch-overlay" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;z-index:50;"></div>
       </div>
-      <!-- Rândul meu: indicatorul de tură + ceas -->
+      <!-- Rândul meu: indicatorul de tură -->
       <div class="player-row">
-        <div id="turn-bar" class="turn-bar" style="flex:1;text-align:left;"></div>
-        <div id="clock-mine" class="clock-box" style="display:none;"></div>
+        <div id="turn-bar" class="turn-bar" style="flex:1;text-align:center;"></div>
       </div>
+      <!-- Ceasul meu — mare, central -->
+      <div id="clock-mine" class="clock-box" style="display:none;"></div>
       <div id="feedback-box" class="feedback-box"></div>
     </div>
     <div id="draw-offer-banner">
@@ -187,10 +216,38 @@ input[type=text]:focus { border-color: #1a3a6b; }
         <button class="btn btn-gray" onclick="declineDraw()">✗ Refuz</button>
       </div>
     </div>
-    <div class="game-actions" style="margin-top:14px;">
-      <button class="btn btn-gray" id="draw-btn" onclick="offerDraw()">½ Ofertă remiză</button>
-      <button class="btn btn-red"  id="resign-btn" onclick="resign()">🏳 Abandonez</button>
+    <div class="game-actions" id="game-actions" style="margin-top:10px;gap:6px;">
+      <button id="draw-btn" onclick="offerDraw()"
+        style="background:rgba(26,58,107,0.08);border:1px solid rgba(26,58,107,0.18);color:rgba(26,26,46,0.5);
+               border-radius:50px;padding:5px 14px;font-family:'Baloo 2',cursive;font-size:0.75em;
+               font-weight:700;cursor:pointer;">½ remiză</button>
+      <button id="resign-btn" onclick="resign()"
+        style="background:rgba(192,57,43,0.07);border:1px solid rgba(192,57,43,0.2);color:rgba(192,57,43,0.55);
+               border-radius:50px;padding:5px 14px;font-family:'Baloo 2',cursive;font-size:0.75em;
+               font-weight:700;cursor:pointer;">🏳 cedez</button>
     </div>
+    <!-- Rezultat + navigare replay (apare după finalizare, tabla rămâne vizibilă) -->
+    <div id="game-result-bar" style="display:none;text-align:center;padding-top:14px;
+      border-top:1px solid rgba(26,58,107,0.1);margin-top:14px;">
+      <div id="game-result-inline"></div>
+      <div class="replay-nav">
+        <button class="rb" onclick="replayFirst()">⏮</button>
+        <button class="rb" onclick="replayPrev()">◀</button>
+        <span id="replay-counter" style="font-family:'Baloo 2',cursive;font-size:0.82em;
+          color:rgba(26,26,46,0.4);min-width:44px;text-align:center;"></span>
+        <button class="rb" onclick="replayNext()">▶</button>
+        <button class="rb" onclick="replayLast()">⏭</button>
+        <button class="btn btn-primary" onclick="goToResultScreen()" style="margin-left:4px;">
+          Clasament ▶
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Notația partidei (card separat sub tablă) -->
+  <div class="card" id="move-list-card" style="display:none;margin-top:0;padding:16px 20px;">
+    <div style="font-family:'Baloo 2',cursive;font-size:0.88em;color:rgba(26,26,46,0.5);
+      text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">♟ Notația partidei</div>
+    <div id="move-list"></div>
   </div>
 </div>
 
@@ -250,6 +307,61 @@ var lastDropTime = 0;
 var premoveSrc = null;
 var premoveDst = null;
 
+// ─── NOTAȚIE & REPLAY ────────────────────────────────────────
+var moveHistory  = [];   // [{san, fen}] — istoricul mutărilor din joc
+var replayIdx    = 0;    // 0 = poziție inițială, N = după N mutări
+var isReplayMode = false;
+var _lastResult  = null; // date pentru ecranul de clasament
+
+// ─── BOT (Stockfish) ─────────────────────────────────────────
+var isBotGame   = false;
+var botLevel    = 3;
+var botWorker   = null;
+var BOT_SKILL   = { 1: 0, 2: 3, 3: 7, 4: 12, 5: 18 };
+var BOT_MOVEMS  = { 1: 150, 2: 250, 3: 400, 4: 700, 5: 1200 };
+
+function initBotGame(level) {
+  isBotGame = true;
+  botLevel  = level || 3;
+  var sfUrl = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js';
+  var blob  = new Blob(['importScripts("' + sfUrl + '")'], { type: 'text/javascript' });
+  botWorker = new Worker(URL.createObjectURL(blob));
+
+  botWorker.onmessage = function(e) {
+    var line = e.data;
+    if (!line || !line.startsWith('bestmove')) return;
+    var mv = line.split(' ')[1];
+    if (!mv || mv === '(none)') return;
+    var from  = mv.slice(0, 2);
+    var to    = mv.slice(2, 4);
+    var promo = mv.length > 4 ? mv[4] : undefined;
+    var move  = game && game.move({ from: from, to: to, promotion: promo || 'q' });
+    if (move) {
+      moveHistory.push({ san: move.san, fen: game.fen() });
+      board.position(game.fen());
+      afterOpponentMove();
+      updateTurnBar();
+      checkGameEnd();
+      executePremove();
+    }
+  };
+
+  botWorker.postMessage('uci');
+  botWorker.postMessage('setoption name Skill Level value ' + (BOT_SKILL[botLevel] || 7));
+  botWorker.postMessage('isready');
+}
+
+function botMakeMove() {
+  if (!botWorker || !game || game.game_over()) return;
+  botWorker.postMessage('position fen ' + game.fen());
+  botWorker.postMessage('go movetime ' + (BOT_MOVEMS[botLevel] || 400));
+}
+
+function stopBot() {
+  if (botWorker) { botWorker.terminate(); botWorker = null; }
+  isBotGame = false;
+}
+
 // ─── CLOCK ───────────────────────────────────────────────────
 var clockSettings  = { time: 0, increment: 0 };
 var clockW_ms      = 0;
@@ -295,9 +407,10 @@ function tickClock() {
 }
 
 function handleTimeout(colorOut) {
+  stopBot();
   var result = colorOut === 'w' ? '0-1' : '1-0';
-  socket.emit('out_of_time',  { gameId: myGameId });
-  socket.emit('game_result',  { gameId: myGameId, result: result, reason: 'timp' });
+  socket.emit('out_of_time', { gameId: myGameId });
+  socket.emit('game_result', { gameId: myGameId, result: result, reason: 'timp', moves: moveHistory });
 }
 
 function afterMyMove() {
@@ -399,7 +512,38 @@ socket.on('game_start', function(data) {
   clockSettings = data.clock || { time: 0, increment: 0 };
   document.getElementById('nav-round-badge').style.display = '';
   document.getElementById('nav-round-badge').textContent = 'Runda ' + data.round;
-  startGame(data.opponentName);
+  startGame(data.opponentName, data.botLevel);
+});
+
+socket.on('game_resume', function(data) {
+  myGameId      = data.gameId;
+  myColor       = data.yourColor;
+  currentRound  = data.round;
+  clockSettings = data.clock || { time: 0, increment: 0 };
+  document.getElementById('nav-round-badge').style.display = '';
+  document.getElementById('nav-round-badge').textContent = 'Runda ' + data.round;
+
+  startGame(data.opponentName, data.botLevel);
+
+  // Refacem poziția din istoricul de mutări
+  if (data.moves && data.moves.length > 0) {
+    for (var i = 0; i < data.moves.length; i++) {
+      var mv = data.moves[i];
+      var result = game.move({ from: mv.from, to: mv.to, promotion: mv.promotion || 'q' });
+      if (result) moveHistory.push({ san: result.san, fen: game.fen() });
+    }
+    board.position(game.fen(), false);
+    updateTurnBar();
+  }
+
+  // Refacem ceasul
+  if (clockSettings.time > 0 && data.clockW_ms != null) {
+    clockW_ms = data.clockW_ms;
+    clockB_ms = data.clockB_ms;
+    stopClock();
+    startClock(game.turn());
+    renderClock();
+  }
 });
 
 socket.on('got_bye', function(data) {
@@ -415,6 +559,7 @@ socket.on('opponent_move', function(data) {
   var parts = data.from + data.to + (data.promotion || '');
   var move = game.move({ from: data.from, to: data.to, promotion: data.promotion || 'q' });
   if (move) {
+    moveHistory.push({ san: move.san, fen: game.fen() });
     board.position(game.fen());
     afterOpponentMove();
     checkGameEnd();
@@ -454,6 +599,8 @@ socket.on('tournament_finished', function(data) {
 });
 
 socket.on('tournament_reset', function() {
+  stopBot();
+  stopClock();
   myId = null; myName = ''; myColor = null; myGameId = null;
   document.getElementById('nav-player-name').textContent = '';
   document.getElementById('nav-round-badge').style.display = 'none';
@@ -478,10 +625,18 @@ document.getElementById('name-input').addEventListener('keydown', function(e) {
 });
 
 // ─── JOC ─────────────────────────────────────────────────────
-function startGame(opponentName) {
+function startGame(opponentName, botLevelParam) {
+  stopBot();   // oprește orice bot anterior
   game = new Chess();
-  selectedSq = null;
+  selectedSq   = null;
   lastDropTime = 0;
+  moveHistory  = [];
+  replayIdx    = 0;
+  isReplayMode = false;
+  _lastResult  = null;
+  document.getElementById('game-result-bar').style.display = 'none';
+  document.getElementById('move-list-card').style.display  = 'none';
+  document.getElementById('game-actions').style.display    = '';
 
   document.getElementById('opponent-bar').textContent =
     '⚔️  ' + opponentName + (myColor === 'w' ? ' (Negru)' : ' (Alb)');
@@ -489,6 +644,8 @@ function startGame(opponentName) {
   document.getElementById('draw-offer-banner').style.display = 'none';
   document.getElementById('resign-btn').disabled  = false;
   document.getElementById('draw-btn').disabled    = false;
+  // Ascunde remiză vs bot (nu are sens)
+  document.getElementById('draw-btn').style.display = (botLevelParam !== undefined) ? 'none' : '';
   setFeedback('');
 
   board = Chessboard('board', {
@@ -501,12 +658,18 @@ function startGame(opponentName) {
     onSnapEnd: function() { board.position(game.fen()); },
   });
 
-  // Pe mobil: overlay activ deasupra tablei
-  document.getElementById('touch-overlay').style.display = 'block';
+  // Pe mobil: overlay activ deasupra tablei (pe desktop cu mouse nu trebuie)
+  document.getElementById('touch-overlay').style.display = isTouch ? 'block' : 'none';
 
   initClock(clockSettings);
   updateTurnBar();
   showScreen('game');
+
+  // Dacă e joc vs. robot, pornește Stockfish
+  if (botLevelParam !== undefined) {
+    initBotGame(botLevelParam);
+    // Robotul joacă cu negrul — alb (jucătorul) mută primul, nu e nevoie de botMakeMove acum
+  }
 }
 
 function isMyTurn() {
@@ -540,11 +703,13 @@ function doMove(src, dest) {
     ((p.color === 'w' && dest[1] === '8') || (p.color === 'b' && dest[1] === '1'));
   var move = game.move({ from: src, to: dest, promotion: isPromo ? 'q' : undefined });
   if (!move) return false;
+  moveHistory.push({ san: move.san, fen: game.fen() });
   board.position(game.fen());
-  sendMove(src, dest, isPromo ? 'q' : null);
+  if (!isBotGame) sendMove(src, dest, isPromo ? 'q' : null);
   afterMyMove();
   updateTurnBar();
   checkGameEnd();
+  if (isBotGame && !game.game_over()) botMakeMove();
   return true;
 }
 
@@ -563,7 +728,7 @@ function highlightSquare(sq) {
 }
 
 function handleSq(sq) {
-  if (!game) return;
+  if (!game || isReplayMode) return;
 
   // ── Nu e rândul meu: mod premove ──
   if (!isMyTurn()) {
@@ -615,6 +780,7 @@ function highlightPre(sq) {
 // ─── DRAG & DROP (desktop) ───────────────────────────────────
 // onDrop e chemat de chessboard.js atât la drag real cât și la click (source=target)
 function onDrop(source, target) {
+  if (isReplayMode) return 'snapback';
   if (!isMyTurn()) {
     // Nu e rândul meu: drag = premove
     if (source !== target && game) {
@@ -699,7 +865,8 @@ document.addEventListener('DOMContentLoaded', function() {
 function sendMove(from, to, promotion) {
   socket.emit('make_move', {
     gameId: myGameId, from: from, to: to,
-    promotion: promotion || null, fen: game.fen()
+    promotion: promotion || null, fen: game.fen(),
+    clockW_ms: clockW_ms, clockB_ms: clockB_ms,
   });
 }
 
@@ -722,7 +889,8 @@ function checkGameEnd() {
 
   if (result) {
     stopClock();
-    socket.emit('game_result', { gameId: myGameId, result: result, reason: reason });
+    stopBot();
+    socket.emit('game_result', { gameId: myGameId, result: result, reason: reason, moves: moveHistory });
   }
 }
 
@@ -730,12 +898,19 @@ function checkGameEnd() {
 function resign() {
   if (!confirm('Ești sigur că vrei să abandonezi?')) return;
   stopClock();
+  stopBot();
   document.getElementById('resign-btn').disabled = true;
   document.getElementById('draw-btn').disabled   = true;
-  socket.emit('resign', { gameId: myGameId });
+  socket.emit('resign', { gameId: myGameId, moves: moveHistory });
 }
 
 function offerDraw() {
+  // Remiză permisă abia după 30 de mutări complete (60 de semi-mutări)
+  if (moveHistory.length < 60) {
+    var remaining = Math.ceil((60 - moveHistory.length) / 2);
+    setFeedback('Remiză posibilă după încă ' + remaining + ' mutări!', 'err');
+    return;
+  }
   socket.emit('offer_draw', { gameId: myGameId });
   setFeedback('Ofertă de remiză trimisă. Așteptăm răspunsul...', 'info');
   document.getElementById('draw-btn').disabled = true;
@@ -744,7 +919,7 @@ function offerDraw() {
 function acceptDraw() {
   stopClock();
   document.getElementById('draw-offer-banner').style.display = 'none';
-  socket.emit('accept_draw', { gameId: myGameId });
+  socket.emit('accept_draw', { gameId: myGameId, moves: moveHistory });
 }
 
 function declineDraw() {
@@ -759,29 +934,99 @@ function setFeedback(msg, type) {
 }
 
 // ─── REZULTAT JOC ────────────────────────────────────────────
+function fmtReason(reason, oppName) {
+  return reason === 'șah mat'      ? 'prin șah mat' :
+         reason === 'abandon'      ? (oppName + ' a abandonat') :
+         reason === 'pat'          ? 'prin pat' :
+         reason === 'acord_remiță' ? 'prin acord' :
+         reason === 'deconectare'  ? (oppName + ' s-a deconectat') :
+         reason === 'timp'         ? 'timp expirat' :
+         reason === 'admin'        ? 'decizie profesor' : '';
+}
+
 function showGameResult(yourResult, result, reason, opponentName) {
   stopClock();
+  stopBot();
   clearPremove();
-  var emoji, title, sub;
-  if (yourResult === 'win')  { emoji = '🎉'; title = 'Ai câștigat!';   sub = 'Felicitări, ' + myName + '!'; }
-  else if (yourResult === 'loss') { emoji = '😔'; title = 'Ai pierdut!'; sub = 'Mai mult succes în runda viitoare!'; }
-  else                       { emoji = '🤝'; title = 'Remiză!';         sub = 'Meci echilibrat!'; }
+  isReplayMode = true;
+  _lastResult  = { yourResult: yourResult, result: result, reason: reason, opponentName: opponentName };
 
-  var reasonStr = reason === 'șah mat'     ? 'prin șah mat' :
-                  reason === 'abandon'     ? opponentName + ' a abandonat' :
-                  reason === 'pat'         ? 'prin pat' :
-                  reason === 'acord_remiță'? 'prin acord' :
-                  reason === 'deconectare' ? opponentName + ' s-a deconectat' :
-                  reason === 'timp'        ? 'timp expirat' :
-                  reason === 'admin'       ? 'decizie profesor' : '';
+  // Ascunde controalele de joc
+  document.getElementById('game-actions').style.display       = 'none';
+  document.getElementById('draw-offer-banner').style.display  = 'none';
+  document.getElementById('resign-btn').disabled  = true;
+  document.getElementById('draw-btn').disabled    = true;
 
+  // Conținut rezultat
+  var emoji = yourResult === 'win' ? '🎉' : yourResult === 'loss' ? '😔' : '🤝';
+  var title = yourResult === 'win' ? 'Ai câștigat!' : yourResult === 'loss' ? 'Ai pierdut!' : 'Remiză!';
+  var rs    = fmtReason(reason, opponentName);
+  document.getElementById('game-result-inline').innerHTML =
+    '<div style="font-size:2.2em;margin-bottom:4px;">' + emoji + '</div>' +
+    '<div style="font-family:\'Baloo 2\',cursive;font-size:1.35em;color:#1a3a6b;font-weight:900;">' + title + '</div>' +
+    (rs ? '<div style="font-size:0.88em;color:rgba(26,26,46,0.55);margin-top:3px;">' + rs + '</div>' : '');
+
+  document.getElementById('game-result-bar').style.display = '';
+  document.getElementById('move-list-card').style.display  = '';
+
+  // Inițializăm replay la poziția finală
+  replayIdx = moveHistory.length;
+  renderMoveList();
+  updateReplayCounter();
+}
+
+// ─── REPLAY ──────────────────────────────────────────────────
+function replaySetPosition() {
+  if (!board) return;
+  board.position(replayIdx === 0 ? 'start' : moveHistory[replayIdx - 1].fen, false);
+  renderMoveList();
+  updateReplayCounter();
+}
+function replayFirst() { replayIdx = 0;                    replaySetPosition(); }
+function replayPrev()  { if (replayIdx > 0) replayIdx--;   replaySetPosition(); }
+function replayNext()  { if (replayIdx < moveHistory.length) replayIdx++; replaySetPosition(); }
+function replayLast()  { replayIdx = moveHistory.length;   replaySetPosition(); }
+function replayJump(n) { replayIdx = n;                    replaySetPosition(); }
+
+function updateReplayCounter() {
+  var el = document.getElementById('replay-counter');
+  if (el) el.textContent = replayIdx + ' / ' + moveHistory.length;
+}
+
+function renderMoveList() {
+  var html = '';
+  for (var i = 0; i < moveHistory.length; i++) {
+    if (i % 2 === 0) {
+      html += '<span class="mn">' + (Math.floor(i / 2) + 1) + '.</span>';
+    }
+    var active = (replayIdx === i + 1);
+    html += '<span class="mv' + (active ? ' cur' : '') + '" data-ridx="' + (i + 1) + '" ' +
+            'onclick="replayJump(' + (i + 1) + ')">' + escHtml(moveHistory[i].san) + '</span>';
+    if (i % 2 === 1) html += '<span style="display:inline-block;width:6px;"></span>';
+  }
+  if (!html) html = '<span style="color:rgba(26,26,46,0.4);font-size:0.88em;">Nicio mutare.</span>';
+  var el = document.getElementById('move-list');
+  if (!el) return;
+  el.innerHTML = html;
+  var cur = el.querySelector('[data-ridx="' + replayIdx + '"]');
+  if (cur) cur.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+function goToResultScreen() {
+  if (!_lastResult) { showScreen('result'); return; }
+  var d = _lastResult;
+  var emoji = d.yourResult === 'win' ? '🎉' : d.yourResult === 'loss' ? '😔' : '🤝';
+  var title = d.yourResult === 'win' ? 'Ai câștigat!' : d.yourResult === 'loss' ? 'Ai pierdut!' : 'Remiză!';
+  var sub   = d.yourResult === 'win' ? 'Felicitări, ' + myName + '!' :
+              d.yourResult === 'loss'? 'Mai mult succes în runda viitoare!' : 'Meci echilibrat!';
+  var rs    = fmtReason(d.reason, d.opponentName);
   document.getElementById('result-content').innerHTML =
     '<span class="result-emoji">' + emoji + '</span>' +
     '<div class="result-title">' + title + '</div>' +
-    '<div class="result-sub" style="margin-top:4px;">' + (reasonStr ? 'Motiv: ' + reasonStr : '') + '</div>' +
-    '<div class="result-sub" style="margin-top:8px;">Rezultat: <strong>' + result + '</strong></div>' +
+    '<div class="result-sub">' + sub + '</div>' +
+    (rs ? '<div class="result-sub" style="margin-top:4px;">Motiv: ' + rs + '</div>' : '') +
+    '<div class="result-sub" style="margin-top:8px;">Rezultat: <strong>' + d.result + '</strong></div>' +
     '<p style="margin-top:16px;font-size:0.9em;color:rgba(26,26,46,0.6);">Asteaptă runda următoare...</p>';
-
   document.getElementById('result-round').textContent = currentRound;
   showScreen('result');
 }
@@ -811,6 +1056,15 @@ function showScreen(id) {
   var el = document.getElementById('screen-' + id);
   if (el) el.classList.add('active');
 }
+
+// Navigare replay cu tastele săgeată
+document.addEventListener('keydown', function(e) {
+  if (!isReplayMode) return;
+  if (e.key === 'ArrowLeft')  { replayPrev();  e.preventDefault(); }
+  if (e.key === 'ArrowRight') { replayNext();  e.preventDefault(); }
+  if (e.key === 'Home')       { replayFirst(); e.preventDefault(); }
+  if (e.key === 'End')        { replayLast();  e.preventDefault(); }
+});
 
 function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');

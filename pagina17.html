@@ -32,139 +32,40 @@
         .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
         .nav-prev:hover { background: rgba(255,255,255,0.75); }
 
-        .chapter-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: rgba(255,255,255,0.4);
-            border: 2px solid #1a3a6b;
-            border-radius: 25px;
-            padding: 8px 18px;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
-            color: #1a3a6b;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
-        }
-        .tab-btn.active, .tab-btn:hover {
-            background: #1a3a6b;
-            color: white;
-        }
-
-        .chapter-title {
-            text-align: center;
-            font-size: 1.2em;
-            font-weight: 700;
-            color: #1a3a6b;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-        .chapter-subtitle {
-            text-align: center;
-            color: #1a3a6b;
-            font-size: 0.95em;
-            margin-bottom: 22px;
-            font-style: italic;
-        }
-
-        .main-content {
-            display: flex;
-            gap: 22px;
-            align-items: flex-start;
-        }
+        .main-content { display: flex; gap: 22px; align-items: flex-start; }
 
         .board-section { flex: 0 0 auto; }
         #board { width: 360px; }
         .sq-hl { position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(210,40,30,0.32);pointer-events:none;z-index:5; }
         .role-icon {
-            position: absolute;
-            bottom: 1px;
-            right: 1px;
-            font-size: 22px;
-            line-height: 1;
-            z-index: 10;
-            pointer-events: none;
+            position: absolute; bottom: 1px; right: 1px;
+            font-size: 22px; line-height: 1; z-index: 10; pointer-events: none;
             filter: drop-shadow(0 0 2px white) drop-shadow(0 0 4px white) drop-shadow(0 1px 4px rgba(0,0,0,0.9));
         }
 
-        .controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            margin-top: 14px;
-        }
-
-        .ctrl-btn {
-            background: #1a3a6b;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 46px;
-            height: 46px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
+        .controls { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 14px; }
+        .ctrl-btn { background: #1a3a6b; color: white; border: none; border-radius: 50%; width: 46px; height: 46px; font-size: 1.1em; cursor: pointer; transition: background 0.2s; }
         .ctrl-btn:hover:not(:disabled) { background: #2a5aab; }
         .ctrl-btn:disabled { background: rgba(26,58,107,0.25); cursor: not-allowed; }
 
-        .move-counter {
-            background: rgba(255,255,255,0.6);
-            border-radius: 20px;
-            padding: 5px 14px;
-            font-weight: 700;
-            color: #1a3a6b;
-            font-size: 0.9em;
-            min-width: 110px;
-            text-align: center;
-        }
+        .move-counter { background: rgba(255,255,255,0.6); border-radius: 20px; padding: 5px 14px; font-weight: 700; color: #1a3a6b; font-size: 0.9em; min-width: 110px; text-align: center; }
 
-        .info-section { flex: 1; min-width: 0; }
+        .info-section { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 
-        .moves-box {
-            background: rgba(255,255,255,0.4);
+        /* Caseta fază activă */
+        .phase-badge {
+            background: #1a3a6b;
+            color: white;
             border-radius: 12px;
-            padding: 12px 14px;
-            margin-bottom: 12px;
-        }
-        .moves-box h3 {
-            font-size: 0.8em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #1a3a6b;
-            margin-bottom: 10px;
+            padding: 10px 16px;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1em;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.03em;
         }
 
-        .moves-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            align-items: center;
-        }
-
-        .move-number { color: rgba(26,58,107,0.5); font-size: 0.8em; padding: 0 2px; }
-
-        .move-token {
-            border: 1px solid rgba(26,58,107,0.3);
-            border-radius: 6px;
-            padding: 4px 9px;
-            font-size: 0.92em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .move-token.white-move { background: rgba(255,255,255,0.7); color: #1a3a6b; }
-        .move-token.black-move { background: rgba(50,50,50,0.12); color: #333; }
-        .move-token.active { background: #1a3a6b !important; color: white !important; border-color: #1a3a6b; }
-        .move-token:hover:not(.active) { background: rgba(255,255,255,0.9); }
-
+        /* Caseta adnotare */
         .annotation-box {
             background: rgba(255,255,255,0.6);
             border-radius: 12px;
@@ -172,31 +73,48 @@
             line-height: 1.65;
             color: #333;
             font-size: 1em;
-            min-height: 100px;
+            min-height: 80px;
             border-left: 4px solid #1a3a6b;
         }
-        .annotation-box.checkmate {
-            border-left-color: #c0392b;
-            background: rgba(255,255,255,0.85);
-        }
+        .annotation-box.checkmate { border-left-color: #c0392b; background: rgba(255,255,255,0.85); }
+        .checkmate-badge { display: inline-block; background: #c0392b; color: white; padding: 3px 12px; border-radius: 20px; font-weight: 700; font-size: 0.9em; margin-bottom: 10px; }
 
-        .checkmate-badge {
-            display: inline-block;
-            background: #c0392b;
-            color: white;
-            padding: 3px 12px;
-            border-radius: 20px;
+        /* Lista mutări */
+        .moves-box { background: rgba(255,255,255,0.4); border-radius: 12px; padding: 12px 14px; }
+        .moves-box h3 { font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; color: #1a3a6b; margin-bottom: 10px; }
+        .moves-list { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+        .move-number { color: rgba(26,58,107,0.5); font-size: 0.8em; padding: 0 2px; }
+        .move-token { border: 1px solid rgba(26,58,107,0.3); border-radius: 6px; padding: 4px 9px; font-size: 0.92em; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+        .move-token.white-move { background: rgba(255,255,255,0.7); color: #1a3a6b; }
+        .move-token.black-move { background: rgba(50,50,50,0.12); color: #333; }
+        .move-token.active { background: #1a3a6b !important; color: white !important; border-color: #1a3a6b; }
+        .move-token:hover:not(.active) { background: rgba(255,255,255,0.9); }
+
+        /* Separator fază în lista de mutări */
+        .phase-sep {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 6px 0 2px;
+            font-size: 0.75em;
             font-weight: 700;
-            font-size: 0.9em;
-            margin-bottom: 10px;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .phase-sep::before, .phase-sep::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(26,58,107,0.25);
         }
 
-        .hint {
-            text-align: center;
-            color: rgba(26,58,107,0.5);
-            font-size: 0.78em;
-            margin-top: 10px;
-        }
+        .card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+        .card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; text-align: justify; }
+        .card p:last-child { margin-bottom: 0; }
+
+        .hint { text-align: center; color: rgba(26,58,107,0.5); font-size: 0.78em; margin-top: 10px; }
 
         @media (max-width: 560px) { .main-content { flex-direction: column; } .board-section { margin: 0 auto; } }
     </style>
@@ -206,18 +124,18 @@
 <nav id="nav">
     <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
     <div class="nav-title">Dam&#259; + Nebun vs. Rege</div>
-    <span class="nav-badge">Nivelul III</span>
+    <div style="display:flex;align-items:center;gap:8px;">
+        <button id="vol-btn" onclick="toggleVolume()" class="nav-btn" style="padding:6px 12px;font-size:1.1em;cursor:pointer;border:none;">&#128266;</button>
+        <span class="nav-badge">Nivelul III</span>
+    </div>
 </nav>
 
 <div class="content">
-    <div class="chapter-tabs">
-        <button class="tab-btn active" onclick="loadChapter(0)">1. Blocada</button>
-        <button class="tab-btn"        onclick="loadChapter(1)">2. Urm&#259;rirea</button>
-        <button class="tab-btn"        onclick="loadChapter(2)">3. Matul</button>
+    <div class="card">
+        <p>Matul cu regina &#351;i nebunul s-ar putea da &#351;i f&#259;r&#259; ajutorul regelui, regina av&#226;nd
+        destul&#259; putere pentru a-l for&#539;a pe regele inamic s&#259; ajung&#259; la marginea tablei,
+        dar, a&#351;a cum am spus, din acest moment are nevoie de un ajutor pentru a da mat.</p>
     </div>
-
-    <div class="chapter-title"    id="chapterTitle"></div>
-    <div class="chapter-subtitle" id="chapterSubtitle"></div>
 
     <div class="main-content">
         <div class="board-section">
@@ -229,15 +147,15 @@
                 <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="&#206;nainte">&#9654;</button>
                 <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima pozi&#539;ie">&#9197;</button>
             </div>
-            <p class="hint">&#8592; &#8594; sau butoanele de mai sus</p>
         </div>
 
         <div class="info-section">
+            <div class="phase-badge" id="phaseBadge"></div>
+            <div class="annotation-box" id="annotationBox"></div>
             <div class="moves-box">
                 <h3>Mut&#259;ri</h3>
                 <div class="moves-list" id="movesList"></div>
             </div>
-            <div class="annotation-box" id="annotationBox"></div>
         </div>
     </div>
 
@@ -253,85 +171,88 @@
 
 <script>
 const PAGE_ID = 'em_msf_dn_l2';
+
+/* ===== SUNETE ===== */
+const sndMove    = new Audio('Sounds/Move.mp3');
+const sndCapture = new Audio('Sounds/Capture.mp3');
+const sndMate    = new Audio('Sounds/Mate.mp3');
+let volumeOn = true;
+function playSound(snd) { if (!volumeOn) return; snd.currentTime = 0; snd.play().catch(() => {}); }
+function toggleVolume() { volumeOn = !volumeOn; document.getElementById('vol-btn').textContent = volumeOn ? '\uD83D\uDD0A' : '\uD83D\uDD07'; }
+
+function redKingOverlay() {
+    document.querySelectorAll('.red-king-ov').forEach(el => el.remove());
+    const chess2 = new Chess(positions[currentStep]);
+    const bd2 = chess2.board();
+    let sq = null;
+    for (let r = 0; r < 8; r++)
+        for (let f = 0; f < 8; f++) {
+            const p = bd2[r][f];
+            if (p && p.type === 'k' && p.color === 'b') sq = String.fromCharCode(97 + f) + (8 - r);
+        }
+    if (!sq) return;
+    const el = document.querySelector('#board .square-' + sq);
+    if (!el) return;
+    const ov = document.createElement('div');
+    ov.className = 'red-king-ov';
+    ov.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(220,0,0,0.52);z-index:5;pointer-events:none;border-radius:3px;';
+    el.style.position = 'relative';
+    el.appendChild(ov);
+}
+
 function toRo(san) {
     const map = { K:'R', Q:'D', R:'T', B:'N', N:'C' };
     return san.replace(/[KQRBN]/g, m => map[m]);
 }
 
-const chapters = [
-    {
-        title:    "1. Blocada",
-        subtitle: "Regina stabile\u015fte blocada \u2014 regele advers r\u0103m\u00e2ne f\u0103r\u0103 sc\u0103pare",
-        startFen: "8/8/8/3k4/8/2QBK3/8/8 w - - 0 1",
-        sanMoves: ["Qc7", "Ke6"],
-        annotations: [
-            "Regina \u015fi nebunul lucreaz\u0103 \u00eempreun\u0103 \u2014 observ\u0103 cum coopereaz\u0103 pentru a-l prinde pe regele advers.",
-            "Regina blocheaz\u0103 accesul regelui pe coloana c \u015fi p\u0103tr\u0103\u0163elele d6 \u015fi e5. Singurul loc unde poate merge regele negru este e6.",
-            ""
-        ]
-    },
-    {
-        title:    "2. Urm\u0103rirea",
-        subtitle: "Regele alb intr\u0103 \u00een ac\u0163iune \u015fi &#238;mpinge regele advers spre margine",
-        startFen: "8/2Q5/4k3/8/8/3BK3/8/8 w - - 2 2",
-        sanMoves: ["Ke4", "Kf6", "Kf4", "Ke6"],
-        annotations: [
-            "Regina a stabilit blocada. Acum regele alb intr\u0103 \u00een ac\u0163iune!",
-            "",
-            "",
-            "Se interzice sc\u0103parea regelui pe la g5. Nebunul blocheaz\u0103 g6, prin urmare regele negru nu poate dec\u00e2t s\u0103 se \u00eentoarc\u0103 la e6.",
-            ""
-        ]
-    },
-    {
-        title:    "3. Matul",
-        subtitle: "Nebunul d\u0103 \u015eah, iar regina d\u0103 lovitura final\u0103",
-        startFen: "8/2Q5/4k3/8/5K2/3B4/8/8 w - - 6 4",
-        sanMoves: ["Bc4+", "Kf6", "Qf7#"],
-        annotations: [
-            "Regele negru este blocat pe r\u00e2ndul 6 \u2014 vine matul!",
-            "Nebunul d\u0103 \u015eah \u015fi \u00eel trimite pe regele negru \u00eenapoi la f6, de unde ar mai putea sc\u0103pa doar pe la g6\u2026 deocamdat\u0103.",
-            "",
-            "Regina, ap\u0103rat\u0103 de nebun, \u00eel atac\u0103 la f7. \u015eah mat!"
-        ]
-    }
-];
+/* ===== JOC UNIC (toate fazele) ===== */
+const game = {
+    startFen: "8/8/8/3k4/8/2QBK3/8/8 w - - 0 1",
+    sanMoves: ["Qc7", "Ke6", "Ke4", "Kf6", "Kf4", "Ke6", "Bc4+", "Kf6", "Qf7#"],
+    // step 0-9
+    annotations: [
+        "Regina \u015fi nebunul lucreaz\u0103 \u00eempreun\u0103 \u2014 observ\u0103 cum coopereaz\u0103 pentru a-l prinde pe regele advers.",
+        "Regina blocheaz\u0103 accesul regelui pe coloana c \u015fi p\u0103tr\u0103\u0163elele d6 \u015fi e5. Singurul loc unde poate merge regele negru este e6.",
+        "Blocada este stabilit\u0103! Acum regele alb intr\u0103 \u00een ac\u0163iune.",
+        "",
+        "",
+        "Se interzice sc\u0103parea regelui pe la g5. Nebunul blocheaz\u0103 g6, prin urmare regele negru nu poate dec\u00e2t s\u0103 se \u00eentoarc\u0103 la e6.",
+        "Regele negru este blocat pe r\u00e2ndul 6 \u2014 vine matul!",
+        "Nebunul d\u0103 \u015eah \u015fi \u00eel trimite pe regele negru \u00eenapoi la f6, de unde ar mai putea sc\u0103pa doar pe la g6\u2026 deocamdat\u0103.",
+        "",
+        "Regina, ap\u0103rat\u0103 de nebun, \u00eel atac\u0103 la f7. \u015eah mat!"
+    ],
+    // faza activă per step (0=Blocada, 1=Urmărirea, 2=Matul)
+    stepPhase: [0, 0, 0, 1, 1, 1, 1, 2, 2, 2]
+};
 
-// Iconițe rol per capitol și pas
-// Capitol 0 "Blocada": Dc3→c7, Nb3, Re3 vs Rd5
-// Capitol 1 "Urmărirea": Dc7, Nd3, Re3→e4→f4 vs Re6
-// Capitol 2 "Matul": Dc7, Nd3→c4, Rf4 vs Re6→f6
-const chapterRoleIcons = [
-    [   // Capitol 0: Blocada
-        { c3: '\uD83C\uDFF9', d3: '\uD83D\uDEE1\uFE0F' },   // 0: start — regina atacă prima
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' }, // 1: Dc7 — blocada stabilită, ambii gardieni
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' }  // 2: Re6
-    ],
-    [   // Capitol 1: Urmărirea — ambii gardieni pe tot parcursul
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' }
-    ],
-    [   // Capitol 2: Matul
-        { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83C\uDFF9' },   // 0: start — nebunul urmează să atace
-        { c4: '\uD83C\uDFF9', c7: '\uD83D\uDEE1\uFE0F' },   // 1: Nc4+ — nebunul dă șah
-        { c4: '\uD83D\uDEE1\uFE0F', c7: '\uD83C\uDFF9' },   // 2: Rf6 — nebunul gardian f7, regina se pregătește
-        { f7: '\uD83C\uDFF9', c4: '\uD83D\uDEE1\uFE0F' }    // 3: Df7# — regina dă mat, nebunul apără
-    ]
+const phaseNames = ["1. Blocada", "2. Urm\u0103rirea", "3. Matul"];
+
+// Separatoarele de fază se inserează ÎNAINTE de mutările cu index: 2 (Ke4) și 6 (Bc4+)
+const phaseSepBefore = { 2: "2. Urm\u0103rirea", 6: "3. Matul" };
+
+// Iconițe rol per step
+const roleIcons = [
+    { c3: '\uD83C\uDFF9', d3: '\uD83D\uDEE1\uFE0F' },
+    { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
+    { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
+    { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
+    { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
+    { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83D\uDEE1\uFE0F' },
+    { c7: '\uD83D\uDEE1\uFE0F', d3: '\uD83C\uDFF9' },
+    { c4: '\uD83C\uDFF9', c7: '\uD83D\uDEE1\uFE0F' },
+    { c4: '\uD83D\uDEE1\uFE0F', c7: '\uD83C\uDFF9' },
+    { f7: '\uD83C\uDFF9', c4: '\uD83D\uDEE1\uFE0F' }
 ];
 
 let board = null;
-let currentChapter = null;
-let currentChapterIdx = 0;
 let positions = [];
 let currentStep = 0;
 
-function computePositions(chapter) {
-    const chess = new Chess(chapter.startFen);
+function computePositions() {
+    const chess = new Chess(game.startFen);
     const fens = [chess.fen()];
-    for (const mv of chapter.sanMoves) {
+    for (const mv of game.sanMoves) {
         const result = chess.move(mv);
         if (!result) { console.error('Mutare invalida:', mv); break; }
         fens.push(chess.fen());
@@ -339,9 +260,38 @@ function computePositions(chapter) {
     return fens;
 }
 
-function showRoleIcons(chIdx, step) {
+function buildMovesList() {
+    const container = document.getElementById('movesList');
+    container.innerHTML = '';
+
+    game.sanMoves.forEach((mv, i) => {
+        // Separator de fază dacă e cazul
+        if (phaseSepBefore[i]) {
+            const sep = document.createElement('div');
+            sep.className = 'phase-sep';
+            sep.textContent = phaseSepBefore[i];
+            container.appendChild(sep);
+        }
+
+        // Număr mutare
+        if (i % 2 === 0) {
+            const num = document.createElement('span');
+            num.className = 'move-number';
+            num.textContent = (Math.floor(i / 2) + 1) + '.';
+            container.appendChild(num);
+        }
+        const btn = document.createElement('button');
+        btn.className = 'move-token ' + (i % 2 === 0 ? 'white-move' : 'black-move');
+        btn.textContent = toRo(mv);
+        btn.dataset.step = i + 1;
+        btn.onclick = () => goToStep(i + 1);
+        container.appendChild(btn);
+    });
+}
+
+function showRoleIcons(step) {
     document.querySelectorAll('.role-icon').forEach(el => el.remove());
-    const icons = (chapterRoleIcons[chIdx] || [])[step];
+    const icons = roleIcons[step];
     if (!icons) return;
     for (const [sq, icon] of Object.entries(icons)) {
         const squareEl = document.querySelector('#board .square-' + sq);
@@ -351,47 +301,6 @@ function showRoleIcons(chIdx, step) {
         div.textContent = icon;
         squareEl.appendChild(div);
     }
-}
-
-function loadChapter(idx) {
-    document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-    currentChapter = chapters[idx];
-    currentChapterIdx = idx;
-    positions = computePositions(currentChapter);
-    currentStep = 0;
-
-    document.getElementById('chapterTitle').textContent    = currentChapter.title;
-    document.getElementById('chapterSubtitle').textContent = currentChapter.subtitle;
-
-    if (board) board.destroy();
-    board = Chessboard('board', {
-        position: positions[0],
-        pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg'
-    });
-
-    buildMovesList();
-    updateUI();
-}
-
-function buildMovesList() {
-    const container = document.getElementById('movesList');
-    container.innerHTML = '';
-    const whiteFirst = currentChapter.startFen.split(' ')[1] === 'w';
-    currentChapter.sanMoves.forEach((mv, i) => {
-        if (i % 2 === 0) {
-            const num = document.createElement('span');
-            num.className = 'move-number';
-            num.textContent = (Math.floor(i / 2) + 1) + '.';
-            container.appendChild(num);
-        }
-        const isWhite = whiteFirst ? (i % 2 === 0) : (i % 2 !== 0);
-        const btn = document.createElement('button');
-        btn.className = 'move-token ' + (isWhite ? 'white-move' : 'black-move');
-        btn.textContent = toRo(mv);
-        btn.dataset.step = i + 1;
-        btn.onclick = () => goToStep(i + 1);
-        container.appendChild(btn);
-    });
 }
 
 function highlightQueenControl() {
@@ -416,9 +325,7 @@ function highlightQueenControl() {
             if (!piece || piece.color !== 'w') continue;
             if (piece.type === 'q' || piece.type === 'b') {
                 const diags = [[-1,-1],[-1,1],[1,-1],[1,1]];
-                const rays  = piece.type === 'q'
-                    ? [...diags, [-1,0],[0,-1],[0,1],[1,0]]
-                    : diags;
+                const rays  = piece.type === 'q' ? [...diags,[-1,0],[0,-1],[0,1],[1,0]] : diags;
                 for (const [dr, df] of rays) {
                     let cr = r + dr, cf = f + df;
                     while (cr >= 0 && cr < 8 && cf >= 0 && cf < 8) {
@@ -449,9 +356,27 @@ function highlightQueenControl() {
     }
 }
 
+function getMoveLabel(s) {
+    if (s === 0) return 'Start';
+    const i = s - 1;
+    const n = Math.floor(i / 2) + 1;
+    return n + (i % 2 === 0 ? '. ' : '... ') + toRo(game.sanMoves[i]);
+}
+
 function goToStep(s) {
+    document.querySelectorAll('.red-king-ov').forEach(el => el.remove());
     currentStep = s;
     board.position(positions[s], false);
+    if (s > 0) {
+        const mv = game.sanMoves[s - 1];
+        if (mv.includes('#')) {
+            setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 200);
+        } else if (mv.includes('x')) {
+            playSound(sndCapture);
+        } else {
+            playSound(sndMove);
+        }
+    }
     updateUI();
 }
 
@@ -460,21 +385,10 @@ function goLast()  { goToStep(positions.length - 1); }
 function goPrev()  { if (currentStep > 0) goToStep(currentStep - 1); }
 function goNext()  { if (currentStep < positions.length - 1) goToStep(currentStep + 1); }
 
-function getMoveLabel(s) {
-    if (s === 0) return 'Start';
-    const i = s - 1;
-    const wf = !chapter.startFen.includes(' b ');
-    const isW = wf ? i % 2 === 0 : i % 2 === 1;
-    const n   = wf ? Math.floor(i/2)+1 : Math.floor((i+1)/2)+1;
-    return n + (isW ? '. ' : '... ') + toRo(chapter.sanMoves[i]);
-}
-
 function updateUI() {
     const total = positions.length - 1;
 
-    document.getElementById('moveCounter').textContent =
-        getMoveLabel(currentStep);
-
+    document.getElementById('moveCounter').textContent = getMoveLabel(currentStep);
     document.getElementById('btnFirst').disabled = currentStep === 0;
     document.getElementById('btnPrev').disabled  = currentStep === 0;
     document.getElementById('btnNext').disabled  = currentStep === total;
@@ -483,10 +397,14 @@ function updateUI() {
     document.querySelectorAll('.move-token').forEach(b =>
         b.classList.toggle('active', parseInt(b.dataset.step) === currentStep));
 
+    // Faza activă
+    const phaseIdx = game.stepPhase[currentStep] || 0;
+    document.getElementById('phaseBadge').textContent = phaseNames[phaseIdx];
+
+    // Adnotare
     const box  = document.getElementById('annotationBox');
-    const text = currentChapter.annotations[currentStep] || '';
-    const lastMove = currentChapter.sanMoves[currentChapter.sanMoves.length - 1] || '';
-    const isMat = currentStep === total && lastMove.includes('#');
+    const text = game.annotations[currentStep] || '';
+    const isMat = currentStep === total && game.sanMoves[total - 1].includes('#');
 
     box.className = 'annotation-box' + (isMat ? ' checkmate' : '');
     box.innerHTML = isMat
@@ -494,8 +412,19 @@ function updateUI() {
         : text;
 
     highlightQueenControl();
-    showRoleIcons(currentChapterIdx, currentStep);
+    showRoleIcons(currentStep);
 }
+
+/* ===== INIT ===== */
+positions = computePositions();
+
+board = Chessboard('board', {
+    position: positions[0],
+    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg'
+});
+
+buildMovesList();
+updateUI();
 
 document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') goNext();
@@ -503,8 +432,6 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Home')       goFirst();
     if (e.key === 'End')        goLast();
 });
-
-loadChapter(0);
 </script>
 </body>
 </html>

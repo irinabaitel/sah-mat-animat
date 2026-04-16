@@ -195,8 +195,11 @@
 
 <nav id="nav">
     <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
-    <div class="nav-title">Damă + Cal vs. Rege</div>
-    <span class="nav-badge">Nivelul III</span>
+    <div class="nav-title">Dam&#259; + Cal vs. Rege</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+        <button id="vol-btn" onclick="toggleVolume()" class="nav-btn" style="padding:6px 12px;font-size:1.1em;cursor:pointer;border:none;">&#128266;</button>
+        <span class="nav-badge">Nivelul III</span>
+    </div>
 </nav>
 
 <div class="content">
@@ -218,9 +221,6 @@
         nu mai are nevoie s&#259; fie alungat p&#226;n&#259; la margine!
     </p></div>
 
-    <div class="chapter-title">Dam&#259; + Cal &mdash; Exemplul 1</div>
-    <div class="chapter-subtitle">Mat &#238;n 5 mut&#259;ri &mdash; Regele alungat pe ultima linie</div>
-
     <div class="main-content">
         <div class="board-section">
             <div id="board"></div>
@@ -231,7 +231,6 @@
                 <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="&#206;nainte">&#9654;</button>
                 <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima pozi&#539;ie">&#9197;</button>
             </div>
-            <p class="hint">&#8592; &#8594; sau butoanele de mai sus</p>
         </div>
 
         <div class="info-section">
@@ -255,6 +254,34 @@
 
 <script>
 const PAGE_ID = 'em_msf_dc_l1';
+
+/* ===== SUNETE ===== */
+const sndMove    = new Audio('Sounds/Move.mp3');
+const sndCapture = new Audio('Sounds/Capture.mp3');
+const sndMate    = new Audio('Sounds/Mate.mp3');
+let volumeOn = true;
+function playSound(snd) { if (!volumeOn) return; snd.currentTime = 0; snd.play().catch(() => {}); }
+function toggleVolume() { volumeOn = !volumeOn; document.getElementById('vol-btn').textContent = volumeOn ? '\uD83D\uDD0A' : '\uD83D\uDD07'; }
+
+function redKingOverlay() {
+    document.querySelectorAll('.red-king-ov').forEach(el => el.remove());
+    const chess2 = new Chess(positions[currentStep]);
+    const bd2 = chess2.board();
+    let sq = null;
+    for (let r = 0; r < 8; r++)
+        for (let f = 0; f < 8; f++) {
+            const p = bd2[r][f];
+            if (p && p.type === 'k' && p.color === 'b') sq = String.fromCharCode(97 + f) + (8 - r);
+        }
+    if (!sq) return;
+    const el = document.querySelector('#board .square-' + sq);
+    if (!el) return;
+    const ov = document.createElement('div');
+    ov.className = 'red-king-ov';
+    ov.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(220,0,0,0.52);z-index:5;pointer-events:none;border-radius:3px;';
+    el.style.position = 'relative';
+    el.appendChild(ov);
+}
 function toRo(san) {
     const map = { K:'R', Q:'D', R:'T', B:'N', N:'C' };
     return san.replace(/[KQRBN]/g, m => map[m]);
@@ -354,8 +381,19 @@ function showRoleIcons(step) {
 }
 
 function goToStep(s) {
+    document.querySelectorAll('.red-king-ov').forEach(el => el.remove());
     currentStep = s;
     board.position(positions[s], false);
+    if (s > 0) {
+        const mv = chapter.sanMoves[s - 1];
+        if (mv.includes('#')) {
+            setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 200);
+        } else if (mv.includes('x')) {
+            playSound(sndCapture);
+        } else {
+            playSound(sndMove);
+        }
+    }
     updateUI();
 }
 

@@ -33,6 +33,7 @@ const T = {
   rounds:  [],         // [Round]
   status:  'lobby',    // 'lobby' | 'active' | 'finished'
   clock:   { time: 0, increment: 0 },  // 0 = fără ceas
+  byeBot:  { enabled: false, level: 3 }, // BYE = punct gratuit sau joc vs. robot
 };
 
 let _seq = 0;
@@ -40,7 +41,8 @@ const newId = () => `g${++_seq}`;
 
 /** @returns {Player} */
 function mkPlayer(id, name) {
-  return { id, name, score: 0, colors: [], opponents: new Set(), byes: 0 };
+  return { id, name, score: 0, colors: [], opponents: new Set(), byes: 0,
+           connected: true, disconnectTimer: null };
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -189,19 +191,58 @@ function broadcastAdmin() {
       whiteId: p.whiteId,
       whiteName: T.players.get(p.whiteId)?.name || '?',
       blackId: p.blackId,
-      blackName: p.blackId === 'BYE' ? 'BYE' : (T.players.get(p.blackId)?.name || '?'),
+      blackName: p.blackId === 'BYE' ? 'BYE' : p.blackId === 'BOT' ? 'Robot 🤖' : (T.players.get(p.blackId)?.name || '?'),
       gameId: p.gameId,
       result: p.result,
     })),
   }));
 
   io.to('admin').emit('admin_state', {
-    players:   [...T.players.values()].map(p => ({ id: p.id, name: p.name, score: p.score })),
+    players:   [...T.players.values()].map(p => ({ id: p.id, name: p.name, score: p.score, connected: p.connected })),
     rounds:    roundsInfo,
     standings: getStandings(),
     status:    T.status,
     clock:     T.clock,
+    byeBot:    T.byeBot,
   });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  HELPER: BYE sau JOC vs. BOT
+//  pairingEntry: obiect existent care trebuie mutat (Swiss), sau null → push nou
+// ═══════════════════════════════════════════════════════════════
+function handleByeOrBot(playerId, round, pairingEntry) {
+  const pl   = T.players.get(playerId);
+  if (!pl) return;
+  const sock = io.sockets.sockets.get(playerId);
+
+  if (!T.byeBot.enabled) {
+    // Punct gratuit clasic
+    pl.byes++;
+    pl.score += 1;
+    if (pairingEntry) {
+      pairingEntry.blackId = 'BYE'; pairingEntry.gameId = null; pairingEntry.result = 'bye';
+    } else {
+      round.pairings.push({ whiteId: playerId, blackId: 'BYE', gameId: null, result: 'bye' });
+    }
+    if (sock) sock.emit('got_bye', { round: round.num, name: pl.name });
+  } else {
+    // Joc vs. robot (Stockfish rulează în browser-ul jucătorului)
+    const gameId = newId();
+    pl.colors.push('w');   // Jucătorul e mereu alb vs. robot
+    // Nu adăugăm 'BOT' în opponents — nu e jucător real, nu afectează Buchholz
+    T.games.set(gameId, { id: gameId, whiteId: playerId, blackId: 'BOT', result: null, round: round.num, moves: [], clockW_ms: T.clock.time * 1000, clockB_ms: T.clock.time * 1000 });
+    if (pairingEntry) {
+      pairingEntry.blackId = 'BOT'; pairingEntry.gameId = gameId; pairingEntry.result = null;
+    } else {
+      round.pairings.push({ whiteId: playerId, blackId: 'BOT', gameId, result: null });
+    }
+    if (sock) sock.emit('game_start', {
+      gameId, yourColor: 'w', opponentName: 'Robot 🤖',
+      round: round.num, clock: T.clock, botLevel: T.byeBot.level,
+    });
+    console.log(`[BOT] ${pl.name} joacă vs. Robot (nivel ${T.byeBot.level}), joc ${gameId}`);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -230,14 +271,16 @@ function finishGame(gameId, result, reason) {
   }
 
   // Notificăm jucătorii
+  const isBotGame = game.blackId === 'BOT';
   const wSock = io.sockets.sockets.get(game.whiteId);
-  const bSock = io.sockets.sockets.get(game.blackId);
+  const bSock = isBotGame ? null : io.sockets.sockets.get(game.blackId);
   let wRes, bRes;
   if (result === '1-0')       { wRes = 'win';  bRes = 'loss'; }
   else if (result === '0-1')  { wRes = 'loss'; bRes = 'win';  }
   else                        { wRes = 'draw'; bRes = 'draw'; }
 
-  if (wSock) wSock.emit('game_over', { gameId, result, reason, yourResult: wRes, opponentName: black?.name || '?' });
+  const oppNameForWhite = isBotGame ? 'Robot 🤖' : (black?.name || '?');
+  if (wSock) wSock.emit('game_over', { gameId, result, reason, yourResult: wRes, opponentName: oppNameForWhite });
   if (bSock) bSock.emit('game_over', { gameId, result, reason, yourResult: bRes, opponentName: white?.name || '?' });
 
   // Dacă toate jocurile s-au terminat, runda e gata
@@ -259,13 +302,73 @@ function finishGame(gameId, result, reason) {
 io.on('connection', (socket) => {
   // ── JUCĂTOR: înregistrare ──
   socket.on('register', ({ name }) => {
-    if (T.status !== 'lobby') {
-      socket.emit('error_msg', 'Turneul a început deja. Contactează profesorul.');
-      return;
-    }
     const cleanName = String(name || '').trim().slice(0, 25);
     if (!cleanName) return;
 
+    // ── Reconectare: turneu activ + nume cunoscut + jucătorul era offline ──
+    if (T.status !== 'lobby') {
+      const offline = [...T.players.values()].find(
+        p => p.name.toLowerCase() === cleanName.toLowerCase() && !p.connected
+      );
+      if (offline) {
+        clearTimeout(offline.disconnectTimer);
+        const oldId = offline.id;
+
+        // Mutăm player-ul la noul socket ID
+        T.players.delete(oldId);
+        offline.id = socket.id;
+        offline.connected = true;
+        offline.disconnectTimer = null;
+        T.players.set(socket.id, offline);
+
+        // Actualizăm referințele în jocuri
+        for (const g of T.games.values()) {
+          if (g.whiteId === oldId) g.whiteId = socket.id;
+          if (g.blackId === oldId) g.blackId = socket.id;
+        }
+
+        socket.emit('welcome', { id: socket.id, name: cleanName });
+
+        // Trimitem starea jocului activ (dacă există)
+        const activeGame = [...T.games.values()].find(
+          g => !g.result && (g.whiteId === socket.id || g.blackId === socket.id)
+        );
+        if (activeGame) {
+          const yourColor = activeGame.whiteId === socket.id ? 'w' : 'b';
+          const oppId = yourColor === 'w' ? activeGame.blackId : activeGame.whiteId;
+          const opp   = T.players.get(oppId);
+          socket.emit('game_resume', {
+            gameId:      activeGame.id,
+            yourColor,
+            opponentName: oppId === 'BOT' ? 'Robot 🤖' : (opp?.name || '?'),
+            moves:       activeGame.moves || [],
+            clockW_ms:   activeGame.clockW_ms,
+            clockB_ms:   activeGame.clockB_ms,
+            round:       activeGame.round,
+            clock:       T.clock,
+            botLevel:    oppId === 'BOT' ? (T.byeBot.level || 3) : undefined,
+          });
+        }
+
+        broadcastLobby();
+        broadcastAdmin();
+        console.log(`[↩] Reconectat: ${cleanName}`);
+        return;
+      }
+
+      // Turneu activ, nu reconectare → eroare
+      const alreadyIn = [...T.players.values()].find(
+        p => p.name.toLowerCase() === cleanName.toLowerCase()
+      );
+      if (alreadyIn) {
+        socket.emit('error_msg', `Ești deja în turneu ca "${cleanName}".`);
+      } else {
+        socket.emit('error_msg', 'Turneul a început deja. Contactează profesorul.');
+      }
+      return;
+    }
+
+    // ── Lobby: înregistrare normală ──
     const dup = [...T.players.values()].find(
       p => p.name.toLowerCase() === cleanName.toLowerCase()
     );
@@ -315,13 +418,7 @@ io.on('connection', (socket) => {
 
     for (const p of pairings) {
       if (p.blackId === 'BYE') {
-        const byePlayer = T.players.get(p.whiteId);
-        if (byePlayer) { byePlayer.byes++; byePlayer.score += 1; }
-        const byeSock = io.sockets.sockets.get(p.whiteId);
-        if (byeSock) byeSock.emit('got_bye', {
-          round: round.num,
-          name: T.players.get(p.whiteId)?.name,
-        });
+        handleByeOrBot(p.whiteId, round, p);  // mută entry-ul existent din swissPair()
         continue;
       }
 
@@ -336,6 +433,9 @@ io.on('connection', (socket) => {
         blackId: p.blackId,
         result: null,
         round: round.num,
+        moves: [],
+        clockW_ms: T.clock.time * 1000,
+        clockB_ms: T.clock.time * 1000,
       });
 
       const wSock = io.sockets.sockets.get(p.whiteId);
@@ -350,12 +450,17 @@ io.on('connection', (socket) => {
   });
 
   // ── JUCĂTOR: mutare ──
-  socket.on('make_move', ({ gameId, from, to, promotion, fen }) => {
+  socket.on('make_move', ({ gameId, from, to, promotion, fen, clockW_ms, clockB_ms }) => {
     const game = T.games.get(gameId);
     if (!game || game.result) return;
     const isWhite = game.whiteId === socket.id;
     const isBlack = game.blackId === socket.id;
     if (!isWhite && !isBlack) return;
+
+    // Salvăm mutarea și starea ceasului pentru reconectare
+    game.moves.push({ from, to, promotion: promotion || null });
+    if (clockW_ms != null) game.clockW_ms = clockW_ms;
+    if (clockB_ms != null) game.clockB_ms = clockB_ms;
 
     const opponentId = isWhite ? game.blackId : game.whiteId;
     const opponentSock = io.sockets.sockets.get(opponentId);
@@ -364,17 +469,19 @@ io.on('connection', (socket) => {
   });
 
   // ── JUCĂTOR: raportare rezultat (detectat de chess.js client) ──
-  socket.on('game_result', ({ gameId, result, reason }) => {
+  socket.on('game_result', ({ gameId, result, reason, moves }) => {
     const game = T.games.get(gameId);
     if (!game || game.result) return;
     if (!['1-0', '0-1', '1/2-1/2'].includes(result)) return;
+    if (moves && Array.isArray(moves) && !game.moves) game.moves = moves;
     finishGame(gameId, result, reason || 'normal');
   });
 
   // ── JUCĂTOR: abandonare ──
-  socket.on('resign', ({ gameId }) => {
+  socket.on('resign', ({ gameId, moves }) => {
     const game = T.games.get(gameId);
     if (!game || game.result) return;
+    if (moves && Array.isArray(moves) && !game.moves) game.moves = moves;
     const result = game.whiteId === socket.id ? '0-1' : '1-0';
     finishGame(gameId, result, 'abandon');
   });
@@ -390,10 +497,11 @@ io.on('connection', (socket) => {
   });
 
   // ── JUCĂTOR: acceptare remiză ──
-  socket.on('accept_draw', ({ gameId }) => {
+  socket.on('accept_draw', ({ gameId, moves }) => {
     const game = T.games.get(gameId);
     if (!game || game.result) return;
-    finishGame(gameId, '1/2-1/2', 'acord_remiză');
+    if (moves && Array.isArray(moves) && !game.moves) game.moves = moves;
+    finishGame(gameId, '1/2-1/2', 'acord_remiță');
   });
 
   // ── ADMIN: forțare rezultat ──
@@ -452,11 +560,7 @@ io.on('connection', (socket) => {
       seen.add(p.whiteId);
 
       if (p.blackId === 'BYE') {
-        const pl = T.players.get(p.whiteId);
-        if (pl) { pl.byes++; pl.score += 1; }
-        finalPairings.push({ whiteId: p.whiteId, blackId: 'BYE', gameId: null, result: 'bye' });
-        const s = io.sockets.sockets.get(p.whiteId);
-        if (s) s.emit('got_bye', { round: round.num, name: T.players.get(p.whiteId)?.name });
+        handleByeOrBot(p.whiteId, round, null);  // push nou în finalPairings
         continue;
       }
 
@@ -474,13 +578,10 @@ io.on('connection', (socket) => {
       if (bSock) bSock.emit('game_start', { gameId, yourColor: 'b', opponentName: white?.name || '?', round: round.num, clock: T.clock });
     }
 
-    // Auto-BYE pentru oricine a fost omis
-    for (const [id, pl] of T.players) {
+    // Auto-BYE/BOT pentru oricine a fost omis
+    for (const [id] of T.players) {
       if (!seen.has(id)) {
-        pl.byes++; pl.score += 1;
-        finalPairings.push({ whiteId: id, blackId: 'BYE', gameId: null, result: 'bye' });
-        const s = io.sockets.sockets.get(id);
-        if (s) s.emit('got_bye', { round: round.num, name: pl.name });
+        handleByeOrBot(id, round, null);
       }
     }
 
@@ -507,6 +608,30 @@ io.on('connection', (socket) => {
     finishGame(gameId, result, 'timp');
   });
 
+  // ── ADMIN: reluare partida ──
+  socket.on('admin_get_game', ({ gameId }) => {
+    if (!socket.rooms.has('admin')) return;
+    const g = T.games.get(gameId);
+    if (!g) return;
+    const whiteName = g.whiteId === 'BOT' ? 'Robot 🤖' : (T.players.get(g.whiteId)?.name || '?');
+    const blackName = g.blackId === 'BOT' ? 'Robot 🤖' : (T.players.get(g.blackId)?.name || '?');
+    socket.emit('game_data', {
+      gameId:    g.id,
+      whiteName, blackName,
+      result:    g.result || '?',
+      moves:     g.moves  || [],
+    });
+  });
+
+  // ── ADMIN: setare BYE bot ──
+  socket.on('admin_set_bye_bot', ({ enabled, level }) => {
+    if (!socket.rooms.has('admin')) return;
+    T.byeBot.enabled = !!enabled;
+    if (level !== undefined) T.byeBot.level = Math.max(1, Math.min(5, parseInt(level) || 3));
+    broadcastAdmin();
+    console.log(`[ADMIN] BYE Bot: ${T.byeBot.enabled ? 'activat' : 'dezactivat'}, nivel ${T.byeBot.level}`);
+  });
+
   // ── ADMIN: finalizare turneu ──
   socket.on('admin_finish_tournament', () => {
     if (!socket.rooms.has('admin')) return;
@@ -523,20 +648,29 @@ io.on('connection', (socket) => {
     if (!player) return;
     console.log(`[-] Deconectat: ${player.name}`);
 
-    // Dacă era într-un joc activ, adversarul câștigă
-    for (const [gameId, game] of T.games) {
-      if (game.result) continue;
-      if (game.whiteId === socket.id || game.blackId === socket.id) {
-        const result = game.whiteId === socket.id ? '0-1' : '1-0';
-        finishGame(gameId, result, 'deconectare');
-        break;
-      }
-    }
-
-    // Ștergem din players numai dacă turneul nu a început
+    // În lobby: ștergem imediat
     if (T.status === 'lobby') {
       T.players.delete(socket.id);
+      broadcastLobby();
+      broadcastAdmin();
+      return;
     }
+
+    // Turneu activ: grace period 90 secunde pentru reconectare
+    player.connected = false;
+    player.disconnectTimer = setTimeout(() => {
+      if (player.connected) return; // s-a reconectat între timp
+      console.log(`[!] Forfeit după 90s: ${player.name}`);
+      for (const [gameId, game] of T.games) {
+        if (game.result) continue;
+        if (game.whiteId === socket.id || game.blackId === socket.id) {
+          const result = game.whiteId === socket.id ? '0-1' : '1-0';
+          finishGame(gameId, result, 'deconectare');
+          break;
+        }
+      }
+      broadcastAdmin();
+    }, 90000);
 
     broadcastLobby();
     broadcastAdmin();

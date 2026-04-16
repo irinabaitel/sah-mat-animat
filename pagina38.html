@@ -189,9 +189,8 @@
         .move-list .mw { color: #1a3a6b; font-weight: 700; margin-right: 6px; }
         .move-list .mb { color: #333; margin-right: 10px; }
         .move-list em  { color: rgba(0,0,0,0.35); font-style: italic; }
-        .move-item { border-radius: 3px; padding: 1px 3px; cursor: default; transition: background 0.15s; }
-        .move-list.review-ready .move-item { cursor: pointer; }
-        .move-list.review-ready .move-item:hover { background: rgba(26,58,107,0.15); }
+        .move-item { border-radius: 3px; padding: 1px 3px; cursor: pointer; transition: background 0.15s; }
+        .move-item:hover { background: rgba(26,58,107,0.15); }
         .move-item.active { background: rgba(26,58,107,0.28) !important; color: white !important; }
 
         /* ===== CONFETTI ===== */
@@ -248,20 +247,19 @@
 
 <nav id="nav">
     <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
-    <div class="nav-title">Damă + Cal vs. Rege</div>
-    <span class="nav-badge">Nivelul III</span>
+    <div class="nav-title">Dam&#259; + Cal vs. Rege</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+        <button id="vol-btn" onclick="toggleVolume()" class="nav-btn" style="padding:6px 12px;font-size:1.1em;cursor:pointer;border:none;">&#128266;</button>
+        <span class="nav-badge">Nivelul III</span>
+    </div>
 </nav>
 
 <div class="content">
-        <div class="lesson-title">        <h1>Arena de Antrenament: Rege + Dam&#259; + Cal vs. Rege</h1>    </div>
+    <div class="lesson-title"><h1>Arena de Antrenament</h1></div>
 
-    <p class="intro">
-        Echipa format&#259; din Rege, Dam&#259; &#351;i Cal combin&#259; puterea liniar&#259; a Damei cu salturile imprevizibile ale Calului!
-        Calul ad&#259;ug&#259; c&#226;mpuri de atac unice pe care Dama nu le poate acoperi singur&#259;, cre&#226;nd surprize tactic pentru Regele advers.
-        Coordoneaz&#259; cele trei piese pentru a &#238;nghesui Regele negru la margine &#351;i a da mat.
-        Exerseaz&#259; de mai multe ori, p&#226;n&#259; c&#226;nd mi&#351;c&#259;rile par naturale.
-        <strong>Robotul joac&#259; cele mai bune mut&#259;ri pentru adversar!</strong>
-    </p>
+    <div class="card">
+        <p>Aceast&#259; echip&#259; combin&#259; puterea liniar&#259; a Damei cu salturile imprevizibile ale Calului! Calul ad&#259;ug&#259; c&#226;mpuri de atac pe care Dama nu le poate acoperi singur&#259;, cre&#226;nd surprize pentru Regele advers. Coordoneaz&#259; cele trei piese pentru a for&#539;a Regele negru s&#259; ajung&#259; la margine &#351;i d&#259; mat. Exerseaz&#259; de mai multe ori, p&#226;n&#259; c&#226;nd mi&#351;c&#259;rile devin reflex. Robotul joac&#259; cele mai bune mut&#259;ri pentru adversar!</p>
+    </div>
 
     <div class="main-content">
 
@@ -300,7 +298,7 @@
 
     <div class="bottom-nav">
         <a href="pagina23.html" class="nav-prev">&#9664; &#206;napoi</a>
-        <a href="pagina24.html" class="nav-next">&#206;nainte &#9654;</a>
+        <a href="pagina19.html" class="nav-next">Nebun + Nebun vs. Rege &#9654;</a>
     </div>
 </div>
 
@@ -310,6 +308,32 @@
 
 <script>
 const PAGE_ID = 'em_msf_dc_ex';
+
+/* ===== SUNETE ===== */
+const sndMove    = new Audio('Sounds/Move.mp3');
+const sndCapture = new Audio('Sounds/Capture.mp3');
+const sndMate    = new Audio('Sounds/Mate.mp3');
+let volumeOn = true;
+function playSound(snd) { if (!volumeOn) return; snd.currentTime = 0; snd.play().catch(() => {}); }
+function playSoundForMove(mv) { if (!mv) return; if (mv.captured) playSound(sndCapture); else playSound(sndMove); }
+function toggleVolume() { volumeOn = !volumeOn; document.getElementById('vol-btn').textContent = volumeOn ? '\uD83D\uDD0A' : '\uD83D\uDD07'; }
+
+function redKingOverlay() {
+    const b = chess.board();
+    const files = 'abcdefgh';
+    let sq = null;
+    for (let r = 0; r < 8; r++)
+        for (let c = 0; c < 8; c++)
+            if (b[r][c] && b[r][c].type === 'k' && b[r][c].color === 'b')
+                sq = files[c] + (8 - r);
+    if (!sq) return;
+    const el = document.querySelector('#board .square-' + sq);
+    if (!el) return;
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(220,0,0,0.52);z-index:5;pointer-events:none;border-radius:3px;';
+    el.style.position = 'relative';
+    el.appendChild(ov);
+}
 const startFen = '8/8/8/4k3/8/8/8/3QK1N1 w - - 0 1';
 const chess    = new Chess(startFen);
 const statusBox = document.getElementById('statusBox');
@@ -387,12 +411,14 @@ function stockfishPlayWhite() {
             updateHeart();
             return;
         }
-        chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+        const mv0 = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+        playSoundForMove(mv0);
         board.position(chess.fen());
         positionHistory.push(chess.fen());
         updateMoveList();
 
         if (chess.in_checkmate()) {
+            setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 300);
             const survived = Math.floor(chess.history().length / 2);
             statusBox.innerHTML = '&#128128; <strong>&#350;ah mat!</strong> Ai rezistat <strong>' + survived + ' mut&#259;ri</strong>. Po&#539;i mai bine?';
             statusBox.className = 'status-box danger';
@@ -585,6 +611,7 @@ function onDrop(source, target) {
     const uciMove = source + target;
     const move = chess.move({ from: source, to: target, promotion: 'q' });
     if (!move) return 'snapback';
+    playSoundForMove(move);
 
     if (playerSide === 'b') {
         positionHistory.push(chess.fen());
@@ -607,6 +634,7 @@ function onDrop(source, target) {
     startClock('b');
 
     if (chess.in_checkmate()) {
+        setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 300);
         const whiteMoves = Math.ceil(chess.history().length / 2);
         statusBox.innerHTML = '&#127942; <strong>&#350;ah mat!</strong> Ai reu&#351;it din <strong>' + whiteMoves + ' mut&#259;ri</strong>. Po&#539;i mai bine?';
         statusBox.className = 'status-box success';
@@ -634,12 +662,14 @@ function onDrop(source, target) {
                 prepareWhiteBest();
                 return;
             }
-            chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+            const mv1 = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+            playSoundForMove(mv1);
             board.position(chess.fen());
             positionHistory.push(chess.fen());
             updateMoveList();
 
             if (chess.in_checkmate()) {
+                setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 300);
                 statusBox.innerHTML = '&#10060; &#350;ah mat! Regele negru a c&#226;&#351;tigat. Mai &#238;ncerc&#259;!';
                 statusBox.className = 'status-box danger';
                 stopClock();
@@ -681,7 +711,6 @@ window.addEventListener('resize', function() { board.resize(); });
 
 /* ===== REVIEW CLICK HANDLER ===== */
 document.getElementById('moveList').addEventListener('click', function(e) {
-    if (!gameOver) return;
     const item = e.target.closest('.move-item');
     if (!item) return;
     const idx = parseInt(item.dataset.idx);

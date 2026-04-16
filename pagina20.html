@@ -8,37 +8,6 @@
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
-
-        #nav {
-            position: sticky; top: 0;
-            background: rgba(245,169,110,0.92);
-            backdrop-filter: blur(8px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 20px; z-index: 100;
-            border-bottom: 2px solid rgba(255,255,255,0.4);
-        }
-        .nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-        .nav-btn:hover { background: rgba(255,255,255,0.85); }
-        .nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em; }
-
-        .content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
-
-        .lesson-title { text-align: center; margin-bottom: 8px; }
-        .lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
-
-        .card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-        .card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; text-align: justify; }
-        .card p:last-child { margin-bottom: 0; }
-
-        .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
-        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
-        .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
-        .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
-        .nav-prev:hover { background: rgba(255,255,255,0.75); }
-
-        @media (max-width: 560px) { .main-content { flex-direction: column; } .board-section { margin: 0 auto; } }
 
         body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
 
@@ -57,142 +26,41 @@
 
         .content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
 
-        .lesson-title { text-align: center; margin-bottom: 8px; }
-        .lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
-
-        .card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-        .card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; text-align: justify; }
-        .card p:last-child { margin-bottom: 0; }
-
         .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
         .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
         .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
         .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
         .nav-prev:hover { background: rgba(255,255,255,0.75); }
 
-        .chapter-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: rgba(255,255,255,0.4);
-            border: 2px solid #1a3a6b;
-            border-radius: 25px;
-            padding: 8px 18px;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
-            color: #1a3a6b;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
-        }
-        .tab-btn.active, .tab-btn:hover {
-            background: #1a3a6b;
-            color: white;
-        }
-
-        .chapter-title {
-            text-align: center;
-            font-size: 1.2em;
-            font-weight: 700;
-            color: #1a3a6b;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-        .chapter-subtitle {
-            text-align: center;
-            color: #1a3a6b;
-            font-size: 0.95em;
-            margin-bottom: 22px;
-            font-style: italic;
-        }
-
-        .main-content {
-            display: flex;
-            gap: 22px;
-            align-items: flex-start;
-        }
+        .main-content { display: flex; gap: 22px; align-items: center; }
 
         .board-section { flex: 0 0 auto; }
         #board { width: 360px; }
         .sq-hl { position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(210,40,30,0.32);pointer-events:none;z-index:5; }
 
-        .controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            margin-top: 14px;
-        }
-
-        .ctrl-btn {
-            background: #1a3a6b;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 46px;
-            height: 46px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
+        .controls { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 14px; }
+        .ctrl-btn { background: #1a3a6b; color: white; border: none; border-radius: 50%; width: 46px; height: 46px; font-size: 1.1em; cursor: pointer; transition: background 0.2s; }
         .ctrl-btn:hover:not(:disabled) { background: #2a5aab; }
         .ctrl-btn:disabled { background: rgba(26,58,107,0.25); cursor: not-allowed; }
 
-        .move-counter {
-            background: rgba(255,255,255,0.6);
-            border-radius: 20px;
-            padding: 5px 14px;
-            font-weight: 700;
-            color: #1a3a6b;
-            font-size: 0.9em;
-            min-width: 110px;
-            text-align: center;
-        }
+        .move-counter { background: rgba(255,255,255,0.6); border-radius: 20px; padding: 5px 14px; font-weight: 700; color: #1a3a6b; font-size: 0.9em; min-width: 110px; text-align: center; }
 
-        .info-section { flex: 1; min-width: 0; }
+        .info-section { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 
-        .moves-box {
-            background: rgba(255,255,255,0.4);
+        /* Caseta fază activă */
+        .phase-badge {
+            background: #1a3a6b;
+            color: white;
             border-radius: 12px;
-            padding: 12px 14px;
-            margin-bottom: 12px;
-        }
-        .moves-box h3 {
-            font-size: 0.8em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #1a3a6b;
-            margin-bottom: 10px;
+            padding: 10px 16px;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1em;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.03em;
         }
 
-        .moves-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            align-items: center;
-        }
-
-        .move-number { color: rgba(26,58,107,0.5); font-size: 0.8em; padding: 0 2px; }
-
-        .move-token {
-            border: 1px solid rgba(26,58,107,0.3);
-            border-radius: 6px;
-            padding: 4px 9px;
-            font-size: 0.92em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .move-token.white-move { background: rgba(255,255,255,0.7); color: #1a3a6b; }
-        .move-token.black-move { background: rgba(50,50,50,0.12); color: #333; }
-        .move-token.active { background: #1a3a6b !important; color: white !important; border-color: #1a3a6b; }
-        .move-token:hover:not(.active) { background: rgba(255,255,255,0.9); }
-
+        /* Caseta adnotare */
         .annotation-box {
             background: rgba(255,255,255,0.6);
             border-radius: 12px;
@@ -200,34 +68,44 @@
             line-height: 1.65;
             color: #333;
             font-size: 1em;
-            min-height: 100px;
+            min-height: 80px;
             border-left: 4px solid #1a3a6b;
         }
-        .annotation-box.checkmate {
-            border-left-color: #c0392b;
-            background: rgba(255,255,255,0.85);
-        }
+        .annotation-box.checkmate { border-left-color: #c0392b; background: rgba(255,255,255,0.85); }
+        .checkmate-badge { display: inline-block; background: #c0392b; color: white; padding: 3px 12px; border-radius: 20px; font-weight: 700; font-size: 0.9em; margin-bottom: 10px; }
 
-        .checkmate-badge {
-            display: inline-block;
-            background: #c0392b;
-            color: white;
-            padding: 3px 12px;
-            border-radius: 20px;
+        /* Lista mutări */
+        .moves-box { background: rgba(255,255,255,0.4); border-radius: 12px; padding: 12px 14px; }
+        .moves-box h3 { font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; color: #1a3a6b; margin-bottom: 10px; }
+        .moves-list { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+        .move-number { color: rgba(26,58,107,0.5); font-size: 0.8em; padding: 0 2px; }
+        .move-token { border: 1px solid rgba(26,58,107,0.3); border-radius: 6px; padding: 4px 9px; font-size: 0.92em; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+        .move-token.white-move { background: rgba(255,255,255,0.7); color: #1a3a6b; }
+        .move-token.black-move { background: rgba(50,50,50,0.12); color: #333; }
+        .move-token.active { background: #1a3a6b !important; color: white !important; border-color: #1a3a6b; }
+        .move-token:hover:not(.active) { background: rgba(255,255,255,0.9); }
+
+        /* Separator fază în lista de mutări */
+        .phase-sep {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 6px 0 2px;
+            font-size: 0.75em;
             font-weight: 700;
-            font-size: 0.9em;
-            margin-bottom: 10px;
+            color: #1a3a6b;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .phase-sep::before, .phase-sep::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(26,58,107,0.25);
         }
 
-        .hint {
-            text-align: center;
-            color: rgba(26,58,107,0.5);
-            font-size: 0.78em;
-            margin-top: 10px;
-        }
-            #board { width: 300px; }
-            .board-section { margin: 0 auto; }
-        }
+        @media (max-width: 560px) { .main-content { flex-direction: column; } .board-section { margin: 0 auto; } }
     </style>
 </head>
 <body>
@@ -235,20 +113,13 @@
 <nav id="nav">
     <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
     <div class="nav-title">Doi Nebuni vs. Rege</div>
-    <span class="nav-badge">Nivelul III</span>
+    <div style="display:flex;align-items:center;gap:8px;">
+        <button id="vol-btn" onclick="toggleVolume()" class="nav-btn" style="padding:6px 12px;font-size:1.1em;cursor:pointer;border:none;">&#128266;</button>
+        <span class="nav-badge">Nivelul III</span>
+    </div>
 </nav>
 
 <div class="content">
-    <div class="chapter-tabs">
-        <button class="tab-btn active" onclick="loadChapter(0)">1. Nebunii &#238;n centru</button>
-        <button class="tab-btn"        onclick="loadChapter(1)">2. Regele vine</button>
-        <button class="tab-btn"        onclick="loadChapter(2)">3. Spre margine</button>
-        <button class="tab-btn"        onclick="loadChapter(3)">4. Spre col&#539; &#351;i mat</button>
-    </div>
-
-    <div class="chapter-title"    id="chapterTitle"></div>
-    <div class="chapter-subtitle" id="chapterSubtitle"></div>
-
     <div class="main-content">
         <div class="board-section">
             <div id="board"></div>
@@ -259,15 +130,15 @@
                 <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="&#206;nainte">&#9654;</button>
                 <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima pozi&#539;ie">&#9197;</button>
             </div>
-            <p class="hint">&#8592; &#8594; sau butoanele de mai sus</p>
         </div>
 
         <div class="info-section">
+            <div class="phase-badge" id="phaseBadge"></div>
+            <div class="annotation-box" id="annotationBox"></div>
             <div class="moves-box">
                 <h3>Mut&#259;ri</h3>
                 <div class="moves-list" id="movesList"></div>
             </div>
-            <div class="annotation-box" id="annotationBox"></div>
         </div>
     </div>
 
@@ -283,96 +154,130 @@
 
 <script>
 const PAGE_ID = 'em_msf_2n_l2';
+
+/* ===== SUNETE ===== */
+const sndMove    = new Audio('Sounds/Move.mp3');
+const sndCapture = new Audio('Sounds/Capture.mp3');
+const sndMate    = new Audio('Sounds/Mate.mp3');
+let volumeOn = true;
+function playSound(snd) { if (!volumeOn) return; snd.currentTime = 0; snd.play().catch(() => {}); }
+function toggleVolume() { volumeOn = !volumeOn; document.getElementById('vol-btn').textContent = volumeOn ? '\uD83D\uDD0A' : '\uD83D\uDD07'; }
+
+function redKingOverlay() {
+    document.querySelectorAll('.red-king-ov').forEach(el => el.remove());
+    const chess2 = new Chess(positions[currentStep]);
+    const bd2 = chess2.board();
+    let sq = null;
+    for (let r = 0; r < 8; r++)
+        for (let f = 0; f < 8; f++) {
+            const p = bd2[r][f];
+            if (p && p.type === 'k' && p.color === 'b') sq = String.fromCharCode(97 + f) + (8 - r);
+        }
+    if (!sq) return;
+    const el = document.querySelector('#board .square-' + sq);
+    if (!el) return;
+    const ov = document.createElement('div');
+    ov.className = 'red-king-ov';
+    ov.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(220,0,0,0.52);z-index:5;pointer-events:none;border-radius:3px;';
+    el.style.position = 'relative';
+    el.appendChild(ov);
+}
+
 function toRo(san) {
     const map = { K:'R', Q:'D', R:'T', B:'N', N:'C' };
     return san.replace(/[KQRBN]/g, m => map[m]);
 }
 
-const chapters = [
-    {
-        title:    "1. Nebunii \u00een centru",
-        subtitle: "Mai \u00eent\u00e2i aducem ambii nebuni \u00een centrul tablei",
-        startFen: "8/8/8/8/B3k3/8/1B6/1K6 w - - 0 1",
-        highlightFrom: 5,
-        sanMoves: ["Bc6+", "Kf5", "Bd4", "Ke6", "Be4", "Kd6"],
-        annotations: [
-            "Urm\u0103re\u015fte cum aducem nebunii \u00een centru pentru a-l prinde pe regele advers",
-            "\u00cencepem prin a aduce primul nebun \u00een centru",
-            "",
-            "Acum al doilea nebun \u2014 tot \u00een centru!",
-            "",
-            "\u00cen acest fel control\u0103m \u00eentreaga tabl\u0103: regele negru este prins",
-            ""
-        ]
-    },
-    {
-        title:    "2. Regele vine",
-        subtitle: "Aducem regele \u00een lupt\u0103 pentru a limita mi\u015fc\u0103rile regelui advers",
-        startFen: "8/8/3k4/8/3BB3/8/8/1K6 w - - 0 1",
-        sanMoves: ["Kc2", "Ke6", "Kc3", "Kd6", "Kc4", "Ke6", "Kc5", "Kd7"],
-        annotations: [
-            "Nebunii sunt \u00een centru. Acum venim cu regele!",
-            "Acum nu mai mut\u0103m nebunii \u2014 venim cu regele",
-            "",
-            "",
-            "Regele negru nu are pe unde s\u0103 mai scape",
-            "",
-            "",
-            "De acum \u00eencepe for\u0163area regelui spre col\u0163",
-            ""
-        ]
-    },
-    {
-        title:    "3. Spre margine",
-        subtitle: "\u00cempingem regele advers spre marginea tablei",
-        startFen: "8/3k4/8/2K5/3BB3/8/8/8 w - - 0 1",
-        sanMoves: ["Bd5", "Ke7", "Be5", "Kd7", "Bd6", "Kd8", "Kc6", "Kc8"],
-        annotations: [
-            "Regele negru va fi \u00eempins spre marginea tablei",
-            "Mic\u015for\u0103m num\u0103rul de p\u0103tr\u0103\u0163ele pe care regele negru poate muta",
-            "",
-            "Aducem \u015fi cel\u0103lalt nebun, \u00eempingând regele advers mai aproape de margine",
-            "",
-            "",
-            "",
-            "Folosim regele pentru a limita mut\u0103rile regelui advers",
-            "Regele este complet blocat pe ultima linie"
-        ]
-    },
-    {
-        highlightKing: true,
-        title:    "4. Spre col\u0163 \u015fi mat",
-        subtitle: "For\u0163\u0103m regele \u00een col\u0163 \u015fi d\u0103m mat",
-        startFen: "2k5/8/2KB4/3B4/8/8/8/8 w - - 0 1",
-        sanMoves: ["Be6+", "Kd8", "Bf7", "Kc8", "Be7", "Kb8", "Kb6", "Kc8", "Be6+", "Kb8", "Bd6+", "Ka8", "Bd5#"],
-        annotations: [
-            "Regele este pe ultima linie. Acum \u00eel for\u0163\u0103m spre col\u0163!",
-            "",
-            "",
-            "Cu aceast\u0103 mutare \u00eel \u00eempiedic\u0103m pe rege s\u0103 scape pe la e8, for\u0163\u00e2ndu-l spre col\u0163ul a8",
-            "",
-            "Acoperim ie\u015firea pe la d8, for\u0163\u00e2nd regele mai aproape de col\u0163",
-            "",
-            "Lu\u0103m opozi\u0163ia pentru a evita sc\u0103parea regelui pe la a7",
-            "C\u00e2nd regele \u00eencerc\u0103 s\u0103 fug\u0103...",
-            "...\u00eei t\u0103iem calea cu nebunul, bloc\u00e2ndu-i accesul",
-            "",
-            "\u00cel gonim spre col\u0163!",
-            "",
-            "\u015ei urmeaz\u0103 atacul final. \u015eah-mat!"
-        ]
-    }
+/* ===== JOC UNIC (toate fazele) ===== */
+const game = {
+    startFen: "8/8/8/8/B3k3/8/1B6/1K6 w - - 0 1",
+    sanMoves: [
+        // 1. Nebunii în centru (mutările 0-5)
+        "Bc6+", "Kf5", "Bd4", "Ke6", "Be4", "Kd6",
+        // 2. Regele vine (mutările 6-13)
+        "Kc2", "Ke6", "Kc3", "Kd6", "Kc4", "Ke6", "Kc5", "Kd7",
+        // 3. Spre margine (mutările 14-21)
+        "Bd5", "Ke7", "Be5", "Kd7", "Bd6", "Kd8", "Kc6", "Kc8",
+        // 4. Spre colț și mat (mutările 22-34)
+        "Be6+", "Kd8", "Bf7", "Kc8", "Be7", "Kb8", "Kb6", "Kc8", "Be6+", "Kb8", "Bd6+", "Ka8", "Bd5#"
+    ],
+    annotations: [
+        // Step 0 – start
+        "Urm\u0103re\u015fte cum aducem nebunii \u00een centru pentru a-l prinde pe regele advers",
+        // Steps 1-5
+        "\u00cencepem prin a aduce primul nebun \u00een centru",
+        "",
+        "Acum al doilea nebun \u2014 tot \u00een centru!",
+        "",
+        "\u00cen acest fel control\u0103m \u00eentreaga tabl\u0103: regele negru este prins",
+        // Step 6 – tranziție spre faza 2
+        "Nebunii sunt \u00een centru. Acum venim cu regele!",
+        // Steps 7-13
+        "Acum nu mai mut\u0103m nebunii \u2014 venim cu regele",
+        "",
+        "",
+        "Regele negru nu are pe unde s\u0103 mai scape",
+        "",
+        "",
+        "De acum \u00eencepe for\u0163area regelui spre col\u0163",
+        // Step 14 – tranziție spre faza 3
+        "Regele negru va fi \u00eempins spre marginea tablei",
+        // Steps 15-21
+        "Mic\u015for\u0103m num\u0103rul de p\u0103tr\u0103\u0163ele pe care regele negru poate muta",
+        "",
+        "Aducem \u015fi cel\u0103lalt nebun, \u00eempingând regele advers mai aproape de margine",
+        "",
+        "",
+        "",
+        "Folosim regele pentru a limita mut\u0103rile regelui advers",
+        // Step 22 – tranziție spre faza 4
+        "Regele este pe ultima linie. Acum \u00eel for\u0163\u0103m spre col\u0163!",
+        // Steps 23-35
+        "",
+        "",
+        "Cu aceast\u0103 mutare \u00eel \u00eempiedic\u0103m pe rege s\u0103 scape pe la e8, for\u0163\u00e2ndu-l spre col\u0163ul a8",
+        "",
+        "Acoperim ie\u015firea pe la d8, for\u0163\u00e2nd regele mai aproape de col\u0163",
+        "",
+        "Lu\u0103m opozi\u0163ia pentru a evita sc\u0103parea regelui pe la a7",
+        "C\u00e2nd regele \u00eencerc\u0103 s\u0103 fug\u0103\u2026",
+        "\u2026\u00eel t\u0103iem calea cu nebunul, bloc\u00e2ndu-i accesul",
+        "",
+        "\u00cel gonim spre col\u0163!",
+        "",
+        "\u015ei urmeaz\u0103 atacul final. \u015eah-mat!"
+    ],
+    // faza activă per step: 0=Nebunii în centru, 1=Regele vine, 2=Spre margine, 3=Spre colț și mat
+    stepPhase: [
+        0, 0, 0, 0, 0, 0,                         // steps 0-5
+        1, 1, 1, 1, 1, 1, 1, 1,                   // steps 6-13
+        2, 2, 2, 2, 2, 2, 2, 2,                   // steps 14-21
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 // steps 22-35
+    ]
+};
+
+const phaseNames = [
+    "1. Nebunii \u00een centru",
+    "2. Regele vine",
+    "3. Spre margine",
+    "4. Spre col\u0163 \u015fi mat"
 ];
 
+// Separatoare de fază înaintea mutărilor cu indecșii: 6, 14, 22
+const phaseSepBefore = {
+    6:  "2. Regele vine",
+    14: "3. Spre margine",
+    22: "4. Spre col\u0163 \u015fi mat"
+};
+
 let board = null;
-let currentChapter = null;
 let positions = [];
 let currentStep = 0;
 
-function computePositions(chapter) {
-    const chess = new Chess(chapter.startFen);
+function computePositions() {
+    const chess = new Chess(game.startFen);
     const fens = [chess.fen()];
-    for (const mv of chapter.sanMoves) {
+    for (const mv of game.sanMoves) {
         const result = chess.move(mv);
         if (!result) { console.error('Mutare invalida:', mv); break; }
         fens.push(chess.fen());
@@ -380,39 +285,26 @@ function computePositions(chapter) {
     return fens;
 }
 
-function loadChapter(idx) {
-    document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-    currentChapter = chapters[idx];
-    positions = computePositions(currentChapter);
-    currentStep = 0;
-
-    document.getElementById('chapterTitle').textContent    = currentChapter.title;
-    document.getElementById('chapterSubtitle').textContent = currentChapter.subtitle;
-
-    if (board) board.destroy();
-    board = Chessboard('board', {
-        position: positions[0],
-        pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg'
-    });
-
-    buildMovesList();
-    updateUI();
-}
-
 function buildMovesList() {
     const container = document.getElementById('movesList');
     container.innerHTML = '';
-    const whiteFirst = currentChapter.startFen.split(' ')[1] === 'w';
-    currentChapter.sanMoves.forEach((mv, i) => {
+
+    game.sanMoves.forEach((mv, i) => {
+        if (phaseSepBefore[i]) {
+            const sep = document.createElement('div');
+            sep.className = 'phase-sep';
+            sep.textContent = phaseSepBefore[i];
+            container.appendChild(sep);
+        }
+
         if (i % 2 === 0) {
             const num = document.createElement('span');
             num.className = 'move-number';
             num.textContent = (Math.floor(i / 2) + 1) + '.';
             container.appendChild(num);
         }
-        const isWhite = whiteFirst ? (i % 2 === 0) : (i % 2 !== 0);
         const btn = document.createElement('button');
-        btn.className = 'move-token ' + (isWhite ? 'white-move' : 'black-move');
+        btn.className = 'move-token ' + (i % 2 === 0 ? 'white-move' : 'black-move');
         btn.textContent = toRo(mv);
         btn.dataset.step = i + 1;
         btn.onclick = () => goToStep(i + 1);
@@ -424,8 +316,7 @@ function highlightBishopControl() {
     const boardEl = document.getElementById('board');
     boardEl.querySelectorAll('.sq-hl').forEach(el => el.remove());
 
-    const from = currentChapter.highlightFrom || 0;
-    if (currentStep < from) return;
+    if (currentStep < 5) return; // nebunii nu sunt încă centralizați
 
     const bd = new Chess(positions[currentStep]).board();
     const dirs8 = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
@@ -438,7 +329,6 @@ function highlightBishopControl() {
         }
     if (bkr < 0) return;
 
-    // All squares attacked by white pieces
     const whitePieceAttacks = new Set();
     for (let r = 0; r < 8; r++)
         for (let f = 0; f < 8; f++) {
@@ -462,7 +352,6 @@ function highlightBishopControl() {
             }
         }
 
-    // Highlight only squares adjacent to black king that are attacked by white
     for (const [dr, df] of dirs8) {
         const cr = bkr + dr, cf = bkf + df;
         if (cr < 0 || cr >= 8 || cf < 0 || cf >= 8) continue;
@@ -476,9 +365,27 @@ function highlightBishopControl() {
     }
 }
 
+function getMoveLabel(s) {
+    if (s === 0) return 'Start';
+    const i = s - 1;
+    const n = Math.floor(i / 2) + 1;
+    return n + (i % 2 === 0 ? '. ' : '... ') + toRo(game.sanMoves[i]);
+}
+
 function goToStep(s) {
+    document.querySelectorAll('.red-king-ov').forEach(el => el.remove());
     currentStep = s;
     board.position(positions[s], false);
+    if (s > 0) {
+        const mv = game.sanMoves[s - 1];
+        if (mv.includes('#')) {
+            setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 200);
+        } else if (mv.includes('x')) {
+            playSound(sndCapture);
+        } else {
+            playSound(sndMove);
+        }
+    }
     updateUI();
 }
 
@@ -487,21 +394,10 @@ function goLast()  { goToStep(positions.length - 1); }
 function goPrev()  { if (currentStep > 0) goToStep(currentStep - 1); }
 function goNext()  { if (currentStep < positions.length - 1) goToStep(currentStep + 1); }
 
-function getMoveLabel(s) {
-    if (s === 0) return 'Start';
-    const i = s - 1;
-    const wf = !chapter.startFen.includes(' b ');
-    const isW = wf ? i % 2 === 0 : i % 2 === 1;
-    const n   = wf ? Math.floor(i/2)+1 : Math.floor((i+1)/2)+1;
-    return n + (isW ? '. ' : '... ') + toRo(chapter.sanMoves[i]);
-}
-
 function updateUI() {
     const total = positions.length - 1;
 
-    document.getElementById('moveCounter').textContent =
-        getMoveLabel(currentStep);
-
+    document.getElementById('moveCounter').textContent = getMoveLabel(currentStep);
     document.getElementById('btnFirst').disabled = currentStep === 0;
     document.getElementById('btnPrev').disabled  = currentStep === 0;
     document.getElementById('btnNext').disabled  = currentStep === total;
@@ -510,10 +406,14 @@ function updateUI() {
     document.querySelectorAll('.move-token').forEach(b =>
         b.classList.toggle('active', parseInt(b.dataset.step) === currentStep));
 
+    // Faza activă
+    const phaseIdx = game.stepPhase[currentStep] || 0;
+    document.getElementById('phaseBadge').textContent = phaseNames[phaseIdx];
+
+    // Adnotare
     const box  = document.getElementById('annotationBox');
-    const text = currentChapter.annotations[currentStep] || '';
-    const lastMove = currentChapter.sanMoves[currentChapter.sanMoves.length - 1] || '';
-    const isMat = currentStep === total && lastMove.includes('#');
+    const text = game.annotations[currentStep] || '';
+    const isMat = currentStep === total && game.sanMoves[total - 1].includes('#');
 
     box.className = 'annotation-box' + (isMat ? ' checkmate' : '');
     box.innerHTML = isMat
@@ -523,14 +423,23 @@ function updateUI() {
     highlightBishopControl();
 }
 
+/* ===== INIT ===== */
+positions = computePositions();
+
+board = Chessboard('board', {
+    position: positions[0],
+    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg'
+});
+
+buildMovesList();
+updateUI();
+
 document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') goNext();
     if (e.key === 'ArrowLeft')  goPrev();
     if (e.key === 'Home')       goFirst();
     if (e.key === 'End')        goLast();
 });
-
-loadChapter(0);
 </script>
 </body>
 </html>

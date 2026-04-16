@@ -72,6 +72,31 @@ body { background: #1a3a6b; font-family: 'Nunito', sans-serif; color: #e8eaf0; m
 .standings-table .score-td { font-family: 'Baloo 2', cursive; color: #7ec8f0; font-weight: 900; }
 .standings-table tr:first-child td { color: #f0c040; }
 
+/* REPLAY MODAL */
+#replay-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78);
+  z-index:1000; overflow:auto; padding:20px 12px; }
+.rm-box { max-width:420px; margin:0 auto; background:#1e4488; border-radius:20px;
+  padding:22px 20px; }
+.rm-title { font-family:'Baloo 2',cursive; font-size:1em; color:#7ec8f0; margin-bottom:12px;
+  display:flex; justify-content:space-between; align-items:center; }
+.rm-close { background:none; border:none; color:#e8eaf0; font-size:1.2em; cursor:pointer; padding:0 4px; }
+#rm-board { width:300px; max-width:calc(100vw - 64px); margin:0 auto; }
+.rm-nav { display:flex; gap:5px; justify-content:center; margin:10px 0; align-items:center; }
+.rmb { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); color:#e8eaf0;
+  border-radius:7px; padding:5px 12px; font-size:1em; cursor:pointer; }
+.rmb:hover { background:rgba(255,255,255,0.2); }
+#rm-counter { font-family:'Baloo 2',cursive; font-size:0.82em; color:rgba(255,255,255,0.4);
+  min-width:42px; text-align:center; }
+#rm-moves { max-height:130px; overflow-y:auto; font-family:'Baloo 2',cursive;
+  font-size:0.88em; line-height:1.9; padding:4px 0; }
+.rmn { color:rgba(255,255,255,0.28); font-size:0.8em; display:inline-block;
+  min-width:24px; text-align:right; padding-right:3px; }
+.rmv { cursor:pointer; padding:2px 5px; border-radius:4px; color:#e8eaf0; display:inline-block; }
+.rmv:hover { background:rgba(255,255,255,0.1); }
+.rmv.cur   { background:#7ec8f0; color:#1a3a6b; }
+#rm-result { text-align:center; font-family:'Baloo 2',cursive; color:rgba(255,255,255,0.5);
+  font-size:0.88em; margin-top:8px; }
+
 /* STATUS */
 .status-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
 .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #27ae60; display: inline-block; }
@@ -160,6 +185,30 @@ body { background: #1a3a6b; font-family: 'Nunito', sans-serif; color: #e8eaf0; m
           <span style="font-size:0.8em;color:rgba(255,255,255,0.5);">s</span>
           <button class="btn btn-gray btn-sm" onclick="setClockCustom()">Aplică</button>
         </div>
+        <div id="clock-error" style="display:none;margin-top:7px;font-family:'Baloo 2',cursive;
+          font-size:0.82em;color:#ff6b6b;">⚠ Introdu cel puțin 1 minut.</div>
+      </div>
+
+      <!-- BYE BOT -->
+      <div class="panel" style="margin-bottom:16px;">
+        <div class="panel-title">🤖 Jucător fără pereche</div>
+        <div id="bye-bot-status" style="font-family:'Baloo 2',cursive;font-size:0.92em;color:rgba(255,255,255,0.45);margin-bottom:10px;">
+          BYE = punct gratuit
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:10px;">
+          <button id="bye-btn-punct" class="btn btn-action btn-sm" onclick="setByeBot(false)">+1 Punct</button>
+          <button id="bye-btn-robot" class="btn btn-gray  btn-sm" onclick="setByeBot(true)">🤖 vs Robot</button>
+        </div>
+        <div id="bye-bot-level-row" style="display:none;">
+          <div style="font-size:0.72em;color:rgba(255,255,255,0.35);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Nivel robot</div>
+          <div style="display:flex;gap:4px;" id="bye-level-btns">
+            <button class="btn btn-gray btn-sm" onclick="setBotLevel(1)">1</button>
+            <button class="btn btn-gray btn-sm" onclick="setBotLevel(2)">2</button>
+            <button class="btn btn-gray btn-sm" onclick="setBotLevel(3)">3</button>
+            <button class="btn btn-gray btn-sm" onclick="setBotLevel(4)">4</button>
+            <button class="btn btn-gray btn-sm" onclick="setBotLevel(5)">5</button>
+          </div>
+        </div>
       </div>
 
       <!-- JUCATORI ÎNREGISTRAȚI -->
@@ -195,7 +244,36 @@ body { background: #1a3a6b; font-family: 'Nunito', sans-serif; color: #e8eaf0; m
   </div>
 </div>
 
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<!-- TOAST EROARE SERVER -->
+<div id="server-toast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:#c0392b;color:#fff;font-family:'Baloo 2',cursive;font-size:0.92em;
+  padding:10px 20px;border-radius:12px;z-index:2000;box-shadow:0 4px 18px rgba(0,0,0,0.4);
+  max-width:90vw;text-align:center;"></div>
+
+<!-- MODAL RELUARE PARTIDA -->
+<div id="replay-modal">
+  <div class="rm-box">
+    <div class="rm-title">
+      <span id="rm-title-text">Partida</span>
+      <button class="rm-close" onclick="closeReplayModal()">✕</button>
+    </div>
+    <div id="rm-board"></div>
+    <div class="rm-nav">
+      <button class="rmb" onclick="rmFirst()">⏮</button>
+      <button class="rmb" onclick="rmPrev()">◀</button>
+      <span id="rm-counter">0 / 0</span>
+      <button class="rmb" onclick="rmNext()">▶</button>
+      <button class="rmb" onclick="rmLast()">⏭</button>
+    </div>
+    <div id="rm-moves"></div>
+    <div id="rm-result"></div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script>
 var socket = io();
 
@@ -217,7 +295,11 @@ socket.on('admin_state', function(data) {
 });
 
 socket.on('error_msg', function(msg) {
-  alert(msg);
+  var t = document.getElementById('server-toast');
+  t.textContent = msg;
+  t.style.display = '';
+  clearTimeout(t._hide);
+  t._hide = setTimeout(function(){ t.style.display = 'none'; }, 3500);
 });
 
 socket.on('lobby_update', function(data) {
@@ -268,8 +350,9 @@ function removePlayer(playerId, name) {
 
 // ─── RENDER ──────────────────────────────────────────────────
 function renderAdminState(data) {
-  // Ceas
-  if (data.clock !== undefined) updateClockDisplay(data.clock);
+  // Ceas + BYE bot
+  if (data.clock  !== undefined) updateClockDisplay(data.clock);
+  if (data.byeBot !== undefined) updateByeBotDisplay(data.byeBot);
 
   // Jucători
   var playerCount = data.players.length;
@@ -277,7 +360,9 @@ function renderAdminState(data) {
   var playerHtml = '';
   data.players.forEach(function(p) {
     playerHtml += '<div class="player-item">' +
-      '<span class="player-name">' + escHtml(p.name) + '</span>' +
+      '<span class="player-name">' + escHtml(p.name) +
+        (p.connected === false ? ' <span style="font-size:0.72em;color:#e67e22;font-family:\'Baloo 2\',cursive;">⚠ offline</span>' : '') +
+      '</span>' +
       '<span style="display:flex;gap:6px;align-items:center;">' +
         '<span class="player-score">' + p.score + 'p</span>' +
         (data.status === 'lobby' ?
@@ -338,7 +423,9 @@ function renderAdminState(data) {
             '<button class="btn btn-gray btn-sm" onclick="forceResult(\'' + p.gameId + '\',\'1/2-1/2\')">½</button>' +
           '</div>' : '');
       } else if (p.result === 'bye') {
-        resHtml = '<span class="pairing-result res-bye">BYE +1</span>';
+        resHtml = p.blackName === 'Robot 🤖'
+          ? '<span class="pairing-result res-pending">vs Robot</span>'
+          : '<span class="pairing-result res-bye">BYE +1</span>';
       } else if (p.result === '1-0') {
         resHtml = '<span class="pairing-result res-white">1-0 (Alb câștigă)</span>';
       } else if (p.result === '0-1') {
@@ -347,11 +434,15 @@ function renderAdminState(data) {
         resHtml = '<span class="pairing-result res-draw">½-½ Remiză</span>';
       }
 
+      var replayBtn = (p.result && p.result !== 'bye' && p.gameId)
+        ? '<button class="btn btn-gray btn-sm" style="margin-left:auto;" title="Reluare partida" ' +
+          'onclick="openReplayModal(\'' + p.gameId + '\')">▶ Partida</button>'
+        : '';
       pairingsHtml += '<div class="pairing-row">' +
         '<span class="pairing-white">⬜ ' + escHtml(p.whiteName) + '</span>' +
         '<span class="pairing-vs">vs</span>' +
         '<span class="pairing-black">⬛ ' + escHtml(p.blackName) + '</span>' +
-        resHtml +
+        resHtml + replayBtn +
         '</div>';
     });
   } else {
@@ -512,7 +603,9 @@ function setClock(time, increment) {
 function setClockCustom() {
   var min = parseInt(document.getElementById('clock-min').value)  || 0;
   var inc = parseInt(document.getElementById('clock-inc').value)  || 0;
-  if (min < 1) { alert('Introdu cel puțin 1 minut.'); return; }
+  var errEl = document.getElementById('clock-error');
+  if (min < 1) { errEl.style.display = ''; return; }
+  errEl.style.display = 'none';
   setClock(min * 60, inc);
 }
 function updateClockDisplay(clock) {
@@ -526,6 +619,116 @@ function updateClockDisplay(clock) {
     var timeStr = s > 0 ? m + ':' + (s < 10 ? '0' : '') + s : m;
     el.textContent = timeStr + ' min + ' + clock.increment + 's increment';
     el.style.color = '#7ec8f0';
+  }
+}
+
+// ─── REPLAY PARTIDA ───────────────────────────────────────────
+var rmBoard  = null;
+var rmMoves  = [];
+var rmIdx    = 0;
+
+socket.on('game_data', function(data) {
+  rmMoves = data.moves || [];
+  rmIdx   = rmMoves.length;  // pornim la poziția finală
+
+  document.getElementById('rm-title-text').textContent =
+    '⬜ ' + data.whiteName + '  vs  ⬛ ' + data.blackName;
+  document.getElementById('rm-result').textContent = 'Rezultat: ' + data.result;
+
+  // Inițializăm tabla (o singură dată)
+  if (!rmBoard) {
+    rmBoard = Chessboard('rm-board', {
+      pieceTheme:   'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+      showNotation: false,
+    });
+  }
+  rmSetPos();
+  document.getElementById('replay-modal').style.display = 'block';
+});
+
+function rmSetPos() {
+  if (!rmBoard) return;
+  rmBoard.position(rmIdx === 0 ? 'start' : rmMoves[rmIdx - 1].fen, false);
+  document.getElementById('rm-counter').textContent = rmIdx + ' / ' + rmMoves.length;
+  renderRmMoves();
+}
+function rmFirst() { rmIdx = 0;                 rmSetPos(); }
+function rmPrev()  { if (rmIdx > 0) rmIdx--;     rmSetPos(); }
+function rmNext()  { if (rmIdx < rmMoves.length) { rmIdx++; rmSetPos(); } }
+function rmLast()  { rmIdx = rmMoves.length;    rmSetPos(); }
+function rmJump(n) { rmIdx = n;                 rmSetPos(); }
+
+function renderRmMoves() {
+  var html = '';
+  for (var i = 0; i < rmMoves.length; i++) {
+    if (i % 2 === 0) {
+      html += '<span class="rmn">' + (Math.floor(i / 2) + 1) + '.</span>';
+    }
+    var cur = (rmIdx === i + 1);
+    html += '<span class="rmv' + (cur ? ' cur' : '') + '" data-ri="' + (i+1) + '" ' +
+            'onclick="rmJump(' + (i+1) + ')">' + escHtml(rmMoves[i].san) + '</span>';
+    if (i % 2 === 1) html += '<span style="display:inline-block;width:5px;"></span>';
+  }
+  if (!html) html = '<span style="color:rgba(255,255,255,0.3);font-size:0.85em;">Notația nu este disponibilă.</span>';
+  var el = document.getElementById('rm-moves');
+  el.innerHTML = html;
+  var c = el.querySelector('[data-ri="' + rmIdx + '"]');
+  if (c) c.scrollIntoView({ block: 'nearest' });
+}
+
+function openReplayModal(gameId) {
+  socket.emit('admin_get_game', { gameId: gameId });
+}
+function closeReplayModal() {
+  document.getElementById('replay-modal').style.display = 'none';
+}
+
+// Navigare cu taste în modal
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('replay-modal').style.display === 'none') return;
+  if (e.key === 'ArrowLeft')  { rmPrev();  e.preventDefault(); }
+  if (e.key === 'ArrowRight') { rmNext();  e.preventDefault(); }
+  if (e.key === 'Home')       { rmFirst(); e.preventDefault(); }
+  if (e.key === 'End')        { rmLast();  e.preventDefault(); }
+  if (e.key === 'Escape')     { closeReplayModal(); }
+});
+
+// ─── BYE BOT ──────────────────────────────────────────────────
+function setByeBot(enabled) {
+  socket.emit('admin_set_bye_bot', { enabled: enabled, level: currentBotLevel });
+}
+function setBotLevel(level) {
+  currentBotLevel = level;
+  socket.emit('admin_set_bye_bot', { enabled: true, level: level });
+}
+
+var currentBotLevel = 3;
+
+function updateByeBotDisplay(byeBot) {
+  if (!byeBot) return;
+  currentBotLevel = byeBot.level || 3;
+  var statusEl   = document.getElementById('bye-bot-status');
+  var levelRow   = document.getElementById('bye-bot-level-row');
+  var btnPunct   = document.getElementById('bye-btn-punct');
+  var btnRobot   = document.getElementById('bye-btn-robot');
+  var levelBtns  = document.getElementById('bye-level-btns');
+
+  if (byeBot.enabled) {
+    statusEl.textContent = 'Jucătorul fără pereche joacă vs. Robot (nivel ' + byeBot.level + ')';
+    statusEl.style.color = '#7ec8f0';
+    btnPunct.className = 'btn btn-gray  btn-sm';
+    btnRobot.className = 'btn btn-action btn-sm';
+    levelRow.style.display = '';
+    // Evidențiază nivelul activ
+    Array.from(levelBtns.children).forEach(function(b, i) {
+      b.className = 'btn btn-sm ' + ((i + 1) === byeBot.level ? 'btn-action' : 'btn-gray');
+    });
+  } else {
+    statusEl.textContent = 'BYE = punct gratuit (+1p)';
+    statusEl.style.color = 'rgba(255,255,255,0.35)';
+    btnPunct.className = 'btn btn-action btn-sm';
+    btnRobot.className = 'btn btn-gray  btn-sm';
+    levelRow.style.display = 'none';
   }
 }
 

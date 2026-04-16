@@ -3,326 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sah Mat Animat - Harta Mentala Dama + Rege vs Rege</title>
+    <title>Sah Mat Animat - Rege + Damă vs Rege</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
-
-        #nav {
-            position: sticky; top: 0;
-            background: rgba(245,169,110,0.92);
-            backdrop-filter: blur(8px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 20px; z-index: 100;
-            border-bottom: 2px solid rgba(255,255,255,0.4);
+        body {
+            height: 100vh;
+            background: #F5A96E;
+            font-family: 'Nunito', sans-serif;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
         }
-        .nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-        .nav-btn:hover { background: rgba(255,255,255,0.85); }
-        .nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em; }
 
-        .content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
-
-        .lesson-title { text-align: center; margin-bottom: 8px; }
-        .lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
-
-        .card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-        .card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; text-align: justify; }
-        .card p:last-child { margin-bottom: 0; }
-
-        .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
-        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
-        .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
-        .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
-        .nav-prev:hover { background: rgba(255,255,255,0.75); }
-
-        @media (max-width: 560px) { .main-content { flex-direction: column; } .board-section { margin: 0 auto; } }
-
-        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
-
+        /* Navigație compactă */
         #nav {
-            position: sticky; top: 0;
+            width: 100%;
             background: rgba(245,169,110,0.92);
-            backdrop-filter: blur(8px);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 20px; z-index: 100;
-            border-bottom: 2px solid rgba(255,255,255,0.4);
+            padding: 8px 20px; z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
         }
-        .nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-        .nav-btn:hover { background: rgba(255,255,255,0.85); }
-        .nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em; }
+        .nav-btn { background: rgba(255,255,255,0.5); border-radius: 50px; padding: 5px 15px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; }
+        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; padding: 2px 12px; border-radius: 20px; text-transform: uppercase; }
 
-        .content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
+        .page {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-        .lesson-title { text-align: center; margin-bottom: 8px; }
-        .lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: clamp(1.5em, 4vh, 2.2em);
+            color: #1a3a6b;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
+        }
 
-        .card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-        .card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; text-align: justify; }
-        .card p:last-child { margin-bottom: 0; }
-
-        .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
-        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
-        .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
-        .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
-        .nav-prev:hover { background: rgba(255,255,255,0.75); }
-
-        /* ===== MIND MAP ===== */
+        /* ===== MIND MAP COMPACT ===== */
         .mindmap-wrap {
             position: relative;
-            width: 1100px;
-            height: 700px;
-            margin: 0 auto;
+            width: 100%;
+            height: 70vh;
+            max-height: 580px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .mm-svg {
             position: absolute;
-            top: 0; left: 0;
-            width: 1100px; height: 800px;
+            width: 100%; height: 100%;
             pointer-events: none;
+            z-index: 1;
         }
 
         .node {
             position: absolute;
-            border-radius: 18px;
-            padding: 14px 18px;
-            font-family: 'Nunito', sans-serif;
-            box-shadow: 0 5px 16px rgba(0,0,0,0.22);
+            border-radius: 15px;
+            padding: 12px 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            z-index: 2;
         }
 
         .node-center {
-            width: 190px;
-            height: 92px;
-            left: 455px;
-            top: 328px;
+            width: 180px;
+            height: 90px;
             background: #e67e22;
             border: 3px solid #ca6f1e;
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             font-family: 'Baloo 2', cursive;
-            font-size: 0.9em;
-            font-weight: 900;
-            color: white;
-            text-transform: uppercase;
-            line-height: 1.25;
-            text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
-        }
-
-        .node-branch { width: 420px; }
-        .node-branch .bt {
-            font-family: 'Baloo 2', cursive;
             font-size: 1em;
             font-weight: 900;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-        .node-branch ul {
-            list-style: none;
-            font-size: 0.87em;
-            line-height: 1.65;
-        }
-        .node-branch ul li::before { content: '\2022 '; font-weight: 900; }
-
-        /* Varianta 1 — Cușca (albastru, stânga-sus) */
-        .node-blue {
-            background: #2471a3;
-            border: 3px solid #1a5276;
-            color: white;
-            top: 18px; left: 0px;
-        }
-        /* Varianta 2 — Echipa de Șoc (verde, dreapta-sus) */
-        .node-green {
-            background: #1e8449;
-            border: 3px solid #145a32;
-            color: white;
-            top: 18px; left: 680px;
-        }
-        /* Capcana PAT (roșu, stânga-jos) */
-        .node-red {
-            background: #b03a2e;
-            border: 3px solid #7b241c;
-            color: white;
-            top: 450px; left: 0px;
-        }
-        /* De reținut (mov, dreapta-jos) */
-        .node-purple {
-            background: #7d3c98;
-            border: 3px solid #5b2c6f;
-            color: white;
-            top: 450px; left: 680px;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
         }
 
-        /* Etichetă variantă (badge număr) */
+        .node-branch { width: 320px; }
         .variant-badge {
             display: inline-block;
-            background: rgba(255,255,255,0.25);
-            border-radius: 20px;
-            padding: 1px 10px;
-            font-size: 0.78em;
-            margin-bottom: 6px;
-            font-family: 'Nunito', sans-serif;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 1px 8px;
+            font-size: 0.7em;
+            margin-bottom: 5px;
             font-weight: 900;
-            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
+        .node-branch .bt {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.05em;
+            font-weight: 900;
+            margin-bottom: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        .node-branch ul { list-style: none; font-size: 0.85em; line-height: 1.4; }
+        .node-branch ul li { position: relative; padding-left: 15px; margin-bottom: 2px; text-align: justify; }
+        .node-branch ul li::before { content: '•'; position: absolute; left: 0; color: white; }
 
-        @media (max-width: 560px) { .main-content { flex-direction: column; } .board-section { margin: 0 auto; } }
+        /* Poziții strânse spre centru */
+        .node-blue   { top: 2%; left: 2%; background: #2471a3; border: 2px solid #1a5276; color: white; }
+        .node-green  { top: 2%; right: 2%; background: #1e8449; border: 2px solid #145a32; color: white; }
+        .node-red    { bottom: 2%; left: 2%; background: #b03a2e; border: 2px solid #7b241c; color: white; }
+        .node-purple { bottom: 2%; right: 2%; background: #7d3c98; border: 2px solid #5b2c6f; color: white; }
+
+        .bottom-nav {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+        }
+        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; padding: 8px 25px; border-radius: 50px; text-decoration: none; font-size: 0.95em; }
+        .nav-prev { background: rgba(255,255,255,0.4); padding: 8px 20px; border-radius: 50px; text-decoration: none; color: #1a3a6b; font-family: 'Baloo 2', cursive; font-size: 0.9em; }
+
+        @media (max-width: 900px) {
+            body { height: auto; }
+            .mindmap-wrap { flex-direction: column; height: auto; max-height: none; }
+            .mm-svg { display: none; }
+            .node { position: relative; top: auto!important; left: auto!important; right: auto!important; bottom: auto!important; transform: none!important; width: 100%; margin-bottom: 15px; }
+            .node-center { order: -1; margin-bottom: 20px; }
+        }
     </style>
 </head>
 <body>
 
 <nav id="nav">
-    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
-    <div class="nav-title">Hart&#259; Mental&#259; &mdash; Dam&#259; vs. Rege</div>
+    <a href="hub.html" class="nav-btn">☰ Cuprins</a>
     <span class="nav-badge">Nivelul III</span>
 </nav>
 
-<div class="content">
-    <div class="lesson-title"><h1>Hart&#259; Mental&#259;<br>Rege + Dam&#259; vs. Rege</h1></div>
+<div class="page">
+    <h1>Rege + Damă vs. Rege</h1>
 
     <div class="mindmap-wrap">
+        <svg class="mm-svg" id="svg-canvas"></svg>
 
-        <svg class="mm-svg" viewBox="0 0 1100 700">
-            <!-- Linii de la centru spre ramuri -->
-            <line x1="550" y1="374" x2="442" y2="298" stroke="#2471a3" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
-            <line x1="550" y1="374" x2="658" y2="298" stroke="#1e8449" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
-            <line x1="550" y1="374" x2="442" y2="450" stroke="#b03a2e" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
-            <line x1="550" y1="374" x2="658" y2="450" stroke="#7d3c98" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
-        </svg>
+        <div class="node node-center" id="center">REGE + DAMĂ<br>VS. REGE</div>
 
-        <!-- Nodul central -->
-        <div class="node node-center">Mat cu<br>Dam&#259; + Rege<br>vs. Rege</div>
-
-        <!-- VARIANTA 1 — CUȘCA (albastru, stânga-sus) -->
-        <div class="node node-branch node-blue">
-            <div class="variant-badge">Varianta 1 &mdash; Lec&#539;ia 1</div>
-            <div class="bt">&#128274; Metoda Cu&#351;tii</div>
+        <div class="node node-branch node-blue" id="n1">
+            <div class="variant-badge">Varianta 1</div>
+            <div class="bt">🏰 Metoda Cuștii</div>
             <ul>
-                <li>Regina se plaseaz&#259; la o <em>s&#259;ritur&#259; de cal</em> fa&#539;&#259; de rege</li>
-                <li>La fiecare mutare, cu&#351;ca invizibil&#259; se str&#226;nge</li>
-                <li>Regina singur&#259; conduce asediul &mdash; cca. <strong>15 mut&#259;ri</strong></li>
-                <li><strong>Regina NU d&#259; niciun &#351;ah p&#226;n&#259; la mat!</strong> Doar forteaz&#259;</li>
-                <li>Regele alb intr&#259; doar la final, pentru lovitura decisiv&#259;</li>
-                <li>Risc: PAT dac&#259; nu chemi Regele la timp!</li>
+                <li>Damă la "săritură de cal" de rege.</li>
+                <li>Fără șah! Cușca se strânge singură.</li>
+                <li>Dama singură conduce asediul.</li>
+                <li>Atenție: lasă-i regelui o cale de fugă!</li>
             </ul>
         </div>
 
-        <!-- VARIANTA 2 — ECHIPA DE ȘOC (verde, dreapta-sus) -->
-        <div class="node node-branch node-green">
-            <div class="variant-badge">Varianta 2 &mdash; Lec&#539;ia 2</div>
-            <div class="bt">&#9889; Echipa de &#350;oc</div>
+        <div class="node node-branch node-green" id="n2">
+            <div class="variant-badge">Varianta 2</div>
+            <div class="bt">⚡ Echipa de Șoc</div>
             <ul>
-                <li>Regele alb intr&#259; activ &#238;n lupt&#259; din <strong>mutarea 3</strong></li>
-                <li>Regele = <strong>zidul</strong> (blocheaz&#259;) &mdash; Regina = <strong>sabia</strong> (atac&#259;)</li>
-                <li><strong>Niciun &#351;ah p&#226;n&#259; la mat!</strong> Regele e for&#539;at, nu gonit</li>
-                <li>Gardul ro&#351;u arat&#259; zonele interzise regelui negru</li>
-                <li>Rezultat: mat &#238;n doar <strong>6 mut&#259;ri</strong> &mdash; de 2,5&#215; mai rapid!</li>
-                <li>Trei variante de mat posibile la final</li>
+                <li>Regele alb intră activ din mutarea 3.</li>
+                <li>Regele = Zidul, Regina = Sabia.</li>
+                <li>Niciun șah până la mat!</li>
+                <li>De 2,5x mai rapid decât metoda cuștii.</li>
             </ul>
         </div>
 
-        <!-- CAPCANA PAT (roșu, stânga-jos) -->
-        <div class="node node-branch node-red">
-            <div class="bt">&#9888;&#65039; Capcana PAT!</div>
+        <div class="node node-branch node-red" id="n3">
+            <div class="bt">⚠️ Capcana PAT!</div>
             <ul>
-                <li>PAT &#8800; &#350;ah Mat &rarr; PAT = <strong>Remiz&#259;!</strong></li>
-                <li>Dac&#259; regele advers nu are mutare &#351;i NU e &#238;n &#351;ah &rarr; PAT</li>
-                <li>Cel mai periculos la margine &#351;i &#238;n col&#539;</li>
-                <li>Solu&#539;ie: mut&#259; regele alb sau repozioneaz&#259; regina</li>
-                <li>Exemplu clasic: Rege negru pe h1, Regina pe g3 &rarr; PAT!</li>
+                <li>PAT = Remiză (nu este victorie!).</li>
+                <li>Periculos când regele e la margine.</li>
+                <li>Dacă nu are mutare și nu e în șah: PAT.</li>
+                <li>Mută mereu regele alb la final.</li>
             </ul>
         </div>
 
-        <!-- DE REȚINUT (mov, dreapta-jos) -->
-        <div class="node node-branch node-purple">
-            <div class="bt">&#128161; De re&#539;inut!</div>
+        <div class="node node-branch node-purple" id="n4">
+            <div class="bt">💡 De reținut!</div>
             <ul>
-                <li>Matul se d&#259; <strong>&#238;ntotdeauna</strong> la margine sau col&#539;</li>
-                <li>Regina singur&#259; NU poate da mat niciodat&#259;</li>
-                <li>Cu Regele activ: mult mai rapid &#351;i mai sigur</li>
-                <li>Regula celor 50 de mut&#259;ri: termin&#259; repede!</li>
-                <li>&#206;nva&#539;&#259; ambele variante &mdash; ele se completeaz&#259;!</li>
+                <li>Matul se dă DOAR la margine/colț.</li>
+                <li>Regina singură NU poate da mat.</li>
+                <li>Cu regele activ e mult mai sigur.</li>
+                <li>Învață ambele: se completează!</li>
             </ul>
         </div>
-
-    </div><!-- end mindmap-wrap -->
+    </div>
 
     <div class="bottom-nav">
-        <a href="pagina25.html" class="nav-prev">&#9664; &#206;napoi</a>
-        <a href="pagina27.html" class="nav-next">&#206;nainte &#9654;</a>
+        <a href="pagina25.html" class="nav-prev">◀ Înapoi</a>
+        <a href="pagina27.html" class="nav-next">Înainte ▶</a>
     </div>
-</div><!-- /.content -->
+</div>
 
 <script>
-const PAGE_ID = 'em_msf_dama_hm';
-</script>
+    function drawLines() {
+        const svg = document.getElementById('svg-canvas');
+        const center = document.getElementById('center');
+        const nodes = [document.getElementById('n1'), document.getElementById('n2'), document.getElementById('n3'), document.getElementById('n4')];
+        
+        if (window.innerWidth <= 900) {
+            svg.innerHTML = '';
+            return;
+        }
 
-<script>
-function layoutMindmap() {
-    const wrap   = document.querySelector('.mindmap-wrap');
-    const center = document.querySelector('.node-center');
-    const blue   = document.querySelector('.node-blue');
-    const green  = document.querySelector('.node-green');
-    const red    = document.querySelector('.node-red');
-    const purple = document.querySelector('.node-purple');
-    const svg    = document.querySelector('.mm-svg');
-    if (!wrap || !center || !blue || !svg) return;
+        const wrapRect = document.querySelector('.mindmap-wrap').getBoundingClientRect();
+        const centerRect = center.getBoundingClientRect();
+        const cX = (centerRect.left + centerRect.right) / 2 - wrapRect.left;
+        const cY = (centerRect.top + centerRect.bottom) / 2 - wrapRect.top;
 
-    const GAP = 30;
+        let linesHtml = '';
+        nodes.forEach(node => {
+            const nodeRect = node.getBoundingClientRect();
+            const nX = (nodeRect.left + nodeRect.right) / 2 - wrapRect.left;
+            const nY = (nodeRect.top + nodeRect.bottom) / 2 - wrapRect.top;
+            const color = window.getComputedStyle(node).borderColor;
 
-    // Înălțimea reală a celulelor de sus
-    const topStart  = blue.offsetTop;
-    const topH      = Math.max(blue.offsetHeight, green.offsetHeight);
-    const topBottom = topStart + topH;
-
-    // Centru: la distanță egală deasupra și dedesubt
-    const centerTop    = topBottom + GAP;
-    center.style.top   = centerTop + 'px';
-    const centerH      = center.offsetHeight;
-    const centerBottom = centerTop + centerH;
-    const centerLeft   = center.offsetLeft;
-    const centerRight  = centerLeft + center.offsetWidth;
-
-    // Celule de jos
-    const botTop    = centerBottom + GAP;
-    red.style.top    = botTop + 'px';
-    purple.style.top = botTop + 'px';
-    const botH = Math.max(red.offsetHeight, purple.offsetHeight);
-
-    // Înălțime totală wrap
-    const totalH = botTop + botH + GAP;
-    wrap.style.height = totalH + 'px';
-    svg.setAttribute('viewBox', '0 0 1100 ' + totalH);
-    svg.style.height = totalH + 'px';
-
-    // Colțurile celulelor branch
-    const blueRight  = blue.offsetLeft  + blue.offsetWidth;
-    const greenLeft  = green.offsetLeft;
-    const redRight   = red.offsetLeft   + red.offsetWidth;
-    const purpleLeft = purple.offsetLeft;
-
-    // Linii SVG din colț în colț
-    const lines = svg.querySelectorAll('line');
-    if (lines.length >= 4) {
-        // albastru colt-DR → centru colt-SU (stanga sus)
-        lines[0].setAttribute('x1', blueRight);  lines[0].setAttribute('y1', topBottom);
-        lines[0].setAttribute('x2', centerLeft); lines[0].setAttribute('y2', centerTop);
-        // verde colt-DL → centru colt-SD (stanga-dreapta sus)
-        lines[1].setAttribute('x1', greenLeft);   lines[1].setAttribute('y1', topBottom);
-        lines[1].setAttribute('x2', centerRight); lines[1].setAttribute('y2', centerTop);
-        // centru colt-JS → rosu colt-TR
-        lines[2].setAttribute('x1', centerLeft); lines[2].setAttribute('y1', centerBottom);
-        lines[2].setAttribute('x2', redRight);   lines[2].setAttribute('y2', botTop);
-        // centru colt-JD → mov colt-TL
-        lines[3].setAttribute('x1', centerRight);  lines[3].setAttribute('y1', centerBottom);
-        lines[3].setAttribute('x2', purpleLeft);   lines[3].setAttribute('y2', botTop);
+            linesHtml += `<line x1="${cX}" y1="${cY}" x2="${nX}" y2="${nY}" 
+                          stroke="${color}" stroke-width="3" stroke-dasharray="6,4" opacity="0.6" />`;
+        });
+        svg.innerHTML = linesHtml;
     }
-}
-window.addEventListener('load', layoutMindmap);
-window.addEventListener('resize', layoutMindmap);
+    window.addEventListener('load', drawLines);
+    window.addEventListener('resize', drawLines);
 </script>
 
 </body>

@@ -551,6 +551,16 @@ function onDrop(source, target) {
         statusBox.className = 'status-box success';
         stopClock(); spawnPageConfetti(5000); setTimeout(removeHeart, 1000); enableReview(); return;
     }
+    if (chess.in_stalemate()) {
+        statusBox.innerHTML = '&#9888;&#65039; <strong>Pat!</strong> Regele Negru nu mai are mutări, dar nu e în șah. Atenție la pat — reia!';
+        statusBox.className = 'status-box warning';
+        stopClock(); enableReview(); return;
+    }
+    if (chess.in_draw()) {
+        statusBox.innerHTML = '&#9878; Remiză! Reia și încearcă să eviți egalul.';
+        statusBox.className = 'status-box warning';
+        stopClock(); enableReview(); return;
+    }
 
     const isGood = sfBestForWhite && uciMove === sfBestForWhite;
     statusBox.innerHTML = isGood
@@ -657,6 +667,178 @@ function startRevansa() {
 /* ===== INIT ===== */
 initStockfish();
 updateClockDisplay();
+</script>
+
+<!-- ===== ADNOTĂRI TABLĂ (click dreapta) ===== -->
+<script>
+(function() {
+    var wrap = document.getElementById('board-wrap');
+
+    // SVG transparent deasupra tablei
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:20;overflow:visible;');
+    wrap.appendChild(svg);
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    svg.appendChild(g);
+
+    // Culori: Ctrl=roșu, Meta/Win=galben, Shift=albastru, simplu=verde
+    var C = {
+        ctrl:  { fill: '#e74c3c', sq: 'rgba(231,76,60,0.38)' },
+        meta:  { fill: '#d4ac0d', sq: 'rgba(212,172,13,0.40)' },
+        shift: { fill: '#2980b9', sq: 'rgba(41,128,185,0.38)' },
+        none:  { fill: '#27ae60', sq: 'rgba(39,174,96,0.38)' }
+    };
+
+    var highlights = {};   // { 'e4': 'none', 'd5': 'ctrl', ... }
+    var arrows     = [];   // [{ from, to, mod }]
+    var drag       = null; // { startSq, mod }
+    var preview    = null; // { from, to, mod }
+
+    function mod(e) {
+        if (e.ctrlKey)  return 'ctrl';
+        if (e.metaKey)  return 'meta';
+        if (e.shiftKey) return 'shift';
+        return 'none';
+    }
+
+    function sqAt(x, y) {
+        // SVG e pointer-events:none deci elementFromPoint vede tabla direct
+        var el = document.elementFromPoint(x, y);
+        var sq = el && el.closest('[data-square]');
+        return sq ? sq.getAttribute('data-square') : null;
+    }
+
+    function sqRect(sq) {
+        var el = document.querySelector('#board [data-square="' + sq + '"]');
+        if (!el) return null;
+        var sr = svg.getBoundingClientRect(), r = el.getBoundingClientRect();
+        return { x: r.left - sr.left, y: r.top - sr.top, w: r.width, h: r.height };
+    }
+
+    function center(sq) {
+        var r = sqRect(sq);
+        return r ? { x: r.x + r.w / 2, y: r.y + r.h / 2 } : null;
+    }
+
+    function sz() {
+        var el = document.querySelector('#board [data-square]');
+        return el ? el.getBoundingClientRect().width : 60;
+    }
+
+    function mk(tag) { return document.createElementNS('http://www.w3.org/2000/svg', tag); }
+
+    function render() {
+        while (g.firstChild) g.removeChild(g.firstChild);
+
+        // Pătrate colorate
+        Object.keys(highlights).forEach(function(sq) {
+            var r = sqRect(sq); if (!r) return;
+            var rect = mk('rect');
+            rect.setAttribute('x', r.x); rect.setAttribute('y', r.y);
+            rect.setAttribute('width', r.w); rect.setAttribute('height', r.h);
+            rect.setAttribute('fill', C[highlights[sq]].sq);
+            g.appendChild(rect);
+        });
+
+        // Săgeți
+        var all = preview ? arrows.concat([preview]) : arrows;
+        all.forEach(function(a) { drawArrow(a.from, a.to, a.mod, a === preview); });
+    }
+
+    function drawArrow(fromSq, toSq, m, isPreview) {
+        if (fromSq === toSq) return;
+        var f = center(fromSq), t = center(toSq);
+        if (!f || !t) return;
+        var s = sz();
+        var op = isPreview ? 0.58 : 0.88;
+        var col = C[m].fill;
+
+        var dx = t.x - f.x, dy = t.y - f.y;
+        var len = Math.sqrt(dx * dx + dy * dy); if (len < 1) return;
+        var ux = dx / len, uy = dy / len;
+        var nx = -uy, ny = ux;
+
+        var sw = s * 0.14, hw = s * 0.30, hl = s * 0.25, so = s * 0.32;
+        var x1 = f.x + ux * so,  y1 = f.y + uy * so;
+        var x2 = t.x - ux * hl,  y2 = t.y - uy * hl;
+
+        var line = mk('line');
+        line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+        line.setAttribute('stroke', col);
+        line.setAttribute('stroke-width', sw);
+        line.setAttribute('stroke-linecap', 'round');
+        line.setAttribute('opacity', op);
+        g.appendChild(line);
+
+        var b1 = { x: x2 + nx * hw / 2, y: y2 + ny * hw / 2 };
+        var b2 = { x: x2 - nx * hw / 2, y: y2 - ny * hw / 2 };
+        var poly = mk('polygon');
+        poly.setAttribute('points', t.x+','+t.y+' '+b1.x+','+b1.y+' '+b2.x+','+b2.y);
+        poly.setAttribute('fill', col);
+        poly.setAttribute('opacity', op);
+        g.appendChild(poly);
+    }
+
+    // ── Evenimente ──────────────────────────────────────────────
+
+    // Oprește meniul de context
+    wrap.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+
+    // Mousedown: start drag sau highlight
+    wrap.addEventListener('mousedown', function(e) {
+        if (e.button === 0) {
+            // Click stânga → șterge toate adnotările
+            if (Object.keys(highlights).length || arrows.length) {
+                highlights = {}; arrows = []; preview = null; render();
+            }
+            return;
+        }
+        if (e.button !== 2) return;
+        e.preventDefault();
+        var sq = sqAt(e.clientX, e.clientY);
+        if (!sq) return;
+        drag = { startSq: sq, mod: mod(e) };
+    });
+
+    // Mousemove: preview săgeată în timp ce tragi
+    document.addEventListener('mousemove', function(e) {
+        if (!drag) return;
+        if (!(e.buttons & 2)) { drag = null; preview = null; render(); return; }
+        var sq = sqAt(e.clientX, e.clientY);
+        preview = (sq && sq !== drag.startSq) ? { from: drag.startSq, to: sq, mod: drag.mod } : null;
+        render();
+    });
+
+    // Mouseup: finalizează highlight sau săgeată
+    document.addEventListener('mouseup', function(e) {
+        if (e.button !== 2 || !drag) return;
+        var sq = sqAt(e.clientX, e.clientY);
+        preview = null;
+
+        if (!sq || sq === drag.startSq) {
+            // Toggle highlight pe pătrat
+            if (highlights[drag.startSq] === drag.mod) delete highlights[drag.startSq];
+            else highlights[drag.startSq] = drag.mod;
+        } else {
+            // Toggle săgeată
+            var idx = -1;
+            for (var i = 0; i < arrows.length; i++) {
+                if (arrows[i].from === drag.startSq && arrows[i].to === sq && arrows[i].mod === drag.mod) { idx = i; break; }
+            }
+            if (idx >= 0) arrows.splice(idx, 1);
+            else arrows.push({ from: drag.startSq, to: sq, mod: drag.mod });
+        }
+        drag = null;
+        render();
+    });
+
+    // Re-render când tabla se schimbă (după mutări)
+    new MutationObserver(function() { requestAnimationFrame(render); })
+        .observe(document.getElementById('board'), { childList: true, subtree: true });
+
+    window.addEventListener('resize', render);
+})();
 </script>
 
 </body>

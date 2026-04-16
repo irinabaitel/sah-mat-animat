@@ -227,8 +227,11 @@
 
 <nav id="nav">
     <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
-    <div class="nav-title">Damă + Turn vs. Rege</div>
-    <span class="nav-badge">Nivelul III</span>
+    <div class="nav-title">Dam&#259; + Turn vs. Rege</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+        <button id="vol-btn" onclick="toggleVolume()" title="Volum" style="background:rgba(255,255,255,0.55);border:2px solid rgba(255,255,255,0.8);border-radius:50px;padding:5px 12px;font-size:1em;cursor:pointer;color:#1a3a6b;font-family:'Baloo 2',cursive;font-weight:700;transition:background 0.2s;">&#128266;</button>
+        <span class="nav-badge">Nivelul III</span>
+    </div>
 </nav>
 
 <div class="content">
@@ -237,11 +240,8 @@
     </div>
 
     <div class="card"><p>
-        Echipa format&#259; din Rege, Dam&#259; &#351;i Turn este una dintre cele mai puternice combina&#539;ii de atac din &#351;ah!
-        Dam&#259; &#351;i Turn lucreaz&#259; &#238;mpreun&#259; pentru a &#238;nghe&#539;ui Regele advers &#238;ntr-un col&#539; sau la margine.
-        Exerseaz&#259; de mai multe ori, p&#226;n&#259; c&#226;nd coordonarea pieselor pare natural&#259;.
-        Cu c&#226;t reu&#351;e&#351;ti s&#259; dai mat din mai pu&#539;ine mut&#259;ri, cu at&#226;t e&#351;ti mai aproape de a deveni maestru!
-        <strong>Robotul joac&#259; cele mai bune mut&#259;ri pentru adversar!</strong>
+        <strong>For&#539;a trio-ului suprem: Rege, Dam&#259; &#351;i Turn!</strong><br>
+        Aceasta este una dintre cele mai devastatoare forma&#539;ii de atac &#238;n &#351;ah. Folose&#351;te Dama &#351;i Turnul ca pe o menghin&#259; pentru a &#238;mpinge Regele advers spre marginea tablei. Exerseaz&#259; aceast&#259; coordonare p&#226;n&#259; c&#226;nd devine un instinct! Cu c&#226;t livrezi matul mai rapid, cu at&#226;t e&#351;ti mai aproape de titlul de maestru. <strong>Aten&#539;ie: robotul nu va ceda u&#351;or &#351;i va juca &#8222;la s&#226;nge&#8221; cele mai bune mut&#259;ri!</strong>
     </p></div>
 
     <div class="main-content">
@@ -280,8 +280,8 @@
     </div><!-- end main-content -->
 
     <div class="bottom-nav">
-        <a href="pagina11.html" class="nav-prev">&#9664; &#206;napoi</a>
-        <a href="pagina12.html" class="nav-next">&#206;nainte &#9654;</a>
+        <a href="pagina10.html" class="nav-prev">&#9664; &#206;napoi</a>
+        <a href="pagina12.html" class="nav-next">Turn + Turn vs. Rege &#9654;</a>
     </div>
 </div>
 
@@ -291,7 +291,7 @@
 
 <script>
 const PAGE_ID = 'em_msf_dt_ex';
-const startFen = '8/8/8/4k3/8/8/8/3QR1K1 w - - 0 1';
+const startFen = '8/8/8/4k3/8/8/8/3QR1K1 b - - 0 1';
 const chess    = new Chess(startFen);
 const statusBox = document.getElementById('statusBox');
 
@@ -305,6 +305,34 @@ let playerSide      = 'w';
 let positionHistory = [];
 let gameOver        = false;
 let gameStarted     = false;
+
+/* ===== SUNETE ===== */
+const sndMove    = new Audio('Sounds/Move.mp3');
+const sndCapture = new Audio('Sounds/Capture.mp3');
+const sndMate    = new Audio('Sounds/Mate.mp3');
+let volumeOn = true;
+function playSound(snd) { if (!volumeOn) return; snd.currentTime = 0; snd.play().catch(() => {}); }
+function playSoundForMove(move) {
+    if (!move) return;
+    if (move.captured) playSound(sndCapture);
+    else               playSound(sndMove);
+}
+function toggleVolume() {
+    volumeOn = !volumeOn;
+    document.getElementById('vol-btn').textContent = volumeOn ? '\uD83D\uDD0A' : '\uD83D\uDD07';
+}
+
+/* ===== REGE ROȘU LA MAT ===== */
+function redKingOverlay() {
+    const sq = blackKingSquare();
+    if (!sq) return;
+    const el = document.querySelector('#board .square-' + sq);
+    if (!el) return;
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(220,0,0,0.52);z-index:5;pointer-events:none;border-radius:3px;';
+    el.style.position = 'relative';
+    el.appendChild(ov);
+}
 
 function initStockfish() {
     try {
@@ -368,7 +396,8 @@ function stockfishPlayWhite() {
             updateHeart();
             return;
         }
-        chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+        const mv1 = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+        playSoundForMove(mv1);
         board.position(chess.fen());
         positionHistory.push(chess.fen());
         updateMoveList();
@@ -379,6 +408,7 @@ function stockfishPlayWhite() {
             statusBox.className = 'status-box danger';
             stopClock();
             setTimeout(removeHeart, 1000);
+            setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 300);
             enableReview();
             return;
         }
@@ -540,14 +570,29 @@ function startGame() {
     gameStarted = true;
     document.getElementById('startBtn').disabled = true;
     if (playerSide === 'w') {
-        startClock('w');
-        prepareWhiteBest();
-        statusBox.innerHTML = 'Mutarea ta! For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!';
+        // Negrul mută primul — Stockfish mișcă regele înainte ca jucătorul să atace
+        statusBox.innerHTML = 'Regele negru se pozi&#539;ioneaz&#259;<span class="dots"></span>';
         statusBox.className = 'status-box';
+        setTimeout(function() {
+            askStockfish(chess.fen(), 12, function(mv) {
+                if (mv && mv !== '(none)') {
+                    const mv0 = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+                    playSoundForMove(mv0);
+                    board.position(chess.fen());
+                    positionHistory.push(chess.fen());
+                    updateMoveList();
+                }
+                startClock('w');
+                prepareWhiteBest();
+                statusBox.innerHTML = 'Mutarea ta! For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!';
+                statusBox.className = 'status-box';
+            });
+        }, 800);
     } else {
-        statusBox.innerHTML = 'Robotul se g&#226;nde&#351;te<span class="dots"></span>';
+        // Revanșă: jucătorul e negru, mută primul
+        startClock('b');
+        statusBox.innerHTML = 'Mutarea ta! Ap&#259;r&#259; Regele negru!';
         statusBox.className = 'status-box';
-        setTimeout(stockfishPlayWhite, 1000);
     }
 }
 
@@ -566,6 +611,7 @@ function onDrop(source, target) {
     const uciMove = source + target;
     const move = chess.move({ from: source, to: target, promotion: 'q' });
     if (!move) return 'snapback';
+    playSoundForMove(move);
 
     if (playerSide === 'b') {
         positionHistory.push(chess.fen());
@@ -594,6 +640,7 @@ function onDrop(source, target) {
         stopClock();
         spawnPageConfetti(5000);
         setTimeout(removeHeart, 1000);
+        setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 300);
         enableReview();
         return;
     }
@@ -615,7 +662,8 @@ function onDrop(source, target) {
                 prepareWhiteBest();
                 return;
             }
-            chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+            const mv2 = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
+            playSoundForMove(mv2);
             board.position(chess.fen());
             positionHistory.push(chess.fen());
             updateMoveList();
@@ -624,6 +672,7 @@ function onDrop(source, target) {
                 statusBox.innerHTML = '&#10060; &#350;ah mat! Regele negru a c&#226;&#351;tigat. Mai &#238;ncerc&#259;!';
                 statusBox.className = 'status-box danger';
                 stopClock();
+                setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 300);
                 enableReview();
                 return;
             }
