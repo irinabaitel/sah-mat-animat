@@ -408,8 +408,9 @@ function tickClock() {
 
 function handleTimeout(colorOut) {
   stopBot();
+  // Calculăm rezultatul din culoarea care a expirat (nu din socket ID)
+  // — ambii clienți pot detecta expirarea, dar 'game_result' poartă rezultatul corect
   var result = colorOut === 'w' ? '0-1' : '1-0';
-  socket.emit('out_of_time', { gameId: myGameId });
   socket.emit('game_result', { gameId: myGameId, result: result, reason: 'timp', moves: moveHistory });
 }
 

@@ -1,0 +1,622 @@
+/* ============================================================
+   MASTER TEMPLATE — Șah Mat Animat
+   ============================================================
+   Cuprins:
+   1.  CSS Variables (Design System)
+   2.  Reset & Base
+   3.  Page Wrapper — layout 100vh fără scroll global
+   4.  Header — titlu + inimi
+   5.  Main Grid — 55 / 45 (tablă / panou)
+   6.  Board Column & Board Wrapper
+   7.  Panel Column — scroll intern
+   8.  Footer Navigation — 3 butoane fixe
+   9.  Feedback Bar — Success / Error / Warning
+   10. Tipografie
+   11. Responsive — tabletă portret & mobil
+   ============================================================ */
+
+
+/* ── 1. CSS Variables ─────────────────────────────────────── */
+:root {
+  /* Paleta proiectului */
+  --c-bg:          #F5A96E;           /* portocaliu cald — fundal principal   */
+  --c-surface:     rgba(255,255,255,0.58);  /* card frosted-glass              */
+  --c-surface-2:   rgba(255,255,255,0.82);  /* card hover / activ              */
+  --c-border:      rgba(255,255,255,0.85);
+  --c-navy:        #1a3a6b;           /* accent principal, titluri            */
+  --c-navy-2:      #2a5aab;           /* hover butoane navy                   */
+  --c-text:        #2a2a3e;
+  --c-text-muted:  #4a4a6e;
+
+  /* Feedback — fixe, nu se schimbă cu tema */
+  --c-success:     #27ae60;
+  --c-error:       #c0392b;
+  --c-warning:     #e67e22;
+  --c-success-bg:  rgba(39, 174, 96,  .15);
+  --c-error-bg:    rgba(192, 57,  43,  .15);
+  --c-warning-bg:  rgba(230, 126, 34,  .15);
+
+  /* Layout — dimensiuni fixe */
+  --header-h:  50px;
+  --footer-h:  58px;
+  --gap:       12px;
+  /*
+   * --extra-pad: spațiul de centrare al tablei în coloana 55fr.
+   * Tabla e mai mică decât coloana când e constrânsă de înălțime.
+   * Offsetul = (lățime_coloana_55fr - tablă) / 2 — aplicat și pe dreapta
+   * pentru simetrie: spațiu_stânga_tablei = spațiu_dreapta_panou.
+   */
+  --extra-pad: max(0px, calc(
+    (0.55 * (100vw - 3 * var(--gap))
+     - (100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap))
+    ) / 2.55
+  ));
+  --radius:    16px;        /* card-uri rotunjite — stil existent             */
+  --radius-sm: 50px;        /* butoane pill — stil existent                   */
+
+  /* Tipografie — calibrate pe nivel1_lectia5 (aprobat) */
+  --font-display: 'Baloo 2', cursive;
+  --font-body:    'Nunito', sans-serif;
+  --fs-h1:   clamp(1.5rem, 3.5vw, 2rem);
+  --fs-h2:   clamp(1.1rem, 2.5vw, 1.35rem);
+  --fs-body: 1rem;        /* 16px — text principal panou */
+  --fs-md:   0.97rem;     /* text descriptiv secțiuni */
+  --fs-sm:   0.88rem;     /* butoane, badge-uri, texte secundare */
+  --fs-xs:   0.82rem;     /* label-uri mici, note */
+  --fw-bold: 700;
+  --fw-xbold:900;
+}
+
+
+/* ── 2. Reset & Base ──────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  /* CRITIC: blochează scroll-ul global pe toată pagina */
+  overflow: hidden;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  color: var(--c-text);
+  background: var(--c-bg);
+}
+
+
+/* ── 3. Page Wrapper ──────────────────────────────────────── */
+.page-wrapper {
+  display:        flex;
+  flex-direction: column;
+  height:         100vh;
+  height:         100dvh; /* dynamic viewport — evită bara de adresă pe mobil */
+  overflow:       hidden;
+}
+
+
+/* ── 4. Header ────────────────────────────────────────────── */
+.page-header {
+  flex-shrink:  0;
+  height:       var(--header-h);
+  display:      flex;
+  align-items:  center;
+  justify-content: space-between;
+  padding:      0 var(--gap);
+  gap:          var(--gap);
+  background:   rgba(245, 169, 110, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 2px solid rgba(255,255,255,0.4);
+  z-index:      50;
+}
+
+.header-title {
+  font-family:  var(--font-display);
+  font-size:    var(--fs-h2);
+  font-weight:  var(--fw-bold);
+  color:        var(--c-navy);
+  white-space:  nowrap;
+  overflow:     hidden;
+  text-overflow:ellipsis;
+  flex:         1;
+}
+
+.header-progress {
+  display:     flex;
+  align-items: center;
+  gap:         4px;
+  flex-shrink: 0;
+}
+
+.lesson-badge {
+  background:   var(--c-navy);
+  color:        white;
+  font-family:  var(--font-display);
+  font-size:    var(--fs-sm);
+  font-weight:  var(--fw-bold);
+  padding:      3px 14px;
+  border-radius:var(--radius-sm);
+  white-space:  nowrap;
+}
+
+.heart {
+  font-size:  1.2rem;
+  line-height:1;
+  transition: transform .2s, opacity .2s;
+}
+
+.heart.lost {
+  filter:  grayscale(1);
+  opacity: .35;
+  transform: scale(0.85);
+}
+
+
+/* ── 5. Main Grid ─────────────────────────────────────────── */
+.page-main {
+  flex:       1;
+  display:    grid;
+  grid-template-columns: 55fr 45fr;
+  gap:        var(--gap);
+  padding:    var(--gap);
+  /* Padding-right oglindește spațiul de centrare al tablei → simetrie */
+  padding-right: calc(var(--gap) + var(--extra-pad));
+  /* CRITIC: fără min-height:0 grid-ul ignoră flex și depășește 100vh */
+  min-height: 0;
+  overflow:   hidden;
+}
+
+
+/* ── 6. Board Column & Wrapper ────────────────────────────── */
+.board-col {
+  display:          flex;
+  align-items:      center;
+  justify-content:  center;
+  min-height:       0;
+  min-width:        0;
+}
+
+.board-wrapper {
+  /*
+   * Pătrat flexibil:
+   * - width: 100%  → ocupă tot ce-i oferă coloana
+   * - dar nu depășește înălțimea disponibilă (100dvh minus header, footer, gaps)
+   * min() alege valoarea mai MICĂ dintre cele două, garantând că nu iese din ecran.
+   */
+  --avail-h: calc(100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap));
+  width:         min(100%, var(--avail-h));
+  aspect-ratio:  1 / 1;
+
+  /* Touch fixes */
+  touch-action:               none;     /* CRITIC: oprește jump-ul paginii la drag */
+  -webkit-touch-callout:      none;     /* dezactivează meniu save-image iOS       */
+  user-select:                none;
+  -webkit-user-select:        none;
+  -webkit-tap-highlight-color:transparent; /* elimină cercul întunecat la tap    */
+
+  /* position:relative — necesar pentru orice overlay absolut (SVG săgeți, badge-uri) */
+  position:      relative;
+  border-radius: var(--radius);
+  overflow:      hidden;
+  box-shadow:    0 6px 30px rgba(0,0,0,0.2);
+}
+
+/* Tabla ocupă 100% din wrapper — suprascrie chessboard.js inline style */
+#board {
+  width:  100% !important;
+  height: 100% !important;
+}
+
+/*
+ * Piesele SVG/PNG: blochează long-press "Save Image" fără a rupe drag-ul.
+ * NU setăm pointer-events:none — ar bloca drag-ul chessboard.js.
+ */
+.board-wrapper img,
+.board-wrapper div {
+  -webkit-touch-callout:      none;
+  -webkit-user-drag:          none;
+  user-drag:                  none;
+  draggable:                  false;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/*
+ * Highlight pătrate — clasă CSS pe .square-XX existente (NU div-uri absolute).
+ * background-image se suprapune pe background-color din chessboard.js — fără conflict.
+ *
+ * .highlight-legal   → punct verde mic în centru (stil Lichess) — mutare posibilă
+ * .highlight-capture → inel verde — piesă adversă care poate fi capturată
+ * .highlight-hover   → punct galben discret la hover
+ * .highlight-selected→ fond verde semi-transparent — piesa selectată
+ */
+.highlight-selected {
+  background-color: rgba(20, 110, 40, .45) !important;
+}
+.highlight-legal {
+  background-image: radial-gradient(
+    circle,
+    rgba(20, 120, 20, 0.55) 22%,
+    transparent 23%
+  ) !important;
+}
+.highlight-capture::before {
+  content:        '';
+  position:       absolute;
+  inset:          0;
+  border:         3px solid rgba(20, 120, 20, 0.65);
+  border-radius:  50%;
+  pointer-events: none;
+  z-index:        50;
+}
+.highlight-last  { background-color: rgba(255, 210,  0, .40) !important; }
+
+/*
+ * Rege în șah: gradient radial identic cu Lichess.
+ * Roșu solid până la 89% din raza elipsei, transparent la margini.
+ * Colțurile pătratului (la ~141% din rază) rămân culoarea normală a tablei.
+ */
+.highlight-check {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255,   0, 0, 1)  0%,
+    rgba(231,   0, 0, 1) 25%,
+    rgba(169,   0, 0, 0) 89%,
+    rgba(158,   0, 0, 0) 100%
+  ) !important;
+}
+
+/*
+ * Piesă atacată: luminiță difuză în cele 4 colțuri ale pătratului.
+ * radial-gradient plasat exact în vârf (0% 0% etc.) → culoarea e maximă
+ * în colț și dispare lin spre centru, fără margine tăiată.
+ * Rezultat: un "halo de colț" fin, ca o vignetă caldă — nu un triunghi.
+ */
+.highlight-threat::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /*
+   * Gradient radial INVERS — ca Lichess (pattern: transparent 80%, color 80%).
+   * Centrul e transparent → culoarea câmpului se păstrează.
+   * Mijlocul fiecărei laturi e la ~70.7% din raza gradientului → rămâne în
+   * zona transparentă (< 73%). Colțurile sunt la 100% → primesc culoarea.
+   * Efectul: inelul circular apare vizibil aproape exclusiv în colțuri.
+   */
+  background: radial-gradient(
+    transparent 73%,
+    rgba(210, 90, 0, 0.60) 87%
+  );
+  pointer-events: none;
+  z-index: 50;
+}
+
+.highlight-hover {
+  background-image: radial-gradient(
+    circle,
+    rgba(180, 160, 0, 0.40) 22%,
+    transparent 23%
+  ) !important;
+}
+
+
+/* ── 7. Panel Column ──────────────────────────────────────── */
+.panel-col {
+  display:        flex;
+  flex-direction: column;
+  min-height:     0;
+  min-width:      0;
+  gap:            8px;
+}
+
+/* Zona de text — scroll intern, NU scroll pe pagină */
+.panel-scroll {
+  flex:         1;
+  overflow-y:   auto;
+  overflow-x:   hidden;
+  background:   var(--c-surface);
+  border:       2px solid var(--c-border);
+  border-radius:var(--radius);
+  padding:      var(--gap) calc(var(--gap) + 4px);
+
+  /* Scrollbar discret */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(26,58,107,.3) transparent;
+}
+.panel-scroll::-webkit-scrollbar       { width: 5px; }
+.panel-scroll::-webkit-scrollbar-track { background: transparent; }
+.panel-scroll::-webkit-scrollbar-thumb { background: rgba(26,58,107,.35); border-radius: 4px; }
+
+/* Feedback bar — iese din scroll, rămâne vizibil */
+.feedback-bar {
+  flex-shrink:   0;
+  display:       flex;
+  align-items:   center;
+  gap:           8px;
+  padding:       9px var(--gap);
+  border-radius: var(--radius-sm);
+  font-family:   var(--font-body);
+  font-weight:   var(--fw-bold);
+  font-size:     var(--fs-body);
+  border:        2px solid transparent;
+  min-height:    42px;
+  transition:    all .2s ease;
+}
+.feedback-bar:empty { min-height: 0; padding: 0; border: none; }
+
+.feedback-bar.success { background: var(--c-success-bg); border-color: var(--c-success); color: var(--c-success); }
+.feedback-bar.error   { background: var(--c-error-bg);   border-color: var(--c-error);   color: var(--c-error);   }
+.feedback-bar.warning { background: var(--c-warning-bg); border-color: var(--c-warning); color: var(--c-warning); }
+
+/* Acțiuni (butoane hint, reset etc.) — fără scroll, fixe sub panou */
+.panel-actions {
+  flex-shrink: 0;
+  display:     flex;
+  gap:         8px;
+}
+
+.btn-action {
+  flex:            1;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             6px;
+  padding:         9px 12px;
+  background:      var(--c-surface);
+  border:          2px solid var(--c-border);
+  border-radius:   var(--radius-sm);
+  font-family:     var(--font-display);
+  font-size:       var(--fs-sm);
+  font-weight:     var(--fw-bold);
+  color:           var(--c-navy);
+  cursor:          pointer;
+  transition:      background .15s, border-color .15s, transform .1s;
+  white-space:     nowrap;
+}
+.btn-action:hover        { background: var(--c-surface-2); }
+.btn-action:active       { transform: scale(0.97); }
+.btn-action.btn-hint     { border-color: var(--c-warning); color: var(--c-warning); }
+.btn-action.btn-solution { border-color: var(--c-navy);    color: var(--c-navy);    }
+.btn-action.btn-reset    { border-color: var(--c-error);   color: var(--c-error);   }
+
+
+/* ── 8. Footer Navigation ─────────────────────────────────── */
+.page-footer {
+  flex-shrink:  0;
+  height:       var(--footer-h);
+  display:      flex;
+  align-items:  center;
+  justify-content: space-between;
+  padding:      0 var(--gap);
+  background:   rgba(245, 169, 110, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top:   2px solid rgba(255,255,255,0.4);
+}
+
+.nav-btn {
+  display:         flex;
+  align-items:     center;
+  gap:             6px;
+  padding:         8px 18px;
+  background:      rgba(255,255,255,0.55);
+  border:          2px solid rgba(255,255,255,0.8);
+  border-radius:   var(--radius-sm);
+  font-family:     var(--font-display);
+  font-size:       var(--fs-sm);
+  font-weight:     var(--fw-bold);
+  color:           var(--c-navy);
+  text-decoration: none;
+  cursor:          pointer;
+  transition:      background .15s, transform .1s;
+  white-space:     nowrap;
+  min-width:       80px;
+  justify-content: center;
+}
+.nav-btn:hover  { background: rgba(255,255,255,0.85); }
+.nav-btn:active { transform: scale(0.96); }
+
+/* Buton Cuprins — accent navy */
+.nav-btn--contents {
+  background:   var(--c-navy);
+  border-color: var(--c-navy);
+  color:        #fff;
+}
+.nav-btn--contents:hover { background: var(--c-navy-2); border-color: var(--c-navy-2); }
+
+/* Buton Înapoi / Înainte — semitransparente */
+.nav-btn--back,
+.nav-btn--forward { /* stilul de bază din .nav-btn e suficient */ }
+
+/*
+ * Buton disabled: rămâne în flux (nu se scoate) pentru a păstra alinierea.
+ * Folosim visibility:visible + opacity redusă, NU display:none.
+ */
+.nav-btn:disabled,
+.nav-btn[aria-disabled="true"] {
+  opacity:        0.25;
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+.nav-btn .icon { font-size: 1rem; line-height: 1; }
+
+
+/* ── 9. Tipografie ────────────────────────────────────────── */
+.panel-scroll h1,
+.panel-scroll .h1 {
+  font-family:  var(--font-display);
+  font-size:    var(--fs-h1);
+  font-weight:  var(--fw-xbold);
+  color:        var(--c-navy);
+  line-height:  1.25;
+  text-shadow:  1px 1px 0 rgba(255,255,255,0.5);
+  margin-bottom:.5em;
+}
+
+.panel-scroll h2,
+.panel-scroll .h2 {
+  font-family:  var(--font-display);
+  font-size:    var(--fs-h2);
+  font-weight:  var(--fw-bold);
+  color:        var(--c-navy);
+  line-height:  1.35;
+  margin-bottom:.4em;
+  margin-top:   .8em;
+}
+
+.panel-scroll p {
+  font-size:   var(--fs-body);
+  line-height: 1.7;
+  color:       var(--c-text);
+  margin-bottom:.6em;
+}
+.panel-scroll p:last-child { margin-bottom: 0; }
+
+.panel-scroll strong { color: var(--c-navy); font-weight: var(--fw-bold); }
+
+.panel-scroll ul,
+.panel-scroll ol {
+  padding-left: 1.4em;
+  margin-bottom:.6em;
+}
+.panel-scroll li { line-height: 1.7; margin-bottom: .2em; }
+
+
+/* ── 10. Highlight Box ────────────────────────────────────── */
+/*
+ * Casetă cu bordură colorată stânga — folosită în lecții pentru
+ * reguli, sfaturi, avertizări.
+ *   .hl-box        → albastru navy (informație neutră)
+ *   .hl-box.ok     → verde (corect / sfat pozitiv)
+ *   .hl-box.warn   → portocaliu (atenție / regulă de reținut)
+ */
+.hl-box {
+  border-left:  4px solid var(--c-navy);
+  border-radius:0 10px 10px 0;
+  padding:      10px 14px;
+  font-size:    var(--fs-md);
+  line-height:  1.7;
+  color:        #1a1a2e;
+  background:   rgba(26,58,107,0.10);
+}
+.hl-box strong          { color: var(--c-navy); }
+
+.hl-box.ok              { background: rgba(40,160,80,0.10); border-left-color: #28a050; }
+.hl-box.ok strong       { color: #1a6035; }
+
+.hl-box.warn            { background: rgba(200,80,0,0.09);  border-left-color: #c05000; }
+.hl-box.warn strong     { color: #8b3000; }
+
+
+/* ── 11. Responsive ───────────────────────────────────────── */
+
+/*
+ * Tabletă portret & telefon:
+ * Tabla stă SUS, panoul coboară JOS.
+ * Regula 100vh rămâne: panoul are scroll intern, pagina nu se lungeşte.
+ */
+@media (max-width: 768px), (max-aspect-ratio: 1/1) {
+  .page-main {
+    grid-template-columns: 1fr;
+    grid-template-rows:    auto 1fr;
+    /* micșorăm gap-ul vertical pentru a câștiga spațiu */
+    gap:     8px;
+    padding: 8px;
+  }
+
+  .board-col {
+    /* Tabla nu poate depăși jumătate din înălțimea disponibilă */
+    max-height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.52);
+  }
+
+  .board-wrapper {
+    --avail-h: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.52);
+    width: min(calc(100dvw - 16px), var(--avail-h));
+  }
+
+  /* Panoul scroll intern — permite text oricât de lung fără a lungi pagina */
+  .panel-col {
+    overflow:  hidden;
+    min-height:0;
+  }
+
+  /* Footer: ascunde label text pe ecrane mici, lasă doar iconițe */
+  .nav-btn .label { display: none; }
+  .nav-btn { min-width: 48px; padding: 8px 12px; }
+}
+
+/* Desktop mare: mărește gap-ul și padding-ul */
+@media (min-width: 1200px) {
+  :root {
+    --gap:      16px;
+    --header-h: 54px;
+    --footer-h: 62px;
+  }
+}
+
+
+/* ── 12. Săgeți pe tablă (standard nivel1_lectia5) ───────────
+ *
+ * JS — copiază funcția de mai jos în orice pagină care desenează săgeți.
+ * SVG-ul se atașează direct pe .board-wrapper (position:relative).
+ *
+ * Standard vizual (aprobat):
+ *   stroke-width : 4px  (linie subțire)
+ *   arrowhead    : 'M0,0 L9,3.5 L0,7 L2.5,3.5 Z'  (vârf cu crestătură)
+ *   markerWidth  : 10   markerHeight : 7
+ *   refX : 8    refY : 3.5
+ *   offset start : sq * 0.30   offset end : sq * 0.38
+ *   animație     : stroke-dasharray/dashoffset → drawArrow 0.45s ease-out
+ *
+ * ─── @keyframes (adaugă o dată per pagină) ───────────────────
+ *
+ * @keyframes drawArrow {
+ *   from { stroke-dashoffset: var(--arrow-len, 300); }
+ *   to   { stroke-dashoffset: 0; }
+ * }
+ *
+ * ─── JS template ─────────────────────────────────────────────
+ *
+ * function clearArrows() {
+ *   var bw = document.querySelector('.board-wrapper');
+ *   if (bw) { var s = bw.querySelector('.sah-arr-svg'); if (s) s.remove(); }
+ * }
+ *
+ * function drawArrows(arrows) {
+ *   if (!arrows || !arrows.length) return;
+ *   var bw = document.querySelector('.board-wrapper');
+ *   if (!bw) return;
+ *   clearArrows();
+ *   var sz = bw.offsetWidth, sq = sz / 8;
+ *   function ctr(n) { var c='abcdefgh'.indexOf(n[0]),r=parseInt(n[1])-1; return {x:c*sq+sq/2,y:(7-r)*sq+sq/2}; }
+ *   var NS='http://www.w3.org/2000/svg', svg=document.createElementNS(NS,'svg');
+ *   svg.setAttribute('class','sah-arr-svg');
+ *   svg.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:20;';
+ *   var defs=document.createElementNS(NS,'defs'); svg.appendChild(defs);
+ *   arrows.forEach(function(arr,i) {
+ *     var col=arr.color||'rgba(200,30,30,0.88)', mid='am'+i;
+ *     var mk=document.createElementNS(NS,'marker');
+ *     mk.setAttribute('id',mid); mk.setAttribute('markerWidth','10'); mk.setAttribute('markerHeight','7');
+ *     mk.setAttribute('refX','8'); mk.setAttribute('refY','3.5'); mk.setAttribute('orient','auto');
+ *     var mp=document.createElementNS(NS,'path');
+ *     mp.setAttribute('d','M0,0 L9,3.5 L0,7 L2.5,3.5 Z'); mp.setAttribute('fill',col);
+ *     mk.appendChild(mp); defs.appendChild(mk);
+ *     var f=ctr(arr.from),t=ctr(arr.to),dx=t.x-f.x,dy=t.y-f.y,len=Math.sqrt(dx*dx+dy*dy);
+ *     if(len<1) return;
+ *     var ux=dx/len,uy=dy/len;
+ *     var x1=f.x+ux*sq*0.30,y1=f.y+uy*sq*0.30,x2=t.x-ux*sq*0.38,y2=t.y-uy*sq*0.38;
+ *     var dl=Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1))+30;
+ *     var ln=document.createElementNS(NS,'line');
+ *     ln.setAttribute('x1',x1);ln.setAttribute('y1',y1);ln.setAttribute('x2',x2);ln.setAttribute('y2',y2);
+ *     ln.setAttribute('stroke',col);ln.setAttribute('stroke-width','4');
+ *     ln.setAttribute('stroke-linecap','round');ln.setAttribute('stroke-linejoin','round');
+ *     ln.setAttribute('marker-end','url(#'+mid+')');
+ *     ln.setAttribute('stroke-dasharray',dl);ln.setAttribute('stroke-dashoffset',dl);
+ *     ln.style.animation='drawArrow 0.45s ease-out forwards';
+ *     svg.appendChild(ln);
+ *   });
+ *   bw.appendChild(svg);
+ * }
+ * ──────────────────────────────────────────────────────────── */

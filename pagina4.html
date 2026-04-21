@@ -1,217 +1,373 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lecția 7 — Șahul Dublu</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Lecția 7 — Șahul Dublu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <style>
+    @keyframes drawArrow {
+      from { stroke-dashoffset: var(--arrow-len, 300); }
+      to   { stroke-dashoffset: 0; }
+    }
 
-#nav { position: sticky; top: 0; background: rgba(245,169,110,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; z-index: 100; border-bottom: 2px solid rgba(255,255,255,0.4); }
-.nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-.nav-btn:hover { background: rgba(255,255,255,0.85); }
-.nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-.nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; padding: 3px 12px; border-radius: 20px; text-decoration: none; }
+    /* ── TITLU PANOU ──────────────────────────────────────── */
+    .panel-heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.15rem, 2.5vw, 1.4rem);
+      font-weight: 900; color: var(--c-navy);
+      line-height: 1.25; margin-bottom: 10px;
+    }
 
-.content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
+    /* ── LABEL EXEMPLU ────────────────────────────────────── */
+    .ex-label {
+      font-family: var(--font-display);
+      font-size: 0.92rem; font-weight: 700;
+      color: var(--c-navy);
+      border-top: 1.5px solid rgba(26,58,107,0.15);
+      padding-top: 12px; margin-top: 14px;
+      margin-bottom: 8px;
+    }
 
-.lesson-title { text-align: center; margin-bottom: 8px; }
-.lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
-.lesson-title .subtitle { font-size: 0.92em; color: rgba(26,26,46,0.6); margin-top: 4px; }
+    /* ── BUTON ACȚIUNE PRINCIPAL ──────────────────────────── */
+    .act-main-btn {
+      display: block; width: 100%;
+      padding: 12px 20px; border-radius: 50px;
+      border: 2px solid var(--c-navy);
+      background: var(--c-navy); color: white;
+      font-family: var(--font-display); font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: background .18s, opacity .18s;
+      text-align: center;
+    }
+    .act-main-btn:hover:not(:disabled) { background: var(--c-navy-2); border-color: var(--c-navy-2); }
+    .act-main-btn:disabled { opacity: 0.38; cursor: default; }
 
-.card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-.card-icon { font-size: 1.6em; margin-bottom: 8px; display: block; }
-.card h2 { font-family: 'Baloo 2', cursive; font-size: 1.2em; color: #1a3a6b; margin-bottom: 10px; }
-.card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; }
-.card p:last-child { margin-bottom: 0; }
-.highlight-box { background: rgba(26,58,107,0.08); border-left: 4px solid #1a3a6b; border-radius: 0 12px 12px 0; padding: 12px 16px; margin-top: 10px; font-size: 0.96em; line-height: 1.7; color: #1a1a2e; }
+    /* ── MESAJ COMENTARIU ─────────────────────────────────── */
+    .move-msg {
+      margin-top: 10px;
+      font-size: var(--fs-sm); font-weight: 700;
+      color: var(--c-navy);
+      background: rgba(26,58,107,0.08);
+      border: 2px solid rgba(26,58,107,0.15);
+      border-radius: 12px; padding: 10px 14px;
+      min-height: 50px; display: flex;
+      align-items: center; line-height: 1.55;
+    }
 
-.board-card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-.board-card h3 { font-family: 'Baloo 2', cursive; font-size: 1.1em; color: #1a3a6b; margin-bottom: 14px; }
-.board-area { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
-.board-wrap { position: relative; flex: 0 0 280px; width: 280px; height: 280px; }
-.chessboard { width: 280px !important; height: 280px !important; }
-.arrow-overlay { position: absolute; top: 0; left: 0; width: 280px; height: 280px; pointer-events: none; }
+    /* ── RÂND CONTROL ─────────────────────────────────────── */
+    .ctrl-row {
+      display: flex; gap: 8px;
+      margin-top: 10px; justify-content: flex-start;
+    }
+    .btn-sm {
+      padding: 6px 16px; border-radius: 50px;
+      font-family: var(--font-display); font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; transition: background .15s, opacity .15s;
+    }
+    .btn-sm:disabled { opacity: 0.32; cursor: default; }
 
-.arr { fill: none; stroke-linecap: round; opacity: 0; transition: opacity 0.15s; }
-.arr.show { opacity: 0.88; animation: drawArrow 0.5s ease-out forwards; }
-@keyframes drawArrow { from { stroke-dashoffset: 400; } to { stroke-dashoffset: 0; } }
+    .btn-reset {
+      border: 1.5px solid rgba(192,57,43,0.40);
+      background: rgba(255,255,255,0.55); color: #8b1a00;
+    }
+    .btn-reset:hover:not(:disabled) { background: rgba(192,57,43,0.10); }
 
-.side-panel { flex: 1 1 160px; display: flex; flex-direction: column; gap: 10px; justify-content: center; }
-.side-panel .panel-label { font-family: 'Baloo 2', cursive; font-size: 0.88em; color: #1a3a6b; font-weight: 700; }
+    .btn-next {
+      border: 1.5px solid rgba(26,58,107,0.40);
+      background: rgba(255,255,255,0.55); color: var(--c-navy);
+    }
+    .btn-next:hover:not(:disabled) { background: rgba(26,58,107,0.10); }
 
-.btn-check { font-family: 'Baloo 2', cursive; font-size: 0.95em; padding: 10px 14px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 3px 10px rgba(0,0,0,0.12); }
-.btn-check:hover { transform: translateY(-2px); box-shadow: 0 5px 14px rgba(0,0,0,0.18); }
-.btn-1 { background: #c0392b; color: white; }
-.btn-2 { background: #8e44ad; color: white; }
-.btn-3 { background: #16a085; color: white; }
-.btn-reset { font-family: 'Baloo 2', cursive; font-size: 0.85em; padding: 8px 16px; border-radius: 12px; border: 2px solid rgba(26,58,107,0.35); background: transparent; color: #1a3a6b; cursor: pointer; transition: all 0.2s; }
-.btn-reset:hover { background: #1a3a6b; color: white; }
-.msg-box { font-size: 0.85em; font-weight: 700; color: #1a3a6b; background: rgba(26,58,107,0.08); border: 2px solid rgba(26,58,107,0.15); border-radius: 12px; padding: 10px 14px; min-height: 60px; display: flex; align-items: center; line-height: 1.5; }
-
-.nav-bottom { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; }
-.nav-bottom a { display: inline-block; background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 1em; padding: 10px 28px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 16px rgba(26,58,107,0.35); }
-.nav-bottom a:hover { background: #2a5aab; transform: translateY(-2px); }
-.nav-bottom a.back { background: rgba(26,58,107,0.45); }
-</style>
+    /* ── TOUCH ────────────────────────────────────────────── */
+    #boardWrapper { touch-action: none; -webkit-touch-callout: none; }
+  </style>
 </head>
 <body>
+<div class="page-wrapper">
 
-<nav id="nav">
-    <a href="nivel1_lectia6.html" class="nav-btn">← Înapoi</a>
-    <div class="nav-title">Lecția 7</div>
-    <a href="hub.html" class="nav-badge">Nivelul I</a>
-</nav>
+  <!-- ── HEADER ─────────────────────────────────── -->
+  <header class="page-header" role="banner">
+    <span class="header-title">Lecția 7 — Șahul Dublu</span>
+  </header>
 
-<div class="content">
+  <!-- ── MAIN ───────────────────────────────────── -->
+  <main class="page-main" role="main">
 
-    <div class="lesson-title">
-        <h1>Șahul Dublu</h1>
-        <div class="subtitle">Lecția 7 · Nivelul I</div>
+    <!-- Board column -->
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
     </div>
 
-    <div class="card">
-        <span class="card-icon">⚡</span>
-        <h2>Ce este șahul dublu?</h2>
-        <p>Șahul dublu este o situație specială în care regele advers este atacat simultan de două piese.</p>
-        <p>Spre deosebire de un șah obișnuit, acest tip de atac este extrem de puternic, deoarece singura opțiune de apărare este mutarea regelui — capturarea sau blocarea ambelor atacuri fiind imposibilă.</p>
+    <!-- Panel column -->
+    <div class="panel-col">
+      <div class="panel-scroll" id="panelScroll">
+
+        <!-- TEXT 1 — titlu + explicație -->
+        <div class="panel-heading">Șahul Dublu</div>
+
+        <p>Șahul dublu este o situație specială în care regele advers este atacat simultan de <strong>două piese</strong>.</p>
+        <p>Spre deosebire de un șah obișnuit, acest tip de atac este extrem de puternic, deoarece singura opțiune de apărare este <strong>mutarea regelui</strong> — capturarea sau blocarea ambelor atacuri fiind imposibilă.</p>
         <p>Șahul dublu apare <strong>prin descoperire</strong>: o piesă se mișcă și dezvăluie atacul unei alte piese, iar în același timp se așează pe un câmp de unde atacă și ea regele.</p>
-        <div class="highlight-box">🔥 <strong>De ce este șahul dublu atât de puternic?</strong><br>Adversarul nu poate scăpa decât <strong>mutând regele</strong> — nu există altă formă de apărare! Aceasta face din șahul dublu o armă tactică extrem de periculoasă.</div>
-    </div>
 
-    <div class="board-card">
-        <h3>Exemplul 1 — Cal + Turn</h3>
-        <div class="board-area">
-            <div class="board-wrap">
-                <div id="board1" class="chessboard"></div>
-                <svg class="arrow-overlay" viewBox="0 0 280 280">
-                    <defs>
-                        <marker id="h-red1" markerWidth="4" markerHeight="4" refX="4" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 Z" fill="#e74c3c"/></marker>
-                        <marker id="h-blue1" markerWidth="4" markerHeight="4" refX="4" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 Z" fill="#2980b9"/></marker>
-                    </defs>
-                    <!-- e4→d6: Cal capturează nebunul -->
-                    <line id="b1-red" class="arr" x1="158" y1="158" x2="123" y2="88" stroke="#e74c3c" stroke-width="4" stroke-dasharray="80" stroke-dashoffset="80" marker-end="url(#h-red1)"/>
-                    <!-- e1→e8: Turn dă șah descoperit -->
-                    <line id="b1-blue" class="arr" x1="158" y1="263" x2="158" y2="18" stroke="#2980b9" stroke-width="4" stroke-dasharray="245" stroke-dashoffset="245" marker-end="url(#h-blue1)"/>
-                </svg>
-            </div>
-            <div class="side-panel">
-                <div class="panel-label">Cal + Turn:</div>
-                <button class="btn-check btn-1" onclick="doDoubleCheck(1)">♘ Cxd6++ — Cal capturează și Turn</button>
-                <button class="btn-reset" onclick="resetEx(1)">↺ Resetează</button>
-                <div id="msg1" class="msg-box">Apasă pentru a vedea șahul dublu!</div>
-            </div>
+        <div class="hl-box warn">
+          <strong>🔥 De ce este șahul dublu atât de puternic?</strong><br>
+          Adversarul nu poate scăpa decât <strong>mutând regele</strong> — nu există altă formă de apărare! Aceasta face din șahul dublu o armă tactică extrem de periculoasă.
         </div>
-    </div>
 
-    <div class="board-card">
-        <h3>Exemplul 2 — Cal + Nebun</h3>
-        <div class="board-area">
-            <div class="board-wrap">
-                <div id="board2" class="chessboard"></div>
-                <svg class="arrow-overlay" viewBox="0 0 280 280">
-                    <defs>
-                        <marker id="h-red2" markerWidth="4" markerHeight="4" refX="4" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 Z" fill="#e74c3c"/></marker>
-                        <marker id="h-blue2" markerWidth="4" markerHeight="4" refX="4" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 Z" fill="#2980b9"/></marker>
-                    </defs>
-                    <line id="b2-red" class="arr" x1="192" y1="192" x2="222" y2="258" stroke="#e74c3c" stroke-width="4" stroke-dasharray="80" stroke-dashoffset="80" marker-end="url(#h-red2)"/>
-                    <line id="b2-blue" class="arr" x1="87" y1="122" x2="222" y2="258" stroke="#2980b9" stroke-width="4" stroke-dasharray="200" stroke-dashoffset="200" marker-end="url(#h-blue2)"/>
-                </svg>
-            </div>
-            <div class="side-panel">
-                <div class="panel-label">Cal + Nebun:</div>
-                <button class="btn-check btn-2" onclick="doDoubleCheck(2)">♞ Cf3++ — Cal și Nebun</button>
-                <button class="btn-reset" onclick="resetEx(2)">↺ Resetează</button>
-                <div id="msg2" class="msg-box">Apasă pentru a vedea șahul dublu!</div>
-            </div>
+        <!-- TEXT 2 — label exemplu curent -->
+        <div class="ex-label" id="exLabel">Exemplul 1 — Cal + Turn</div>
+
+        <!-- BUTON ACȚIUNE -->
+        <button class="act-main-btn" id="actBtn" onclick="showDoubleCheck()">
+          ♘ Cxd6++ — Cal capturează și Turn
+        </button>
+
+        <!-- COMENTARIU -->
+        <div class="move-msg" id="moveMsg">Apasă pentru a vedea șahul dublu!</div>
+
+        <!-- RÂND CONTROL -->
+        <div class="ctrl-row">
+          <button class="btn-sm btn-reset" id="resetBtn"
+                  onclick="resetEx()" disabled>↺ Resetează</button>
+          <button class="btn-sm btn-next"  id="nextBtn"
+                  onclick="nextEx()">Următorul →</button>
         </div>
+
+      </div><!-- /panel-scroll -->
+
+      <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
     </div>
 
-    <div class="board-card">
-        <h3>Exemplul 3 — Nebun + Turn</h3>
-        <div class="board-area">
-            <div class="board-wrap">
-                <div id="board3" class="chessboard"></div>
-                <svg class="arrow-overlay" viewBox="0 0 280 280">
-                    <defs>
-                        <marker id="h-red3" markerWidth="4" markerHeight="4" refX="4" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 Z" fill="#e74c3c"/></marker>
-                        <marker id="h-blue3" markerWidth="4" markerHeight="4" refX="4" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 Z" fill="#2980b9"/></marker>
-                    </defs>
-                    <line id="b3-red" class="arr" x1="157" y1="122" x2="258" y2="21" stroke="#e74c3c" stroke-width="4" stroke-dasharray="150" stroke-dashoffset="150" marker-end="url(#h-red3)"/>
-                    <line id="b3-blue" class="arr" x1="262" y1="262" x2="262" y2="21" stroke="#2980b9" stroke-width="4" stroke-dasharray="245" stroke-dashoffset="245" marker-end="url(#h-blue3)"/>
-                </svg>
-            </div>
-            <div class="side-panel">
-                <div class="panel-label">Nebun + Turn:</div>
-                <button class="btn-check btn-3" onclick="doDoubleCheck(3)">♗ Nxe5++ — Nebun și Turn</button>
-                <button class="btn-reset" onclick="resetEx(3)">↺ Resetează</button>
-                <div id="msg3" class="msg-box">Apasă pentru a vedea șahul dublu!</div>
-            </div>
-        </div>
-    </div>
+  </main>
 
-    <div class="nav-bottom">
-        <a href="nivel1_lectia6.html" class="back">◀ Lecția 6</a>
-        <a href="pagina5.html">Lecția 8 ▶</a>
-    </div>
+  <!-- ── FOOTER ─────────────────────────────────── -->
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="nivel1_lectia6.html" class="nav-btn nav-btn--back">
+      <span class="icon" aria-hidden="true">←</span>
+      <span class="label">Înapoi</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon" aria-hidden="true">⊞</span>
+      <span class="label">Cuprins</span>
+    </a>
+    <a href="pagina5.html" class="nav-btn nav-btn--forward">
+      <span class="icon" aria-hidden="true">→</span>
+      <span class="label">Înainte</span>
+    </a>
+  </footer>
 
-</div>
+</div><!-- /page-wrapper -->
 
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script>
-var pieceTheme = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
-var START = {
-    1: 'r1bqk2r/ppp2ppp/3b4/3p4/3nN3/5N2/PPP2KPP/R2QR3',
-    2: 'B1b3nN/6pp/p1pp4/1pb3q1/3nPP2/2N5/PP4PP/R2Q1RK1',
-    3: '7k/pp6/2n3p1/3nr3/8/8/PPP4B/2KR3R'
-};
-var AFTER = {
-    1: 'r1bqk2r/ppp2ppp/3N4/3p4/3n4/5N2/PPP2KPP/R2QR3',
-    2: 'B1b3nN/6pp/p1pp4/1pb3q1/4PP2/2N2n2/PP4PP/R2Q1RK1',
-    3: '7k/pp6/2n3p1/3nB3/8/8/PPP5/2KR3R'
-};
-var MESSAGES = {
-    1: '🔴 Calul alb capturează nebunul pe d6 — atacă direct regele negru (e8) și totodată eliberează coloana e, unde Turnul de pe e1 dă și el șah. Regele nu poate fi apărat — șah dublu!!',
-    2: '🟣 Calul negru sare pe f3 — atacă direct regele alb (g1) și totodată descoperă atacul Nebunului negru de pe c5 spre g1. Regele nu poate fi apărat — șah dublu!!',
-    3: '🟢 Nebunul alb capturează pe e5 — atacă regele negru (h8) pe diagonală și totodată eliberează coloana h, unde Turnul de pe h1 dă și el șah. Regele nu poate fi apărat — șah dublu!!'
-};
-var boards = {};
-[1,2,3].forEach(function(n) {
-    $('#board'+n).css('width','280px');
-    boards[n] = Chessboard('board'+n, { position: START[n], pieceTheme: pieceTheme, showNotation: true });
+/* ═══════════════════════════════════════════════════════════════
+   DATE EXEMPLE
+   ═══════════════════════════════════════════════════════════════ */
+const PIECE_THEME = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+
+const EXAMPLES = [
+  {
+    label:    'Exemplul 1 — Cal + Turn',
+    btnText:  '♘ Cxd6++ — Cal capturează și Turn',
+    start:    'r1bqk2r/ppp2ppp/3b4/3p4/3nN3/5N2/PPP2KPP/R2QR3',
+    after:    'r1bqk2r/ppp2ppp/3N4/3p4/3n4/5N2/PPP2KPP/R2QR3',
+    /* săgeată 1 = traiectoria calului, săgeată 2 = linia turnului descoperit */
+    arrows: [
+      { from:'e4', to:'d6', color:'rgba(210,50,30,0.88)'  },
+      { from:'e1', to:'e8', color:'rgba(41,128,185,0.88)' }
+    ],
+    checkSq:  'e8',
+    message:  '🔴 Calul alb capturează nebunul pe d6 — atacă direct regele negru (e8) și totodată eliberează coloana e, unde Turnul de pe e1 dă și el șah. Regele nu poate fi apărat — șah dublu!!'
+  },
+  {
+    label:    'Exemplul 2 — Cal + Nebun',
+    btnText:  '♞ Cf3++ — Cal și Nebun',
+    start:    'B1b3nN/6pp/p1pp4/1pb3q1/3nPP2/2N5/PP4PP/R2Q1RK1',
+    after:    'B1b3nN/6pp/p1pp4/1pb3q1/4PP2/2N2n2/PP4PP/R2Q1RK1',
+    /* săgeată 1 = calul atacă regele, săgeată 2 = nebunul descoperit atacă regele */
+    arrows: [
+      { from:'f3', to:'g1', color:'rgba(142,68,173,0.88)' },
+      { from:'c5', to:'g1', color:'rgba(41,128,185,0.88)' }
+    ],
+    checkSq:  'g1',
+    message:  '🟣 Calul negru sare pe f3 — atacă direct regele alb (g1) și totodată descoperă atacul Nebunului negru de pe c5 spre g1. Regele nu poate fi apărat — șah dublu!!'
+  },
+  {
+    label:    'Exemplul 3 — Nebun + Turn',
+    btnText:  '♗ Nxe5++ — Nebun și Turn',
+    start:    '7k/pp6/2n3p1/3nr3/8/8/PPP4B/2KR3R',
+    after:    '7k/pp6/2n3p1/3nB3/8/8/PPP5/2KR3R',
+    /* săgeată 1 = nebunul atacă regele pe diagonală, săgeată 2 = turnul pe coloana h */
+    arrows: [
+      { from:'e5', to:'h8', color:'rgba(22,160,133,0.88)' },
+      { from:'h1', to:'h8', color:'rgba(41,128,185,0.88)' }
+    ],
+    checkSq:  'h8',
+    message:  '🟢 Nebunul alb capturează pe e5 — atacă regele negru (h8) pe diagonală și totodată eliberează coloana h, unde Turnul de pe h1 dă și el șah. Regele nu poate fi apărat — șah dublu!!'
+  }
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   STARE
+   ═══════════════════════════════════════════════════════════════ */
+let board      = null;
+let currentEx  = 0;
+let shown      = false;
+
+/* ── BOARD INIT ──────────────────────────────────────────────── */
+board = Chessboard('board', {
+  position:   EXAMPLES[0].start,
+  pieceTheme:  PIECE_THEME,
+  draggable:   false,
 });
-function showArrows(n) {
-    ['red','blue'].forEach(function(c) {
-        var el = document.getElementById('b'+n+'-'+c);
-        if (!el) return;
-        var dash = el.getAttribute('stroke-dasharray');
-        el.setAttribute('stroke-dashoffset', dash);
-        el.classList.remove('show');
-        el.getBoundingClientRect();
-        el.classList.add('show');
-    });
+
+function debounce(fn, d) {
+  let t;
+  return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); };
 }
-function hideArrows(n) {
-    ['red','blue'].forEach(function(c) {
-        var el = document.getElementById('b'+n+'-'+c);
-        if (el) el.classList.remove('show');
-    });
+window.addEventListener('resize', debounce(() => {
+  board.resize();
+  if (shown) redrawArrows();
+}, 150));
+
+/* ── HIGHLIGHTS ──────────────────────────────────────────────── */
+function applyCheckHighlight(sq) {
+  document.querySelectorAll('.highlight-check').forEach(el => el.classList.remove('highlight-check'));
+  if (sq) {
+    const el = document.querySelector('.square-' + sq);
+    if (el) el.classList.add('highlight-check');
+  }
 }
-function doDoubleCheck(n) {
-    boards[n].position(START[n], false);
-    hideArrows(n);
-    setTimeout(function() { boards[n].position(AFTER[n], true); }, 300);
-    setTimeout(function() { showArrows(n); document.getElementById('msg'+n).textContent = MESSAGES[n]; }, 1100);
+
+/* ── ARROWS (standard master-template) ──────────────────────── */
+function clearArrows() {
+  const bw = document.querySelector('.board-wrapper');
+  if (bw) { const s = bw.querySelector('.sah-arr-svg'); if (s) s.remove(); }
 }
-function resetEx(n) {
-    boards[n].position(START[n], true);
-    hideArrows(n);
-    document.getElementById('msg'+n).textContent = 'Apasă pentru a vedea șahul dublu!';
+
+function drawArrows(arrows) {
+  if (!arrows || !arrows.length) return;
+  const bw = document.querySelector('.board-wrapper');
+  if (!bw) return;
+  clearArrows();
+  const sz = bw.offsetWidth, sq = sz / 8;
+  function ctr(n) {
+    const c = 'abcdefgh'.indexOf(n[0]), r = parseInt(n[1]) - 1;
+    return { x: c * sq + sq / 2, y: (7 - r) * sq + sq / 2 };
+  }
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('class', 'sah-arr-svg');
+  svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:20;';
+  const defs = document.createElementNS(NS, 'defs');
+  svg.appendChild(defs);
+  arrows.forEach(function(arr, i) {
+    const col = arr.color || 'rgba(200,30,30,0.88)', mid = 'am' + i;
+    const mk = document.createElementNS(NS, 'marker');
+    mk.setAttribute('id', mid);
+    mk.setAttribute('markerWidth', '10'); mk.setAttribute('markerHeight', '7');
+    mk.setAttribute('refX', '8');        mk.setAttribute('refY', '3.5');
+    mk.setAttribute('orient', 'auto');
+    const mp = document.createElementNS(NS, 'path');
+    mp.setAttribute('d', 'M0,0 L9,3.5 L0,7 L2.5,3.5 Z');
+    mp.setAttribute('fill', col);
+    mk.appendChild(mp); defs.appendChild(mk);
+    const f = ctr(arr.from), t = ctr(arr.to);
+    const dx = t.x - f.x, dy = t.y - f.y;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    if (len < 1) return;
+    const ux = dx / len, uy = dy / len;
+    const x1 = f.x + ux * sq * 0.30, y1 = f.y + uy * sq * 0.30;
+    const x2 = t.x - ux * sq * 0.38, y2 = t.y - uy * sq * 0.38;
+    const dl = Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)) + 30;
+    const ln = document.createElementNS(NS, 'line');
+    ln.setAttribute('x1', x1); ln.setAttribute('y1', y1);
+    ln.setAttribute('x2', x2); ln.setAttribute('y2', y2);
+    ln.setAttribute('stroke', col);
+    ln.setAttribute('stroke-width', '4');
+    ln.setAttribute('stroke-linecap', 'round');
+    ln.setAttribute('stroke-linejoin', 'round');
+    ln.setAttribute('marker-end', 'url(#' + mid + ')');
+    ln.setAttribute('stroke-dasharray', dl);
+    ln.setAttribute('stroke-dashoffset', dl);
+    ln.style.animation = 'drawArrow 0.45s ease-out forwards';
+    svg.appendChild(ln);
+  });
+  bw.appendChild(svg);
 }
+
+function redrawArrows() {
+  if (shown) drawArrows(EXAMPLES[currentEx].arrows);
+}
+
+/* ── LOAD EXAMPLE ────────────────────────────────────────────── */
+function loadEx(n) {
+  currentEx = n;
+  shown     = false;
+  const ex  = EXAMPLES[n];
+
+  board.position(ex.start, false);
+  clearArrows();
+  applyCheckHighlight(null);
+
+  document.getElementById('exLabel').textContent  = ex.label;
+  document.getElementById('actBtn').textContent   = ex.btnText;
+  document.getElementById('actBtn').disabled      = false;
+  document.getElementById('moveMsg').textContent  = 'Apasă pentru a vedea șahul dublu!';
+  document.getElementById('resetBtn').disabled    = true;
+  document.getElementById('nextBtn').disabled     = (n === EXAMPLES.length - 1);
+  document.getElementById('panelScroll').scrollTop = 0;
+}
+
+/* ── SHOW DOUBLE CHECK ───────────────────────────────────────── */
+function showDoubleCheck() {
+  if (shown) return;
+  shown = true;
+  const ex = EXAMPLES[currentEx];
+
+  document.getElementById('actBtn').disabled = true;
+
+  /* 1. afișează poziția după mutare */
+  setTimeout(function() {
+    board.position(ex.after, true);
+  }, 300);
+
+  /* 2. animează săgețile și highlight-ul */
+  setTimeout(function() {
+    drawArrows(ex.arrows);
+    applyCheckHighlight(ex.checkSq);
+    document.getElementById('moveMsg').textContent = ex.message;
+    document.getElementById('resetBtn').disabled = false;
+  }, 1100);
+}
+
+/* ── RESET ───────────────────────────────────────────────────── */
+function resetEx() {
+  shown = false;
+  const ex = EXAMPLES[currentEx];
+  board.position(ex.start, true);
+  clearArrows();
+  applyCheckHighlight(null);
+  document.getElementById('actBtn').disabled     = false;
+  document.getElementById('resetBtn').disabled   = true;
+  document.getElementById('moveMsg').textContent = 'Apasă pentru a vedea șahul dublu!';
+}
+
+/* ── NEXT ────────────────────────────────────────────────────── */
+function nextEx() {
+  if (currentEx < EXAMPLES.length - 1) loadEx(currentEx + 1);
+}
+
+/* ── INIT ────────────────────────────────────────────────────── */
+$(document).ready(function() {
+  /* nextBtn disabled pe ultimul exemplu — setat în loadEx */
+  document.getElementById('nextBtn').disabled = false;
+});
 </script>
 </body>
 </html>

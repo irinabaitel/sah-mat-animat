@@ -1,801 +1,189 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sah Mat Animat - Exerseaza: Rege + Dama + Nebun vs Rege</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
-
-        #nav {
-            position: sticky; top: 0;
-            background: rgba(245,169,110,0.92);
-            backdrop-filter: blur(8px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 20px; z-index: 100;
-            border-bottom: 2px solid rgba(255,255,255,0.4);
-        }
-        .nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-        .nav-btn:hover { background: rgba(255,255,255,0.85); }
-        .nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em; }
-
-        .content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
-
-        .lesson-title { text-align: center; margin-bottom: 8px; }
-        .lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
-
-        .card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-        .card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; text-align: justify; }
-        .card p:last-child { margin-bottom: 0; }
-
-        .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
-        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
-        .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
-        .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
-        .nav-prev:hover { background: rgba(255,255,255,0.75); }
-
-        .ctrl-btn { background: #1a3a6b; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1em; cursor: pointer; transition: background 0.2s; }
-        .ctrl-btn:hover:not(:disabled) { background: #2a5aab; }
-        .ctrl-btn:disabled { background: rgba(26,58,107,0.25); cursor: not-allowed; }
-        .board-controls { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px; }
-
-        @media (max-width: 560px) { .main-content { flex-direction: column; } .board-section { margin: 0 auto; } }
-
-        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
-
-        h1 {
-            font-family: 'Baloo 2', cursive;
-            font-size: 2em;
-            color: #1a3a6b;
-            text-transform: uppercase;
-            margin-bottom: 0;
-            margin-top: 0;
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
-            text-align: center;
-            line-height: 1.25;
-        }
-
-        /* ===== LAYOUT ===== */
-        .main-content {
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-            flex-wrap: wrap;
-        }
-
-        /* ===== BOARD ===== */
-        .board-section { flex: 0 0 auto; }
-
-        #board-wrap {
-            position: relative;
-            display: inline-block;
-            width: min(480px, calc(100vw - 280px));
-            height: min(480px, calc(100vw - 280px));
-        }
-        #board { width: 100%; }
-
-        /* ===== INFO ===== */
-        .info-section {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .status-box {
-            background: rgba(255,255,255,0.5);
-            border-radius: 12px;
-            padding: 14px 16px;
-            font-size: 1em;
-            line-height: 1.6;
-            color: #333;
-            min-height: 70px;
-            border-left: 4px solid #1a3a6b;
-        }
-        .status-box.success {
-            border-left-color: #27ae60;
-            background: rgba(220,255,230,0.75);
-        }
-        .status-box.warning {
-            border-left-color: #e67e22;
-            background: rgba(255,240,210,0.8);
-        }
-        .status-box.danger {
-            border-left-color: #c0392b;
-            background: rgba(255,220,220,0.8);
-        }
-
-        .restart-btn {
-            background: #1a3a6b;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-family: 'Baloo 2', cursive;
-            font-size: 1em;
-            padding: 9px 26px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.2s;
-            display: block;
-        }
-        .restart-btn:hover { background: #2a5aab; }
-        .revansa-btn { background: #7d3c98; }
-        .revansa-btn:hover { background: #9b59b6; }
-        .start-btn { background: #27ae60; }
-        .start-btn:hover:not(:disabled) { background: #2ecc71; }
-        .start-btn:disabled { background: rgba(39,174,96,0.35); cursor: default; transform: none !important; }
-
-        /* ===== CHESS CLOCK ===== */
-        .clock-wrap {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        .clock-box {
-            flex: 1;
-            background: rgba(255,255,255,0.4);
-            border-radius: 10px;
-            padding: 8px 10px;
-            text-align: center;
-            border: 2px solid transparent;
-            transition: border-color 0.2s, background 0.2s;
-        }
-        .clock-box.active {
-            border-color: #1a3a6b;
-            background: rgba(255,255,255,0.75);
-        }
-        .clock-label {
-            font-size: 0.72em;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: rgba(26,58,107,0.6);
-            margin-bottom: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-        .clock-dot {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: #e67e22;
-            display: none;
-            animation: pulse-dot 0.8s ease-in-out infinite;
-        }
-        .clock-box.active .clock-dot { display: inline-block; }
-        @keyframes pulse-dot {
-            0%,100% { opacity: 1; transform: scale(1); }
-            50%      { opacity: 0.4; transform: scale(0.7); }
-        }
-        .clock-time {
-            font-family: 'Baloo 2', cursive;
-            font-size: 1.5em;
-            font-weight: 900;
-            color: #1a3a6b;
-            letter-spacing: 1px;
-        }
-        .clock-box.active .clock-time { color: #e67e22; }
-
-        /* ===== MOVE LIST ===== */
-        .move-list {
-            background: rgba(255,255,255,0.45);
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin-top: 10px;
-            font-size: 0.85em;
-            line-height: 1.9;
-            max-height: 180px;
-            overflow-y: auto;
-            color: #222;
-        }
-        .move-list .mn { color: rgba(26,58,107,0.5); font-weight: 700; margin-right: 2px; }
-        .move-list .mw { color: #1a3a6b; font-weight: 700; margin-right: 6px; }
-        .move-list .mb { color: #333; margin-right: 10px; }
-        .move-list em  { color: rgba(0,0,0,0.35); font-style: italic; }
-        .move-item { border-radius: 3px; padding: 1px 3px; cursor: pointer; transition: background 0.15s; }
-        .move-item:hover { background: rgba(26,58,107,0.15); }
-        .move-item.active { background: rgba(26,58,107,0.28) !important; color: white !important; }
-
-        /* ===== CONFETTI ===== */
-        @keyframes confetti-fall {
-            0%   { opacity: 1; transform: translate(0,0) rotate(0deg); }
-            80%  { opacity: 1; }
-            100% { opacity: 0; transform: translate(var(--dx),var(--dy)) rotate(var(--rot)); }
-        }
-        .confetti-page {
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            border-radius: 3px;
-            animation: confetti-fall var(--dur, 2s) ease-in forwards;
-        }
-
-        /* ===== HEART BADGE ===== */
-        .heart-badge {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.3em;
-            z-index: 10;
-            pointer-events: none;
-            animation: heartbeat-slow 1.3s ease-in-out infinite;
-        }
-        .heart-badge.hb-fast {
-            animation: heartbeat-fast 0.45s ease-in-out infinite;
-        }
-        @keyframes heartbeat-slow {
-            0%,100% { transform: translate(-50%,-50%) scale(1); }
-            50%      { transform: translate(-50%,-50%) scale(1.4); }
-        }
-        @keyframes heartbeat-fast {
-            0%,100% { transform: translate(-50%,-50%) scale(1); }
-            50%      { transform: translate(-50%,-50%) scale(1.5); }
-        }
-
-        /* ===== THINKING DOTS ===== */
-        @keyframes dots { 0%{content:'.';} 33%{content:'..';} 66%{content:'...';} 100%{content:'';} }
-        .dots::after { content: ''; animation: dots 1.2s steps(3,end) infinite; }
-
-        /* ===== NAV ===== */
-
-        @media (max-width: 640px) {
-            body { padding: 8px 4px; }
-            h1 { font-size: 1.5em; margin-top: 0; }
-            .main-content { flex-direction: column; align-items: center; }
-            #board-wrap { width: min(480px, calc(100vw - 40px)); height: min(480px, calc(100vw - 40px)); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Șah Mat Animat – Arena: Damă + Nebun vs Rege</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <style>
+    .board-col{flex-direction:column;gap:6px;}
+    #boardWrapper{--avail-h:calc(100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap) - 48px);}
+    .arena-settings{display:flex;align-items:center;gap:8px;padding:4px 10px;background:var(--c-surface);border:2px solid var(--c-border);border-radius:var(--radius-sm);flex-shrink:0;overflow-x:auto;overflow-y:hidden;}
+    .settings-label{font-family:var(--font-display);font-size:var(--fs-sm);font-weight:var(--fw-bold);color:var(--c-navy);white-space:nowrap;flex-shrink:0;}
+    .settings-btns{display:flex;gap:5px;flex:1;justify-content:space-evenly;}
+    .s-btn{background:rgba(255,255,255,0.55);border:2px solid rgba(26,58,107,0.25);border-radius:var(--radius-sm);padding:2px 10px;font-family:var(--font-body);font-size:var(--fs-sm);font-weight:var(--fw-bold);color:var(--c-navy);cursor:pointer;white-space:nowrap;transition:all .15s;}
+    .s-btn:hover{background:var(--c-surface-2);}.s-btn.active{background:var(--c-navy);color:white;border-color:var(--c-navy);}
+    .panel-col{gap:6px;}
+    .arena-clock{flex-shrink:0;align-self:flex-start;width:fit-content;min-width:180px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 16px;background:var(--c-surface);border:2px solid var(--c-border);border-radius:8px;transition:border-color .2s,background .2s;height:calc((100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap) - 48px) / 8 * 0.65 + 1cm);min-height:44px;max-height:70px;}
+    .arena-clock.active{border-color:var(--c-navy);background:var(--c-surface-2);}
+    .clock-time{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2.2rem);font-weight:var(--fw-xbold);color:var(--c-navy);letter-spacing:2px;line-height:1;}
+    .arena-clock.active .clock-time{color:var(--c-warning);}
+    .clock-right{display:flex;align-items:center;gap:8px;}
+    .clock-dot{width:7px;height:7px;border-radius:50%;background:var(--c-warning);opacity:0;flex-shrink:0;animation:pulse-dot .8s ease-in-out infinite;}
+    .arena-clock.active .clock-dot{opacity:1;}
+    @keyframes pulse-dot{0%,100%{transform:scale(1);}50%{transform:scale(.55);}}
+    .clock-piece{font-size:1.5em;line-height:1;opacity:.7;}.arena-clock.active .clock-piece{opacity:1;}
+    .clock-player{font-family:var(--font-body);font-size:var(--fs-sm);font-weight:var(--fw-bold);color:var(--c-text-muted);}.arena-clock.active .clock-player{color:var(--c-navy);}
+    .status-box{flex-shrink:0;background:rgba(255,255,255,0.45);border-radius:10px;padding:9px 13px;font-size:.91rem;line-height:1.55;color:var(--c-text);border-left:4px solid var(--c-navy);}
+    .status-box.success{border-left-color:var(--c-success);background:var(--c-success-bg);}
+    .status-box.warning{border-left-color:var(--c-warning);background:var(--c-warning-bg);}
+    .status-box.danger{border-left-color:var(--c-error);background:var(--c-error-bg);}
+    .move-list{overflow-y:auto;max-height:calc(0.84rem * 1.9 * 4 + 16px);background:rgba(255,255,255,0.55);border:1px solid rgba(26,58,107,0.15);border-radius:8px;padding:6px 10px;font-size:.84rem;line-height:1.9;color:#222;margin-top:8px;scrollbar-width:thin;scrollbar-color:rgba(26,58,107,.3) transparent;}
+    .move-list::-webkit-scrollbar{width:4px;}.move-list::-webkit-scrollbar-track{background:transparent;}.move-list::-webkit-scrollbar-thumb{background:rgba(26,58,107,.35);border-radius:4px;}
+    .move-list .mn{color:rgba(26,58,107,.5);font-weight:700;margin-right:2px;}.move-list .mw{color:var(--c-navy);font-weight:700;margin-right:6px;}.move-list .mb{color:#333;margin-right:10px;}.move-list em{color:rgba(0,0,0,.35);font-style:italic;}
+    .move-item{border-radius:3px;padding:1px 3px;cursor:default;transition:background .15s;}.move-list.review-ready .move-item{cursor:pointer;}.move-list.review-ready .move-item:hover{background:rgba(26,58,107,.15);}.move-item.active{background:rgba(26,58,107,.28)!important;color:var(--c-navy)!important;}
+    #reviewHint{font-size:.78rem;color:rgba(26,58,107,.6);line-height:1.4;margin-top:6px;}
+    .panel-actions{gap:6px;}.panel-actions .btn-action{font-size:1rem;}.btn-revansa{border-color:#7d3c98!important;color:#7d3c98!important;}
+    @keyframes confetti-fall{0%{opacity:1;transform:translate(0,0) rotate(0deg);}80%{opacity:1;}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot));}}
+    .confetti-page{position:fixed;pointer-events:none;z-index:9999;border-radius:3px;animation:confetti-fall var(--dur,2s) ease-in forwards;}
+    .heart-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.3em;z-index:10;pointer-events:none;animation:heartbeat-slow 1.3s ease-in-out infinite;}
+    .heart-badge.hb-fast{animation:heartbeat-fast .45s ease-in-out infinite;}
+    @keyframes heartbeat-slow{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.4);}}
+    @keyframes heartbeat-fast{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.5);}}
+    @keyframes dots{0%{content:'.';}33%{content:'..';}66%{content:'...';}100%{content:'';}}
+    .dots::after{content:'';animation:dots 1.2s steps(3,end) infinite;}
+    @media (max-width:768px),(max-aspect-ratio:1/1){#boardWrapper{--avail-h:calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.52 - 44px);}.arena-clock{height:calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.52 / 8 * 0.65);min-height:32px;padding:0 10px;}.clock-time{font-size:clamp(1.1rem,4.5vw,1.5rem);}}
+  </style>
 </head>
 <body>
+<div class="page-wrapper">
 
-<nav id="nav">
-    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
-    <div class="nav-title">Arena — Dam&#259; + Nebun vs. Rege</div>
-    <div style="display:flex;align-items:center;gap:8px;">
-        <button id="vol-btn" onclick="toggleVolume()" class="nav-btn" style="padding:6px 12px;font-size:1.1em;cursor:pointer;border:none;">&#128266;</button>
-        <span class="nav-badge">Nivelul III</span>
+  <header class="page-header" role="banner">
+    <span class="header-title">Arena: Dam&#259; + Nebun vs Rege</span>
+    <div class="header-progress">
+      <button id="muteBtn" onclick="toggleMute()" style="background:rgba(255,255,255,0.5);border:none;border-radius:50px;padding:4px 10px;font-size:1.1em;cursor:pointer;">&#128266;</button>
+      <span class="lesson-badge">Nivelul III</span>
     </div>
-</nav>
+  </header>
 
-<div class="content">
-        <div class="lesson-title"><h1>Arena de Antrenament</h1></div>
-
-    <div class="card">
-        <p>Echipa Rege + Dam&#259; + Nebun este extrem de puternic&#259; &#8212; Dama controleaz&#259; linii &#351;i coloane, iar Nebunul taie diagonale periculoase! Coordon&#226;nd aceste piese, po&#539;i aduce rapid Regele advers &#238;ntr-un col&#539; sau la margine. Exerseaz&#259; de mai multe ori, p&#226;n&#259; c&#226;nd coordonarea pieselor devine natural&#259;. Cu c&#226;t reu&#351;e&#351;ti s&#259; dai mat din mai pu&#539;ine mut&#259;ri, cu at&#226;t e&#351;ti mai aproape de a deveni maestru! Robotul joac&#259; cele mai bune mut&#259;ri pentru adversar!</p>
-    </div>
-
-    <div class="main-content">
-
-        <!-- Board -->
-        <div class="board-section">
-            <div id="board-wrap">
-                <div id="board"></div>
-            </div>
-            <div class="board-controls">
-                <button class="ctrl-btn" id="btnFirst" onclick="reviewFirst()" title="Prima pozi&#539;ie" disabled>&#9198;</button>
-                <button class="ctrl-btn" id="btnPrev"  onclick="reviewPrev()"  title="&#206;napoi" disabled>&#9664;</button>
-                <button class="ctrl-btn" id="btnNext"  onclick="reviewNext()"  title="&#206;nainte" disabled>&#9654;</button>
-                <button class="ctrl-btn" id="btnLast"  onclick="reviewLast()"  title="Ultima pozi&#539;ie" disabled>&#9197;</button>
-            </div>
+  <main class="page-main" role="main">
+    <div class="board-col">
+      <div class="arena-settings" id="settingsPanel">
+        <span class="settings-label">Timp:</span>
+        <div class="settings-btns" id="timeBtns">
+          <button class="s-btn" onclick="setTime(60000,this)">1 min</button>
+          <button class="s-btn" onclick="setTime(180000,this)">3 min</button>
+          <button class="s-btn" onclick="setTime(300000,this)">5 min</button>
+          <button class="s-btn" onclick="setTime(600000,this)">10 min</button>
+          <button class="s-btn active" onclick="setTime(0,this)">&#8734;</button>
         </div>
-
-        <!-- Info -->
-        <div class="info-section">
-            <div class="status-box" id="statusBox">
-                Ap&#259;sa&#539;i <strong>Start!</strong> pentru a &#238;ncepe.
-            </div>
-            <div class="clock-wrap">
-                <div class="clock-box" id="clockWhite">
-                    <div class="clock-label"><span class="clock-dot"></span>&#9812; <span id="labelWhite">Tu</span></div>
-                    <div class="clock-time" id="clockWhiteTime">00:00</div>
-                </div>
-                <div class="clock-box" id="clockBlack">
-                    <div class="clock-label"><span class="clock-dot"></span>&#9818; <span id="labelBlack">Robot</span></div>
-                    <div class="clock-time" id="clockBlackTime">00:00</div>
-                </div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:10px;">
-                <button class="restart-btn" style="margin-top:0;flex:1;" onclick="restartGame()">&#8635; Reia Jocul</button>
-                <button class="restart-btn start-btn" id="startBtn" style="margin-top:0;flex:1;" onclick="startGame()">&#9654; Start!</button>
-                <button class="restart-btn revansa-btn" style="margin-top:0;flex:1;" onclick="startRevansa()">&#9818; Revan&#351;&#259;!</button>
-            </div>
-            <div class="move-list" id="moveList"><em>Nicio mutare &#238;nc&#259;.</em></div>
-            <p id="reviewHint" style="display:none;font-size:0.8em;color:rgba(26,58,107,0.6);margin-top:6px;">&#9432; Apas&#259; pe o mutare pentru a revedea pozi&#539;ia.</p>
-        </div>
-
-    </div><!-- end main-content -->
-
-    <div class="bottom-nav">
-        <a href="pagina18.html" class="nav-prev">&#9664; &#206;napoi</a>
-        <a href="pagina22.html" class="nav-next">Dam&#259; + Cal vs. Rege &#9654;</a>
+      </div>
+      <div class="board-wrapper" id="boardWrapper"><div id="board"></div></div>
     </div>
+
+    <div class="panel-col">
+      <div class="arena-clock" id="clockBlack">
+        <div class="clock-time" id="clockBlackTime">00:00</div>
+        <div class="clock-right"><span class="clock-piece">&#9818;</span><span class="clock-player" id="labelBlack">Robot</span><span class="clock-dot"></span></div>
+      </div>
+
+      <div class="status-box" id="statusBox">Mutarea ta! Coordoneaz&#259; Dama &#351;i Nebunul!</div>
+
+      <div class="panel-scroll" role="region" aria-label="Status joc">
+        <p>Echipa <strong>Rege + Dam&#259; + Nebun</strong> este extrem de puternic&#259; &mdash;
+        Dama controleaz&#259; linii &#351;i coloane, iar Nebunul taie diagonale periculoase!
+        Coordon&#226;nd aceste piese, po&#539;i aduce rapid Regele advers &#238;ntr-un col&#539;
+        sau la margine.</p>
+        <p style="margin-top:6px;">Exerseaz&#259; de mai multe ori, p&#226;n&#259; c&#226;nd
+        coordonarea pieselor devine natural&#259;. Cu c&#226;t reu&#351;e&#351;ti s&#259; dai mat
+        din mai pu&#539;ine mut&#259;ri, cu at&#226;t e&#351;ti mai aproape de a deveni maestru!
+        Robotul joac&#259; cele mai bune mut&#259;ri pentru adversar!</p>
+        <div class="move-list" id="moveList"><em>Nicio mutare &#238;nc&#259;.</em></div>
+        <p id="reviewHint" style="display:none;">&#9432; Apas&#259; pe o mutare pentru a revedea pozi&#539;ia.</p>
+      </div>
+
+      <div class="arena-clock" id="clockWhite">
+        <div class="clock-time" id="clockWhiteTime">00:00</div>
+        <div class="clock-right"><span class="clock-piece">&#9812;</span><span class="clock-player" id="labelWhite">Tu</span><span class="clock-dot"></span></div>
+      </div>
+
+      <div class="panel-actions">
+        <button class="btn-action btn-reset" onclick="restartGame()">&#8635; Reia</button>
+        <button class="btn-action btn-revansa" onclick="startRevansa()">&#9818; Revan&#351;&#259;</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lectie">
+    <a href="pagina18.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">&#206;napoi</span></a>
+    <a href="hub.html" class="nav-btn nav-btn--contents"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
+    <a href="pagina22.html" class="nav-btn nav-btn--forward"><span class="icon">&#8594;</span><span class="label">&#206;nainte</span></a>
+  </footer>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-
 <script>
-const PAGE_ID = 'em_msf_dn_ex';
+const sndMove=new Audio('Sounds/Move.mp3'),sndCapture=new Audio('Sounds/Capture.mp3'),sndMate=new Audio('Sounds/Mate.mp3');
+let soundMuted=false;
+function playSound(snd){if(!soundMuted){snd.currentTime=0;snd.play().catch(function(){});}}
+function playSoundForMove(mv){if(!mv)return;if(chess.in_checkmate()){playSound(sndMate);return;}if(mv.flags&&mv.flags.includes('c'))playSound(sndCapture);else playSound(sndMove);}
+function toggleMute(){soundMuted=!soundMuted;document.getElementById('muteBtn').textContent=soundMuted?'\uD83D\uDD07':'\uD83D\uDD0A';}
 
-/* ===== SUNETE ===== */
-const sndMove    = new Audio('Sounds/Move.mp3');
-const sndCapture = new Audio('Sounds/Capture.mp3');
-const sndMate    = new Audio('Sounds/Mate.mp3');
-let volumeOn = true;
-function playSound(snd) { if (!volumeOn) return; snd.currentTime = 0; snd.play().catch(() => {}); }
-function playSoundForMove(mv) { if (!mv) return; if (mv.captured) playSound(sndCapture); else playSound(sndMove); }
-function toggleVolume() { volumeOn = !volumeOn; document.getElementById('vol-btn').textContent = volumeOn ? '\uD83D\uDD0A' : '\uD83D\uDD07'; }
-const startFen = '8/8/8/4k3/8/8/8/2BQK3 w - - 0 1';
-const chess    = new Chess(startFen);
-const statusBox = document.getElementById('statusBox');
+const startFen='8/8/8/4k3/8/8/8/2BQK3 w - - 0 1';
+const chess=new Chess(startFen);
+const statusBox=document.getElementById('statusBox');
+let initialTime=0,playerSide='w',positionHistory=[startFen],gameOver=false,firstMoveHappened=false;
 
-/* ===== STOCKFISH ===== */
-let stockfish       = null;
-let sfCallback      = null;
-let sfBestForWhite  = null;
-let sfReady         = false;
-let sfMateIn        = null;
-let playerSide      = 'w';
-let positionHistory = [];
-let gameOver        = false;
-let gameStarted     = false;
+function setTime(ms,btn){if(firstMoveHappened)return;initialTime=ms;document.querySelectorAll('#timeBtns .s-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');whiteTime=ms;blackTime=ms;updateClockDisplay();}
 
-function initStockfish() {
-    try {
-        const code = `importScripts('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js')`;
-        const blob = new Blob([code], { type: 'application/javascript' });
-        stockfish = new Worker(URL.createObjectURL(blob));
-    } catch(e) {
-        try { stockfish = new Worker('stockfish.js'); } catch(e2) { stockfish = null; }
-    }
-    if (!stockfish) return;
+let stockfish=null,sfCallback=null,sfBestForWhite=null,sfReady=false,sfMateIn=null;
+function initStockfish(){try{const blob=new Blob(["importScripts('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js')"],{type:'application/javascript'});stockfish=new Worker(URL.createObjectURL(blob));}catch(e){try{stockfish=new Worker('stockfish.js');}catch(e2){stockfish=null;}}if(!stockfish)return;stockfish.onmessage=function(e){const msg=e.data;if(msg==='uciok'){stockfish.postMessage('setoption name Skill Level value 20');stockfish.postMessage('isready');}if(msg==='readyok'){sfReady=true;prepareWhiteBest();}if(typeof msg==='string'&&msg.includes('score mate')){const m=msg.match(/score mate (-?\d+)/);if(m){const n=parseInt(m[1]);if(n>0)sfMateIn=n;}}if(typeof msg==='string'&&msg.startsWith('bestmove')){const mv=msg.split(' ')[1];if(sfCallback){const cb=sfCallback;sfCallback=null;cb(mv);}}};stockfish.postMessage('uci');}
+function askStockfish(fen,depth,callback){if(!stockfish||!sfReady){callback(null);return;}sfCallback=callback;stockfish.postMessage('stop');stockfish.postMessage('position fen '+fen);stockfish.postMessage('go depth '+depth);}
+function prepareWhiteBest(){if(playerSide!=='w')return;if(chess.turn()!=='w'||chess.game_over())return;sfBestForWhite=null;sfMateIn=null;askStockfish(chess.fen(),14,function(mv){sfBestForWhite=mv;updateHeart();});}
+function stockfishPlayWhite(){if(chess.game_over())return;sfMateIn=null;if(firstMoveHappened)startClock('w');statusBox.innerHTML='Robotul se g\u00e2nde\u015fte<span class="dots"></span>';statusBox.className='status-box';askStockfish(chess.fen(),15,function(mv){if(!mv||mv==='(none)'){if(firstMoveHappened)startClock('b');statusBox.innerHTML='E r\u00e2ndul t\u0103u!';statusBox.className='status-box';updateHeart();return;}const sfWhiteMove=chess.move({from:mv.slice(0,2),to:mv.slice(2,4)});playSoundForMove(sfWhiteMove);board.position(chess.fen());positionHistory.push(chess.fen());updateMoveList();firstMoveHappened=true;lockTimeButtons();if(chess.in_checkmate()){const survived=Math.floor(chess.history().length/2);statusBox.innerHTML='\uD83D\uDC80 <strong>\u015eah mat!</strong> Ai rezistat <strong>'+survived+' mut\u0103ri</strong>. Po\u0163i mai bine?';statusBox.className='status-box danger';stopClock();setTimeout(removeHeart,1000);enableReview();return;}if(chess.in_stalemate()||chess.in_draw()){statusBox.innerHTML='\uD83C\uDF89 <strong>Pat!</strong> Ai ob\u0163inut remiza \u2014 excep\u0163ional!';statusBox.className='status-box success';stopClock();spawnPageConfetti(5000);enableReview();return;}startClock('b');statusBox.innerHTML='E r\u00e2ndul t\u0103u! Nu te apropia de margine.';statusBox.className='status-box';updateHeart();});}
 
-    stockfish.onmessage = function(e) {
-        const msg = e.data;
-        if (msg === 'uciok') {
-            stockfish.postMessage('setoption name Skill Level value 20');
-            stockfish.postMessage('isready');
-        }
-        if (msg === 'readyok') { sfReady = true; }
-        if (typeof msg === 'string' && msg.includes('score mate')) {
-            const m = msg.match(/score mate (-?\d+)/);
-            if (m) { const n = parseInt(m[1]); if (n > 0) sfMateIn = n; }
-        }
-        if (typeof msg === 'string' && msg.startsWith('bestmove')) {
-            const mv = msg.split(' ')[1];
-            if (sfCallback) { const cb = sfCallback; sfCallback = null; cb(mv); }
-        }
-    };
-    stockfish.postMessage('uci');
-}
+function spawnPageConfetti(duration){const colors=['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb','#ffffff'];const endTime=Date.now()+duration;function batch(){if(Date.now()>=endTime)return;for(let i=0;i<12;i++){const p=document.createElement('div');p.className='confetti-page';const w=7+Math.random()*7,h=w*(0.35+Math.random()*0.7);p.style.cssText='width:'+w+'px;height:'+h+'px;background:'+colors[Math.floor(Math.random()*colors.length)]+';left:'+(Math.random()*100)+'vw;top:-14px';const fd=window.innerHeight*(0.65+Math.random()*0.45);p.style.setProperty('--dx',((Math.random()-.5)*180)+'px');p.style.setProperty('--dy',fd+'px');p.style.setProperty('--rot',(Math.random()*900-450)+'deg');const dur=1.8+Math.random()*2.4;p.style.setProperty('--dur',dur+'s');document.body.appendChild(p);setTimeout(function(){p.remove();},dur*1000+200);}setTimeout(batch,110);}batch();}
 
-function askStockfish(fen, depth, callback) {
-    if (!stockfish || !sfReady) { callback(null); return; }
-    sfCallback = callback;
-    stockfish.postMessage('stop');
-    stockfish.postMessage('position fen ' + fen);
-    stockfish.postMessage('go depth ' + depth);
-}
+function updateMoveList(){const el=document.getElementById('moveList');if(!el)return;const hist=chess.history();if(hist.length===0){el.innerHTML='<em>Nicio mutare \u00eenc\u0103.</em>';return;}let html='';for(let i=0;i<hist.length;i+=2){html+='<div class="move-row"><span class="mn">'+(i/2+1)+'.</span><span class="mw move-item" data-idx="'+i+'">'+hist[i]+'</span>'+(hist[i+1]?'<span class="mb move-item" data-idx="'+(i+1)+'">'+hist[i+1]+'</span>':'')+'</div>';}el.innerHTML=html;el.scrollTop=el.scrollHeight;}
 
-function prepareWhiteBest() {
-    if (playerSide !== 'w') return;
-    if (chess.turn() !== 'w' || chess.game_over()) return;
-    sfBestForWhite = null;
-    sfMateIn = null;
-    askStockfish(chess.fen(), 14, function(mv) {
-        sfBestForWhite = mv;
-        updateHeart();
-    });
-}
+let whiteTime=0,blackTime=0,clockInterval=null,clockSide=null,clockLastTick=null;
+function formatTime(ms){const s=Math.floor(Math.abs(ms)/1000),m=Math.floor(s/60);return(m<10?'0':'')+m+':'+(s%60<10?'0':'')+(s%60);}
+function updateClockDisplay(){document.getElementById('clockWhiteTime').textContent=formatTime(whiteTime);document.getElementById('clockBlackTime').textContent=formatTime(blackTime);}
+function applyDelta(side,delta){if(initialTime>0){if(side==='w'){whiteTime-=delta;if(whiteTime<0)whiteTime=0;}else{blackTime-=delta;if(blackTime<0)blackTime=0;}}else{if(side==='w')whiteTime+=delta;else blackTime+=delta;}}
+function onFlag(side){stopClock();const isUser=(playerSide===side);statusBox.innerHTML=isUser?'\u231a <strong>Timp epuizat!</strong> Ai r\u0103mas f\u0103r\u0103 timp.':'\u231a <strong>Robotul a r\u0103mas f\u0103r\u0103 timp!</strong> Ai c\u00e2\u015ftigat!';statusBox.className=isUser?'status-box danger':'status-box success';enableReview();}
+function startClock(side){if(clockInterval)clearInterval(clockInterval);if(clockLastTick&&clockSide)applyDelta(clockSide,Date.now()-clockLastTick);clockSide=side;clockLastTick=Date.now();clockInterval=setInterval(function(){const now=Date.now(),delta=now-clockLastTick;clockLastTick=now;applyDelta(clockSide,delta);updateClockDisplay();if(initialTime>0){if(clockSide==='w'&&whiteTime<=0){onFlag('w');return;}if(clockSide==='b'&&blackTime<=0){onFlag('b');return;}}},100);document.getElementById('clockWhite').classList.toggle('active',side==='w');document.getElementById('clockBlack').classList.toggle('active',side==='b');}
+function stopClock(){if(clockInterval){clearInterval(clockInterval);clockInterval=null;}if(clockLastTick&&clockSide)applyDelta(clockSide,Date.now()-clockLastTick);clockSide=null;clockLastTick=null;document.getElementById('clockWhite').classList.remove('active');document.getElementById('clockBlack').classList.remove('active');updateClockDisplay();}
+function resetClocks(){stopClock();whiteTime=initialTime;blackTime=initialTime;updateClockDisplay();}
+function lockTimeButtons(){document.querySelectorAll('#timeBtns .s-btn').forEach(function(b){b.disabled=true;});}
 
-function stockfishPlayWhite() {
-    if (chess.game_over()) return;
-    sfMateIn = null;
-    startClock('w');
-    statusBox.innerHTML = 'Robotul se g&#226;nde&#351;te<span class="dots"></span>';
-    statusBox.className = 'status-box';
-    askStockfish(chess.fen(), 15, function(mv) {
-        if (!mv || mv === '(none)') {
-            startClock('b');
-            statusBox.innerHTML = 'E r&#226;ndul t&#259;u!';
-            statusBox.className = 'status-box';
-            updateHeart();
-            return;
-        }
-        const mv0 = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
-        playSoundForMove(mv0);
-        board.position(chess.fen());
-        positionHistory.push(chess.fen());
-        updateMoveList();
+function blackKingSquare(){const b=chess.board(),files='abcdefgh';for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(b[r][c]&&b[r][c].type==='k'&&b[r][c].color==='b')return files[c]+(8-r);return null;}
+function removeHeart(){const h=document.getElementById('king-heart');if(h)h.remove();}
+function showHeart(square,fast){removeHeart();const el=document.querySelector('#board .square-'+square);if(!el)return;const h=document.createElement('div');h.id='king-heart';h.className='heart-badge'+(fast?' hb-fast':'');h.textContent='\u2764\ufe0f';el.style.position='relative';el.appendChild(h);}
+function updateHeart(){if(chess.game_over()){removeHeart();return;}const sq=blackKingSquare();if(!sq||sfMateIn===null){removeHeart();return;}if(sfMateIn<=3)showHeart(sq,true);else if(sfMateIn<=8)showHeart(sq,false);else removeHeart();}
 
-        if (chess.in_checkmate()) {
-            setTimeout(function() { playSound(sndMate); }, 300);
-            const survived = Math.floor(chess.history().length / 2);
-            statusBox.innerHTML = '&#128128; <strong>&#350;ah mat!</strong> Ai rezistat <strong>' + survived + ' mut&#259;ri</strong>. Po&#539;i mai bine?';
-            statusBox.className = 'status-box danger';
-            stopClock();
-            setTimeout(removeHeart, 1000);
-            enableReview();
-            return;
-        }
-        if (chess.in_stalemate() || chess.in_draw()) {
-            statusBox.innerHTML = '&#127881; <strong>Pat!</strong> Ai ob&#539;inut remiza &mdash; excep&#539;ional!';
-            statusBox.className = 'status-box success';
-            stopClock();
-            spawnPageConfetti(5000);
-            enableReview();
-            return;
-        }
-        startClock('b');
-        statusBox.innerHTML = 'E r&#226;ndul t&#259;u! Nu te apropia de margine.';
-        statusBox.className = 'status-box';
-        updateHeart();
-    });
-}
+function onDragStart(source,piece){if(chess.game_over())return false;if(chess.turn()!==playerSide)return false;if(playerSide==='w'&&piece.startsWith('b'))return false;if(playerSide==='b'&&piece.startsWith('w'))return false;return true;}
 
-/* ===== CONFETTI ===== */
-function spawnPageConfetti(duration) {
-    const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb','#ff99cc','#ffffff'];
-    const endTime = Date.now() + duration;
-    function batch() {
-        if (Date.now() >= endTime) return;
-        for (let i = 0; i < 12; i++) {
-            const p = document.createElement('div');
-            p.className = 'confetti-page';
-            const w = 7 + Math.random() * 7;
-            const h = w * (0.35 + Math.random() * 0.7);
-            p.style.width  = w + 'px';
-            p.style.height = h + 'px';
-            p.style.background = colors[Math.floor(Math.random() * colors.length)];
-            p.style.left = (Math.random() * 100) + 'vw';
-            p.style.top  = '-14px';
-            const fallDist = window.innerHeight * (0.65 + Math.random() * 0.45);
-            p.style.setProperty('--dx',  ((Math.random() - 0.5) * 180) + 'px');
-            p.style.setProperty('--dy',  fallDist + 'px');
-            p.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
-            const dur = 1.8 + Math.random() * 2.4;
-            p.style.setProperty('--dur', dur + 's');
-            document.body.appendChild(p);
-            setTimeout(function() { p.remove(); }, dur * 1000 + 200);
-        }
-        setTimeout(batch, 110);
-    }
-    batch();
-}
+function onDrop(source,target){if(chess.turn()!==playerSide)return 'snapback';const uciMove=source+target;const move=chess.move({from:source,to:target,promotion:'q'});if(!move)return 'snapback';playSoundForMove(move);if(!firstMoveHappened){firstMoveHappened=true;lockTimeButtons();}
+if(playerSide==='b'){positionHistory.push(chess.fen());updateMoveList();setTimeout(stockfishPlayWhite,350);return;}
+if(chess.in_stalemate()){statusBox.innerHTML='\u26a0\ufe0f <strong>Pat!</strong> Regele negru nu mai are mut\u0103ri \u2014 e remiz\u0103! \u00cencerc\u0103 alt\u0103 mutare.';statusBox.className='status-box warning';chess.undo();board.position(chess.fen());prepareWhiteBest();return 'snapback';}
+positionHistory.push(chess.fen());updateMoveList();startClock('b');
+if(chess.in_checkmate()){const whiteMoves=Math.ceil(chess.history().length/2);statusBox.innerHTML='\uD83C\uDFC6 <strong>\u015eah mat!</strong> Ai reu\u015fit din <strong>'+whiteMoves+' mut\u0103ri</strong>. Po\u0163i mai bine?';statusBox.className='status-box success';stopClock();spawnPageConfetti(5000);setTimeout(removeHeart,1000);enableReview();return;}
+const isGood=sfBestForWhite&&uciMove===sfBestForWhite;
+statusBox.innerHTML=isGood?'\u2705 Mutare excelent\u0103! Acum r\u0103spunde Regele negru<span class="dots"></span>':'Regele negru r\u0103spunde<span class="dots"></span>';
+statusBox.className=isGood?'status-box success':'status-box';
+setTimeout(function(){askStockfish(chess.fen(),15,function(mv){if(!mv||mv==='(none)'){statusBox.innerHTML='E r\u00e2ndul t\u0103u!';statusBox.className='status-box';prepareWhiteBest();return;}const sfBlackMove=chess.move({from:mv.slice(0,2),to:mv.slice(2,4)});playSoundForMove(sfBlackMove);board.position(chess.fen());positionHistory.push(chess.fen());updateMoveList();if(chess.in_checkmate()){statusBox.innerHTML='\u274c \u015eah mat! Regele negru a c\u00e2\u015ftigat. Mai \u00eencerc\u0103!';statusBox.className='status-box danger';stopClock();enableReview();return;}if(chess.in_stalemate()||chess.in_draw()){statusBox.innerHTML='\u26a0\ufe0f Remiz\u0103! Mai \u00eencerc\u0103.';statusBox.className='status-box warning';stopClock();enableReview();return;}startClock('w');statusBox.innerHTML=isGood?'\u2705 Mutare excelent\u0103! Acum e r\u00e2ndul t\u0103u.':'E r\u00e2ndul t\u0103u. G\u00e2nde\u015fte-te cum s\u0103 restr\u00e2ngi Regele negru!';statusBox.className=isGood?'status-box success':'status-box';prepareWhiteBest();});},350);}
 
-/* ===== MOVE LIST ===== */
-function updateMoveList() {
-    const el = document.getElementById('moveList');
-    if (!el) return;
-    const hist = chess.history();
-    if (hist.length === 0) { el.innerHTML = '<em>Nicio mutare &#238;nc&#259;.</em>'; return; }
-    let html = '';
-    for (let i = 0; i < hist.length; i += 2) {
-        html += '<span class="mn">' + (i/2+1) + '.</span>'
-              + '<span class="mw move-item" data-idx="' + i + '">' + hist[i] + '</span>'
-              + (hist[i+1] ? '<span class="mb move-item" data-idx="' + (i+1) + '">' + hist[i+1] + '</span>' : '');
-    }
-    el.innerHTML = html;
-    el.scrollTop = el.scrollHeight;
-}
+function onSnapEnd(){board.position(chess.fen());}
 
-/* ===== CHESS CLOCK ===== */
-let whiteTime = 0, blackTime = 0;
-let clockInterval = null, clockSide = null, clockLastTick = null;
+const board=Chessboard('board',{position:startFen,pieceTheme:'https://lichess1.org/assets/piece/caliente/{piece}.svg',draggable:true,onDragStart:onDragStart,onDrop:onDrop,onSnapEnd:onSnapEnd});
+const debounce=(fn,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};};
+function syncSettingsWidth(){const brd=document.getElementById('board'),sp=document.getElementById('settingsPanel');if(brd&&sp)sp.style.width=brd.offsetWidth+'px';}
+window.addEventListener('resize',debounce(function(){board.resize();syncSettingsWidth();},120));
+setTimeout(syncSettingsWidth,200);
 
-function formatTime(ms) {
-    const s = Math.floor(ms / 1000);
-    const m = Math.floor(s / 60);
-    return (m < 10 ? '0' : '') + m + ':' + ((s % 60) < 10 ? '0' : '') + (s % 60);
-}
+document.getElementById('moveList').addEventListener('click',function(e){if(!gameOver)return;const item=e.target.closest('.move-item');if(!item)return;const idx=parseInt(item.dataset.idx);const pos=positionHistory[idx+1];if(!pos)return;board.position(pos,false);document.querySelectorAll('#moveList .move-item').forEach(function(el){el.classList.remove('active');});item.classList.add('active');});
 
-function updateClockDisplay() {
-    document.getElementById('clockWhiteTime').textContent = formatTime(whiteTime);
-    document.getElementById('clockBlackTime').textContent = formatTime(blackTime);
-}
+function enableReview(){gameOver=true;document.getElementById('moveList').classList.add('review-ready');document.getElementById('reviewHint').style.display='block';}
+function resetBoard(){chess.load(startFen);board.position(startFen,false);sfBestForWhite=null;sfMateIn=null;gameOver=false;firstMoveHappened=false;positionHistory=[startFen];removeHeart();resetClocks();document.getElementById('moveList').classList.remove('review-ready');document.getElementById('reviewHint').style.display='none';document.querySelectorAll('#timeBtns .s-btn').forEach(function(b){b.disabled=false;});updateMoveList();}
+function restartGame(){playerSide='w';board.orientation('white');document.getElementById('labelWhite').textContent='Tu';document.getElementById('labelBlack').textContent='Robot';resetBoard();statusBox.innerHTML='Mutarea ta! Coordoneaz\u0103 Dama \u0219i Nebunul!';statusBox.className='status-box';prepareWhiteBest();}
+function startRevansa(){playerSide='b';board.orientation('black');document.getElementById('labelWhite').textContent='Robot';document.getElementById('labelBlack').textContent='Tu';resetBoard();statusBox.innerHTML='Robotul se g\u00e2nde\u015fte<span class="dots"></span>';statusBox.className='status-box';setTimeout(stockfishPlayWhite,800);}
 
-function startClock(side) {
-    if (clockInterval) clearInterval(clockInterval);
-    if (clockLastTick && clockSide) {
-        const delta = Date.now() - clockLastTick;
-        if (clockSide === 'w') whiteTime += delta;
-        else blackTime += delta;
-    }
-    clockSide = side;
-    clockLastTick = Date.now();
-    clockInterval = setInterval(function() {
-        const now = Date.now();
-        if (clockSide === 'w') whiteTime += now - clockLastTick;
-        else blackTime += now - clockLastTick;
-        clockLastTick = now;
-        updateClockDisplay();
-    }, 100);
-    document.getElementById('clockWhite').classList.toggle('active', side === 'w');
-    document.getElementById('clockBlack').classList.toggle('active', side === 'b');
-}
-
-function stopClock() {
-    if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
-    if (clockLastTick && clockSide) {
-        const delta = Date.now() - clockLastTick;
-        if (clockSide === 'w') whiteTime += delta;
-        else blackTime += delta;
-    }
-    clockSide = null; clockLastTick = null;
-    document.getElementById('clockWhite').classList.remove('active');
-    document.getElementById('clockBlack').classList.remove('active');
-    updateClockDisplay();
-}
-
-function resetClocks() {
-    stopClock();
-    whiteTime = 0; blackTime = 0;
-    updateClockDisplay();
-}
-
-/* ===== HEART ON BLACK KING ===== */
-function blackKingSquare() {
-    const b = chess.board();
-    const files = 'abcdefgh';
-    for (let r = 0; r < 8; r++)
-        for (let c = 0; c < 8; c++)
-            if (b[r][c] && b[r][c].type === 'k' && b[r][c].color === 'b')
-                return files[c] + (8 - r);
-    return null;
-}
-
-function removeHeart() {
-    const h = document.getElementById('king-heart');
-    if (h) h.remove();
-}
-
-function showHeart(square, fast) {
-    removeHeart();
-    const el = document.querySelector('#board .square-' + square);
-    if (!el) return;
-    const h = document.createElement('div');
-    h.id = 'king-heart';
-    h.className = 'heart-badge' + (fast ? ' hb-fast' : '');
-    h.textContent = '\u2764\ufe0f';
-    el.style.position = 'relative';
-    el.appendChild(h);
-}
-
-function updateHeart() {
-    if (chess.game_over()) { removeHeart(); return; }
-    const sq = blackKingSquare();
-    if (!sq || sfMateIn === null) { removeHeart(); return; }
-    if (sfMateIn <= 3)      showHeart(sq, true);
-    else if (sfMateIn <= 8) showHeart(sq, false);
-    else                    removeHeart();
-}
-
-/* ===== START GAME ===== */
-function startGame() {
-    if (gameStarted) return;
-    gameStarted = true;
-    document.getElementById('startBtn').disabled = true;
-    if (playerSide === 'w') {
-        startClock('w');
-        prepareWhiteBest();
-        statusBox.innerHTML = 'Mutarea ta! For&#539;eaz&#259; Regele negru s&#259; ajung&#259; la margine!';
-        statusBox.className = 'status-box';
-    } else {
-        statusBox.innerHTML = 'Robotul se g&#226;nde&#351;te<span class="dots"></span>';
-        statusBox.className = 'status-box';
-        setTimeout(stockfishPlayWhite, 1000);
-    }
-}
-
-/* ===== BOARD CALLBACKS ===== */
-function onDragStart(source, piece) {
-    if (!gameStarted || chess.game_over()) return false;
-    if (chess.turn() !== playerSide) return false;
-    if (playerSide === 'w' && piece.startsWith('b')) return false;
-    if (playerSide === 'b' && piece.startsWith('w')) return false;
-    return true;
-}
-
-function onDrop(source, target) {
-    if (chess.turn() !== playerSide) return 'snapback';
-
-    const uciMove = source + target;
-    const move = chess.move({ from: source, to: target, promotion: 'q' });
-    if (!move) return 'snapback';
-    playSoundForMove(move);
-
-    if (playerSide === 'b') {
-        positionHistory.push(chess.fen());
-        updateMoveList();
-        setTimeout(stockfishPlayWhite, 350);
-        return;
-    }
-
-    if (chess.in_stalemate()) {
-        statusBox.innerHTML = '&#9888;&#65039; <strong>Pat!</strong> Regele negru nu mai are mut&#259;ri &mdash; e remiz&#259;! &#206;ncerc&#259; alt&#259; mutare.';
-        statusBox.className = 'status-box warning';
-        chess.undo();
-        board.position(chess.fen());
-        prepareWhiteBest();
-        return 'snapback';
-    }
-
-    positionHistory.push(chess.fen());
-    updateMoveList();
-    startClock('b');
-
-    if (chess.in_checkmate()) {
-        setTimeout(function() { playSound(sndMate); }, 300);
-        const whiteMoves = Math.ceil(chess.history().length / 2);
-        statusBox.innerHTML = '&#127942; <strong>&#350;ah mat!</strong> Ai reu&#351;it din <strong>' + whiteMoves + ' mut&#259;ri</strong>. Po&#539;i mai bine?';
-        statusBox.className = 'status-box success';
-        stopClock();
-        spawnPageConfetti(5000);
-        setTimeout(removeHeart, 1000);
-        enableReview();
-        return;
-    }
-
-    const isGood = sfBestForWhite && uciMove === sfBestForWhite;
-    if (isGood) {
-        statusBox.innerHTML = '&#9989; Mutare excelent&#259;! Acum r&#259;spunde Regele negru<span class="dots"></span>';
-        statusBox.className = 'status-box success';
-    } else {
-        statusBox.innerHTML = 'Regele negru r&#259;spunde<span class="dots"></span>';
-        statusBox.className = 'status-box';
-    }
-
-    setTimeout(function() {
-        askStockfish(chess.fen(), 15, function(mv) {
-            if (!mv || mv === '(none)') {
-                statusBox.innerHTML = 'E r&#226;ndul t&#259;u!';
-                statusBox.className = 'status-box';
-                prepareWhiteBest();
-                return;
-            }
-            const mv1 = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
-            playSoundForMove(mv1);
-            board.position(chess.fen());
-            positionHistory.push(chess.fen());
-            updateMoveList();
-
-            if (chess.in_checkmate()) {
-                setTimeout(function() { playSound(sndMate); }, 300);
-                statusBox.innerHTML = '&#10060; &#350;ah mat! Regele negru a c&#226;&#351;tigat. Mai &#238;ncerc&#259;!';
-                statusBox.className = 'status-box danger';
-                stopClock();
-                enableReview();
-                return;
-            }
-            if (chess.in_stalemate() || chess.in_draw()) {
-                statusBox.innerHTML = '&#9888;&#65039; Remiz&#259;! Mai &#238;ncerc&#259;.';
-                statusBox.className = 'status-box warning';
-                stopClock();
-                enableReview();
-                return;
-            }
-            startClock('w');
-            statusBox.innerHTML = isGood
-                ? '&#9989; Mutare excelent&#259;! Acum e r&#226;ndul t&#259;u.'
-                : 'E r&#226;ndul t&#259;u. G&#226;nde&#351;te-te cum s&#259; restr&#226;ngi Regele negru spre margine!';
-            statusBox.className = isGood ? 'status-box success' : 'status-box';
-            prepareWhiteBest();
-        });
-    }, 350);
-}
-
-function onSnapEnd() {
-    board.position(chess.fen());
-}
-
-/* ===== BOARD INIT ===== */
-const board = Chessboard('board', {
-    position: startFen,
-    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
-    draggable: true,
-    onDragStart: onDragStart,
-    onDrop: onDrop,
-    onSnapEnd: onSnapEnd
-});
-
-window.addEventListener('resize', function() { board.resize(); });
-
-
-/* ===== RESTART / REVAN&#350;&#258; ===== */
-function enableReview() {
-    gameOver = true;
-    document.getElementById('moveList').classList.add('review-ready');
-    const rh = document.getElementById('reviewHint');
-    if (rh) rh.style.display = 'block';
-}
-
-function resetBoard() {
-    chess.load(startFen);
-    board.position(startFen, false);
-    sfBestForWhite = null;
-    sfMateIn = null;
-    gameOver = false;
-    gameStarted = false;
-    positionHistory = [startFen];
-    removeHeart();
-    resetClocks();
-    document.getElementById('moveList').classList.remove('review-ready');
-    const rh = document.getElementById('reviewHint');
-    if (rh) rh.style.display = 'none';
-    document.getElementById('startBtn').disabled = false;
-    updateMoveList();
-}
-
-function restartGame() {
-    playerSide = 'w';
-    document.getElementById('labelWhite').textContent = 'Tu';
-    document.getElementById('labelBlack').textContent = 'Robot';
-    resetBoard();
-    statusBox.innerHTML = 'Ap&#259;sa&#539;i <strong>Start!</strong> pentru a &#238;ncepe.';
-    statusBox.className = 'status-box';
-}
-
-function startRevansa() {
-    playerSide = 'b';
-    document.getElementById('labelWhite').textContent = 'Robot';
-    document.getElementById('labelBlack').textContent = 'Tu';
-    resetBoard();
-    statusBox.innerHTML = 'Ap&#259;sa&#539;i <strong>Start!</strong> &mdash; Robotul mut&#259; primul!';
-    statusBox.className = 'status-box';
-}
-
-/* ===== REVIEW NAV ===== */
-let reviewStep = 0;
-
-function updateReviewButtons() {
-    const total = positionHistory.length - 1;
-    document.getElementById('btnFirst').disabled = reviewStep === 0;
-    document.getElementById('btnPrev').disabled  = reviewStep === 0;
-    document.getElementById('btnNext').disabled  = reviewStep === total;
-    document.getElementById('btnLast').disabled  = reviewStep === total;
-}
-
-function syncReviewHighlight() {
-    document.querySelectorAll('#moveList .move-item').forEach(function(el) {
-        el.classList.toggle('active', parseInt(el.dataset.idx) === reviewStep - 1);
-    });
-}
-
-function goReviewStep(s) {
-    reviewStep = Math.max(0, Math.min(positionHistory.length - 1, s));
-    board.position(positionHistory[reviewStep], false);
-    syncReviewHighlight();
-    updateReviewButtons();
-}
-
-function reviewFirst() { goReviewStep(0); }
-function reviewLast()  { goReviewStep(positionHistory.length - 1); }
-function reviewPrev()  { goReviewStep(reviewStep - 1); }
-function reviewNext()  { goReviewStep(reviewStep + 1); }
-
-// Suprascriem updateMoveList ca să actualizeze și butoanele după fiecare mutare
-const _origUpdateMoveList = updateMoveList;
-updateMoveList = function() {
-    _origUpdateMoveList();
-    reviewStep = positionHistory.length - 1;
-    updateReviewButtons();
-};
-
-// Click pe mutare din listă → sync cu reviewStep
-document.getElementById('moveList').addEventListener('click', function(e) {
-    const item = e.target.closest('.move-item');
-    if (!item) return;
-    const idx = parseInt(item.dataset.idx);
-    goReviewStep(idx + 1);
-});
-
-/* ===== START ===== */
 initStockfish();
 </script>
-
-
+<script src="arena_touch.js"></script>
 </body>
 </html>
