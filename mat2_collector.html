@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Colector puzzle-uri mateIn2</title>
+  <style>
+    body { font-family: monospace; background: #1a1a2e; color: #eee; padding: 24px; }
+    h2   { color: #f0a500; }
+    #log { white-space: pre; font-size: 0.85em; color: #aaa; height: 200px; overflow-y: auto;
+           border: 1px solid #444; padding: 8px; margin: 12px 0; }
+    #progress { font-size: 1.2em; margin: 8px 0; }
+    #output   { width: 100%; height: 300px; font-size: 0.78em; background: #111; color: #0f0;
+                border: 1px solid #0f0; padding: 8px; display: none; }
+    button { padding: 10px 24px; background: #f0a500; border: none; border-radius: 8px;
+             font-size: 1em; cursor: pointer; margin-top: 10px; }
+    button:disabled { opacity: 0.4; cursor: default; }
+    .bar-wrap { background: #333; border-radius: 8px; height: 16px; margin: 8px 0; width: 400px; }
+    .bar-fill { background: #27ae60; height: 16px; border-radius: 8px; width: 0%; transition: width .3s; }
+  </style>
+</head>
+<body>
+<h2>🔍 Colector puzzle-uri mateIn2 — Lichess</h2>
+<div id="progress">Gata să pornească...</div>
+<div class="bar-wrap"><div class="bar-fill" id="bar"></div></div>
+<div id="log"></div>
+<button id="startBtn" onclick="start()">▶ Pornește colectarea</button>
+<button id="copyBtn" onclick="copyResult()" style="display:none; background:#27ae60;">📋 Copiază JSON</button>
+<textarea id="output" readonly></textarea>
+
+<script>
+const TARGET   = 50;
+const DELAY_MS = 1800;   /* ms între call-uri — respectă rate limit Lichess */
+
+let collected = [];
+let seen      = new Set();
+let attempts  = 0;
+let running   = false;
+
+const logEl  = document.getElementById('log');
+const progEl = document.getElementById('progress');
+const barEl  = document.getElementById('bar');
+
+function log(msg) {
+  logEl.textContent += msg + '\n';
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function fetchJSON(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+async function start() {
+  if (running) return;
+  running = true;
+  document.getElementById('startBtn').disabled = true;
+  log('Pornit. Aștept răspunsuri de la Lichess...\n');
+
+  while (collected.length < TARGET) {
+    attempts++;
+    try {
+      const d  = await fetchJSON('https://lichess.org/api/puzzle/next');
+      const pz = d.puzzle || {};
+      const id = pz.id || '';
+      const themes = pz.themes || [];
+      const sol    = pz.solution || [];
+
+      if (seen.has(id)) { await sleep(DELAY_MS); continue; }
+      seen.add(id);
+
+      if (themes.includes('mateIn2') && sol.length === 3) {
+        /* al doilea call pentru FEN */
+        const full = await fetchJSON(`https://lichess.org/api/puzzle/${id}`);
+        const fp   = full.puzzle || {};
+        const fen  = fp.fen || '';
+        const sol2 = fp.solution || sol;
+        if (fen) {
+          const turn = fen.includes(' w ') ? 'w' : 'b';
+          collected.push({ fen, sol: sol2, turn });
+          const n = collected.length;
+          log(`#${String(n).padStart(2,'0')} [${id}] ${turn}  ${fen}`);
+          progEl.textContent = `${n} / ${TARGET} puzzle-uri colectate (${attempts} apeluri)`;
+          barEl.style.width  = (n / TARGET * 100) + '%';
+          await sleep(DELAY_MS);
+        }
+      }
+    } catch(e) {
+      const msg = e.message || '';
+      log(`Eroare la apelul ${attempts}: ${msg}`);
+      if (msg.includes('429')) await sleep(8000);
+    }
+    await sleep(DELAY_MS);
+  }
+
+  /* afișează rezultatul */
+  log('\n✅ Gata! Copiază JSON-ul de mai jos și trimite-l în chat.');
+  const output = document.getElementById('output');
+  output.style.display = 'block';
+  output.value = JSON.stringify(collected, null, 2);
+  document.getElementById('copyBtn').style.display = 'inline-block';
+  progEl.textContent = `✅ ${collected.length} puzzle-uri colectate în ${attempts} apeluri!`;
+}
+
+function copyResult() {
+  const el = document.getElementById('output');
+  el.select();
+  document.execCommand('copy');
+  alert('Copiat! Acum dă paste în chat.');
+}
+</script>
+</body>
+</html>

@@ -125,9 +125,6 @@
         </div>
 
         <!-- BUTOANE -->
-        <p style="font-family:var(--font-display); font-size:0.92rem; color:var(--c-navy); font-weight:700; margin-bottom:2px;">
-          ♟ Exersează — alege o apărare:
-        </p>
         <div class="def-btns">
           <button class="def-btn" id="btn-red"   onclick="showDefense('red',   'b6', 'c4')">
             <span class="bi">♞</span>
@@ -146,7 +143,9 @@
           </button>
         </div>
 
-        <div class="move-msg" id="moveMsg">Alege o apărare! ☝️</div>
+        <a href="exercitii_sah_p22.html" class="def-btn" style="margin-top:14px; justify-content:center; text-decoration:none; background:var(--c-navy); color:white; border-color:var(--c-navy);">
+          ♟ Exersează
+        </a>
 
         <div class="reset-row">
           <button class="btn-reset" id="resetBtn"
@@ -170,9 +169,9 @@
       <span class="icon" aria-hidden="true">⊞</span>
       <span class="label">Cuprins</span>
     </a>
-    <a href="pagina4.html" class="nav-btn nav-btn--forward">
+    <a href="pagina5.html" class="nav-btn nav-btn--forward">
       <span class="icon" aria-hidden="true">→</span>
-      <span class="label">Șahul dublu</span>
+      <span class="label">Matul</span>
     </a>
   </footer>
 
@@ -320,7 +319,6 @@ function showDefense(color, from, to) {
     board.position(chess.fen(), true);
     clearArrows();
     applyCheckHighlight(null);
-    document.getElementById('moveMsg').textContent = MESSAGES[color];
     document.getElementById('resetBtn').style.display = 'inline-block';
   }, 700);
 }
@@ -333,7 +331,6 @@ function resetBoard() {
   );
   chess = new Chess(START_FEN);
   board.position(START_FEN, true);
-  document.getElementById('moveMsg').textContent = 'Alege o apărare! ☝️';
   document.getElementById('resetBtn').style.display = 'none';
   setTimeout(function() {
     drawArrows([CHECK_ARROW]);

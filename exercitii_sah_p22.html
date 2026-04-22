@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Șah — Exerciții</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    .panel-heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+      font-weight: 900;
+      color: var(--c-navy);
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+    .turn-badge {
+      display: inline-block;
+      padding: 3px 14px;
+      border-radius: 50px;
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .turn-badge.white { background:#f0f0f0; color:var(--c-navy); border:1.5px solid #ccc; }
+    .turn-badge.black { background:#222; color:#fff; border:1.5px solid #000; }
+
+    .ctrl-row { display:flex; gap:7px; margin-top:10px; flex-wrap:wrap; }
+    .btn-sm {
+      padding:7px 15px; border-radius:50px;
+      font-family:var(--font-display); font-size:0.86rem; font-weight:700;
+      cursor:pointer; transition:background .15s, opacity .15s;
+      border:1.5px solid transparent;
+    }
+    .btn-sm:disabled { opacity:0.28; cursor:default; }
+    .btn-prev   { border-color:rgba(26,58,107,0.35); background:rgba(255,255,255,0.55); color:var(--c-navy); }
+    .btn-prev:hover:not(:disabled)  { background:rgba(26,58,107,0.10); }
+    .btn-reset  { border-color:rgba(192,57,43,0.40); background:rgba(255,255,255,0.55); color:#8b1a00; }
+    .btn-reset:hover:not(:disabled) { background:rgba(192,57,43,0.10); }
+    .btn-next   { border-color:var(--c-navy); background:var(--c-navy); color:white; }
+    .btn-next:hover:not(:disabled)  { opacity:0.86; }
+
+    .square-selected { background:rgba(255,200,0,0.55) !important; }
+
+    /* ── OVERLAY TRANZIȚIE ───────────────────────────── */
+    #transOverlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(10,20,50,0.72); z-index:200;
+      align-items:center; justify-content:center;
+    }
+    #transOverlay.show { display:flex; }
+    .trans-box {
+      background:white; border-radius:20px; padding:32px 28px;
+      max-width:340px; width:90%; text-align:center;
+      box-shadow:0 12px 40px rgba(0,0,0,0.30);
+    }
+    .trans-icon  { font-size:2.8rem; margin-bottom:10px; }
+    .trans-title { font-family:var(--font-display); font-size:1.3rem; font-weight:900; color:var(--c-navy); margin-bottom:10px; }
+    .trans-msg   { font-size:0.95rem; color:#444; line-height:1.6; margin-bottom:20px; }
+    .btn-trans   { padding:11px 28px; border-radius:50px; font-family:var(--font-display); font-size:1rem; font-weight:700; background:var(--c-navy); color:white; border:none; cursor:pointer; }
+    .btn-trans:hover { opacity:0.88; }
+
+    #boardWrapper { touch-action:none; -webkit-touch-callout:none; }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title" id="pageTitle">Șah — Atac</span>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+
+        <div class="panel-heading" id="setTitle">Șah — Atac</div>
+        <span class="turn-badge white" id="turnBadge">⬜ Albul mută</span>
+
+        <div class="progress-wrap">
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+
+        <div class="task-msg idle" id="taskMsg">Atacă regele!</div>
+
+        <div class="ctrl-row">
+          <button class="btn-sm btn-prev"  id="prevBtn" onclick="prevPuzzle()" disabled>← Precedentul</button>
+          <button class="btn-sm btn-reset" onclick="resetPuzzle()">↺ Resetează</button>
+          <button class="btn-sm btn-next"  id="nextBtn" onclick="nextPuzzle()" disabled>Următorul →</button>
+        </div>
+
+      </div>
+      <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare">
+    <a href="nivel1_lectia6.html" class="nav-btn nav-btn--back">
+      <span class="icon" aria-hidden="true">←</span>
+      <span class="label">Înapoi</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon" aria-hidden="true">⊞</span>
+      <span class="label">Cuprins</span>
+    </a>
+    <a href="pagina4.html" class="nav-btn nav-btn--forward">
+      <span class="icon" aria-hidden="true">→</span>
+      <span class="label">Șahul dublu</span>
+    </a>
+  </footer>
+
+</div>
+
+<!-- ── OVERLAY TRANZIȚIE SETURI ───────────────────────── -->
+<div id="transOverlay">
+  <div class="trans-box">
+    <div class="trans-icon">🎉</div>
+    <div class="trans-title" id="transTitle">Bravo!</div>
+    <div class="trans-msg"   id="transMsg"></div>
+    <button class="btn-trans" id="transBtn" onclick="dismissTransition()">Continuă →</button>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+const PIECE_THEME = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+
+const SETS = [
+  {
+    id:          'atac',
+    title:       'Șah — Atac',
+    instruction: 'Atacă regele!',
+    successMsg:  '✅ Corect! Ai dat șah!',
+    tranMsg:     'Ai finalizat toate exercițiile de <strong>Atac</strong>!<br>Urmează exercițiile de <strong>Apărare</strong>.',
+  },
+  {
+    id:          'aparare',
+    title:       'Șah — Apărare',
+    instruction: 'Regele tău este atacat. Cum îl aperi?',
+    successMsg:  '✅ Corect! Ai ieșit din șah!',
+    tranMsg:     'Felicitări! Ai completat toate exercițiile!',
+  },
+];
+
+const PUZZLES = [
+  /* ── SET 0: ATAC (11 puzzle-uri) ─────────────────── */
+  { set:0, fen:'2r2k2/1p4p1/1p3n2/8/5B2/6P1/5PKP/R7 w - - 0 1',                      sol:{from:'f4',to:'d6'}, turn:'w' },
+  { set:0, fen:'2r5/1p1nkpb1/8/4p3/4P3/2NK2B1/PP6/7R b - - 0 1',                      sol:{from:'d7',to:'c5'}, turn:'b' },
+  { set:0, fen:'r3k3/5pp1/2p1p3/2b1P3/8/7P/5PB1/4R1K1 w - - 0 1',                     sol:{from:'g2',to:'c6'}, turn:'w' },
+  { set:0, fen:'8/1p2k1pp/p4n2/8/2K5/1P3B2/1P4PP/8 b - - 0 1',                        sol:{from:'b7',to:'b5'}, turn:'b' },
+  { set:0, fen:'3r4/ppp1kpp1/2n5/4p3/2P1P3/2N5/PP3KPP/4R3 b - - 0 1',                 sol:{from:'d8',to:'d2'}, turn:'b' },
+  { set:0, fen:'7r/8/p5b1/P3k1p1/4Pp2/5P2/4NK2/3R4 w - - 0 1',                        sol:{from:'d1',to:'d5'}, turn:'w' },
+  { set:0, fen:'2rqkbnr/pp2pppp/3p4/2pP4/4P3/1P6/P4PPP/RN1QKB1R w KQk - 0 1',         sol:{from:'f1',to:'b5'}, turn:'w' },
+  { set:0, fen:'r3kb1r/ppp2ppp/2nq1n2/6B1/3pP3/5N2/PPP2PPP/RN1QK2R b KQkq - 0 1',    sol:{from:'d6',to:'b4'}, turn:'b' },
+  { set:0, fen:'8/4k1p1/2p1pp2/2PnN3/7P/6P1/5PK1/8 w - - 0 1',                        sol:{from:'e5',to:'c6'}, turn:'w' },
+  { set:0, fen:'4k3/pp2b1pp/5p2/8/1n2PB2/1P2N3/P5PP/4K3 b - - 0 1',                   sol:{from:'b4',to:'d3'}, turn:'b' },
+  { set:0, fen:'k1r5/p1p1qpp1/5b2/P7/2P2P2/6N1/Q6P/3R2K1 w - - 0 1',                 sol:{from:'a2',to:'g2'}, turn:'w' },
+  /* ── SET 1: APĂRARE (12 puzzle-uri) ────────────────── */
+  { set:1, fen:'2k5/1pp4p/p1n5/6r1/8/2B5/PP3P1P/5RK1 w - - 0 1',                sol:{from:'g1',to:'h1'}, turn:'w' },
+  { set:1, fen:'2rR2k1/pp3ppp/4b3/6B1/8/7P/PP3PP1/6K1 b - - 0 1',               sol:{from:'c8',to:'d8'}, turn:'b' },
+  { set:1, fen:'5rk1/pp4pp/8/8/4bP2/1N4P1/PP5P/3R3K w - - 0 1',                 sol:{from:'h1',to:'g1'}, turn:'w' },
+  { set:1, fen:'8/6pk/6p1/2pB2b1/2P5/1P4PQ/6K1/q7 b - - 0 1',                   sol:{from:'g5',to:'h6'}, turn:'b' },
+  { set:1, fen:'5rk1/ppq2pn1/2p2Npp/8/2P5/5Q2/PP3PPP/5RK1 b - - 0 1',           sol:{from:'g8',to:'h8'}, turn:'b' },
+  { set:1, fen:'7r/8/1p2k3/2b1p3/4P3/2N2P2/8/3R3K w - - 0 1',                   sol:{from:'h1',to:'g2'}, turn:'w' },
+  { set:1, fen:'kn1r4/4R3/ppB5/8/8/8/3r2PP/2R3K1 b - - 0 1',                    sol:{from:'b8',to:'c6'}, turn:'b' },
+  { set:1, fen:'r2qkbnr/1p2pppp/p7/1BppP3/8/4P3/PPP2PPP/R1BQK2R b KQkq - 0 1',  sol:{from:'a6',to:'b5'}, turn:'b' },
+  { set:1, fen:'7k/6p1/4Q3/7p/6n1/1B6/8/q5K1 w - - 0 1',                        sol:{from:'g1',to:'g2'}, turn:'w' },
+  { set:1, fen:'r6k/1p1q3p/p7/1n2Q3/8/1B6/PP6/1K2R3 b - - 0 1',                 sol:{from:'d7',to:'g7'}, turn:'b' },
+  { set:1, fen:'R7/1pb2k2/2b3p1/6Bp/7P/2NP3P/1PP2P1K/4r3 w - - 0 1',            sol:{from:'f2',to:'f4'}, turn:'w' },
+  { set:1, fen:'1b3r1k/p5pp/1p6/8/2B1Q3/1P5P/P2R1PP1/q5K1 w - - 0 1',           sol:{from:'c4',to:'f1'}, turn:'w' },
+];
+
+/* ── STATE ────────────────────────────────────────── */
+let curIdx    = 0;
+let chess     = null;
+let board     = null;
+let selSq     = null;
+let solved    = false;
+let completed = {};   /* { puzzleIdx: true } — puzzle-uri rezolvate */
+
+/* ── UTILS ────────────────────────────────────────── */
+function setOf(i)    { return PUZZLES[i].set; }
+function setStart(s) { return PUZZLES.findIndex(p => p.set === s); }
+function setCount(s) { return PUZZLES.filter(p => p.set === s).length; }
+function isLastInSet(i) {
+  const s = setOf(i);
+  return (i - setStart(s) + 1) === setCount(s);
+}
+function nextSetHasPuzzles() {
+  return setCount(setOf(curIdx) + 1) > 0;
+}
+
+/* ── BARĂ PROGRES ─────────────────────────────────── */
+function updateProgress() {
+  const s     = setOf(curIdx);
+  const start = setStart(s);
+  const count = setCount(s);
+  let solvedCount = 0;
+  for (let i = start; i < start + count; i++) {
+    if (completed[i]) solvedCount++;
+  }
+  document.getElementById('progressFill').style.width =
+    (solvedCount / count * 100) + '%';
+}
+
+/* ── SUNET GREȘIT ─────────────────────────────────── */
+function playWrong() {
+  try {
+    const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(380, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.28);
+    gain.gain.setValueAtTime(0.22, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+    osc.start(); osc.stop(ctx.currentTime + 0.28);
+  } catch(e) {}
+}
+
+/* ── CONFETTI ─────────────────────────────────────── */
+function celebrate(big) {
+  confetti(big
+    ? { particleCount:150, spread:80, origin:{y:0.55} }
+    : { particleCount:60,  spread:55, origin:{y:0.65} });
+}
+
+/* ── HIGHLIGHTS ───────────────────────────────────── */
+function clearHL() {
+  document.querySelectorAll('.square-selected, .highlight-check')
+    .forEach(el => el.classList.remove('square-selected', 'highlight-check'));
+}
+
+function hlKing() {
+  if (!chess.in_check()) return;
+  const color = chess.turn();
+  const b = chess.board();
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const sq = b[r][c];
+      if (sq && sq.type === 'k' && sq.color === color) {
+        const el = document.querySelector('.square-' + 'abcdefgh'[c] + (8 - r));
+        if (el) el.classList.add('highlight-check');
+        return;
+      }
+    }
+  }
+}
+
+/* ── FEEDBACK ─────────────────────────────────────── */
+function setMsg(type, text) {
+  const el = document.getElementById('taskMsg');
+  el.className = 'task-msg ' + type;
+  el.innerHTML = text;
+}
+function idleMsg() { setMsg('idle', SETS[setOf(curIdx)].instruction); }
+
+/* ── UI ───────────────────────────────────────────── */
+function updateUI() {
+  const p = PUZZLES[curIdx];
+  const s = SETS[p.set];
+
+  document.getElementById('pageTitle').textContent = s.title;
+  document.getElementById('setTitle').textContent  = s.title;
+
+  const badge = document.getElementById('turnBadge');
+  if (p.turn === 'w') { badge.textContent = '⬜ Albul mută'; badge.className = 'turn-badge white'; }
+  else                { badge.textContent = '⬛ Negrul mută'; badge.className = 'turn-badge black'; }
+
+  document.getElementById('prevBtn').disabled = (curIdx === 0);
+  document.getElementById('nextBtn').disabled = true;
+}
+
+/* ── LOAD ─────────────────────────────────────────── */
+function loadPuzzle(idx) {
+  curIdx = idx; solved = false; selSq = null;
+  chess = new Chess(PUZZLES[idx].fen);
+  board.position(PUZZLES[idx].fen, false);
+  clearHL();
+  updateUI();
+  updateProgress();
+  idleMsg();
+}
+
+/* ── MUTARE ───────────────────────────────────────── */
+function tryMove(from, to) {
+  const sol = PUZZLES[curIdx].sol;
+  if (from === sol.from && to === sol.to) {
+    chess.move({ from, to, promotion:'q' });
+    board.position(chess.fen(), true);
+    clearHL();
+    setTimeout(hlKing, 350);
+    solved = true;
+    completed[curIdx] = true;
+    updateProgress();
+    celebrate(false);
+    setMsg('ok', SETS[setOf(curIdx)].successMsg);
+    document.getElementById('nextBtn').disabled = false;
+    return true;
+  } else {
+    playWrong();
+    setMsg('err', '❌ Greșit — încearcă din nou!');
+    setTimeout(idleMsg, 1400);
+    return false;
+  }
+}
+
+/* ── DRAG ─────────────────────────────────────────── */
+function onDragStart(source, piece) {
+  if (solved) return false;
+  const turn = PUZZLES[curIdx].turn;
+  if (turn === 'w' && piece[0] === 'b') return false;
+  if (turn === 'b' && piece[0] === 'w') return false;
+  return true;
+}
+function onDrop(source, target) {
+  if (target === 'offboard') return 'snapback';
+  clearHL(); selSq = null;
+  if (!tryMove(source, target)) return 'snapback';
+}
+function onSnapEnd() { board.position(chess.fen()); }
+
+/* ── CLICK ────────────────────────────────────────── */
+$(document).on('click', '.square-55d63', function () {
+  if (solved) return;
+  const sq    = $(this).data('square');
+  const piece = chess.get(sq);
+  const turn  = PUZZLES[curIdx].turn;
+  if (selSq) {
+    clearHL(); selSq = null;
+    if (sq === selSq) return;                             /* click pe aceeași piesă → deselectare */
+    const friendlyColor = turn === 'w' ? 'w' : 'b';
+    if (piece && piece.color === friendlyColor) {         /* click pe altă piesă proprie → schimbă selecția */
+      selSq = sq;
+      const el = document.querySelector('.square-' + sq);
+      if (el) el.classList.add('square-selected');
+    } else {
+      tryMove(selSq, sq);                                 /* click pe câmp țintă → încearcă mutarea */
+    }
+  } else {
+    if (!piece) return;
+    if (turn === 'w' && piece.color !== 'w') return;
+    if (turn === 'b' && piece.color !== 'b') return;
+    selSq = sq;
+    const el = document.querySelector('.square-' + sq);
+    if (el) el.classList.add('square-selected');
+  }
+});
+
+/* ── NAVIGARE ─────────────────────────────────────── */
+function prevPuzzle()  { if (curIdx > 0) loadPuzzle(curIdx - 1); }
+function resetPuzzle() { loadPuzzle(curIdx); }
+function nextPuzzle() {
+  if (isLastInSet(curIdx)) { showTransition(); }
+  else { loadPuzzle(curIdx + 1); }
+}
+
+/* ── TRANZIȚIE ────────────────────────────────────── */
+function showTransition() {
+  const s    = setOf(curIdx);
+  const data = SETS[s];
+  const more = nextSetHasPuzzles();
+  document.getElementById('transTitle').textContent = more ? 'Bravo! Ai terminat!' : '🏆 Completat!';
+  document.getElementById('transMsg').innerHTML     = data.tranMsg;
+  document.getElementById('transBtn').textContent   = more ? 'Continuă →' : 'Înapoi la început';
+  celebrate(true);
+  document.getElementById('transOverlay').classList.add('show');
+}
+function dismissTransition() {
+  document.getElementById('transOverlay').classList.remove('show');
+  const nextSet = setOf(curIdx) + 1;
+  if (nextSetHasPuzzles()) { loadPuzzle(setStart(nextSet)); }
+  else                     { loadPuzzle(0); }
+}
+
+/* ── INIT ─────────────────────────────────────────── */
+board = Chessboard('board', {
+  pieceTheme: PIECE_THEME,
+  draggable:  true,
+  onDragStart, onDrop, onSnapEnd,
+});
+function debounce(fn, d) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; }
+window.addEventListener('resize', debounce(() => board.resize(), 150));
+$(document).ready(() => loadPuzzle(0));
+</script>
+</body>
+</html>

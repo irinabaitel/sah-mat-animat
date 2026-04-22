@@ -1,79 +1,785 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lecția 8 — Matul</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Matul</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    .panel-heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.15rem, 2.5vw, 1.4rem);
+      font-weight: 900;
+      color: var(--c-navy);
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+    .score-row {
+      display: flex; gap: 10px; flex-wrap: wrap;
+      margin: 10px 0 14px;
+    }
+    .score-badge {
+      font-family: var(--font-display);
+      font-size: var(--fs-sm);
+      background: var(--c-navy);
+      color: white;
+      padding: 5px 16px;
+      border-radius: 50px;
+    }
+    .btn-arena {
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 14px; padding: 11px 20px; border-radius: 50px;
+      background: var(--c-navy); color: white; text-decoration: none;
+      font-family: var(--font-display); font-size: 0.97rem; font-weight: 700;
+      border: none; cursor: pointer; width: 100%;
+      transition: opacity .18s;
+    }
+    .btn-arena:hover { opacity: 0.86; }
 
-#nav { position: sticky; top: 0; background: rgba(245,169,110,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; z-index: 100; border-bottom: 2px solid rgba(255,255,255,0.4); }
-.nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-.nav-btn:hover { background: rgba(255,255,255,0.85); }
-.nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-.nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; padding: 3px 12px; border-radius: 20px; text-decoration: none; }
+    /* ── PUZZLE VIEW ─────────────────────────────────── */
+    #puzzleView { display: none; }
 
-.content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
+    .turn-badge {
+      display: inline-block;
+      padding: 3px 14px; border-radius: 50px;
+      font-family: var(--font-display); font-size: 0.82rem; font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .turn-badge.white { background:#f0f0f0; color:var(--c-navy); border:1.5px solid #ccc; }
+    .turn-badge.black { background:#222; color:#fff; border:1.5px solid #000; }
 
-.lesson-title { text-align: center; margin-bottom: 8px; }
-.lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
-.lesson-title .subtitle { font-size: 0.92em; color: rgba(26,26,46,0.6); margin-top: 4px; }
+    .ctrl-row { display:flex; gap:7px; margin-top:10px; flex-wrap:wrap; }
+    .btn-sm {
+      padding:7px 15px; border-radius:50px;
+      font-family:var(--font-display); font-size:0.86rem; font-weight:700;
+      cursor:pointer; transition:background .15s, opacity .15s;
+      border:1.5px solid transparent;
+    }
+    .btn-sm:disabled { opacity:0.28; cursor:default; }
+    .btn-prev  { border-color:rgba(26,58,107,0.35); background:rgba(255,255,255,0.55); color:var(--c-navy); }
+    .btn-prev:hover:not(:disabled)  { background:rgba(26,58,107,0.10); }
+    .btn-reset { border-color:rgba(192,57,43,0.40); background:rgba(255,255,255,0.55); color:#8b1a00; }
+    .btn-reset:hover:not(:disabled) { background:rgba(192,57,43,0.10); }
+    .btn-next  { border-color:var(--c-navy); background:var(--c-navy); color:white; }
+    .btn-next:hover:not(:disabled)  { opacity:0.86; }
 
-.card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-.card-icon { font-size: 1.6em; margin-bottom: 8px; display: block; }
-.card h2 { font-family: 'Baloo 2', cursive; font-size: 1.2em; color: #1a3a6b; margin-bottom: 10px; }
-.card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; }
-.card p:last-child { margin-bottom: 0; }
+    .btn-back-lecture {
+      display:block; margin-top:10px; text-align:center;
+      font-family:var(--font-display); font-size:0.82rem;
+      color:var(--c-text-muted); cursor:pointer; background:none; border:none;
+      text-decoration:underline;
+    }
+    .btn-back-lecture:hover { color:var(--c-navy); }
 
-.score-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
-.score-badge { font-family: 'Baloo 2', cursive; font-size: 1em; background: #1a3a6b; color: white; padding: 8px 24px; border-radius: 50px; box-shadow: 0 4px 12px rgba(26,58,107,0.35); }
+    .square-selected { background:rgba(255,200,0,0.55) !important; }
+    #boardWrapper { touch-action:none; -webkit-touch-callout:none; }
 
-.nav-bottom { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; }
-.nav-bottom a { display: inline-block; background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 1em; padding: 10px 28px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 16px rgba(26,58,107,0.35); }
-.nav-bottom a:hover { background: #2a5aab; transform: translateY(-2px); }
-.nav-bottom a.back { background: rgba(26,58,107,0.45); }
-</style>
+    /* ── SHAKE ───────────────────────────────────────── */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-8px); }
+      40%       { transform: translateX(8px); }
+      60%       { transform: translateX(-5px); }
+      80%       { transform: translateX(5px); }
+    }
+    .board-shake { animation: shake 0.35s ease-out; }
+  </style>
 </head>
 <body>
+<div class="page-wrapper">
 
-<nav id="nav">
-    <a href="pagina4.html" class="nav-btn">← Înapoi</a>
-    <div class="nav-title">Lecția 8</div>
-    <a href="hub.html" class="nav-badge">Nivelul I</a>
-</nav>
+  <header class="page-header" role="banner">
+    <span class="header-title" id="pageTitle">Matul</span>
+  </header>
 
-<div class="content">
+  <main class="page-main" role="main">
 
-    <div class="lesson-title">
-        <h1>Matul</h1>
-        <div class="subtitle">Lecția 8 · Nivelul I</div>
+    <!-- Board — stânga -->
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
     </div>
 
-    <div class="card">
-        <span class="card-icon">♚</span>
-        <h2>Ce înseamnă mat?</h2>
-        <p>Atunci când regele este atacat și nu are unde să fugă în siguranță, nicio piesă nu se poate interpune între piesa care atacă și rege și piesa care îl atacă nu poate fi capturată, se spune că este <strong>șah mat</strong>, adică regele este mort.</p>
-        <p>Acesta este scopul jocului — de a-l face mat pe regele advers. Pentru aceasta trebuie să ne antrenăm mintea să facem planuri bune și să recunoaștem ceea ce se numesc <strong>Tipare de mat</strong>! Vom vorbi despre acestea puțin mai târziu.</p>
-    </div>
+    <!-- Panel — dreapta -->
+    <div class="panel-col">
+      <div class="panel-scroll" id="panelScroll">
 
-    <div class="card">
-        <span class="card-icon">🤝</span>
-        <h2>Cum se termină partida?</h2>
-        <p>Regele nu se capturează, nu se elimină de pe tablă. În momentul în care este încoltit și nu mai are nicio cale de scăpare, partida de șah se încheie. Jucătorul a cărui armată a fost înfrântă astfel își poate culca regele pe tablă cu un gest elegant, recunoscând astfel victoria adversarului.</p>
-        <p>La victoria prin mat, jucătorul care câștigă primește un punct, iar cel care pierde, zero puncte:</p>
-        <div class="score-row">
-            <div class="score-badge">Albul câștigă: 1-0</div>
-            <div class="score-badge">Negrul câștigă: 0-1</div>
+        <!-- ── LECȚIE ──────────────────────────────── -->
+        <div id="lectureView">
+          <div class="panel-heading">Matul</div>
+
+          <p><strong>Ce înseamnă mat?</strong></p>
+          <p>Atunci când regele este atacat și nu are unde să fugă în siguranță, nicio piesă nu se poate interpune între piesa care atacă și rege și piesa care îl atacă nu poate fi capturată, se spune că este <strong>șah mat</strong>, adică regele este mort.</p>
+          <p>Acesta este scopul jocului — de a-l face mat pe regele advers. Pentru aceasta trebuie să ne antrenăm mintea să facem planuri bune și să recunoaștem ceea ce se numesc <strong>Tipare de mat</strong>! Vom vorbi despre acestea puțin mai târziu.</p>
+
+          <p style="margin-top:10px;"><strong>Cum se termină partida?</strong></p>
+          <p>Regele nu se capturează, nu se elimină de pe tablă. În momentul în care este încoltit și nu mai are nicio cale de scăpare, partida de șah se încheie. Jucătorul a cărui armată a fost înfrântă astfel își poate culca regele pe tablă cu un gest elegant, recunoscând astfel victoria adversarului.</p>
+          <p>La victoria prin mat, jucătorul care câștigă primește un punct, iar cel care pierde, zero puncte:</p>
+
+          <div class="score-row">
+            <div class="score-badge">Albul câștigă: 1–0</div>
+            <div class="score-badge">Negrul câștigă: 0–1</div>
+          </div>
+
+          <button class="btn-arena" id="arenaBtn" onclick="startArena()">♟ Arenă de Mat →</button>
+          <button class="btn-arena" id="continueBtn" onclick="continueArena()"
+                  style="display:none; margin-top:8px; background:var(--c-success); border-color:var(--c-success);">
+            ▶ Continuă de unde ai rămas
+          </button>
         </div>
+
+        <!-- ── PUZZLE ─────────────────────────────── -->
+        <div id="puzzleView">
+          <div class="panel-heading">Mat în 1 mutare</div>
+          <span class="turn-badge white" id="turnBadge">⬜ Albul mută</span>
+
+          <div class="progress-wrap">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+          </div>
+
+          <div class="task-msg idle" id="taskMsg">Dă șah mat într-o singură mutare!</div>
+
+          <div class="ctrl-row">
+            <button class="btn-sm btn-prev"  id="prevBtn"  onclick="prevPuzzle()" disabled>← Precedentul</button>
+            <button class="btn-sm btn-reset" onclick="resetPuzzle()">↺ Resetează</button>
+            <button class="btn-sm btn-next"  id="contBtn"  onclick="continueArena()" style="border-color:var(--c-success);background:var(--c-success);">Continuă</button>
+            <button class="btn-sm btn-next"  id="nextBtn"  onclick="nextPuzzle()" disabled>Următorul →</button>
+          </div>
+        </div>
+
+      </div>
+      <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
     </div>
 
-    <div class="nav-bottom">
-        <a href="pagina4.html" class="back">◀ Lecția 7</a>
-        <a href="mat1.html">Arenă Mat în 1 ▶</a>
-    </div>
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="nivel1_lectia6.html" class="nav-btn nav-btn--back" onclick="if(mode==='puzzle'){backToLecture();return false;}">
+      <span class="icon" aria-hidden="true">←</span>
+      <span class="label">Înapoi</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon" aria-hidden="true">⊞</span>
+      <span class="label">Cuprins</span>
+    </a>
+    <a href="aparare_mat.html" class="nav-btn nav-btn--forward">
+      <span class="icon" aria-hidden="true">→</span>
+      <span class="label">Apărarea împotriva matului</span>
+    </a>
+  </footer>
 
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+const PIECE_THEME  = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+const LECTURE_FEN  = '1R4k1/5ppp/8/8/8/8/6PP/6K1 b - - 0 1';
+const LECTURE_KING = 'g8';
+
+const PUZZLES = [
+  { fen:'k1B5/4Q3/8/8/8/4K3/8/8 w - - 0 1',                                    turn:'w' },
+  { fen:'k7/8/3b4/8/K7/2q5/8/8 b - - 0 1',                                     turn:'b' },
+  { fen:'k7/8/4n3/7K/8/8/8/2q5 b - - 0 1',                                     turn:'b' },
+  { fen:'k7/1q6/8/8/8/2p5/8/K7 b - - 0 1',                                     turn:'b' },
+  { fen:'kr6/P2N4/8/8/8/8/8/2K5 w - - 0 1',                                    turn:'w' },
+  { fen:'3k4/3r4/8/5B2/Q7/8/8/2K5 w - - 0 1',                                  turn:'w' },
+  { fen:'1b6/8/8/7k/8/8/3q3P/7K b - - 0 1',                                    turn:'b' },
+  { fen:'k7/8/n7/8/8/8/1Q5P/1R5K w - - 0 1',                                   turn:'w' },
+  { fen:'k7/p7/8/5Q2/8/8/8/6K1 w - - 0 1',                                     turn:'w' },
+  { fen:'k7/8/8/5Q2/8/8/8/1R4K1 w - - 0 1',                                    turn:'w' },
+  { fen:'6k1/7p/7B/8/8/8/8/K4R2 w - - 0 1',                                    turn:'w' },
+  { fen:'3rkn2/R6p/5P1B/8/8/8/8/K7 w - - 0 1',                                 turn:'w' },
+  { fen:'1k6/1b6/2q5/8/8/4N1P1/5P1P/6K1 b - - 0 1',                            turn:'b' },
+  { fen:'kn6/p6R/1P6/8/8/8/2P5/6K1 w - - 0 1',                                 turn:'w' },
+  { fen:'5r1k/pp1R3p/3p3Q/5q2/8/5P2/P5PK/8 w - - 0 1',                         turn:'w' },
+  { fen:'7k/5P2/Q7/8/8/8/8/2K5 w - - 0 1',                                     turn:'w' },
+  { fen:'8/8/2r5/8/8/4k3/8/4K3 b - - 0 1',                                     turn:'b' },
+  { fen:'5rk1/5p1p/2n3p1/8/6N1/2B5/8/4K3 w - - 0 1',                           turn:'w' },
+  { fen:'8/8/4b3/4b3/8/8/5k2/7K b - - 0 1',                                    turn:'b' },
+  { fen:'1r5k/8/8/3b4/3n4/8/8/K7 b - - 0 1',                                   turn:'b' },
+  { fen:'1r5k/8/8/3b4/K1n5/8/8/8 b - - 0 1',                                   turn:'b' },
+  { fen:'8/8/4k1K1/8/8/8/3R4/2R5 w - - 0 1',                                   turn:'w' },
+  { fen:'8/1b4k1/8/1P6/8/1N5p/r7/5QK1 b - - 0 1',                              turn:'b' },
+  { fen:'7k/4N1pp/8/2n3N1/6K1/8/8/8 w - - 0 1',                                turn:'w' },
+  { fen:'8/4p3/8/P4N2/KP6/8/nk6/8 b - - 0 1',                                  turn:'b' },
+  { fen:'6k1/6p1/5q2/8/8/6Q1/r7/4K1R1 b - - 0 1',                              turn:'b' },
+  { fen:'8/P4r2/K7/1P6/2Nb4/2p5/2k5/7R b - - 0 1',                             turn:'b' },
+  { fen:'5r1k/5p1p/5p2/r7/8/2B3R1/7P/7K w - - 0 1',                            turn:'w' },
+  { fen:'5rk1/6p1/8/8/1n6/qPN3Q1/P7/KR6 b - - 0 1',                            turn:'b' },
+  { fen:'5r1k/r1b3p1/8/4n1R1/2B5/1P3P2/5K2/8 w - - 0 1',                       turn:'w' },
+  { fen:'8/6k1/8/5p2/8/1P4PK/r2q4/7R b - - 0 1',                               turn:'b' },
+  { fen:'7k/p5bp/6p1/8/2B4P/1PN1nR2/P5r1/4K3 b - - 0 1',                       turn:'b' },
+  { fen:'r2q1rk1/pp6/2npnpp1/2p1p3/4P3/P1PPP3/1P5Q/RN2K1NR w KQ - 0 1',       turn:'w' },
+  { fen:'6rk/p5b1/1p1Q3p/4B1pP/3Pp3/4q2P/KP6/5n2 w - - 0 1',                   turn:'w' },
+  { fen:'r3k2r/ppp2Np1/2q2n2/2b1p2p/2B5/3P2KP/PPP4P/RNB1QR2 b kq - 0 1',      turn:'b' },
+  { fen:'2b5/4k3/2p2pp1/1P5p/P1B1KB1P/5PP1/5b2/8 b - - 0 1',                   turn:'b' },
+  { fen:'5k2/3Rbp2/2p2Np1/2n1P3/5B1p/8/1Pr2PK1/8 w - - 0 1',                   turn:'w' },
+  { fen:'5k2/1q4R1/1p2BB1p/pP1pP3/1n1P4/8/1Pr2r2/3R2K1 w - - 0 1',             turn:'w' },
+  { fen:'8/1p3Qpp/p4b1k/P1pPp3/2P3B1/8/1P1q3P/7K w - - 0 1',                   turn:'w' },
+  { fen:'8/1R6/1P4pk/4pp2/3nP3/2NPK3/2r2P2/8 b - - 0 1',                       turn:'b' },
+  { fen:'r2q1rk1/1ppbbpp1/2np3p/1B6/4n3/2Q1PN2/PBP2PPP/R3K2R w KQ - 0 13',    turn:'w' },
+  { fen:'r3kb1r/p4pp1/b1p4p/n3pQ2/4N3/2Nq4/PP1P1PPP/R1B2RK1 b kq - 1 14',     turn:'b' },
+  { fen:'rn2q1k1/pp3ppp/2pb4/3p1B2/2PN4/1Q6/PP3PPP/R1B4K b - - 0 15',          turn:'b' },
+  { fen:'rn3rk1/1bp2ppp/p3pb2/3q4/3P4/2PQ4/P1B1NPPP/R1B2RK1 b - - 4 14',      turn:'b' },
+  { fen:'1R6/R5p1/p1b1k3/2P5/8/2n1P3/5PpP/6K1 b - - 0 31',                     turn:'b' },
+  { fen:'2q1rbk1/5p1p/2p2nP1/3p4/1p1P4/3BP2P/1PQ1NP2/6RK b - - 0 24',          turn:'b' },
+  { fen:'rb3rk1/5ppp/p1pqbn2/2Np4/1P2p3/P3P2P/1B1PBPP1/2RQ1RK1 b - - 0 18',   turn:'b' },
+  { fen:'1nkr1b1r/pppb4/4p1p1/PP3p1q/2PP1Bp1/6P1/5PBP/RN1Q1RK1 b - - 3 19',   turn:'b' },
+  { fen:'r1b2rk1/ppb5/2p4p/2Ppqpp1/1P6/2NBP3/P4PPP/2RQ1RK1 b - - 1 16',       turn:'b' },
+  { fen:'4kb2/2p4p/ppN1P1p1/2n5/2P5/r5P1/2K4P/3R4 w - - 4 35',                 turn:'w' },
+  { fen:'r1b4k/1pp1b1pp/p1np2q1/3Qp3/1PB1P3/P3Br1P/2P2PP1/R2R3K w - - 0 18',  turn:'w' },
+  { fen:'k4n2/p2r1pp1/P1rBp2p/4P3/2P5/2K4P/5PP1/1R6 w - - 0 35',               turn:'w' },
+  { fen:'r1b1k2r/pp3ppp/2p1p3/4P1B1/Pbp1n3/2N1P3/1P3PPP/3RKB1R w Kkq - 1 11', turn:'w' },
+  { fen:'6k1/p1p3pp/4N3/1p6/2q1r1n1/2B5/PP4PP/3R1R1K w - - 0 29',              turn:'w' },
+  { fen:'r2q2k1/ppp3p1/2np1n1B/2bbp3/4P3/3P2Q1/PPP2PPP/R4RK1 w - - 0 14',     turn:'w' },
+  { fen:'R7/8/2p2r1k/P4p1p/3PpP1q/6p1/3B3Q/6RK b - - 0 43',                   turn:'b' },
+  { fen:'6N1/1R5p/3pk1p1/6n1/4P1P1/7r/8/5K2 w - - 0 40',                       turn:'w' },
+  { fen:'3k4/8/6Q1/7p/p1q1P1pP/P1B5/1P5P/7K b - - 0 39',                       turn:'b' },
+  { fen:'r4r2/1pp1Nppk/3p4/p3n3/4P3/1PPP2P1/1P1K2P1/3R4 w - - 0 23',           turn:'w' },
+  { fen:'rn2qrk1/ppp2N2/3pPpp1/3n4/6b1/8/P1QN1PPP/R4RK1 w - - 0 19',           turn:'w' },
+  { fen:'8/6p1/4k1N1/5R1P/4n1PK/5P2/8/r7 b - - 0 60',                           turn:'b' },
+  { fen:'r4rk1/pb3ppp/1p2p3/3q4/3N4/2P4P/PPQ2PP1/R4RK1 b - - 2 18',            turn:'b' },
+  { fen:'rn2k2r/ppq2p2/2p1pp2/8/2BN2p1/3P4/PPPB1P2/R2Q1RK1 b kq - 0 16',      turn:'b' },
+  { fen:'2rq1rk1/1p3p1p/p1pn2p1/P1Np4/1P1PnP2/4P3/5PBP/R1Q3RK b - - 3 22',    turn:'b' },
+  { fen:'2r3k1/1Q3ppp/8/8/4B3/2q1P3/R4PPP/4R1K1 b - - 0 24',                   turn:'b' },
+  { fen:'N4rk1/pp3ppp/5n2/3pq3/8/2P2Q2/PP3PPP/R1B3K1 b - - 1 18',              turn:'b' },
+  { fen:'8/2r5/1b5k/1P1Pp1R1/4Q2p/6pP/6P1/2r2B1K b - - 0 41',                  turn:'b' },
+  { fen:'r3kb1r/pR1n1ppp/2p1p3/8/2q2P2/4BR2/2P3PP/3Q2K1 w kq - 0 15',          turn:'w' },
+  { fen:'4r3/3R1pkp/6p1/1P6/1b6/5B2/1P1R1PPP/6K1 b - - 0 36',                  turn:'b' },
+  { fen:'8/pp4p1/2b1p1k1/3q1n2/3P1Q2/4B3/5PPP/R5K1 b - - 4 28',                turn:'b' },
+  { fen:'r2q1rk1/ppp2ppp/2n5/3p2N1/3P4/1B5P/P1Q2PP1/R1B2bK1 w - - 0 17',      turn:'w' },
+  { fen:'r2q1rk1/1b3pp1/p3p3/6b1/1pnN1n2/3Q4/PPP1NB2/1K1R1B1R w - - 0 21',    turn:'w' },
+  { fen:'8/5k2/1P4RK/6P1/1r6/8/8/8 b - - 2 58',                                 turn:'b' },
+  { fen:'r1b1k2r/pp1p1ppp/1qn1pB2/8/4P3/5N2/PPPNKbPP/R2Q1B1R b kq - 1 9',     turn:'b' },
+  { fen:'rn2kb1r/pQ2pppp/2p2n2/8/3q2b1/8/PPP2PPP/RNB1KBNR b KQkq - 0 7',       turn:'b' },
+  { fen:'rnbq3r/ppp1n2k/3p3p/4P1p1/4Pp2/1QP5/PP4PP/RNB2RK1 w - - 2 12',        turn:'w' },
+  { fen:'r1bq1rk1/pp2npp1/4p3/3p4/3P2n1/2P2NP1/PPQN1PP1/R3K2R w KQ - 0 14',   turn:'w' },
+  { fen:'2r4k/5p2/4pNp1/6Pp/qQ5P/7r/2P5/1RKN4 b - - 3 37',                     turn:'b' },
+  { fen:'r2q1rk1/pp1b1pp1/2n1p1n1/2b1P1NQ/3p4/P7/1P3PPP/RNB2RK1 w - - 4 14',  turn:'w' },
+  { fen:'4k3/4p2R/1pp1P1p1/8/3pN3/4b3/1rP3PP/5K2 w - - 0 26',                  turn:'w' },
+  { fen:'6rk/7p/R2N3P/3r4/1P5K/P7/8/8 w - - 5 51',                              turn:'w' },
+  { fen:'5kr1/ppR3p1/3R3p/1n6/1r6/8/1P3PPP/2K5 w - - 5 32',                    turn:'w' },
+  { fen:'2R5/7k/1p2pBq1/3bP2p/8/5P2/5KP1/8 w - - 2 46',                        turn:'w' },
+  { fen:'7k/1pq3p1/2p2r1p/3pPQ2/1p1P4/7P/1rB4K/5R2 w - - 0 36',                turn:'w' },
+  { fen:'1rb1k2r/1pq1bp2/p1n1p3/3P2pp/6n1/1BN2Q2/PPP1NPPP/2BR1RK1 b k - 0 15', turn:'b' },
+  { fen:'r1b1kb1r/pp2pppp/1qnp4/6B1/4P1n1/1NN5/PPP2PPP/R2QKB1R b KQkq - 7 8',  turn:'b' },
+  { fen:'6R1/p4q2/2p4p/6p1/6Pk/8/P4r1P/6QK w - - 1 43',                         turn:'w' },
+  { fen:'r1r3k1/2p3p1/p2p3p/Pp1Pp3/4P3/3P1p1q/R1Q2P1N/4R2K b - - 1 28',        turn:'b' },
+  { fen:'2r3k1/7p/6q1/p1Np4/Qp2pr2/P4P2/1PR2P1K/6R1 b - - 1 36',               turn:'b' },
+  { fen:'r4rk1/ppp2pn1/3p4/q2N4/1n1PP3/5P2/PPP5/1K1R1B1R w - - 3 19',          turn:'w' },
+  { fen:'r4rk1/pbp1n1pp/1p1p4/3Pp1N1/2B4P/2PQ4/PP4q1/R2K3R w - - 0 18',        turn:'w' },
+  { fen:'r3k2r/ppp2p1p/2n1pp2/7q/2PN2P1/2BP2b1/PP2B1P1/R2Q1RK1 b kq - 0 16',   turn:'b' },
+  { fen:'r2N2r1/p2P1p2/1p1Q1p1k/6qp/5R2/P2B3P/1P3PP1/6K1 b - - 0 28',          turn:'b' },
+  { fen:'2r5/p3b1k1/8/4pp1K/2Pp2p1/6P1/P1P2R1P/R2Q4 b - - 0 29',               turn:'b' },
+  { fen:'r1bq3r/pppkn1p1/2np1p1p/4pP1Q/2B1P3/2b3N1/PPPP2PP/R1B2RK1 w - - 2 10', turn:'w' },
+  { fen:'r5k1/6p1/2N3pp/3p4/P2P4/1P5n/6PP/6RK b - - 0 34',                     turn:'b' },
+  { fen:'7k/6p1/8/4p3/Pp1Q4/1P3b1q/6P1/5RK1 b - - 0 45',                       turn:'b' },
+  { fen:'3r1r1k/ppp2pnp/3b3Q/7q/2B1N1R1/P4P2/1P5P/2K5 w - - 3 23',             turn:'w' },
+  { fen:'r6k/ppp2B2/3p1b1p/4p2r/2P1Pp2/P2P1n2/1P3P1R/R4Q1K b - - 0 27',        turn:'b' },
+  { fen:'4R3/4R3/1k1K2p1/1P6/1P6/2rp3r/8/8 w - - 4 46',                         turn:'w' },
+  { fen:'r3qrk1/pb2p1b1/1p1pNnQ1/2p4p/3P3P/2P1P1B1/PP3P2/R3K1R1 w Q - 3 18',   turn:'w' },
+  { fen:'r5k1/pp4pp/4p1q1/4p3/3n4/P3Q1P1/1PP4P/2KR1R2 b - - 5 24',             turn:'b' },
+  { fen:'r6r/1q2bpk1/7p/p1p1pPpn/Pp2P1nP/1P1B1N2/1BP3P1/3RR1QK b - - 8 30',   turn:'b' },
+  { fen:'r4bkr/pppqp1pp/6B1/7Q/2PP4/2N1P2P/PP4P1/R5K1 w - - 1 16',             turn:'w' },
+  { fen:'8/8/3p1k2/R2P3K/5PP1/3r4/8/8 b - - 0 63',                              turn:'b' },
+  { fen:'3q1k2/nbp3p1/4PpQp/pp6/6P1/P3p3/1P2BbP1/1K5R w - - 0 30',             turn:'w' },
+  { fen:'7r/1p6/2p3R1/2PpR3/7k/6b1/p4P1K/8 w - - 0 40',                         turn:'w' },
+  { fen:'1Q6/5p1k/4b1pp/5B2/3p2KP/6P1/P3R3/5r2 b - - 0 45',                    turn:'b' },
+  { fen:'r1bqkn1r/ppb1n2p/2p1pp2/4N3/3PN3/3B4/PPPQ1PPP/R3K2R w KQkq - 0 13',  turn:'w' },
+  { fen:'q5kr/p4p2/4b1p1/4B2p/5n2/2P5/P1Q2PPP/3R1RK1 b - - 0 21',              turn:'b' },
+  { fen:'r6k/4qp1p/p4NrQ/1p2p3/3pP3/1P1P3P/1PP3P1/5RK1 w - - 3 24',            turn:'w' },
+  { fen:'4b2k/R7/p4q2/2P1r2p/3QP1pP/1B6/P5pR/6K1 b - - 1 36',                  turn:'b' },
+  { fen:'r3r1k1/p1p2ppp/4b3/7q/6n1/2BP4/PPP1R1PP/RN3QK1 b - - 11 17',          turn:'b' },
+  { fen:'rnb1k2r/ppp2p1p/4p3/8/3N2Bq/2NP2b1/PPP2PP1/R1BQ1RK1 b kq - 2 13',    turn:'b' },
+  { fen:'r2q1r1k/pbpn1p1n/1p1pp2Q/7P/4P3/2NP2R1/PPP1BPP1/R3K3 w Q - 7 18',    turn:'w' },
+  { fen:'1r5r/3b4/pk2P3/1p2Q1Np/4BP2/1P5n/P5PP/6RK b - - 0 36',                turn:'b' },
+  { fen:'8/p2R2pp/1p2Bp2/4pP2/6P1/4k2P/P1P4r/3K4 b - - 3 34',                  turn:'b' },
+  { fen:'7k/p4R1p/3p3B/2pN1n2/2PbB1b1/3P2P1/P3r3/5R1K b - - 0 28',            turn:'b' },
+  { fen:'5rk1/1q3r2/3p2pQ/3p4/3B4/2P2P2/P5PP/6K1 w - - 0 31',                  turn:'w' },
+  { fen:'r1q2rk1/1p1b1pbp/p2p4/2p2N2/P3Pn2/2NP2QP/1PP3BK/R7 w - - 0 21',      turn:'w' },
+  { fen:'r4q1k/7p/p3p1BQ/1p2P3/P7/2p2b2/1P3P1K/6R1 w - - 1 32',               turn:'w' },
+  { fen:'2r1r1k1/1bpn1ppp/p4n2/1p6/1P1N2q1/P3P3/1BB1QPPP/3R1RK1 b - - 7 18',  turn:'b' },
+  { fen:'r5k1/ppp1p1b1/4N1Q1/3pq1Bp/7P/5N2/PPP2rP1/2KR4 b - - 2 17',           turn:'b' },
+  { fen:'1Q5R/5pk1/5rpp/8/8/4P1PK/4qPQP/8 b - - 0 41',                          turn:'b' },
+  { fen:'r3k2r/pp3pp1/4p3/3Pqnp1/PP6/8/4NPPP/R2Q1RK1 b kq - 0 21',             turn:'b' },
+  { fen:'4rBk1/pb4pp/1pq2p2/4p3/2Pb4/3P3P/P3QPPN/1R2R1K1 b - - 0 24',          turn:'b' },
+  { fen:'r1bqkb1r/pp1pnppp/2n5/1N2p3/5B2/8/PPP1PPPP/R2QKBNR w KQkq - 0 7',    turn:'w' },
+  { fen:'r3r1k1/p4ppp/2p5/3p4/3QbPP1/2N4q/PPP4N/4RRK1 b - - 0 22',            turn:'b' },
+  { fen:'7q/1r2pQ2/2p5/p1B1P1pB/3Pk3/2p1b3/P1P3P1/7K w - - 2 38',              turn:'w' },
+  { fen:'8/8/8/8/8/4K3/5Q2/1qk5 w - - 6 54',                                   turn:'w' },
+  { fen:'k2r3r/pp6/6R1/3P2Pp/2P2B1n/P1N4q/1P3P2/R4QK1 b - - 2 24',            turn:'b' },
+  { fen:'b4b1r/3k1ppp/p2p4/1p2p3/3Pq3/N3B3/PP3PPP/R2Q1RK1 b - - 0 16',        turn:'b' },
+  { fen:'r2qkbnr/pp1npppb/2p4p/7P/2P1N3/3B1N2/PP2QPP1/R1B1K2R w KQkq - 1 11', turn:'w' },
+  { fen:'r2qrk2/p2n2p1/b1pb1n1p/8/1p1P1N2/1Q3N1P/PP3PP1/R1B1R1K1 w - - 2 17', turn:'w' },
+  { fen:'r3kb1r/pp1qp1p1/2npNp2/8/4Q2p/6P1/PPP1PPKP/R1B2R2 w kq - 0 14',      turn:'w' },
+  { fen:'5r2/1p2k1p1/2p3R1/p2pP1R1/3P4/2PK4/PP3r2/8 b - - 8 39',              turn:'b' },
+  { fen:'r4bnr/ppq2Qp1/2pkPn1p/3p4/3P3P/8/PPP5/RNB1K1NR w KQ - 5 15',          turn:'w' },
+  { fen:'r3k2r/ppp2p1p/3b1p2/4p3/8/1PPB4/b1PQ1PPP/2KR3R b kq - 0 14',          turn:'b' },
+  { fen:'6k1/pQ3pp1/7p/8/3P4/6Pb/PPR2r1P/6K1 b - - 0 25',                      turn:'b' },
+  { fen:'4k3/5r2/p7/1p3p1P/3Q1PPB/P1n4K/1b1p4/3q4 w - - 11 56',               turn:'w' },
+];
+
+/* ── STATE ─────────────────────────────────────────── */
+let mode      = 'lecture';
+let curIdx    = 0;
+let chess     = null;
+let board     = null;
+let selSq     = null;
+let solved    = false;
+let completed = {};
+
+/* ── PROGRESS PERSISTAT ─────────────────────────────── */
+const SAVE_KEY = 'mat1_progress';
+
+function saveProgress() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ idx: curIdx, done: completed })); } catch(e) {}
+}
+
+function loadSavedProgress() {
+  try {
+    const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+    if (d) { completed = d.done || {}; return typeof d.idx === 'number' ? d.idx : 0; }
+  } catch(e) {}
+  return 0;
+}
+
+function resetProgress() {
+  if (!confirm('Ștergi tot progresul și începi de la puzzle 1?')) return;
+  try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+  completed = {};
+  loadPuzzle(0);
+  updateArenaBtn();
+}
+
+function updateArenaBtn() {
+  try {
+    const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+    const doneCount = d ? Object.keys(d.done || {}).length : 0;
+    const arenaBtn = document.getElementById('arenaBtn');
+    const contBtn  = document.getElementById('continueBtn');
+    if (!arenaBtn) return;
+    if (doneCount > 0) {
+      arenaBtn.textContent = '♟ Arenă de Mat (' + doneCount + '/' + PUZZLES.length + ' rezolvate)';
+      if (contBtn) {
+        const maxSolved = Math.max(...Object.keys(d.done).map(Number));
+        const nextIdx   = Math.min(maxSolved + 1, PUZZLES.length - 1);
+        contBtn.textContent = '▶ Continuă de la #' + (nextIdx + 1);
+        contBtn.style.display = 'flex';
+      }
+    } else {
+      arenaBtn.textContent = '♟ Arenă de Mat →';
+      if (contBtn) contBtn.style.display = 'none';
+    }
+  } catch(e) {}
+}
+
+/* ── UTILS ─────────────────────────────────────────── */
+function debounce(fn, d) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; }
+
+/* ── HIGHLIGHTS ────────────────────────────────────── */
+function clearHL() {
+  document.querySelectorAll('.square-selected, .highlight-check')
+    .forEach(el => el.classList.remove('square-selected', 'highlight-check'));
+}
+function applyHL(sq, cls) {
+  const el = document.querySelector('.square-' + sq);
+  if (el) el.classList.add(cls);
+}
+function hlKing() {
+  if (!chess || !chess.in_check()) return;
+  const color = chess.turn();
+  const b = chess.board();
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const sq = b[r][c];
+      if (sq && sq.type === 'k' && sq.color === color) {
+        applyHL('abcdefgh'[c] + (8 - r), 'highlight-check');
+        return;
+      }
+    }
+  }
+}
+
+/* ── SUNET GREȘIT ──────────────────────────────────── */
+function playWrong() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(380, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.28);
+    gain.gain.setValueAtTime(0.22, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+    osc.start(); osc.stop(ctx.currentTime + 0.28);
+  } catch(e) {}
+}
+
+function shakeBoard() {
+  const bw = document.getElementById('boardWrapper');
+  bw.classList.remove('board-shake');
+  void bw.offsetWidth;
+  bw.classList.add('board-shake');
+  bw.addEventListener('animationend', () => bw.classList.remove('board-shake'), { once: true });
+}
+
+const SND = {
+  move:    new Audio('Sounds/Move.mp3'),
+  capture: new Audio('Sounds/Capture.mp3'),
+  mate:    new Audio('Sounds/Mate.mp3'),
+};
+
+function playMoveSound(isCapture) {
+  try { const s = isCapture ? SND.capture : SND.move; s.currentTime = 0; s.play(); } catch(e) {}
+}
+function playMateSound() {
+  try { SND.mate.currentTime = 0; SND.mate.play(); } catch(e) {}
+}
+
+function celebrate() {
+  confetti({ particleCount:80, spread:60, origin:{y:0.60} });
+}
+
+/* ── FEEDBACK ──────────────────────────────────────── */
+function setMsg(type, text) {
+  const el = document.getElementById('taskMsg');
+  el.className = 'task-msg ' + type;
+  el.innerHTML = text;
+}
+function idleMsg() { setMsg('idle', 'Dă șah mat într-o singură mutare!'); }
+
+/* ── PROGRESS ──────────────────────────────────────── */
+function updateProgress() {
+  const count = Object.keys(completed).length;
+  document.getElementById('progressFill').style.width = (count / PUZZLES.length * 100) + '%';
+}
+
+/* ── PUZZLE UI ─────────────────────────────────────── */
+function updatePuzzleUI() {
+  const p = PUZZLES[curIdx];
+  const badge = document.getElementById('turnBadge');
+  if (p.turn === 'w') { badge.textContent = '⬜ Albul mută'; badge.className = 'turn-badge white'; }
+  else                { badge.textContent = '⬛ Negrul mută'; badge.className = 'turn-badge black'; }
+  document.getElementById('prevBtn').disabled = (curIdx === 0);
+  document.getElementById('nextBtn').disabled = true;
+}
+
+/* ── LOAD PUZZLE ────────────────────────────────────── */
+function loadPuzzle(idx) {
+  curIdx = idx; solved = false; selSq = null;
+  saveProgress();
+  if (window._annClear) window._annClear();
+  chess = new Chess(PUZZLES[idx].fen);
+  board.position(PUZZLES[idx].fen, false);
+  board.orientation(PUZZLES[idx].turn === 'w' ? 'white' : 'black');
+  clearHL();
+  updatePuzzleUI();
+  updateProgress();
+  if (completed[idx]) {
+    setMsg('ok', '✅ Deja rezolvat!');
+    document.getElementById('nextBtn').disabled = (curIdx === PUZZLES.length - 1);
+    solved = true;
+  } else {
+    idleMsg();
+  }
+}
+
+/* ── MUTARE (validare prin checkmate) ───────────────── */
+function tryMove(from, to) {
+  const move = chess.move({ from, to, promotion:'q' });
+  if (move === null) return false;           /* mutare ilegală */
+
+  if (chess.in_checkmate()) {
+    board.position(chess.fen(), true);
+    playMoveSound(!!move.captured);
+    clearHL();
+    setTimeout(() => { hlKing(); playMateSound(); }, 350);
+    solved = true;
+    completed[curIdx] = true;
+    updateProgress();
+    celebrate();
+    setMsg('ok', '✅ Șah mat! Excelent!');
+    document.getElementById('nextBtn').disabled = (curIdx === PUZZLES.length - 1);
+    return true;
+  } else {
+    chess.undo();
+    board.position(chess.fen(), false);
+    playWrong();
+    shakeBoard();
+    setMsg('err', '❌ Nu este mat — încearcă din nou!');
+    setTimeout(idleMsg, 1400);
+    return false;
+  }
+}
+
+/* ── DRAG ───────────────────────────────────────────── */
+function onDragStart(source, piece) {
+  if (mode === 'lecture' || solved) return false;
+  const turn = PUZZLES[curIdx].turn;
+  if (turn === 'w' && piece[0] === 'b') return false;
+  if (turn === 'b' && piece[0] === 'w') return false;
+  return true;
+}
+function onDrop(source, target) {
+  if (target === 'offboard') return 'snapback';
+  clearHL(); selSq = null;
+  if (!tryMove(source, target)) return 'snapback';
+}
+function onSnapEnd() { if (chess) board.position(chess.fen()); }
+
+/* ── CLICK ──────────────────────────────────────────── */
+$(document).on('click', '.square-55d63', function () {
+  if (mode === 'lecture' || solved) return;
+  const sq    = $(this).data('square');
+  const piece = chess.get(sq);
+  const turn  = PUZZLES[curIdx].turn;
+  if (selSq) {
+    const prevSq = selSq;
+    clearHL(); selSq = null;
+    if (sq === prevSq) return;
+    const friendly = turn === 'w' ? 'w' : 'b';
+    if (piece && piece.color === friendly) {
+      selSq = sq; applyHL(sq, 'square-selected');
+    } else {
+      tryMove(prevSq, sq);
+    }
+  } else {
+    if (!piece) return;
+    if (turn === 'w' && piece.color !== 'w') return;
+    if (turn === 'b' && piece.color !== 'b') return;
+    selSq = sq; applyHL(sq, 'square-selected');
+  }
+});
+
+/* ── NAVIGARE ───────────────────────────────────────── */
+function prevPuzzle()  { if (curIdx > 0) loadPuzzle(curIdx - 1); }
+function resetPuzzle() { loadPuzzle(curIdx); }
+function nextPuzzle()  { if (curIdx < PUZZLES.length - 1) loadPuzzle(curIdx + 1); }
+
+/* ── ARENĂ / LECȚIE ─────────────────────────────────── */
+function enterArena(idx) {
+  mode = 'puzzle';
+  document.getElementById('lectureView').style.display = 'none';
+  document.getElementById('puzzleView').style.display  = 'block';
+  document.getElementById('pageTitle').textContent     = 'Mat în 1 mutare';
+  loadPuzzle(idx);
+}
+
+function startArena() {
+  loadSavedProgress();   /* restaurează completed */
+  enterArena(0);
+}
+
+function continueArena() {
+  loadSavedProgress();
+  const keys = Object.keys(completed).map(Number);
+  const maxSolved = keys.length ? Math.max(...keys) : -1;
+  const nextIdx   = Math.min(maxSolved + 1, PUZZLES.length - 1);
+  if (mode === 'puzzle') {
+    loadPuzzle(nextIdx);
+  } else {
+    enterArena(nextIdx);
+  }
+}
+
+function backToLecture() {
+  mode = 'lecture';
+  document.getElementById('lectureView').style.display = 'block';
+  document.getElementById('puzzleView').style.display  = 'none';
+  document.getElementById('pageTitle').textContent     = 'Matul';
+  updateArenaBtn();
+  board.orientation('white');
+  board.position(LECTURE_FEN, true);
+  chess = null; selSq = null;
+  if (window._annClear) window._annClear();
+  clearHL();
+  setTimeout(() => applyHL(LECTURE_KING, 'highlight-check'), 250);
+}
+
+/* ── INIT ───────────────────────────────────────────── */
+board = Chessboard('board', {
+  position:   LECTURE_FEN,
+  pieceTheme: PIECE_THEME,
+  draggable:  true,
+  onDragStart, onDrop, onSnapEnd,
+});
+window.addEventListener('resize', debounce(() => { board.resize(); _annRender(); }, 150));
+$(document).ready(() => {
+  setTimeout(() => applyHL(LECTURE_KING, 'highlight-check'), 300);
+  updateArenaBtn();
+});
+</script>
+
+<!-- ── ANNOTAȚII INTERACTIVE (sageti + patrate) ──────── -->
+<script>
+(function () {
+  'use strict';
+
+  const ARROW_COLOR = 'rgba(60,190,80,0.85)';
+  const SQ_COLOR    = 'rgba(60,190,80,0.40)';
+
+  var annArrows  = [];     /* [{from,to}] */
+  var annSquares = {};     /* {sq: true}  */
+  var rmbFrom    = null;
+  var rmbMoved   = false;
+
+  /* ── internals ── */
+  function fileRank(sq) {
+    return { c: 'abcdefgh'.indexOf(sq[0]), r: parseInt(sq[1]) - 1 };
+  }
+  function sqCenter(sq, sz) {
+    var fr = fileRank(sq), c = fr.c, r = fr.r;
+    var ori = (typeof board !== 'undefined') ? board.orientation() : 'white';
+    if (ori === 'black') { c = 7 - c; r = 7 - r; }
+    var sqSz = sz / 8;
+    return { x: c * sqSz + sqSz / 2, y: (7 - r) * sqSz + sqSz / 2 };
+  }
+  function getSq(el) {
+    for (var i = 0; i < 8 && el; i++) {
+      var sq = el.getAttribute && el.getAttribute('data-square');
+      if (sq) return sq;
+      el = el.parentElement;
+    }
+    return null;
+  }
+
+  function render() {
+    var bw = document.getElementById('boardWrapper');
+    if (!bw) return;
+    var svg = bw.querySelector('.ann-svg');
+    if (!svg) {
+      svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'ann-svg');
+      svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:25;';
+      bw.appendChild(svg);
+    }
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var NS  = 'http://www.w3.org/2000/svg';
+    var sz  = bw.offsetWidth;
+    var sqSz = sz / 8;
+    var defs = document.createElementNS(NS, 'defs');
+    svg.appendChild(defs);
+
+    /* square highlights */
+    Object.keys(annSquares).forEach(function (sq) {
+      var fr = fileRank(sq), c = fr.c, r = fr.r;
+      var ori = (typeof board !== 'undefined') ? board.orientation() : 'white';
+      if (ori === 'black') { c = 7 - c; r = 7 - r; }
+      var rect = document.createElementNS(NS, 'rect');
+      rect.setAttribute('x', c * sqSz);
+      rect.setAttribute('y', (7 - r) * sqSz);
+      rect.setAttribute('width', sqSz);
+      rect.setAttribute('height', sqSz);
+      rect.setAttribute('fill', SQ_COLOR);
+      svg.appendChild(rect);
+    });
+
+    /* arrows */
+    annArrows.forEach(function (arr, i) {
+      var mid = 'ann' + i;
+      var mk  = document.createElementNS(NS, 'marker');
+      mk.setAttribute('id', mid);
+      mk.setAttribute('markerWidth', '10'); mk.setAttribute('markerHeight', '7');
+      mk.setAttribute('refX', '8');         mk.setAttribute('refY', '3.5');
+      mk.setAttribute('orient', 'auto');
+      var mp = document.createElementNS(NS, 'path');
+      mp.setAttribute('d', 'M0,0 L9,3.5 L0,7 L2.5,3.5 Z');
+      mp.setAttribute('fill', ARROW_COLOR);
+      mk.appendChild(mp); defs.appendChild(mk);
+
+      var f  = sqCenter(arr.from, sz);
+      var t  = sqCenter(arr.to,   sz);
+      var dx = t.x - f.x, dy = t.y - f.y;
+      var len = Math.sqrt(dx*dx + dy*dy);
+      if (len < 1) return;
+      var ux = dx/len, uy = dy/len;
+      var x1 = f.x + ux * sqSz * 0.30, y1 = f.y + uy * sqSz * 0.30;
+      var x2 = t.x - ux * sqSz * 0.38, y2 = t.y - uy * sqSz * 0.38;
+      var ln = document.createElementNS(NS, 'line');
+      ln.setAttribute('x1', x1); ln.setAttribute('y1', y1);
+      ln.setAttribute('x2', x2); ln.setAttribute('y2', y2);
+      ln.setAttribute('stroke', ARROW_COLOR);
+      ln.setAttribute('stroke-width', '5');
+      ln.setAttribute('stroke-linecap', 'round');
+      ln.setAttribute('marker-end', 'url(#' + mid + ')');
+      svg.appendChild(ln);
+    });
+  }
+
+  function clearAll() { annArrows = []; annSquares = {}; render(); }
+
+  /* expose for external callers */
+  window._annClear  = clearAll;
+  window._annRender = render;
+
+  window.addEventListener('load', function () {
+    var boardEl = document.getElementById('board');
+    if (!boardEl) return;
+
+    /* right mouse down → remember start square */
+    boardEl.addEventListener('mousedown', function (e) {
+      if (e.button !== 2) return;
+      e.preventDefault();
+      rmbFrom  = getSq(e.target);
+      rmbMoved = false;
+    });
+
+    boardEl.addEventListener('mousemove', function (e) {
+      if (rmbFrom) rmbMoved = true;
+    });
+
+    /* right mouse up → draw arrow or color square */
+    boardEl.addEventListener('mouseup', function (e) {
+      if (e.button !== 2) return;
+      e.preventDefault();
+      var to = getSq(e.target);
+      if (!rmbFrom || !to) { rmbFrom = null; return; }
+
+      if (!rmbMoved || rmbFrom === to) {
+        /* toggle square color */
+        if (annSquares[to]) delete annSquares[to];
+        else annSquares[to] = true;
+      } else {
+        /* toggle arrow */
+        var idx = annArrows.findIndex(function (a) { return a.from === rmbFrom && a.to === to; });
+        if (idx >= 0) annArrows.splice(idx, 1);
+        else annArrows.push({ from: rmbFrom, to: to });
+      }
+      rmbFrom = null;
+      render();
+    });
+
+    /* block context menu on board */
+    boardEl.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+    /* left click clears annotations */
+    boardEl.addEventListener('mousedown', function (e) {
+      if (e.button === 0) clearAll();
+    });
+
+    /* ── touch support: long-press → color square ── */
+    var touchSq = null, touchTimer = null;
+    boardEl.addEventListener('touchstart', function (e) {
+      touchSq = getSq(e.touches[0].target);
+      touchTimer = setTimeout(function () {
+        if (!touchSq) return;
+        if (annSquares[touchSq]) delete annSquares[touchSq];
+        else annSquares[touchSq] = true;
+        render();
+        touchSq = null;
+      }, 500);
+    }, { passive: true });
+    boardEl.addEventListener('touchend',   function () { clearTimeout(touchTimer); });
+    boardEl.addEventListener('touchmove',  function () { clearTimeout(touchTimer); touchSq = null; });
+  });
+}());
+</script>
 </body>
 </html>
