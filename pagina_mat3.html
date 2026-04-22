@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Mat în 2 mutări</title>
+  <title>Mat în 3 mutări</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -12,40 +12,31 @@
     .panel-heading {
       font-family: var(--font-display);
       font-size: clamp(1.15rem, 2.5vw, 1.4rem);
-      font-weight: 900;
-      color: var(--c-navy);
-      line-height: 1.25;
-      margin-bottom: 8px;
+      font-weight: 900; color: var(--c-navy);
+      line-height: 1.25; margin-bottom: 8px;
     }
     .btn-arena {
       display: flex; align-items: center; justify-content: center;
       margin-top: 14px; padding: 11px 20px; border-radius: 50px;
       background: var(--c-navy); color: white; text-decoration: none;
       font-family: var(--font-display); font-size: 0.97rem; font-weight: 700;
-      border: none; cursor: pointer; width: 100%;
-      transition: opacity .18s;
+      border: none; cursor: pointer; width: 100%; transition: opacity .18s;
     }
     .btn-arena:hover { opacity: 0.86; }
-
     #puzzleView { display: none; }
-
     .turn-badge {
-      display: inline-block;
-      padding: 3px 14px; border-radius: 50px;
-      font-family: var(--font-display); font-size: 0.82rem; font-weight: 700;
-      margin-bottom: 10px;
+      display: inline-block; padding: 3px 14px; border-radius: 50px;
+      font-family: var(--font-display); font-size: 0.82rem; font-weight: 700; margin-bottom: 10px;
     }
     .turn-badge.white { background:#f0f0f0; color:var(--c-navy); border:1.5px solid #ccc; }
     .turn-badge.black { background:#222; color:#fff; border:1.5px solid #000; }
-
     .phase-badge {
-      display: inline-block; margin-left: 6px;
-      padding: 2px 10px; border-radius: 50px;
+      display: inline-block; margin-left: 6px; padding: 2px 10px; border-radius: 50px;
       font-family: var(--font-display); font-size: 0.75rem; font-weight: 700;
       background: rgba(26,58,107,0.12); color: var(--c-navy);
     }
-    .phase-badge.move2 { background: rgba(39,174,96,0.18); color: #1a6b3a; }
-
+    .phase-badge.move2 { background: rgba(41,128,185,0.18); color: #155a80; }
+    .phase-badge.move3 { background: rgba(39,174,96,0.18); color: #1a6b3a; }
     .ctrl-row { display:flex; gap:7px; margin-top:10px; flex-wrap:wrap; }
     .btn-sm {
       padding:7px 15px; border-radius:50px;
@@ -62,10 +53,8 @@
     .btn-cont:hover:not(:disabled)  { opacity:0.86; }
     .btn-next  { border-color:var(--c-navy); background:var(--c-navy); color:white; }
     .btn-next:hover:not(:disabled)  { opacity:0.86; }
-
     .square-selected { background:rgba(255,200,0,0.55) !important; }
     #boardWrapper { touch-action:none; -webkit-touch-callout:none; }
-
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20%       { transform: translateX(-8px); }
@@ -80,48 +69,45 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title" id="pageTitle">Mat în 2 mutări</span>
+    <span class="header-title" id="pageTitle">Mat în 3 mutări</span>
   </header>
 
   <main class="page-main" role="main">
 
-    <!-- Board -->
     <div class="board-col">
       <div class="board-wrapper" id="boardWrapper">
         <div id="board"></div>
       </div>
     </div>
 
-    <!-- Panel -->
     <div class="panel-col">
       <div class="panel-scroll" id="panelScroll">
 
-        <!-- ── LECȚIE ── -->
         <div id="lectureView">
-          <div class="panel-heading">Mat în 2 mutări</div>
-
-          <p>Un <strong>mat în 2</strong> înseamnă că trebuie să găsești o mutare care, indiferent cum răspunde adversarul, duce la șah mat la mutarea următoare.</p>
-          <p style="margin-top:8px;">Este ca un plan în două etape: <strong>prima mutare</strong> creează o amenințare irezistibilă, iar <strong>a doua</strong> livrează matul.</p>
+          <div class="panel-heading">Mat în 3 mutări</div>
+          <p>Un <strong>mat în 3</strong> înseamnă că ai un plan de trei mutări care duce inevitabil la șah mat — indiferent cum răspunde adversarul.</p>
+          <p style="margin-top:8px;">Prima mutare creează o amenințare puternică, a doua o menține, iar a treia livrează matul.</p>
 
           <div class="hl-box" style="margin: 12px 0;">
             <strong>🧩 Cum funcționează arena:</strong>
             <ul style="margin-top:6px; padding-left:1.3em; line-height:1.8;">
-              <li>Faci prima mutare</li>
+              <li>Faci prima mutare (trebuie să fie exactă)</li>
               <li>Computerul răspunde automat</li>
-              <li>Dai mat cu a doua mutare</li>
+              <li>Faci a doua mutare (trebuie să fie exactă)</li>
+              <li>Computerul răspunde din nou</li>
+              <li>Dai șah mat cu a treia mutare</li>
             </ul>
           </div>
 
-          <button class="btn-arena" id="arenaBtn" onclick="startArena()">♟ Arenă Mat în 2 →</button>
+          <button class="btn-arena" id="arenaBtn" onclick="startArena()">♟ Arenă Mat în 3 →</button>
           <button class="btn-arena" id="continueBtn" onclick="continueArena()"
                   style="display:none; margin-top:8px; background:var(--c-success);">
             ▶ Continuă
           </button>
         </div>
 
-        <!-- ── PUZZLE ── -->
         <div id="puzzleView">
-          <div class="panel-heading">Mat în 2 mutări</div>
+          <div class="panel-heading">Mat în 3 mutări</div>
           <span class="turn-badge white" id="turnBadge">⬜ Albul mută</span>
           <span class="phase-badge" id="phaseBadge">Mutarea 1</span>
 
@@ -146,18 +132,18 @@
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
-    <a href="pagina5.html" class="nav-btn nav-btn--back"
+    <a href="pagina_mat2.html" class="nav-btn nav-btn--back"
        onclick="if(mode==='puzzle'){backToLecture();return false;}">
       <span class="icon" aria-hidden="true">←</span>
-      <span class="label">Mat în 1</span>
+      <span class="label">Mat în 2</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon" aria-hidden="true">⊞</span>
       <span class="label">Cuprins</span>
     </a>
-    <a href="pagina_mat3.html" class="nav-btn nav-btn--forward">
+    <a href="pagina_mat4.html" class="nav-btn nav-btn--forward">
       <span class="icon" aria-hidden="true">→</span>
-      <span class="label">Mat în 3 mutări</span>
+      <span class="label">Mat în 4 mutări</span>
     </a>
   </footer>
 
@@ -168,72 +154,73 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script>
 const PIECE_THEME = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
-const LECTURE_FEN = '8/8/8/8/8/3k4/3q4/3K4 b - - 0 1';
+const N_PLAYER    = 3;
+const SAVE_KEY    = 'mat3_progress';
+const LECTURE_FEN = '6nr/p4p1p/k1p5/1p6/1QN5/2P1P3/4KPqP/8 w - - 0 27';
 
 const PUZZLES = [
-  { fen:"r6r/pQ3R2/6pk/6P1/3P4/PP3p1P/3q1P2/4R1K1 b - - 0 1", sol:["d2g5","g1f1","g5g2"], turn:"b" },
-  { fen:"3r3r/1bkp1ppp/pp6/4P3/1QP2q1P/1R6/P3P1P1/5B1K w - - 0 1", sol:["b4b6","c7c8","b6b7"], turn:"w" },
-  { fen:"5k2/5p2/4pp2/prq5/1p5Q/1P3P2/PK5P/3R4 w - - 0 1", sol:["h4h8","f8e7","h8d8"], turn:"w" },
-  { fen:"4R3/Bp3kpp/2p5/8/PPb5/5p1P/5P2/1q2Q1K1 b - - 1 1", sol:["b1g6","g1h2","g6g2"], turn:"b" },
-  { fen:"6k1/p5P1/2bN2Qp/2p5/8/8/P1q1p1PP/4n1K1 w - - 0 1", sol:["g6f7","g8h7","g7g8q"], turn:"w" },
-  { fen:"r5r1/p4Q1p/2pkp3/q1ppp3/4nP1b/1P2P3/P1PPK1PP/RN5R w - - 0 1", sol:["f4e5","d6e5","f7f4"], turn:"w" },
-  { fen:"2r3k1/3n1p1p/p3p1p1/1p2P3/3QbP1q/P1P4P/1P4P1/2NR1R1K b - - 1 1", sol:["h4h3","h1g1","h3g2"], turn:"b" },
-  { fen:"r1bq2kr/2p1bp2/p1n2n2/1p2pQB1/3pP3/P2P3P/BPPN1PP1/R3K2R w KQ - 4 10", sol:["f5g6","g8f8","g6f7"], turn:"w" },
-  { fen:"1r4k1/r4ppp/2n5/pp6/4nQ2/6P1/5P1P/3R2K1 w - - 0 1", sol:["f4b8","c6b8","d1d8"], turn:"w" },
-  { fen:"8/pp2r1p1/2p1p3/4k2q/6R1/3QPKP1/PPP5/8 w - - 0 1", sol:["d3d4","e5f5","d4f4"], turn:"w" },
-  { fen:"r1bqk2r/pp1np1b1/2p4p/4Npp1/2PPp3/4P1BP/PP3PP1/R2QKB1R w KQkq - 0 9", sol:["d1h5","e8f8","h5f7"], turn:"w" },
-  { fen:"1r4nr/k4ppp/Bq1bp1b1/8/Q7/3P4/PPP2PP1/R3R2K w - - 1 1", sol:["a6c8","b6a5","a4a5"], turn:"w" },
-  { fen:"5rk1/R3Qp1p/6p1/P1p5/2Cb4/6P1/3q1P1P/4N1K1 b - - 0 1", sol:["d2f2","g1h1","f2g1"], turn:"b" },
-  { fen:"4Q3/1pk3bp/3N2p1/p1pP1pq1/2P5/P7/1P4PP/6K1 w - - 1 1", sol:["d6b5","c7b6","e8e6"], turn:"w" },
-  { fen:"N4rk1/1b1nbqpp/p2p4/1p2n3/8/2P3N1/PPB2PPP/R1BQR1K1 b - - 1 1", sol:["f7f2","g1h1","f2g2"], turn:"b" },
-  { fen:"2kr3B/pp6/2n4n/2bp4/6q1/2N3Pp/PPP2P1N/R2Q1RK1 b - - 1 1", sol:["g4g3","g1h1","g3g2"], turn:"b" },
-  { fen:"7r/5pkp/6r1/4p1QP/4qp2/1P6/5PP1/3R2K1 w - - 1 1", sol:["h5h6","g7g8","g5d8"], turn:"w" },
-  { fen:"1kr5/pppQ2pp/1q6/6B1/8/6bP/P1P2P2/3R2K1 w - - 0 1", sol:["d7c8","b8c8","d1d8"], turn:"w" },
-  { fen:"8/pQ5p/2pk4/3b2q1/3P1p2/1PP4P/P5PK/6R1 b - - 1 1", sol:["g5g3","h2h1","g3h3"], turn:"b" },
-  { fen:"8/3kp2p/2n5/2P5/1p1p2P1/3P4/qPKB1Q1P/3RR3 b - - 1 1", sol:["b4b3","c2c1","a2a1"], turn:"b" },
-  { fen:"r4r1k/p4p1p/3p2p1/3Np1n1/2q1P3/P3PQ2/6PP/5RK1 w - - 1 1", sol:["f3f6","h8g8","d5e7"], turn:"w" },
-  { fen:"Q7/6pk/4Bn1p/8/1p1q1P2/2r1R2P/6PK/8 w - - 1 1", sol:["e6f5","g7g6","e3e7"], turn:"w" },
-  { fen:"4r1rk/pp3p1p/2pqnPpQ/3p2P1/3P1R2/2N4P/PPP5/3R2K1 w - - 1 1", sol:["h6h7","h8h7","f4h4"], turn:"w" },
-  { fen:"r1b1k2r/ppp2ppp/5q2/8/6n1/1N1Pp1N1/PPP1Q1PP/R4BKR b kq - 1 1", sol:["f6f2","e2f2","e3f2"], turn:"b" },
-  { fen:"r2r4/1p3pPk/p6p/2p1q1PQ/P7/7P/1PP4b/5R1K w - - 0 1", sol:["h5h6","h7g8","h6h8"], turn:"w" },
-  { fen:"3Q4/k1p2pp1/1pP1pn1p/8/1n6/4B3/PPq2PPP/6K1 w - - 0 1", sol:["d8c7","a7a6","c7b6"], turn:"w" },
-  { fen:"5rk1/Q4ppp/6r1/3P2P1/5q2/4RN1b/P3BP2/3R2K1 b - - 1 1", sol:["f4g4","g1h1","g4g2"], turn:"b" },
-  { fen:"3r2k1/pp3ppp/5n2/8/2P5/2N3Q1/Pq3PPP/1R4K1 b - - 1 1", sol:["b2b1","c3b1","d8d1"], turn:"b" },
-  { fen:"5rk1/p5pp/4p3/8/P7/6B1/4p1PP/2RrR1K1 b - - 1 1", sol:["f8f1","e1f1","e2f1q"], turn:"b" },
-  { fen:"r3r1k1/ppb3pp/2pq4/2PPnp2/1P2p3/PQN1B2P/5PP1/R4RK1 b - - 1 1", sol:["e5f3","g2f3","d6h2"], turn:"b" },
-  { fen:"5r1k/p1p3pp/8/2pQ4/3p4/3P2P1/PP4P1/R1B1rBK1 b - - 0 1", sol:["f8f1","g1h2","f1h1"], turn:"b" },
-  { fen:"3q3r/r4p1k/2p2p1p/p4N1Q/1p2P3/1P5P/1PP2PP1/6K1 w - - 0 1", sol:["h5h6","h7g8","h6g7"], turn:"w" },
-  { fen:"6k1/pp3np1/4Q2p/6P1/7P/8/P3rr2/K2R4 w - - 1 1", sol:["d1d8","g8h7","g5g6"], turn:"w" },
-  { fen:"1r4k1/4pr1p/p2pR1pQ/1p6/2P5/1P4P1/PB3qBP/5b1K w - - 0 1", sol:["e6g6","h7g6","h6h8"], turn:"w" },
-  { fen:"6k1/5p2/p3p1pp/8/2Q3N1/6PP/P3R2K/q2r4 b - - 1 1", sol:["d1h1","h2g2","a1f1"], turn:"b" },
-  { fen:"6k1/6p1/6Np/1P3P2/rr6/8/8/3R2K1 w - - 1 1", sol:["d1d8","g8f7","d8f8"], turn:"w" },
-  { fen:"8/8/8/8/8/3k4/3q4/3K4 b - - 0 1", sol:["d2g5","d1e1","g5g1"], turn:"b" },
-  { fen:"k7/8/KQ6/8/8/8/8/8 w - - 0 1", sol:["b6f6","a8b8","f6d8"], turn:"w" },
-  { fen:"k7/8/2K5/Q7/8/8/8/8 w - - 0 1", sol:["a5a6","a8b8","a6b7"], turn:"w" },
-  { fen:"k7/8/1K6/8/8/8/R7/8 w - - 0 1", sol:["a2h2","a8b8","h2h8"], turn:"w" },
-  { fen:"k7/1pR5/1K6/8/8/8/8/8 w - - 0 1", sol:["c7h7","a8b8","h7h8"], turn:"w" },
-  { fen:"1k6/1pR5/1K6/8/8/8/8/8 w - - 0 1", sol:["c7c5","b8a8","c5c8"], turn:"w" },
-  { fen:"k7/8/1K6/1R6/8/8/8/8 w - - 0 1", sol:["b6c7","a8a7","b5a5"], turn:"w" },
-  { fen:"k7/8/1K6/8/8/N7/1Q6/8 w - - 0 1", sol:["b6c7","a8a7","b2b7"], turn:"w" },
-  { fen:"k7/8/KN6/8/8/8/1Q6/8 w - - 0 1", sol:["b2g7","a8b8","g7b7"], turn:"w" },
-  { fen:"k7/8/KR6/B7/8/8/8/8 w - - 0 1", sol:["b6h6","a8b8","h6h8"], turn:"w" },
-  { fen:"1k6/8/KR6/1B6/8/8/8/8 w - - 0 1", sol:["b6c6","b8a8","c6c8"], turn:"w" },
-  { fen:"1k6/8/2K5/8/8/8/1R6/8 w - - 0 1", sol:["b2a2","b8c8","a2a8"], turn:"w" },
-  { fen:"1k6/8/1K6/8/8/8/1R6/8 w - - 0 1", sol:["b2c2","b8a8","c2c8"], turn:"w" },
-  { fen:"k7/8/1K6/8/8/8/1R6/8 w - - 0 1", sol:["b6c7","a8a7","b2a2"], turn:"w" },
+  { fen:"6nr/p4p1p/k1p5/1p6/1QN5/2P1P3/4KPqP/8 w - - 0 27", sol:["b4a5","a6b7","c4d6","b7b8","a5d8"], turn:"w" },
+  { fen:"4rr1k/p1Qn2pp/3p1q2/8/8/2P5/PP3PPP/RN3RK1 b - - 0 16", sol:["f6f2","f1f2","e8e1","f2f1","e1f1"], turn:"b" },
+  { fen:"1r6/pp2kppQ/2n1p1n1/3p2P1/5P2/2PqP3/PP1N4/2KR3R b - - 4 27", sol:["c6b4","c3b4","b8c8","d2c4","c8c4"], turn:"b" },
+  { fen:"rn3rk1/4pp1p/3p2pB/2q4P/3QP1b1/Pp6/1P2B3/1K1R2NR b - - 0 20", sol:["c5c2","b1a1","a8a3","b2a3","c2a2"], turn:"b" },
+  { fen:"2k1r3/pppn1pp1/3b2b1/3B2Pp/5P2/3P3P/PPPR4/2K3NR b - - 0 18", sol:["e8e1","d2d1","d6f4","c1b1","e1d1"], turn:"b" },
+  { fen:"r6r/pp2kb2/3p1p2/1N1Pp3/3bP3/P2B2P1/1P1Q2PP/7K b - - 7 28", sol:["h8h2","h1h2","a8h8","d2h6","h8h6"], turn:"b" },
+  { fen:"2k3r1/pppb1prp/1q6/8/Q7/2P1R1P1/P4P1P/4R1K1 w - - 4 24", sol:["e3e8","d7e8","e1e8","g8e8","a4e8"], turn:"w" },
+  { fen:"1n5k/6p1/p2q1rPp/1ppB4/8/3P4/PPP1rPQ1/2K4R w - - 0 26", sol:["h1h6","g7h6","g6g7","h8h7","g7g8q"], turn:"w" },
+  { fen:"3R4/1pp1r1kp/4r1p1/p1P5/5Q2/P4PPq/1P5P/3R2K1 b - - 3 32", sol:["e6e1","d1e1","e7e1","g1f2","h3f1"], turn:"b" },
+  { fen:"8/2p4r/1p3k2/p2PR1p1/P1P2pP1/1P3P1r/4R1K1/8 b - - 0 46", sol:["h3h2","g2f1","h2h1","f1f2","h7h2"], turn:"b" },
+  { fen:"r1qr3k/pp3pb1/1np1p3/8/3P3P/2N2PR1/PP1Q2P1/2KR4 w - - 0 23", sol:["d2g5","d8g8","g5h5","g7h6","h5h6"], turn:"w" },
+  { fen:"r5k1/pp2q1p1/2p1p2p/3nP1pP/3P2P1/2PQ1r2/PPB5/R5K1 w - - 0 24", sol:["d3h7","g8f7","c2g6","f7f8","h7h8"], turn:"w" },
+  { fen:"8/8/6p1/PR3p2/1P3k1P/8/r5P1/7K b - - 0 39", sol:["f4g3","b5d5","a2a1","d5d1","a1d1"], turn:"b" },
+  { fen:"Q7/8/8/5k2/8/5pr1/5r2/R6K b - - 0 50", sol:["g3h3","h1g1","f2g2","g1f1","h3h1"], turn:"b" },
+  { fen:"3r2k1/4ppnp/pp4p1/2p5/4q3/3rP3/P2P1QPP/3R1RK1 w - - 0 29", sol:["f2f7","g8h8","f7f8","d8f8","f1f8"], turn:"w" },
+  { fen:"r1b2rk1/1p2b1p1/pq2p1P1/3pn3/1P1P4/P1N1P3/6P1/R2QK2R w KQ - 0 18", sol:["h1h8","g8h8","d1h5","h8g8","h5h7"], turn:"w" },
+  { fen:"1k3r2/q5r1/2Qp3p/3Bp3/2N1P1p1/P7/1PP2PPP/R5K1 b - - 13 35", sol:["a7f2","g1h1","f2f1","a1f1","f8f1"], turn:"b" },
+  { fen:"r1b2rk1/p4ppp/2p5/6q1/6P1/3p1Q1P/PPP5/1K2RR2 w - - 0 18", sol:["f3f7","f8f7","e1e8","f7f8","f1f8"], turn:"w" },
+  { fen:"6k1/pp3rpp/4Nb2/4p3/1r6/6PK/PP5P/2R5 w - - 0 29", sol:["c1c8","f6d8","c8d8","f7f8","d8f8"], turn:"w" },
+  { fen:"8/3r1ppp/4p3/k3P3/pR2R2P/2P5/3r1PP1/2K5 b - - 5 31", sol:["d2d1","c1b2","d7d2","b2a3","d1a1"], turn:"b" },
+  { fen:"5k2/5r1p/pp2Q3/8/8/1P6/P1q2PPP/4R1K1 b - - 0 32", sol:["c2f2","g1h1","f2f1","e1f1","f7f1"], turn:"b" },
+  { fen:"2b2r1k/pp4p1/2p5/4r3/2B5/1P6/P4pK1/5R2 w - - 5 33", sol:["f1h1","c8h3","h1h3","e5h5","h3h5"], turn:"w" },
+  { fen:"Q7/8/3B4/2p5/1rkn4/K7/8/8 b - - 2 54", sol:["d4b5","a3a2","b5c3","a2a1","b4b1"], turn:"b" },
+  { fen:"4r2k/1p3Q2/p4N1p/5P2/1P6/P1Pn1K2/4r3/6R1 b - - 0 36", sol:["e8e3","f3g4","d3e5","g4h5","e2h2"], turn:"b" },
+  { fen:"3r2k1/6pp/8/5Q2/2pP4/2q3P1/5RKP/8 w - - 0 36", sol:["f5f7","g8h8","f7f8","d8f8","f2f8"], turn:"w" },
+  { fen:"7r/2N2p1p/p2p4/1p6/3B2b1/8/P3k2P/2RR3K b - - 3 35", sol:["g4f3","h1g1","h8g8","d4g7","g8g7"], turn:"b" },
+  { fen:"6k1/5R2/pp4p1/2p4p/7P/1P6/P2rr1PK/5R2 w - - 1 39", sol:["f7f8","g8h7","f1f7","h7h6","f8h8"], turn:"w" },
+  { fen:"2kr3r/2p2p2/p4q2/1p6/P2PQ3/1PP3pP/6P1/3RR1K1 b - - 0 28", sol:["f6f2","g1h1","h8h3","g2h3","f2h2"], turn:"b" },
+  { fen:"r6k/pp4p1/3p2rp/6q1/2Q2p2/1P3P1b/PBP1R1P1/4R1K1 w - - 0 25", sol:["e2e8","a8e8","e1e8","h8h7","c4g8"], turn:"w" },
+  { fen:"5rk1/R5p1/5q1p/8/3p2Q1/1P6/P3rPPP/5RK1 b - - 3 38", sol:["f6f2","f1f2","e2e1","f2f1","e1f1"], turn:"b" },
+  { fen:"6Q1/q1k5/3pB1p1/2pP1p2/2P2P2/rp2PK1P/8/8 w - - 3 38", sol:["g8c8","c7b6","c8c6","b6a5","c6b5"], turn:"w" },
+  { fen:"8/1b4p1/p3p1Pr/1p1p4/3N4/2PBk3/PP5r/1K3R2 w - - 21 42", sol:["f1f3","e3d2","d4b3","d2e1","f3f1"], turn:"w" },
+  { fen:"6k1/1p1R3p/p5p1/P1B1bpK1/4r2P/6P1/2P2P2/8 b - - 4 34", sol:["e4g4","g5h6","g4h4","g3h4","e5f4"], turn:"b" },
+  { fen:"2r3k1/pb3ppp/1p2pq2/1P6/2Q1PP2/6P1/P5BP/2R3K1 w - - 1 25", sol:["c4c8","b7c8","c1c8","f6d8","c8d8"], turn:"w" },
+  { fen:"5k2/5p1p/6p1/1p2q3/2p1p1Q1/1P2P3/P1R2PPP/6K1 b - - 0 26", sol:["e5a1","c2c1","a1c1","g4d1","c1d1"], turn:"b" },
+  { fen:"2Q5/p4pk1/3p2pp/8/3RP3/5P2/1r4PP/7K b - - 0 30", sol:["b2b1","c8c1","b1c1","d4d1","c1d1"], turn:"b" },
+  { fen:"2kr3r/pp2nppp/4p3/1BPpP3/bn1N2Q1/q1N5/2PB1PPP/1K1R3R b - - 5 14", sol:["a4c2","d4c2","a3b3","b1a1","b4c2"], turn:"b" },
+  { fen:"r2q3k/5P2/2n3Bp/3p2pP/pp1b2Q1/6B1/1PP5/6K1 w - - 0 40", sol:["g4d4","c6d4","g3e5","d8f6","e5f6"], turn:"w" },
+  { fen:"2kr4/2pR4/2P1K1P1/8/8/4n3/p7/8 w - - 0 50", sol:["d7d8","c8d8","g6g7","a2a1q","g7g8q"], turn:"w" },
+  { fen:"r3r3/2q1b1pk/p3P1Np/5Qp1/8/8/PPpp1P2/2R1R1K1 w - - 0 31", sol:["g6f8","h7g8","f5h7","g8f8","h7h8"], turn:"w" },
+  { fen:"5rk1/pR1Q1ppp/4N3/3p1n2/8/7P/q4rP1/4R1K1 w - - 0 29", sol:["d7f7","f8f7","b7b8","f7f8","b8f8"], turn:"w" },
+  { fen:"1R1Q4/5ppk/7p/4Pb2/1P6/2b5/3r3P/2KR4 b - - 4 36", sol:["d2c2","c1b1","c2b2","b1a1","b2h2"], turn:"b" },
+  { fen:"r6k/5Rp1/2pb3p/1p2P3/3P4/2P3Q1/1P4PP/7K b - - 0 29", sol:["a8a1","g3e1","a1e1","f7f1","e1f1"], turn:"b" },
+  { fen:"1k1rR3/p1p3pp/Pp3r2/3p4/Q2N4/8/1PPq1PPP/4R1K1 b - - 4 25", sol:["d2f2","g1h1","f2f1","e1f1","f6f1"], turn:"b" },
+  { fen:"2k4r/ppp1q1p1/3b2p1/3Q4/1P2NPn1/P1P5/6P1/R1B2RKN b - - 0 21", sol:["h8h1","g1h1","e7h4","h1g1","h4h2"], turn:"b" },
+  { fen:"r5k1/pppb2p1/1bnp1q2/6N1/8/2NQ2B1/PP4PP/7K w - - 0 20", sol:["d3h7","g8f8","h7h8","f8e7","c3d5"], turn:"w" },
+  { fen:"6k1/5ppp/4p3/3n4/2rB4/1r4P1/5PKP/R2q4 w - - 0 33", sol:["a1a8","b3b8","a8b8","c4c8","b8c8"], turn:"w" },
+  { fen:"4r1k1/4qp2/3p3p/3P1np1/8/2Q5/1P3PPP/R2N1K2 b - - 3 30", sol:["e7e2","f1g1","e2e1","c3e1","e8e1"], turn:"b" },
+  { fen:"1r6/6R1/3p4/KP1Rp3/2r1P3/2k2P2/8/8 b - - 2 45", sol:["c4a4","a5a4","b8a8","g7a7","a8a7"], turn:"b" },
+  { fen:"r4rk1/1pp2p1p/p4Qp1/3n3P/P2Nq3/8/1B4R1/5B1K w - - 0 37", sol:["f6g7","g8g7","d4f5","g7g8","f5h6"], turn:"w" },
 ];
 
 /* ── STATE ── */
-let mode      = 'lecture';
-let curIdx    = 0;
-let chess     = null;
-let board     = null;
-let selSq     = null;
-let solved    = false;
-let phase     = 'waiting_move1';  /* 'waiting_move1' | 'waiting_move2' */
-let completed = {};
-
-const SAVE_KEY = 'mat2_progress';
+let mode           = 'lecture';
+let curIdx         = 0;
+let chess          = null;
+let board          = null;
+let selSq          = null;
+let solved         = false;
+let playerPhase    = 1;        /* 1..N_PLAYER */
+let isComputerTurn = false;
+let completed      = {};
 
 /* ── SUNET ── */
 const SND = {
@@ -260,63 +247,49 @@ function playWrong() {
     osc.start(); osc.stop(ctx.currentTime + 0.28);
   } catch(e) {}
 }
-
 function shakeBoard() {
   const bw = document.getElementById('boardWrapper');
-  bw.classList.remove('board-shake');
-  void bw.offsetWidth;
+  bw.classList.remove('board-shake'); void bw.offsetWidth;
   bw.classList.add('board-shake');
   bw.addEventListener('animationend', () => bw.classList.remove('board-shake'), { once: true });
 }
-
-function celebrate() {
-  confetti({ particleCount:80, spread:60, origin:{y:0.60} });
-}
+function celebrate() { confetti({ particleCount:80, spread:60, origin:{y:0.60} }); }
 
 /* ── UTILS ── */
 function debounce(fn, d) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; }
-
 function clearHL() {
   document.querySelectorAll('.square-selected, .highlight-check')
     .forEach(el => el.classList.remove('square-selected','highlight-check'));
 }
-function applyHL(sq, cls) {
-  const el = document.querySelector('.square-' + sq);
-  if (el) el.classList.add(cls);
-}
+function applyHL(sq, cls) { const el = document.querySelector('.square-' + sq); if (el) el.classList.add(cls); }
 function hlKing() {
   if (!chess || !chess.in_check()) return;
-  const b = chess.board();
-  const color = chess.turn();
-  for (let r = 0; r < 8; r++)
-    for (let c = 0; c < 8; c++) {
-      const sq = b[r][c];
-      if (sq && sq.type === 'k' && sq.color === color)
-        applyHL('abcdefgh'[c] + (8 - r), 'highlight-check');
-    }
+  const b = chess.board(), color = chess.turn();
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const sq = b[r][c];
+    if (sq && sq.type === 'k' && sq.color === color) applyHL('abcdefgh'[c] + (8 - r), 'highlight-check');
+  }
 }
 
 /* ── MESSAGES ── */
-function setMsg(type, text) {
-  const el = document.getElementById('taskMsg');
-  el.className = 'task-msg ' + type;
-  el.innerHTML = text;
-}
-function idleMsg1() { setMsg('idle', 'Găsește prima mutare câștigătoare!'); }
-function idleMsg2() { setMsg('idle', '🎯 Acum dă șah mat!'); }
+function setMsg(type, text) { const el = document.getElementById('taskMsg'); el.className = 'task-msg ' + type; el.innerHTML = text; }
+const PHASE_MSG = [
+  'Găsește prima mutare câștigătoare!',
+  '🎯 Mutarea a 2-a — menține presiunea!',
+  '🏆 Acum dă șah mat!',
+];
+function idleMsg(p) { setMsg('idle', PHASE_MSG[p - 1]); }
 
 function setPhaseBadge(p) {
   const el = document.getElementById('phaseBadge');
-  if (p === 1) { el.textContent = 'Mutarea 1'; el.className = 'phase-badge'; }
-  else         { el.textContent = 'Mutarea 2'; el.className = 'phase-badge move2'; }
+  el.textContent = 'Mutarea ' + p;
+  el.className = 'phase-badge' + (p === 3 ? ' move3' : p === 2 ? ' move2' : '');
 }
 
 /* ── PROGRESS ── */
 function updateProgress() {
-  const n = Object.keys(completed).length;
-  document.getElementById('progressFill').style.width = (n / PUZZLES.length * 100) + '%';
+  document.getElementById('progressFill').style.width = (Object.keys(completed).length / PUZZLES.length * 100) + '%';
 }
-
 function saveProgress() {
   try { localStorage.setItem(SAVE_KEY, JSON.stringify({ idx: curIdx, done: completed })); } catch(e) {}
 }
@@ -329,13 +302,13 @@ function loadSavedProgress() {
 }
 function updateArenaBtn() {
   try {
-    const d    = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+    const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
     const done = d ? Object.keys(d.done || {}).length : 0;
-    const ab   = document.getElementById('arenaBtn');
-    const cb   = document.getElementById('continueBtn');
+    const ab = document.getElementById('arenaBtn');
+    const cb = document.getElementById('continueBtn');
     if (!ab) return;
     if (done > 0) {
-      ab.textContent = '♟ Arenă Mat în 2 (' + done + '/' + PUZZLES.length + ' rezolvate)';
+      ab.textContent = '♟ Arenă Mat în 3 (' + done + '/' + PUZZLES.length + ' rezolvate)';
       if (cb) {
         const max = Math.max(...Object.keys(d.done).map(Number));
         const nxt = Math.min(max + 1, PUZZLES.length - 1);
@@ -343,7 +316,7 @@ function updateArenaBtn() {
         cb.style.display = 'flex';
       }
     } else {
-      ab.textContent = '♟ Arenă Mat în 2 →';
+      ab.textContent = '♟ Arenă Mat în 3 →';
       if (cb) cb.style.display = 'none';
     }
   } catch(e) {}
@@ -360,7 +333,8 @@ function updatePuzzleUI() {
 }
 
 function loadPuzzle(idx) {
-  curIdx = idx; solved = false; selSq = null; phase = 'waiting_move1';
+  curIdx = idx; solved = false; selSq = null;
+  playerPhase = 1; isComputerTurn = false;
   if (window._annClear) window._annClear();
   chess = new Chess(PUZZLES[idx].fen);
   board.position(PUZZLES[idx].fen, false);
@@ -375,81 +349,77 @@ function loadPuzzle(idx) {
     document.getElementById('nextBtn').disabled = (curIdx === PUZZLES.length - 1);
     solved = true;
   } else {
-    idleMsg1();
+    idleMsg(1);
   }
 }
 
 /* ── MUTĂRI ── */
 function tryMove(from, to) {
-  if (solved) return 'snapback';
+  if (solved || isComputerTurn) return 'snapback';
 
-  if (phase === 'waiting_move1') {
-    const exp = PUZZLES[curIdx].sol[0];
+  const solIdx = (playerPhase - 1) * 2;
+  const isLast = playerPhase === N_PLAYER;
+
+  if (!isLast) {
+    const exp = PUZZLES[curIdx].sol[solIdx];
     if (from !== exp.slice(0,2) || to !== exp.slice(2,4)) {
       playWrong(); shakeBoard();
       setMsg('err', '❌ Nu este mutarea corectă — mai încearcă!');
-      setTimeout(idleMsg1, 1400);
+      setTimeout(() => idleMsg(playerPhase), 1400);
       return 'snapback';
     }
-    const move = chess.move({ from, to, promotion:'q' });
-    if (!move) return 'snapback';
-    playMoveSound(!!move.captured);
-    board.position(chess.fen(), true);
-    clearHL(); selSq = null;
-    phase = 'computer';
-    setMsg('idle', '⏳ Adversarul răspunde...');
-    setPhaseBadge(2);
-
-    setTimeout(() => {
-      const resp = PUZZLES[curIdx].sol[1];
-      const cm = chess.move({ from: resp.slice(0,2), to: resp.slice(2,4), promotion:'q' });
-      if (cm) { playMoveSound(!!cm.captured); board.position(chess.fen(), true); }
-      phase = 'waiting_move2';
-      idleMsg2();
-    }, 700);
-    return undefined;
   }
 
-  if (phase === 'waiting_move2') {
-    const move = chess.move({ from, to, promotion:'q' });
-    if (!move) return 'snapback';
-    if (chess.in_checkmate()) {
-      board.position(chess.fen(), true);
-      playMoveSound(!!move.captured);
-      clearHL();
-      setTimeout(() => { hlKing(); playMateSound(); }, 350);
-      solved = true; completed[curIdx] = true;
-      updateProgress(); saveProgress();
-      celebrate();
-      setMsg('ok', '✅ Șah mat în 2! Excelent!');
-      document.getElementById('nextBtn').disabled = (curIdx === PUZZLES.length - 1);
-    } else {
-      chess.undo();
-      board.position(chess.fen(), false);
+  const move = chess.move({ from, to, promotion:'q' });
+  if (!move) return 'snapback';
+
+  if (isLast) {
+    if (!chess.in_checkmate()) {
+      chess.undo(); board.position(chess.fen(), false);
       playWrong(); shakeBoard();
       setMsg('err', '❌ Nu este mat — încearcă altă mutare!');
-      setTimeout(idleMsg2, 1400);
+      setTimeout(() => idleMsg(N_PLAYER), 1400);
       return 'snapback';
     }
+    board.position(chess.fen(), true);
+    playMoveSound(!!move.captured);
+    clearHL();
+    setTimeout(() => { hlKing(); playMateSound(); }, 350);
+    solved = true; completed[curIdx] = true;
+    updateProgress(); saveProgress();
+    celebrate();
+    setMsg('ok', '✅ Șah mat în 3! Excelent!');
+    document.getElementById('nextBtn').disabled = (curIdx === PUZZLES.length - 1);
     return undefined;
   }
 
-  return 'snapback';
+  /* mutare intermediară corectă → computer răspunde */
+  playMoveSound(!!move.captured);
+  board.position(chess.fen(), true);
+  clearHL(); selSq = null;
+  isComputerTurn = true;
+  setMsg('idle', '⏳ Adversarul răspunde...');
+
+  setTimeout(() => {
+    const resp = PUZZLES[curIdx].sol[solIdx + 1];
+    const cm = chess.move({ from: resp.slice(0,2), to: resp.slice(2,4), promotion:'q' });
+    if (cm) { playMoveSound(!!cm.captured); board.position(chess.fen(), true); }
+    playerPhase++;
+    isComputerTurn = false;
+    setPhaseBadge(playerPhase);
+    idleMsg(playerPhase);
+  }, 700);
+
+  return undefined;
 }
 
 /* ── DRAG & CLICK ── */
 function onDragStart(source, piece) {
-  if (mode === 'lecture' || solved || phase === 'computer') return false;
-  const turn = PUZZLES[curIdx].turn;
-  if (phase === 'waiting_move1') {
-    if (turn === 'w' && piece[0] === 'b') return false;
-    if (turn === 'b' && piece[0] === 'w') return false;
-  }
-  if (phase === 'waiting_move2') {
-    const moverColor = chess.turn() === 'w' ? 'w' : 'b';
-    if (piece[0] !== moverColor) return false;
-  }
-  return true;
+  if (mode === 'lecture' || solved || isComputerTurn) return false;
+  const moverColor = playerPhase === 1
+    ? (PUZZLES[curIdx].turn === 'w' ? 'w' : 'b')
+    : chess.turn();
+  return piece[0] === moverColor;
 }
 function onDrop(source, target) {
   if (target === 'offboard') return 'snapback';
@@ -459,10 +429,10 @@ function onDrop(source, target) {
 function onSnapEnd() { if (chess) board.position(chess.fen()); }
 
 $(document).on('click', '.square-55d63', function () {
-  if (mode === 'lecture' || solved || phase === 'computer') return;
+  if (mode === 'lecture' || solved || isComputerTurn) return;
   const sq    = $(this).data('square');
   const piece = chess.get(sq);
-  const moverColor = phase === 'waiting_move1'
+  const moverColor = playerPhase === 1
     ? (PUZZLES[curIdx].turn === 'w' ? 'w' : 'b')
     : chess.turn();
 
@@ -491,13 +461,10 @@ function enterArena(idx) {
   mode = 'puzzle';
   document.getElementById('lectureView').style.display = 'none';
   document.getElementById('puzzleView').style.display  = 'block';
-  document.getElementById('pageTitle').textContent     = 'Mat în 2 mutări';
+  document.getElementById('pageTitle').textContent     = 'Mat în 3 mutări';
   loadPuzzle(idx);
 }
-function startArena() {
-  loadSavedProgress();
-  enterArena(0);
-}
+function startArena()    { loadSavedProgress(); enterArena(0); }
 function continueArena() {
   loadSavedProgress();
   const keys = Object.keys(completed).map(Number);
@@ -510,7 +477,7 @@ function backToLecture() {
   mode = 'lecture';
   document.getElementById('lectureView').style.display = 'block';
   document.getElementById('puzzleView').style.display  = 'none';
-  document.getElementById('pageTitle').textContent     = 'Mat în 2 mutări';
+  document.getElementById('pageTitle').textContent     = 'Mat în 3 mutări';
   updateArenaBtn();
   board.orientation('white');
   board.position(LECTURE_FEN, true);
