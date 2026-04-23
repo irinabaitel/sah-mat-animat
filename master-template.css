@@ -623,6 +623,60 @@ html, body {
 .move-feedback.err { background: rgba(192,57,43,0.92);  color: #fff; }
 
 
+/* ── 13. Dialog promovare pion ───────────────────────────────
+ *
+ * Plasează .promo-overlay direct în .board-wrapper (position:relative).
+ * Apare în partea de sus a tablei, centrat orizontal.
+ * HTML minim:
+ *   <div class="promo-overlay" id="promoOverlay">
+ *     <div class="promo-title">Alege piesa:</div>
+ *     <div class="promo-btns" id="promoBtns"></div>  ← butoane generate în JS
+ *   </div>
+ * JS: setează display:flex / display:none
+ * ──────────────────────────────────────────────────────────── */
+.promo-overlay {
+  display:        none;
+  position:       absolute;
+  top:            0;
+  left:           50%;
+  transform:      translateX(-50%);
+  background:     rgba(255,255,255,0.97);
+  border-radius:  0 0 14px 14px;
+  padding:        10px 14px;
+  z-index:        200;
+  flex-direction: column;
+  align-items:    center;
+  gap:            8px;
+  box-shadow:     0 4px 24px rgba(0,0,0,0.25);
+  border:         2px solid rgba(26,58,107,0.2);
+  border-top:     none;
+}
+
+.promo-title {
+  font-family: var(--font-display);
+  font-size:   var(--fs-xs);
+  color:       var(--c-navy);
+  font-weight: var(--fw-bold);
+}
+
+.promo-btns { display: flex; gap: 8px; }
+
+.promo-btn {
+  width:         52px;
+  height:        52px;
+  border-radius: 10px;
+  background:    rgba(255,255,255,0.8);
+  border:        2px solid rgba(26,58,107,0.2);
+  cursor:        pointer;
+  display:       flex;
+  align-items:   center;
+  justify-content: center;
+  transition:    background 0.15s;
+}
+.promo-btn:hover { background: rgba(26,58,107,0.12); border-color: var(--c-navy); }
+.promo-btn img   { width: 38px; height: 38px; pointer-events: none; }
+
+
 /* ── 12. Săgeți pe tablă (standard nivel1_lectia5) ───────────
  *
  * JS — copiază funcția de mai jos în orice pagină care desenează săgeți.

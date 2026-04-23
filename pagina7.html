@@ -2,76 +2,534 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lecția 9 — Patul</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Patul — Lecția 10</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+.card { background: var(--c-surface); border: 2px solid var(--c-border); border-radius: var(--radius); padding: 14px 16px; }
+.lesson-content { display: flex; flex-direction: column; gap: 12px; }
 
-#nav { position: sticky; top: 0; background: rgba(245,169,110,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; z-index: 100; border-bottom: 2px solid rgba(255,255,255,0.4); }
-.nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-.nav-btn:hover { background: rgba(255,255,255,0.85); }
-.nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-.nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; padding: 3px 12px; border-radius: 20px; text-decoration: none; }
+.ex-dots { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin: 4px 0; }
+.ex-dot {
+  background: rgba(255,255,255,0.55); border: 2px solid rgba(26,58,107,0.25);
+  border-radius: 20px; padding: 4px 11px; min-width: 34px;
+  font-family: var(--font-display); font-size: var(--fs-xs); font-weight: 700;
+  color: var(--c-navy); cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.ex-dot:hover  { background: rgba(255,255,255,0.85); }
+.ex-dot.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
 
-.content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
+.ex-label {
+  font-family: var(--font-display); font-size: var(--fs-sm);
+  color: var(--c-navy); font-weight: 700; text-align: center; min-height: 1.2em;
+}
+.ex-ann { font-size: var(--fs-md); line-height: 1.7; color: var(--c-text); min-height: 2em; }
 
-.lesson-title { text-align: center; margin-bottom: 8px; }
-.lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
-.lesson-title .subtitle { font-size: 0.92em; color: rgba(26,26,46,0.6); margin-top: 4px; }
+/* highlight mutare sugestie */
+.sq-hl-from { background: rgba(90,190,90,0.38) !important; }
+.sq-hl-to   { background: rgba(50,170,50,0.55) !important; }
 
-.card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-.card-icon { font-size: 1.6em; margin-bottom: 8px; display: block; }
-.card h2 { font-family: 'Baloo 2', cursive; font-size: 1.2em; color: #1a3a6b; margin-bottom: 10px; }
-.card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; }
-.card p:last-child { margin-bottom: 0; }
-.tip-box { background: rgba(231,76,60,0.08); border-left: 4px solid #e74c3c; border-radius: 0 12px 12px 0; padding: 12px 16px; margin-top: 12px; font-size: 0.94em; line-height: 1.7; color: #1a1a2e; }
-.tip-box-green { background: rgba(39,174,96,0.08); border-left: 4px solid #27ae60; border-radius: 0 12px 12px 0; padding: 12px 16px; margin-top: 12px; font-size: 0.94em; line-height: 1.7; color: #1a1a2e; }
-
-.nav-bottom { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; }
-.nav-bottom a { display: inline-block; background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 1em; padding: 10px 28px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 16px rgba(26,58,107,0.35); }
-.nav-bottom a:hover { background: #2a5aab; transform: translateY(-2px); }
-.nav-bottom a.back { background: rgba(26,58,107,0.45); }
+/* footer rows */
+.footer-row { width: 100%; display: flex; align-items: center; justify-content: space-between; }
 </style>
 </head>
 <body>
+<div class="page-wrapper">
 
-<nav id="nav">
-    <a href="aparare_mat.html" class="nav-btn">← Înapoi</a>
-    <div class="nav-title">Lecția 10</div>
-    <a href="hub.html" class="nav-badge">Nivelul I</a>
-</nav>
+  <header class="page-header" role="banner">
+    <span class="header-title">Patul</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Lecția 10</span>
+    </div>
+  </header>
 
-<div class="content">
+  <main class="page-main" role="main">
 
-    <div class="lesson-title">
-        <h1>Patul</h1>
-        <div class="subtitle">Lecția 10 · Nivelul I</div>
+    <!-- Tablă stânga -->
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+        <!-- Dialog promovare -->
+        <div class="promo-overlay" id="promoOverlay">
+          <div class="promo-title">Alege piesa:</div>
+          <div class="promo-btns" id="promoBtns"></div>
+        </div>
+      </div>
     </div>
 
-    <div class="card">
-        <span class="card-icon">🤝</span>
-        <h2>Ce este patul?</h2>
-        <p>O partidă de șah se poate termina cu <strong>„PAT"</strong> atunci când un jucător este la mutare și nu este în șah, dar nici nu poate muta o altă piesă sau regele.</p>
-        <p>Piesele nu pot fi mutate pentru că fie sunt blocate (de exemplu pioni blocați de alte piese care stau în fața lor), sau, dacă aceste piese s-ar muta, ar lăsa regele în șah.</p>
-        <p>De asemenea, se consideră că regele nu poate muta dacă este blocat de piesele proprii sau de piese ale adversarului care sunt apărate, sau dacă acolo unde are câmpuri libere, ar intra în șah.</p>
-        <p>Cu alte cuvinte, când jucătorul care este la mutare nu este în șah și nu poate muta nicio piesă, se spune că este <strong>pat</strong>, iar acest lucru este echivalent cu o <strong>remiză</strong>, adică fiecare jucător câștigă o jumătate de punct.</p>
-    </div>
+    <!-- Panel dreapta -->
+    <div class="panel-col">
+      <div class="panel-scroll" id="panelScroll">
 
-    <div class="card">
-        <span class="card-icon">⚠️</span>
-        <h2>Când evităm patul, când îl căutăm?</h2>
-        <p>Atunci când jucăm șah și suntem în avantaj, trebuie să fim atenți să nu facem o mutare prin care adversarul nostru să facă pat. Nu ne dorim ca în loc de punctul victoriei să obținem doar o jumătate de punct.</p>
-        <div class="tip-box">⚠️ <strong>Atenție când ești în avantaj!</strong> Verifică mereu dacă adversarul poate scăpa prin pat înainte de a muta.</div>
-        <div class="tip-box-green" style="margin-top:10px;">✅ <strong>Folosește patul în apărare!</strong> Atunci când ești în dezavantaj, cu piese mai puține, un scor egal e mai bun decât o înfrângere — caută activ posibilitatea de pat.</div>
-    </div>
+        <!-- ══ ECRANUL 1 ══ -->
+        <div id="screen1" class="lesson-content">
 
-    <div class="nav-bottom">
-        <a href="aparare_mat.html" class="back">◀ Înapoi</a>
-        <a href="nivel1_lectia10.html">10 Exemple &mdash; Patul &#9654;</a>
-    </div>
+          <h1>Patul</h1>
 
-</div>
+          <div class="card">
+            <h2>Ce este patul?</h2>
+            <p>O partidă de șah se poate termina cu <strong>„PAT"</strong> atunci când un jucător este la mutare și nu este în șah, dar nici nu poate muta o altă piesă sau regele.</p>
+            <p>Piesele nu pot fi mutate pentru că fie sunt blocate (de exemplu pioni blocați de alte piese care stau în fața lor), sau, dacă aceste piese s-ar muta, ar lăsa regele în șah.</p>
+            <p>De asemenea, se consideră că regele nu poate muta dacă este blocat de piesele proprii sau de piese ale adversarului care sunt apărate, sau dacă acolo unde are câmpuri libere, ar intra în șah.</p>
+            <p>Cu alte cuvinte, când jucătorul care este la mutare nu este în șah și nu poate muta nicio piesă, se spune că este <strong>pat</strong>, iar acest lucru este echivalent cu o <strong>remiză</strong>, adică fiecare jucător câștigă o jumătate de punct.</p>
+          </div>
+
+          <div class="card">
+            <h2>Când evităm patul, când îl căutăm?</h2>
+            <p>Atunci când jucăm șah și suntem în avantaj, trebuie să fim atenți să nu facem o mutare prin care adversarul nostru să facă pat. Nu ne dorim ca în loc de punctul victoriei să obținem doar o jumătate de punct.</p>
+            <div class="hl-box warn">⚠️ <strong>Atenție când ești în avantaj!</strong> Verifică mereu dacă adversarul poate scăpa prin pat înainte de a muta.</div>
+            <div class="hl-box ok" style="margin-top:8px;">✅ <strong>Folosește patul în apărare!</strong> Atunci când ești în dezavantaj, cu piese mai puține, un scor egal e mai bun decât o înfrângere — caută activ posibilitatea de pat.</div>
+          </div>
+
+          <p>În poziția alăturată, <strong>albul este la mutare</strong>. Urmărește cele 5 exemple în care negrul forțează patul:</p>
+
+          <div class="hl-box warn">
+            <strong>Acestea sunt situații care apar foarte des în finalurile jucătorilor începători care nu sunt atenți.</strong>
+          </div>
+
+          <p>Selectează un exemplu și încearcă mutarea pe tablă:</p>
+
+          <div class="ex-dots" id="dots1"></div>
+          <div class="ex-label" id="exLabel1"></div>
+          <div class="ex-ann"   id="exAnn1"></div>
+          <div class="task-msg" id="result1" style="display:none;"></div>
+          <button class="btn-action" id="reset1" style="display:none;" onclick="resetExample()">↺ Reia poziția</button>
+
+        </div>
+
+        <!-- ══ ECRANUL 2 ══ -->
+        <div id="screen2" class="lesson-content" style="display:none;">
+
+          <h1>Greșelile albului</h1>
+
+          <p><strong>Albul poate greși într-un singur fel</strong> — făcând o mutare care îl lasă pe negru fără mutări, în timp ce regele negru nu este în șah.</p>
+
+          <div class="hl-box warn">
+            <strong>Atenție!</strong> Verifică mereu dacă adversarul rămâne fără mutări după ce tu muți.
+          </div>
+
+          <p>Încearcă mutarea greșită pe tablă și observă rezultatul:</p>
+
+          <div class="ex-dots" id="dots2"></div>
+          <div class="ex-label" id="exLabel2"></div>
+          <div class="ex-ann"   id="exAnn2"></div>
+          <div class="task-msg" id="result2" style="display:none;"></div>
+          <button class="btn-action" id="reset2" style="display:none;" onclick="resetExample()">↺ Reia poziția</button>
+
+        </div>
+
+      </div><!-- /.panel-scroll -->
+    </div><!-- /.panel-col -->
+
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <div class="footer-row" id="footer1">
+      <a href="aparare_mat.html" class="nav-btn nav-btn--back">
+        <span class="icon">←</span><span class="label">Înapoi</span>
+      </a>
+      <a href="hub.html" class="nav-btn nav-btn--contents">
+        <span class="icon">⊞</span><span class="label">Cuprins</span>
+      </a>
+      <button class="nav-btn nav-btn--forward" onclick="goScreen2()">
+        <span class="icon">→</span><span class="label">Înainte</span>
+      </button>
+    </div>
+    <div class="footer-row" id="footer2" style="display:none;">
+      <button class="nav-btn nav-btn--back" onclick="goScreen1()">
+        <span class="icon">←</span><span class="label">Înapoi</span>
+      </button>
+      <a href="hub.html" class="nav-btn nav-btn--contents">
+        <span class="icon">⊞</span><span class="label">Cuprins</span>
+      </a>
+      <a href="sah_etern.html" class="nav-btn nav-btn--forward">
+        <span class="icon">→</span><span class="label">Șahul etern</span>
+      </a>
+    </div>
+  </footer>
+
+</div><!-- /.page-wrapper -->
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
+<script>
+var PT = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+
+/* ── Date ecran 1 ─────────────────────────────────────────── */
+var S1 = [
+  {
+    fen:    '8/8/3p4/3P1b2/5P2/2k5/1r6/K3Nr2 w - - 0 1',
+    label:  'Poziția de start — albul este la mutare',
+    ann:    'Albul este la mutare. Selectează un exemplu de mai jos pentru a vedea cum poate apărea patul.',
+    from: null, to: null, isStatic: true
+  },
+  {
+    fen:    '1K6/4k3/1b6/3b4/8/8/8/8 b - - 0 1',
+    label:  'Exemplul 1 — mută regele negru',
+    ann:    'Negrul mută. Încearcă să muți regele pe d7 și urmărește ce se întâmplă cu regele alb.',
+    from: 'e7', to: 'd7', isStatic: false
+  },
+  {
+    fen:    '7K/8/6kb/7n/8/8/8/8 b - - 0 1',
+    label:  'Exemplul 2 — mută calul negru',
+    ann:    'Negrul mută. Încearcă să muți calul pe f6 și observă că regele alb pe h8 rămâne fără mutări.',
+    from: 'h5', to: 'f6', isStatic: false
+  },
+  {
+    fen:    '8/8/8/8/5q2/7K/8/5k2 b - - 0 1',
+    label:  'Exemplul 3 — mută regele negru',
+    ann:    'Negrul mută. Încearcă să muți regele pe f2 și urmărește blocada completă a regelui alb pe h3.',
+    from: 'f1', to: 'f2', isStatic: false
+  },
+  {
+    fen:    '8/4k3/8/8/1q6/8/8/K7 b - - 0 1',
+    label:  'Exemplul 4 — mută dama neagră',
+    ann:    'Negrul mută. Încearcă să muți dama pe b3 și observă că regele alb pe a1 nu mai are nicio mutare.',
+    from: 'b4', to: 'b3', isStatic: false
+  },
+  {
+    fen:    '8/8/8/8/8/1r6/2k5/K7 b - - 0 1',
+    label:  'Exemplul 5 — mută turnul negru',
+    ann:    'Negrul mută. Încearcă să muți turnul pe b2 și urmărește cum regele alb pe a1 rămâne complet blocat.',
+    from: 'b3', to: 'b2', isStatic: false
+  }
+];
+
+/* ── Date ecran 2 ─────────────────────────────────────────── */
+var S2 = [
+  {
+    fen:    '7k/8/5pK1/5Q2/8/8/8/8 w - - 0 1',
+    label:  'Greșeala 1 — Regele alb prea aproape',
+    ann:    'Rf7',
+    from: 'g6', to: 'f7', isStatic: false
+  },
+  {
+    fen:    '7k/5K1n/8/8/8/8/8/6R1 w - - 0 1',
+    label:  'Greșeala 2 — Turnul leagă calul',
+    ann:    'Th1',
+    from: 'g1', to: 'h1', isStatic: false
+  },
+  {
+    fen:    '8/5PPk/5B2/5K2/8/8/8/8 w - - 2 2',
+    label:  'Greșeala 3 — Subpromotare',
+    ann:    'g8=C',
+    from: 'g7', to: 'g8', isStatic: false
+  },
+  {
+    fen:    '1Q3K2/6Bk/6r1/8/8/8/8/8 w - - 2 2',
+    label:  'Greșeala 4 — Dama se retrage greșit',
+    ann:    'Db1',
+    from: 'b8', to: 'b1', isStatic: false
+  },
+  {
+    fen:    '1Q5B/8/3npn2/3pkp2/3rpr2/8/1Q2K2Q/8 w - - 0 1',
+    label:  'Greșeala 5 — Regele completează blocada',
+    ann:    'Re3',
+    from: 'e2', to: 'e3', isStatic: false
+  },
+  {
+    fen:    '1N6/8/8/8/8/8/pp1PPP2/kb2K2R w K - 0 1',
+    label:  'Greșeala 6 — Rocada face pat',
+    ann:    '0-0',
+    from: 'e1', to: 'g1', isStatic: false
+  },
+  {
+    fen:    'bk6/8/1KP5/8/8/8/8/Q7 w - - 0 1',
+    label:  'Greșeala 7 — Mutarea pionului duce la pat',
+    ann:    'Dxa8+ apoi c7',
+    from: 'a1', to: 'a8', isStatic: false, autoResponse: ['Kxa8']
+  },
+  {
+    fen:    '7k/1Q3K2/7q/8/8/8/8/2B5 w - - 0 1',
+    label:  'Greșeala 8 — Nebunul se mută greșit',
+    ann:    'Nxh6 și Ng7',
+    from: 'c1', to: 'h6', isStatic: false, autoResponse: ['Kh7']
+  },
+  {
+    fen:    '8/5K1k/6qp/5P1P/8/8/8/8 w - - 0 1',
+    label:  'Greșeala 9 — Pionul capturează spre pat',
+    ann:    'fxg6+ și Rf8',
+    from: 'f5', to: 'g6', isStatic: false, autoResponse: ['Kh8']
+  },
+  {
+    fen:    '1k6/7R/8/2R5/8/8/8/7K w - - 0 1',
+    label:  'Greșeala 10 — Turnuri greșit coordonate',
+    ann:    'Tcc7 și Tb7',
+    from: 'c5', to: 'c7', isStatic: false, autoResponse: ['Ka8']
+  }
+];
+
+/* ── Stare globală ────────────────────────────────────────── */
+var board       = null;
+var chess       = null;
+var curData     = null;
+var pendingSrc  = null;
+var pendingTgt  = null;
+var autoIdx     = 0;
+var s1Cur       = 0;
+var s2Cur       = 0;
+
+/* ── Highlights ───────────────────────────────────────────── */
+function clearSuggHL() {
+  document.querySelectorAll('#board .sq-hl-from, #board .sq-hl-to').forEach(function(el) {
+    el.classList.remove('sq-hl-from', 'sq-hl-to');
+  });
+}
+function applySuggHL(from, to) {
+  clearSuggHL();
+  if (!from) return;
+  var f = document.querySelector('#board .square-' + from);
+  var t = document.querySelector('#board .square-' + to);
+  if (f) f.classList.add('sq-hl-from');
+  if (t) t.classList.add('sq-hl-to');
+}
+function clearMoveHL() {
+  document.querySelectorAll(
+    '#board .highlight-selected, #board .highlight-legal, #board .highlight-capture'
+  ).forEach(function(el) {
+    el.classList.remove('highlight-selected', 'highlight-legal', 'highlight-capture');
+  });
+}
+
+/* ── Result + reset ───────────────────────────────────────── */
+function curScreen() {
+  return document.getElementById('screen1').style.display !== 'none' ? 1 : 2;
+}
+function showResult(msg, cls) {
+  var el = document.getElementById('result' + curScreen());
+  el.textContent = msg;
+  el.className = 'task-msg ' + cls;
+  el.style.display = '';
+  document.getElementById('reset' + curScreen()).style.display = '';
+}
+function hideResults() {
+  [1, 2].forEach(function(n) {
+    document.getElementById('result' + n).style.display = 'none';
+    document.getElementById('reset'  + n).style.display = 'none';
+  });
+}
+function checkResult() {
+  if (chess.in_stalemate()) {
+    showResult('🤝 PAT! Partida se termină remiză.', 'ok');
+  } else if (chess.in_checkmate()) {
+    showResult('♟ ȘAH MAT!', 'ok');
+  } else if (chess.game_over()) {
+    showResult('Partida s-a terminat.', 'idle');
+  }
+}
+function playAutoResponse() {
+  if (chess.game_over()) return;
+  if (!curData.autoResponse) return;
+  if (autoIdx >= curData.autoResponse.length) return;
+  if (chess.turn() !== 'b') return;
+  var san = curData.autoResponse[autoIdx++];
+  setTimeout(function() {
+    chess.move(san);
+    board.position(chess.fen(), true);
+    checkResult();
+  }, 450);
+}
+function afterMove() {
+  checkResult();
+  if (!chess.game_over()) playAutoResponse();
+}
+function resetExample() {
+  autoIdx = 0;
+  loadPos(curData);
+}
+
+/* ── Promovare ────────────────────────────────────────────── */
+function buildPromoDialog(color) {
+  var pieces = ['q', 'r', 'b', 'n'];
+  var labels = { q: 'Damă', r: 'Turn', b: 'Nebun', n: 'Cal' };
+  var btns = document.getElementById('promoBtns');
+  btns.innerHTML = '';
+  pieces.forEach(function(p) {
+    var btn = document.createElement('button');
+    btn.className = 'promo-btn';
+    btn.title = labels[p];
+    var img = document.createElement('img');
+    img.src = 'https://lichess1.org/assets/piece/caliente/' + (color === 'w' ? 'w' : 'b') + p.toUpperCase() + '.svg';
+    img.alt = labels[p];
+    btn.appendChild(img);
+    btn.onclick = function() { doPromo(p); };
+    btns.appendChild(btn);
+  });
+}
+function showPromo(src, tgt) {
+  pendingSrc = src;
+  pendingTgt = tgt;
+  buildPromoDialog(chess.turn());
+  document.getElementById('promoOverlay').style.display = 'flex';
+}
+function doPromo(piece) {
+  document.getElementById('promoOverlay').style.display = 'none';
+  var move = chess.move({ from: pendingSrc, to: pendingTgt, promotion: piece });
+  if (!move) return;
+  board.position(chess.fen());
+  clearSuggHL();
+  afterMove();
+}
+
+/* ── Board handlers ───────────────────────────────────────── */
+function onDragStart(source, piece) {
+  if (curData && curData.isStatic) return false;
+  if (chess.game_over()) return false;
+  if (chess.turn() === 'w' && piece.search(/^b/) !== -1) return false;
+  if (chess.turn() === 'b' && piece.search(/^w/) !== -1) return false;
+  return true;
+}
+function onDrop(source, target) {
+  clearMoveHL();
+  clearSuggHL();
+  if (source === target) return 'snapback';
+  var moves = chess.moves({ square: source, verbose: true });
+  var isPromo = moves.some(function(m) { return m.to === target && m.flags.indexOf('p') !== -1; });
+  if (isPromo) {
+    showPromo(source, target);
+    return 'snapback';
+  }
+  var move = chess.move({ from: source, to: target });
+  if (!move) return 'snapback';
+  afterMove();
+}
+function onSnapEnd() {
+  board.position(chess.fen());
+}
+function onMouseoverSquare(square) {
+  if (curData && curData.isStatic) return;
+  if (chess.game_over()) return;
+  var moves = chess.moves({ square: square, verbose: true });
+  if (!moves.length) return;
+  var sel = document.querySelector('#board .square-' + square);
+  if (sel) sel.classList.add('highlight-selected');
+  moves.forEach(function(m) {
+    var el = document.querySelector('#board .square-' + m.to);
+    if (!el) return;
+    if (m.captured) el.classList.add('highlight-capture');
+    else el.classList.add('highlight-legal');
+  });
+}
+function onMouseoutSquare() {
+  clearMoveHL();
+}
+
+/* ── Load position ────────────────────────────────────────── */
+function loadPos(data) {
+  curData = data;
+  chess   = new Chess(data.fen);
+  autoIdx = 0;
+  hideResults();
+  clearSuggHL();
+  clearMoveHL();
+  document.getElementById('promoOverlay').style.display = 'none';
+
+  if (!board) {
+    board = Chessboard('board', {
+      position:          data.fen,
+      pieceTheme:        PT,
+      showNotation:      true,
+      draggable:         true,
+      onDragStart:       onDragStart,
+      onDrop:            onDrop,
+      onSnapEnd:         onSnapEnd,
+      onMouseoverSquare: onMouseoverSquare,
+      onMouseoutSquare:  onMouseoutSquare
+    });
+    window.addEventListener('resize', function() { board.resize(); });
+  } else {
+    board.position(data.fen, false);
+  }
+
+  setTimeout(function() { applySuggHL(data.from, data.to); }, 80);
+}
+
+/* ── Dots ecran 1 ─────────────────────────────────────────── */
+function buildDots1() {
+  var row = document.getElementById('dots1');
+  S1.forEach(function(ex, i) {
+    if (i === 0) return;
+    var btn = document.createElement('button');
+    btn.className = 'ex-dot';
+    btn.textContent = i;
+    btn.title = ex.label;
+    btn.onclick = function() { goS1(i); };
+    row.appendChild(btn);
+  });
+}
+function goS1(i) {
+  s1Cur = i;
+  document.querySelectorAll('#dots1 .ex-dot').forEach(function(d, j) {
+    d.classList.toggle('active', j + 1 === i);
+  });
+  document.getElementById('exLabel1').textContent = S1[i].label;
+  document.getElementById('exAnn1').textContent   = S1[i].ann;
+  loadPos(S1[i]);
+}
+
+/* ── Dots ecran 2 ─────────────────────────────────────────── */
+function buildDots2() {
+  var row = document.getElementById('dots2');
+  S2.forEach(function(ex, i) {
+    var btn = document.createElement('button');
+    btn.className = 'ex-dot' + (i === 0 ? ' active' : '');
+    btn.textContent = i + 1;
+    btn.title = ex.label;
+    btn.onclick = function() { goS2(i); };
+    row.appendChild(btn);
+  });
+}
+function goS2(i) {
+  s2Cur = i;
+  document.querySelectorAll('#dots2 .ex-dot').forEach(function(d, j) {
+    d.classList.toggle('active', j === i);
+  });
+  document.getElementById('exLabel2').textContent = S2[i].label;
+  document.getElementById('exAnn2').textContent   = S2[i].ann;
+  loadPos(S2[i]);
+}
+
+/* ── Navigare ecrane ──────────────────────────────────────── */
+function goScreen2() {
+  document.getElementById('screen1').style.display = 'none';
+  document.getElementById('screen2').style.display = '';
+  document.getElementById('footer1').style.display = 'none';
+  document.getElementById('footer2').style.display = 'flex';
+  document.getElementById('panelScroll').scrollTop = 0;
+  goS2(0);
+}
+function goScreen1() {
+  document.getElementById('screen2').style.display = 'none';
+  document.getElementById('screen1').style.display = '';
+  document.getElementById('footer2').style.display = 'none';
+  document.getElementById('footer1').style.display = 'flex';
+  document.getElementById('panelScroll').scrollTop = 0;
+  loadPos(S1[s1Cur]);
+  document.getElementById('exLabel1').textContent = s1Cur > 0 ? S1[s1Cur].label : '';
+  document.getElementById('exAnn1').textContent   = s1Cur > 0 ? S1[s1Cur].ann   : '';
+}
+
+/* ── Navigare tastatură ───────────────────────────────────── */
+document.addEventListener('keydown', function(e) {
+  var scr = curScreen();
+  if (scr === 1) {
+    if (e.key === 'ArrowRight') goS1(Math.min(s1Cur + 1, S1.length - 1));
+    if (e.key === 'ArrowLeft')  goS1(Math.max(s1Cur - 1, 1));
+  } else {
+    if (e.key === 'ArrowRight') goS2(Math.min(s2Cur + 1, S2.length - 1));
+    if (e.key === 'ArrowLeft')  goS2(Math.max(s2Cur - 1, 0));
+  }
+});
+
+/* ── Init ─────────────────────────────────────────────────── */
+buildDots1();
+buildDots2();
+loadPos(S1[0]);
+
+</script>
 </body>
 </html>
