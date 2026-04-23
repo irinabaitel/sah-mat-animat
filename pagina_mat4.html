@@ -56,6 +56,23 @@
     .btn-next:hover:not(:disabled)  { opacity:0.86; }
     .square-selected { background:rgba(255,200,0,0.55) !important; }
     #boardWrapper { touch-action:none; -webkit-touch-callout:none; }
+    .hint-square { background:rgba(80,200,80,0.65) !important; }
+    .btn-tri  { padding:7px 11px; min-width:34px; }
+    .btn-hint { border-color:rgba(39,174,96,0.45); background:rgba(39,174,96,0.08); color:#1a6b3a; }
+    .btn-hint:hover:not(:disabled) { background:rgba(39,174,96,0.18); }
+    .btn-sol  { border-color:rgba(142,68,173,0.45); background:rgba(142,68,173,0.08); color:#6c3483; }
+    .btn-sol:hover:not(:disabled)  { background:rgba(142,68,173,0.18); }
+    .arena-back-btn {
+      display:block; margin-top:10px; width:100%;
+      padding:8px 16px; border-radius:50px;
+      font-family:var(--font-display); font-size:0.86rem; font-weight:700;
+      color:var(--c-navy); cursor:pointer;
+      background:rgba(255,255,255,0.55);
+      border:1.5px solid rgba(26,58,107,0.25);
+      text-align:center; text-decoration:none;
+      transition:background .15s;
+    }
+    .arena-back-btn:hover { background:rgba(26,58,107,0.10); }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20%       { transform: translateX(-8px); }
@@ -122,27 +139,34 @@
             <button class="btn-sm btn-cont"  onclick="continueArena()">Continuă</button>
             <button class="btn-sm btn-next"  id="nextBtn"  onclick="nextPuzzle()" disabled>Următorul →</button>
           </div>
+          <div class="ctrl-row" style="margin-top:5px">
+            <button class="btn-sm btn-tri btn-prev" id="stepBackBtn" onclick="stepBack()" disabled>◄</button>
+            <button class="btn-sm btn-tri btn-prev" id="stepFwdBtn"  onclick="stepForward()" disabled>►</button>
+            <button class="btn-sm btn-hint" onclick="showHint()">💡 Indiciu</button>
+            <button class="btn-sm btn-sol"  onclick="showSolution()">▶▶ Soluție</button>
+          </div>
         </div>
 
       </div>
+      <button class="arena-back-btn" id="arenaBackBtn" style="display:none" onclick="window.location.href='pagina5.html#arena'">← Arenă</button>
       <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
     </div>
 
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
-    <a href="pagina_mat3.html" class="nav-btn nav-btn--back"
+    <a href="pagina5.html" class="nav-btn nav-btn--back"
        onclick="if(mode==='puzzle'){backToLecture();return false;}">
       <span class="icon" aria-hidden="true">←</span>
-      <span class="label">Mat în 3</span>
+      <span class="label">Lecție Mat</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon" aria-hidden="true">⊞</span>
       <span class="label">Cuprins</span>
     </a>
-    <a href="hub.html" class="nav-btn nav-btn--forward">
+    <a href="pagina5.html#arena" class="nav-btn nav-btn--forward">
       <span class="icon" aria-hidden="true">→</span>
-      <span class="label">Înainte</span>
+      <span class="label">Arenă</span>
     </a>
   </footer>
 
@@ -217,9 +241,11 @@ let chess          = null;
 let board          = null;
 let selSq          = null;
 let solved         = false;
-let playerPhase    = 1;        /* 1..N_PLAYER */
+let playerPhase    = 1;
 let isComputerTurn = false;
 let completed      = {};
+let moveHistory    = [];
+let viewIdx        = 0;
 
 /* ── SUNET ── */
 const SND = {
@@ -289,7 +315,10 @@ function setPhaseBadge(p) {
 
 /* ── PROGRESS ── */
 function updateProgress() {
-  document.getElementById('progressFill').style.width = (Object.keys(completed).length / PUZZLES.length * 100) + '%';
+  const n    = Object.keys(completed).length;
+  const fill = document.getElementById('progressFill');
+  fill.style.width = (n / PUZZLES.length * 100) + '%';
+  fill.parentElement.title = n + ' / ' + PUZZLES.length + ' rezolvate';
 }
 function saveProgress() {
   try { localStorage.setItem(SAVE_KEY, JSON.stringify({ idx: curIdx, done: completed })); } catch(e) {}
@@ -334,8 +363,10 @@ function updatePuzzleUI() {
 }
 
 function loadPuzzle(idx) {
+  if (autoPlayTimer) { clearTimeout(autoPlayTimer); autoPlayTimer = null; }
   curIdx = idx; solved = false; selSq = null;
   playerPhase = 1; isComputerTurn = false;
+  moveHistory = []; viewIdx = 0;
   if (window._annClear) window._annClear();
   chess = new Chess(PUZZLES[idx].fen);
   board.position(PUZZLES[idx].fen, false);
@@ -344,6 +375,7 @@ function loadPuzzle(idx) {
   setPhaseBadge(1);
   updatePuzzleUI();
   updateProgress();
+  updateNavBtns();
   saveProgress();
   if (completed[idx]) {
     setMsg('ok', '✅ Deja rezolvat!');
@@ -384,6 +416,7 @@ function tryMove(from, to) {
     }
     board.position(chess.fen(), true);
     playMoveSound(!!move.captured);
+    recordMove(from, to, 'q');
     clearHL();
     setTimeout(() => { hlKing(); playMateSound(); }, 350);
     solved = true; completed[curIdx] = true;
@@ -397,6 +430,7 @@ function tryMove(from, to) {
   /* mutare intermediară corectă → computer răspunde */
   playMoveSound(!!move.captured);
   board.position(chess.fen(), true);
+  recordMove(from, to, 'q');
   clearHL(); selSq = null;
   isComputerTurn = true;
   setMsg('idle', '⏳ Adversarul răspunde...');
@@ -404,7 +438,11 @@ function tryMove(from, to) {
   setTimeout(() => {
     const resp = PUZZLES[curIdx].sol[solIdx + 1];
     const cm = chess.move({ from: resp.slice(0,2), to: resp.slice(2,4), promotion:'q' });
-    if (cm) { playMoveSound(!!cm.captured); board.position(chess.fen(), true); }
+    if (cm) {
+      playMoveSound(!!cm.captured);
+      board.position(chess.fen(), true);
+      recordMove(resp.slice(0,2), resp.slice(2,4), 'q');
+    }
     playerPhase++;
     isComputerTurn = false;
     setPhaseBadge(playerPhase);
@@ -414,9 +452,76 @@ function tryMove(from, to) {
   return undefined;
 }
 
+let autoPlayTimer = null;
+
+/* ── INDICIU ── */
+function showHint() {
+  if (viewIdx < moveHistory.length || isComputerTurn) return;
+  const solIdx = (playerPhase - 1) * 2;
+  const from   = PUZZLES[curIdx].sol[solIdx].slice(0, 2);
+  clearHL();
+  applyHL(from, 'hint-square');
+}
+
+/* ── SOLUȚIE ── */
+function showSolution() {
+  if (autoPlayTimer) { clearTimeout(autoPlayTimer); autoPlayTimer = null; }
+  const pz = PUZZLES[curIdx];
+  moveHistory = pz.sol.map(sq => ({ from: sq.slice(0,2), to: sq.slice(2,4), prom: 'q' }));
+  viewIdx = 0;
+  board.position(pz.fen, false);
+  clearHL();
+  updateNavBtns();
+  autoPlay();
+}
+function autoPlay() {
+  if (viewIdx >= moveHistory.length) return;
+  viewIdx++;
+  replayToPos(viewIdx);
+  updateNavBtns();
+  if (viewIdx < moveHistory.length) autoPlayTimer = setTimeout(autoPlay, 800);
+}
+
+/* ── MOVE HISTORY ── */
+function recordMove(from, to, prom) {
+  moveHistory.push({ from, to, prom: prom || 'q' });
+  viewIdx = moveHistory.length;
+  updateNavBtns();
+}
+function replayToPos(idx) {
+  const pz   = PUZZLES[curIdx];
+  const temp = new Chess(pz.fen);
+  for (let i = 0; i < idx; i++) {
+    const m = moveHistory[i];
+    temp.move({ from: m.from, to: m.to, promotion: m.prom });
+  }
+  board.position(temp.fen(), false);
+  clearHL();
+}
+function stepBack() {
+  if (viewIdx <= 0) return;
+  viewIdx--;
+  replayToPos(viewIdx);
+  updateNavBtns();
+}
+function stepForward() {
+  if (viewIdx >= moveHistory.length) return;
+  viewIdx++;
+  replayToPos(viewIdx);
+  updateNavBtns();
+}
+function updateNavBtns() {
+  const bb = document.getElementById('stepBackBtn');
+  const fb = document.getElementById('stepFwdBtn');
+  if (bb) bb.disabled = viewIdx <= 0;
+  if (fb) fb.disabled = viewIdx >= moveHistory.length;
+}
+
 /* ── DRAG & CLICK ── */
 function onDragStart(source, piece) {
-  if (mode === 'lecture' || solved || isComputerTurn) return false;
+  if (mode === 'lecture' || isComputerTurn) return false;
+  if (viewIdx < moveHistory.length) return false;
+  if (solved) return false;
   const moverColor = playerPhase === 1
     ? (PUZZLES[curIdx].turn === 'w' ? 'w' : 'b')
     : chess.turn();
@@ -430,7 +535,9 @@ function onDrop(source, target) {
 function onSnapEnd() { if (chess) board.position(chess.fen()); }
 
 $(document).on('click', '.square-55d63', function () {
-  if (mode === 'lecture' || solved || isComputerTurn) return;
+  if (mode === 'lecture' || isComputerTurn) return;
+  if (viewIdx < moveHistory.length) return;
+  if (solved) return;
   const sq    = $(this).data('square');
   const piece = chess.get(sq);
   const moverColor = playerPhase === 1
@@ -463,6 +570,7 @@ function enterArena(idx) {
   document.getElementById('lectureView').style.display = 'none';
   document.getElementById('puzzleView').style.display  = 'block';
   document.getElementById('pageTitle').textContent     = 'Mat în 4 mutări';
+  document.getElementById('arenaBackBtn').style.display = 'block';
   loadPuzzle(idx);
 }
 function startArena()    { loadSavedProgress(); enterArena(0); }
@@ -479,6 +587,7 @@ function backToLecture() {
   document.getElementById('lectureView').style.display = 'block';
   document.getElementById('puzzleView').style.display  = 'none';
   document.getElementById('pageTitle').textContent     = 'Mat în 4 mutări';
+  document.getElementById('arenaBackBtn').style.display = 'none';
   updateArenaBtn();
   board.orientation('white');
   board.position(LECTURE_FEN, true);
@@ -498,63 +607,7 @@ window.addEventListener('resize', debounce(() => { board.resize(); if (window._a
 $(document).ready(() => { updateArenaBtn(); });
 </script>
 
-<!-- ── ANNOTAȚII INTERACTIVE ── -->
-<script>
-(function () {
-  const ARROW_COLOR = 'rgba(60,190,80,0.85)';
-  const SQ_COLOR    = 'rgba(60,190,80,0.40)';
-  var annArrows = [], annSquares = {}, rmbFrom = null, rmbMoved = false;
-
-  function fileRank(sq) { return { c:'abcdefgh'.indexOf(sq[0]), r:parseInt(sq[1])-1 }; }
-  function sqCenter(sq, sz) {
-    var fr=fileRank(sq), c=fr.c, r=fr.r, ori=(typeof board!=='undefined')?board.orientation():'white';
-    if(ori==='black'){c=7-c;r=7-r;}
-    var s=sz/8; return {x:c*s+s/2,y:(7-r)*s+s/2};
-  }
-  function getSq(el){ for(var i=0;i<8&&el;i++){var s=el.getAttribute&&el.getAttribute('data-square');if(s)return s;el=el.parentElement;}return null; }
-
-  function render() {
-    var bw=document.getElementById('boardWrapper'); if(!bw)return;
-    var svg=bw.querySelector('.ann-svg');
-    if(!svg){svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','ann-svg');svg.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:25;';bw.appendChild(svg);}
-    while(svg.firstChild)svg.removeChild(svg.firstChild);
-    var NS='http://www.w3.org/2000/svg', sz=bw.offsetWidth, sqSz=sz/8;
-    var defs=document.createElementNS(NS,'defs');svg.appendChild(defs);
-    Object.keys(annSquares).forEach(function(sq){
-      var fr=fileRank(sq),c=fr.c,r=fr.r,ori=(typeof board!=='undefined')?board.orientation():'white';
-      if(ori==='black'){c=7-c;r=7-r;}
-      var rect=document.createElementNS(NS,'rect');rect.setAttribute('x',c*sqSz);rect.setAttribute('y',(7-r)*sqSz);rect.setAttribute('width',sqSz);rect.setAttribute('height',sqSz);rect.setAttribute('fill',SQ_COLOR);svg.appendChild(rect);
-    });
-    annArrows.forEach(function(arr,i){
-      var mid='ann'+i, mk=document.createElementNS(NS,'marker');mk.setAttribute('id',mid);mk.setAttribute('markerWidth','10');mk.setAttribute('markerHeight','7');mk.setAttribute('refX','8');mk.setAttribute('refY','3.5');mk.setAttribute('orient','auto');
-      var mp=document.createElementNS(NS,'path');mp.setAttribute('d','M0,0 L9,3.5 L0,7 L2.5,3.5 Z');mp.setAttribute('fill',ARROW_COLOR);mk.appendChild(mp);defs.appendChild(mk);
-      var f=sqCenter(arr.from,sz),t=sqCenter(arr.to,sz),dx=t.x-f.x,dy=t.y-f.y,len=Math.sqrt(dx*dx+dy*dy);if(len<1)return;
-      var ux=dx/len,uy=dy/len,x1=f.x+ux*sqSz*0.30,y1=f.y+uy*sqSz*0.30,x2=t.x-ux*sqSz*0.38,y2=t.y-uy*sqSz*0.38;
-      var ln=document.createElementNS(NS,'line');ln.setAttribute('x1',x1);ln.setAttribute('y1',y1);ln.setAttribute('x2',x2);ln.setAttribute('y2',y2);ln.setAttribute('stroke',ARROW_COLOR);ln.setAttribute('stroke-width','5');ln.setAttribute('stroke-linecap','round');ln.setAttribute('marker-end','url(#'+mid+')');svg.appendChild(ln);
-    });
-  }
-  function clearAll(){annArrows=[];annSquares={};render();}
-  window._annClear=clearAll; window._annRender=render;
-
-  window.addEventListener('load',function(){
-    var boardEl=document.getElementById('board'); if(!boardEl)return;
-    boardEl.addEventListener('mousedown',function(e){if(e.button!==2)return;e.preventDefault();rmbFrom=getSq(e.target);rmbMoved=false;});
-    boardEl.addEventListener('mousemove',function(){if(rmbFrom)rmbMoved=true;});
-    boardEl.addEventListener('mouseup',function(e){
-      if(e.button!==2)return;e.preventDefault();
-      var to=getSq(e.target);if(!rmbFrom||!to){rmbFrom=null;return;}
-      if(!rmbMoved||rmbFrom===to){if(annSquares[to])delete annSquares[to];else annSquares[to]=true;}
-      else{var idx=annArrows.findIndex(function(a){return a.from===rmbFrom&&a.to===to;});if(idx>=0)annArrows.splice(idx,1);else annArrows.push({from:rmbFrom,to:to});}
-      rmbFrom=null;render();
-    });
-    boardEl.addEventListener('contextmenu',function(e){e.preventDefault();});
-    boardEl.addEventListener('mousedown',function(e){if(e.button===0)clearAll();});
-    var touchSq=null,touchTimer=null;
-    boardEl.addEventListener('touchstart',function(e){touchSq=getSq(e.touches[0].target);touchTimer=setTimeout(function(){if(!touchSq)return;if(annSquares[touchSq])delete annSquares[touchSq];else annSquares[touchSq]=true;render();touchSq=null;},500);},{passive:true});
-    boardEl.addEventListener('touchend',function(){clearTimeout(touchTimer);});
-    boardEl.addEventListener('touchmove',function(){clearTimeout(touchTimer);touchSq=null;});
-  });
-}());
-</script>
+<!-- board-utils: touch bridge + adnotări 4 culori -->
+<script src="board-utils.js"></script>
 </body>
 </html>

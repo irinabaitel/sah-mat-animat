@@ -509,6 +509,43 @@ html, body {
 .hl-box.warn            { background: rgba(200,80,0,0.09);  border-left-color: #c05000; }
 .hl-box.warn strong     { color: #8b3000; }
 
+/*
+ * Casetă de instrucțiune/feedback pentru exerciții interactive.
+ * Font: var(--fs-body) — același cu paragrafele explicative din panou.
+ *   .task-msg.idle → instrucțiunea curentă (fundal gri)
+ *   .task-msg.ok   → răspuns corect (verde)
+ *   .task-msg.err  → răspuns greșit (roșu)
+ */
+.task-msg {
+  border-radius: 12px;
+  padding:       10px 14px;
+  min-height:    46px;
+  display:       flex;
+  align-items:   center;
+  line-height:   1.55;
+  font-size:     var(--fs-body);
+}
+.task-msg.idle { color: var(--c-navy);  background: rgba(26,58,107,0.07);  border: 2px solid rgba(26,58,107,0.13); }
+.task-msg.ok   { font-weight: 700; color: #1a7a1a; background: rgba(39,174,96,0.12);  border: 2px solid rgba(39,174,96,0.35);  }
+.task-msg.err  { font-weight: 700; color: #8b1a00; background: rgba(192,57,43,0.10); border: 2px solid rgba(192,57,43,0.28); }
+
+/*
+ * Bară de progres pentru exerciții — se umple pe măsură ce sunt rezolvate.
+ */
+.progress-wrap {
+  height:        8px;
+  background:    rgba(26,58,107,0.13);
+  border-radius: 4px;
+  margin-bottom: 12px;
+  overflow:      hidden;
+}
+.progress-fill {
+  height:        100%;
+  background:    var(--c-navy);
+  border-radius: 4px;
+  transition:    width 0.45s ease;
+  min-width:     0;
+}
 
 /* ── 11. Responsive ───────────────────────────────────────── */
 

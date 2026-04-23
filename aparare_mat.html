@@ -1,297 +1,330 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lecția 9 — Apărarea împotriva Matului</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Apărarea împotriva Matului</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <style>
+    .lesson-content { display: flex; flex-direction: column; gap: 14px; }
 
-#nav { position: sticky; top: 0; background: rgba(245,169,110,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; z-index: 100; border-bottom: 2px solid rgba(255,255,255,0.4); }
-.nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-.nav-btn:hover { background: rgba(255,255,255,0.85); }
-.nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-.nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; padding: 3px 12px; border-radius: 20px; text-decoration: none; }
+    /* ── Card ── */
+    .card {
+      background: var(--c-surface);
+      border: 2px solid var(--c-border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .card-icon { font-size: 1.3em; margin-bottom: 4px; display: block; }
 
-.content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
+    /* ── Accordion sections ── */
+    .defense-section {
+      background: var(--c-surface);
+      border: 2px solid var(--c-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .defense-section summary {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; cursor: pointer; user-select: none; list-style: none;
+    }
+    .defense-section summary::-webkit-details-marker { display: none; }
+    .defense-section summary:hover { background: var(--c-surface-2); }
+    .defense-num {
+      background: var(--c-navy); color: white;
+      font-family: var(--font-display); font-size: 0.85em;
+      width: 26px; height: 26px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .defense-label { font-family: var(--font-display); font-size: 1em; color: var(--c-navy); flex: 1; }
+    .defense-arrow { font-size: 0.72em; color: var(--c-navy); transition: transform 0.2s; }
+    details[open] .defense-arrow { transform: rotate(90deg); }
+    .defense-body { padding: 4px 16px 14px; display: flex; flex-direction: column; gap: 10px; }
 
-.lesson-title { text-align: center; margin-bottom: 8px; }
-.lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
-.lesson-title .subtitle { font-size: 0.92em; color: rgba(26,26,46,0.6); margin-top: 4px; }
+    /* ── Controls inside sections ── */
+    .diagram-label { font-family: var(--font-display); font-size: 0.84em; color: var(--c-navy); font-weight: 700; text-align: center; min-height: 16px; }
+    .diagram-msg { font-family: var(--font-display); font-size: 0.82em; min-height: 16px; text-align: center; }
+    .diagram-msg.ok   { color: var(--c-success); }
+    .diagram-msg.err  { color: var(--c-error); }
+    .diagram-msg.info { color: var(--c-navy); }
+    .diagram-nav { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; }
 
-.card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-.card-icon { font-size: 1.6em; margin-bottom: 8px; display: block; }
-.card h2 { font-family: 'Baloo 2', cursive; font-size: 1.2em; color: #1a3a6b; margin-bottom: 10px; }
-.card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; }
-.card p:last-child { margin-bottom: 0; }
-.card ul { padding-left: 22px; margin: 8px 0 0; }
-.card ul li { font-size: 0.96em; line-height: 1.8; color: #2a2a3e; }
+    /* ── Navigation dots ── */
+    .grp-dots { display: flex; gap: 6px; justify-content: center; min-height: 12px; }
+    .gdot { width: 10px; height: 10px; border-radius: 50%; background: rgba(26,58,107,0.18); border: 2px solid rgba(26,58,107,0.28); cursor: pointer; transition: all 0.2s; }
+    .gdot:hover { background: rgba(26,58,107,0.38); }
+    .gdot.active { background: var(--c-navy); border-color: var(--c-navy); transform: scale(1.2); }
 
-/* Accordion */
-.defense-section { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; overflow: hidden; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-.defense-section summary { display: flex; align-items: center; gap: 12px; padding: 16px 24px; cursor: pointer; user-select: none; list-style: none; }
-.defense-section summary::-webkit-details-marker { display: none; }
-.defense-section summary:hover { background: rgba(255,255,255,0.3); }
-.defense-num { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.9em; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.defense-label { font-family: 'Baloo 2', cursive; font-size: 1.1em; color: #1a3a6b; flex: 1; }
-.defense-arrow { font-size: 0.75em; color: #1a3a6b; transition: transform 0.2s; }
-details[open] .defense-arrow { transform: rotate(90deg); }
-.defense-body { padding: 8px 24px 22px; display: flex; flex-direction: column; gap: 16px; }
-.defense-body > p { font-size: 0.95em; line-height: 1.75; color: #2a2a3e; }
+    /* ── Buttons ── */
+    .dbtn {
+      background: var(--c-navy); color: white;
+      font-family: var(--font-display); font-size: 0.76em;
+      padding: 5px 12px; border-radius: var(--radius-sm);
+      border: none; cursor: pointer; transition: all 0.15s;
+    }
+    .dbtn:hover:not(:disabled) { background: var(--c-navy-2); }
+    .dbtn:disabled { opacity: 0.28; cursor: default; }
+    .dbtn.reset { background: rgba(26,58,107,0.14); color: var(--c-navy); }
+    .dbtn.reset:hover:not(:disabled) { background: rgba(26,58,107,0.28); }
+    .dbtn.solve { background: var(--c-warning); color: white; }
+    .dbtn.solve:hover:not(:disabled) { opacity: 0.85; }
+    .dbtn-full { width: 100%; padding: 9px; font-size: 0.88em; margin-top: 10px; border-radius: var(--radius-sm); }
 
-/* Diagram block inside each section */
-.diagram-block { background: rgba(255,255,255,0.45); border: 1.5px solid rgba(255,255,255,0.8); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-.diagram-label { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; font-weight: 700; }
-.diagram-counter { font-size: 0.78em; color: rgba(26,26,46,0.5); }
-.diagram-board { width: min(300px, calc(100vw - 80px)); }
-.diagram-msg { font-family: 'Baloo 2', cursive; font-size: 0.88em; min-height: 20px; text-align: center; }
-.diagram-msg.ok   { color: #27ae60; }
-.diagram-msg.err  { color: #e74c3c; }
-.diagram-msg.info { color: #1a3a6b; }
-.diagram-nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
-.dbtn { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.8em; padding: 6px 14px; border-radius: 50px; border: none; cursor: pointer; transition: all 0.2s; }
-.dbtn:hover:not(:disabled) { background: #2a5aab; transform: translateY(-2px); }
-.dbtn:disabled { background: rgba(26,58,107,0.3); cursor: default; transform: none; }
-.dbtn.reset { background: rgba(26,58,107,0.2); color: #1a3a6b; }
-.dbtn.reset:hover { background: rgba(26,58,107,0.4); transform: none; }
+    /* ── Arena progress bar ── */
+    .arena-title { font-family: var(--font-display); font-size: 1.05em; color: var(--c-navy); font-weight: 700; margin-bottom: 10px; }
 
-@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+    .ar-progress-outer {
+      position: relative;
+      margin-bottom: 4px;
+    }
+    .ar-progress-wrap { background: rgba(26,58,107,0.12); border-radius: 20px; height: 8px; overflow: hidden; }
+    .ar-progress-bar  { height: 100%; background: var(--c-success); border-radius: 20px; transition: width 0.5s ease; width: 0%; }
 
-/* Group example dots */
-.grp-dots { display: flex; gap: 7px; justify-content: center; margin-bottom: 10px; min-height: 14px; }
-.gdot { width: 11px; height: 11px; border-radius: 50%; background: rgba(26,58,107,0.2); border: 2px solid rgba(26,58,107,0.3); cursor: pointer; transition: all 0.2s; }
-.gdot:hover { background: rgba(26,58,107,0.4); }
-.gdot.active { background: #1a3a6b; border-color: #1a3a6b; transform: scale(1.2); }
-.dbtn.solve { background: rgba(230,126,34,0.85); color: white; }
-.dbtn.solve:hover:not(:disabled) { background: #c0392b; }
+    /* Tooltip la hover (starea idle) */
+    .ar-progress-outer[data-tip]:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 7px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--c-navy);
+      color: white;
+      font-family: var(--font-display);
+      font-size: var(--fs-xs);
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+      pointer-events: none;
+    }
 
-/* Arena puzzle dots */
-.ex-dots { display: flex; gap: 7px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
-.edot { width: 30px; height: 30px; border-radius: 50%; background: rgba(26,58,107,0.15); border: 2px solid rgba(26,58,107,0.25); cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Baloo 2', cursive; font-size: 0.7em; color: #1a3a6b; font-weight: 700; transition: all 0.2s; }
-.edot:hover { background: rgba(26,58,107,0.3); }
-.edot.cur  { background: #1a3a6b; color: white; border-color: #1a3a6b; }
-.edot.ok   { background: #27ae60; border-color: #27ae60; color: white; }
-.edot.warn { background: #f39c12; border-color: #f39c12; color: white; }
-.edot.err  { background: #e74c3c; border-color: #e74c3c; color: white; }
+    /* ── Arena activă ── */
+    .ar-score-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .ar-score-label { font-family: var(--font-display); font-size: var(--fs-xs); color: var(--c-text-muted); }
+    .ar-score-badge { background: var(--c-navy); color: white; font-family: var(--font-display); font-size: var(--fs-xs); padding: 2px 10px; border-radius: var(--radius-sm); }
+    .ar-ex-nav { display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+    .ar-move-nav { display: none; gap: 6px; align-items: center; justify-content: center; margin-top: 4px; }
+    .ar-move-nav .dbtn { background: rgba(26,58,107,0.32); }
+    .ar-move-nav .dbtn:hover:not(:disabled) { background: rgba(26,58,107,0.58); }
+    .ar-num { font-family: var(--font-display); font-size: var(--fs-xs); color: var(--c-text-muted); text-align: center; margin: 4px 0; }
 
-/* Arena progress bar */
-.ar-progress-wrap { background: rgba(26,58,107,0.12); border-radius: 20px; height: 8px; margin: 0 0 4px; overflow: hidden; }
-.ar-progress-bar  { height: 100%; background: linear-gradient(90deg,#27ae60,#2ecc71); border-radius: 20px; transition: width 0.5s ease; width: 0%; }
-.ar-progress-label { font-family: 'Baloo 2', cursive; font-size: 0.75em; color: rgba(26,26,46,0.5); margin-bottom: 12px; text-align: right; }
-
-/* Arena exercise nav */
-.ar-ex-nav { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 8px; }
-.ar-ex-nav .dbtn { font-size: 0.78em; padding: 7px 16px; }
-.ar-move-nav { display: none; gap: 8px; align-items: center; justify-content: center; margin-top: 6px; }
-.ar-move-nav .dbtn { font-size: 0.78em; padding: 6px 14px; background: rgba(26,58,107,0.35); }
-.ar-move-nav .dbtn:hover:not(:disabled) { background: rgba(26,58,107,0.6); }
-
-/* Bottom nav */
-.nav-bottom { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; }
-.nav-bottom a { display: inline-block; background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 1em; padding: 10px 28px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 16px rgba(26,58,107,0.35); }
-.nav-bottom a:hover { background: #2a5aab; transform: translateY(-2px); }
-.nav-bottom a.back { background: rgba(26,58,107,0.45); }
-</style>
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  </style>
 </head>
 <body>
+<div class="page-wrapper">
 
-<nav id="nav">
-  <a href="pagina5.html" class="nav-btn">← Înapoi</a>
-  <div class="nav-title">Lecția 9</div>
-  <a href="hub.html" class="nav-badge">Nivelul I</a>
-</nav>
+  <header class="page-header" role="banner">
+    <span class="header-title">Apărarea împotriva Matului</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Lecția 9</span>
+    </div>
+  </header>
 
-<div class="content">
+  <main class="page-main" role="main">
 
-  <div class="lesson-title">
-    <h1>Apărarea împotriva Matului</h1>
-    <div class="subtitle">Lecția 9 · Nivelul I</div>
-  </div>
-
-  <div class="card">
-    <span class="card-icon">🛡️</span>
-    <h2>Ne place să dăm mat, dar...</h2>
-    <p>...nu ne place să îl luăm! De aceea trebuie să știm să ne apărăm împotriva atacurilor de mat. În primul rând, trebuie să îl <strong>vedem</strong>: analizăm la fiecare mutare situația regelui nostru, cine l-ar putea amenința, care sunt câmpurile pe care el s-ar putea refugia și cum pot fi protejate.</p>
-    <p>Să nu uităm că șahul este <strong>sport de echipă</strong>: căutăm soldații care ar putea interveni cu folos în apărarea regelui.</p>
-  </div>
-
-  <!-- 1. Protejare -->
-  <details class="defense-section" open>
-    <summary>
-      <div class="defense-num">1</div>
-      <div class="defense-label">🛡 Protejarea câmpului amenințat</div>
-      <div class="defense-arrow">▶</div>
-    </summary>
-    <div class="defense-body">
-      <p>Dacă adversarul amenință să cucerească un câmp vital lângă regele tău, poți <strong>apăra acel câmp</strong> mutând o piesă care să-l controleze. Cel mai simplu: mută chiar regele pe câmpul amenințat, dacă este sigur. Un turn propriu poate ocupa ultima linie înaintea adversarului.</p>
-      <div class="diagram-block" id="grp-protejare">
-        <div class="diagram-label" id="lbl-protejare"></div>
-        <div class="grp-dots" id="dots-protejare"></div>
-        <div class="diagram-board" id="board-protejare"></div>
-        <div class="diagram-msg" id="msg-protejare"></div>
-        <div class="diagram-nav">
-          <button class="dbtn" id="prev-protejare" onclick="stepGroup('protejare',-1)">◀ Anterior</button>
-          <button class="dbtn reset" onclick="resetGroup('protejare')">↺ Reia</button>
-          <button class="dbtn solve" onclick="autoSolve('protejare')">💡 Soluție</button>
-          <button class="dbtn" id="next-protejare" onclick="stepGroup('protejare',+1)">Următor ▶</button>
-        </div>
+    <!-- Tablă — stânga -->
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
       </div>
     </div>
-  </details>
 
-  <!-- 2. Capturare -->
-  <details class="defense-section">
-    <summary>
-      <div class="defense-num">2</div>
-      <div class="defense-label">⚔️ Capturarea piesei care amenință</div>
-      <div class="defense-arrow">▶</div>
-    </summary>
-    <div class="defense-body">
-      <p>Deși regele este prins în colț, armata lui poate acționa! Dacă piesa care amenință matul poate fi capturată, <strong>capturează-o</strong>.</p>
-      <div class="diagram-block" id="grp-capturare">
-        <div class="diagram-label" id="lbl-capturare"></div>
-        <div class="grp-dots" id="dots-capturare"></div>
-        <div class="diagram-board" id="board-capturare"></div>
-        <div class="diagram-msg" id="msg-capturare"></div>
-        <div class="diagram-nav">
-          <button class="dbtn" id="prev-capturare" onclick="stepGroup('capturare',-1)">◀ Anterior</button>
-          <button class="dbtn reset" onclick="resetGroup('capturare')">↺ Reia</button>
-          <button class="dbtn solve" onclick="autoSolve('capturare')">💡 Soluție</button>
-          <button class="dbtn" id="next-capturare" onclick="stepGroup('capturare',+1)">Următor ▶</button>
-        </div>
-      </div>
-    </div>
-  </details>
+    <!-- Panel — dreapta -->
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="lesson-content">
 
-  <!-- 3. Regele pleacă -->
-  <details class="defense-section">
-    <summary>
-      <div class="defense-num">3</div>
-      <div class="defense-label">🏃 Mutarea regelui spre zone mai sigure</div>
-      <div class="defense-arrow">▶</div>
-    </summary>
-    <div class="defense-body">
-      <p>Uneori cea mai bună apărare este <strong>fuga</strong>! Regele iese din zona periculoasă înainte ca atacul să se declanșeze. <em>Rf8</em> îi va permite să părăsească linia a 8-a în caz de atac al turnului.</p>
-      <div class="diagram-block" id="grp-fuga">
-        <div class="diagram-label" id="lbl-fuga"></div>
-        <div class="grp-dots" id="dots-fuga"></div>
-        <div class="diagram-board" id="board-fuga"></div>
-        <div class="diagram-msg" id="msg-fuga"></div>
-        <div class="diagram-nav">
-          <button class="dbtn" id="prev-fuga" onclick="stepGroup('fuga',-1)">◀ Anterior</button>
-          <button class="dbtn reset" onclick="resetGroup('fuga')">↺ Reia</button>
-          <button class="dbtn solve" onclick="autoSolve('fuga')">💡 Soluție</button>
-          <button class="dbtn" id="next-fuga" onclick="stepGroup('fuga',+1)">Următor ▶</button>
-        </div>
-      </div>
-    </div>
-  </details>
+          <!-- Introducere -->
+          <div class="card">
+            <span class="card-icon">🛡️</span>
+            <h2>Ne place să dăm mat, dar...</h2>
+            <p>...nu ne place să îl luăm! De aceea trebuie să știm să ne apărăm împotriva atacurilor de mat. În primul rând, trebuie să îl <strong>vedem</strong>: analizăm la fiecare mutare situația regelui nostru, cine l-ar putea amenința, care sunt câmpurile pe care el s-ar putea refugia și cum pot fi protejate.</p>
+            <p>Să nu uităm că șahul este <strong>sport de echipă</strong>: căutăm soldații care ar putea interveni cu folos în apărarea regelui.</p>
+          </div>
 
-  <!-- 4. Calea de scăpare -->
-  <details class="defense-section">
-    <summary>
-      <div class="defense-num">4</div>
-      <div class="defense-label">💨 Crearea unui pătrățel de scăpare</div>
-      <div class="defense-arrow">▶</div>
-    </summary>
-    <div class="defense-body">
-      <p>Regele stă uneori blocat în propriul colț — piesele proprii îi blochează fuga! <strong>Creează o cale de scăpare</strong> mișcând un pion, înainte ca atacul să sosească. Cu pionul neatins ar fi mat!</p>
-      <div class="diagram-block" id="grp-scapare">
-        <div class="diagram-label" id="lbl-scapare"></div>
-        <div class="grp-dots" id="dots-scapare"></div>
-        <div class="diagram-board" id="board-scapare"></div>
-        <div class="diagram-msg" id="msg-scapare"></div>
-        <div class="diagram-nav">
-          <button class="dbtn" id="prev-scapare" onclick="stepGroup('scapare',-1)">◀ Anterior</button>
-          <button class="dbtn reset" onclick="resetGroup('scapare')">↺ Reia</button>
-          <button class="dbtn solve" onclick="autoSolve('scapare')">💡 Soluție</button>
-          <button class="dbtn" id="next-scapare" onclick="stepGroup('scapare',+1)">Următor ▶</button>
-        </div>
-      </div>
-    </div>
-  </details>
+          <!-- Rezumat — sus -->
+          <div class="card">
+            <span class="card-icon">📋</span>
+            <h2>Sunt 5 căi de apărare împotriva matului</h2>
+            <ul>
+              <li><strong>Protejare</strong> — apără câmpul sau linia de atac a adversarului</li>
+              <li><strong>Capturare</strong> — elimină piesa care amenință matul</li>
+              <li><strong>Fuga regelui</strong> — mută regele din zona periculoasă</li>
+              <li><strong>Calea de scăpare</strong> — creează un pătrățel liber pentru rege</li>
+              <li><strong>Interpunere</strong> — plasează o piesă apărată între rege și atacator</li>
+            </ul>
+          </div>
 
-  <!-- 5. Interpunere -->
-  <details class="defense-section">
-    <summary>
-      <div class="defense-num">5</div>
-      <div class="defense-label">🚧 Interpunerea unei piese apărate</div>
-      <div class="defense-arrow">▶</div>
-    </summary>
-    <div class="defense-body">
-      <p>Când o piesă adversă atacă de la distanță, poți <strong>interpune o piesă proprie apărată</strong> pe linia de atac, întrerupând-o. Uneori un schimb dezavantajos este mai bun decât un mat!</p>
-      <div class="diagram-block" id="grp-interpunere">
-        <div class="diagram-label" id="lbl-interpunere"></div>
-        <div class="grp-dots" id="dots-interpunere"></div>
-        <div class="diagram-board" id="board-interpunere"></div>
-        <div class="diagram-msg" id="msg-interpunere"></div>
-        <div class="diagram-nav">
-          <button class="dbtn" id="prev-interpunere" onclick="stepGroup('interpunere',-1)">◀ Anterior</button>
-          <button class="dbtn reset" onclick="resetGroup('interpunere')">↺ Reia</button>
-          <button class="dbtn solve" onclick="autoSolve('interpunere')">💡 Soluție</button>
-          <button class="dbtn" id="next-interpunere" onclick="stepGroup('interpunere',+1)">Următor ▶</button>
-        </div>
-      </div>
-    </div>
-  </details>
+          <!-- 1. Protejare — deschis implicit -->
+          <details class="defense-section" open data-gid="protejare">
+            <summary>
+              <div class="defense-num">1</div>
+              <div class="defense-label">🛡 Protejarea câmpului amenințat</div>
+              <div class="defense-arrow">▶</div>
+            </summary>
+            <div class="defense-body">
+              <p>Dacă adversarul amenință să cucerească un câmp vital lângă regele tău, poți <strong>apăra acel câmp</strong> mutând o piesă care să-l controleze. Cel mai simplu: mută chiar regele pe câmpul amenințat, dacă este sigur. Un turn propriu poate ocupa ultima linie înaintea adversarului.</p>
+              <div class="diagram-label" id="lbl-protejare"></div>
+              <div class="grp-dots" id="dots-protejare"></div>
+              <div class="diagram-msg" id="msg-protejare"></div>
+              <div class="diagram-nav">
+                <button class="dbtn" id="prev-protejare" onclick="stepGroup('protejare',-1)">◀ Anterior</button>
+                <button class="dbtn reset" onclick="resetGroup('protejare')">↺ Reia</button>
+                <button class="dbtn solve" onclick="autoSolve('protejare')">💡 Soluție</button>
+                <button class="dbtn" id="next-protejare" onclick="stepGroup('protejare',+1)">Următor ▶</button>
+              </div>
+            </div>
+          </details>
 
-  <!-- Rezumat -->
-  <div class="card">
-    <span class="card-icon">📋</span>
-    <h2>Cele 5 căi de apărare</h2>
-    <ul>
-      <li><strong>Protejare</strong> — apără câmpul sau linia de atac a adversarului</li>
-      <li><strong>Capturare</strong> — elimină piesa care amenință matul</li>
-      <li><strong>Fuga regelui</strong> — mută regele din zona periculoasă</li>
-      <li><strong>Calea de scăpare</strong> — creează un pătrățel liber pentru rege</li>
-      <li><strong>Interpunere</strong> — plasează o piesă apărată între rege și atacator</li>
-    </ul>
-  </div>
+          <!-- 2. Capturare -->
+          <details class="defense-section" data-gid="capturare">
+            <summary>
+              <div class="defense-num">2</div>
+              <div class="defense-label">⚔️ Capturarea piesei care amenință</div>
+              <div class="defense-arrow">▶</div>
+            </summary>
+            <div class="defense-body">
+              <p>Deși regele este prins în colț, armata lui poate acționa! Dacă piesa care amenință matul poate fi capturată, <strong>capturează-o</strong>.</p>
+              <div class="diagram-label" id="lbl-capturare"></div>
+              <div class="grp-dots" id="dots-capturare"></div>
+              <div class="diagram-msg" id="msg-capturare"></div>
+              <div class="diagram-nav">
+                <button class="dbtn" id="prev-capturare" onclick="stepGroup('capturare',-1)">◀ Anterior</button>
+                <button class="dbtn reset" onclick="resetGroup('capturare')">↺ Reia</button>
+                <button class="dbtn solve" onclick="autoSolve('capturare')">💡 Soluție</button>
+                <button class="dbtn" id="next-capturare" onclick="stepGroup('capturare',+1)">Următor ▶</button>
+              </div>
+            </div>
+          </details>
 
-  <!-- Arena antrenament -->
-  <div class="card" id="arena-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
-      <div>
-        <span class="card-icon" style="display:inline;margin-right:6px;">🏋️</span>
-        <span style="font-family:'Baloo 2',cursive;font-size:1.2em;color:#1a3a6b;font-weight:700;">Antrenament — Tactică și apărare</span>
-      </div>
-      <span id="arena-score" style="font-family:'Baloo 2',cursive;font-size:0.88em;background:#1a3a6b;color:white;padding:4px 14px;border-radius:20px;">0 / 25 rezolvate</span>
-    </div>
-    <div class="ar-progress-wrap"><div class="ar-progress-bar" id="ar-progress-bar"></div></div>
-    <div class="ar-progress-label" id="ar-progress-label">0% sesiune curentă</div>
-    <p style="font-size:0.9em;color:#2a2a3e;margin-bottom:14px;">Găsește cea mai bună mutare defensivă!</p>
-    <div class="ex-dots" id="arena-dots"></div>
-    <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;justify-content:center;">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
-        <div id="arena-board" style="width:min(300px,calc(100vw - 48px));"></div>
-        <!-- Move analysis nav -->
-        <div class="ar-move-nav" id="ar-move-nav">
-          <button class="dbtn" id="ar-mv-prev" onclick="arMoveNav(-1)" disabled>◀ Înapoi</button>
-          <button class="dbtn" id="ar-mv-next" onclick="arMoveNav(+1)" disabled>Înainte ▶</button>
-        </div>
-        <!-- Exercise nav -->
-        <div class="ar-ex-nav" style="width:100%;min(300px,calc(100vw - 48px));">
-          <button class="dbtn" id="ar-prev" onclick="arGo(arCur-1)">◀ Anterior</button>
-          <button class="dbtn reset" id="ar-retry" onclick="arRetry()" style="display:none;">↺ Mai încearcă</button>
-          <button class="dbtn" id="ar-next" onclick="arGo(arCur+1)">Următorul ▶</button>
-        </div>
-      </div>
-      <div style="flex:1;min-width:180px;max-width:280px;display:flex;flex-direction:column;gap:8px;padding-top:4px;">
-        <div id="ar-num" style="font-family:'Baloo 2',cursive;font-size:0.78em;color:rgba(26,26,46,0.5);"></div>
-        <div id="ar-msg" class="diagram-msg"></div>
-      </div>
-    </div>
-  </div>
+          <!-- 3. Fuga regelui -->
+          <details class="defense-section" data-gid="fuga">
+            <summary>
+              <div class="defense-num">3</div>
+              <div class="defense-label">🏃 Mutarea regelui spre zone mai sigure</div>
+              <div class="defense-arrow">▶</div>
+            </summary>
+            <div class="defense-body">
+              <p>Uneori cea mai bună apărare este <strong>fuga</strong>! Regele iese din zona periculoasă înainte ca atacul să se declanșeze. <em>Rf8</em> îi va permite să părăsească linia a 8-a în caz de atac al turnului.</p>
+              <div class="diagram-label" id="lbl-fuga"></div>
+              <div class="grp-dots" id="dots-fuga"></div>
+              <div class="diagram-msg" id="msg-fuga"></div>
+              <div class="diagram-nav">
+                <button class="dbtn" id="prev-fuga" onclick="stepGroup('fuga',-1)">◀ Anterior</button>
+                <button class="dbtn reset" onclick="resetGroup('fuga')">↺ Reia</button>
+                <button class="dbtn solve" onclick="autoSolve('fuga')">💡 Soluție</button>
+                <button class="dbtn" id="next-fuga" onclick="stepGroup('fuga',+1)">Următor ▶</button>
+              </div>
+            </div>
+          </details>
 
-  <div class="nav-bottom">
-    <a href="pagina5.html" class="back">◀ Lecția 8</a>
-    <a href="pagina7.html">Lecția 10 ▶</a>
-  </div>
+          <!-- 4. Calea de scăpare -->
+          <details class="defense-section" data-gid="scapare">
+            <summary>
+              <div class="defense-num">4</div>
+              <div class="defense-label">💨 Crearea unui pătrățel de scăpare</div>
+              <div class="defense-arrow">▶</div>
+            </summary>
+            <div class="defense-body">
+              <p>Regele stă uneori blocat în propriul colț — piesele proprii îi blochează fuga! <strong>Creează o cale de scăpare</strong> mișcând un pion, înainte ca atacul să sosească. Cu pionul neatins ar fi mat!</p>
+              <div class="diagram-label" id="lbl-scapare"></div>
+              <div class="grp-dots" id="dots-scapare"></div>
+              <div class="diagram-msg" id="msg-scapare"></div>
+              <div class="diagram-nav">
+                <button class="dbtn" id="prev-scapare" onclick="stepGroup('scapare',-1)">◀ Anterior</button>
+                <button class="dbtn reset" onclick="resetGroup('scapare')">↺ Reia</button>
+                <button class="dbtn solve" onclick="autoSolve('scapare')">💡 Soluție</button>
+                <button class="dbtn" id="next-scapare" onclick="stepGroup('scapare',+1)">Următor ▶</button>
+              </div>
+            </div>
+          </details>
 
-</div>
+          <!-- 5. Interpunere -->
+          <details class="defense-section" data-gid="interpunere">
+            <summary>
+              <div class="defense-num">5</div>
+              <div class="defense-label">🚧 Interpunerea unei piese apărate</div>
+              <div class="defense-arrow">▶</div>
+            </summary>
+            <div class="defense-body">
+              <p>Când o piesă adversă atacă de la distanță, poți <strong>interpune o piesă proprie apărată</strong> pe linia de atac, întrerupând-o. Uneori un schimb dezavantajos este mai bun decât un mat!</p>
+              <div class="diagram-label" id="lbl-interpunere"></div>
+              <div class="grp-dots" id="dots-interpunere"></div>
+              <div class="diagram-msg" id="msg-interpunere"></div>
+              <div class="diagram-nav">
+                <button class="dbtn" id="prev-interpunere" onclick="stepGroup('interpunere',-1)">◀ Anterior</button>
+                <button class="dbtn reset" onclick="resetGroup('interpunere')">↺ Reia</button>
+                <button class="dbtn solve" onclick="autoSolve('interpunere')">💡 Soluție</button>
+                <button class="dbtn" id="next-interpunere" onclick="stepGroup('interpunere',+1)">Următor ▶</button>
+              </div>
+            </div>
+          </details>
+
+          <!-- Arenă antrenament -->
+          <div class="card" id="arena-card">
+
+            <!-- Starea IDLE: bara + buton -->
+            <div id="arena-idle">
+              <div class="arena-title">🏋️ Antrenament — Tactică și apărare</div>
+              <div class="ar-progress-outer" id="ar-prog-outer-idle" data-tip="0 / 25 rezolvate">
+                <div class="ar-progress-wrap">
+                  <div class="ar-progress-bar" id="ar-progress-bar-idle"></div>
+                </div>
+              </div>
+              <button class="dbtn dbtn-full" onclick="startArena()">🏋️ Intră în arenă →</button>
+            </div>
+
+            <!-- Starea ACTIVĂ: bara sus + navigare -->
+            <div id="arena-active" style="display:none;">
+              <div class="ar-score-row">
+                <div class="ar-score-label" id="ar-num">Poziția 1 / 25</div>
+                <div class="ar-score-badge" id="arena-score">0 / 25</div>
+              </div>
+              <div class="ar-progress-outer" id="ar-prog-outer-active">
+                <div class="ar-progress-wrap">
+                  <div class="ar-progress-bar" id="ar-progress-bar-active"></div>
+                </div>
+              </div>
+              <div id="ar-msg" class="diagram-msg" style="margin:6px 0;"></div>
+              <div class="ar-ex-nav">
+                <button class="dbtn" id="ar-prev" onclick="arGo(arCur-1)">◀ Anterior</button>
+                <button class="dbtn reset" id="ar-retry" onclick="arRetry()" style="display:none;">↺ Mai încearcă</button>
+                <button class="dbtn" id="ar-next" onclick="arGo(arCur+1)">Următorul ▶</button>
+              </div>
+              <div class="ar-move-nav" id="ar-move-nav">
+                <button class="dbtn" id="ar-mv-prev" onclick="arMoveNav(-1)" disabled>◀ Înapoi</button>
+                <button class="dbtn" id="ar-mv-next" onclick="arMoveNav(+1)" disabled>Înainte ▶</button>
+              </div>
+            </div>
+
+          </div><!-- /.card arena -->
+
+        </div><!-- /.lesson-content -->
+      </div><!-- /.panel-scroll -->
+    </div><!-- /.panel-col -->
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="pagina5.html" class="nav-btn nav-btn--back">
+      <span class="icon" aria-hidden="true">←</span>
+      <span class="label">Mat</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon" aria-hidden="true">⊞</span>
+      <span class="label">Cuprins</span>
+    </a>
+    <a href="pagina7.html" class="nav-btn nav-btn--forward">
+      <span class="icon" aria-hidden="true">→</span>
+      <span class="label">Pat</span>
+    </a>
+  </footer>
+
+</div><!-- /.page-wrapper -->
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
@@ -409,15 +442,16 @@ const GROUPS = {
   ],
 };
 
-// ── Group state ───────────────────────────────────────────────
-const state = {};   // { groupId: { idx, board, game, busy } }
+// ── Shared board & group state ────────────────────────────────
+let board = null, activeGid = null;
+const state = {};
 
 function initGroup(gid) {
-  state[gid] = { idx: 0, board: null, game: null, busy: false };
-  loadPuzzle(gid, 0);
+  state[gid] = { idx: 0, game: null, busy: false };
 }
 
 function loadPuzzle(gid, idx) {
+  activeGid = gid;
   const puzzles = GROUPS[gid];
   const d = puzzles[idx];
   const s = state[gid];
@@ -425,10 +459,8 @@ function loadPuzzle(gid, idx) {
   s.busy = false;
   s.game = new Chess(d.fen);
 
-  // Label
   document.getElementById('lbl-' + gid).textContent = d.label;
 
-  // Dots
   const dotsEl = document.getElementById('dots-' + gid);
   if (dotsEl) {
     dotsEl.innerHTML = '';
@@ -443,7 +475,6 @@ function loadPuzzle(gid, idx) {
     }
   }
 
-  // Nav buttons
   const prevBtn = document.getElementById('prev-' + gid);
   const nextBtn = document.getElementById('next-' + gid);
   if (prevBtn) { prevBtn.disabled = (idx === 0); prevBtn.style.display = puzzles.length > 1 ? '' : 'none'; }
@@ -451,9 +482,8 @@ function loadPuzzle(gid, idx) {
 
   setMsg(gid, '');
 
-  // Board
-  if (s.board) s.board.destroy();
-  s.board = Chessboard('board-' + gid, {
+  if (board) board.destroy();
+  board = Chessboard('board', {
     draggable: true,
     position: d.fen,
     pieceTheme: PT,
@@ -465,25 +495,22 @@ function loadPuzzle(gid, idx) {
       if (!mv) return 'snapback';
 
       if (uci === d.sol) {
-        s.board.position(s.game.fen(), false);
+        board.position(s.game.fen(), false);
         setMsg(gid, d.hint, 'ok');
         s.busy = true;
         setTimeout(() => {
-          const wm = s.game.move({ from: d.wNext.slice(0,2), to: d.wNext.slice(2,4), promotion: 'q' });
-          if (wm) s.board.position(s.game.fen(), false);
-          setTimeout(() => {
-            setMsg(gid, d.wMsg, 'info');
-            s.busy = false;
-          }, 250);
+          if (d.wNext) {
+            const wm = s.game.move({ from: d.wNext.slice(0,2), to: d.wNext.slice(2,4), promotion: 'q' });
+            if (wm) board.position(s.game.fen(), false);
+            setTimeout(() => { setMsg(gid, d.wMsg, 'info'); s.busy = false; }, 250);
+          } else { s.busy = false; }
         }, 750);
       } else {
         s.game.undo();
-        s.board.position(d.fen, false);
+        board.position(d.fen, false);
         const el = document.getElementById('msg-' + gid);
         setMsg(gid, '✗ Încearcă altceva!', 'err');
-        el.style.animation = 'none';
-        void el.offsetWidth;
-        el.style.animation = 'shake 0.35s';
+        el.style.animation = 'none'; void el.offsetWidth; el.style.animation = 'shake 0.35s';
       }
     }
   });
@@ -491,68 +518,61 @@ function loadPuzzle(gid, idx) {
 
 function setMsg(gid, text, cls) {
   const el = document.getElementById('msg-' + gid);
+  if (!el) return;
   el.textContent = text;
   el.className = 'diagram-msg' + (cls ? ' ' + cls : '');
 }
 
 function stepGroup(gid, dir) {
-  const puzzles = GROUPS[gid];
   const next = state[gid].idx + dir;
-  if (next >= 0 && next < puzzles.length) loadPuzzle(gid, next);
+  if (next >= 0 && next < GROUPS[gid].length) loadPuzzle(gid, next);
 }
 
 function resetGroup(gid) { loadPuzzle(gid, state[gid].idx); }
 
 function autoSolve(gid) {
+  loadPuzzle(gid, state[gid].idx);
   const s = state[gid];
-  if (s.busy) return;
   const d = GROUPS[gid][s.idx];
-  // Resetează poziția înainte de a arăta soluția
-  s.game = new Chess(d.fen);
-  s.board.position(d.fen, false);
-  setMsg(gid, '');
   s.busy = true;
   setTimeout(() => {
     const mv = s.game.move({ from: d.sol.slice(0,2), to: d.sol.slice(2,4), promotion: 'q' });
     if (!mv) { s.busy = false; return; }
-    s.board.position(s.game.fen(), true);   // animat
+    board.position(s.game.fen(), true);
     setMsg(gid, d.hint, 'ok');
     setTimeout(() => {
       if (d.wNext) {
         const wm = s.game.move({ from: d.wNext.slice(0,2), to: d.wNext.slice(2,4), promotion: 'q' });
-        if (wm) s.board.position(s.game.fen(), true);
-        setTimeout(() => {
-          setMsg(gid, d.wMsg, 'info');
-          s.busy = false;
-        }, 600);
-      } else {
-        s.busy = false;
-      }
+        if (wm) board.position(s.game.fen(), true);
+        setTimeout(() => { setMsg(gid, d.wMsg, 'info'); s.busy = false; }, 600);
+      } else { s.busy = false; }
     }, 900);
   }, 150);
 }
 
-// ── Init all groups ────────────────────────────────────────────
-$(function() {
+// ── Init ───────────────────────────────────────────────────────
+$(function () {
   Object.keys(GROUPS).forEach(gid => initGroup(gid));
 
-  // Resize boards when accordion opens
+  // Accordion: click deschide secțiunea, închide celelalte
   document.querySelectorAll('.defense-section').forEach(det => {
     det.addEventListener('toggle', () => {
-      setTimeout(() => {
-        Object.values(state).forEach(s => { if (s.board) s.board.resize(); });
-      }, 50);
+      if (det.open) {
+        document.querySelectorAll('.defense-section').forEach(other => {
+          if (other !== det && other.open) other.removeAttribute('open');
+        });
+        loadPuzzle(det.dataset.gid, state[det.dataset.gid].idx);
+      }
     });
   });
+
+  // Prima secțiune e deschisă implicit — încarcă tabla
+  loadPuzzle('protejare', 0);
 });
 
-$(window).on('resize', () => {
-  Object.values(state).forEach(s => { if (s.board) s.board.resize(); });
-  if (arBoard) arBoard.resize();
-});
+$(window).on('resize', () => { if (board) board.resize(); });
 
-// ── Arena — 25 puzzles ────────────────────────────────────────
-// Notație română: D=Damă(Q), T=Turn(R), N=Nebun(B), C=Cal(N), R=Rege(K), pion=fără prefix
+// ── Arena ─────────────────────────────────────────────────────
 const ARENA = [
   { fen: '8/1pq2p1k/r4Qpp/8/1p6/1P4PP/1B3P1K/8 b - - 0 1',             sol: 'Txf6' },
   { fen: 'r1bq1rk1/ppp2p1p/2nb4/6N1/2BP4/2PQ3P/P4PP1/R4RK1 b - - 0 1', sol: 'Dxg5' },
@@ -581,7 +601,6 @@ const ARENA = [
   { fen: '4rk2/1qp1bp1Q/8/1p3Rp1/1P4P1/P4P2/6K1/8 b - - 0 1',          sol: 'f6'   },
 ];
 
-// Mapare notație română → tip piesă chess.js
 function parseSol(s) {
   const map = { D:'q', T:'r', C:'n', N:'b', R:'k' };
   const clean = s.replace(/[x+#!=?]/g, '').trim();
@@ -590,42 +609,30 @@ function parseSol(s) {
   return { piece: pc ? (map[pc] || 'p') : 'p', target };
 }
 
-let arCur = 0, arBoard = null, arGame = null, arReplay = -1;
-const arSolved  = new Array(25).fill(false);  // rezolvat (inclusiv cu greșeli)
-const arPerfect = new Array(25).fill(false);  // rezolvat fără nicio greșeală
-const arErrors  = new Array(25).fill(false);  // a greșit cel puțin o dată
-const arSnaps   = {};                          // i -> [fen0, fen1, fen2…]
-
-function arDotClass(i) {
-  const cur = i === arCur ? ' cur' : '';
-  if (arSolved[i])      return 'edot' + (arPerfect[i] ? ' ok' : ' warn') + cur;
-  if (arErrors[i])      return 'edot err' + cur;
-  return 'edot' + cur;
-}
-
-function arBuildDots() {
-  const el = document.getElementById('arena-dots');
-  el.innerHTML = '';
-  ARENA.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = arDotClass(i);
-    d.textContent = i + 1;
-    d.onclick = () => arGo(i);
-    d.id = 'ardot' + i;
-    el.appendChild(d);
-  });
-}
+let arCur = 0, arGame = null, arReplay = -1;
+const arSolved  = new Array(25).fill(false);
+const arPerfect = new Array(25).fill(false);
+const arErrors  = new Array(25).fill(false);
+const arSnaps   = {};
 
 function arUpdateScore() {
-  const perfect = arPerfect.filter(Boolean).length;
-  const total   = arSolved.filter(Boolean).length;
+  const perfect   = arPerfect.filter(Boolean).length;
+  const total     = arSolved.filter(Boolean).length;
   const imperfect = total - perfect;
-  const scoreLabel = perfect + (imperfect > 0 ? ' + ' + imperfect + '⚠' : '') + ' / 25 rezolvate';
-  document.getElementById('arena-score').textContent = scoreLabel;
   const pct = Math.round(perfect / 25 * 100);
-  document.getElementById('ar-progress-bar').style.width = pct + '%';
-  document.getElementById('ar-progress-label').textContent =
-    pct + '% sesiune curentă' + (pct === 100 ? '  🎉' : '');
+
+  // ambele bare de progres (idle + activă)
+  ['ar-progress-bar-idle', 'ar-progress-bar-active'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.width = pct + '%';
+  });
+
+  const tipText = perfect + (imperfect > 0 ? ' + ' + imperfect + '⚠' : '') + ' / 25 rezolvate';
+  const outerIdle = document.getElementById('ar-prog-outer-idle');
+  if (outerIdle) outerIdle.setAttribute('data-tip', tipText);
+
+  const scoreEl = document.getElementById('arena-score');
+  if (scoreEl) scoreEl.textContent = perfect + (imperfect > 0 ? ' + ' + imperfect + '⚠' : '') + ' / 25';
 }
 
 function arShowMoveNav(snaps, pos) {
@@ -642,126 +649,101 @@ function arHideMoveNav() {
 }
 
 function arMoveNav(dir) {
-  const snaps = arSnaps[arCur];
-  if (!snaps) return;
+  if (activeGid !== 'arena') return;
+  const snaps = arSnaps[arCur]; if (!snaps) return;
   arReplay = Math.max(0, Math.min(snaps.length - 1, arReplay + dir));
-  arBoard.position(snaps[arReplay], false);
+  if (board) board.position(snaps[arReplay], false);
   document.getElementById('ar-mv-prev').disabled = (arReplay === 0);
   document.getElementById('ar-mv-next').disabled = (arReplay === snaps.length - 1);
 }
 
 function arRetry() {
-  // Reîncarcă poziția fără a reseta starea de eroare
   const d = ARENA[arCur];
   arGame = new Chess(d.fen);
   arHideMoveNav();
   document.getElementById('ar-retry').style.display = 'none';
   const msgEl = document.getElementById('ar-msg');
-  msgEl.textContent = '';
-  msgEl.className = 'diagram-msg';
-  arBoard.position(d.fen, false);
-  arBoard.orientation(d.fen.split(' ')[1] === 'w' ? 'white' : 'black');
+  msgEl.textContent = ''; msgEl.className = 'diagram-msg';
+  if (activeGid === 'arena' && board) {
+    board.position(d.fen, false);
+    board.orientation(d.fen.split(' ')[1] === 'w' ? 'white' : 'black');
+  } else {
+    arGo(arCur);
+  }
+}
+
+function startArena() {
+  document.getElementById('arena-idle').style.display = 'none';
+  document.getElementById('arena-active').style.display = '';
+  arGo(0);
 }
 
 function arGo(i) {
   if (i < 0 || i > 24) return;
+  activeGid = 'arena';
   arCur = i;
   const d = ARENA[i];
   arGame = new Chess(d.fen);
-  const turn = d.fen.split(' ')[1];
+  const turn   = d.fen.split(' ')[1];
   const parsed = parseSol(d.sol);
 
   document.getElementById('ar-num').textContent = 'Poziția ' + (i + 1) + ' / 25';
   const msgEl = document.getElementById('ar-msg');
-  msgEl.textContent = '';
-  msgEl.className = 'diagram-msg';
-
-  document.getElementById('ar-prev').disabled  = (i === 0);
-  document.getElementById('ar-next').disabled  = (i === 24);
+  msgEl.textContent = ''; msgEl.className = 'diagram-msg';
+  document.getElementById('ar-prev').disabled = (i === 0);
+  document.getElementById('ar-next').disabled = (i === 24);
   document.getElementById('ar-retry').style.display = 'none';
 
-  // Dacă deja rezolvat, arată navigarea de mutări
   if (arSolved[i] && arSnaps[i]) {
     arShowMoveNav(arSnaps[i], arSnaps[i].length - 1);
-    msgEl.textContent = '✓ ' + d.sol;
-    msgEl.className = 'diagram-msg ok';
+    msgEl.textContent = '✓ ' + d.sol; msgEl.className = 'diagram-msg ok';
   } else {
     arHideMoveNav();
-    // Dacă are erori dar nu e rezolvat, arată retry
-    if (arErrors[i]) {
-      document.getElementById('ar-retry').style.display = 'inline-flex';
-    }
+    if (arErrors[i]) document.getElementById('ar-retry').style.display = 'inline-flex';
   }
 
-  arBuildDots();
-
-  if (arBoard) arBoard.destroy();
-  arBoard = Chessboard('arena-board', {
+  if (board) board.destroy();
+  board = Chessboard('board', {
     draggable: true,
     position: d.fen,
     pieceTheme: PT,
     orientation: turn === 'w' ? 'white' : 'black',
     onDrop(src, tgt) {
-      if (arReplay >= 0) return 'snapback';  // blocat în modul analiză
+      if (arReplay >= 0) return 'snapback';
       const mv = arGame.move({ from: src, to: tgt, promotion: 'q' });
       if (!mv) return 'snapback';
 
       const correct = (tgt === parsed.target) && (mv.piece === parsed.piece);
       if (correct) {
-        arBoard.position(arGame.fen(), false);
+        board.position(arGame.fen(), false);
         const snaps = [d.fen, arGame.fen()];
         arSolved[i] = true;
         if (!arErrors[i]) arPerfect[i] = true;
-
-        document.getElementById('ardot' + i).className = arDotClass(i);
         document.getElementById('ar-retry').style.display = 'none';
         arUpdateScore();
-
-        msgEl.textContent = '✓ ' + d.sol;
-        msgEl.className = 'diagram-msg ok';
-
-        // Răspuns alb automat (dacă există)
+        msgEl.textContent = '✓ ' + d.sol; msgEl.className = 'diagram-msg ok';
         if (d.wNext) {
           setTimeout(() => {
             const wm = arGame.move({ from: d.wNext.slice(0,2), to: d.wNext.slice(2,4), promotion: 'q' });
-            if (wm) {
-              arBoard.position(arGame.fen(), false);
-              snaps.push(arGame.fen());
-            }
-            arSnaps[i] = snaps;
-            arShowMoveNav(snaps, snaps.length - 1);
-            if (d.wMsg) { msgEl.textContent = '✓ ' + d.sol + ' — ' + d.wMsg; }
+            if (wm) { board.position(arGame.fen(), false); snaps.push(arGame.fen()); }
+            arSnaps[i] = snaps; arShowMoveNav(snaps, snaps.length - 1);
+            if (d.wMsg) msgEl.textContent = '✓ ' + d.sol + ' — ' + d.wMsg;
           }, 750);
-        } else {
-          arSnaps[i] = snaps;
-          arShowMoveNav(snaps, snaps.length - 1);
-        }
+        } else { arSnaps[i] = snaps; arShowMoveNav(snaps, snaps.length - 1); }
       } else {
-        // Mutare greșită: piesa rămâne, nu snapback
-        arBoard.position(arGame.fen(), false);
+        board.position(arGame.fen(), false);
         arErrors[i] = true;
-        document.getElementById('ardot' + i).className = arDotClass(i);
         document.getElementById('ar-retry').style.display = 'inline-flex';
         arUpdateScore();
-
         const snaps = [d.fen, arGame.fen()];
-        arSnaps[i] = snaps;
-        arShowMoveNav(snaps, 1);
-
-        msgEl.textContent = '✗ Mutare greșită — analizează sau reia!';
-        msgEl.className = 'diagram-msg err';
-        msgEl.style.animation = 'none';
-        void msgEl.offsetWidth;
-        msgEl.style.animation = 'shake 0.35s';
+        arSnaps[i] = snaps; arShowMoveNav(snaps, 1);
+        msgEl.textContent = '✗ Mutare greșită — analizează sau reia!'; msgEl.className = 'diagram-msg err';
+        msgEl.style.animation = 'none'; void msgEl.offsetWidth; msgEl.style.animation = 'shake 0.35s';
       }
     }
   });
 }
-
-// Init arena after groups
-$(function() {
-  arGo(0);
-});
 </script>
+<script src="board-utils.js"></script>
 </body>
 </html>
