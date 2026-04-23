@@ -277,6 +277,5 @@
     badge.className = 'move-feedback ' + type;
     badge.textContent = type === 'ok' ? '✓' : '✗';
     el.appendChild(badge);
-    setTimeout(function () { if (badge.parentNode) badge.remove(); }, 1500);
   };
 }());
