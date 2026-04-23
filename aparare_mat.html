@@ -496,6 +496,7 @@ function loadPuzzle(gid, idx) {
 
       if (uci === d.sol) {
         board.position(s.game.fen(), false);
+        if (window._moveFeedback) window._moveFeedback(tgt, 'ok');
         setMsg(gid, d.hint, 'ok');
         s.busy = true;
         setTimeout(() => {
@@ -508,6 +509,7 @@ function loadPuzzle(gid, idx) {
       } else {
         s.game.undo();
         board.position(d.fen, false);
+        if (window._moveFeedback) window._moveFeedback(tgt, 'err');
         const el = document.getElementById('msg-' + gid);
         setMsg(gid, '✗ Încearcă altceva!', 'err');
         el.style.animation = 'none'; void el.offsetWidth; el.style.animation = 'shake 0.35s';
@@ -716,6 +718,7 @@ function arGo(i) {
       const correct = (tgt === parsed.target) && (mv.piece === parsed.piece);
       if (correct) {
         board.position(arGame.fen(), false);
+        if (window._moveFeedback) window._moveFeedback(tgt, 'ok');
         const snaps = [d.fen, arGame.fen()];
         arSolved[i] = true;
         if (!arErrors[i]) arPerfect[i] = true;
@@ -732,6 +735,7 @@ function arGo(i) {
         } else { arSnaps[i] = snaps; arShowMoveNav(snaps, snaps.length - 1); }
       } else {
         board.position(arGame.fen(), false);
+        if (window._moveFeedback) window._moveFeedback(tgt, 'err');
         arErrors[i] = true;
         document.getElementById('ar-retry').style.display = 'inline-flex';
         arUpdateScore();

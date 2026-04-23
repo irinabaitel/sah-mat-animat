@@ -266,4 +266,17 @@
       touchFrom = null;
     }, { passive: true });
   });
+
+  /* ── Move feedback badge: cerculeț ✓/✗ pe pătratul destinație ── */
+  window._moveFeedback = function (square, type) {
+    var el = document.querySelector('.square-' + square);
+    if (!el) return;
+    var prev = el.querySelector('.move-feedback');
+    if (prev) prev.remove();
+    var badge = document.createElement('div');
+    badge.className = 'move-feedback ' + type;
+    badge.textContent = type === 'ok' ? '✓' : '✗';
+    el.appendChild(badge);
+    setTimeout(function () { if (badge.parentNode) badge.remove(); }, 1500);
+  };
 }());
