@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Șah Etern — 10 Exemple</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
+<style>
+.lesson-content { display: flex; flex-direction: column; gap: 10px; }
+
+/* dots exemple */
+.ex-dots { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.ex-dot {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(26,58,107,0.15); border: 2px solid rgba(26,58,107,0.25);
+  font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--fw-bold);
+  color: var(--c-navy); cursor: pointer; transition: all 0.18s;
+  display: flex; align-items: center; justify-content: center;
+}
+.ex-dot:hover { background: rgba(26,58,107,0.3); }
+.ex-dot.cur  { background: var(--c-navy); color: white; border-color: var(--c-navy); }
+.ex-dot.done { background: var(--c-success); border-color: var(--c-success); color: white; }
+
+.ex-title {
+  font-family: var(--font-display); font-size: var(--fs-sm);
+  font-weight: var(--fw-bold); color: var(--c-navy); text-align: center;
+}
+.turn-badge {
+  font-family: var(--font-display); font-size: var(--fs-xs); color: var(--c-navy);
+  background: rgba(26,58,107,0.08); border-radius: var(--radius-sm);
+  padding: 4px 14px; text-align: center; align-self: center;
+}
+
+/* mutări */
+.moves-box { background: rgba(255,255,255,0.45); border-radius: 12px; padding: 10px 14px; }
+.moves-header {
+  font-family: var(--font-display); font-size: var(--fs-xs); color: var(--c-text-muted);
+  font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px;
+}
+.moves-row { display: flex; flex-wrap: wrap; gap: 2px; align-items: baseline; line-height: 2.1; }
+.mv-num  { color: var(--c-text-muted); font-size: var(--fs-xs); font-weight: 900; min-width: 22px; }
+.mv {
+  font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-bold);
+  color: var(--c-navy); padding: 1px 6px; border-radius: 6px; cursor: pointer;
+}
+.mv:hover  { background: rgba(26,58,107,0.1); }
+.mv.active { background: var(--c-navy); color: white; border-radius: var(--radius-sm); padding: 1px 10px; }
+.draw-tag  { font-family: var(--font-display); font-size: var(--fs-sm); font-weight: 900; color: var(--c-error); }
+
+/* adnotare */
+.annotation {
+  background: rgba(26,58,107,0.07); border: 2px solid rgba(26,58,107,0.13);
+  border-radius: 12px; padding: 11px 14px;
+  font-size: var(--fs-md); line-height: 1.65; color: var(--c-navy);
+  font-weight: var(--fw-bold); min-height: 52px;
+}
+
+/* navigare pași */
+.step-nav { display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.ctrl-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--c-surface); border: 2px solid rgba(26,58,107,0.2);
+  font-size: 0.9em; color: var(--c-navy); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: background 0.15s;
+}
+.ctrl-btn:hover:not(:disabled) { background: var(--c-surface-2); }
+.ctrl-btn:disabled { opacity: 0.35; cursor: default; }
+.ctrl-start {
+  height: 34px; padding: 0 14px; border-radius: var(--radius-sm);
+  background: var(--c-navy); color: white; border: none;
+  font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--fw-bold);
+  cursor: pointer; transition: background 0.15s;
+}
+.ctrl-start:hover { background: var(--c-navy-2); }
+.step-ctr {
+  font-family: var(--font-display); font-size: var(--fs-xs);
+  color: var(--c-text-muted); text-align: center;
+}
+
+/* navigare exemple */
+.ex-nav { display: flex; gap: 8px; }
+.ex-nav button {
+  flex: 1; background: rgba(26,58,107,0.45); border: none; border-radius: var(--radius-sm);
+  padding: 8px 12px; font-family: var(--font-display); font-size: var(--fs-xs);
+  color: white; cursor: pointer; transition: background 0.15s;
+}
+.ex-nav button:hover:not(:disabled) { background: rgba(26,58,107,0.7); }
+.ex-nav button:disabled { opacity: 0.35; cursor: default; }
+
+/* click-to-move highlight */
+#board .sq-selected { background: rgba(255,214,0,0.55) !important; }
+
+@keyframes flash-ok {
+  0%,100% { box-shadow: 0 6px 30px rgba(0,0,0,0.2); }
+  50%      { box-shadow: 0 0 0 6px rgba(39,174,96,0.45); }
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Șah Etern — Exemple</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Nivelul I</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="lesson-content">
+
+          <div class="ex-dots" id="dotsWrap"></div>
+          <div class="ex-title"  id="exTitle"></div>
+          <div class="turn-badge" id="turnBadge"></div>
+
+          <div class="moves-box">
+            <div class="moves-header">Mutări</div>
+            <div class="moves-row" id="movesRow"></div>
+          </div>
+
+          <div class="annotation" id="annotation"></div>
+
+          <div class="step-nav">
+            <button class="ctrl-btn"   id="btnFirst" onclick="goFirst()" title="Prima poziție">⏮</button>
+            <button class="ctrl-btn"   id="btnPrev"  onclick="prevStep()" title="Înapoi">◀</button>
+            <button class="ctrl-start" onclick="goFirst()">Start</button>
+            <button class="ctrl-btn"   id="btnNext"  onclick="nextStep()" title="Înainte">▶</button>
+            <button class="ctrl-btn"   id="btnLast"  onclick="goLast()" title="Ultima poziție">⏭</button>
+          </div>
+
+          <div class="step-ctr" id="stepCtr"></div>
+
+          <div class="ex-nav">
+            <button id="btnPrevEx" onclick="prevEx()">◀ Anterior</button>
+            <button id="btnNextEx" onclick="nextEx()">Următor ▶</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="sah_etern.html" class="nav-btn nav-btn--back">
+      <span class="icon">←</span><span class="label">Șah Etern</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon">⊞</span><span class="label">Cuprins</span>
+    </a>
+    <a href="nivel1_lectia12.html" class="nav-btn nav-btn--forward">
+      <span class="icon">→</span><span class="label">Înainte</span>
+    </a>
+  </footer>
+
+</div><!-- /.page-wrapper -->
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
+<script>
+var PT = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+
+const EXAMPLES = [
+  {
+    name: 'Exemplul 1 — Turnul ca salvator',
+    fen:  '5Q2/1p5p/5p2/1p6/6R1/1k6/5rPP/2KR4 b - - 0 1',
+    san:  ['Rc2+','Kb1','Rb2+','Ka1','Ra2+','Kb1','Rb2+','Kc1','Rc2+'],
+    orient: 'black',
+    ann: [
+      'Negrul mută. Inferioritate materială — caută remiza!',
+      '1...Tc2+ — Turnul negru dă șah regelui!',
+      '2. Rb1 — Regele alb fuge.',
+      '2...Tb2+ — Turnul urmărește regele!',
+      '3. Ra1 — Regele fuge la a1.',
+      '3...Ta2+ — Urmărirea continuă!',
+      '4. Rb1 — Regele revine la b1.',
+      '4...Tb2+ — Și turnul revine!',
+      '5. Rc1 — Regele încearcă altă cale.',
+      '5...Tc2+ — Remiză! Poziția se repetă. ½‑½'
+    ]
+  },
+  {
+    name: 'Exemplul 2 — Dama neobosită',
+    fen:  '8/2pk2pp/8/4q3/PQ3p2/2PP1P1P/2P3P1/6K1 b - - 0 1',
+    san:  ['Qe1+','Kh2','Qg3+','Kh1','Qe1+','Kh2','Qg3+','Kg1','Qe1+','Kh2','Qg3+','Kg1'],
+    orient: 'black',
+    ann: [
+      'Negrul mută. Cum oprești ofensiva albului?',
+      '1...De1+ — Dama neagră dă șah!',
+      '2. Rh2 — Regele alb se ferește.',
+      '2...Dg3+ — Alt șah!',
+      '3. Rh1 — Regele fuge înapoi.',
+      '3...De1+ — Aceeași lovitură!',
+      '4. Rh2 — Regele navighează...',
+      '4...Dg3+ — ...și dama îl urmărește!',
+      '5. Rg1 — Regele încearcă altă cale.',
+      '5...De1+ — Dama continuă urmărirea!',
+      '6. Rh2 — Regele revine.',
+      '6...Dg3+ — Aceeași secvență din nou!',
+      '7. Rg1 — Remiză! Poziția s-a repetat de 3 ori. ½‑½'
+    ]
+  },
+  {
+    name: 'Exemplul 3 — Sacrificiu și urmărire',
+    fen:  '4r1k1/1R3pp1/7p/p1p5/1b2p3/4r2P/4N1P1/5RK1 w - - 0 1',
+    san:  ['Rfxf7','Rxe2','Rxg7+','Kh8','Rh7+','Kg8'],
+    orient: 'white',
+    ann: [
+      'Albul mută. Cum salvezi remiza cu turnurile?',
+      '1. Txf7 — Primul turn intră agresiv, sacrificând!',
+      '1...Txe2 — Negrul capturează calul alb.',
+      '2. Txg7+ — Al doilea turn dă șah capturând!',
+      '2...Rh8 — Regele fuge la colț.',
+      '3. Th7+ — Turnul urmărește regele!',
+      '3...Rg8 — Remiză! Poziția se repetă. ½‑½'
+    ]
+  },
+  {
+    name: 'Exemplul 4 — Dama albă dansează',
+    fen:  '6qk/p6p/1p2p3/2n5/8/5Q1K/6PP/8 w - - 0 1',
+    san:  ['Qf6+','Qg7','Qd8+','Qg8','Qf6+','Qg7','Qd8+'],
+    orient: 'white',
+    ann: [
+      'Albul mută. Cum obții remiza?',
+      '1. Df6+ — Dama albă dă șah regelui!',
+      '1...Dg7 — Dama neagră blochează șahul.',
+      '2. Dd8+ — Alt șah!',
+      '2...Dg8 — Dama neagră blochează din nou.',
+      '3. Df6+ — Aceeași mutare!',
+      '3...Dg7 — Aceeași apărare.',
+      '4. Dd8+ — Remiză! Poziția se repetă. ½‑½'
+    ]
+  },
+  {
+    name: 'Exemplul 5 — Poziție de studiu',
+    fen:  '3r3k/pp3qp1/1b5p/n7/4QN2/8/P4PPP/5RK1 w - - 0 1',
+    san:  [],
+    orient: 'white',
+    ann: [
+      'Albul mută. Poți găsi continuarea de șah etern?\n(Poziție de studiu liberă — explorează posibilitățile!)'
+    ]
+  },
+  {
+    name: 'Exemplul 6 — Dansul a două turnuri',
+    fen:  'r4rk1/pp3pp1/7p/bP6/2PB4/q2P3P/3nBPR1/3Q2K1 w - - 0 1',
+    san:  ['Rxg7+','Kh8','Rxf7+','Kg8','Rg7+','Kh8','Rf7+'],
+    orient: 'white',
+    ann: [
+      'Albul mută. Cum folosești cele două turnuri?',
+      '1. Txg7+ — Primul turn atacă cu șah capturând pionul!',
+      '1...Rh8 — Regele fuge la colț.',
+      '2. Txf7+ — Al doilea turn dă șah!',
+      '2...Rg8 — Regele se întoarce.',
+      '3. Tg7+ — Primul turn revine cu șah!',
+      '3...Rh8 — Regele revine la colț.',
+      '4. Tf7+ — Remiză! Poziția se repetă. ½‑½'
+    ]
+  },
+  {
+    name: 'Exemplul 7 — Un turn face minuni',
+    fen:  '7r/pp3kqP/4p1n1/3p2PQ/8/r7/2R2P2/6K1 w - - 0 1',
+    san:  ['Rc7+','Kf8','Rc8+','Ke7','Rc7+'],
+    orient: 'white',
+    ann: [
+      'Albul mută. Remiză cu un singur turn!',
+      '1. Tc7+ — Turnul dă șah de pe coloana c!',
+      '1...Rf8 — Regele fuge.',
+      '2. Tc8+ — Alt șah!',
+      '2...Re7 — Regele continuă fuga.',
+      '3. Tc7+ — Remiză! Poziția se repetă. ½‑½'
+    ]
+  },
+  {
+    name: 'Exemplul 8 — Sacrificiu de turn, apoi urmărire',
+    fen:  '2R2b1r/k1p2ppp/pp3n2/8/P3P3/B2n1P1P/5QPK/1q6 w - - 0 1',
+    san:  ['Qg3','Bd6','Rxc7+','Bxc7','Qxc7+','Ka8','Qc6+','Ka7','Qc7+','Ka8','Qc6+','Ka7'],
+    orient: 'white',
+    ann: [
+      'Albul mută. Inferioritate materială — caută remiza!',
+      '1. Dg3 — Mutare subtilă: dama se repoziționează!',
+      '1...Nd6 — Negrul apără câmpul c7.',
+      '2. Txc7+ — Sacrificiu de turn!',
+      '2...Nxc7 — Negrul trebuie să captureze.',
+      '3. Dxc7+ — Dama intră cu șah!',
+      '3...Ra8 — Regele fuge la colț.',
+      '4. Dc6+ — Alt șah!',
+      '4...Ra7 — Regele continuă fuga.',
+      '5. Dc7+ — Urmărirea continuă!',
+      '5...Ra8 — Regele revine.',
+      '6. Dc6+ — Aceeași secvență!',
+      '6...Ra7 — Remiză! Poziția se repetă. ½‑½'
+    ]
+  },
+  {
+    name: 'Exemplul 9 — Șah etern ratat',
+    fen:  'r1b3r1/5p1k/4pP1q/pp1p4/2pP4/P1P2R2/1P1Q2P1/4R1K1 w - - 0 1',
+    san:  ['Qxh6+','Kxh6','Rh3+','Kg6','Rg3+','Kh6','Rh3+','Kg6','Rg3+','Kxf6'],
+    orient: 'white',
+    ann: [
+      'Albul mută. Sacrificiu de damă pentru șah etern... sau nu?',
+      '1. Dxh6+ — Sacrificiu de damă!',
+      '1...Rxh6 — Regele trebuie să captureze.',
+      '2. Th3+ — Turnul dă șah!',
+      '2...Rg6 — Regele fuge.',
+      '3. Tg3+ — Alt șah!',
+      '3...Rh6 — Regele revine.',
+      '4. Th3+ — Aceeași urmărire...',
+      '4...Rg6 — Regele revine din nou.',
+      '5. Tg3+ — Albul putea cere remiza — poziția s-a repetat!',
+      '5...Rxf6! — Regele scapă capturând pionul! Remiza a eșuat.'
+    ]
+  },
+  {
+    name: 'Exemplul 10 — Dama neobosită (2)',
+    fen:  '2r2rk1/6q1/1p5R/pP3P1Q/2p1P3/P2p4/1P6/3RKB2 b - - 0 1',
+    san:  ['Qg3+','Kd2','Qf4+','Kc3','Qe5+','Kd2','Qf4+','Ke1','Qg3+'],
+    orient: 'black',
+    ann: [
+      'Negrul mută. Caută remiza prin șah etern!',
+      '1...Dg3+ — Dama neagră dă șah!',
+      '2. Rd2 — Regele alb fuge.',
+      '2...Df4+ — Alt șah!',
+      '3. Rc3 — Regele fuge din nou.',
+      '3...De5+ — Urmărirea continuă!',
+      '4. Rd2 — Regele revine.',
+      '4...Df4+ — Aceeași poziție!',
+      '5. Re1 — Regele încearcă altă cale.',
+      '5...Dg3+ — Remiză! Poziția se repetă de 3 ori. ½‑½'
+    ]
+  }
+];
+
+/* pre-compute FEN sequences */
+EXAMPLES.forEach(function(ex) {
+  var g = new Chess(ex.fen);
+  ex.positions = [ex.fen];
+  ex.san.forEach(function(mv) { if (g.move(mv)) ex.positions.push(g.fen()); });
+});
+
+var curEx   = 0;
+var curStep = 0;
+var board   = null;
+var selSq   = null;
+var lastDrop = 0;
+var seen    = new Array(10).fill(false);
+
+/* ── mutare așteptată ─────────────────────────────────────── */
+function expectedMove() {
+  var ex = EXAMPLES[curEx];
+  if (curStep >= ex.positions.length - 1) return null;
+  var g  = new Chess(ex.positions[curStep]);
+  var mv = g.move(ex.san[curStep]);
+  return mv ? { from: mv.from, to: mv.to } : null;
+}
+
+/* ── click-to-move ────────────────────────────────────────── */
+function clearSel() {
+  selSq = null;
+  document.querySelectorAll('#board .sq-selected').forEach(function(e) {
+    e.classList.remove('sq-selected');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('board').addEventListener('click', function(e) {
+    if (Date.now() - lastDrop < 250) return;
+    var ex = EXAMPLES[curEx];
+    if (!ex.san.length) return;
+    var sqEl = e.target.closest('[data-square]');
+    if (!sqEl) return;
+    var sq = sqEl.getAttribute('data-square');
+    if (!sq) return;
+    var g = new Chess(ex.positions[curStep]);
+    var pc = g.get(sq);
+    var turn = g.turn();
+    if (!selSq) {
+      if (pc && pc.color === turn) { selSq = sq; sqEl.classList.add('sq-selected'); }
+    } else {
+      if (sq === selSq) { clearSel(); return; }
+      if (pc && pc.color === turn) { clearSel(); selSq = sq; sqEl.classList.add('sq-selected'); return; }
+      var from = selSq; clearSel();
+      var exp = expectedMove();
+      if (exp && from === exp.from && sq === exp.to) goToStep(curStep + 1);
+    }
+  });
+});
+
+/* ── navigare pași ────────────────────────────────────────── */
+function goToStep(s) {
+  var ex  = EXAMPLES[curEx];
+  s = Math.max(0, Math.min(s, ex.positions.length - 1));
+  curStep = s;
+  clearSel();
+  board.position(ex.positions[s], false);
+  renderMoves();
+  document.getElementById('annotation').textContent = ex.ann[s] || '';
+  renderStepCtr();
+  renderStepBtns();
+  if (s === ex.positions.length - 1 && ex.san.length > 0) {
+    seen[curEx] = true;
+    renderDots();
+    var bw = document.getElementById('boardWrapper');
+    bw.style.animation = 'flash-ok 0.6s';
+    setTimeout(function() { bw.style.animation = ''; }, 700);
+  }
+}
+
+function nextStep() { goToStep(curStep + 1); }
+function prevStep() { goToStep(curStep - 1); }
+function goFirst()  { goToStep(0); }
+function goLast()   { goToStep(EXAMPLES[curEx].positions.length - 1); }
+
+/* ── încarcă exemplul ─────────────────────────────────────── */
+function loadEx(i) {
+  curEx   = i;
+  curStep = 0;
+  selSq   = null;
+  var ex  = EXAMPLES[i];
+  var hasMoves = ex.san.length > 0;
+
+  document.getElementById('exTitle').textContent = ex.name;
+  document.getElementById('turnBadge').textContent =
+    ex.orient === 'white' ? '⬜ Albul mută' : '⬛ Negrul mută';
+
+  renderDots();
+
+  if (board) board.destroy();
+  board = Chessboard('board', {
+    position:    ex.fen,
+    orientation: ex.orient,
+    draggable:   hasMoves,
+    pieceTheme:  PT,
+    onDrop: function(src, tgt) {
+      lastDrop = Date.now();
+      clearSel();
+      if (!hasMoves || src === tgt) return 'snapback';
+      var exp = expectedMove();
+      if (exp && src === exp.from && tgt === exp.to) {
+        setTimeout(function() { goToStep(curStep + 1); }, 40);
+      }
+      return 'snapback';
+    },
+    onSnapEnd: function() {
+      board.position(EXAMPLES[curEx].positions[curStep], false);
+    }
+  });
+
+  renderMoves();
+  document.getElementById('annotation').textContent = ex.ann[0] || '';
+  renderStepCtr();
+  renderStepBtns();
+  renderExBtns();
+}
+
+function prevEx() { if (curEx > 0) loadEx(curEx - 1); }
+function nextEx() { if (curEx < 9) loadEx(curEx + 1); }
+
+/* ── render helpers ───────────────────────────────────────── */
+function renderDots() {
+  var wrap = document.getElementById('dotsWrap');
+  wrap.innerHTML = '';
+  for (var i = 0; i < 10; i++) {
+    var d = document.createElement('button');
+    d.textContent = i + 1;
+    d.className = 'ex-dot' +
+      (i === curEx           ? ' cur'  : '') +
+      (seen[i] && i !== curEx ? ' done' : '');
+    d.title = EXAMPLES[i].name;
+    (function(idx) { d.onclick = function() { loadEx(idx); }; })(i);
+    wrap.appendChild(d);
+  }
+}
+
+function renderMoves() {
+  var ex  = EXAMPLES[curEx];
+  var row = document.getElementById('movesRow');
+  row.innerHTML = '';
+  if (!ex.san.length) {
+    var em = document.createElement('em');
+    em.style.cssText = 'color:var(--c-text-muted);font-size:var(--fs-xs);font-style:italic;';
+    em.textContent = 'Poziție de studiu liberă';
+    row.appendChild(em);
+    return;
+  }
+  var blackFirst = (ex.orient === 'black');
+  ex.san.forEach(function(mv, i) {
+    var showNum = blackFirst ? (i % 2 === 0) : (i % 2 === 0);
+    if (showNum) {
+      var nm = document.createElement('span');
+      nm.className = 'mv-num';
+      nm.textContent = (Math.floor(i / 2) + 1) + (blackFirst && i === 0 ? '...' : '.');
+      row.appendChild(nm);
+    }
+    var sp = document.createElement('span');
+    sp.className = 'mv' + (i === curStep - 1 ? ' active' : '');
+    sp.textContent = mv;
+    (function(s) { sp.onclick = function() { goToStep(s); }; })(i + 1);
+    row.appendChild(sp);
+  });
+  var dr = document.createElement('span');
+  dr.className = 'draw-tag';
+  dr.textContent = ' ½‑½';
+  row.appendChild(dr);
+}
+
+function renderStepCtr() {
+  var ex = EXAMPLES[curEx];
+  var el = document.getElementById('stepCtr');
+  if (!ex.san.length) { el.textContent = ''; return; }
+  el.textContent = 'Pasul ' + curStep + ' / ' + ex.san.length;
+}
+
+function renderStepBtns() {
+  var max = EXAMPLES[curEx].positions.length - 1;
+  document.getElementById('btnFirst').disabled = (curStep === 0);
+  document.getElementById('btnPrev').disabled  = (curStep === 0);
+  document.getElementById('btnNext').disabled  = (curStep === max);
+  document.getElementById('btnLast').disabled  = (curStep === max);
+}
+
+function renderExBtns() {
+  document.getElementById('btnPrevEx').disabled = (curEx === 0);
+  document.getElementById('btnNextEx').disabled = (curEx === 9);
+}
+
+/* ── tastatură ────────────────────────────────────────────── */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); nextStep(); }
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); prevStep(); }
+  if (e.key === 'Home') { e.preventDefault(); goFirst(); }
+  if (e.key === 'End')  { e.preventDefault(); goLast();  }
+});
+
+window.addEventListener('resize', function() { if (board) board.resize(); });
+
+$(function() { loadEx(0); });
+</script>
+</body>
+</html>

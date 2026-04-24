@@ -2,238 +2,309 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lecția 10 — Șahul Etern</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Șahul Etern</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+.card { background: var(--c-surface); border: 2px solid var(--c-border); border-radius: var(--radius); padding: 14px 16px; }
+.lesson-content { display: flex; flex-direction: column; gap: 12px; }
 
-#nav { position: sticky; top: 0; background: rgba(245,169,110,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; z-index: 100; border-bottom: 2px solid rgba(255,255,255,0.4); }
-.nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-.nav-btn:hover { background: rgba(255,255,255,0.85); }
-.nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-.nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; padding: 3px 12px; border-radius: 20px; text-decoration: none; }
-
-.content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
-
-.lesson-title { text-align: center; margin-bottom: 8px; }
-.lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
-.lesson-title .subtitle { font-size: 0.92em; color: rgba(26,26,46,0.6); margin-top: 4px; }
-
-.card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-.card-icon { font-size: 1.6em; margin-bottom: 8px; display: block; }
-.card h2 { font-family: 'Baloo 2', cursive; font-size: 1.2em; color: #1a3a6b; margin-bottom: 10px; }
-.card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; }
-.card p:last-child { margin-bottom: 0; }
-
-.board-card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-.board-card h3 { font-family: 'Baloo 2', cursive; font-size: 1.1em; color: #1a3a6b; margin-bottom: 14px; }
-
-.board-area { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: start; }
-
-.board-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.diagram-subtitle { font-family: 'Nunito', sans-serif; font-style: italic; font-size: 0.95em; color: #1a3a6b; font-weight: 700; }
-.board-wrapper { width: 300px; height: 300px; }
-.chessboard { width: 300px !important; height: 300px !important; }
-
-.nav-controls { display: flex; align-items: center; gap: 8px; }
-.btn-round { width: 36px; height: 36px; border-radius: 50%; border: none; background: #d0d8e8; color: #1a3a6b; font-size: 0.95em; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.18s; box-shadow: 0 2px 6px rgba(0,0,0,0.13); }
-.btn-round:hover:not(:disabled) { background: #b0bdd4; transform: translateY(-1px); }
-.btn-round:disabled { opacity: 0.4; cursor: default; transform: none; }
-.btn-start-text { font-family: 'Baloo 2', cursive; font-size: 0.82em; padding: 0 14px; height: 36px; border-radius: 50px; border: none; background: #1a3a6b; color: white; cursor: pointer; font-weight: 700; transition: all 0.18s; box-shadow: 0 2px 8px rgba(26,58,107,0.3); }
-.btn-start-text:hover { background: #2a5aab; transform: translateY(-1px); }
-
-.side-panel { display: flex; flex-direction: column; gap: 12px; padding-top: 24px; }
-.moves-box { background: rgba(255,255,255,0.5); border-radius: 14px; padding: 12px 16px 10px; }
-.moves-header { font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 900; letter-spacing: 0.12em; color: #8899bb; text-transform: uppercase; margin-bottom: 8px; }
-.move-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; line-height: 2.0; }
-.move-num { font-weight: 900; color: #8899bb; min-width: 22px; font-size: 0.92em; }
-.move-token { font-size: 1em; font-weight: 700; color: #1a1a1a; padding: 1px 4px; border-radius: 5px; cursor: default; }
-.move-token.move-active { background: #1a3a6b; color: #fff; border-radius: 50px; padding: 1px 10px; }
-.draw-result { font-weight: 900; color: #c0392b; font-size: 1em; }
-.annotation-box { background: rgba(26,58,107,0.08); border: 2px solid rgba(26,58,107,0.15); border-radius: 14px; padding: 12px 16px; font-size: 0.88em; font-weight: 700; color: #1a3a6b; line-height: 1.55; min-height: 52px; }
-
-.nav-bottom { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; }
-.nav-bottom a { display: inline-block; background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 1em; padding: 10px 28px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 16px rgba(26,58,107,0.35); }
-.nav-bottom a:hover { background: #2a5aab; transform: translateY(-2px); }
-.nav-bottom a.back { background: rgba(26,58,107,0.45); }
-
-@media (max-width: 600px) {
-    .board-area { grid-template-columns: 1fr; }
-    .board-wrapper, .chessboard { width: 100% !important; height: auto !important; }
+/* tab-uri exemplu */
+.ex-tabs { display: flex; gap: 8px; }
+.ex-tab {
+  flex: 1; padding: 7px 10px; border-radius: var(--radius-sm);
+  background: var(--c-surface); border: 2px solid rgba(26,58,107,0.2);
+  font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--fw-bold);
+  color: var(--c-navy); cursor: pointer; transition: all 0.15s; text-align: center;
 }
+.ex-tab:hover  { background: var(--c-surface-2); }
+.ex-tab.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
+
+.ex-label {
+  font-family: var(--font-display); font-size: var(--fs-sm);
+  color: var(--c-navy); font-weight: var(--fw-bold); text-align: center;
+}
+
+/* mutări */
+.moves-box { background: rgba(255,255,255,0.45); border-radius: 12px; padding: 10px 14px; }
+.moves-header {
+  font-family: var(--font-display); font-size: var(--fs-xs);
+  color: var(--c-text-muted); font-weight: 900; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.moves-row { display: flex; flex-wrap: wrap; gap: 2px; align-items: baseline; line-height: 2.1; }
+.move-num  { color: var(--c-text-muted); font-size: var(--fs-xs); font-weight: 900; min-width: 22px; }
+.move-token {
+  font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-bold);
+  color: var(--c-navy); padding: 1px 6px; border-radius: 6px; cursor: pointer;
+}
+.move-token:hover { background: rgba(26,58,107,0.1); }
+.move-token.active { background: var(--c-navy); color: white; border-radius: var(--radius-sm); padding: 1px 10px; }
+.draw-result { font-family: var(--font-display); font-size: var(--fs-sm); font-weight: 900; color: var(--c-error); }
+
+/* adnotare */
+.annotation-box {
+  background: rgba(26,58,107,0.07); border: 2px solid rgba(26,58,107,0.13);
+  border-radius: 12px; padding: 11px 14px;
+  font-size: var(--fs-md); line-height: 1.65; color: var(--c-navy);
+  font-weight: var(--fw-bold); min-height: 56px;
+}
+
+/* butoane navigare pași */
+.step-nav { display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.ctrl-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--c-surface); border: 2px solid rgba(26,58,107,0.2);
+  font-size: 0.95em; color: var(--c-navy); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.ctrl-btn:hover:not(:disabled) { background: var(--c-surface-2); }
+.ctrl-btn:disabled { opacity: 0.35; cursor: default; }
+.ctrl-start {
+  height: 36px; padding: 0 16px; border-radius: var(--radius-sm);
+  background: var(--c-navy); color: white; border: none;
+  font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--fw-bold);
+  cursor: pointer; transition: background 0.15s;
+}
+.ctrl-start:hover { background: var(--c-navy-2); }
 </style>
 </head>
 <body>
+<div class="page-wrapper">
 
-<nav id="nav">
-    <a href="pagina7.html" class="nav-btn">← Înapoi</a>
-    <div class="nav-title">Lecția 10</div>
-    <a href="hub.html" class="nav-badge">Nivelul I</a>
-</nav>
+  <header class="page-header" role="banner">
+    <span class="header-title">Șahul Etern</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Nivelul I</span>
+    </div>
+  </header>
 
-<div class="content">
+  <main class="page-main" role="main">
 
-    <div class="lesson-title">
-        <h1>Șahul Etern</h1>
-        <div class="subtitle">Lecția 10 · Nivelul I</div>
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
     </div>
 
-    <div class="card">
-        <span class="card-icon">♾️</span>
-        <h2>Ce este șahul etern?</h2>
-        <p>La fel ca și patul, șahul etern ne salvează de la pierderea partidei și rezultatul este remiză. Înseamnă că îi dăm șah regelui advers astfel încât nu poate scăpa de această amenințare, indiferent de manevra pe care o va face. Dacă o poziție se repetă de trei ori, partida se încheie cu remiză.</p>
-        <p>Folosim acest procedeu atunci când poziția noastră e mai proastă și am putea pierde partida. De multe ori se ajunge în această situație când încercăm să dăm mat, dar nu avem forțe suficiente pentru aceasta.</p>
-    </div>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="lesson-content">
 
-    <div class="board-card">
-        <h3>Exemplul 1 — Șah etern</h3>
-        <div class="board-area">
-            <div class="board-col">
-                <div class="board-wrapper">
-                    <div id="board1" class="chessboard"></div>
-                </div>
-                <div class="nav-controls">
-                    <button class="btn-round" id="btnFirst1" onclick="goFirst1()" title="Prima poziție">&#x23EE;</button>
-                    <button class="btn-round" id="btnPrev1" onclick="prevMove1()" title="Mutarea anterioară">&#9664;</button>
-                    <button class="btn-start-text" onclick="resetBoard1()">Start</button>
-                    <button class="btn-round" id="btnNext1" onclick="nextMove1()" title="Mutarea următoare">&#9654;</button>
-                    <button class="btn-round" id="btnLast1" onclick="goLast1()" title="Ultima poziție">&#x23ED;</button>
-                </div>
-            </div>
-            <div class="side-panel">
-                <div class="moves-box">
-                    <div class="moves-header">Mutări</div>
-                    <div class="move-row"><span class="move-num">1.</span><span id="m1_1w" class="move-token">Dg6+</span><span id="m1_1b" class="move-token">Rh8</span></div>
-                    <div class="move-row"><span class="move-num">2.</span><span id="m1_2w" class="move-token">Dh6+</span><span id="m1_2b" class="move-token">Rg8</span></div>
-                    <div class="move-row"><span class="move-num">3.</span><span id="m1_3w" class="move-token">Dg6+</span><span id="m1_3b" class="move-token">Rh8</span></div>
-                    <div class="move-row"><span class="move-num">4.</span><span id="m1_4w" class="move-token">Dh6+</span><span id="m1_4b" class="move-token">Rg8</span></div>
-                    <div class="move-row"><span class="draw-result">&#189;&#8209;&#189;</span></div>
-                </div>
-                <div id="msg1" class="annotation-box">Albul este amenințat de dama neagră de pe a5. Apasă ▶ pentru a vedea cum se salvează!</div>
-            </div>
+          <h1>Șahul Etern</h1>
+
+          <div class="card">
+            <h2>Ce este șahul etern?</h2>
+            <p>La fel ca și patul, șahul etern ne salvează de la pierderea partidei și rezultatul este remiză. Înseamnă că îi dăm șah regelui advers astfel încât nu poate scăpa de această amenințare, indiferent de manevra pe care o va face. Dacă o poziție se repetă de trei ori, partida se încheie cu remiză.</p>
+            <p>Folosim acest procedeu atunci când poziția noastră e mai proastă și am putea pierde partida.</p>
+          </div>
+
+          <div class="hl-box">
+            Observă că în ambele exemple, dama albă dă șah alternând între două câmpuri. Regele negru nu poate scăpa — dacă face orice altă mutare, poziția se repetă a treia oară și partida se termină <strong>remiză</strong>.
+          </div>
+
+          <div class="ex-tabs" id="exTabs"></div>
+          <div class="ex-label" id="exLabel"></div>
+
+          <div class="moves-box">
+            <div class="moves-header">Mutări</div>
+            <div class="moves-row" id="movesRow"></div>
+          </div>
+
+          <div class="annotation-box" id="annotationBox"></div>
+
+          <div class="step-nav">
+            <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima poziție">⏮</button>
+            <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="Înapoi">◀</button>
+            <button class="ctrl-start" onclick="goFirst()">Start</button>
+            <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="Înainte">▶</button>
+            <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima poziție">⏭</button>
+          </div>
+
         </div>
+      </div>
     </div>
 
-    <div class="card">
-        <p>Observă că în ambele exemple, dama albă dă șah alternând între două câmpuri. Regele negru nu poate scăpa — dacă face orice altă mutare, poziția se repetă a treia oară și partida se termină remiză.</p>
-    </div>
+  </main>
 
-    <div class="board-card">
-        <h3>Exemplul 2 — Sacrificiu de turn</h3>
-        <div class="board-area">
-            <div class="board-col">
-                <div class="board-wrapper">
-                    <div id="board2" class="chessboard"></div>
-                </div>
-                <div class="nav-controls">
-                    <button class="btn-round" id="btnFirst2" onclick="goFirst2()" title="Prima poziție">&#x23EE;</button>
-                    <button class="btn-round" id="btnPrev2" onclick="prevMove2()" title="Mutarea anterioară">&#9664;</button>
-                    <button class="btn-start-text" onclick="resetBoard2()">Start</button>
-                    <button class="btn-round" id="btnNext2" onclick="nextMove2()" title="Mutarea următoare">&#9654;</button>
-                    <button class="btn-round" id="btnLast2" onclick="goLast2()" title="Ultima poziție">&#x23ED;</button>
-                </div>
-            </div>
-            <div class="side-panel">
-                <div class="moves-box">
-                    <div class="moves-header">Mutări</div>
-                    <div class="move-row"><span class="move-num">1.</span><span id="m2_1w" class="move-token">Tf2</span><span id="m2_1b" class="move-token">Txf2</span></div>
-                    <div class="move-row"><span class="move-num">2.</span><span id="m2_2w" class="move-token">Dh5+</span><span id="m2_2b" class="move-token">Rg8</span></div>
-                    <div class="move-row"><span class="move-num">3.</span><span id="m2_3w" class="move-token">De8+</span><span id="m2_3b" class="move-token">Rh7</span></div>
-                    <div class="move-row"><span class="move-num">4.</span><span id="m2_4w" class="move-token">Dh5+</span><span id="m2_4b" class="move-token">Rg8</span></div>
-                    <div class="move-row"><span class="move-num">5.</span><span id="m2_5w" class="move-token">De8+</span><span class="draw-result">&#189;&#8209;&#189;</span></div>
-                </div>
-                <div id="msg2" class="annotation-box">Albul sacrifică turnul pentru a evita matul. Apasă ▶ pentru a vedea cum se salvează!</div>
-            </div>
-        </div>
-    </div>
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="pagina7.html" class="nav-btn nav-btn--back">
+      <span class="icon">←</span><span class="label">Pat</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon">⊞</span><span class="label">Cuprins</span>
+    </a>
+    <a href="sah_etern_exemple.html" class="nav-btn nav-btn--forward">
+      <span class="icon">→</span><span class="label">Exemple</span>
+    </a>
+  </footer>
 
-    <div class="nav-bottom">
-        <a href="pagina7.html" class="back">◀ Lecția 9</a>
-        <a href="sah_etern_exemple.html">10 Exemple — Șah Etern ▶</a>
-    </div>
+</div><!-- /.page-wrapper -->
 
-</div>
-
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
 <script>
-var FENS1 = [
-    'rnb2rk1/pppp4/8/q7/8/8/2Q5/2K5',
-    'rnb2rk1/pppp4/6Q1/q7/8/8/8/2K5',
-    'rnb2r1k/pppp4/6Q1/q7/8/8/8/2K5',
-    'rnb2r1k/pppp4/7Q/q7/8/8/8/2K5',
-    'rnb2rk1/pppp4/7Q/q7/8/8/8/2K5',
-    'rnb2rk1/pppp4/6Q1/q7/8/8/8/2K5',
-    'rnb2r1k/pppp4/6Q1/q7/8/8/8/2K5',
-    'rnb2r1k/pppp4/7Q/q7/8/8/8/2K5',
-    'rnb2rk1/pppp4/7Q/q7/8/8/8/2K5'
-];
-var MSGS1 = [
-    'Albul este amenințat de dama neagră de pe a5. Apasă ▶ pentru a vedea cum se salvează!',
-    '1. Dg6+ — Dama albă dă șah regelui negru pe g6!',
-    '1... Rh8 — Negrul nu are altă mutare.',
-    '2. Dh6+ — Dama albă urmărește regele pe h6!',
-    '2... Rg8 — Regele revine pe g8.',
-    '3. Dg6+ — Din nou, dama albă dă șah pe g6!',
-    '3... Rh8 — Din nou, regele revine unde a mai fost...',
-    '4. Dh6+ — Dama albă continuă urmărirea!',
-    '4... Rg8 — Remiză! Poziția s-a repetat de trei ori. ½‑½ Șah etern!'
-];
-var MOVE_IDS1 = ['m1_1w','m1_1b','m1_2w','m1_2b','m1_3w','m1_3b','m1_4w','m1_4b'];
-var step1 = 0;
-$('#board1').css('width','300px');
-var board1 = Chessboard('board1', { position: FENS1[0], pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg', showNotation: true, orientation: 'white' });
-function highlight1(idx) { MOVE_IDS1.forEach(function(id,i){ var el=document.getElementById(id); if(!el)return; if(i===idx)el.classList.add('move-active'); else el.classList.remove('move-active'); }); }
-function clearHighlights1() { MOVE_IDS1.forEach(function(id){ var el=document.getElementById(id); if(el)el.classList.remove('move-active'); }); }
-function updateButtons1() { document.getElementById('btnFirst1').disabled=(step1===0); document.getElementById('btnPrev1').disabled=(step1===0); document.getElementById('btnNext1').disabled=(step1>=FENS1.length-1); document.getElementById('btnLast1').disabled=(step1>=FENS1.length-1); }
-function nextMove1() { if(step1>=FENS1.length-1)return; step1++; board1.position(FENS1[step1],true); highlight1(step1-1); document.getElementById('msg1').textContent=MSGS1[step1]; updateButtons1(); }
-function prevMove1() { if(step1<=0)return; step1--; board1.position(FENS1[step1],true); if(step1>0)highlight1(step1-1); else clearHighlights1(); document.getElementById('msg1').textContent=MSGS1[step1]; updateButtons1(); }
-function goFirst1() { step1=1; board1.position(FENS1[1],true); highlight1(0); document.getElementById('msg1').textContent=MSGS1[1]; updateButtons1(); }
-function goLast1() { step1=FENS1.length-1; board1.position(FENS1[step1],true); highlight1(MOVE_IDS1.length-1); document.getElementById('msg1').textContent=MSGS1[step1]; updateButtons1(); }
-function resetBoard1() { step1=0; board1.position(FENS1[0],true); clearHighlights1(); document.getElementById('msg1').textContent=MSGS1[0]; updateButtons1(); }
+var PT = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
 
-var FENS2 = [
-    '7k/p5p1/1p2p3/3q4/2P2P2/P6P/3pr1PK/3Q1R2',
-    '7k/p5p1/1p2p3/3q4/2P2P2/P6P/3prRPK/3Q4',
-    '7k/p5p1/1p2p3/3q4/2P2P2/P6P/3p1rPK/3Q4',
-    '7k/p5p1/1p2p3/3q3Q/2P2P2/P6P/3p1rPK/8',
-    '6k1/p5p1/1p2p3/3q3Q/2P2P2/P6P/3p1rPK/8',
-    '4Q1k1/p5p1/1p2p3/3q4/2P2P2/P6P/3p1rPK/8',
-    '4Q3/p5pk/1p2p3/3q4/2P2P2/P6P/3p1rPK/8',
-    '8/p5pk/1p2p3/3q3Q/2P2P2/P6P/3p1rPK/8',
-    '6k1/p5p1/1p2p3/3q3Q/2P2P2/P6P/3p1rPK/8',
-    '4Q1k1/p5p1/1p2p3/3q4/2P2P2/P6P/3p1rPK/8'
+var EXAMPLES = [
+  {
+    title: 'Exemplul 1 — Șah etern',
+    fens: [
+      'rnb2rk1/pppp4/8/q7/8/8/2Q5/2K5',
+      'rnb2rk1/pppp4/6Q1/q7/8/8/8/2K5',
+      'rnb2r1k/pppp4/6Q1/q7/8/8/8/2K5',
+      'rnb2r1k/pppp4/7Q/q7/8/8/8/2K5',
+      'rnb2rk1/pppp4/7Q/q7/8/8/8/2K5',
+      'rnb2rk1/pppp4/6Q1/q7/8/8/8/2K5',
+      'rnb2r1k/pppp4/6Q1/q7/8/8/8/2K5',
+      'rnb2r1k/pppp4/7Q/q7/8/8/8/2K5',
+      'rnb2rk1/pppp4/7Q/q7/8/8/8/2K5'
+    ],
+    msgs: [
+      'Albul este amenințat de dama neagră de pe a5. Apasă ▶ pentru a vedea cum se salvează!',
+      '1. Dg6+ — Dama albă dă șah regelui negru pe g6!',
+      '1... Rh8 — Negrul nu are altă mutare.',
+      '2. Dh6+ — Dama albă urmărește regele pe h6!',
+      '2... Rg8 — Regele revine pe g8.',
+      '3. Dg6+ — Din nou, dama albă dă șah pe g6!',
+      '3... Rh8 — Din nou, regele revine unde a mai fost...',
+      '4. Dh6+ — Dama albă continuă urmărirea!',
+      '4... Rg8 — Remiză! Poziția s-a repetat de trei ori. ½‑½ Șah etern!'
+    ],
+    tokens: ['Dg6+','Rh8','Dh6+','Rg8','Dg6+','Rh8','Dh6+','Rg8']
+  },
+  {
+    title: 'Exemplul 2 — Sacrificiu de turn',
+    fens: [
+      '7k/p5p1/1p2p3/3q4/2P2P2/P6P/3pr1PK/3Q1R2',
+      '7k/p5p1/1p2p3/3q4/2P2P2/P6P/3prRPK/3Q4',
+      '7k/p5p1/1p2p3/3q4/2P2P2/P6P/3p1rPK/3Q4',
+      '7k/p5p1/1p2p3/3q3Q/2P2P2/P6P/3p1rPK/8',
+      '6k1/p5p1/1p2p3/3q3Q/2P2P2/P6P/3p1rPK/8',
+      '4Q1k1/p5p1/1p2p3/3q4/2P2P2/P6P/3p1rPK/8',
+      '4Q3/p5pk/1p2p3/3q4/2P2P2/P6P/3p1rPK/8',
+      '8/p5pk/1p2p3/3q3Q/2P2P2/P6P/3p1rPK/8',
+      '6k1/p5p1/1p2p3/3q3Q/2P2P2/P6P/3p1rPK/8',
+      '4Q1k1/p5p1/1p2p3/3q4/2P2P2/P6P/3p1rPK/8'
+    ],
+    msgs: [
+      'Albul sacrifică turnul pentru a evita matul. Apasă ▶ pentru a vedea cum se salvează!',
+      '1. Tf2 — Albul sacrifică turnul pentru a evita matul.',
+      '1... Txf2 — Negrul capturează și amenință în continuare cu mat.',
+      '2. Dh5+ — Captura negrului a deschis diagonala damei care atacă regele advers.',
+      '2... Rg8 — Singura mutare a negrului este Rg8.',
+      '3. De8+ — Șah! Dama albă atacă regele de pe e8!',
+      '3... Rh7 — Regele negru fuge la h7.',
+      '4. Dh5+ — Dama albă urmărește regele din nou!',
+      '4... Rg8 — Regele revine la g8.',
+      '5. De8+ — Negrul nu are altă posibilitate — remiză prin repetiție. ½‑½'
+    ],
+    tokens: ['Tf2','Txf2','Dh5+','Rg8','De8+','Rh7','Dh5+','Rg8','De8+']
+  }
 ];
-var MSGS2 = [
-    'Albul sacrifică turnul pentru a evita matul. Apasă ▶ pentru a vedea cum se salvează!',
-    '1. Tf2 — Albul sacrifică turnul pentru a evita matul.',
-    '1... Txf2 — Negrul capturează și amenință în continuare cu mat la prima mutare.',
-    '2. Dh5+ — Captura negrului cu turnul la f2 a deschis diagonala damei care atacă regele advers.',
-    '2... Rg8 — Singura mutare a negrului este Rg8.',
-    '3. De8+ — Șah! Dama albă atacă regele de pe e8!',
-    '3... Rh7 — Regele negru fuge la h7.',
-    '4. Dh5+ — Dama albă urmărește regele din nou!',
-    '4... Rg8 — Regele revine la g8.',
-    '5. De8+ — Negrul nu are altă posibilitate decât să repete mutările până când se obține remiză. ½‑½'
-];
-var MOVE_IDS2 = ['m2_1w','m2_1b','m2_2w','m2_2b','m2_3w','m2_3b','m2_4w','m2_4b','m2_5w'];
-var step2 = 0;
-$('#board2').css('width','300px');
-var board2 = Chessboard('board2', { position: FENS2[0], pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg', showNotation: true, orientation: 'white' });
-function highlight2(idx) { MOVE_IDS2.forEach(function(id,i){ var el=document.getElementById(id); if(!el)return; if(i===idx)el.classList.add('move-active'); else el.classList.remove('move-active'); }); }
-function clearHighlights2() { MOVE_IDS2.forEach(function(id){ var el=document.getElementById(id); if(el)el.classList.remove('move-active'); }); }
-function updateButtons2() { document.getElementById('btnFirst2').disabled=(step2===0); document.getElementById('btnPrev2').disabled=(step2===0); document.getElementById('btnNext2').disabled=(step2>=FENS2.length-1); document.getElementById('btnLast2').disabled=(step2>=FENS2.length-1); }
-function nextMove2() { if(step2>=FENS2.length-1)return; step2++; board2.position(FENS2[step2],true); highlight2(step2-1); document.getElementById('msg2').textContent=MSGS2[step2]; updateButtons2(); }
-function prevMove2() { if(step2<=0)return; step2--; board2.position(FENS2[step2],true); if(step2>0)highlight2(step2-1); else clearHighlights2(); document.getElementById('msg2').textContent=MSGS2[step2]; updateButtons2(); }
-function goFirst2() { step2=1; board2.position(FENS2[1],true); highlight2(0); document.getElementById('msg2').textContent=MSGS2[1]; updateButtons2(); }
-function goLast2() { step2=FENS2.length-1; board2.position(FENS2[step2],true); highlight2(MOVE_IDS2.length-1); document.getElementById('msg2').textContent=MSGS2[step2]; updateButtons2(); }
-function resetBoard2() { step2=0; board2.position(FENS2[0],true); clearHighlights2(); document.getElementById('msg2').textContent=MSGS2[0]; updateButtons2(); }
 
-updateButtons1();
-updateButtons2();
+var board   = null;
+var curEx   = 0;
+var curStep = 0;
+
+/* ── navigare ─────────────────────────────────────────────── */
+function goToStep(s) {
+  var ex = EXAMPLES[curEx];
+  s = Math.max(0, Math.min(s, ex.fens.length - 1));
+  curStep = s;
+  board.position(ex.fens[s], s > 0);
+  document.getElementById('annotationBox').textContent = ex.msgs[s];
+  renderMoves();
+  updateBtns();
+}
+function goFirst() { goToStep(0); }
+function goPrev()  { goToStep(curStep - 1); }
+function goNext()  { goToStep(curStep + 1); }
+function goLast()  { goToStep(EXAMPLES[curEx].fens.length - 1); }
+
+function updateBtns() {
+  var max = EXAMPLES[curEx].fens.length - 1;
+  document.getElementById('btnFirst').disabled = (curStep === 0);
+  document.getElementById('btnPrev').disabled  = (curStep === 0);
+  document.getElementById('btnNext').disabled  = (curStep === max);
+  document.getElementById('btnLast').disabled  = (curStep === max);
+}
+
+/* ── mutări ───────────────────────────────────────────────── */
+function renderMoves() {
+  var ex     = EXAMPLES[curEx];
+  var tokens = ex.tokens;
+  var row    = document.getElementById('movesRow');
+  row.innerHTML = '';
+  tokens.forEach(function(mv, i) {
+    if (i % 2 === 0) {
+      var nm = document.createElement('span');
+      nm.className = 'move-num';
+      nm.textContent = (Math.floor(i / 2) + 1) + '.';
+      row.appendChild(nm);
+    }
+    var sp = document.createElement('span');
+    sp.className = 'move-token' + (curStep === i + 1 ? ' active' : '');
+    sp.textContent = mv;
+    (function(s) { sp.onclick = function() { goToStep(s); }; })(i + 1);
+    row.appendChild(sp);
+  });
+  var dr = document.createElement('span');
+  dr.className = 'draw-result';
+  dr.textContent = ' ½‑½';
+  row.appendChild(dr);
+}
+
+/* ── încarcă exemplul ─────────────────────────────────────── */
+function loadEx(i) {
+  curEx   = i;
+  curStep = 0;
+  document.querySelectorAll('.ex-tab').forEach(function(t, j) {
+    t.classList.toggle('active', j === i);
+  });
+  document.getElementById('exLabel').textContent = EXAMPLES[i].title;
+  var fen = EXAMPLES[i].fens[0];
+  if (!board) {
+    board = Chessboard('board', {
+      position:     fen,
+      pieceTheme:   PT,
+      showNotation: true
+    });
+    window.addEventListener('resize', function() { board.resize(); });
+  } else {
+    board.position(fen, false);
+  }
+  document.getElementById('annotationBox').textContent = EXAMPLES[i].msgs[0];
+  renderMoves();
+  updateBtns();
+}
+
+/* ── tab-uri ──────────────────────────────────────────────── */
+function buildTabs() {
+  var row = document.getElementById('exTabs');
+  EXAMPLES.forEach(function(ex, i) {
+    var btn = document.createElement('button');
+    btn.className = 'ex-tab' + (i === 0 ? ' active' : '');
+    btn.textContent = 'Exemplul ' + (i + 1);
+    btn.onclick = function() { loadEx(i); };
+    row.appendChild(btn);
+  });
+}
+
+/* ── tastatură ────────────────────────────────────────────── */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goNext();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPrev();
+  if (e.key === 'Home') goFirst();
+  if (e.key === 'End')  goLast();
+});
+
+buildTabs();
+loadEx(0);
 </script>
 </body>
 </html>
