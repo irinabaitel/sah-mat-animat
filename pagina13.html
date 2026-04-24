@@ -1,257 +1,165 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sah Mat Animat - Doua Turnuri vs Rege - Exemple</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Două Turnuri vs. Rege — Exemple</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
+<style>
+.lesson-content { display: flex; flex-direction: column; gap: 10px; }
 
-        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+/* tab-uri */
+.ex-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.ex-tab {
+  flex: 1; min-width: 80px; padding: 6px 8px; border-radius: var(--radius-sm);
+  background: var(--c-surface); border: 2px solid rgba(26,58,107,0.2);
+  font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--fw-bold);
+  color: var(--c-navy); cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.ex-tab:hover  { background: var(--c-surface-2); }
+.ex-tab.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
 
-        #nav {
-            position: sticky; top: 0;
-            background: rgba(245,169,110,0.92);
-            backdrop-filter: blur(8px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 20px; z-index: 100;
-            border-bottom: 2px solid rgba(255,255,255,0.4);
-        }
-        .nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-        .nav-btn:hover { background: rgba(255,255,255,0.85); }
-        .nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em; }
+/* subtitlu capitol */
+.ex-label {
+  font-family: var(--font-display); font-size: var(--fs-sm);
+  color: var(--c-navy); font-weight: var(--fw-bold); text-align: center;
+}
 
-        .content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
+/* mutări */
+.moves-box { background: rgba(255,255,255,0.45); border-radius: 12px; padding: 10px 14px; }
+.moves-header {
+  font-family: var(--font-display); font-size: var(--fs-xs);
+  color: var(--c-text-muted); font-weight: 900; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.moves-row { display: flex; flex-wrap: wrap; gap: 2px; align-items: baseline; line-height: 2.1; }
+.move-num  { color: var(--c-text-muted); font-size: var(--fs-xs); font-weight: 900; min-width: 22px; }
+.move-token {
+  font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-bold);
+  color: var(--c-navy); padding: 1px 6px; border-radius: 6px; cursor: pointer;
+}
+.move-token:hover { background: rgba(26,58,107,0.1); }
+.move-token.active { background: var(--c-navy); color: white; border-radius: var(--radius-sm); padding: 1px 10px; }
 
-        .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
-        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
-        .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
-        .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
-        .nav-prev:hover { background: rgba(255,255,255,0.75); }
+/* adnotare */
+.annotation-box {
+  background: rgba(26,58,107,0.07); border: 2px solid rgba(26,58,107,0.13);
+  border-radius: 12px; padding: 11px 14px;
+  font-size: var(--fs-md); line-height: 1.65; color: var(--c-navy);
+  font-weight: var(--fw-bold); min-height: 56px;
+}
+.annotation-box.checkmate {
+  border-color: var(--c-error); background: var(--c-error-bg);
+  color: var(--c-error);
+}
+.checkmate-badge {
+  display: inline-block; background: var(--c-error); color: white;
+  padding: 2px 10px; border-radius: 20px; font-size: var(--fs-xs);
+  font-weight: 900; margin-bottom: 6px;
+}
 
-        .chapter-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
+/* butoane navigare pași */
+.step-nav { display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.ctrl-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--c-surface); border: 2px solid rgba(26,58,107,0.2);
+  font-size: 0.95em; color: var(--c-navy); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.ctrl-btn:hover:not(:disabled) { background: var(--c-surface-2); }
+.ctrl-btn:disabled { opacity: 0.35; cursor: default; }
+.ctrl-start {
+  height: 36px; padding: 0 14px; border-radius: var(--radius-sm);
+  background: var(--c-surface); border: 2px solid rgba(26,58,107,0.2);
+  font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--fw-bold);
+  color: var(--c-navy); cursor: pointer; transition: background 0.15s; min-width: 80px; text-align: center;
+}
+.ctrl-start:hover { background: var(--c-surface-2); }
 
-        .tab-btn {
-            background: rgba(255,255,255,0.4);
-            border: 2px solid #1a3a6b;
-            border-radius: 25px;
-            padding: 8px 18px;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
-            color: #1a3a6b;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
-        }
-        .tab-btn.active, .tab-btn:hover {
-            background: #1a3a6b;
-            color: white;
-        }
-
-        .chapter-subtitle {
-            background: #1a3a6b;
-            color: white;
-            border-radius: 12px;
-            padding: 10px 16px;
-            font-family: 'Baloo 2', cursive;
-            font-size: 1em;
-            font-weight: 700;
-            text-align: center;
-            letter-spacing: 0.03em;
-            margin-bottom: 0;
-        }
-
-        .main-content {
-            display: flex;
-            gap: 22px;
-            align-items: flex-start;
-        }
-
-        .board-section { flex: 0 0 auto; }
-        #board { width: 360px; }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            margin-top: 14px;
-        }
-
-        .ctrl-btn {
-            background: #1a3a6b;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 46px;
-            height: 46px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .ctrl-btn:hover:not(:disabled) { background: #2a5aab; }
-        .ctrl-btn:disabled { background: rgba(26,58,107,0.25); cursor: not-allowed; }
-
-        .move-counter {
-            background: rgba(255,255,255,0.6);
-            border-radius: 20px;
-            padding: 5px 14px;
-            font-weight: 700;
-            color: #1a3a6b;
-            font-size: 0.9em;
-            min-width: 110px;
-            text-align: center;
-        }
-
-        .info-section {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .moves-box {
-            background: rgba(255,255,255,0.4);
-            border-radius: 12px;
-            padding: 12px 14px;
-        }
-        .moves-box h3 {
-            font-size: 0.8em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #1a3a6b;
-            margin-bottom: 10px;
-        }
-
-        .moves-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            align-items: center;
-        }
-
-        .move-number { color: rgba(26,58,107,0.5); font-size: 0.8em; padding: 0 2px; }
-
-        .move-token {
-            border: 1px solid rgba(26,58,107,0.3);
-            border-radius: 6px;
-            padding: 4px 9px;
-            font-size: 0.92em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .move-token.white-move { background: rgba(255,255,255,0.7); color: #1a3a6b; }
-        .move-token.black-move { background: rgba(50,50,50,0.12); color: #333; }
-        .move-token.active { background: #1a3a6b !important; color: white !important; border-color: #1a3a6b; }
-        .move-token:hover:not(.active) { background: rgba(255,255,255,0.9); }
-
-        .annotation-box {
-            background: rgba(255,255,255,0.6);
-            border-radius: 12px;
-            padding: 16px;
-            line-height: 1.65;
-            color: #333;
-            font-size: 1em;
-            min-height: 100px;
-            border-left: 4px solid #1a3a6b;
-        }
-        .annotation-box.checkmate {
-            border-left-color: #c0392b;
-            background: rgba(255,255,255,0.85);
-        }
-
-        .checkmate-badge {
-            display: inline-block;
-            background: #c0392b;
-            color: white;
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.9em;
-            margin-bottom: 10px;
-        }
-
-        .hint {
-            text-align: center;
-            color: rgba(26,58,107,0.5);
-            font-size: 0.78em;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 560px) {
-            .main-content { flex-direction: column; }
-            .board-section { margin: 0 auto; }
-        }
-    </style>
+/* overlay roșu pe rege la mat */
+.king-red-ov {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(220,0,0,0.52); z-index: 5; pointer-events: none; border-radius: 3px;
+}
 </style>
 </head>
 <body>
+<div class="page-wrapper">
 
-<nav id="nav">
-    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
-    <div class="nav-title">Dou&#259; Turnuri vs. Rege</div>
-    <div style="display:flex;align-items:center;gap:8px;">
-        <button id="vol-btn" onclick="toggleVolume()" title="Volum" style="background:rgba(255,255,255,0.55);border:2px solid rgba(255,255,255,0.8);border-radius:50px;padding:5px 12px;font-size:1em;cursor:pointer;color:#1a3a6b;font-family:'Baloo 2',cursive;font-weight:700;transition:background 0.2s;">&#128266;</button>
-        <span class="nav-badge">Nivelul III</span>
+  <header class="page-header" role="banner">
+    <span class="header-title">Două Turnuri — Exemple</span>
+    <div class="header-progress">
+      <button id="vol-btn" onclick="toggleVolume()"
+              style="background:rgba(255,255,255,0.5);border:none;border-radius:50px;padding:4px 10px;font-size:1.1em;cursor:pointer;">&#128266;</button>
+      <span class="lesson-badge">Nivelul III</span>
     </div>
-</nav>
+  </header>
 
-<div class="content">
-    <div class="chapter-tabs">
-        <button class="tab-btn active" onclick="loadChapter(0)">Dou&#259; Turnuri 1</button>
-        <button class="tab-btn"        onclick="loadChapter(1)">Dou&#259; Turnuri 2</button>
-        <button class="tab-btn"        onclick="loadChapter(2)">Dou&#259; Turnuri 3</button>
-        <button class="tab-btn"        onclick="loadChapter(3)">&#9888; Regele se apropie!</button>
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
     </div>
 
-    <div class="main-content">
-        <div class="board-section">
-            <div id="board"></div>
-            <div class="controls">
-                <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima pozi&#539;ie">&#9198;</button>
-                <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="&#206;napoi">&#9664;</button>
-                <div class="move-counter" id="moveCounter">Start</div>
-                <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="&#206;nainte">&#9654;</button>
-                <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima pozi&#539;ie">&#9197;</button>
-            </div>
-            <p class="hint">&#8592; &#8594; sau butoanele de mai sus</p>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="lesson-content">
+
+          <h1>Două Turnuri vs. Rege</h1>
+
+          <div class="ex-tabs" id="exTabs">
+            <button class="ex-tab active" onclick="loadChapter(0)">T+T 1</button>
+            <button class="ex-tab"        onclick="loadChapter(1)">T+T 2</button>
+            <button class="ex-tab"        onclick="loadChapter(2)">T+T 3</button>
+            <button class="ex-tab"        onclick="loadChapter(3)">&#9888; Regele se apropie</button>
+          </div>
+
+          <div class="ex-label" id="exLabel"></div>
+
+          <div class="moves-box">
+            <div class="moves-header">Mutări</div>
+            <div class="moves-row" id="movesRow"></div>
+          </div>
+
+          <div class="annotation-box" id="annotationBox"></div>
+
+          <div class="step-nav">
+            <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima poziție">&#9198;</button>
+            <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="Înapoi">&#9664;</button>
+            <button class="ctrl-start" id="moveCounter">Start</button>
+            <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="Înainte">&#9654;</button>
+            <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima poziție">&#9197;</button>
+          </div>
+
         </div>
-
-        <div class="info-section">
-            <div class="chapter-subtitle" id="chapterSubtitle"></div>
-            <div class="annotation-box" id="annotationBox"></div>
-            <div class="moves-box">
-                <h3>Mut&#259;ri</h3>
-                <div class="moves-list" id="movesList"></div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <div class="bottom-nav">
-        <a href="pagina12.html" class="nav-prev">&#9664; &#206;napoi</a>
-        <a href="pagina14.html" class="nav-next">&#206;nainte &#9654;</a>
-    </div>
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="pagina12.html" class="nav-btn nav-btn--back">
+      <span class="icon">←</span><span class="label">T+T Lecție</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon">⊞</span><span class="label">Cuprins</span>
+    </a>
+    <a href="pagina14.html" class="nav-btn nav-btn--forward">
+      <span class="icon">→</span><span class="label">Înainte</span>
+    </a>
+  </footer>
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-
 <script>
-const PAGE_ID = 'em_msf_2t_l2';
-
-/* ===== SUNETE ===== */
 const sndMove    = new Audio('Sounds/Move.mp3');
 const sndCapture = new Audio('Sounds/Capture.mp3');
 const sndMate    = new Audio('Sounds/Mate.mp3');
@@ -259,10 +167,9 @@ let volumeOn = true;
 function playSound(snd) { if (!volumeOn) return; snd.currentTime = 0; snd.play().catch(() => {}); }
 function toggleVolume() {
     volumeOn = !volumeOn;
-    document.getElementById('vol-btn').textContent = volumeOn ? '\uD83D\uDD0A' : '\uD83D\uDD07';
+    document.getElementById('vol-btn').textContent = volumeOn ? '🔊' : '🔇';
 }
 
-/* ===== REGE ROȘU LA MAT ===== */
 function matedKingSquare(fen) {
     const tmp = new Chess(fen);
     if (!tmp.in_checkmate()) return null;
@@ -285,7 +192,6 @@ function redKingOverlay() {
     if (!el) return;
     const ov = document.createElement('div');
     ov.className = 'king-red-ov';
-    ov.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(220,0,0,0.52);z-index:5;pointer-events:none;border-radius:3px;';
     el.style.position = 'relative';
     el.appendChild(ov);
 }
@@ -296,63 +202,62 @@ function toRo(san) {
 
 const chapters = [
     {
-        title:    "Dou\u0103 Turnuri \u2014 Exemplul 1",
-        subtitle: "Mat \u00een 1 mutare",
+        title:    "Două Turnuri — Exemplul 1",
+        subtitle: "Mat în 1 mutare",
         startFen: "5r2/6r1/2k5/7K/8/8/8/8 b - - 0 1",
         sanMoves: ["Rh8#"],
         annotations: [
-            "Regele alb este prins pe coloana h, cu coloana g blocat\u0103 de turnul din g7. G\u0103se\u015fti mutarea care d\u0103 mat dintr-o singur\u0103 lovitur\u0103?",
-            "\u015eah mat! Turnul din f8 se mut\u0103 pe h8 \u2014 coloana h este blocat\u0103 de noul turn, coloana g era deja blocat\u0103 de turnul din g7. Regele alb nu are nicio sc\u0103pare!"
+            "Regele alb este prins pe coloana h, cu coloana g blocată de turnul din g7. Găseşti mutarea care dă mat dintr-o singură lovitură?",
+            "Şah mat! Turnul din f8 se mută pe h8 — coloana h este blocată de noul turn, coloana g era deja blocată de turnul din g7. Regele alb nu are nicio scăpare!"
         ]
     },
     {
-        title:    "Dou\u0103 Turnuri \u2014 Exemplul 2",
-        subtitle: "Mat \u00een 2 mut\u0103ri",
+        title:    "Două Turnuri — Exemplul 2",
+        subtitle: "Mat în 2 mutări",
         startFen: "5r2/4r3/2k5/8/8/6K1/8/8 b - - 0 1",
         sanMoves: ["Rg7+", "Kh2", "Rh8#"],
         annotations: [
-            "Regele alb este pe coloana g. Negrul are un plan \u00een 2 mut\u0103ri. \u00cel g\u0103se\u015fti?",
-            "Turnul din e7 se mut\u0103 pe g7 \u015fi d\u0103 \u015fah! Coloana g este acum blocat\u0103 \u2014 regele alb este for\u0163at s\u0103 fug\u0103 spre coloana h.",
-            "Regele alb fuge la h2 \u2014 singura direc\u0163ie disponibil\u0103. Acum vine lovitura final\u0103!",
-            "\u015eah mat! Turnul din f8 vine pe h8. Coloana h blocat\u0103, coloana g blocat\u0103 \u2014 regele nu are nicio sc\u0103pare!"
+            "Regele alb este pe coloana g. Negrul are un plan în 2 mutări. Îl găseşti?",
+            "Turnul din e7 se mută pe g7 şi dă şah! Coloana g este acum blocată — regele alb este forţat să fugă spre coloana h.",
+            "Regele alb fuge la h2 — singura direcţie disponibilă. Acum vine lovitura finală!",
+            "Şah mat! Turnul din f8 vine pe h8. Coloana h blocată, coloana g blocată — regele nu are nicio scăpare!"
         ]
     },
     {
-        title:    "Dou\u0103 Turnuri \u2014 Exemplul 3",
-        subtitle: "Tehnica sc\u0103rii",
+        title:    "Două Turnuri — Exemplul 3",
+        subtitle: "Tehnica scării",
         startFen: "7k/r7/1r6/4K3/8/8/8/8 b - - 0 1",
         sanMoves: ["Ra5+", "Ke4", "Rb4+", "Ke3", "Ra3+", "Ke2", "Rb2+", "Ke1", "Ra1#"],
         annotations: [
-            "Regele alb se afl\u0103 pe linia 5. Negrul va folosi tehnica sc\u0103rii pentru a-l \u00eempinge spre linia 1. Urm\u0103re\u015fte cum turnurile mut\u0103 pe r\u00e2nd, a\u015fa cum picioarele p\u0103\u015fesc pe r\u00e2nd atunci c\u00e2nd urci pe o scar\u0103!",
-            "Primul turn taie linia 5! Regele alb este \u00een \u015fah \u015fi nu mai poate r\u0103m\u00e2ne pe linia 5.",
-            "Regele alb coboar\u0103 la e4 \u2014 for\u0163at spre linia 1.",
-            "Al doilea turn taie linia 4! Regele alb este din nou \u00een \u015fah.",
-            "Regele coboar\u0103 la e3.",
-            "Primul turn taie linia 3! R\u00e2nd pe r\u00e2nd, turnurile colaboreaz\u0103 perfect.",
-            "Regele coboar\u0103 la e2.",
+            "Regele alb se află pe linia 5. Negrul va folosi tehnica scării pentru a-l împinge spre linia 1. Urmăreşte cum turnurile mută pe rând, aşa cum picioarele păşesc pe rând atunci când urci pe o scară!",
+            "Primul turn taie linia 5! Regele alb este în şah şi nu mai poate rămâne pe linia 5.",
+            "Regele alb coboară la e4 — forţat spre linia 1.",
+            "Al doilea turn taie linia 4! Regele alb este din nou în şah.",
+            "Regele coboară la e3.",
+            "Primul turn taie linia 3! Rând pe rând, turnurile colaborează perfect.",
+            "Regele coboară la e2.",
             "Al doilea turn taie linia 2! Regele este aproape prins.",
-            "Regele coboar\u0103 la e1 \u2014 ultima linie!",
-            "\u015eah mat! Primul turn vine pe a1. Linia 1 blocat\u0103, linia 2 blocat\u0103 \u2014 regele nu mai are nicio sc\u0103pare. Tehnica sc\u0103rii a func\u0163ionat!"
+            "Regele coboară la e1 — ultima linie!",
+            "Şah mat! Primul turn vine pe a1. Linia 1 blocată, linia 2 blocată — regele nu mai are nicio scăpare. Tehnica scării a funcţionat!"
         ]
-    }
-    ,
+    },
     {
-        title:    "Aten\u0163ie! Regele se apropie de turn",
-        subtitle: "Cum reac\u0163ion\u0103m c\u00e2nd regele advers amenin\u0163\u0103 un turn",
+        title:    "Atenţie! Regele se apropie de turn",
+        subtitle: "Cum reacţionăm când regele advers ameninţă un turn",
         startFen: "8/5K2/8/R7/1R6/3k4/8/8 b - - 0 1",
         sanMoves: ["Kc3", "Rh4", "Kb3", "Rg5", "Kc3", "Rg3+", "Kd2", "Rh2+", "Ke1", "Rg1#"],
         annotations: [
-            "Regele negru este pe d3 \u015fi se \u00eendreapt\u0103 spre turnul de pe b4. Aten\u0163ie \u2014 trebuie s\u0103 reac\u0163ion\u0103m la timp!",
-            "Regele negru s-a mutat pe c3 \u2014 amenin\u0163\u0103 direct turnul de pe b4! C\u00e2nd regele se apropie de turn trebuie s\u0103 fim aten\u0163i! Fugim cu turnul departe de rege, dar r\u0103m\u00e2nem pe aceea\u015fi linie.",
-            "Turnul de pe b4 mut\u0103 la h4 \u2014 se \u00eendep\u0103rteaz\u0103 de rege, dar r\u0103m\u00e2ne pe linia 4!",
-            "Dac\u0103 regele advers ne \u00eempiedic\u0103 s\u0103 p\u0103\u015fim cu turnurile pe sc\u0103ri\u0163a noastr\u0103, mut\u0103m sc\u0103ri\u0163a \u00een siguran\u0163\u0103, departe de atacurile lui.",
-            "\u015ei cel\u0103lalt turn se mut\u0103 \u00een siguran\u0163\u0103 pe g5!",
-            "Acum continu\u0103m s\u0103 \u00eel for\u0163\u0103m pe rege s\u0103 ajung\u0103 la marginea tablei, a\u015fa cum ne-am propus de la \u00eenceput.",
-            "\u015eah! Sc\u0103ri\u0163a reintr\u0103 \u00een func\u0163iune.",
-            "Suntem \u00een siguran\u0163\u0103, urm\u0103m planul ini\u0163ial.",
-            "\u015eah...",
-            "\u015ei mat!",
-            "\u015eah mat! Linia 1 blocat\u0103, linia 2 blocat\u0103 \u2014 regele nu mai are nicio sc\u0103pare!"
+            "Regele negru este pe d3 şi se îndreaptă spre turnul de pe b4. Atenţie — trebuie să reacţionăm la timp!",
+            "Regele negru s-a mutat pe c3 — ameninţă direct turnul de pe b4! Când regele se apropie de turn trebuie să fim atenţi! Fugim cu turnul departe de rege, dar rămânem pe aceeaşi linie.",
+            "Turnul de pe b4 mută la h4 — se îndepărtează de rege, dar rămâne pe linia 4!",
+            "Dacă regele advers ne împiedică să păşim cu turnurile pe scăriţa noastră, mutăm scăriţa în siguranţă, departe de atacurile lui.",
+            "Şi celălalt turn se mută în siguranţă pe g5!",
+            "Acum continuăm să îl forţăm pe rege să ajungă la marginea tablei, aşa cum ne-am propus de la început.",
+            "Şah! Scăriţa reintră în funcţiune.",
+            "Suntem în siguranţă, urmăm planul iniţial.",
+            "Şah...",
+            "Şi mat!",
+            "Şah mat! Linia 1 blocată, linia 2 blocată — regele nu mai are nicio scăpare!"
         ]
     }
 ];
@@ -374,12 +279,12 @@ function computePositions(chapter) {
 }
 
 function loadChapter(idx) {
-    document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+    document.querySelectorAll('.ex-tab').forEach((b, i) => b.classList.toggle('active', i === idx));
     currentChapter = chapters[idx];
     positions = computePositions(currentChapter);
     currentStep = 0;
 
-    document.getElementById('chapterSubtitle').textContent = currentChapter.subtitle;
+    document.getElementById('exLabel').textContent = currentChapter.subtitle;
 
     if (board) board.destroy();
     board = Chessboard('board', {
@@ -392,7 +297,7 @@ function loadChapter(idx) {
 }
 
 function buildMovesList() {
-    const container = document.getElementById('movesList');
+    const container = document.getElementById('movesRow');
     container.innerHTML = '';
     const whiteFirst = currentChapter.startFen.split(' ')[1] === 'w';
     currentChapter.sanMoves.forEach((mv, i) => {
@@ -405,13 +310,12 @@ function buildMovesList() {
         }
         if (showNum) {
             const num = document.createElement('span');
-            num.className = 'move-number';
+            num.className = 'move-num';
             num.textContent = numText;
             container.appendChild(num);
         }
-        const isWhite = whiteFirst ? (i % 2 === 0) : (i % 2 !== 0);
         const btn = document.createElement('button');
-        btn.className = 'move-token ' + (isWhite ? 'white-move' : 'black-move');
+        btn.className = 'move-token';
         btn.textContent = toRo(mv);
         btn.dataset.step = i + 1;
         btn.onclick = () => goToStep(i + 1);
@@ -456,8 +360,7 @@ function getMoveLabel(s) {
 function updateUI() {
     const total = positions.length - 1;
 
-    document.getElementById('moveCounter').textContent =
-        getMoveLabel(currentStep);
+    document.getElementById('moveCounter').textContent = getMoveLabel(currentStep);
 
     document.getElementById('btnFirst').disabled = currentStep === 0;
     document.getElementById('btnPrev').disabled  = currentStep === 0;
@@ -469,11 +372,11 @@ function updateUI() {
 
     const box  = document.getElementById('annotationBox');
     const text = currentChapter.annotations[currentStep] || '';
-    const isMat = currentStep === total;
+    const isMat = currentStep === total && currentChapter.sanMoves[total - 1] && currentChapter.sanMoves[total - 1].includes('#');
 
     box.className = 'annotation-box' + (isMat ? ' checkmate' : '');
     box.innerHTML = isMat
-        ? '<span class="checkmate-badge">\u2713 \u015eAH MAT!</span><br>' + text
+        ? '<span class="checkmate-badge">✓ ŞAH MAT!</span><br>' + text
         : text;
 }
 
@@ -486,6 +389,6 @@ document.addEventListener('keydown', e => {
 
 loadChapter(0);
 </script>
-<script src="arena_touch.js"></script>
+<script src="board-utils.js"></script>
 </body>
 </html>

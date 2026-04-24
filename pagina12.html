@@ -1,91 +1,101 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sah Mat Animat - Doua Turnuri vs Rege</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
-
-        #nav {
-            position: sticky; top: 0;
-            background: rgba(245,169,110,0.92);
-            backdrop-filter: blur(8px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 20px; z-index: 100;
-            border-bottom: 2px solid rgba(255,255,255,0.4);
-        }
-        .nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-        .nav-btn:hover { background: rgba(255,255,255,0.85); }
-        .nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em; }
-
-        .content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
-
-        .lesson-title { text-align: center; margin-bottom: 8px; }
-        .lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
-
-        .card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-        .card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; text-align: justify; }
-        .card p:last-child { margin-bottom: 0; }
-
-        .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
-        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
-        .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
-        .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
-        .nav-prev:hover { background: rgba(255,255,255,0.75); }
-
-        @media (max-width: 560px) {
-            .card { padding: 16px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Turn + Turn vs. Rege</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
+<style>
+.lesson-content { display: flex; flex-direction: column; gap: 14px; }
+.card {
+  background: var(--c-surface); border: 2px solid var(--c-border);
+  border-radius: var(--radius); padding: 14px 16px;
+}
+.card p { font-size: var(--fs-md); line-height: 1.75; color: var(--c-text); margin-bottom: 10px; text-align: justify; }
+.card p:last-child { margin-bottom: 0; }
+.card p strong { color: var(--c-navy); }
+</style>
 </head>
 <body>
+<div class="page-wrapper">
 
-<nav id="nav">
-    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
-    <div class="nav-title">Dou&#259; Turnuri vs. Rege</div>
-    <span class="nav-badge">Nivelul III</span>
-</nav>
+  <header class="page-header" role="banner">
+    <span class="header-title">Turn + Turn vs. Rege</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Nivelul III</span>
+    </div>
+  </header>
 
-<div class="content">
+  <main class="page-main" role="main">
 
-    <div class="lesson-title">
-        <h1>Maturi Simple cu Figuri<br>Rege + Dou&#259; Turnuri vs. Rege</h1>
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
     </div>
 
-    <div class="card">
-        <p>Pentru cine &#238;n&#539;elege ce are de f&#259;cut, matul cu dou&#259; turnuri versus rege este foarte simplu.
-        De obicei, nici nu este nevoie s&#259; fie folosit regele &#8212; cele dou&#259; turnuri se descurc&#259;
-        foarte bine &#351;i foarte repede s&#259; &#238;&#351;i fac&#259; treaba.</p>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="lesson-content">
+
+          <h1>Maturi simple cu figuri<br>Rege + Două Turnuri vs. Rege</h1>
+
+          <div class="card">
+            <p>Pentru cine înțelege ce are de făcut, matul cu două turnuri versus rege este foarte simplu.
+            De obicei, nici nu este nevoie să fie folosit regele — cele două turnuri se descurcă
+            foarte bine și foarte repede să își facă treaba.</p>
+          </div>
+
+          <div class="card">
+            <p>Regele advers trebuie să fie forțat să ajungă pe o margine a tablei — nu contează
+            dacă este linia 1, linia 8, coloana a sau coloana h. Turnurile lucrează împreună ca o
+            <strong>scară</strong>: unul taie o linie, celălalt taie următoarea, și tot așa, până când regele
+            advers nu mai are unde fugi.</p>
+          </div>
+
+          <div class="card">
+            <p>Dar ce ar trebui să facă cel care rămâne doar cu regele? Cea mai bună strategie este
+            să se apropie de unul dintre turnuri — dacă reușește să-l captureze, finalul
+            devine mult mai dificil de câștigat. Acesta este un aspect pe care începătorii
+            îl ignoră deseori: se concentrează exclusiv pe executarea <strong>scărițe</strong> și
+            uită să verifice dacă regele advers se apropie periculos de vreunul dintre turnuri.</p>
+          </div>
+
+          <div class="hl-box">
+            Pe tablă: mat tipic cu Două Turnuri. Regele negru este prins la marginea tablei — Turnul de pe a2 dă mat pe coloana a, Turnul de pe b1 blochează coloana b.
+          </div>
+
+        </div>
+      </div>
     </div>
 
-    <div class="card">
-        <p>Regele advers trebuie s&#259; fie for&#539;at s&#259; ajung&#259; pe o margine a tablei &#8212; nu conteaz&#259;
-        dac&#259; este linia 1, linia 8, coloana a sau coloana h. Turnurile lucreaz&#259; &#238;mpreun&#259; ca o
-        scar&#259;: unul taie o linie, cel&#259;lalt taie urm&#259;toarea, &#351;i tot a&#351;a, p&#226;n&#259; c&#226;nd regele
-        advers nu mai are unde fugi.</p>
-    </div>
+  </main>
 
-    <div class="card">
-        <p>Dar ce ar trebui s&#259; fac&#259; cel care r&#259;m&#226;ne doar cu regele? Cea mai bun&#259; strategie este
-        s&#259; se apropie de unul dintre turnuri &#8212; dac&#259; reu&#351;e&#351;te s&#259;-l captureze, finalul
-        devine mult mai dificil de c&#226;&#351;tigat. Acesta este un aspect pe care &#238;nceput&#259;torii
-        &#238;l ignor&#259; deseori: ei se concentreaz&#259; exclusiv pe executarea &bdquo;sc&#259;ri&#539;ei&rdquo;
-        &#351;i uit&#259; s&#259; verifice dac&#259; regele advers se apropie periculos de vreunul dintre turnuri.</p>
-    </div>
-
-    <div class="bottom-nav">
-        <a href="pagina11.html" class="nav-prev">&#9664; &#206;napoi</a>
-        <a href="pagina13.html" class="nav-next">&#206;nainte &#9654;</a>
-    </div>
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="pagina11.html" class="nav-btn nav-btn--back">
+      <span class="icon">←</span><span class="label">Înapoi</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon">⊞</span><span class="label">Cuprins</span>
+    </a>
+    <a href="pagina13.html" class="nav-btn nav-btn--forward">
+      <span class="icon">→</span><span class="label">Înainte</span>
+    </a>
+  </footer>
 
 </div>
 
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script>
-const PAGE_ID = 'em_msf_2t_l1';
+Chessboard('board', {
+  position: '8/k7/8/8/8/8/R2K4/1R6',
+  pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+  draggable: false
+});
 </script>
+<script src="board-utils.js"></script>
 </body>
 </html>
