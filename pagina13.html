@@ -155,7 +155,16 @@ function toggleVolume() {
     document.getElementById('vol-btn').textContent = volumeOn ? '🔊' : '🔇';
 }
 
-/* ── Efect mat: inele concentrice (sec.14 master-template.css) ── */
+/* ── Efect mat: highlight-check (sec.6 master-template.css, pattern din pagina5) ── */
+function applyHL(sq, cls) {
+    const el = document.querySelector('.square-' + sq);
+    if (el) el.classList.add(cls);
+}
+function removeKingOverlay() {
+    document.querySelectorAll('.highlight-check').forEach(function(el) {
+        el.classList.remove('highlight-check');
+    });
+}
 function matedKingSquare(fen) {
     const tmp = new Chess(fen);
     if (!tmp.in_checkmate()) return null;
@@ -166,21 +175,9 @@ function matedKingSquare(fen) {
                 return files[c] + (8 - r);
     return null;
 }
-function removeKingOverlay() {
-    document.querySelectorAll('.sq-mate-ring').forEach(function(e) { e.remove(); });
-}
 function redKingOverlay(sq) {
     removeKingOverlay();
-    const el = document.querySelector('#board .square-' + sq);
-    if (!el) return;
-    el.style.position = 'relative';
-    [0, 280, 560].forEach(function(delay) {
-        const ring = document.createElement('div');
-        ring.className = 'sq-mate-ring';
-        ring.style.animationDelay = delay + 'ms';
-        el.appendChild(ring);
-        setTimeout(function() { if (ring.parentNode) ring.remove(); }, delay + 900);
-    });
+    applyHL(sq, 'highlight-check');
 }
 
 function toRo(san) {

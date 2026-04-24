@@ -20,3 +20,15 @@ Include întotdeauna **`<script src="board-utils.js"></script>`** în orice pagi
 
 ## Clase CSS globale
 `.hl-box` / `.hl-box.ok` / `.hl-box.warn` sunt în `master-template.css` — nu le redefini local.
+
+## Efect mat pe pătrat rege
+Folosește clasa **`.highlight-check`** (sec. 6 din `master-template.css`) — radial gradient roșu, stil Lichess.
+**Nu inventa efecte noi.** Pattern JS standard (copiază din `pagina5.html`):
+```js
+function applyHL(sq, cls) {
+  const el = document.querySelector('.square-' + sq);
+  if (el) el.classList.add(cls);
+}
+// la mat:
+applyHL(matedKingSquare(), 'highlight-check');
+```

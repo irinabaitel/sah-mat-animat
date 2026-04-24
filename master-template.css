@@ -742,46 +742,26 @@ html, body {
  * ──────────────────────────────────────────────────────────── */
 
 
-/* ── 14. Efect mat — inele concentrice pe pătratul regelui ───
+/* ── 14. Efect mat pe pătratul regelui ───────────────────────
  *
- * Stil Lichess: 3 unde roșii se extind din centrul pătratului.
- * Folosit în orice pagină cu exemple ilustrate de mat.
+ * Folosește clasa existentă .highlight-check (sec. 6) —
+ * radial gradient roșu, stil Lichess. NU inventa efecte noi.
  *
- * JS pattern (copiază în orice pagină):
+ * Pattern JS (copiază din pagina5.html):
  *
+ *   function applyHL(sq, cls) {
+ *     var el = document.querySelector('.square-' + sq);
+ *     if (el) el.classList.add(cls);
+ *   }
  *   function removeKingOverlay() {
- *     document.querySelectorAll('.sq-mate-ring').forEach(function(e) { e.remove(); });
+ *     document.querySelectorAll('.highlight-check')
+ *       .forEach(function(el) { el.classList.remove('highlight-check'); });
  *   }
  *   function redKingOverlay(sq) {
  *     removeKingOverlay();
- *     var el = document.querySelector('#board .square-' + sq);
- *     if (!el) return;
- *     el.style.position = 'relative';
- *     [0, 280, 560].forEach(function(delay) {
- *       var ring = document.createElement('div');
- *       ring.className = 'sq-mate-ring';
- *       ring.style.animationDelay = delay + 'ms';
- *       el.appendChild(ring);
- *       setTimeout(function() { if (ring.parentNode) ring.remove(); }, delay + 900);
- *     });
+ *     applyHL(sq, 'highlight-check');
  *   }
  * ──────────────────────────────────────────────────────────── */
-.sq-mate-ring {
-  position:      absolute;
-  top:           50%;
-  left:          50%;
-  width:         1px;
-  height:        1px;
-  border-radius: 50%;
-  pointer-events:none;
-  z-index:       6;
-  box-shadow:    0 0 0 2px rgba(210,0,0,0.85);
-  animation:     sq-mate-ring 0.85s ease-out forwards;
-}
-@keyframes sq-mate-ring {
-  0%   { box-shadow: 0 0 0 2px  rgba(210,0,0,0.85); }
-  100% { box-shadow: 0 0 0 50px rgba(210,0,0,0);    }
-}
 
 
 /* ── 15. Jurnal mutări vertical (pagini cu exemple ilustrate) ─
