@@ -247,6 +247,25 @@ let board = null;
 let currentChapter = null;
 let positions = [];
 let currentStep = 0;
+const freeChess = new Chess(); /* urmărește poziția curentă pentru jocul liber */
+
+function onDrop(source, target) {
+    const move = freeChess.move({ from: source, to: target, promotion: 'q' });
+    if (!move) return 'snapback';
+    playSound(move.captured ? sndCapture : sndMove);
+    board.position(freeChess.fen(), false);
+    if (freeChess.game_over()) return;
+    setTimeout(function() {
+        if (freeChess.game_over()) return;
+        const moves = freeChess.moves();
+        if (!moves.length) return;
+        const m = freeChess.move(moves[Math.floor(Math.random() * moves.length)]);
+        if (m) {
+            playSound(m.captured ? sndCapture : sndMove);
+            board.position(freeChess.fen(), false);
+        }
+    }, 380);
+}
 
 function computePositions(chapter) {
     const chess = new Chess(chapter.startFen);
@@ -269,8 +288,10 @@ function loadChapter(idx) {
     board = Chessboard('board', {
         position: positions[0],
         pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
-        draggable: true
+        draggable: true,
+        onDrop: onDrop
     });
+    freeChess.load(positions[0]);
     removeKingOverlay();
     updateUI();
 }
@@ -341,6 +362,7 @@ function goToStep(s) {
     currentStep = s;
     removeKingOverlay();
     board.position(positions[s], false);
+    freeChess.load(positions[s]);
 
     if (s > prevStep) {
         const san = currentChapter.sanMoves[s - 1] || '';
