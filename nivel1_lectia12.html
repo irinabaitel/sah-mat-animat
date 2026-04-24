@@ -2,193 +2,204 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lecția 12 — Câștig, egal și pierdere</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Câștig, egal și pierdere</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+/* ── Carduri colorate ── */
+.lesson-content { display: flex; flex-direction: column; gap: 14px; }
 
-#nav { position: sticky; top: 0; background: rgba(245,169,110,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; z-index: 100; border-bottom: 2px solid rgba(255,255,255,0.4); }
-.nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-.nav-btn:hover { background: rgba(255,255,255,0.85); }
-.nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-.nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; padding: 3px 12px; border-radius: 20px; }
-
-.content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 18px; }
-
-/* ===== CARDS ===== */
-.card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 26px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-.card.win    { background: rgba(220,255,230,0.7);  border-color: rgba(39,174,96,0.4); }
-.card.lose   { background: rgba(255,220,220,0.7);  border-color: rgba(192,57,43,0.4); }
-.card.draw   { background: rgba(255,248,210,0.75); border-color: rgba(230,184,0,0.4); }
-.card.info   { background: rgba(220,235,255,0.7);  border-color: rgba(26,58,107,0.25); }
+.card {
+  background: var(--c-surface); border: 2px solid var(--c-border);
+  border-radius: var(--radius); padding: 14px 16px;
+}
+.card.win  { background: rgba(220,255,230,0.7);  border-color: rgba(39,174,96,0.4); }
+.card.lose { background: rgba(255,220,220,0.7);  border-color: rgba(192,57,43,0.4); }
+.card.draw { background: rgba(255,248,210,0.75); border-color: rgba(230,184,0,0.4); }
 
 .card-title {
-    font-family: 'Baloo 2', cursive;
-    font-size: 1.15em;
-    font-weight: 900;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  font-family: var(--font-display); font-size: var(--fs-sm);
+  font-weight: var(--fw-xbold); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
 }
 .card.win  .card-title { color: #1a6b3a; }
 .card.lose .card-title { color: #922b21; }
 .card.draw .card-title { color: #7d6608; }
-.card.info .card-title { color: #1a3a6b; }
 
-.card p { font-size: 0.95em; line-height: 1.8; color: #2a2a3e; margin-bottom: 8px; text-align: justify; }
-.card p:last-child { margin-bottom: 0; }
-.card p strong { color: #1a3a6b; }
-
-.card ul { list-style: none; margin-top: 4px; }
-.card ul li {
-    position: relative;
-    padding-left: 22px;
-    font-size: 0.94em;
-    line-height: 1.75;
-    color: #2a2a3e;
-    margin-bottom: 4px;
+.card p {
+  font-size: var(--fs-md); line-height: 1.75; color: var(--c-text);
+  margin-bottom: 8px; text-align: justify;
 }
-.card ul li::before { content: '—'; position: absolute; left: 0; color: rgba(26,58,107,0.5); font-weight: 700; }
+.card p:last-child { margin-bottom: 0; }
+.card p strong { color: var(--c-navy); }
+
+.card ul { list-style: none; margin-top: 4px; display: flex; flex-direction: column; gap: 3px; }
+.card ul li {
+  position: relative; padding-left: 22px;
+  font-size: var(--fs-md); line-height: 1.7; color: var(--c-text);
+}
+.card ul li::before { content: '—'; position: absolute; left: 0; font-weight: 700; }
 .card.win  ul li::before { color: #27ae60; }
 .card.lose ul li::before { color: #c0392b; }
 .card.draw ul li::before { color: #b7770d; }
-
-.card ul li a { color: #1a3a6b; font-weight: 700; }
+.card ul li a { color: var(--c-navy); font-weight: 700; }
 .card ul li a:hover { text-decoration: underline; }
 
-/* rezultate */
-.results-row {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-}
+/* ── Scoruri ── */
+.results-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
 .result-badge {
-    flex: 1;
-    min-width: 120px;
-    border-radius: 14px;
-    padding: 14px 12px;
-    text-align: center;
-    font-family: 'Baloo 2', cursive;
-    font-weight: 900;
+  flex: 1; min-width: 100px; border-radius: 14px; padding: 12px 10px;
+  text-align: center; font-family: var(--font-display); font-weight: var(--fw-xbold);
 }
-.result-badge .score { font-size: 1.8em; display: block; margin-bottom: 4px; }
-.result-badge .label { font-size: 0.78em; color: inherit; opacity: 0.85; }
-.rb-white { background: rgba(255,255,255,0.8); color: #1a3a6b; border: 2px solid rgba(26,58,107,0.2); }
-.rb-draw  { background: rgba(255,220,80,0.5);  color: #7d5a00; border: 2px solid rgba(183,119,13,0.3); }
-.rb-black { background: rgba(40,40,60,0.85);   color: white;   border: 2px solid rgba(0,0,0,0.2); }
+.result-badge .score { font-size: 1.6em; display: block; margin-bottom: 3px; }
+.result-badge .label { font-size: var(--fs-xs); opacity: 0.85; }
+.rb-white { background: rgba(255,255,255,0.8); color: var(--c-navy); border: 2px solid rgba(26,58,107,0.2); }
+.rb-draw  { background: rgba(255,220,80,0.5);  color: #7d5a00;      border: 2px solid rgba(183,119,13,0.3); }
+.rb-black { background: rgba(40,40,60,0.85);   color: white;        border: 2px solid rgba(0,0,0,0.2); }
 
-/* categorii timp */
-.time-cats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-.time-cat { flex: 1; min-width: 130px; background: rgba(255,255,255,0.6); border-radius: 12px; padding: 12px 14px; border-left: 4px solid #1a3a6b; }
-.time-cat .tc-name { font-family: 'Baloo 2', cursive; font-weight: 900; font-size: 0.95em; color: #1a3a6b; margin-bottom: 4px; }
-.time-cat .tc-desc { font-size: 0.82em; line-height: 1.5; color: #444; }
-
-/* nav jos */
-.bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
-.nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
-.nav-prev:hover { background: rgba(255,255,255,0.75); }
-.nav-next { background: #1a3a6b; color: white; border-radius: 50px; padding: 9px 22px; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 14px rgba(26,58,107,0.35); white-space: nowrap; }
-.nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
-
-h1.page-title { font-family: 'Baloo 2', cursive; font-size: clamp(1.5em,4.5vw,2.1em); color: #1a3a6b; text-align: center; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
+/* ── Categorii timp ── */
+.time-cats { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.time-cat {
+  flex: 1; min-width: 120px; background: rgba(255,255,255,0.6);
+  border-radius: 12px; padding: 10px 12px; border-left: 4px solid var(--c-navy);
+}
+.tc-name {
+  font-family: var(--font-display); font-weight: var(--fw-xbold);
+  font-size: var(--fs-sm); color: var(--c-navy); margin-bottom: 4px;
+}
+.tc-desc { font-size: var(--fs-xs); line-height: 1.5; color: #444; }
 </style>
 </head>
 <body>
+<div class="page-wrapper">
 
-<nav id="nav">
-    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
-    <div class="nav-title">Câștig, Egal și Pierdere</div>
-    <span class="nav-badge">Nivelul I</span>
-</nav>
+  <header class="page-header" role="banner">
+    <span class="header-title">Câștig, egal și pierdere</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Nivelul I</span>
+    </div>
+  </header>
 
-<div class="content">
+  <main class="page-main" role="main">
 
-    <h1 class="page-title">Câștig, egal și pierdere — toate variantele</h1>
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
+    </div>
 
-    <!-- Rezultate posibile -->
-    <div class="card">
-        <p>Un joc de șah poate fi <strong>câștigat, pierdut sau egal</strong>. Jucătorul care câștigă primește <strong>1 punct</strong>, cel care pierde — <strong>0 puncte</strong>, iar în caz de remiză ambii primesc câte <strong>½ punct</strong>.</p>
-        <div class="results-row">
-            <div class="result-badge rb-white">
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="lesson-content">
+
+          <h1>Câștig, egal și pierdere — toate variantele</h1>
+
+          <!-- Rezultate posibile -->
+          <div class="card">
+            <p>Un joc de șah poate fi <strong>câștigat, pierdut sau egal</strong>. Jucătorul care câștigă primește <strong>1 punct</strong>, cel care pierde — <strong>0 puncte</strong>, iar în caz de remiză ambii primesc câte <strong>½ punct</strong>.</p>
+            <div class="results-row">
+              <div class="result-badge rb-white">
                 <span class="score">1 — 0</span>
                 <span class="label">Albele câștigă</span>
-            </div>
-            <div class="result-badge rb-draw">
+              </div>
+              <div class="result-badge rb-draw">
                 <span class="score">½ — ½</span>
                 <span class="label">Remiză</span>
-            </div>
-            <div class="result-badge rb-black">
+              </div>
+              <div class="result-badge rb-black">
                 <span class="score">0 — 1</span>
                 <span class="label">Negrele câștigă</span>
+              </div>
             </div>
-        </div>
-    </div>
+          </div>
 
-    <!-- Categorii de competiție -->
-    <div class="card info">
-        <div class="card-title">&#9203; Categorii de competiție oficială</div>
-        <p>În concursurile organizate după regulile Federației Internaționale de Șah există trei categorii, clasificate după timpul de gândire acordat fiecărui jucător:</p>
-        <div class="time-cats">
-            <div class="time-cat">
+          <!-- Categorii de competiție -->
+          <div class="hl-box">
+            <strong>&#9203; Categorii de competiție oficială</strong><br>
+            În concursurile organizate după regulile Federației Internaționale de Șah există trei categorii, clasificate după timpul de gândire acordat fiecărui jucător:
+            <div class="time-cats">
+              <div class="time-cat">
                 <div class="tc-name">&#9812; Șah Clasic</div>
                 <div class="tc-desc">Timp de gândire lung — peste 60 de minute</div>
-            </div>
-            <div class="time-cat">
+              </div>
+              <div class="time-cat">
                 <div class="tc-name">&#9200; Șah Rapid</div>
                 <div class="tc-desc">Între 10 și 60 de minute per jucător</div>
-            </div>
-            <div class="time-cat">
+              </div>
+              <div class="time-cat">
                 <div class="tc-name">&#9889; Blitz</div>
                 <div class="tc-desc">Maximum 10 minute per jucător</div>
+              </div>
             </div>
-        </div>
-    </div>
+          </div>
 
-    <!-- Cum se câștigă -->
-    <div class="card win">
-        <div class="card-title">&#127942; O partidă se poate câștiga prin:</div>
-        <ul>
-            <li><strong>Mat</strong></li>
-            <li><strong>Abandon sau neprezentare</strong> — cel care abandonează sau nu se prezintă la tablă pierde</li>
-            <li><strong>La timp</strong> — pierde jucătorul al cărui timp de gândire s-a terminat, indiferent dacă situația lui pe tablă era mai bună, chiar dacă ar fi putut da mat la prima mutare. Singura excepție: material insuficient</li>
-        </ul>
-    </div>
+          <!-- Cum se câștigă -->
+          <div class="card win">
+            <div class="card-title">&#127942; O partidă se poate câștiga prin:</div>
+            <ul>
+              <li><strong>Mat</strong></li>
+              <li><strong>Abandon sau neprezentare</strong> — cel care abandonează sau nu se prezintă la tablă pierde</li>
+              <li><strong>La timp</strong> — pierde jucătorul al cărui timp de gândire s-a terminat, indiferent dacă situația lui pe tablă era mai bună sau chiar dacă ar fi putut da mat la prima mutare. Singura excepție: material insuficient</li>
+            </ul>
+          </div>
 
-    <!-- Cum se pierde -->
-    <div class="card lose">
-        <div class="card-title">&#128128; O partidă se poate pierde prin:</div>
-        <ul>
-            <li><strong>Fraudă tehnologică</strong></li>
-            <li>Dacă primești <strong>mat</strong></li>
-            <li>Dacă îți recunoști înfrângerea sau <strong>abandonezi</strong></li>
-            <li>Dacă rămâi <strong>fără timp</strong></li>
-            <li>Dacă faci <strong>2 mutări ilegale</strong> (care contravin <a href="https://frsah.ro/wp-content/uploads/2023/02/Legile-sahului-2023.pdf" target="_blank">Legilor șahului</a>)</li>
-        </ul>
-    </div>
+          <!-- Cum se pierde -->
+          <div class="card lose">
+            <div class="card-title">&#128128; O partidă se poate pierde prin:</div>
+            <ul>
+              <li><strong>Fraudă tehnologică</strong></li>
+              <li>Dacă primești <strong>mat</strong></li>
+              <li>Dacă îți recunoști înfrângerea sau <strong>abandonezi</strong></li>
+              <li>Dacă rămâi <strong>fără timp</strong></li>
+              <li>Dacă faci <strong>2 mutări ilegale</strong> (care contravin <a href="https://frsah.ro/wp-content/uploads/2023/02/Legile-sahului-2023.pdf" target="_blank">Legilor șahului</a>)</li>
+            </ul>
+          </div>
 
-    <!-- Cum se remizează -->
-    <div class="card draw">
-        <div class="card-title">&#9878; O partidă se termină la egalitate dacă:</div>
-        <ul>
-            <li>Jucătorii <strong>convin</strong> asupra acestui lucru (de obicei după cel puțin 30 de mutări)</li>
-            <li><strong>Material insuficient</strong> — rege contra rege, rege + cal sau rege + nebun contra rege</li>
-            <li>Cel care „câștigă" la timp are <strong>material insuficient</strong> pentru a da mat</li>
-            <li><strong>Pat</strong></li>
-            <li><strong>Regula celor 50 de mutări</strong> — în 50 de mutări consecutive nu s-a avansat niciun pion și nu s-a capturat nicio piesă</li>
-            <li><strong>Repetarea de 3 ori</strong> a aceleiași situații pe tablă (pentru ambii jucători, nu repetarea unor mutări de către un singur jucător)</li>
-            <li><strong>Șah etern</strong></li>
-        </ul>
-    </div>
+          <!-- Cum se remizează -->
+          <div class="card draw">
+            <div class="card-title">&#9878; O partidă se termină la egalitate dacă:</div>
+            <ul>
+              <li>Jucătorii <strong>convin</strong> asupra acestui lucru (de obicei după cel puțin 30 de mutări)</li>
+              <li><strong>Material insuficient</strong> — rege contra rege, rege + cal sau rege + nebun contra rege</li>
+              <li>Cel care „câștigă" la timp are <strong>material insuficient</strong> pentru a da mat</li>
+              <li><strong>Pat</strong></li>
+              <li><strong>Regula celor 50 de mutări</strong> — în 50 de mutări consecutive nu s-a avansat niciun pion și nu s-a capturat nicio piesă</li>
+              <li><strong>Repetarea de 3 ori</strong> a aceleiași situații pe tablă (pentru ambii jucători, nu repetarea unor mutări de către un singur jucător)</li>
+              <li><strong>Șah etern</strong></li>
+            </ul>
+          </div>
 
-    <div class="bottom-nav">
-        <a href="sah_etern.html" class="nav-prev">&#9664; Șahul Etern</a>
-        <a href="nivel1_lectia13.html" class="nav-next">Numărarea Atacatorilor &#9654;</a>
-    </div>
+        </div><!-- /lesson-content -->
+      </div><!-- /panel-scroll -->
+    </div><!-- /panel-col -->
 
-</div>
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="sah_etern.html" class="nav-btn nav-btn--back">
+      <span class="icon">←</span><span class="label">Șahul Etern</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon">⊞</span><span class="label">Cuprins</span>
+    </a>
+    <a href="nivel1_lectia13.html" class="nav-btn nav-btn--forward">
+      <span class="icon">→</span><span class="label">Numărarea Atacatorilor</span>
+    </a>
+  </footer>
+
+</div><!-- /page-wrapper -->
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+Chessboard('board', {
+  position: 'start',
+  pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+  draggable: false
+});
+</script>
+<script src="board-utils.js"></script>
 </body>
 </html>
