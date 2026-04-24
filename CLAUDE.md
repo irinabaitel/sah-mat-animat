@@ -12,7 +12,7 @@ Set: `caliente` de pe lichess CDN — `https://lichess1.org/assets/piece/calient
 Adaugă clasă CSS pe `.square-XX` existente (nu crea div-uri absolute poziționate manual).
 
 ## Tablă interactivă
-Orice tablă interactivă suportă **click ȘI drag-and-drop**; `touch-action:none` pe `.board-wrapper`.
+Orice tablă — inclusiv cele cu exemple ilustrate (non-puzzle) — suportă **click ȘI drag-and-drop**; `touch-action:none` pe `.board-wrapper`. Inițializează întotdeauna cu `draggable: true`.
 
 Include întotdeauna **`<script src="board-utils.js"></script>`** în orice pagină cu tablă interactivă (plasează după jQuery + chessboard.js, înainte de `</body>`). Conține:
 - **Touch bridge** — convertește touch events în mouse events pentru chessboard.js (drag cu degetul pe touchscreen)
