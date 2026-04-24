@@ -56,10 +56,6 @@
     .btn-revansa { border-color: #7d3c98 !important; color: #7d3c98 !important; }
     @keyframes confetti-fall { 0%{opacity:1;transform:translate(0,0) rotate(0deg);} 80%{opacity:1;} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot));} }
     .confetti-page { position:fixed; pointer-events:none; z-index:9999; border-radius:3px; animation:confetti-fall var(--dur,2s) ease-in forwards; }
-    .heart-badge { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:1.3em; z-index:10; pointer-events:none; animation:heartbeat-slow 1.3s ease-in-out infinite; }
-    .heart-badge.hb-fast { animation:heartbeat-fast .45s ease-in-out infinite; }
-    @keyframes heartbeat-slow { 0%,100%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.4);} }
-    @keyframes heartbeat-fast { 0%,100%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.5);} }
     @keyframes dots { 0%{content:'.';} 33%{content:'..';} 66%{content:'...';} 100%{content:'';} }
     .dots::after { content:''; animation:dots 1.2s steps(3,end) infinite; }
     @media (max-width:768px),(max-aspect-ratio:1/1) {
@@ -184,7 +180,7 @@ function toggleMute() {
     document.getElementById('muteBtn').textContent = soundMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A';
 }
 
-const startFen  = '8/8/8/4k3/8/8/8/3QR1K1 w - - 0 1';
+const startFen  = '8/8/8/5k2/8/8/8/3QR1K1 w - - 0 1';
 const chess     = new Chess(startFen);
 const statusBox = document.getElementById('statusBox');
 
@@ -233,7 +229,7 @@ function prepareWhiteBest() {
     if (playerSide !== 'w') return;
     if (chess.turn() !== 'w' || chess.game_over()) return;
     sfBestForWhite = null; sfMateIn = null;
-    askStockfish(chess.fen(), 14, function(mv) { sfBestForWhite = mv; updateHeart(); });
+    askStockfish(chess.fen(), 14, function(mv) { sfBestForWhite = mv; });
 }
 
 function stockfishPlayWhite() {
@@ -243,19 +239,19 @@ function stockfishPlayWhite() {
     statusBox.innerHTML = 'Robotul se g\u00e2nde\u015fte<span class="dots"></span>';
     statusBox.className = 'status-box';
     askStockfish(chess.fen(), 15, function(mv) {
-        if (!mv || mv === '(none)') { if (firstMoveHappened) startClock('b'); statusBox.innerHTML = 'E r\u00e2ndul t\u0103u!'; statusBox.className = 'status-box'; updateHeart(); return; }
+        if (!mv || mv === '(none)') { if (firstMoveHappened) startClock('b'); statusBox.innerHTML = 'E r\u00e2ndul t\u0103u!'; statusBox.className = 'status-box';  return; }
         const sfWhiteMove = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
         playSoundForMove(sfWhiteMove);
         board.position(chess.fen());
         positionHistory.push(chess.fen());
         updateMoveList();
         firstMoveHappened = true; lockTimeButtons();
-        if (chess.in_checkmate()) { const survived = Math.floor(chess.history().length / 2); statusBox.innerHTML = '\uD83D\uDC80 <strong>\u015eah mat!</strong> Ai rezistat <strong>' + survived + ' mut\u0103ri</strong>. Po\u0163i mai bine?'; statusBox.className = 'status-box danger'; stopClock(); setTimeout(removeHeart, 1000); enableReview(); return; }
+        if (chess.in_checkmate()) { const survived = Math.floor(chess.history().length / 2); statusBox.innerHTML = '\uD83D\uDC80 <strong>\u015eah mat!</strong> Ai rezistat <strong>' + survived + ' mut\u0103ri</strong>. Po\u0163i mai bine?'; statusBox.className = 'status-box danger'; stopClock(); enableReview(); return; }
         if (chess.in_stalemate() || chess.in_draw()) { statusBox.innerHTML = '\uD83C\uDF89 <strong>Pat!</strong> Ai ob\u0163inut remiza \u2014 excep\u0163ional!'; statusBox.className = 'status-box success'; stopClock(); spawnPageConfetti(5000); enableReview(); return; }
         startClock('b');
         statusBox.innerHTML = 'E r\u00e2ndul t\u0103u! Nu te apropia de margine.';
         statusBox.className = 'status-box';
-        updateHeart();
+        
     });
 }
 
@@ -320,9 +316,6 @@ function resetClocks() { stopClock(); whiteTime=initialTime; blackTime=initialTi
 function lockTimeButtons() { document.querySelectorAll('#timeBtns .s-btn').forEach(function(b){b.disabled=true;}); }
 
 function blackKingSquare() { const b=chess.board(),files='abcdefgh'; for(let r=0;r<8;r++) for(let c=0;c<8;c++) if(b[r][c]&&b[r][c].type==='k'&&b[r][c].color==='b') return files[c]+(8-r); return null; }
-function removeHeart() { const h=document.getElementById('king-heart'); if(h)h.remove(); }
-function showHeart(square, fast) { removeHeart(); const el=document.querySelector('#board .square-'+square); if(!el)return; const h=document.createElement('div'); h.id='king-heart'; h.className='heart-badge'+(fast?' hb-fast':''); h.textContent='\u2764\ufe0f'; el.style.position='relative'; el.appendChild(h); }
-function updateHeart() { if(chess.game_over()){removeHeart();return;} const sq=blackKingSquare(); if(!sq||sfMateIn===null){removeHeart();return;} if(sfMateIn<=3)showHeart(sq,true); else if(sfMateIn<=8)showHeart(sq,false); else removeHeart(); }
 
 function onDragStart(source, piece) {
     if (chess.game_over()) return false;
@@ -355,7 +348,7 @@ function onDrop(source, target) {
         const whiteMoves = Math.ceil(chess.history().length / 2);
         statusBox.innerHTML = '\uD83C\uDFC6 <strong>\u015eah mat!</strong> Ai reu\u015fit din <strong>' + whiteMoves + ' mut\u0103ri</strong>. Po\u0163i mai bine?';
         statusBox.className = 'status-box success';
-        stopClock(); spawnPageConfetti(5000); setTimeout(removeHeart,1000); enableReview(); return;
+        stopClock(); spawnPageConfetti(5000); enableReview(); return;
     }
 
     const isGood = sfBestForWhite && uciMove === sfBestForWhite;
@@ -404,7 +397,7 @@ function enableReview() { gameOver=true; document.getElementById('moveList').cla
 function resetBoard() {
     chess.load(startFen); board.position(startFen, false);
     sfBestForWhite=null; sfMateIn=null; gameOver=false; firstMoveHappened=false;
-    positionHistory=[startFen]; removeHeart(); resetClocks();
+    positionHistory=[startFen]; resetClocks();
     document.getElementById('moveList').classList.remove('review-ready');
     document.getElementById('reviewHint').style.display='none';
     document.querySelectorAll('#timeBtns .s-btn').forEach(function(b){b.disabled=false;});

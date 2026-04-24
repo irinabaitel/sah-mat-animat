@@ -207,27 +207,6 @@
             animation: confetti-fall var(--dur, 2s) ease-in forwards;
         }
 
-        /* ===== HEART BADGE ===== */
-        .heart-badge {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.3em;
-            z-index: 10;
-            pointer-events: none;
-            animation: heartbeat-slow 1.3s ease-in-out infinite;
-        }
-        .heart-badge.hb-fast {
-            animation: heartbeat-fast 0.45s ease-in-out infinite;
-        }
-        @keyframes heartbeat-slow {
-            0%,100% { transform: translate(-50%,-50%) scale(1); }
-            50%      { transform: translate(-50%,-50%) scale(1.4); }
-        }
-        @keyframes heartbeat-fast {
-            0%,100% { transform: translate(-50%,-50%) scale(1); }
-            50%      { transform: translate(-50%,-50%) scale(1.5); }
-        }
 
         /* ===== THINKING DOTS ===== */
         @keyframes dots { 0%{content:'.';} 33%{content:'..';} 66%{content:'...';} 100%{content:'';} }
@@ -318,7 +297,7 @@ function playSound(snd) { if (!volumeOn) return; snd.currentTime = 0; snd.play()
 function playSoundForMove(mv) { if (!mv) return; if (mv.captured) playSound(sndCapture); else playSound(sndMove); }
 function toggleVolume() { volumeOn = !volumeOn; document.getElementById('vol-btn').textContent = volumeOn ? '\uD83D\uDD0A' : '\uD83D\uDD07'; }
 
-const startFen = '8/8/8/4k3/8/8/8/2B2BK1 w - - 0 1';
+const startFen = '8/8/8/5k2/8/8/8/2B2BK1 w - - 0 1';
 const chess    = new Chess(startFen);
 const statusBox = document.getElementById('statusBox');
 
@@ -377,7 +356,6 @@ function prepareWhiteBest() {
     sfMateIn = null;
     askStockfish(chess.fen(), 14, function(mv) {
         sfBestForWhite = mv;
-        updateHeart();
     });
 }
 
@@ -392,7 +370,6 @@ function stockfishPlayWhite() {
             startClock('b');
             statusBox.innerHTML = 'E r&#226;ndul t&#259;u!';
             statusBox.className = 'status-box';
-            updateHeart();
             return;
         }
         const mv0 = chess.move({ from: mv.slice(0,2), to: mv.slice(2,4) });
@@ -407,7 +384,6 @@ function stockfishPlayWhite() {
             statusBox.innerHTML = '&#128128; <strong>&#350;ah mat!</strong> Ai rezistat <strong>' + survived + ' mut&#259;ri</strong>. Po&#539;i mai bine?';
             statusBox.className = 'status-box danger';
             stopClock();
-            setTimeout(removeHeart, 1000);
             enableReview();
             return;
         }
@@ -422,7 +398,6 @@ function stockfishPlayWhite() {
         startClock('b');
         statusBox.innerHTML = 'E r&#226;ndul t&#259;u! Nu te apropia de margine.';
         statusBox.className = 'status-box';
-        updateHeart();
     });
 }
 
@@ -526,42 +501,6 @@ function resetClocks() {
     updateClockDisplay();
 }
 
-/* ===== HEART ON BLACK KING ===== */
-function blackKingSquare() {
-    const b = chess.board();
-    const files = 'abcdefgh';
-    for (let r = 0; r < 8; r++)
-        for (let c = 0; c < 8; c++)
-            if (b[r][c] && b[r][c].type === 'k' && b[r][c].color === 'b')
-                return files[c] + (8 - r);
-    return null;
-}
-
-function removeHeart() {
-    const h = document.getElementById('king-heart');
-    if (h) h.remove();
-}
-
-function showHeart(square, fast) {
-    removeHeart();
-    const el = document.querySelector('#board .square-' + square);
-    if (!el) return;
-    const h = document.createElement('div');
-    h.id = 'king-heart';
-    h.className = 'heart-badge' + (fast ? ' hb-fast' : '');
-    h.textContent = '\u2764\ufe0f';
-    el.style.position = 'relative';
-    el.appendChild(h);
-}
-
-function updateHeart() {
-    if (chess.game_over()) { removeHeart(); return; }
-    const sq = blackKingSquare();
-    if (!sq || sfMateIn === null) { removeHeart(); return; }
-    if (sfMateIn <= 3)      showHeart(sq, true);
-    else if (sfMateIn <= 8) showHeart(sq, false);
-    else                    removeHeart();
-}
 
 /* ===== START GAME ===== */
 function startGame() {
@@ -615,7 +554,6 @@ function onDrop(source, target) {
         statusBox.className = 'status-box success';
         stopClock();
         spawnPageConfetti(5000);
-        setTimeout(removeHeart, 1000);
         enableReview();
         return;
     }
@@ -715,7 +653,6 @@ function resetBoard() {
     gameOver = false;
     gameStarted = false;
     positionHistory = [startFen];
-    removeHeart();
     resetClocks();
     document.getElementById('moveList').classList.remove('review-ready');
     const rh = document.getElementById('reviewHint');
