@@ -13,7 +13,7 @@
 /* tab-uri */
 .ex-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
 .ex-tab {
-  flex: 1; min-width: 80px; padding: 6px 8px; border-radius: var(--radius-sm);
+  flex: 1; min-width: 70px; padding: 6px 8px; border-radius: var(--radius-sm);
   background: var(--c-surface); border: 2px solid rgba(26,58,107,0.2);
   font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--fw-bold);
   color: var(--c-navy); cursor: pointer; transition: all 0.15s; text-align: center;
@@ -27,32 +27,16 @@
   color: var(--c-navy); font-weight: var(--fw-bold); text-align: center;
 }
 
-/* mutări */
-.moves-box { background: rgba(255,255,255,0.45); border-radius: 12px; padding: 10px 14px; }
-.moves-header {
-  font-family: var(--font-display); font-size: var(--fs-xs);
-  color: var(--c-text-muted); font-weight: 900; letter-spacing: 0.1em;
-  text-transform: uppercase; margin-bottom: 6px;
-}
-.moves-row { display: flex; flex-wrap: wrap; gap: 2px; align-items: baseline; line-height: 2.1; }
-.move-num  { color: var(--c-text-muted); font-size: var(--fs-xs); font-weight: 900; min-width: 22px; }
-.move-token {
-  font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-bold);
-  color: var(--c-navy); padding: 1px 6px; border-radius: 6px; cursor: pointer;
-}
-.move-token:hover { background: rgba(26,58,107,0.1); }
-.move-token.active { background: var(--c-navy); color: white; border-radius: var(--radius-sm); padding: 1px 10px; }
-
-/* adnotare */
+/* adnotare — înălțime fixă ca să nu sară butoanele */
 .annotation-box {
   background: rgba(26,58,107,0.07); border: 2px solid rgba(26,58,107,0.13);
   border-radius: 12px; padding: 11px 14px;
   font-size: var(--fs-md); line-height: 1.65; color: var(--c-navy);
-  font-weight: var(--fw-bold); min-height: 56px;
+  font-weight: var(--fw-bold);
+  min-height: 72px;
 }
 .annotation-box.checkmate {
-  border-color: var(--c-error); background: var(--c-error-bg);
-  color: var(--c-error);
+  border-color: var(--c-error); background: var(--c-error-bg); color: var(--c-error);
 }
 .checkmate-badge {
   display: inline-block; background: var(--c-error); color: white;
@@ -60,8 +44,12 @@
   font-weight: 900; margin-bottom: 6px;
 }
 
-/* butoane navigare pași */
-.step-nav { display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap; }
+/* step-nav — fix la baza panel-col (AFARA panel-scroll) */
+.step-nav {
+  flex-shrink: 0;
+  display: flex; gap: 6px; align-items: center; justify-content: center;
+  padding: 6px 0;
+}
 .ctrl-btn {
   width: 36px; height: 36px; border-radius: 50%;
   background: var(--c-surface); border: 2px solid rgba(26,58,107,0.2);
@@ -75,15 +63,10 @@
   height: 36px; padding: 0 14px; border-radius: var(--radius-sm);
   background: var(--c-surface); border: 2px solid rgba(26,58,107,0.2);
   font-family: var(--font-display); font-size: var(--fs-xs); font-weight: var(--fw-bold);
-  color: var(--c-navy); cursor: pointer; transition: background 0.15s; min-width: 80px; text-align: center;
+  color: var(--c-navy); cursor: pointer; transition: background 0.15s;
+  min-width: 80px; text-align: center;
 }
 .ctrl-start:hover { background: var(--c-surface-2); }
-
-/* overlay roșu pe rege la mat */
-.king-red-ov {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(220,0,0,0.52); z-index: 5; pointer-events: none; border-radius: 3px;
-}
 </style>
 </head>
 <body>
@@ -107,12 +90,14 @@
     </div>
 
     <div class="panel-col">
+
+      <!-- panel-scroll: h1, tab-uri, subtitlu, adnotare, jurnal mutări -->
       <div class="panel-scroll">
         <div class="lesson-content">
 
           <h1>Două Turnuri vs. Rege</h1>
 
-          <div class="ex-tabs" id="exTabs">
+          <div class="ex-tabs">
             <button class="ex-tab active" onclick="loadChapter(0)">T+T 1</button>
             <button class="ex-tab"        onclick="loadChapter(1)">T+T 2</button>
             <button class="ex-tab"        onclick="loadChapter(2)">T+T 3</button>
@@ -121,23 +106,23 @@
 
           <div class="ex-label" id="exLabel"></div>
 
-          <div class="moves-box">
-            <div class="moves-header">Mutări</div>
-            <div class="moves-row" id="movesRow"></div>
-          </div>
-
           <div class="annotation-box" id="annotationBox"></div>
 
-          <div class="step-nav">
-            <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima poziție">&#9198;</button>
-            <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="Înapoi">&#9664;</button>
-            <button class="ctrl-start" id="moveCounter">Start</button>
-            <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="Înainte">&#9654;</button>
-            <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima poziție">&#9197;</button>
-          </div>
+          <!-- jurnal mutări vertical, 4 linii vizibile, apare progresiv -->
+          <div class="moves-log" id="movesLog"></div>
 
         </div>
       </div>
+
+      <!-- step-nav FIXAT la baza panel-col, nu se mișcă -->
+      <div class="step-nav">
+        <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima poziție">&#9198;</button>
+        <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="Înapoi">&#9664;</button>
+        <button class="ctrl-start" id="moveCounter">Start</button>
+        <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="Înainte">&#9654;</button>
+        <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima poziție">&#9197;</button>
+      </div>
+
     </div>
 
   </main>
@@ -170,12 +155,11 @@ function toggleVolume() {
     document.getElementById('vol-btn').textContent = volumeOn ? '🔊' : '🔇';
 }
 
+/* ── Efect mat: inele concentrice (sec.14 master-template.css) ── */
 function matedKingSquare(fen) {
     const tmp = new Chess(fen);
     if (!tmp.in_checkmate()) return null;
-    const color = tmp.turn();
-    const b = tmp.board();
-    const files = 'abcdefgh';
+    const color = tmp.turn(), b = tmp.board(), files = 'abcdefgh';
     for (let r = 0; r < 8; r++)
         for (let c = 0; c < 8; c++)
             if (b[r][c] && b[r][c].type === 'k' && b[r][c].color === color)
@@ -183,18 +167,22 @@ function matedKingSquare(fen) {
     return null;
 }
 function removeKingOverlay() {
-    document.querySelectorAll('.king-red-ov').forEach(e => e.remove());
+    document.querySelectorAll('.sq-mate-ring').forEach(function(e) { e.remove(); });
 }
-function redKingOverlay() {
-    const sq = matedKingSquare(positions[currentStep]);
-    if (!sq) return;
+function redKingOverlay(sq) {
+    removeKingOverlay();
     const el = document.querySelector('#board .square-' + sq);
     if (!el) return;
-    const ov = document.createElement('div');
-    ov.className = 'king-red-ov';
     el.style.position = 'relative';
-    el.appendChild(ov);
+    [0, 280, 560].forEach(function(delay) {
+        const ring = document.createElement('div');
+        ring.className = 'sq-mate-ring';
+        ring.style.animationDelay = delay + 'ms';
+        el.appendChild(ring);
+        setTimeout(function() { if (ring.parentNode) ring.remove(); }, delay + 900);
+    });
 }
+
 function toRo(san) {
     const map = { K:'R', Q:'D', R:'T', B:'N', N:'C' };
     return san.replace(/[KQRBN]/g, m => map[m]);
@@ -202,62 +190,58 @@ function toRo(san) {
 
 const chapters = [
     {
-        title:    "Două Turnuri — Exemplul 1",
         subtitle: "Mat în 1 mutare",
         startFen: "5r2/6r1/2k5/7K/8/8/8/8 b - - 0 1",
         sanMoves: ["Rh8#"],
         annotations: [
-            "Regele alb este prins pe coloana h, cu coloana g blocată de turnul din g7. Găseşti mutarea care dă mat dintr-o singură lovitură?",
-            "Şah mat! Turnul din f8 se mută pe h8 — coloana h este blocată de noul turn, coloana g era deja blocată de turnul din g7. Regele alb nu are nicio scăpare!"
+            "Regele alb este prins pe coloana h, cu coloana g blocată de turnul din g7. Găsești mutarea care dă mat dintr-o singură lovitură?",
+            "Șah mat! Turnul din f8 se mută pe h8 — coloana h este blocată de noul turn, coloana g era deja blocată de turnul din g7. Regele alb nu are nicio scăpare!"
         ]
     },
     {
-        title:    "Două Turnuri — Exemplul 2",
         subtitle: "Mat în 2 mutări",
         startFen: "5r2/4r3/2k5/8/8/6K1/8/8 b - - 0 1",
         sanMoves: ["Rg7+", "Kh2", "Rh8#"],
         annotations: [
-            "Regele alb este pe coloana g. Negrul are un plan în 2 mutări. Îl găseşti?",
-            "Turnul din e7 se mută pe g7 şi dă şah! Coloana g este acum blocată — regele alb este forţat să fugă spre coloana h.",
-            "Regele alb fuge la h2 — singura direcţie disponibilă. Acum vine lovitura finală!",
-            "Şah mat! Turnul din f8 vine pe h8. Coloana h blocată, coloana g blocată — regele nu are nicio scăpare!"
+            "Regele alb este pe coloana g. Negrul are un plan în 2 mutări. Îl găsești?",
+            "Turnul din e7 se mută pe g7 și dă șah! Coloana g este acum blocată — regele alb este forțat să fugă spre coloana h.",
+            "Regele alb fuge la h2 — singura direcție disponibilă. Acum vine lovitura finală!",
+            "Șah mat! Turnul din f8 vine pe h8. Coloana h blocată, coloana g blocată — regele nu are nicio scăpare!"
         ]
     },
     {
-        title:    "Două Turnuri — Exemplul 3",
         subtitle: "Tehnica scării",
         startFen: "7k/r7/1r6/4K3/8/8/8/8 b - - 0 1",
         sanMoves: ["Ra5+", "Ke4", "Rb4+", "Ke3", "Ra3+", "Ke2", "Rb2+", "Ke1", "Ra1#"],
         annotations: [
-            "Regele alb se află pe linia 5. Negrul va folosi tehnica scării pentru a-l împinge spre linia 1. Urmăreşte cum turnurile mută pe rând, aşa cum picioarele păşesc pe rând atunci când urci pe o scară!",
-            "Primul turn taie linia 5! Regele alb este în şah şi nu mai poate rămâne pe linia 5.",
-            "Regele alb coboară la e4 — forţat spre linia 1.",
-            "Al doilea turn taie linia 4! Regele alb este din nou în şah.",
+            "Regele alb se află pe linia 5. Negrul va folosi tehnica scării pentru a-l împinge spre linia 1. Urmărește cum turnurile mută pe rând, așa cum picioarele pășesc pe rând atunci când urci pe o scară!",
+            "Primul turn taie linia 5! Regele alb este în șah și nu mai poate rămâne pe linia 5.",
+            "Regele alb coboară la e4 — forțat spre linia 1.",
+            "Al doilea turn taie linia 4! Regele alb este din nou în șah.",
             "Regele coboară la e3.",
             "Primul turn taie linia 3! Rând pe rând, turnurile colaborează perfect.",
             "Regele coboară la e2.",
             "Al doilea turn taie linia 2! Regele este aproape prins.",
             "Regele coboară la e1 — ultima linie!",
-            "Şah mat! Primul turn vine pe a1. Linia 1 blocată, linia 2 blocată — regele nu mai are nicio scăpare. Tehnica scării a funcţionat!"
+            "Șah mat! Primul turn vine pe a1. Linia 1 blocată, linia 2 blocată — regele nu mai are nicio scăpare. Tehnica scării a funcționat!"
         ]
     },
     {
-        title:    "Atenţie! Regele se apropie de turn",
-        subtitle: "Cum reacţionăm când regele advers ameninţă un turn",
+        subtitle: "Cum reacționăm când regele advers amenință un turn",
         startFen: "8/5K2/8/R7/1R6/3k4/8/8 b - - 0 1",
         sanMoves: ["Kc3", "Rh4", "Kb3", "Rg5", "Kc3", "Rg3+", "Kd2", "Rh2+", "Ke1", "Rg1#"],
         annotations: [
-            "Regele negru este pe d3 şi se îndreaptă spre turnul de pe b4. Atenţie — trebuie să reacţionăm la timp!",
-            "Regele negru s-a mutat pe c3 — ameninţă direct turnul de pe b4! Când regele se apropie de turn trebuie să fim atenţi! Fugim cu turnul departe de rege, dar rămânem pe aceeaşi linie.",
+            "Regele negru este pe d3 și se îndreaptă spre turnul de pe b4. Atenție — trebuie să reacționăm la timp!",
+            "Regele negru s-a mutat pe c3 — amenință direct turnul de pe b4! Fugim cu turnul departe de rege, dar rămânem pe aceeași linie.",
             "Turnul de pe b4 mută la h4 — se îndepărtează de rege, dar rămâne pe linia 4!",
-            "Dacă regele advers ne împiedică să păşim cu turnurile pe scăriţa noastră, mutăm scăriţa în siguranţă, departe de atacurile lui.",
-            "Şi celălalt turn se mută în siguranţă pe g5!",
-            "Acum continuăm să îl forţăm pe rege să ajungă la marginea tablei, aşa cum ne-am propus de la început.",
-            "Şah! Scăriţa reintră în funcţiune.",
-            "Suntem în siguranţă, urmăm planul iniţial.",
-            "Şah...",
-            "Şi mat!",
-            "Şah mat! Linia 1 blocată, linia 2 blocată — regele nu mai are nicio scăpare!"
+            "Dacă regele advers ne împiedică să pășim cu turnurile pe scărița noastră, mutăm scărița în siguranță, departe de atacurile lui.",
+            "Și celălalt turn se mută în siguranță pe g5!",
+            "Acum continuăm să îl forțăm pe rege să ajungă la marginea tablei, așa cum ne-am propus de la început.",
+            "Șah! Scărița reintră în funcțiune.",
+            "Suntem în siguranță, urmăm planul inițial.",
+            "Șah...",
+            "Și mat!",
+            "Șah mat! Linia 1 blocată, linia 2 blocată — regele nu mai are nicio scăpare!"
         ]
     }
 ];
@@ -283,70 +267,49 @@ function loadChapter(idx) {
     currentChapter = chapters[idx];
     positions = computePositions(currentChapter);
     currentStep = 0;
-
     document.getElementById('exLabel').textContent = currentChapter.subtitle;
-
     if (board) board.destroy();
     board = Chessboard('board', {
         position: positions[0],
         pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg'
     });
-
-    buildMovesList();
+    removeKingOverlay();
     updateUI();
 }
 
-function buildMovesList() {
-    const container = document.getElementById('movesRow');
+/* ── Jurnal mutări progresiv (sec.15 master-template.css) ── */
+function rebuildLog() {
+    const container = document.getElementById('movesLog');
     container.innerHTML = '';
     const whiteFirst = currentChapter.startFen.split(' ')[1] === 'w';
-    currentChapter.sanMoves.forEach((mv, i) => {
-        let showNum = false, numText = '';
-        if (whiteFirst) {
-            if (i % 2 === 0) { showNum = true; numText = (Math.floor(i / 2) + 1) + '.'; }
-        } else {
-            if (i === 0) { showNum = true; numText = '1...'; }
-            else if (i % 2 === 1) { showNum = true; numText = (Math.floor((i + 1) / 2) + 1) + '.'; }
-        }
+    for (let i = 0; i < currentStep; i++) {
+        const mv = currentChapter.sanMoves[i];
+        const isW = whiteFirst ? (i % 2 === 0) : (i % 2 === 1);
+        const numN = whiteFirst ? Math.floor(i/2)+1 : Math.floor((i+1)/2)+1;
+        const showNum = whiteFirst ? (i % 2 === 0) : (i === 0 || i % 2 === 1);
+
+        const row = document.createElement('div');
+        row.className = 'mlog-row ' + (isW ? 'mlog-w' : 'mlog-b');
+        row.dataset.step = i + 1;
+
+        const num = document.createElement('span');
+        num.className = 'mlog-num';
         if (showNum) {
-            const num = document.createElement('span');
-            num.className = 'move-num';
-            num.textContent = numText;
-            container.appendChild(num);
+            num.textContent = numN + (isW ? '.' : '...');
         }
+        row.appendChild(num);
+
         const btn = document.createElement('button');
-        btn.className = 'move-token';
+        btn.className = 'mlog-token' + (i + 1 === currentStep ? ' active' : '');
         btn.textContent = toRo(mv);
-        btn.dataset.step = i + 1;
-        btn.onclick = () => goToStep(i + 1);
-        container.appendChild(btn);
-    });
-}
+        btn.onclick = (function(s) { return function() { goToStep(s); }; })(i + 1);
+        row.appendChild(btn);
 
-function goToStep(s) {
-    const prevStep = currentStep;
-    currentStep = s;
-    removeKingOverlay();
-    board.position(positions[s], false);
-
-    if (s > prevStep) {
-        const san = currentChapter.sanMoves[s - 1] || '';
-        if (san.includes('#')) {
-            setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 200);
-        } else if (san.includes('x')) {
-            playSound(sndCapture);
-        } else {
-            playSound(sndMove);
-        }
+        container.appendChild(row);
     }
-
-    updateUI();
+    /* scroll la ultima mutare */
+    container.scrollTop = container.scrollHeight;
 }
-
-function goFirst() { goToStep(0); }
-function goLast()  { goToStep(positions.length - 1); }
-function goPrev()  { if (currentStep > 0) goToStep(currentStep - 1); }
-function goNext()  { if (currentStep < positions.length - 1) goToStep(currentStep + 1); }
 
 function getMoveLabel(s) {
     if (s === 0) return 'Start';
@@ -361,24 +324,48 @@ function updateUI() {
     const total = positions.length - 1;
 
     document.getElementById('moveCounter').textContent = getMoveLabel(currentStep);
-
     document.getElementById('btnFirst').disabled = currentStep === 0;
     document.getElementById('btnPrev').disabled  = currentStep === 0;
     document.getElementById('btnNext').disabled  = currentStep === total;
     document.getElementById('btnLast').disabled  = currentStep === total;
 
-    document.querySelectorAll('.move-token').forEach(b =>
-        b.classList.toggle('active', parseInt(b.dataset.step) === currentStep));
-
     const box  = document.getElementById('annotationBox');
     const text = currentChapter.annotations[currentStep] || '';
     const isMat = currentStep === total && currentChapter.sanMoves[total - 1] && currentChapter.sanMoves[total - 1].includes('#');
-
     box.className = 'annotation-box' + (isMat ? ' checkmate' : '');
-    box.innerHTML = isMat
-        ? '<span class="checkmate-badge">✓ ŞAH MAT!</span><br>' + text
-        : text;
+    box.innerHTML = isMat ? '<span class="checkmate-badge">✓ ȘAH MAT!</span><br>' + text : text;
+
+    rebuildLog();
 }
+
+function goToStep(s) {
+    const prevStep = currentStep;
+    currentStep = s;
+    removeKingOverlay();
+    board.position(positions[s], false);
+
+    if (s > prevStep) {
+        const san = currentChapter.sanMoves[s - 1] || '';
+        if (san.includes('#')) {
+            const sq = matedKingSquare(positions[s]);
+            setTimeout(function() {
+                playSound(sndMate);
+                if (sq) redKingOverlay(sq);
+            }, 200);
+        } else if (san.includes('x')) {
+            playSound(sndCapture);
+        } else {
+            playSound(sndMove);
+        }
+    }
+
+    updateUI();
+}
+
+function goFirst() { goToStep(0); }
+function goLast()  { goToStep(positions.length - 1); }
+function goPrev()  { if (currentStep > 0) goToStep(currentStep - 1); }
+function goNext()  { if (currentStep < positions.length - 1) goToStep(currentStep + 1); }
 
 document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') goNext();

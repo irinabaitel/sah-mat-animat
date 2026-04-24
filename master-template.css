@@ -740,3 +740,104 @@ html, body {
  *   bw.appendChild(svg);
  * }
  * ──────────────────────────────────────────────────────────── */
+
+
+/* ── 14. Efect mat — inele concentrice pe pătratul regelui ───
+ *
+ * Stil Lichess: 3 unde roșii se extind din centrul pătratului.
+ * Folosit în orice pagină cu exemple ilustrate de mat.
+ *
+ * JS pattern (copiază în orice pagină):
+ *
+ *   function removeKingOverlay() {
+ *     document.querySelectorAll('.sq-mate-ring').forEach(function(e) { e.remove(); });
+ *   }
+ *   function redKingOverlay(sq) {
+ *     removeKingOverlay();
+ *     var el = document.querySelector('#board .square-' + sq);
+ *     if (!el) return;
+ *     el.style.position = 'relative';
+ *     [0, 280, 560].forEach(function(delay) {
+ *       var ring = document.createElement('div');
+ *       ring.className = 'sq-mate-ring';
+ *       ring.style.animationDelay = delay + 'ms';
+ *       el.appendChild(ring);
+ *       setTimeout(function() { if (ring.parentNode) ring.remove(); }, delay + 900);
+ *     });
+ *   }
+ * ──────────────────────────────────────────────────────────── */
+.sq-mate-ring {
+  position:      absolute;
+  top:           50%;
+  left:          50%;
+  width:         1px;
+  height:        1px;
+  border-radius: 50%;
+  pointer-events:none;
+  z-index:       6;
+  box-shadow:    0 0 0 2px rgba(210,0,0,0.85);
+  animation:     sq-mate-ring 0.85s ease-out forwards;
+}
+@keyframes sq-mate-ring {
+  0%   { box-shadow: 0 0 0 2px  rgba(210,0,0,0.85); }
+  100% { box-shadow: 0 0 0 50px rgba(210,0,0,0);    }
+}
+
+
+/* ── 15. Jurnal mutări vertical (pagini cu exemple ilustrate) ─
+ *
+ * Container cu scroll intern — afișează 4 linii deodată.
+ * Mutările apar progresiv pe măsură ce userul navighează.
+ * Rebuild-uit în updateUI() la fiecare pas.
+ *
+ * HTML:  <div class="moves-log" id="movesLog"></div>
+ *
+ * Fiecare intrare generată în JS:
+ *   <div class="mlog-row [mlog-w|mlog-b]" data-step="N">
+ *     <span class="mlog-num">1.</span>
+ *     <button class="mlog-token [active]">Th8#</button>
+ *   </div>
+ * ──────────────────────────────────────────────────────────── */
+.moves-log {
+  background:     rgba(255,255,255,0.45);
+  border-radius:  12px;
+  padding:        6px 10px;
+  height:         calc(4 * 2rem + 12px);
+  overflow-y:     auto;
+  display:        flex;
+  flex-direction: column;
+  gap:            1px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(26,58,107,.25) transparent;
+}
+.moves-log::-webkit-scrollbar       { width: 3px; }
+.moves-log::-webkit-scrollbar-thumb { background: rgba(26,58,107,.3); border-radius: 3px; }
+
+.mlog-row {
+  display:     flex;
+  align-items: center;
+  gap:         6px;
+  min-height:  2rem;
+}
+.mlog-num {
+  font-family: var(--font-display);
+  font-size:   var(--fs-xs);
+  color:       var(--c-text-muted);
+  font-weight: 900;
+  min-width:   28px;
+  text-align:  right;
+}
+.mlog-token {
+  font-family:  var(--font-display);
+  font-size:    var(--fs-sm);
+  font-weight:  var(--fw-bold);
+  color:        var(--c-navy);
+  padding:      2px 8px;
+  border-radius:6px;
+  background:   none;
+  border:       none;
+  cursor:       pointer;
+  transition:   background 0.12s;
+}
+.mlog-token:hover  { background: rgba(26,58,107,0.1); }
+.mlog-token.active { background: var(--c-navy); color: white; border-radius: var(--radius-sm); }
