@@ -99,18 +99,6 @@
   animation: kl-flash 2.2s ease forwards;
 }
 
-@keyframes hb-slow {
-  0%,100% { transform: translate(-50%,-50%) scale(1); }
-  15%     { transform: translate(-50%,-50%) scale(1.45); }
-  30%     { transform: translate(-50%,-50%) scale(1); }
-  45%     { transform: translate(-50%,-50%) scale(1.25); }
-  60%     { transform: translate(-50%,-50%) scale(1); }
-}
-@keyframes hb-fast {
-  0%,100% { transform: translate(-50%,-50%) scale(1); }
-  20%     { transform: translate(-50%,-50%) scale(1.65); }
-  40%     { transform: translate(-50%,-50%) scale(0.85); }
-}
 @keyframes confetti-fall {
   0%   { opacity: 1;   transform: translate(0, 0) rotate(0deg); }
   80%  { opacity: 1; }
@@ -120,14 +108,6 @@
   position: fixed; pointer-events: none; z-index: 9999;
   border-radius: 3px; animation: confetti-fall var(--dur, 2s) ease-in forwards;
 }
-.heart-marker {
-  position: absolute; top: 50%; left: 50%;
-  font-size: 28px; line-height: 1; z-index: 15; pointer-events: none;
-  filter: drop-shadow(0 0 6px rgba(255,0,0,0.85));
-}
-.heart-marker.hb-slow { animation: hb-slow 1.1s ease infinite; }
-.heart-marker.hb-fast { animation: hb-fast 0.45s ease infinite; }
-.heart-marker.victory { transform: translate(-50%,-50%) scale(0.65); opacity: 0.75; z-index: 4; }
 </style>
 </head>
 <body>
@@ -292,9 +272,6 @@ const knightLinks = {
 };
 
 let cageTimer = null;
-let heartEl = null;
-let heartbeatTimer = null;
-let heartAudioCtx = null;
 
 function playCageClank() {
   if (soundMuted || soundVolume === 0) return;
@@ -325,49 +302,6 @@ function playCageClank() {
   } catch(e) {}
 }
 
-function playLubDub() {
-  if (soundMuted || soundVolume === 0) return;
-  try {
-    if (!heartAudioCtx || heartAudioCtx.state === 'closed')
-      heartAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (heartAudioCtx.state === 'suspended') heartAudioCtx.resume();
-    const ctx = heartAudioCtx;
-    const t = ctx.currentTime;
-    const v = soundVolume * 0.45;
-    const o1 = ctx.createOscillator(), g1 = ctx.createGain();
-    o1.type = 'sine';
-    o1.frequency.setValueAtTime(90, t);
-    o1.frequency.exponentialRampToValueAtTime(42, t + 0.11);
-    g1.gain.setValueAtTime(v, t);
-    g1.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
-    o1.connect(g1); g1.connect(ctx.destination);
-    o1.start(t); o1.stop(t + 0.16);
-    const o2 = ctx.createOscillator(), g2 = ctx.createGain();
-    o2.type = 'sine';
-    o2.frequency.setValueAtTime(62, t + 0.13);
-    o2.frequency.exponentialRampToValueAtTime(30, t + 0.25);
-    g2.gain.setValueAtTime(v * 0.6, t + 0.13);
-    g2.gain.exponentialRampToValueAtTime(0.001, t + 0.27);
-    o2.connect(g2); g2.connect(ctx.destination);
-    o2.start(t + 0.13); o2.stop(t + 0.3);
-  } catch(e) {}
-}
-
-function startHeartbeat(period) {
-  if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
-  playLubDub();
-  heartbeatTimer = setInterval(playLubDub, period);
-}
-
-function stopHeartbeat() {
-  if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
-  if (heartAudioCtx) { try { heartAudioCtx.close(); } catch(e){} heartAudioCtx = null; }
-}
-
-function removeHeart() {
-  if (heartEl) { heartEl.remove(); heartEl = null; }
-  stopHeartbeat();
-}
 
 function spawnPageConfetti(duration) {
   const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb','#ff99cc','#ffffff'];
@@ -396,35 +330,6 @@ function spawnPageConfetti(duration) {
   batch();
 }
 
-function updateHeart(step) {
-  removeHeart();
-  if (step === 13) {
-    const sq = document.querySelector('#board .square-g2');
-    if (!sq) return;
-    heartEl = document.createElement('div');
-    heartEl.className = 'heart-marker hb-slow';
-    heartEl.textContent = '❤️';
-    sq.appendChild(heartEl);
-    startHeartbeat(1100);
-  } else if (step === 14) {
-    const sq = document.querySelector('#board .square-g2');
-    if (!sq) return;
-    heartEl = document.createElement('div');
-    heartEl.className = 'heart-marker hb-fast';
-    heartEl.textContent = '❤️';
-    sq.appendChild(heartEl);
-    startHeartbeat(450);
-  } else if (step === 15) {
-    spawnPageConfetti(5000);
-    const sq = document.querySelector('#board .square-g2');
-    if (sq) {
-      heartEl = document.createElement('div');
-      heartEl.className = 'heart-marker victory';
-      heartEl.textContent = '❤️';
-      sq.appendChild(heartEl);
-    }
-  }
-}
 
 function showCage(step) {
   const existing = document.getElementById('cage-svg');
@@ -623,8 +528,8 @@ function goToStep(s) {
   updateUI();
   showCage(s);
   showKnightLink(s);
-  updateHeart(s);
   if (s === positions.length - 1) {
+    spawnPageConfetti(5000);
     setTimeout(redKingOverlay, 200);
   }
 }
