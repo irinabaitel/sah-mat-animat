@@ -66,13 +66,32 @@
     if (!svg) {
       svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.setAttribute('class', 'ann-svg');
-      svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:25;';
+      svg.style.cssText = 'position:absolute;pointer-events:none;z-index:25;';
       bw.appendChild(svg);
     }
     while (svg.firstChild) svg.removeChild(svg.firstChild);
 
+    /* Aliniază SVG citind direct din DOM poziția pătrățelului din colțul stânga-sus */
+    var ori = (typeof board !== 'undefined' && board) ? board.orientation() : 'white';
+    var tlName = ori === 'white' ? 'a8' : 'h1';
+    var tlSq   = bw.querySelector('[data-square="' + tlName + '"]');
+    var sqSz, svgX = 0, svgY = 0;
+    if (tlSq) {
+      sqSz = tlSq.offsetWidth;
+      var bwRect = bw.getBoundingClientRect();
+      var tlRect = tlSq.getBoundingClientRect();
+      svgX = Math.round(tlRect.left - bwRect.left);
+      svgY = Math.round(tlRect.top  - bwRect.top);
+    } else {
+      sqSz = bw.offsetWidth / 8;
+    }
+    var sz = sqSz * 8;
+    svg.style.left   = svgX + 'px';
+    svg.style.top    = svgY + 'px';
+    svg.style.width  = sz   + 'px';
+    svg.style.height = sz   + 'px';
+
     var NS = 'http://www.w3.org/2000/svg';
-    var sz = bw.offsetWidth, sqSz = sz / 8;
     var defs = document.createElementNS(NS, 'defs');
     svg.appendChild(defs);
 

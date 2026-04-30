@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ro">
 <head>
   <meta charset="UTF-8">
@@ -107,9 +107,9 @@
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lectie">
-    <a href="pagina27.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">&#206;napoi</span></a>
+    <a href="pagina26.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">&#206;napoi</span></a>
     <a href="hub.html" class="nav-btn nav-btn--contents"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
-    <a href="pagina28.html" class="nav-btn nav-btn--forward"><span class="icon">&#8594;</span><span class="label">&#206;nainte</span></a>
+    <a href="pagina19.html" class="nav-btn nav-btn--forward"><span class="icon">&#8594;</span><span class="label">Nebun+Nebun</span></a>
   </footer>
 </div>
 
@@ -159,13 +159,13 @@ function onDragStart(source,piece){if(chess.game_over())return false;if(chess.tu
 
 function onDrop(source,target){if(chess.turn()!==playerSide)return 'snapback';const uciMove=source+target;const move=chess.move({from:source,to:target,promotion:'q'});if(!move)return 'snapback';playSoundForMove(move);if(!firstMoveHappened){firstMoveHappened=true;lockTimeButtons();}
 if(playerSide==='b'){positionHistory.push(chess.fen());updateMoveList();setTimeout(stockfishPlayWhite,350);return;}
-if(chess.in_stalemate()){statusBox.innerHTML='\u26a0\ufe0f <strong>Pat!</strong> Regele negru nu mai are mut\u0103ri \u2014 e remiz\u0103! \u00cencerc\u0103 alt\u0103 mutare.';statusBox.className='status-box warning';chess.undo();board.position(chess.fen());prepareWhiteBest();return 'snapback';}
 positionHistory.push(chess.fen());updateMoveList();startClock('b');
 if(chess.in_checkmate()){const whiteMoves=Math.ceil(chess.history().length/2);statusBox.innerHTML='\uD83C\uDFC6 <strong>\u015eah mat!</strong> Ai reu\u015fit din <strong>'+whiteMoves+' mut\u0103ri</strong>. Po\u0163i mai bine?';statusBox.className='status-box success';stopClock();spawnPageConfetti(5000);setTimeout(removeHeart,1000);enableReview();return;}
+if(chess.in_stalemate()||chess.in_draw()){statusBox.innerHTML='⚠️ <strong>Pat!</strong> Remiză! Mai încercă.';statusBox.className='status-box';stopClock();enableReview();return;}
 const isGood=sfBestForWhite&&uciMove===sfBestForWhite;
 statusBox.innerHTML=isGood?'\u2705 Mutare excelent\u0103! Acum r\u0103spunde Regele negru<span class="dots"></span>':'Regele negru r\u0103spunde<span class="dots"></span>';
 statusBox.className=isGood?'status-box success':'status-box';
-setTimeout(function(){askStockfish(chess.fen(),15,function(mv){if(!mv||mv==='(none)'){statusBox.innerHTML='E r\u00e2ndul t\u0103u!';statusBox.className='status-box';prepareWhiteBest();return;}const sfBlackMove=chess.move({from:mv.slice(0,2),to:mv.slice(2,4)});playSoundForMove(sfBlackMove);board.position(chess.fen());positionHistory.push(chess.fen());updateMoveList();if(chess.in_checkmate()){statusBox.innerHTML='\u274c \u015eah mat! Regele negru a c\u00e2\u015ftigat. Mai \u00eencerc\u0103!';statusBox.className='status-box danger';stopClock();enableReview();return;}if(chess.in_stalemate()||chess.in_draw()){statusBox.innerHTML='\u26a0\ufe0f Remiz\u0103! Mai \u00eencerc\u0103.';statusBox.className='status-box warning';stopClock();enableReview();return;}startClock('w');statusBox.innerHTML=isGood?'\u2705 Mutare excelent\u0103! Acum e r\u00e2ndul t\u0103u.':'E r\u00e2ndul t\u0103u. G\u00e2nde\u015fte-te cum s\u0103 restr\u00e2ngi Regele negru!';statusBox.className=isGood?'status-box success':'status-box';prepareWhiteBest();});},350);}
+setTimeout(function(){askStockfish(chess.fen(),15,function(mv){if(!mv||mv==='(none)'){statusBox.innerHTML='E r\u00e2ndul t\u0103u!';statusBox.className='status-box';prepareWhiteBest();return;}const sfBlackMove=chess.move({from:mv.slice(0,2),to:mv.slice(2,4)});playSoundForMove(sfBlackMove);board.position(chess.fen());positionHistory.push(chess.fen());updateMoveList();if(chess.in_checkmate()){statusBox.innerHTML='\u274c \u015eah mat! Regele negru a c\u00e2\u015ftigat. Mai \u00eencerc\u0103!';statusBox.className='status-box danger';stopClock();enableReview();return;}if(chess.in_stalemate()||chess.in_draw()){statusBox.innerHTML='\u26a0\ufe0f Remiz\u0103! Mai \u00eencerc\u0103.';statusBox.className='status-box';stopClock();enableReview();return;}startClock('w');statusBox.innerHTML=isGood?'\u2705 Mutare excelent\u0103! Acum e r\u00e2ndul t\u0103u.':'E r\u00e2ndul t\u0103u. G\u00e2nde\u015fte-te cum s\u0103 restr\u00e2ngi Regele negru!';statusBox.className=isGood?'status-box success':'status-box';prepareWhiteBest();});},350);}
 
 function onSnapEnd(){board.position(chess.fen());}
 

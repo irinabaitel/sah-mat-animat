@@ -1,217 +1,207 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sah Mat Animat - Dama si Nebun vs Rege</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Damă + Nebun vs. Rege</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
+<style>
+.lesson-content { display: flex; flex-direction: column; gap: 14px; }
 
-        #nav {
-            position: sticky; top: 0;
-            background: rgba(245,169,110,0.92);
-            backdrop-filter: blur(8px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 20px; z-index: 100;
-            border-bottom: 2px solid rgba(255,255,255,0.4);
-        }
-        .nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-        .nav-btn:hover { background: rgba(255,255,255,0.85); }
-        .nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-        .nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 0.06em; }
+.card {
+  background: var(--c-surface); border: 2px solid var(--c-border);
+  border-radius: var(--radius); padding: 14px 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.card.active-card {
+  border-color: var(--c-navy);
+  box-shadow: 0 0 0 3px rgba(26,58,107,0.12);
+}
+.card p { font-size: var(--fs-md); line-height: 1.75; color: var(--c-text); margin-bottom: 10px; text-align: justify; }
+.card p:last-child { margin-bottom: 0; }
+.card p strong { color: var(--c-navy); }
 
-        .content { max-width: 780px; margin: 0 auto; padding: 28px 16px 0; display: flex; flex-direction: column; gap: 20px; }
-
-        .lesson-title { text-align: center; margin-bottom: 8px; }
-        .lesson-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(1.7em,5vw,2.4em); color: #1a3a6b; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); line-height: 1.2; }
-
-        .card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 22px 24px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-        .card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; margin-bottom: 10px; text-align: justify; }
-        .card p:last-child { margin-bottom: 0; }
-
-        .board-card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 16px 20px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-        .sec-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-        .sec-icon { font-size: 1.8em; }
-        .sec-title { font-family: 'Baloo 2', cursive; font-size: 1.15em; color: #1a3a6b; }
-
-        .examples-row {
-            display: flex;
-            gap: 32px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .mini-example {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-        .mini-board { width: 200px; }
-        .mini-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .mini-btn {
-            background: #1a3a6b;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            font-size: 0.85em;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .mini-btn:hover:not(:disabled) { background: #2a5aab; }
-        .mini-btn:disabled { background: rgba(26,58,107,0.25); cursor: not-allowed; }
-        .mini-badge {
-            background: rgba(26,58,107,0.1);
-            border-radius: 16px;
-            padding: 4px 12px;
-            font-family: 'Baloo 2', cursive;
-            font-weight: 700;
-            color: #1a3a6b;
-            font-size: 0.85em;
-            min-width: 64px;
-            text-align: center;
-        }
-        .mini-badge.mat { background: #c0392b; color: white; }
-        .mini-label {
-            font-size: 0.82em;
-            color: rgba(26,26,46,0.55);
-            font-style: italic;
-        }
-
-        .bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 8px; }
-        .nav-next { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.95em; font-weight: 700; padding: 9px 22px; border-radius: 50px; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 12px rgba(26,58,107,0.35); }
-        .nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
-        .nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
-        .nav-prev:hover { background: rgba(255,255,255,0.75); }
-
-        @media (max-width: 560px) {
-            .card, .board-card { padding: 16px; }
-            .mini-board { width: 160px; }
-        }
-    </style>
+.card-nav {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 12px; justify-content: center;
+}
+.mini-btn {
+  background: var(--c-navy); color: white; border: none;
+  border-radius: 50%; width: 30px; height: 30px;
+  font-size: 0.82em; cursor: pointer; transition: background 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.mini-btn:hover:not(:disabled) { background: #2a5aab; }
+.mini-btn:disabled { background: rgba(26,58,107,0.22); cursor: not-allowed; }
+.mini-badge {
+  background: rgba(26,58,107,0.1); border-radius: 14px;
+  padding: 3px 14px; font-family: 'Baloo 2', cursive;
+  font-weight: 700; color: var(--c-navy); font-size: 0.85em;
+  min-width: 64px; text-align: center;
+}
+.mini-badge.mat { background: #c0392b; color: white; }
+</style>
 </head>
 <body>
+<div class="page-wrapper">
 
-<nav id="nav">
-    <a href="hub.html" class="nav-btn">&#9776; Cuprins</a>
-    <div class="nav-title">Dam&#259; + Nebun vs. Rege</div>
-    <span class="nav-badge">Nivelul III</span>
-</nav>
+  <header class="page-header" role="banner">
+    <span class="header-title">Damă + Nebun vs. Rege</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Nivelul III</span>
+    </div>
+  </header>
 
-<div class="content">
+  <main class="page-main" role="main">
 
-    <div class="lesson-title">
-        <h1>Maturi Simple cu Figuri<br>Rege + Dam&#259; + Nebun vs. Rege</h1>
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
     </div>
 
-    <div class="card">
-        <p>C&#226;nd sunt pu&#539;ine piese pe tabl&#259;, o singur&#259; pies&#259; nu prea poate s&#259; dea mat,
-        prin urmare piesele trebuie s&#259; colaboreze &#238;ntre ele, schimb&#226;ndu-&#351;i la nevoie
-        rolurile pe care le au. Una dintre piese este, la un moment dat,
-        <strong>v&#226;n&#259;torul</strong>, iar rolul v&#226;n&#259;torului este acela de a fug&#259;ri regele
-        &#351;i de a-l obliga s&#259; se duc&#259; &#238;ntr-un anumit loc, pe un anumit p&#259;tr&#259;&#539;el.
-        Cealalt&#259; pies&#259; are rolul de <strong>gardian</strong> &#351;i &#238;i taie calea regelui
-        &#238;n timp ce acesta fuge de v&#226;n&#259;tor, astfel &#238;nc&#226;t regele fug&#259;rit s&#259; ajung&#259;
-        c&#226;t mai repede pe p&#259;tr&#259;&#539;elul pe care ace&#351;tia &#238;&#351;i doresc. Pentru c&#259; joac&#259;
-        &#238;n aceea&#351;i echip&#259;, intervine &#351;i regele, u&#351;ur&#226;ndu-le &#351;i mai mult munca celor doi.
-        Uneori se poate &#351;i f&#259;r&#259; ajutorul regelui, dar, &#351;tim bine, unde-s mul&#539;i, puterea cre&#351;te!</p>
-    </div>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="lesson-content">
 
-    <div class="card">
-        <p>Matul cu regina &#351;i nebunul s-ar putea da &#351;i f&#259;r&#259; ajutorul regelui, regina av&#226;nd
-        destul&#259; putere pentru a-l for&#539;a pe regele inamic s&#259; ajung&#259; la marginea tablei,
-        dar, a&#351;a cum am spus, din acest moment are nevoie de un ajutor pentru a da mat.</p>
-    </div>
+          <h1>Maturi simple cu figuri<br>Rege + Damă + Nebun vs. Rege</h1>
 
-    <div class="board-card">
-        <div class="sec-header">
-            <span class="sec-icon">&#9812;</span>
-            <span class="sec-title">Iat&#259; dou&#259; situa&#539;ii &#238;n care ob&#539;inem matul cu regina &#351;i nebunul</span>
-        </div>
-        <div class="examples-row">
-            <div class="mini-example">
-                <div id="board1" class="mini-board"></div>
-                <div class="mini-controls">
-                    <button class="mini-btn" id="b1prev" onclick="step1(-1)">&#9664;</button>
-                    <div class="mini-badge" id="badge1">Start</div>
-                    <button class="mini-btn" id="b1next" onclick="step1(1)">&#9654;</button>
-                </div>
-                <span class="mini-label">Regina d&#259; mat la d7</span>
+          <!-- Card 1: regele participă (Df7#) -->
+          <div class="card active-card" id="card1">
+            <p>Când sunt puține piese pe tablă, o singură piesă nu prea poate să dea mat —
+            piesele trebuie să colaboreze între ele, schimbându-și la nevoie rolurile.
+            Una devine <strong>vânătorul</strong>: fugărește regele și îl obligă să ajungă
+            într-un anumit loc. Cealaltă devine <strong>gardianul</strong>: îi taie calea
+            regelui fugărit. Intervine și regele, ușurându-le și mai mult munca celor doi —
+            unde-s mulți, puterea crește!</p>
+            <div class="card-nav">
+              <button class="mini-btn" id="bAprev" onclick="stepA(-1)">&#9664;</button>
+              <div class="mini-badge" id="badgeA">Start</div>
+              <button class="mini-btn" id="bAnext" onclick="stepA(1)">&#9654;</button>
             </div>
-            <div class="mini-example">
-                <div id="board2" class="mini-board"></div>
-                <div class="mini-controls">
-                    <button class="mini-btn" id="b2prev" onclick="step2(-1)">&#9664;</button>
-                    <div class="mini-badge" id="badge2">Start</div>
-                    <button class="mini-btn" id="b2next" onclick="step2(1)">&#9654;</button>
-                </div>
-                <span class="mini-label">Regina d&#259; mat la f7</span>
+          </div>
+
+          <!-- Card 2: fără ajutorul regelui (Dd7#) -->
+          <div class="card" id="card2">
+            <p>Matul cu regina și nebunul s-ar putea da și fără ajutorul regelui —
+            regina are destulă putere pentru a-l forța pe regele inamic să ajungă la
+            marginea tablei, iar <strong>nebunul sprijină lovitura finală</strong>.
+            Regele nu trebuie să intervină în mod direct: regina și nebunul se descurcă
+            singure.</p>
+            <div class="card-nav">
+              <button class="mini-btn" id="bBprev" onclick="stepB(-1)">&#9664;</button>
+              <div class="mini-badge" id="badgeB">Start</div>
+              <button class="mini-btn" id="bBnext" onclick="stepB(1)">&#9654;</button>
             </div>
+          </div>
+
         </div>
+      </div>
     </div>
 
-    <div class="bottom-nav">
-        <a href="pagina14.html" class="nav-prev">&#9664; &#206;napoi</a>
-        <a href="pagina17.html" class="nav-next">&#206;nainte &#9654;</a>
-    </div>
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="pagina14.html" class="nav-btn nav-btn--back">
+      <span class="icon">←</span><span class="label">Înapoi</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon">⊞</span><span class="label">Cuprins</span>
+    </a>
+    <a href="pagina17.html" class="nav-btn nav-btn--forward">
+      <span class="icon">→</span><span class="label">Înainte</span>
+    </a>
+  </footer>
 
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script>
-const PAGE_ID = 'em_msf_dn_l1';
-const positions1 = [
-    '3k4/8/8/1Q3B2/8/5K2/8/8 w - - 0 1',
-    '3k4/3Q4/8/5B2/8/5K2/8/8 b - - 1 1'
-];
-const labels1 = ['Start', 'Dd7#'];
+// Exemplul A: Df7# — regele alb pe f4 participă activ
+const posA   = ['8/2Q5/5k2/8/2B2K2/8/8/8', '8/5Q2/5k2/8/2B2K2/8/8/8'];
+const labA   = ['Start', 'Df7#'];
 
-const positions2 = [
-    '8/2Q5/5k2/8/2B2K2/8/8/8 w - - 0 1',
-    '8/5Q2/5k2/8/2B2K2/8/8/8 b - - 1 1'
-];
-const labels2 = ['Start', 'Df7#'];
+// Exemplul B: Dd7# — regele alb pe f3 e departe de acțiune
+const posB   = ['3k4/8/8/1Q3B2/8/5K2/8/8', '3k4/3Q4/8/5B2/8/5K2/8/8'];
+const labB   = ['Start', 'Dd7#'];
 
-const cfg = { pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg', draggable: false };
+let activeEx = 'A';
+let idxA = 0, idxB = 0;
 
-const board1 = Chessboard('board1', Object.assign({}, cfg, { position: positions1[0] }));
-const board2 = Chessboard('board2', Object.assign({}, cfg, { position: positions2[0] }));
+const mainBoard = Chessboard('board', {
+  position: posA[0],
+  pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+  draggable: true
+});
 
-let idx1 = 0, idx2 = 0;
-
-function updateBoard1() {
-    board1.position(positions1[idx1], false);
-    const badge = document.getElementById('badge1');
-    badge.textContent = labels1[idx1];
-    badge.className = 'mini-badge' + (idx1 === positions1.length - 1 ? ' mat' : '');
-    document.getElementById('b1prev').disabled = idx1 === 0;
-    document.getElementById('b1next').disabled = idx1 === positions1.length - 1;
-}
-function updateBoard2() {
-    board2.position(positions2[idx2], false);
-    const badge = document.getElementById('badge2');
-    badge.textContent = labels2[idx2];
-    badge.className = 'mini-badge' + (idx2 === positions2.length - 1 ? ' mat' : '');
-    document.getElementById('b2prev').disabled = idx2 === 0;
-    document.getElementById('b2next').disabled = idx2 === positions2.length - 1;
+// Găsește pătratul regelui negru din FEN fără chess.js
+function blackKingSq(fen) {
+  const rows = fen.split(' ')[0].split('/');
+  for (let r = 0; r < 8; r++) {
+    let f = 0;
+    for (const ch of rows[r]) {
+      if (ch >= '1' && ch <= '8') f += parseInt(ch);
+      else if (ch === 'k') return String.fromCharCode(97 + f) + (8 - r);
+      else f++;
+    }
+  }
+  return null;
 }
 
-function step1(d) { idx1 = Math.max(0, Math.min(positions1.length - 1, idx1 + d)); updateBoard1(); }
-function step2(d) { idx2 = Math.max(0, Math.min(positions2.length - 1, idx2 + d)); updateBoard2(); }
+function clearHL() {
+  document.querySelectorAll('#board .highlight-check').forEach(el => el.classList.remove('highlight-check'));
+}
 
-updateBoard1();
-updateBoard2();
+function applyMatHL(fen) {
+  const sq = blackKingSq(fen);
+  if (!sq) return;
+  const el = document.querySelector('#board .square-' + sq);
+  if (el) el.classList.add('highlight-check');
+}
+
+function updateAll() {
+  clearHL();
+  const fen = activeEx === 'A' ? posA[idxA] : posB[idxB];
+  mainBoard.position(fen, false);
+
+  const isLast = activeEx === 'A' ? (idxA === posA.length - 1) : (idxB === posB.length - 1);
+  if (isLast) setTimeout(() => applyMatHL(fen), 200);
+
+  // Badge și butoane card 1 (exemplul A)
+  const bA = document.getElementById('badgeA');
+  bA.textContent = labA[idxA];
+  bA.className = 'mini-badge' + (idxA === posA.length - 1 ? ' mat' : '');
+  document.getElementById('bAprev').disabled = idxA === 0;
+  document.getElementById('bAnext').disabled = idxA === posA.length - 1;
+
+  // Badge și butoane card 2 (exemplul B)
+  const bB = document.getElementById('badgeB');
+  bB.textContent = labB[idxB];
+  bB.className = 'mini-badge' + (idxB === posB.length - 1 ? ' mat' : '');
+  document.getElementById('bBprev').disabled = idxB === 0;
+  document.getElementById('bBnext').disabled = idxB === posB.length - 1;
+
+  // Cardul activ evidențiat
+  document.getElementById('card1').classList.toggle('active-card', activeEx === 'A');
+  document.getElementById('card2').classList.toggle('active-card', activeEx === 'B');
+}
+
+function stepA(d) {
+  activeEx = 'A';
+  idxA = Math.max(0, Math.min(posA.length - 1, idxA + d));
+  updateAll();
+}
+function stepB(d) {
+  activeEx = 'B';
+  idxB = Math.max(0, Math.min(posB.length - 1, idxB + d));
+  updateAll();
+}
+
+updateAll();
 </script>
-<script src="arena_touch.js"></script>
+<script src="board-utils.js"></script>
 </body>
 </html>
