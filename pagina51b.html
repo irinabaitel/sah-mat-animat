@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Legătura — Nivelul IV</title>
+  <title>Ruperea Legăturii — Nivelul IV</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -54,7 +54,6 @@
 
     .square-selected { background: rgba(255,200,0,0.55) !important; }
 
-    /* ── Accordion ── */
     .acc-list { display: flex; flex-direction: column; gap: 5px; }
 
     .acc-item {
@@ -86,7 +85,7 @@
     .acc-item.open .acc-chevron { transform: rotate(90deg); }
 
     .acc-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-    .acc-item.open .acc-body { max-height: 400px; }
+    .acc-item.open .acc-body { max-height: 420px; }
 
     .acc-inner { padding: 2px 14px 12px; }
 
@@ -111,7 +110,7 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">Legătura</span>
+    <span class="header-title">Ruperea Legăturii</span>
     <div class="header-progress">
       <span class="lesson-badge">Nivelul IV</span>
     </div>
@@ -130,12 +129,12 @@
         <div class="info-content">
 
           <div class="card">
-            <p><strong>Legătura</strong> este o situație în care o piesă atacă <strong>două piese adverse aflate pe aceeași linie</strong> — coloană, linie sau diagonală. Piesele care pot lega sunt <strong>nebunii, turnurile și reginele</strong>. Piesa cu valoare mai mică este blocată în fața celei cu valoare mai mare.</p>
-            <p>Dacă piesa din față se mută, piesa mai valoroasă din spate rămâne în pericol.</p>
+            <p>O piesă legată nu este <strong>blocată pentru totdeauna</strong>. Există metode prin care îi poți reda libertatea: alungă atacatorul cu un pion, forțează o schimbare a poziției printr-un sacrificiu sau — cel mai spectaculos — <strong>ignoră legătura și lansezi un atac decisiv</strong>.</p>
+            <p>Ruperea legăturii este adesea cheia combinațiilor tactice de nivel avansat.</p>
           </div>
 
           <div class="gold-rule card">
-            <p>&#127775; <strong>Regula de aur:</strong> O piesă legată își pierde parțial sau total puterea de mișcare. Ea devine o <strong>țintă fixă</strong> — un punct vulnerabil pe care îl poți ataca repetat până când defensiva adversarului cedează.</p>
+            <p>&#127775; <strong>Regula de aur:</strong> Înainte să cedezi o piesă legată, verifică dacă poți <strong>rupe legătura</strong> cu un atac de pion sau o combinație care amenință ceva mai important.</p>
           </div>
 
           <div id="accList" class="acc-list"></div>
@@ -152,7 +151,7 @@
             <div class="moves-log" id="movesLog"></div>
           </div>
 
-          <a href="pagina51b.html" class="btn-primary" style="display:flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 20px;border-radius:50px;background:var(--c-navy);color:white;text-decoration:none;font-family:var(--font-display);font-size:0.97rem;font-weight:700;border:none;cursor:pointer;width:100%;box-sizing:border-box;transition:opacity .18s;" onmouseover="this.style.opacity='.86'" onmouseout="this.style.opacity='1'">&#8594; Ruperea Legăturii</a>
+          <a href="pagina52.html" class="btn-primary" style="display:flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 20px;border-radius:50px;background:var(--c-navy);color:white;text-decoration:none;font-family:var(--font-display);font-size:0.97rem;font-weight:700;border:none;cursor:pointer;width:100%;box-sizing:border-box;transition:opacity .18s;" onmouseover="this.style.opacity='.86'" onmouseout="this.style.opacity='1'">&#127919; Arenă Legătură &#8594;</a>
 
         </div>
       </div>
@@ -161,14 +160,14 @@
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
-    <a href="pagina50.html" class="nav-btn nav-btn--back">
+    <a href="pagina51.html" class="nav-btn nav-btn--back">
       <span class="icon">&#8592;</span><span class="label">Înapoi</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon">&#8862;</span><span class="label">Cuprins</span>
     </a>
-    <a href="pagina51b.html" class="nav-btn nav-btn--forward">
-      <span class="icon">&#8594;</span><span class="label">Ruperea Legăturii</span>
+    <a href="pagina52.html" class="nav-btn nav-btn--forward">
+      <span class="icon">&#8594;</span><span class="label">Arenă de antrenament</span>
     </a>
   </footer>
 
@@ -183,147 +182,99 @@ function toRo(san) {
   return san.replace(/[KQRBN]/g, m => map[m]);
 }
 
-/* ── Chapter data ── */
 const chapters = [
 
-  /* 0 — Absolut 1: nebun leagă turn față de rege (diagonală) */
+  /* 0 — Pionul alungă nebunul care creează legătura */
   {
-    fen: '6k1/6pp/8/3r4/8/7P/4BPP1/6K1 w - - 0 1',
-    san: ['Bc4'],
+    fen: '4k3/8/8/8/6b1/5N2/6PP/3Q2K1 w - - 0 1',
+    san: ['h3', 'Bh5', 'g4', 'Bg6'],
     ann: {
-      0: 'Nebunul alb de pe e2 se pregătește să creeze o legătură absolută.',
-      1: 'Nebunul mută pe c4 — leagă <strong>absolut</strong> turnul de pe d5 față de regele de pe g8! Turnul nu mai poate să se miște.'
+      0: 'Nebunul negru de pe g4 leagă <strong>relativ</strong> calul de pe f3 față de regina de pe d1. Albul pregătește ruperea legăturii cu pionii.',
+      1: 'Albul joacă h3 — pionul atacă direct nebunul de pe g4! Negrul trebuie să se retragă.',
+      2: 'Nebunul se retrage pe h5 pentru a evita captura.',
+      3: 'Albul joacă g4 — pionul atacă acum nebunul de pe h5! Negrul trebuie să se retragă din nou.',
+      4: 'Nebunul se retrage pe g6. Legătura este ruptă — calul de pe f3 este din nou liber!'
     },
     arrows: {
-      1: [{from:'c4',to:'d5',color:'R'},{from:'d5',to:'g8',color:'Y'}]
+      0: [{from:'g4',to:'f3',color:'R'},{from:'f3',to:'d1',color:'Y'}],
+      1: [{from:'h3',to:'g4',color:'R'}],
+      2: [],
+      3: [{from:'g4',to:'h5',color:'R'}],
+      4: [{from:'f3',to:'e5',color:'G'}]
     }
   },
 
-  /* 1 — Absolut 2: turn leagă cal față de rege (linie) */
+  /* 1 — Smith-Morra: sacrificiu pentru a rupe legătura */
   {
-    fen: 'K7/8/8/4n2k/8/8/8/R7 w - - 0 1',
-    san: ['Ra5', 'Kg4', 'Rxe5'],
+    fen: 'r2qkbnr/pp2pppp/2np4/8/2B1P1b1/2N2N2/PP3PPP/R1BQK2R w KQkq - 2 7',
+    san: ['Bxf7+', 'Kxf7', 'Ng5+', 'Ke8', 'Qxg4'],
     ann: {
-      0: 'Turnul alb poate crea o legătură absolută pe linia a 5-a.',
-      1: 'Turnul mută pe a5 — leagă <strong>absolut</strong> calul de pe e5 față de regele de pe h5! Calul nu se poate mișca.',
-      2: 'Negrul mută regele pentru a scăpa de legătură... dar acum calul rămâne fără apărare!',
-      3: 'Turnul câștigă calul!'
+      0: 'Nebunul negru de pe g4 leagă calul de pe f3 față de regina de pe d1. Albul are o combinație surprinzătoare pentru a rupe legătura!',
+      1: 'Sacrificiu pe f7 cu șah! Forțând regele negru să captureze și liberând indirect calul din legătură.',
+      2: 'Regele negru este obligat să ia nebunul pe f7.',
+      3: 'Calul "legat" sare acum liber pe g5 — dă șah regelui de pe f7! Legătura a fost ruptă prin tactică.',
+      4: 'Regele se retrage pe e8.',
+      5: 'Regina albă câștigă nebunul care a creat legătura! Albul a ieșit în avantaj material.'
     },
     arrows: {
-      1: [{from:'a5',to:'e5',color:'R'},{from:'e5',to:'h5',color:'Y'}]
+      0: [{from:'g4',to:'f3',color:'R'},{from:'f3',to:'d1',color:'Y'}],
+      1: [{from:'c4',to:'f7',color:'G'}],
+      2: [],
+      3: [{from:'f3',to:'g5',color:'G'},{from:'g5',to:'f7',color:'R'}],
+      4: [],
+      5: [{from:'d1',to:'g4',color:'G'}]
     }
   },
 
-  /* 2 — Absolut 3: regină leagă turn față de rege (diagonală) */
+  /* 2 — Matul lui Legal: negrul ia regina */
   {
-    fen: '7q/6k1/8/8/5R2/8/8/1NK5 b - - 0 1',
-    san: ['Qh6', 'Nd2', 'Qxf4'],
+    fen: 'r2qkbnr/ppp2ppp/2np4/4p2b/2B1P3/2N2N1P/PPPP1PP1/R1BQK2R w KQkq - 1 6',
+    san: ['Nxe5', 'Bxd1', 'Bxf7+', 'Ke7', 'Nd5'],
     ann: {
-      0: 'Negrul la mutare poate crea o legătură absolută față de regele alb.',
-      1: 'Dama neagră mută pe h6 — leagă <strong>absolut</strong> turnul de pe f4 față de regele de pe c1! Turnul nu se poate muta.',
-      2: 'Albul încearcă să blocheze cu calul pe d2...',
-      3: 'Dama câștigă turnul legat!'
+      0: 'Nebunul negru de pe h5 leagă calul de pe f3 față de regina de pe d1 — negrul crede că poate lua regina gratis!',
+      1: 'Albul <strong>ignoră legătura</strong> și sacrifică regina! Calul sare pe e5. Aceasta este <strong>capcana lui Legal</strong>!',
+      2: 'Negrul ia "gratis" regina cu nebunul... cade în capcana lui Legal!',
+      3: 'Nebunul alb atacă regele de pe e8 cu șah! Regele trebuie să se mute.',
+      4: 'Regele negru este forțat să se retragă pe e7.',
+      5: 'Calul dă <strong>MAT</strong> pe d5! Nebunul propriu de pe f8 blochează fuga spre f8, regina blochează d8, pionul blochează d6. Regele este prins!'
     },
     arrows: {
-      1: [{from:'h6',to:'f4',color:'R'},{from:'f4',to:'c1',color:'Y'}]
+      0: [{from:'h5',to:'f3',color:'R'},{from:'f3',to:'d1',color:'Y'}],
+      1: [{from:'f3',to:'e5',color:'G'}],
+      2: [{from:'h5',to:'d1',color:'R'}],
+      3: [{from:'c4',to:'f7',color:'G'}],
+      4: [],
+      5: [{from:'c3',to:'d5',color:'G'}]
     }
   },
 
-  /* 3 — Absolut 4: nebun leagă cal față de rege, turn exploatează */
+  /* 3 — Matul lui Legal: negrul recapturează calul (nu ia regina) */
   {
-    fen: '6k1/8/8/3n4/8/1B6/8/3R2K1 w - - 0 1',
-    san: ['Rxd5'],
+    fen: 'r2qkbnr/ppp2ppp/2np4/4p2b/2B1P3/2N2N1P/PPPP1PP1/R1BQK2R w KQkq - 1 6',
+    san: ['Nxe5', 'Nxe5', 'Qxh5', 'Nxc4', 'Qb5+'],
     ann: {
-      0: 'Nebunul alb de pe b3 leagă <strong>absolut</strong> calul de pe d5 față de regele de pe g8. Calul nu se poate mișca!',
-      1: 'Turnul ia calul legat — calul nu putea fugi nicăieri!'
+      0: 'Aceeași poziție — dar ce se întâmplă dacă negrul NU ia regina gratis?',
+      1: 'Albul joacă Nxe5 — ignorând legătura.',
+      2: 'De data aceasta negrul recapturează cu calul, evitând captura reginei. Un răspuns mai prudent.',
+      3: 'Albul ia nebunul care crea legătura cu Qxh5! Schimb avantajos — albul câștigă o piesă.',
+      4: 'Calul negru ia nebunul de pe c4.',
+      5: 'Regina albă dă șah pe b5, atacând pe diagonala b5-e8. Albul este în avantaj decisiv!'
     },
     arrows: {
-      0: [{from:'b3',to:'d5',color:'R'},{from:'d5',to:'g8',color:'Y'}],
-      1: [{from:'b3',to:'g8',color:'Y'}]
-    }
-  },
-
-  /* 4 — Absolut 5 (propriu): nebun leagă cal față de rege (diagonală) */
-  {
-    fen: '4k3/8/2n5/1B6/8/8/3K4/4R3 w - - 0 1',
-    san: ['Re6'],
-    ann: {
-      0: 'Nebunul alb de pe b5 leagă <strong>absolut</strong> calul de pe c6 față de regele de pe e8.',
-      1: 'Turnul atacă calul legat de pe e6! Calul nu poate fugi (ar lăsa regele în șah) — este pierdut.'
-    },
-    arrows: {
-      0: [{from:'b5',to:'c6',color:'R'},{from:'c6',to:'e8',color:'Y'}],
-      1: [{from:'b5',to:'c6',color:'R'},{from:'c6',to:'e8',color:'Y'},{from:'e6',to:'c6',color:'G'}]
-    }
-  },
-
-  /* 5 — Relativ 1: turn leagă cal față de regină (coloană) */
-  {
-    fen: '4k3/3q4/8/3n4/8/3R4/8/3K4 w - - 0 1',
-    san: [],
-    ann: {
-      0: 'Turnul alb de pe d3 leagă <strong>relativ</strong> calul de pe d5 față de regina de pe d7. Calul se poate muta legal, dar negrul ar pierde regina!'
-    },
-    arrows: {
-      0: [{from:'d3',to:'d5',color:'R'},{from:'d5',to:'d7',color:'Y'}]
-    }
-  },
-
-  /* 6 — Relativ 2: nebun leagă cal față de regină (diagonală) */
-  {
-    fen: '4k3/4q3/8/2n5/1B6/8/4K3/8 w - - 0 1',
-    san: [],
-    ann: {
-      0: 'Nebunul alb de pe b4 leagă <strong>relativ</strong> calul de pe c5 față de regina de pe e7. Dacă calul se mișcă, regina este pierdută!'
-    },
-    arrows: {
-      0: [{from:'b4',to:'c5',color:'R'},{from:'c5',to:'e7',color:'Y'}]
-    }
-  },
-
-  /* 7 — Relativ 3: turn leagă cal față de regină (linie) */
-  {
-    fen: '4k3/8/8/q1n4R/8/8/8/4K3 w - - 0 1',
-    san: [],
-    ann: {
-      0: 'Turnul alb de pe h5 leagă <strong>relativ</strong> calul de pe c5 față de regina de pe a5. Dacă calul se mișcă, turnul ia regina!'
-    },
-    arrows: {
-      0: [{from:'h5',to:'c5',color:'R'},{from:'c5',to:'a5',color:'Y'}]
-    }
-  },
-
-  /* 8 — Relativ 4: nebun leagă nebun față de turn (diagonală) */
-  {
-    fen: 'r3k3/1b6/8/8/8/8/6B1/4K3 w - - 0 1',
-    san: [],
-    ann: {
-      0: 'Nebunul alb de pe g2 leagă <strong>relativ</strong> nebunul de pe b7 față de turnul de pe a8. Dacă nebunul se mișcă, albul ia turnul!'
-    },
-    arrows: {
-      0: [{from:'g2',to:'b7',color:'R'},{from:'b7',to:'a8',color:'Y'}]
-    }
-  },
-
-  /* 9 — Relativ 5: turn leagă nebun față de regină (coloană) */
-  {
-    fen: '1q2k3/8/8/8/1b6/8/8/1R2K3 w - - 0 1',
-    san: [],
-    ann: {
-      0: 'Turnul alb de pe b1 leagă <strong>relativ</strong> nebunul de pe b4 față de regina de pe b8. Dacă nebunul se mișcă, turnul ia regina!'
-    },
-    arrows: {
-      0: [{from:'b1',to:'b4',color:'R'},{from:'b4',to:'b8',color:'Y'}]
+      0: [{from:'h5',to:'f3',color:'R'},{from:'f3',to:'d1',color:'Y'}],
+      1: [{from:'f3',to:'e5',color:'G'}],
+      2: [{from:'c6',to:'e5',color:'R'}],
+      3: [{from:'d1',to:'h5',color:'G'}],
+      4: [{from:'e5',to:'c4',color:'R'}],
+      5: [{from:'h5',to:'b5',color:'G'},{from:'b5',to:'e8',color:'Y'}]
     }
   }
 
 ];
 
-/* ── State ── */
 let curChapterIdx = 0;
 let positions     = [];
 
-/* ── Positions precompute ── */
 function computePositions(ch) {
   const c = new Chess(ch.fen);
   const fens = [c.fen()];
@@ -334,7 +285,6 @@ function computePositions(ch) {
   return fens;
 }
 
-/* ── Board init ── */
 let selSq   = null;
 let rmbDown = false;
 
@@ -388,20 +338,16 @@ function currentStep() {
   return parseInt(document.getElementById('moveCounter').dataset.step || '0');
 }
 
-/* ── Chapter loading ── */
 function loadChapter(idx) {
   curChapterIdx = idx;
   const ch = chapters[idx];
   positions = computePositions(ch);
-
   const firstTurn = ch.fen.split(' ')[1];
   board.orientation(ch.orient || (firstTurn === 'b' ? 'black' : 'white'));
-
   buildMovesList();
   goToStep(0);
 }
 
-/* ── Step navigation ── */
 function goToStep(s) {
   clearSel();
   if (window._annClear) window._annClear();
@@ -416,7 +362,6 @@ function goLast()  { goToStep(positions.length - 1); }
 function goPrev()  { const s = currentStep(); if (s > 0) goToStep(s - 1); }
 function goNext()  { const s = currentStep(); if (s < positions.length - 1) goToStep(s + 1); }
 
-/* ── UI update ── */
 function getMoveLabel(s) {
   if (s === 0) return 'Start';
   const preFen  = positions[s - 1];
@@ -447,16 +392,9 @@ function updateUI(s) {
   const box = document.getElementById('annotationBox');
   const txt = (ch.ann && ch.ann[s] !== undefined) ? ch.ann[s] : '';
   box.className = 'annotation-box';
-  if (txt) {
-    box.innerHTML = txt;
-  } else {
-    box.innerHTML = s === 0
-      ? '<em style="opacity:.55">Apasă &#9654; pentru a avansa prin mutări.</em>'
-      : '';
-  }
+  box.innerHTML = txt || (s === 0 ? '<em style="opacity:.55">Apasă &#9654; pentru a avansa prin mutări.</em>' : '');
 }
 
-/* ── Moves log ── */
 function createMoveBtn(san, step, cls) {
   const btn = document.createElement('button');
   btn.className = 'mlog-token ' + cls;
@@ -505,7 +443,6 @@ function buildMovesList() {
   }
 }
 
-/* ── Study arrows (SVG overlay) ── */
 function clearStudyArrows() {
   const ex = document.getElementById('study-arrows-svg');
   if (ex) ex.remove();
@@ -563,6 +500,7 @@ function redrawStudyArrows(chIdx, step) {
 
   const SW = 5;
   arrows.forEach(function (arr, i) {
+    if (arr.from === arr.to) return;
     const col = COL[arr.color] || COL.G;
     const mid = 'sarr' + i;
     const mk  = document.createElementNS(NS, 'marker');
@@ -592,7 +530,6 @@ function redrawStudyArrows(chIdx, step) {
   bw.appendChild(svg);
 }
 
-/* ── Keyboard ── */
 document.addEventListener('keydown', function (e) {
   if (e.key === 'ArrowRight') goNext();
   if (e.key === 'ArrowLeft')  goPrev();
@@ -600,30 +537,23 @@ document.addEventListener('keydown', function (e) {
   if (e.key === 'End')        goLast();
 });
 
-/* ── Pin types + accordion ── */
 const pinTypes = [
   {
     num: '1.',
-    title: 'Legătura Absolută',
-    desc: 'Piesa legată nu are voie să se miște deloc — în spatele ei se află <strong>regele</strong>. Mutarea ar fi ilegală (ar lăsa regele în șah).',
+    title: 'Ruperea Legăturii',
+    desc: 'Poți alunga piesa care creează legătura cu un <strong>atac de pion</strong>, sau prin combinații tactice care forțează mutarea atacatorului.',
     examples: [
-      { ch: 0, label: 'Ex. 1' },
-      { ch: 1, label: 'Ex. 2' },
-      { ch: 2, label: 'Ex. 3' },
-      { ch: 3, label: 'Ex. 4' },
-      { ch: 4, label: 'Ex. 5' }
+      { ch: 0, label: 'Ex. 1 — Pionul alungă nebunul' },
+      { ch: 1, label: 'Ex. 2 — Sacrificiu de nebun' }
     ]
   },
   {
     num: '2.',
-    title: 'Legătura Relativă',
-    desc: 'Piesa se poate mișca legal, dar nu este recomandat — s-ar pierde o piesă <strong>mai valoroasă</strong> din spatele ei (de exemplu, un turn sau o regină).',
+    title: 'Matul lui Legal',
+    desc: 'Cel mai spectaculos mod: <strong>ignori legătura și sacrifici regina</strong>! Adversarul ia regina "gratis" — dar cade în mat. Descoperit de Sire de Légal (~1750).',
     examples: [
-      { ch: 5, label: 'Ex. 1' },
-      { ch: 6, label: 'Ex. 2' },
-      { ch: 7, label: 'Ex. 3' },
-      { ch: 8, label: 'Ex. 4' },
-      { ch: 9, label: 'Ex. 5' }
+      { ch: 2, label: 'Ex. 1 — Negrul ia regina' },
+      { ch: 3, label: 'Ex. 2 — Negrul recapturează calul' }
     ]
   }
 ];
@@ -673,7 +603,7 @@ function openAcc(item) {
     if (o !== item) closeAcc(o, true);
   });
   item.classList.add('open');
-  item.querySelector('.acc-body').style.maxHeight = '400px';
+  item.querySelector('.acc-body').style.maxHeight = '420px';
   const controls = document.getElementById('navControls');
   item.parentNode.insertBefore(controls, item.nextElementSibling);
   controls.style.display = '';
@@ -695,7 +625,6 @@ function loadExAcc(btn, chIdx) {
   loadChapter(chIdx);
 }
 
-/* ── Init ── */
 buildAccordion();
 loadChapter(0);
 const firstAcc = document.querySelector('#accList .acc-item');
