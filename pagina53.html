@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Atac Dublu — Nivelul IV</title>
+  <title>Frigăruia — Nivelul IV</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -21,22 +21,11 @@
     .card p:last-child { margin-bottom: 0; }
     .card p strong { color: var(--c-navy); }
 
-    .chapter-bar {
-      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    .gold-rule {
+      background: linear-gradient(135deg, #fff8e1, #fff3cd);
+      border: 2px solid #f4c842; border-radius: var(--radius); padding: 12px 14px;
     }
-    .chapter-label {
-      font-family: var(--font-display); font-size: var(--fs-sm);
-      font-weight: var(--fw-bold); color: var(--c-text-muted); white-space: nowrap;
-    }
-    .ch-btn {
-      width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(26,58,107,0.3);
-      background: rgba(255,255,255,0.55); font-family: var(--font-display);
-      font-size: var(--fs-sm); font-weight: var(--fw-bold); color: var(--c-navy);
-      cursor: pointer; transition: all 0.15s; display: flex; align-items: center;
-      justify-content: center;
-    }
-    .ch-btn:hover { background: var(--c-surface-2); border-color: var(--c-navy); }
-    .ch-btn.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
+    .gold-rule p { margin-bottom: 0; }
 
     .step-controls {
       display: flex; align-items: center; justify-content: center; gap: 8px; padding: 4px 0;
@@ -62,31 +51,7 @@
     }
     .annotation-box.success { border-left-color: var(--c-success); background: var(--c-success-bg); }
     .annotation-box.danger  { border-left-color: var(--c-error);   background: var(--c-error-bg);   }
-    .annotation-box.warning { border-left-color: var(--c-warning); background: var(--c-warning-bg); }
 
-    .mat-badge {
-      display: inline-block; background: #c0392b; color: white;
-      padding: 2px 10px; border-radius: 20px;
-      font-weight: 700; font-size: 0.88em; margin-bottom: 6px;
-    }
-
-    @keyframes confetti-fall {
-      0%   { opacity: 1;   transform: translate(0,0) rotate(0deg); }
-      80%  { opacity: 1; }
-      100% { opacity: 0;   transform: translate(var(--dx),var(--dy)) rotate(var(--rot)); }
-    }
-    .confetti-page {
-      position: fixed; pointer-events: none; z-index: 9999;
-      border-radius: 3px; animation: confetti-fall var(--dur,2s) ease-in forwards;
-    }
-    .btn-arena {
-      display: flex; align-items: center; justify-content: center;
-      margin-top: 14px; padding: 11px 20px; border-radius: 50px;
-      background: var(--c-navy); color: white; text-decoration: none;
-      font-family: var(--font-display); font-size: 0.97rem; font-weight: 700;
-      border: none; cursor: pointer; width: 100%; transition: opacity .18s;
-    }
-    .btn-arena:hover { opacity: 0.86; }
     .square-selected { background: rgba(255,200,0,0.55) !important; }
 
     /* ── Accordion ── */
@@ -104,9 +69,8 @@
       padding: 11px 14px; cursor: pointer; user-select: none;
       transition: background 0.15s;
     }
-    .acc-item.open .acc-header, .acc-header:hover {
-      background: rgba(26,58,107,0.07);
-    }
+    .acc-item.open .acc-header, .acc-header:hover { background: rgba(26,58,107,0.07); }
+
     .acc-num {
       font-family: var(--font-display); font-weight: 900;
       color: var(--c-navy); font-size: var(--fs-sm); min-width: 22px;
@@ -140,16 +104,14 @@
     }
     .ex-btn:hover, .ex-btn.active { background: var(--c-navy); color: white; }
 
-    #navControls {
-      display: flex; flex-direction: column; gap: 10px; padding: 4px 0 6px;
-    }
+    #navControls { display: flex; flex-direction: column; gap: 10px; padding: 4px 0 6px; }
   </style>
 </head>
 <body>
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">Atac Dublu</span>
+    <span class="header-title">Frigăruia</span>
     <div class="header-progress">
       <span class="lesson-badge">Nivelul IV</span>
     </div>
@@ -168,14 +130,17 @@
         <div class="info-content">
 
           <div class="card">
-            <p><strong>Atacul dublu</strong> este tactica prin care mutând o piesă se creează două amenințări asupra adversarului. Dacă una dintre piesele amenințate este regele, atunci cealaltă piesă este pierdută, altfel, jucătorul poate alege care piesă va fi eliminată.</p>
-            <p>Există mai multe tipuri de atac dublu.</p>
+            <p><strong>Frigăruia</strong> este opusul legăturii. Piesa atacatoare vizează mai întâi <strong>piesa mai valoroasă</strong> (sau chiar regele), forțând-o să se mute. Piesa mai puțin valoroasă din spatele ei rămâne expusă și este <strong>capturată</strong>.</p>
+            <p>Piesele care pot frigărui sunt cele cu mișcare liniară: <strong>regina, turnul și nebunul</strong>.</p>
+          </div>
+
+          <div class="gold-rule card">
+            <p>&#127775; <strong>Regula de aur:</strong> Piesa mai valoroasă este atacată prima — ea se mută să scape, dar sacrifică piesa mai slabă din spatele ei. Gândește-te la o <strong>frigăruie</strong>: piesa din față e împunsă, cea din spate e capturată!</p>
           </div>
 
           <div id="accList" class="acc-list"></div>
 
           <div id="navControls" style="display:none">
-
             <div class="step-controls">
               <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima poziție">&#9198;</button>
               <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="Înapoi">&#9664;</button>
@@ -183,14 +148,11 @@
               <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="Înainte">&#9654;</button>
               <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima poziție">&#9197;</button>
             </div>
-
             <div class="annotation-box" id="annotationBox"></div>
-
             <div class="moves-log" id="movesLog"></div>
-
           </div>
 
-          <a href="pagina50.html" class="btn-arena">🎯 Arenă Atac Dublu →</a>
+          <a href="pagina54.html" class="btn-primary" style="display:flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 20px;border-radius:50px;background:var(--c-navy);color:white;text-decoration:none;font-family:var(--font-display);font-size:0.97rem;font-weight:700;border:none;cursor:pointer;width:100%;box-sizing:border-box;transition:opacity .18s;" onmouseover="this.style.opacity='.86'" onmouseout="this.style.opacity='1'">&#127919; Arenă de antrenament &#8594;</a>
 
         </div>
       </div>
@@ -199,13 +161,13 @@
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
-    <a href="pagina48.html" class="nav-btn nav-btn--back">
+    <a href="pagina52.html" class="nav-btn nav-btn--back">
       <span class="icon">&#8592;</span><span class="label">Înapoi</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon">&#8862;</span><span class="label">Cuprins</span>
     </a>
-    <a href="pagina50.html" class="nav-btn nav-btn--forward">
+    <a href="pagina54.html" class="nav-btn nav-btn--forward">
       <span class="icon">&#8594;</span><span class="label">Arenă de antrenament</span>
     </a>
   </footer>
@@ -223,215 +185,182 @@ function toRo(san) {
 
 /* ── Chapter data ── */
 const chapters = [
-  /* 0 — Furculița: Regină 1 */
-  {
-    fen: '4k3/p3n1p1/5p1p/4p3/r3P3/7P/P3Q1P1/6K1 w - - 0 1',
-    san: ['Qb5+'],
-    ann: { 1: 'Dama atacă simultan regele și turnul negru' },
-    arrows: {}
-  },
-  /* 1 — Furculița: Regină 2 */
-  {
-    fen: 'r2q2k1/pp3p2/2p3p1/3p4/1N1P4/1P4B1/P3B1PP/5R1K b - - 0 1',
-    san: ['Qe7'],
-    ann: { 1: 'Dama atacă simultan nebunul (e2) și calul (b4) alb' },
-    arrows: {}
-  },
-  /* 2 — Furculița: Turn 1 */
-  {
-    fen: 'r3k2r/1pp3pp/p1p5/4p1n1/8/4R3/PPP2PPP/R5K1 w kq - 0 1',
-    san: ['Rxe5+', 'Kf7', 'Rxg5'],
-    ann: {
-      1: 'Turnul ia pionul, dă șah regelui și atacă simultan calul negru',
-      3: 'Turnul câștigă calul'
-    },
-    arrows: {}
-  },
-  /* 3 — Furculița: Turn 2 */
-  {
-    fen: 'b5k1/4r1pp/1p6/2p5/8/5N1P/1P1R1PPK/8 w - - 0 1',
-    san: ['Rd8+', 'Kf7', 'Rxa8'],
-    ann: {
-      1: 'Turnul dă șah și atacă simultan nebunul de pe a8',
-      3: 'Turnul câștigă nebunul'
-    },
-    arrows: {}
-  },
-  /* 4 — Furculița: Nebun 1 */
-  {
-    fen: 'r5k1/6pp/8/3n4/8/6P1/5PBP/6K1 w - - 0 1',
-    san: ['Bxd5'],
-    ann: { 1: 'Nebunul ia calul și atacă simultan regele (g8) și turnul (a8)' },
-    arrows: {}
-  },
-  /* 5 — Furculița: Nebun 2 */
-  {
-    fen: '8/p3bkpp/5p2/4p3/1pn5/1N3B1P/PP3PP1/6K1 w - - 0 1',
-    san: ['Bd5+'],
-    ann: { 1: 'Nebunul dă șah regelui (f7) și atacă simultan calul negru (c4)' },
-    arrows: {}
-  },
-  /* 6 — Furculița: Cal 1 */
-  {
-    fen: '6k1/5p2/3p2n1/3P1P1p/2Q5/5KP1/1P3R1P/4r3 b - - 0 1',
-    san: ['Ne5+', 'Kf4', 'Nxc4'],
-    ann: {
-      1: 'Calul dă șah (f3) și atacă simultan regina albă (c4)',
-      3: 'Calul câștigă regina'
-    },
-    arrows: {}
-  },
-  /* 7 — Furculița: Cal 2 */
-  {
-    fen: '6k1/6pp/1p1npp2/2p5/2P1PP1n/P5P1/1B1Q1K1P/8 b - - 0 1',
-    san: ['Nxe4+', 'Ke3', 'Nxd2'],
-    ann: {
-      1: 'Calul ia pionul, dă șah (f2) și atacă simultan dama albă (d2)',
-      3: 'Calul câștigă dama'
-    },
-    arrows: {}
-  },
-  /* 8 — Furculița: Pion 1 */
-  {
-    fen: '4b3/6pp/2rknp2/8/1P1PQ3/5P1P/6PK/8 w - - 2 2',
-    san: ['d5'],
-    ann: { 1: 'Pionul atacă simultan turnul (c6) și calul (e6) negru' },
-    arrows: {}
-  },
-  /* 9 — Furculița: Pion 2 */
-  {
-    fen: 'r3r1k1/1b1n1pb1/pp1q1npp/4p3/P2P4/2P1N2P/1P2BPPB/R2R1QK1 w - - 0 1',
-    san: ['dxe5', 'Qc5', 'exf6'],
-    ann: {
-      1: 'Pionul ia pe e5 atacând simultan dama (d6) și calul (f6) negru',
-      3: 'Pionul ia calul'
-    },
-    arrows: {}
-  },
-  /* 10 — Furculița: Rege 1 */
-  {
-    fen: '2k5/2p3p1/1p2p3/p7/3nP3/3PN1B1/1nPK3P/8 w - - 0 1',
-    san: ['Kc3'],
-    ann: { 1: 'Regele atacă simultan ambii cai negri (b2 și d4)' },
-    arrows: {}
-  },
-  /* 11 — Furculița: Rege 2 */
-  {
-    fen: '8/8/8/8/3nb1k1/8/3K4/8 w - - 0 1',
-    san: ['Ke3'],
-    ann: { 1: 'Regele atacă simultan calul (d4) și nebunul (e4) negru' },
-    arrows: {}
-  },
 
-  /* 12 — Atac dublu prin descoperire: 1 */
+  /* 0 — Absolut 1: damă frigăruie rege + turn (linie) */
   {
-    fen: '2k5/8/7q/2B5/8/6P1/6KP/2R5 w - - 0 1',
-    san: ['Be3+', 'Kd8', 'Bxh6'],
+    fen: '8/8/8/8/8/r3k3/8/4K2Q w - - 0 1',
+    san: ['Qh3', 'Ke4', 'Qxa3'],
     ann: {
-      1: 'Nebunul se mută descoperind șahul turnului pe coloana c și atacă simultan dama neagră',
-      3: 'Nebunul câștigă dama'
-    },
-    arrows: {}
-  },
-  /* 13 — Atac dublu prin descoperire: 2 */
-  {
-    fen: '8/k2r4/8/2P5/8/8/5BKP/8 w - - 0 1',
-    san: ['c6+', 'Ka6', 'cxd7'],
-    ann: {
-      1: 'Pionul se mută descoperind atacul nebunului asupra regelui și atacă simultan turnul',
-      3: 'Pionul câștigă turnul'
-    },
-    arrows: {}
-  },
-  /* 14 — Atac dublu prin descoperire: 3 */
-  {
-    fen: '8/1p4pk/p5qp/3b1r2/P2B4/2P4P/1PQ3P1/4R1K1 b - - 0 1',
-    san: ['Rf1+', 'Rxf1', 'Qxc2'],
-    ann: {
-      1: 'Turnul dă șah și descoperă atacul damei negre asupra damei albe',
-      3: 'Dama câștigă dama albă'
-    },
-    arrows: {}
-  },
-  /* 15 — Atac dublu prin descoperire: 4 */
-  {
-    fen: 'k3r3/B1p3pp/3p1p2/4r3/8/3P2P1/1RP2P1P/R5K1 w - - 0 1',
-    san: ['Bc5'],
-    ann: {
-      1: 'Nebunul eliberează coloana a — turnul de pe a1 dă șah mat! Regele negru nu are nicio scăpare'
-    },
-    arrows: {}
-  },
-  /* 16 — Atac dublu prin descoperire: 5 */
-  {
-    fen: 'qrr3k1/5Npp/8/8/2Q5/7P/5PP1/6K1 w - - 0 1',
-    san: ['Nh6+', 'Kh8', 'Qg8+', 'Rxg8', 'Nf7'],
-    ann: {
-      1: 'Șah dublu! Calul atacă direct g8, iar mișcarea lui descoperă atacul damei pe diagonala c4–g8',
-      3: 'Sacrificiul de damă pe g8 — obligatoriu de luat',
-      5: 'Calul dă mat pe f7 — regele este sufocat de propriile piese!'
-    },
-    arrows: {}
-  },
-
-  /* 17 — Atac piesă + câmp esențial: 1 (poziție statică) */
-  {
-    fen: 'k7/pp3p2/4n1p1/5p2/2Q5/1r5P/1P4PK/8 b - - 1 1',
-    san: [],
-    ann: { 0: 'Dama albă de pe c4 amenință simultan turnul negru (Dxb3) și matul (Dc8#) — negrul nu poate preveni amândouă' },
-    arrows: {}
-  },
-  /* 18 — Atac piesă + câmp esențial: 2 */
-  {
-    fen: '8/p7/1p4pk/2b4p/7P/P5r1/1P2Q1P1/7K w - - 0 1',
-    san: ['Qe5'],
-    ann: { 1: 'Dama amenință simultan turnul negru (g3) și matul (Dh8#) — negrul nu poate salva ambele' },
-    arrows: {}
-  },
-  /* 19 — Atac piesă + câmp esențial: 3 */
-  {
-    fen: '6rk/1p6/pb5p/4p3/4P3/6P1/P4PK1/3Q4 w - - 0 1',
-    san: ['Qd6'],
-    ann: { 1: 'Dama amenință simultan nebunul (b6) și matul (Dh6#)' },
-    arrows: {}
-  },
-  /* 20 — Atac piesă + câmp esențial: 4 */
-  {
-    fen: '8/1p3pbk/p5pp/q7/2P2P2/PP4NP/K3Q1P1/8 b - - 0 1',
-    san: ['Qc3'],
-    ann: { 1: 'Dama neagră amenință simultan calul alb (g3) și matul (Da1#)' },
-    arrows: {}
-  },
-  /* 21 — Atac piesă + câmp esențial: 5 */
-  {
-    fen: '6k1/1p5p/p6R/1q6/8/8/PP3RPP/K7 b - - 0 1',
-    san: ['Qg5'],
-    ann: { 1: 'Dama neagră amenință simultan turnul alb (h6) și matul (Dc1#)' },
-    arrows: {}
-  },
-
-  /* 22 — Atac dublu combinat: 1 */
-  {
-    fen: '5rk1/6pp/p2br3/3p1p1q/R2P1Pb1/2P1B1P1/1P1N3P/4RQK1 b - - 0 1',
-    san: ['Qe8', 'Raa1', 'Rxe3'],
-    ann: {
-      1: 'Dama atacă simultan turnul de pe a4 și întărește atacul turnului negru asupra nebunului de pe e3',
-      3: 'Turnul câștigă nebunul'
+      0: 'Regele negru de pe e3 și turnul de pe a3 sunt pe <strong>aceeași linie</strong>. Dama albă poate frigărui!',
+      1: '<strong>Dama atacă regele pe linia 3 — șah!</strong> Regele este forțat să fugă, lăsând turnul din spate fără protecție.',
+      2: 'Regele fuge pe e4...',
+      3: '<strong>Dama câștigă turnul!</strong> Frigăruia absolută: regele era în față, turnul în spate.'
     },
     arrows: {
-      1: [
-        { from: 'e8', to: 'a4', color: 'G' },
-        { from: 'e8', to: 'e3', color: 'G' },
-        { from: 'e6', to: 'e3', color: 'G' }
-      ]
+      0: [{from:'e3',to:'a3',color:'Y'}],
+      1: [{from:'h3',to:'e3',color:'R'},{from:'e3',to:'a3',color:'Y'}],
+      3: [{from:'h3',to:'a3',color:'G'}]
+    }
+  },
+
+  /* 1 — Absolut 2: turn frigăruie rege + turn (coloană) */
+  {
+    fen: '7r/8/8/8/7k/8/4K3/R7 w - - 0 1',
+    san: ['Rh1', 'Kg5', 'Rxh8'],
+    ann: {
+      0: 'Regele negru de pe h4 și turnul de pe h8 sunt pe <strong>coloana h</strong>. Turnul alb poate frigărui!',
+      1: '<strong>Turnul sare pe h1 — șah pe coloana h!</strong> Regele este forțat să se mute, iar turnul din spatele lui rămâne descoperit.',
+      2: 'Regele fuge pe g5...',
+      3: '<strong>Turnul câștigă turnul advers de pe h8!</strong> Frigăruia absolută pe coloană.'
+    },
+    arrows: {
+      0: [{from:'h4',to:'h8',color:'Y'}],
+      1: [{from:'h1',to:'h4',color:'R'},{from:'h4',to:'h8',color:'Y'}],
+      3: [{from:'h1',to:'h8',color:'G'}]
+    }
+  },
+
+  /* 2 — Absolut 3: turn frigăruie rege + turn (linie) */
+  {
+    fen: '8/8/8/8/3k3r/8/4K3/R7 w - - 0 1',
+    san: ['Ra4', 'Kd5', 'Rxh4'],
+    ann: {
+      0: 'Regele negru de pe d4 și turnul de pe h4 sunt pe <strong>linia a 4-a</strong>. Turnul alb frigăruie!',
+      1: '<strong>Turnul atacă regele pe linia 4 — șah!</strong> Regele trebuie să elibereze linia, lăsând turnul din spate expus.',
+      2: 'Regele se retrage pe d5...',
+      3: '<strong>Turnul capturează turnul de pe h4!</strong> Frigăruia absolută pe linie.'
+    },
+    arrows: {
+      0: [{from:'d4',to:'h4',color:'Y'}],
+      1: [{from:'a4',to:'d4',color:'R'},{from:'d4',to:'h4',color:'Y'}],
+      3: [{from:'a4',to:'h4',color:'G'}]
+    }
+  },
+
+  /* 3 — Absolut 4: nebun frigăruie rege + damă (diagonală) */
+  {
+    fen: '7q/8/8/8/3k4/8/8/2B1K3 w - - 0 1',
+    san: ['Bb2', 'Kd5', 'Bxh8'],
+    ann: {
+      0: 'Regele negru de pe d4 și dama de pe h8 sunt pe aceeași <strong>diagonală</strong>. Nebunul poate frigărui!',
+      1: '<strong>Nebunul sare pe b2 — șah pe diagonală!</strong> Regele este forțat să se mute; dama de pe h8 rămâne în calea nebunului.',
+      2: 'Regele se mută pe d5 pentru a ieși din șah...',
+      3: '<strong>Nebunul câștigă dama de pe h8!</strong> Frigăruia absolută pe diagonală.'
+    },
+    arrows: {
+      0: [{from:'d4',to:'h8',color:'Y'}],
+      1: [{from:'b2',to:'d4',color:'R'},{from:'d4',to:'h8',color:'Y'}],
+      3: [{from:'b2',to:'h8',color:'G'}]
+    }
+  },
+
+  /* 4 — Absolut 5: damă frigăruie rege + turn (coloană) */
+  {
+    fen: '8/8/8/7Q/8/8/r1k5/4K3 w - - 0 1',
+    san: ['Qh2', 'Kc1', 'Qxa2'],
+    ann: {
+      0: 'Regele negru de pe c2 și turnul de pe a2 sunt pe <strong>linia a 2-a</strong>. Dama albă frigăruie!',
+      1: '<strong>Dama atacă regele pe linia 2 — șah!</strong> Regele trebuie să fugă, lăsând turnul din spatele lui descoperit.',
+      2: 'Regele se refugiază pe c1...',
+      3: '<strong>Dama câștigă turnul de pe a2!</strong> O frigăruie absolută completă.'
+    },
+    arrows: {
+      0: [{from:'c2',to:'a2',color:'Y'}],
+      1: [{from:'h2',to:'c2',color:'R'},{from:'c2',to:'a2',color:'Y'}],
+      3: [{from:'h2',to:'a2',color:'G'}]
+    }
+  },
+
+  /* 5 — Relativ 1: turn frigăruie damă + turn (coloană) */
+  {
+    fen: '4r1k1/8/8/4q3/8/8/8/2K4R w - - 0 1',
+    san: ['Re1', 'Qd6', 'Rxe8'],
+    ann: {
+      0: 'Dama neagră de pe e5 și turnul de pe e8 sunt pe <strong>coloana e</strong>. Turnul alb poate frigărui piesele adverse!',
+      1: '<strong>Turnul sare pe e1 — atacă dama!</strong> Dama este piesa mai valoroasă; ea trebuie să se mute, lăsând turnul din spate descoperit.',
+      2: 'Dama se salvează pe d6...',
+      3: '<strong>Turnul câștigă turnul advers de pe e8!</strong> Frigăruia relativă: o piesă valoroasă s-a mutat, cealaltă a fost capturată.'
+    },
+    arrows: {
+      0: [{from:'e5',to:'e8',color:'Y'}],
+      1: [{from:'e1',to:'e5',color:'R'},{from:'e5',to:'e8',color:'Y'}],
+      3: [{from:'e1',to:'e8',color:'G'}]
+    }
+  },
+
+  /* 6 — Relativ 2: nebun frigăruie damă + turn (diagonală) */
+  {
+    fen: '7k/8/r7/8/8/3q4/6B1/4K3 w - - 0 1',
+    san: ['Bf1', 'Qe4', 'Bxa6'],
+    ann: {
+      0: 'Dama neagră de pe d3 și turnul de pe a6 sunt pe aceeași <strong>diagonală</strong>. Nebunul alb poate frigărui!',
+      1: '<strong>Nebunul sare pe f1 — atacă dama pe diagonală!</strong> Dama este amenințată; ea trebuie să se mute, expunând turnul de pe a6.',
+      2: 'Dama se mută pe e4 pentru a scăpa...',
+      3: '<strong>Nebunul câștigă turnul de pe a6!</strong> Frigăruia relativă pe diagonală.'
+    },
+    arrows: {
+      0: [{from:'d3',to:'a6',color:'Y'}],
+      1: [{from:'f1',to:'d3',color:'R'},{from:'d3',to:'a6',color:'Y'}],
+      3: [{from:'f1',to:'a6',color:'G'}]
+    }
+  },
+
+  /* 7 — Relativ 3: damă frigăruie turn + cal (linie) */
+  {
+    fen: '8/7Q/8/8/8/n2r4/4k3/7K w - - 0 1',
+    san: ['Qh3', 'Rd6', 'Qxa3'],
+    ann: {
+      0: 'Turnul negru de pe d3 și calul de pe a3 sunt pe <strong>linia a 3-a</strong>. Dama albă poate frigărui!',
+      1: '<strong>Dama atacă turnul pe linia 3!</strong> Turnul este amenințat și trebuie să se mute, lăsând calul din spatele lui fără apărare.',
+      2: 'Turnul se retrage pe d6...',
+      3: '<strong>Dama câștigă calul de pe a3!</strong> Frigăruia relativă în acțiune.'
+    },
+    arrows: {
+      0: [{from:'d3',to:'a3',color:'Y'}],
+      1: [{from:'h3',to:'d3',color:'R'},{from:'d3',to:'a3',color:'Y'}],
+      3: [{from:'h3',to:'a3',color:'G'}]
+    }
+  },
+
+  /* 8 — Relativ 4: turn frigăruie damă + turn (linie) */
+  {
+    fen: '1rq5/8/4k3/8/8/8/8/K6R w - - 0 1',
+    san: ['Rh8', 'Qd7', 'Rxb8'],
+    ann: {
+      0: 'Dama neagră de pe c8 și turnul de pe b8 sunt pe <strong>linia a 8-a</strong>. Turnul alb poate frigărui!',
+      1: '<strong>Turnul sare pe h8 — atacă dama!</strong> Dama este amenințată de-a lungul liniei 8 și trebuie să se mute, lăsând turnul din spate expus.',
+      2: 'Dama se salvează pe d7...',
+      3: '<strong>Turnul câștigă turnul advers de pe b8!</strong> Frigăruia relativă pe linie.'
+    },
+    arrows: {
+      0: [{from:'c8',to:'b8',color:'Y'}],
+      1: [{from:'h8',to:'c8',color:'R'},{from:'c8',to:'b8',color:'Y'}],
+      3: [{from:'h8',to:'b8',color:'G'}]
+    }
+  },
+
+  /* 9 — Relativ 5: nebun frigăruie damă + turn (diagonală) */
+  {
+    fen: '6k1/r7/8/8/3q4/8/7B/4K3 w - - 0 1',
+    san: ['Bg1', 'Qe5', 'Bxa7'],
+    ann: {
+      0: 'Dama neagră de pe d4 și turnul de pe a7 sunt pe aceeași <strong>diagonală</strong>. Nebunul alb va frigărui!',
+      1: '<strong>Nebunul sare pe g1 — atacă dama pe diagonală!</strong> Dama trebuie să se mute; turnul de pe a7 rămâne expus în spatele ei.',
+      2: 'Dama fuge pe e5...',
+      3: '<strong>Nebunul câștigă turnul de pe a7!</strong> Frigăruia relativă pe diagonală.'
+    },
+    arrows: {
+      0: [{from:'d4',to:'a7',color:'Y'}],
+      1: [{from:'g1',to:'d4',color:'R'},{from:'d4',to:'a7',color:'Y'}],
+      3: [{from:'g1',to:'a7',color:'G'}]
     }
   }
+
 ];
 
 /* ── State ── */
 let curChapterIdx = 0;
 let positions     = [];
-let isLastMate    = false;
 
 /* ── Positions precompute ── */
 function computePositions(ch) {
@@ -445,38 +374,28 @@ function computePositions(ch) {
 }
 
 /* ── Board init ── */
-let selSq = null;
-let rmbDown = false;  /* urmăresc butonul drept în faza captură, înainte de chessboard.js */
+let selSq   = null;
+let rmbDown = false;
 
 document.addEventListener('mousedown', function (e) { if (e.button === 2) rmbDown = true;  }, true);
 document.addEventListener('mouseup',   function (e) { if (e.button === 2) rmbDown = false; }, true);
 
 function clearSel() {
-  document.querySelectorAll('.square-selected').forEach(function (el) {
-    el.classList.remove('square-selected');
-  });
+  document.querySelectorAll('.square-selected').forEach(function (el) { el.classList.remove('square-selected'); });
   selSq = null;
 }
 
-function onDragStart() {
-  if (rmbDown) return false;  /* blochează drag pe click-dreapta */
-  clearSel();
-  return true;
-}
-function onDrop(source, target) {
-  if (target === 'offboard') return 'snapback';
-  return undefined;
-}
-function onSnapEnd() { /* keep freely moved position */ }
+function onDragStart() { if (rmbDown) return false; clearSel(); return true; }
+function onDrop(source, target) { if (target === 'offboard') return 'snapback'; }
+function onSnapEnd() {}
 
 const board = Chessboard('board', {
-  position:    chapters[0].fen,
-  pieceTheme:  'https://lichess1.org/assets/piece/caliente/{piece}.svg',
-  draggable:   true,
-  onDragStart, onDrop, onSnapEnd,
+  position:   chapters[0].fen,
+  pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+  draggable:  true,
+  onDragStart, onDrop, onSnapEnd
 });
 
-/* click-to-move (doar buton stânga) */
 $(document).on('click', '.square-55d63', function (e) {
   if (e.button !== 0) return;
   const sq  = $(this).data('square');
@@ -505,8 +424,7 @@ window.addEventListener('resize', function () {
 });
 
 function currentStep() {
-  const mc = document.getElementById('moveCounter');
-  return parseInt(mc.dataset.step || '0');
+  return parseInt(document.getElementById('moveCounter').dataset.step || '0');
 }
 
 /* ── Chapter loading ── */
@@ -514,20 +432,12 @@ function loadChapter(idx) {
   curChapterIdx = idx;
   const ch = chapters[idx];
   positions = computePositions(ch);
-  isLastMate = new Chess(positions[positions.length - 1]).in_checkmate();
 
   const firstTurn = ch.fen.split(' ')[1];
   board.orientation(ch.orient || (firstTurn === 'b' ? 'black' : 'white'));
 
   buildMovesList();
-  updateChapterBtns();
   goToStep(0);
-}
-
-function updateChapterBtns() {
-  document.querySelectorAll('.ch-btn').forEach(function (b, i) {
-    b.classList.toggle('active', i === curChapterIdx);
-  });
 }
 
 /* ── Step navigation ── */
@@ -536,31 +446,14 @@ function goToStep(s) {
   if (window._annClear) window._annClear();
   document.getElementById('moveCounter').dataset.step = s;
   board.position(positions[s], false);
-
-  /* highlights */
-  document.querySelectorAll('#board .highlight-check').forEach(function (el) {
-    el.classList.remove('highlight-check');
-  });
   redrawStudyArrows(curChapterIdx, s);
-
-  if (s > 0) highlightCheckIfNeeded(positions[s]);
   updateUI(s);
-  if (s === positions.length - 1 && isLastMate) {
-    highlightCheckIfNeeded(positions[s]);
-    spawnPageConfetti(4000);
-  }
 }
 
 function goFirst() { goToStep(0); }
 function goLast()  { goToStep(positions.length - 1); }
-function goPrev()  {
-  const s = currentStep();
-  if (s > 0) goToStep(s - 1);
-}
-function goNext()  {
-  const s = currentStep();
-  if (s < positions.length - 1) goToStep(s + 1);
-}
+function goPrev()  { const s = currentStep(); if (s > 0) goToStep(s - 1); }
+function goNext()  { const s = currentStep(); if (s < positions.length - 1) goToStep(s + 1); }
 
 /* ── UI update ── */
 function getMoveLabel(s) {
@@ -575,8 +468,9 @@ function getMoveLabel(s) {
 
 function updateUI(s) {
   const total = positions.length - 1;
-  document.getElementById('moveCounter').textContent = getMoveLabel(s);
-  document.getElementById('moveCounter').dataset.step = s;
+  const mc = document.getElementById('moveCounter');
+  mc.textContent = getMoveLabel(s);
+  mc.dataset.step = s;
   document.getElementById('btnFirst').disabled = s === 0;
   document.getElementById('btnPrev').disabled  = s === 0;
   document.getElementById('btnNext').disabled  = s === total;
@@ -590,17 +484,14 @@ function updateUI(s) {
 
   const ch  = chapters[curChapterIdx];
   const box = document.getElementById('annotationBox');
-  const txt = (ch.ann && ch.ann[s]) || '';
-  const isLast = s === total;
-  if (isLast && isLastMate) {
-    box.className = 'annotation-box danger';
-    box.innerHTML = '<span class="mat-badge">&#9876; ȘAH MAT!</span>' + (txt ? '<br>' + txt : '');
-  } else if (txt) {
-    box.className = 'annotation-box';
+  const txt = (ch.ann && ch.ann[s] !== undefined) ? ch.ann[s] : '';
+  box.className = 'annotation-box';
+  if (txt) {
     box.innerHTML = txt;
   } else {
-    box.className = 'annotation-box';
-    box.innerHTML = s === 0 ? '<em style="opacity:.55">Apasă ▶ pentru a avansa prin mutări.</em>' : '';
+    box.innerHTML = s === 0
+      ? '<em style="opacity:.55">Apasă &#9654; pentru a avansa prin mutări.</em>'
+      : '';
   }
 }
 
@@ -627,15 +518,12 @@ function buildMovesList() {
     const parts   = preFen.split(' ');
     const turn    = parts[1];
     const moveNum = parts[5];
-
     const row = document.createElement('div');
     row.className = 'mlog-row';
-
     const numSpan = document.createElement('span');
     numSpan.className = 'mlog-num';
     numSpan.textContent = moveNum + '.';
     row.appendChild(numSpan);
-
     if (turn === 'b') {
       const plh = document.createElement('span');
       plh.className = 'mlog-token mlog-w';
@@ -652,27 +540,7 @@ function buildMovesList() {
         i++;
       }
     }
-
     log.appendChild(row);
-  }
-}
-
-/* ── Check highlight ── */
-function highlightCheckIfNeeded(fen) {
-  const c = new Chess(fen);
-  if (!c.in_check() && !c.in_checkmate()) return;
-  const turn = c.turn();
-  const bd   = c.board();
-  for (let r = 0; r < 8; r++) {
-    for (let f = 0; f < 8; f++) {
-      const p = bd[r][f];
-      if (p && p.type === 'k' && p.color === turn) {
-        const sq = String.fromCharCode(97 + f) + (8 - r);
-        const el = document.querySelector('#board .square-' + sq);
-        if (el) el.classList.add('highlight-check');
-        return;
-      }
-    }
   }
 }
 
@@ -688,8 +556,8 @@ function redrawStudyArrows(chIdx, step) {
   const arrows = ch.arrows && ch.arrows[step];
   if (!arrows || arrows.length === 0) return;
 
-  const NS = 'http://www.w3.org/2000/svg';
-  const bw = document.getElementById('boardWrapper');
+  const NS  = 'http://www.w3.org/2000/svg';
+  const bw  = document.getElementById('boardWrapper');
   if (!bw) return;
 
   const ori    = board.orientation();
@@ -725,10 +593,8 @@ function redrawStudyArrows(chIdx, step) {
     Y: 'rgba(215,165,20,0.85)'
   };
 
-  function fileRank(sq) { return { c: sq.charCodeAt(0) - 97, r: parseInt(sq[1]) - 1 }; }
   function sqCenter(sq) {
-    const fr = fileRank(sq);
-    let c = fr.c, r = fr.r;
+    let c = sq.charCodeAt(0) - 97, r = parseInt(sq[1]) - 1;
     if (ori === 'black') { c = 7 - c; r = 7 - r; }
     const s = sz / 8;
     return { x: c * s + s / 2, y: (7 - r) * s + s / 2 };
@@ -753,7 +619,7 @@ function redrawStudyArrows(chIdx, step) {
     if (len < 1) return;
     const ux = dx / len, uy = dy / len;
     const ln = document.createElementNS(NS, 'line');
-    ln.setAttribute('x1', f.x);          ln.setAttribute('y1', f.y);
+    ln.setAttribute('x1', f.x);           ln.setAttribute('y1', f.y);
     ln.setAttribute('x2', t.x - ux * SW); ln.setAttribute('y2', t.y - uy * SW);
     ln.setAttribute('stroke', col);
     ln.setAttribute('stroke-width', String(SW));
@@ -765,33 +631,6 @@ function redrawStudyArrows(chIdx, step) {
   bw.appendChild(svg);
 }
 
-/* ── Confetti ── */
-function spawnPageConfetti(duration) {
-  const colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ff66bb','#ffffff'];
-  const endTime = Date.now() + duration;
-  function batch() {
-    if (Date.now() >= endTime) return;
-    for (let i = 0; i < 10; i++) {
-      const p = document.createElement('div');
-      p.className = 'confetti-page';
-      const w = 7 + Math.random() * 7, h = w * (0.35 + Math.random() * 0.7);
-      p.style.cssText = 'width:' + w + 'px;height:' + h + 'px;background:' +
-        colors[Math.floor(Math.random() * colors.length)] + ';left:' +
-        (Math.random() * 100) + 'vw;top:-14px';
-      const fd = window.innerHeight * (0.65 + Math.random() * 0.45);
-      p.style.setProperty('--dx', ((Math.random() - 0.5) * 180) + 'px');
-      p.style.setProperty('--dy', fd + 'px');
-      p.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
-      const dur = 1.8 + Math.random() * 2.4;
-      p.style.setProperty('--dur', dur + 's');
-      document.body.appendChild(p);
-      setTimeout(function () { p.remove(); }, dur * 1000 + 200);
-    }
-    setTimeout(batch, 120);
-  }
-  batch();
-}
-
 /* ── Keyboard ── */
 document.addEventListener('keydown', function (e) {
   if (e.key === 'ArrowRight') goNext();
@@ -800,57 +639,30 @@ document.addEventListener('keydown', function (e) {
   if (e.key === 'End')        goLast();
 });
 
-/* ── Attack types + accordion ── */
-const atacTypes = [
+/* ── Skewer types + accordion ── */
+const skewTypes = [
   {
     num: '1.',
-    title: 'Furculița',
-    desc: 'Orice piesă poate fi un atacator care își prinde adversarul în furculiță.',
+    title: 'Frigăruia Absolută',
+    desc: 'Regele este atacat direct — el trebuie să se mute, lăsând piesa mai puțin valoroasă din spatele lui fără protecție.',
     examples: [
-      { ch: 0,  label: 'Regină 1' },
-      { ch: 1,  label: 'Regină 2' },
-      { ch: 2,  label: 'Turn 1'   },
-      { ch: 3,  label: 'Turn 2'   },
-      { ch: 4,  label: 'Nebun 1'  },
-      { ch: 5,  label: 'Nebun 2'  },
-      { ch: 6,  label: 'Cal 1'    },
-      { ch: 7,  label: 'Cal 2'    },
-      { ch: 8,  label: 'Pion 1'   },
-      { ch: 9,  label: 'Pion 2'   },
-      { ch: 10, label: 'Rege 1'   },
-      { ch: 11, label: 'Rege 2'   }
+      { ch: 0, label: 'Ex. 1' },
+      { ch: 1, label: 'Ex. 2' },
+      { ch: 2, label: 'Ex. 3' },
+      { ch: 3, label: 'Ex. 4' },
+      { ch: 4, label: 'Ex. 5' }
     ]
   },
   {
     num: '2.',
-    title: 'Atacul dublu prin descoperire',
-    desc: 'O piesă se mută și atacă ceva, iar alta, din spatele ei, atacă și ea — poate aceeași piesă sau cu totul alta.',
+    title: 'Frigăruia Relativă',
+    desc: 'O piesă valoroasă (regină sau turn) este atacată prima. Ea se mută să scape — și piesa mai puțin valoroasă din spatele ei este capturată.',
     examples: [
-      { ch: 12, label: 'Ex. 1' },
-      { ch: 13, label: 'Ex. 2' },
-      { ch: 14, label: 'Ex. 3' },
-      { ch: 15, label: 'Ex. 4' },
-      { ch: 16, label: 'Ex. 5' }
-    ]
-  },
-  {
-    num: '3.',
-    title: 'Atac asupra unei piese și a unui câmp esențial',
-    desc: 'Unor astfel de atacuri trebuie să li se acorde prioritatea cuvenită: se cedează piesa în favoarea prevenirii matului.',
-    examples: [
-      { ch: 17, label: 'Ex. 1' },
-      { ch: 18, label: 'Ex. 2' },
-      { ch: 19, label: 'Ex. 3' },
-      { ch: 20, label: 'Ex. 4' },
-      { ch: 21, label: 'Ex. 5' }
-    ]
-  },
-  {
-    num: '4.',
-    title: 'Atac dublu combinat',
-    desc: '',
-    examples: [
-      { ch: 22, label: 'Ex. 1' }
+      { ch: 5, label: 'Ex. 1' },
+      { ch: 6, label: 'Ex. 2' },
+      { ch: 7, label: 'Ex. 3' },
+      { ch: 8, label: 'Ex. 4' },
+      { ch: 9, label: 'Ex. 5' }
     ]
   }
 ];
@@ -860,7 +672,7 @@ let activeExBtn = null;
 function buildAccordion() {
   const list = document.getElementById('accList');
   if (!list) return;
-  atacTypes.forEach(function (type, ti) {
+  skewTypes.forEach(function (type) {
     const item = document.createElement('div');
     item.className = 'acc-item';
 
@@ -871,32 +683,24 @@ function buildAccordion() {
       '<span class="acc-title">' + type.title + '</span>' +
       '<span class="acc-chevron">&#9658;</span>';
 
-    const body = document.createElement('div');
+    const body  = document.createElement('div');
     body.className = 'acc-body';
     const inner = document.createElement('div');
     inner.className = 'acc-inner';
 
-    let innerHTML = '';
-    if (type.desc) innerHTML += '<p class="acc-desc">' + type.desc + '</p>';
-    innerHTML += '<div class="acc-examples">';
-    type.examples.forEach(function (ex, i) {
-      const chIdx = typeof ex === 'object' ? ex.ch : ex;
-      const lbl   = typeof ex === 'object' ? ex.label : 'Exemplu ' + (i + 1);
-      innerHTML += '<button class="ex-btn" data-ch="' + chIdx + '"' +
-                   ' onclick="loadExAcc(this,' + chIdx + ')">' + lbl + '</button>';
+    let html = '<p class="acc-desc">' + type.desc + '</p><div class="acc-examples">';
+    type.examples.forEach(function (ex) {
+      html += '<button class="ex-btn" data-ch="' + ex.ch + '"' +
+              ' onclick="loadExAcc(this,' + ex.ch + ')">' + ex.label + '</button>';
     });
-    innerHTML += '</div>';
-    inner.innerHTML = innerHTML;
+    html += '</div>';
+    inner.innerHTML = html;
     body.appendChild(inner);
-
     item.appendChild(hdr);
     item.appendChild(body);
     list.appendChild(item);
 
-    /* deschide la hover */
     item.addEventListener('mouseenter', function () { openAcc(item); });
-
-    /* click pe header pentru toggle (touch + desktop) */
     hdr.addEventListener('click', function () {
       item.classList.contains('open') ? closeAcc(item) : openAcc(item);
     });
@@ -909,7 +713,7 @@ function openAcc(item) {
   });
   item.classList.add('open');
   item.querySelector('.acc-body').style.maxHeight = '400px';
-  var controls = document.getElementById('navControls');
+  const controls = document.getElementById('navControls');
   item.parentNode.insertBefore(controls, item.nextElementSibling);
   controls.style.display = '';
 }
@@ -918,7 +722,7 @@ function closeAcc(item, keepControls) {
   item.classList.remove('open');
   item.querySelector('.acc-body').style.maxHeight = '0';
   if (!keepControls) {
-    var controls = document.getElementById('navControls');
+    const controls = document.getElementById('navControls');
     if (item.nextElementSibling === controls) controls.style.display = 'none';
   }
 }
@@ -933,8 +737,10 @@ function loadExAcc(btn, chIdx) {
 /* ── Init ── */
 buildAccordion();
 loadChapter(0);
-var firstAcc = document.querySelector('#accList .acc-item');
+const firstAcc = document.querySelector('#accList .acc-item');
 if (firstAcc) openAcc(firstAcc);
+const firstExBtn = document.querySelector('.ex-btn[data-ch="0"]');
+if (firstExBtn) { activeExBtn = firstExBtn; firstExBtn.classList.add('active'); }
 </script>
 <script src="board-utils.js"></script>
 </body>
