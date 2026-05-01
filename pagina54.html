@@ -63,6 +63,7 @@
     .square-selected { background: rgba(255,200,0,0.55) !important; }
     #boardWrapper { touch-action: none; -webkit-touch-callout: none; }
     .hint-square { background: rgba(80,200,80,0.65) !important; }
+    .highlight-lastmove { background: rgba(255,170,0,0.38) !important; }
     .btn-tri  { padding: 7px 11px; min-width: 34px; }
     .btn-hint { border-color: rgba(39,174,96,0.45); background: rgba(39,174,96,0.08); color: #1a6b3a; }
     .btn-hint:hover:not(:disabled) { background: rgba(39,174,96,0.18); }
@@ -270,7 +271,8 @@ let solIdx      = 0;
 let completed   = {};
 let moveHistory = [];
 let viewIdx     = 0;
-let autoPlayTimer = null;
+let autoPlayTimer  = null;
+let puzzleStartFen = null;
 
 const SAVE_KEY = 'skewer_progress';
 
@@ -320,8 +322,8 @@ function celebrate() {
 function debounce(fn, d) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; }
 
 function clearHL() {
-  document.querySelectorAll('.square-selected, .highlight-check')
-    .forEach(el => el.classList.remove('square-selected', 'highlight-check'));
+  document.querySelectorAll('.square-selected, .highlight-check, .highlight-lastmove')
+    .forEach(el => el.classList.remove('square-selected', 'highlight-check', 'highlight-lastmove'));
 }
 function applyHL(sq, cls) {
   const el = document.querySelector('.square-' + sq);
@@ -396,8 +398,9 @@ function resetAllProgress() {
 function updatePuzzleUI() {
   const p     = PUZZLES[curIdx];
   const badge = document.getElementById('turnBadge');
-  if (p.turn === 'w') { badge.textContent = '⬜ Albul mută'; badge.className = 'turn-badge white'; }
-  else                { badge.textContent = '⬛ Negrul mută'; badge.className = 'turn-badge black'; }
+  /* userul e culoarea opusă față de cel care mută primul */
+  if (p.turn === 'w') { badge.textContent = '⬛ Negrul mută'; badge.className = 'turn-badge black'; }
+  else                { badge.textContent = '⬜ Albul mută';  badge.className = 'turn-badge white'; }
 
   const lv = levelOf(curIdx);
   const lb = document.getElementById('levelBadge');
@@ -411,18 +414,37 @@ function updatePuzzleUI() {
 function loadPuzzle(idx) {
   if (autoPlayTimer) { clearTimeout(autoPlayTimer); autoPlayTimer = null; }
   curIdx = idx; solved = false; selSq = null;
-  phase = 'waiting'; solIdx = 0;
-  moveHistory = []; viewIdx = 0;
+  phase = 'intro'; solIdx = 0;
+  moveHistory = []; viewIdx = 0; puzzleStartFen = null;
   if (window._annClear) window._annClear();
   chess = new Chess(PUZZLES[idx].fen);
   board.position(PUZZLES[idx].fen, false);
-  board.orientation(PUZZLES[idx].turn === 'w' ? 'white' : 'black');
+  /* userul joacă culoarea opusă — tabla orientată pentru user */
+  board.orientation(PUZZLES[idx].turn === 'w' ? 'black' : 'white');
   clearHL();
   updatePuzzleUI();
   updateProgress();
   updateNavBtns();
   saveProgress();
-  if (completed[idx]) {
+  setMsg('idle', '&#9203; Adversarul mută...');
+  setTimeout(playIntroMove, 900);
+}
+
+function playIntroMove() {
+  const uci  = PUZZLES[curIdx].sol[0];
+  const from = uci.slice(0, 2);
+  const to   = uci.slice(2, 4);
+  const move = chess.move({ from, to, promotion: 'q' });
+  if (!move) return;
+  playMoveSound(!!move.captured);
+  board.position(chess.fen(), false);
+  clearHL();
+  applyHL(from, 'highlight-lastmove');
+  applyHL(to,   'highlight-lastmove');
+  puzzleStartFen = chess.fen();
+  solIdx = 1;
+  phase  = 'waiting';
+  if (completed[curIdx]) {
     setMsg('ok', '&#10003; Deja rezolvat — poți încerca din nou!');
     document.getElementById('nextBtn').disabled = (curIdx === PUZZLES.length - 1);
   } else {
@@ -544,10 +566,11 @@ function showHint() {
 function showSolution() {
   if (autoPlayTimer) { clearTimeout(autoPlayTimer); autoPlayTimer = null; }
   const pz   = PUZZLES[curIdx];
-  moveHistory = pz.sol.map(uci => ({ from: uci.slice(0,2), to: uci.slice(2,4), prom: 'q' }));
-  chess = new Chess(pz.fen);
+  const base = puzzleStartFen || pz.fen;
+  moveHistory = pz.sol.slice(1).map(uci => ({ from: uci.slice(0,2), to: uci.slice(2,4), prom: 'q' }));
+  chess = new Chess(base);
   viewIdx = 0;
-  board.position(pz.fen, false);
+  board.position(base, false);
   clearHL();
   updateNavBtns();
   autoPlaySol();
@@ -567,8 +590,8 @@ function recordMove(from, to) {
   updateNavBtns();
 }
 function replayToPos(idx) {
-  const pz   = PUZZLES[curIdx];
-  const temp = new Chess(pz.fen);
+  const base = puzzleStartFen || PUZZLES[curIdx].fen;
+  const temp = new Chess(base);
   for (let i = 0; i < idx; i++) {
     const m = moveHistory[i];
     temp.move({ from: m.from, to: m.to, promotion: m.prom });
