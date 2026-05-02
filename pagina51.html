@@ -261,63 +261,93 @@ const chapters = [
     }
   },
 
-  /* 5 — Relativ 1: turn leagă cal față de regină (coloană) */
+  /* 5 — Relativ 1: turn creează pin pe coloană — cal față de regină */
   {
-    fen: '4k3/3q4/8/3n4/8/3R4/8/3K4 w - - 0 1',
-    san: [],
+    fen: '4k3/3q4/8/3n4/8/8/8/3RK3 w - - 0 1',
+    san: ['Rd4', 'Nf4', 'Rxd7'],
     ann: {
-      0: 'Turnul alb de pe d3 leagă <strong>relativ</strong> calul de pe d5 față de regina de pe d7. Calul se poate muta legal, dar negrul ar pierde regina!'
+      0: 'Calul de pe d5 și regina de pe d7 sunt pe aceeași coloană. Albul poate crea o legătură relativă cu turnul!',
+      1: 'Turnul vine pe d4 — <strong>legătură relativă</strong> pe coloana d! Calul nu poate fugi fără a ceda regina de pe d7.',
+      2: 'Calul ignoră legătura și fuge pe f4...',
+      3: 'Turnul câștigă regina!'
     },
     arrows: {
-      0: [{from:'d3',to:'d5',color:'R'},{from:'d5',to:'d7',color:'Y'}]
+      0: [],
+      1: [{from:'d4',to:'d5',color:'R'},{from:'d5',to:'d7',color:'Y'}],
+      2: [],
+      3: []
     }
   },
 
-  /* 6 — Relativ 2: nebun leagă cal față de regină (diagonală) */
+  /* 6 — Relativ 2: nebun creează pin pe diagonală — cal față de regină */
   {
-    fen: '4k3/4q3/8/2n5/1B6/8/4K3/8 w - - 0 1',
-    san: [],
+    fen: '4k3/4q3/8/2n5/8/B7/4K3/8 w - - 0 1',
+    san: ['Bb4', 'Ne4', 'Bxe7'],
     ann: {
-      0: 'Nebunul alb de pe b4 leagă <strong>relativ</strong> calul de pe c5 față de regina de pe e7. Dacă calul se mișcă, regina este pierdută!'
+      0: 'Calul de pe c5 și regina de pe e7 sunt pe aceeași diagonală. Nebunul poate crea o legătură relativă!',
+      1: 'Nebunul vine pe b4 — <strong>legătură relativă</strong> pe diagonală! Dacă calul se mișcă, regina este pierdută.',
+      2: 'Calul ignoră legătura și fuge pe e4...',
+      3: 'Nebunul câștigă regina!'
     },
     arrows: {
-      0: [{from:'b4',to:'c5',color:'R'},{from:'c5',to:'e7',color:'Y'}]
+      0: [],
+      1: [{from:'b4',to:'c5',color:'R'},{from:'c5',to:'e7',color:'Y'}],
+      2: [],
+      3: []
     }
   },
 
-  /* 7 — Relativ 3: turn leagă cal față de regină (linie) */
+  /* 7 — Relativ 3: turn creează pin pe linie — cal față de regină */
   {
-    fen: '4k3/8/8/q1n4R/8/8/8/4K3 w - - 0 1',
-    san: [],
+    fen: '4k3/8/8/qn6/8/8/8/4K2R w - - 0 1',
+    san: ['Rh5', 'Nc3', 'Rxa5'],
     ann: {
-      0: 'Turnul alb de pe h5 leagă <strong>relativ</strong> calul de pe c5 față de regina de pe a5. Dacă calul se mișcă, turnul ia regina!'
+      0: 'Calul de pe b5 și regina de pe a5 sunt pe aceeași linie. Turnul poate crea o legătură din direcția opusă!',
+      1: 'Turnul vine pe h5 — <strong>legătură relativă</strong> pe linia 5! Dacă calul se mișcă, turnul ia regina.',
+      2: 'Calul ignoră legătura și fuge pe c3...',
+      3: 'Turnul câștigă regina!'
     },
     arrows: {
-      0: [{from:'h5',to:'c5',color:'R'},{from:'c5',to:'a5',color:'Y'}]
+      0: [],
+      1: [{from:'h5',to:'b5',color:'R'},{from:'b5',to:'a5',color:'Y'}],
+      2: [],
+      3: []
     }
   },
 
-  /* 8 — Relativ 4: nebun leagă nebun față de turn (diagonală) */
+  /* 8 — Relativ 4: nebun creează pin pe diagonală — nebun față de turn */
   {
-    fen: 'r3k3/1b6/8/8/8/8/6B1/4K3 w - - 0 1',
-    san: [],
+    fen: 'r3k3/8/2b5/8/8/8/8/R3KB2 w - - 0 1',
+    san: ['Bg2', 'Bd7', 'Bxa8'],
     ann: {
-      0: 'Nebunul alb de pe g2 leagă <strong>relativ</strong> nebunul de pe b7 față de turnul de pe a8. Dacă nebunul se mișcă, albul ia turnul!'
+      0: 'Nebunul negru de pe c6 și turnul de pe a8 sunt pe aceeași diagonală (a8-h1). Nebunul alb poate crea o legătură relativă!',
+      1: 'Nebunul vine pe g2 — <strong>legătură relativă</strong> pe diagonală! Dacă nebunul negru se mișcă, albul ia turnul.',
+      2: 'Nebunul negru ignoră legătura și fuge pe d7...',
+      3: 'Nebunul alb câștigă turnul — exact ce amenința legătura!'
     },
     arrows: {
-      0: [{from:'g2',to:'b7',color:'R'},{from:'b7',to:'a8',color:'Y'}]
+      0: [],
+      1: [{from:'g2',to:'c6',color:'R'},{from:'c6',to:'a8',color:'Y'}],
+      2: [],
+      3: [{from:'g2',to:'a8',color:'G'}]
     }
   },
 
-  /* 9 — Relativ 5: turn leagă nebun față de regină (coloană) */
+  /* 9 — Relativ 5: turn creează pin pe coloană — nebun față de regină */
   {
-    fen: '1q2k3/8/8/8/1b6/8/8/1R2K3 w - - 0 1',
-    san: [],
+    fen: '1q2k3/8/8/8/1b6/8/3R4/4K3 w - - 0 1',
+    san: ['Rb2', 'Bc5', 'Rxb8'],
     ann: {
-      0: 'Turnul alb de pe b1 leagă <strong>relativ</strong> nebunul de pe b4 față de regina de pe b8. Dacă nebunul se mișcă, turnul ia regina!'
+      0: 'Nebunul de pe b4 și regina de pe b8 sunt pe aceeași coloană. Turnul poate crea o legătură și un atac simultan!',
+      1: 'Turnul vine pe b2 — <strong>legătură relativă</strong> pe coloana b! Nebunul este atacat direct și nu poate fugi fără a pierde regina.',
+      2: 'Nebunul ignoră legătura și fuge pe c5...',
+      3: 'Turnul câștigă regina cu șah!'
     },
     arrows: {
-      0: [{from:'b1',to:'b4',color:'R'},{from:'b4',to:'b8',color:'Y'}]
+      0: [],
+      1: [{from:'b2',to:'b4',color:'R'},{from:'b4',to:'b8',color:'Y'}],
+      2: [],
+      3: []
     }
   }
 
