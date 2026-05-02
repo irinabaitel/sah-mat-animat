@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Frigăruia — Nivelul IV</title>
+  <title>Piese Supraîncărcate — Nivelul IV</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -54,7 +54,6 @@
 
     .square-selected { background: rgba(255,200,0,0.55) !important; }
 
-    /* ── Accordion ── */
     .acc-list { display: flex; flex-direction: column; gap: 5px; }
 
     .acc-item {
@@ -111,7 +110,7 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">Frigăruia</span>
+    <span class="header-title">Piese Supraîncărcate</span>
     <div class="header-progress">
       <span class="lesson-badge">Nivelul IV</span>
     </div>
@@ -130,12 +129,12 @@
         <div class="info-content">
 
           <div class="card">
-            <p>Spre deosebire de legătură, <strong>frigăruia</strong> este un atac în linie asupra a două piese, dar piesa mai valoroasă se află direct în atacul piesei adverse, iar undeva în spatele ei se află o piesă mai puțin valoroasă care, de obicei, va fi capturată.</p>
-            <p>Dacă facem o analogie cu legătura: atunci când <strong>regele</strong> este piesa atacată, nu mai este nicio speranță pentru piesa din spatele lui — regele trebuie să iasă din șah obligatoriu. <strong>Doar piesele cu bătaie lungă</strong> pot ataca în acest fel: regina, turnul și nebunul.</p>
+            <p>O piesă este <strong>supraîncărcată</strong> dacă are mai multe responsabilități deodată — de exemplu, să apere două piese, să apere o piesă și un câmp important, sau să blocheze un șah și o piesă în același timp.</p>
+            <p>Dacă îi cerem să renunțe la una din sarcini, pierderea este inevitabilă.</p>
           </div>
 
           <div class="gold-rule card">
-            <p>&#127775; <strong>Regula de aur:</strong> Spre deosebire de legătură, unde piesa mai valoroasă e în spate, la frigăruie piesa mai valoroasă e <strong>în față</strong> — ea este forțată să se mute, lăsând piesa mai slabă din spatele ei să fie capturată.</p>
+            <p>&#127775; <strong>Regula de aur:</strong> Identifică piesa care face „două meserii" deodată. Atacă una dintre responsabilitățile ei — cealaltă va fi sacrificată.</p>
           </div>
 
           <div id="accList" class="acc-list"></div>
@@ -152,7 +151,7 @@
             <div class="moves-log" id="movesLog"></div>
           </div>
 
-          <a href="pagina54.html" class="btn-primary" style="display:flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 20px;border-radius:50px;background:var(--c-navy);color:white;text-decoration:none;font-family:var(--font-display);font-size:0.97rem;font-weight:700;border:none;cursor:pointer;width:100%;box-sizing:border-box;transition:opacity .18s;" onmouseover="this.style.opacity='.86'" onmouseout="this.style.opacity='1'">&#127919; Arenă de antrenament &#8594;</a>
+          <a href="pagina58.html" class="btn-primary" style="display:flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 20px;border-radius:50px;background:var(--c-navy);color:white;text-decoration:none;font-family:var(--font-display);font-size:0.97rem;font-weight:700;border:none;cursor:pointer;width:100%;box-sizing:border-box;transition:opacity .18s;" onmouseover="this.style.opacity='.86'" onmouseout="this.style.opacity='1'">&#8594; Arenă Piese Supraîncărcate</a>
 
         </div>
       </div>
@@ -161,14 +160,14 @@
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
-    <a href="pagina52.html" class="nav-btn nav-btn--back">
+    <a href="pagina56.html" class="nav-btn nav-btn--back">
       <span class="icon">&#8592;</span><span class="label">Înapoi</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon">&#8862;</span><span class="label">Cuprins</span>
     </a>
-    <a href="pagina54.html" class="nav-btn nav-btn--forward">
-      <span class="icon">&#8594;</span><span class="label">Arenă de antrenament</span>
+    <a href="pagina58.html" class="nav-btn nav-btn--forward">
+      <span class="icon">&#8594;</span><span class="label">Arenă Supraîncărcate</span>
     </a>
   </footer>
 
@@ -186,173 +185,129 @@ function toRo(san) {
 /* ── Chapter data ── */
 const chapters = [
 
-  /* 0 — Absolut 1: damă frigăruie rege + turn (linie) */
+  /* 0 — Pion f7 supraîncărcat: apără nebunul e6 și calul g6 */
   {
-    fen: '8/8/8/8/8/r3k3/8/4K2Q w - - 0 1',
-    san: ['Qh3', 'Ke4', 'Qxa3'],
+    fen: '6k1/5pp1/4b1n1/8/8/3BR3/5PPP/6K1 w - - 0 1',
+    san: ['Bxg6', 'fxg6', 'Rxe6'],
     ann: {
-      0: 'Regele negru de pe e3 și turnul de pe a3 sunt pe <strong>aceeași linie</strong>. Dama albă poate frigărui!',
-      1: '<strong>Dama atacă regele pe linia 3 — șah!</strong> Regele este forțat să fugă, lăsând turnul din spate fără protecție.',
-      2: 'Regele fuge pe e4...',
-      3: '<strong>Dama câștigă turnul!</strong> Frigăruia absolută: regele era în față, turnul în spate.'
+      0: 'Pionul din f7 are <strong>două responsabilități</strong>: apără atât nebunul de pe e6, cât și calul de pe g6.',
+      1: 'Un schimb aparent egal — dar care îndepărtează apărătorul nebunului!',
+      2: 'Pionul din f7 <strong>trebuie să recaptureze</strong> — și astfel nu mai poate apăra nebunul de pe e6.',
+      3: '<strong>Nebun gratis!</strong> Piesa supraîncărcată nu putea fi prezentă în ambele locuri deodată.'
     },
     arrows: {
-      0: [{from:'e3',to:'a3',color:'Y'}],
-      1: [{from:'h3',to:'e3',color:'R'},{from:'e3',to:'a3',color:'Y'}],
-      3: [{from:'h3',to:'a3',color:'G'}]
+      0: [{from:'f7',to:'e6',color:'Y'},{from:'f7',to:'g6',color:'Y'}],
+      1: [{from:'d3',to:'g6',color:'G'}],
+      2: [],
+      3: [{from:'e3',to:'e6',color:'G'}]
     }
   },
 
-  /* 1 — Absolut 2: turn frigăruie rege + turn (coloană) */
+  /* 1 — Cal f6 supraîncărcat: nu poate pleca (previne matul la h7) */
   {
-    fen: '7r/8/8/8/7k/8/4K3/R7 w - - 0 1',
-    san: ['Rh1', 'Kg5', 'Rxh8'],
+    fen: '2r1rbk1/5pp1/3P1n2/8/8/3Q3P/2B2PPK/8 w - - 0 1',
+    san: ['d7', 'Rcd8', 'dxe8=Q', 'Rxd3', 'Qe2'],
     ann: {
-      0: 'Regele negru de pe h4 și turnul de pe h8 sunt pe <strong>coloana h</strong>. Turnul alb poate frigărui!',
-      1: '<strong>Turnul sare pe h1 — șah pe coloana h!</strong> Regele este forțat să se mute, iar turnul din spatele lui rămâne descoperit.',
-      2: 'Regele fuge pe g5...',
-      3: '<strong>Turnul câștigă turnul advers de pe h8!</strong> Frigăruia absolută pe coloană.'
+      0: 'Calul din f6 este <strong>supraîncărcat</strong>: nu-și poate părăsi postul din care previne matul reginei la h7!',
+      1: 'Pionul avansează, amenințând să promoveze la d8!',
+      2: 'Turnul din c8 se mută la d8 pentru a bloca promovarea...',
+      3: 'Pionul promovează, luând turnul de pe e8! Calul din f6 nu poate interveni.',
+      4: 'Negrul ia regina de pe d3 — cea mai bună mutare disponibilă.',
+      5: 'Regina nou-promovată menține avantajul decisiv.'
     },
     arrows: {
-      0: [{from:'h4',to:'h8',color:'Y'}],
-      1: [{from:'h1',to:'h4',color:'R'},{from:'h4',to:'h8',color:'Y'}],
-      3: [{from:'h1',to:'h8',color:'G'}]
+      0: [{from:'f6',to:'h7',color:'Y'},{from:'d3',to:'h7',color:'R'}],
+      1: [{from:'d6',to:'d7',color:'G'}],
+      2: [],
+      3: [{from:'d7',to:'e8',color:'G'}],
+      4: [],
+      5: [{from:'e8',to:'e2',color:'G'}]
     }
   },
 
-  /* 2 — Absolut 3: turn frigăruie rege + turn (linie) */
+  /* 2 — Pion h7 supraîncărcat: blochează h6 și apără g6 */
   {
-    fen: '8/8/8/8/3k3r/8/4K3/R7 w - - 0 1',
-    san: ['Ra4', 'Kd5', 'Rxh4'],
+    fen: '2b5/7p/3k2pP/1p1p1pP1/1P1P1K2/8/5P2/3B4 w - - 0 1',
+    san: ['Bh5', 'Be6', 'Bxg6', 'Bg8', 'Bxf5', 'Ke7', 'Ke5'],
     ann: {
-      0: 'Regele negru de pe d4 și turnul de pe h4 sunt pe <strong>linia a 4-a</strong>. Turnul alb frigăruie!',
-      1: '<strong>Turnul atacă regele pe linia 4 — șah!</strong> Regele trebuie să elibereze linia, lăsând turnul din spate expus.',
-      2: 'Regele se retrage pe d5...',
-      3: '<strong>Turnul capturează turnul de pe h4!</strong> Frigăruia absolută pe linie.'
+      0: 'Pionul din h7 este <strong>supraîncărcat</strong>: trebuie să blocheze înaintarea pionului alb din h6 și, în același timp, să apere câmpul g6.',
+      1: 'Albul știe că pionul din g6 nu poate pleca — dacă ia pe h5, albul avansează g5-g6-g7-g8=D.',
+      2: 'Negrul mută nebunul pentru a apăra ce poate...',
+      3: 'Nebunul ia pe g6! Pionul din h7 nu poate captura — h6 ar avansa imediat la h7.',
+      4: 'Nebunul negru se retrage, incapabil să ia pe g6.',
+      5: 'Nebunul alb câștigă și pionul din f5!',
+      6: 'Regele negru încearcă să intervină...',
+      7: '<strong>A pătruns și regele alb!</strong> Avantaj decisiv.'
     },
     arrows: {
-      0: [{from:'d4',to:'h4',color:'Y'}],
-      1: [{from:'a4',to:'d4',color:'R'},{from:'d4',to:'h4',color:'Y'}],
-      3: [{from:'a4',to:'h4',color:'G'}]
+      0: [{from:'h7',to:'h6',color:'Y'},{from:'h7',to:'g6',color:'Y'}],
+      1: [{from:'d1',to:'h5',color:'G'},{from:'h5',to:'g6',color:'R'}],
+      2: [],
+      3: [{from:'h5',to:'g6',color:'G'}],
+      4: [],
+      5: [{from:'g6',to:'f5',color:'G'}],
+      6: [],
+      7: [{from:'f4',to:'e5',color:'G'}]
     }
   },
 
-  /* 3 — Absolut 4: nebun frigăruie rege + damă (diagonală) */
+  /* 3 — Regina neagră supraîncărcată: apără nebunul și ultima linie (Capablanca 1911) */
   {
-    fen: '7q/8/8/8/3k4/8/8/2B1K3 w - - 0 1',
-    san: ['Bb2', 'Kd5', 'Bxh8'],
+    fen: '3q3k/pp2b1pp/8/2P5/1P2RBQ1/2P5/P4rPp/7K w - - 2 29',
+    san: ['Rxe7', 'Rf1+', 'Kxh2', 'Qf8', 'Qxg7+', 'Qxg7', 'Re8+', 'Qf8', 'Rxf8+', 'Kg7', 'Bh6+', 'Kxh6', 'Rxf1'],
     ann: {
-      0: 'Regele negru de pe d4 și dama de pe h8 sunt pe aceeași <strong>diagonală</strong>. Nebunul poate frigărui!',
-      1: '<strong>Nebunul sare pe b2 — șah pe diagonală!</strong> Regele este forțat să se mute; dama de pe h8 rămâne în calea nebunului.',
-      2: 'Regele se mută pe d5 pentru a ieși din șah...',
-      3: '<strong>Nebunul câștigă dama de pe h8!</strong> Frigăruia absolută pe diagonală.'
+      0: 'Regina neagră este <strong>supraîncărcată</strong>: apără nebunul de pe e7 și ultima linie unde regele este blocat. Partidă jucată în 1911: Capablanca vs. Spielmann.',
+      1: 'Albul exploatează supraîncărcarea! Turnul ia nebunul de pe e7.',
+      2: 'Negrul dă șah pe prima linie pentru a câștiga timp.',
+      3: 'Regele alb scapă, luând pionul de pe h2.',
+      4: 'Regina neagră se retrage la f8, apărând g7.',
+      5: 'Regina albă se sacrifică pe g7!',
+      6: 'Negrul recaptureaza...',
+      7: 'Turnul dă șah pe ultima linie!',
+      8: 'Regina neagră blochează șahul, venind la f8.',
+      9: 'Turnul ia regina neagră cu șah!',
+      10: 'Regele scapă la g7.',
+      11: 'Nebunul dă șah!',
+      12: 'Regele este forțat să ia nebunul.',
+      13: '<strong>Albul ia turnul negru de pe f1</strong> — avantaj material decisiv!'
     },
     arrows: {
-      0: [{from:'d4',to:'h8',color:'Y'}],
-      1: [{from:'b2',to:'d4',color:'R'},{from:'d4',to:'h8',color:'Y'}],
-      3: [{from:'b2',to:'h8',color:'G'}]
+      0: [{from:'d8',to:'e7',color:'Y'},{from:'d8',to:'h8',color:'Y'}],
+      1: [{from:'e4',to:'e7',color:'G'}],
+      2: [{from:'f2',to:'f1',color:'R'}],
+      3: [],
+      4: [],
+      5: [{from:'g4',to:'g7',color:'R'}],
+      6: [],
+      7: [{from:'e7',to:'e8',color:'G'}],
+      8: [],
+      9: [{from:'e8',to:'f8',color:'G'}],
+      10: [],
+      11: [{from:'f4',to:'h6',color:'G'}],
+      12: [],
+      13: [{from:'f8',to:'f1',color:'G'}]
     }
   },
 
-  /* 4 — Absolut 5: damă frigăruie rege + turn (coloană) */
+  /* 4 — Rege negru supraîncărcat: apără turnul d7 și pionul f7 */
   {
-    fen: '8/8/8/7Q/8/8/r1k5/4K3 w - - 0 1',
-    san: ['Qh2', 'Kc1', 'Qxa2'],
+    fen: '8/1Q1rkpp1/p3p3/3nB1r1/8/3q3P/PP3R2/K1R5 w - - 2 34',
+    san: ['Rxf7+', 'Kxf7', 'Qxd7+', 'Kg6', 'Qxg7+'],
     ann: {
-      0: 'Regele negru de pe c2 și turnul de pe a2 sunt pe <strong>linia a 2-a</strong>. Dama albă frigăruie!',
-      1: '<strong>Dama atacă regele pe linia 2 — șah!</strong> Regele trebuie să fugă, lăsând turnul din spatele lui descoperit.',
-      2: 'Regele se refugiază pe c1...',
-      3: '<strong>Dama câștigă turnul de pe a2!</strong> O frigăruie absolută completă.'
+      0: 'Regele negru de pe e7 este <strong>supraîncărcat</strong>: apără atât turnul de pe d7, cât și pionul din f7.',
+      1: 'Albul preia controlul liniei a 7-a și îndepărtează apărarea turnului!',
+      2: 'Regele este forțat să captureze — dar acum turnul de pe d7 rămâne fără apărare.',
+      3: 'Regina câștigă turnul cu șah!',
+      4: 'Regele fuge...',
+      5: 'Regina capturează al doilea pion cu șah! Avantaj decisiv.'
     },
     arrows: {
-      0: [{from:'c2',to:'a2',color:'Y'}],
-      1: [{from:'h2',to:'c2',color:'R'},{from:'c2',to:'a2',color:'Y'}],
-      3: [{from:'h2',to:'a2',color:'G'}]
-    }
-  },
-
-  /* 5 — Relativ 1: turn frigăruie damă + turn (coloană) */
-  {
-    fen: '4r1k1/8/8/4q3/8/8/8/2K4R w - - 0 1',
-    san: ['Re1', 'Qd6', 'Rxe8'],
-    ann: {
-      0: 'Dama neagră de pe e5 și turnul de pe e8 sunt pe <strong>coloana e</strong>. Turnul alb poate frigărui piesele adverse!',
-      1: '<strong>Turnul sare pe e1 — atacă dama!</strong> Dama este piesa mai valoroasă; ea trebuie să se mute, lăsând turnul din spate descoperit.',
-      2: 'Dama se salvează pe d6...',
-      3: '<strong>Turnul câștigă turnul advers de pe e8!</strong> Frigăruia relativă: o piesă valoroasă s-a mutat, cealaltă a fost capturată.'
-    },
-    arrows: {
-      0: [{from:'e5',to:'e8',color:'Y'}],
-      1: [{from:'e1',to:'e5',color:'R'},{from:'e5',to:'e8',color:'Y'}],
-      3: [{from:'e1',to:'e8',color:'G'}]
-    }
-  },
-
-  /* 6 — Relativ 2: nebun frigăruie damă + turn (diagonală) */
-  {
-    fen: '7k/8/r7/8/8/3q4/6B1/4K3 w - - 0 1',
-    san: ['Bf1', 'Qe4', 'Bxa6'],
-    ann: {
-      0: 'Dama neagră de pe d3 și turnul de pe a6 sunt pe aceeași <strong>diagonală</strong>. Nebunul alb poate frigărui!',
-      1: '<strong>Nebunul sare pe f1 — atacă dama pe diagonală!</strong> Dama este amenințată; ea trebuie să se mute, expunând turnul de pe a6.',
-      2: 'Dama se mută pe e4 pentru a scăpa...',
-      3: '<strong>Nebunul câștigă turnul de pe a6!</strong> Frigăruia relativă pe diagonală.'
-    },
-    arrows: {
-      0: [{from:'d3',to:'a6',color:'Y'}],
-      1: [{from:'f1',to:'d3',color:'R'},{from:'d3',to:'a6',color:'Y'}],
-      3: [{from:'f1',to:'a6',color:'G'}]
-    }
-  },
-
-  /* 7 — Relativ 3: damă frigăruie turn + cal (linie) */
-  {
-    fen: '8/7Q/8/8/8/n2r4/4k3/7K w - - 0 1',
-    san: ['Qh3', 'Rd6', 'Qxa3'],
-    ann: {
-      0: 'Turnul negru de pe d3 și calul de pe a3 sunt pe <strong>linia a 3-a</strong>. Dama albă poate frigărui!',
-      1: '<strong>Dama atacă turnul pe linia 3!</strong> Turnul este amenințat și trebuie să se mute, lăsând calul din spatele lui fără apărare.',
-      2: 'Turnul se retrage pe d6...',
-      3: '<strong>Dama câștigă calul de pe a3!</strong> Frigăruia relativă în acțiune.'
-    },
-    arrows: {
-      0: [{from:'d3',to:'a3',color:'Y'}],
-      1: [{from:'h3',to:'d3',color:'R'},{from:'d3',to:'a3',color:'Y'}],
-      3: [{from:'h3',to:'a3',color:'G'}]
-    }
-  },
-
-  /* 8 — Relativ 4: turn frigăruie damă + turn (linie) */
-  {
-    fen: '1rq5/8/4k3/8/8/8/8/K6R w - - 0 1',
-    san: ['Rh8', 'Qd7', 'Rxb8'],
-    ann: {
-      0: 'Dama neagră de pe c8 și turnul de pe b8 sunt pe <strong>linia a 8-a</strong>. Turnul alb poate frigărui!',
-      1: '<strong>Turnul sare pe h8 — atacă dama!</strong> Dama este amenințată de-a lungul liniei 8 și trebuie să se mute, lăsând turnul din spate expus.',
-      2: 'Dama se salvează pe d7...',
-      3: '<strong>Turnul câștigă turnul advers de pe b8!</strong> Frigăruia relativă pe linie.'
-    },
-    arrows: {
-      0: [{from:'c8',to:'b8',color:'Y'}],
-      1: [{from:'h8',to:'c8',color:'R'},{from:'c8',to:'b8',color:'Y'}],
-      3: [{from:'h8',to:'b8',color:'G'}]
-    }
-  },
-
-  /* 9 — Relativ 5: nebun frigăruie damă + turn (diagonală) */
-  {
-    fen: '6k1/r7/8/8/3q4/8/7B/4K3 w - - 0 1',
-    san: ['Bg1', 'Qe5', 'Bxa7'],
-    ann: {
-      0: 'Dama neagră de pe d4 și turnul de pe a7 sunt pe aceeași <strong>diagonală</strong>. Nebunul alb va frigărui!',
-      1: '<strong>Nebunul sare pe g1 — atacă dama pe diagonală!</strong> Dama trebuie să se mute; turnul de pe a7 rămâne expus în spatele ei.',
-      2: 'Dama fuge pe e5...',
-      3: '<strong>Nebunul câștigă turnul de pe a7!</strong> Frigăruia relativă pe diagonală.'
-    },
-    arrows: {
-      0: [{from:'d4',to:'a7',color:'Y'}],
-      1: [{from:'g1',to:'d4',color:'R'},{from:'d4',to:'a7',color:'Y'}],
-      3: [{from:'g1',to:'a7',color:'G'}]
+      0: [{from:'e7',to:'d7',color:'Y'},{from:'e7',to:'f7',color:'Y'}],
+      1: [{from:'f2',to:'f7',color:'G'}],
+      2: [],
+      3: [{from:'b7',to:'d7',color:'G'}],
+      4: [],
+      5: [{from:'d7',to:'g7',color:'G'}]
     }
   }
 
@@ -367,7 +322,8 @@ function computePositions(ch) {
   const c = new Chess(ch.fen);
   const fens = [c.fen()];
   for (const mv of ch.san) {
-    if (!c.move(mv)) { console.error('Mutare invalidă:', mv); break; }
+    const result = c.move(mv);
+    if (!result) { console.error('Mutare invalidă:', mv, 'în', c.fen()); break; }
     fens.push(c.fen());
   }
   return fens;
@@ -602,6 +558,7 @@ function redrawStudyArrows(chIdx, step) {
 
   const SW = 5;
   arrows.forEach(function (arr, i) {
+    if (arr.from === arr.to) return;
     const col = COL[arr.color] || COL.G;
     const mid = 'sarr' + i;
     const mk  = document.createElementNS(NS, 'marker');
@@ -639,30 +596,18 @@ document.addEventListener('keydown', function (e) {
   if (e.key === 'End')        goLast();
 });
 
-/* ── Skewer types + accordion ── */
-const skewTypes = [
+/* ── Overload types + accordion ── */
+const overloadTypes = [
   {
     num: '1.',
-    title: 'Frigăruia Absolută',
-    desc: 'Regele este atacat direct — el trebuie să se mute, lăsând piesa mai puțin valoroasă din spatele lui fără protecție.',
+    title: 'Exemple de Piese Supraîncărcate',
+    desc: 'Orice piesă poate fi supraîncărcată — un pion, un cal, o regină sau chiar regele. Când îi cerem să facă prea multe, una dintre responsabilități va fi sacrificată.',
     examples: [
       { ch: 0, label: 'Ex. 1' },
       { ch: 1, label: 'Ex. 2' },
       { ch: 2, label: 'Ex. 3' },
       { ch: 3, label: 'Ex. 4' },
       { ch: 4, label: 'Ex. 5' }
-    ]
-  },
-  {
-    num: '2.',
-    title: 'Frigăruia Relativă',
-    desc: 'O piesă valoroasă (regină sau turn) este atacată prima. Ea se mută să scape — și piesa mai puțin valoroasă din spatele ei este capturată.',
-    examples: [
-      { ch: 5, label: 'Ex. 1' },
-      { ch: 6, label: 'Ex. 2' },
-      { ch: 7, label: 'Ex. 3' },
-      { ch: 8, label: 'Ex. 4' },
-      { ch: 9, label: 'Ex. 5' }
     ]
   }
 ];
@@ -672,7 +617,7 @@ let activeExBtn = null;
 function buildAccordion() {
   const list = document.getElementById('accList');
   if (!list) return;
-  skewTypes.forEach(function (type) {
+  overloadTypes.forEach(function (type) {
     const item = document.createElement('div');
     item.className = 'acc-item';
 

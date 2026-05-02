@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Arenă Atac Dublu</title>
+  <title>Arenă Atragerea</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -112,7 +112,6 @@
       transition: opacity 0.15s;
     }
     .progress-outer:hover::after { opacity: 1; }
-    /* anulăm margin-bottom-ul din master-template pe bara interioară */
     .progress-outer .progress-wrap { margin-bottom: 0; }
   </style>
 </head>
@@ -120,7 +119,7 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title" id="pageTitle">Arenă Atac Dublu</span>
+    <span class="header-title" id="pageTitle">Arenă Atragerea</span>
   </header>
 
   <main class="page-main" role="main">
@@ -136,23 +135,23 @@
 
         <!-- ── LECȚIE ── -->
         <div id="lectureView">
-          <div class="panel-heading">Arenă Atac Dublu</div>
+          <div class="panel-heading">Arenă Atragerea</div>
 
-          <p><strong>Atacul dublu</strong> este tactica prin care o piesă amenință simultan două ținte ale adversarului. Dacă una este regele, cealaltă piesă este pierdută.</p>
+          <p><strong>Atragerea</strong> forțează o piesă adversară (de obicei regele) să se mute pe un câmp prost. Sacrificiul este forțat — matul sau câștigul material urmează imediat.</p>
 
           <div class="hl-box" style="margin: 12px 0;">
             <strong>🧩 Cum funcționează arena:</strong>
             <ul style="margin-top: 6px; padding-left: 1.3em; line-height: 1.8;">
-              <li>Găsești mutarea (sau secvența) câștigătoare</li>
-              <li>Computerul răspunde automat</li>
-              <li>Câștigai material prin atac dublu!</li>
+              <li>Identifici câmpul fatal pentru piesa adversă</li>
+              <li>Sacrifici pentru a o atrage acolo</li>
+              <li>Continui cu matul sau câștigul decisiv!</li>
             </ul>
             <p style="margin-top:8px; font-size:0.88em; opacity:0.75;">
               45 puzzle-uri · 3 niveluri de dificultate (Ușor → Mediu → Avansat)
             </p>
           </div>
 
-          <button class="btn-arena" id="arenaBtn" onclick="startArena()">🎯 Arenă Atac Dublu →</button>
+          <button class="btn-arena" id="arenaBtn" onclick="startArena()">🎯 Arenă Atragerea →</button>
           <button class="btn-arena" id="continueBtn" onclick="continueArena()"
                   style="display:none; margin-top:8px; background:var(--c-success);">
             ▶ Continuă
@@ -165,7 +164,7 @@
 
         <!-- ── PUZZLE ── -->
         <div id="puzzleView">
-          <div class="panel-heading">Atac Dublu</div>
+          <div class="panel-heading">Atragerea</div>
           <span class="turn-badge white" id="turnBadge">⬜ Albul mută</span>
           <span class="level-badge" id="levelBadge">UȘOR</span>
 
@@ -175,7 +174,7 @@
             </div>
           </div>
 
-          <div class="task-msg idle" id="taskMsg">Găsește atacul dublu!</div>
+          <div class="task-msg idle" id="taskMsg">Atrage piesa adversă!</div>
 
           <div class="ctrl-row">
             <button class="btn-sm btn-prev"  id="prevBtn"  onclick="prevPuzzle()" disabled>← Precedentul</button>
@@ -193,24 +192,24 @@
 
       </div>
       <button class="arena-back-btn" id="arenaBackBtn" style="display:none"
-              onclick="backToLecture()">← Atac Dublu</button>
+              onclick="backToLecture()">← Atragerea</button>
       <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
     </div>
 
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
-    <a href="pagina49.html" class="nav-btn nav-btn--back">
+    <a href="pagina59.html" class="nav-btn nav-btn--back">
       <span class="icon" aria-hidden="true">←</span>
-      <span class="label">Atac Dublu</span>
+      <span class="label">Atragerea</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon" aria-hidden="true">⊞</span>
       <span class="label">Cuprins</span>
     </a>
-    <a href="pagina55.html" class="nav-btn nav-btn--forward">
+    <a href="pagina61.html" class="nav-btn nav-btn--forward">
       <span class="icon" aria-hidden="true">&#8594;</span>
-      <span class="label">Atacul în raze X</span>
+      <span class="label">Devierea</span>
     </a>
   </footer>
 
@@ -220,82 +219,63 @@
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script>
-const PIECE_THEME = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
-const LECTURE_FEN = 'r1b1kb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4';
+const PIECE_THEME  = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+const LECTURE_FEN  = '5nk1/5p1p/8/5N2/8/Q4p1q/3r4/1R4K1 w - - 0 1';
 
 /* ── PUZZLE DATA ── */
 const PUZZLES = [
-  /* 0-4 UȘOR */
-  { fen:'8/3Nbk2/2p5/5p2/2b4p/4BP2/5KPP/8 w - - 0 39',
-    sol:['d7e5','f7e6','e5c4'], turn:'w' },
-  { fen:'r4k2/pb1pqrp1/1p1p1n1p/8/3PPNn1/1QP1B3/PP4PP/R4RK1 w - - 1 19',
-    sol:['f4g6','f8e8','g6e7'], turn:'w' },
-  { fen:'3r1rk1/1p3ppp/p1p5/2PNBb2/2P5/8/P4PPP/R5K1 w - - 0 20',
-    sol:['d5e7','g8h8','e7f5'], turn:'w' },
-  { fen:'8/kp6/8/P2P1p2/3n4/6K1/8/2R5 b - - 0 51',
-    sol:['d4e2','g3g2','e2c1'], turn:'b' },
-  { fen:'5k1r/p7/6B1/2N1p3/P1Pq4/1P1P4/3KRr2/8 w - - 0 44',
-    sol:['c5e6','f8g8','e6d4'], turn:'w' },
+  /* 0-11 UȘOR */
+  { fen:'8/1ppk4/p2pp3/4p3/Pn1PP3/N1P1PK2/1P3R2/5r2 b - - 2 34', sol:['f1f2', 'f3f2', 'b4d3', 'f2e2', 'd3b2'], turn:'b' },
+  { fen:'2kr4/pp1b1p1p/3R2p1/4r3/8/2P2P2/PP2NKPP/7R b - - 1 24', sol:['e5e2', 'f2e2', 'd7b5'], turn:'b' },
+  { fen:'7n/7P/4p3/2k5/2p1P3/2B3p1/2b3P1/6K1 w - - 3 48', sol:['c3h8', 'c2e4', 'h8d4', 'c5d4', 'h7h8q'], turn:'w' },
+  { fen:'6k1/4q1p1/p3p1Bp/3p2P1/2pP2Q1/2P5/Pr3rP1/R3R1K1 b - - 0 28', sol:['f2g2', 'g4g2', 'b2g2', 'g1g2', 'e7g5', 'g2h3', 'g5g6'], turn:'b' },
+  { fen:'1r3b2/5p2/1BR3pk/p3p2p/P3P3/5P2/1PP3PP/6K1 b - - 0 27', sol:['b8b6', 'c6b6', 'f8c5', 'g1h1', 'c5b6'], turn:'b' },
+  { fen:'r5k1/5ppp/p3r3/1pb5/3NP3/nPN5/P4PPP/R2R2K1 b - - 2 21', sol:['c5d4', 'd1d4', 'a3c2', 'a1d1', 'c2d4'], turn:'b' },
+  { fen:'2r3rk/4q1pp/pn2pp2/1p2P3/3P2Q1/1P3P1R/P4P1P/6nK w - - 0 32', sol:['h3h7', 'h8h7', 'g4h5'], turn:'w' },
+  { fen:'r1bQ4/pp3p1k/6p1/2p4p/5q1P/2P2nN1/PP4BK/R7 w - - 0 23', sol:['g2f3', 'f4f3', 'a1f1', 'c8h3', 'f1f3'], turn:'w' },
+  { fen:'8/q3k3/2r4p/4p1p1/4Pp2/1P5P/P2RQ1P1/3K4 b - - 9 32', sol:['a7g1', 'e2e1', 'c6c1', 'd1c1', 'g1e1'], turn:'b' },
+  { fen:'8/5pkp/R4B2/6K1/8/5rP1/P4n2/8 b - - 3 37', sol:['f3f6', 'a6f6', 'f2e4', 'g5f4', 'e4f6'], turn:'b' },
+  { fen:'4k2r/pp2ppb1/q2p2p1/3P1b1p/2r4P/1NP1BP2/PP1Q2P1/K2RR3 b k - 6 19', sol:['a6a2', 'a1a2', 'c4a4'], turn:'b' },
+  { fen:'3q2rk/5prp/4bQ2/pp1pRpP1/3p3R/1PpP4/P1P3PP/6K1 w - - 9 29', sol:['h4h7', 'h8h7', 'f6h6'], turn:'w' },
 
-  /* 5-11 MEDIU */
-  { fen:'2r2rk1/pp3ppp/5p2/3Nb3/3n3P/P2B2P1/1P3P2/R4RK1 w - - 3 24',
-    sol:['d5e7','g8h8','e7c8'], turn:'w' },
-  { fen:'r3r2k/p2R3p/1p3R1P/2p3b1/6p1/P7/1PP3P1/1K6 w - - 5 29',
-    sol:['f6f7','g5h6','f7h7','h8g8','h7h6'], turn:'w' },
-  { fen:'5r2/ppkq4/8/2p2p1R/1n2r1pP/2Q5/PPP3P1/1K3R2 w - - 0 27',
-    sol:['c3c5','b4c6','c5f8'], turn:'w' },
-  { fen:'3r4/pb3p1p/1p2p1pk/4N3/3P4/6nP/P4PP1/3B2K1 w - - 0 38',
-    sol:['e5f7','h6g7','f7d8','b7d5','f2g3'], turn:'w' },
-  { fen:'8/1kp3r1/p1Np1pq1/PpnPp1p1/1QP1P1P1/5P2/1P3KPR/8 b - - 0 34',
-    sol:['c5d3','f2e2','d3b4'], turn:'b' },
-  { fen:'1n4k1/5pp1/2p1p2p/2PpN3/3PnP2/1Q2P3/5PKP/q4N2 b - - 2 27',
-    sol:['a1f1','g2f1','e4d2','f1e1','d2b3'], turn:'b' },
-  { fen:'2r1r2k/pp3Rb1/3pB1p1/qb4B1/4P1Q1/1P6/P5PP/2R4K b - - 0 24',
-    sol:['c8c1','g5c1','a5e1','f7f1','e1f1'], turn:'b' },
+  /* 12-24 MEDIU */
+  { fen:'6k1/5p2/q3p1p1/2BpP1Pp/5P1P/2PQ4/P1R1K3/1r6 b - - 5 31', sol:['b1e1', 'e2d2', 'e1d1', 'd2d1', 'a6d3'], turn:'b' },
+  { fen:'3R1rk1/6p1/p1p3P1/8/1P4p1/P7/2r5/6KR w - - 3 33', sol:['h1h8', 'g8h8', 'd8f8'], turn:'w' },
+  { fen:'r1b1k2r/2pp1ppp/p2b1q1n/1p6/4P3/1BP5/PP1PQPPP/RNB2RK1 b kq - 4 11', sol:['d6h2', 'g1h2', 'f6h4', 'h2g1', 'h6g4'], turn:'b' },
+  { fen:'r5k1/pbp1q1pp/1p1pp2r/5p2/2PP4/P1PBPP2/3Q2PP/5RRK b - - 0 18', sol:['h6h2', 'h1h2', 'e7h4'], turn:'b' },
+  { fen:'r1b1k2r/pp1p1ppp/1q6/8/1nPN4/1PQ5/P3PPPP/R3KB1R b KQkq - 0 14', sol:['b6d4', 'c3d4', 'b4c2', 'e1d2', 'c2d4'], turn:'b' },
+  { fen:'7r/1pp1kp2/p4p1p/5P2/4Pbr1/1PNR4/1PP5/2K2R2 w - - 1 21', sol:['f1f4', 'g4f4', 'c3d5', 'e7d6', 'd5f4'], turn:'w' },
+  { fen:'3q1k2/p3p2p/6p1/8/2QB1n2/7P/PPP3P1/6K1 b - - 0 28', sol:['d8d4', 'c4d4', 'f4e2', 'g1f2', 'e2d4'], turn:'b' },
+  { fen:'5k1r/p2n2q1/2Q5/4r3/3N4/1P3P2/P6P/3R1R1K b - - 0 30', sol:['h8h2', 'h1h2', 'e5h5'], turn:'b' },
+  { fen:'5rk1/5ppp/1p2pq2/pN1p4/Pn1P4/1PN1P3/5RPP/2Q3K1 b - - 0 19', sol:['f6f2', 'g1f2', 'b4d3', 'f2e2', 'd3c1'], turn:'b' },
+  { fen:'rb2Q1nk/6pp/8/pPB2P2/1nP5/1P6/1q1r2PP/1B2R1K1 w - - 3 26', sol:['e8g8', 'h8g8', 'e1e8', 'g8f7', 'e8f8'], turn:'w' },
+  { fen:'r1r5/4kppp/1p2p3/8/3NP3/8/PPb2PPP/K1R4R b - - 5 25', sol:['a8a2', 'a1a2', 'c8a8'], turn:'b' },
+  { fen:'6k1/2q2pnp/pp6/8/P4p1Q/2P3RP/1P3PPK/3r4 w - - 0 39', sol:['g3g7', 'g8g7', 'h4g4', 'g7f8', 'g4d1'], turn:'w' },
+  { fen:'r5k1/5ppp/4q2r/2pN4/4Pp2/1P2bP2/P1Q3PP/3R1R1K b - - 4 29', sol:['h6h2', 'h1h2', 'e6h6'], turn:'b' },
 
-  /* 12-18 AVANSAT */
-  { fen:'r3k2r/ppqn1pp1/2p1p1p1/2P3B1/3P2n1/5NP1/PP3PP1/R2QR1K1 b kq - 0 14',
-    sol:['h8h1','g1h1','g4f2','h1g1','f2d1'], turn:'b' },
-  { fen:'2r3k1/6p1/2qp3p/p3pNbP/1p1pP3/1P1P4/P1P5/1K1Q2R1 w - - 0 33',
-    sol:['g1g5','h6g5','f5e7','g8h7','e7c6'], turn:'w' },
-  { fen:'r1br2k1/1p3ppp/pnn1p2q/4B3/P2P4/3B1N2/1P3PPP/R2Q1RK1 w - - 4 17',
-    sol:['e5c7','b6d5','c7d8'], turn:'w' },
-  { fen:'2r1r1k1/1p3p2/p7/3P2p1/1P2b3/P1N3K1/2R3P1/4R3 w - - 0 32',
-    sol:['c3e4','c8c2','e4f6','g8g7','f6e8'], turn:'w' },
-  { fen:'3r1rk1/8/2n3p1/2Np3p/3Pp3/2P1q3/P1Q5/2R2BBK b - - 3 35',
-    sol:['f8f1','c1f1','e3h3','c2h2','h3f1'], turn:'b' },
-  { fen:'r2r2k1/2p1npp1/N3p2p/pB2q3/P2n4/B1Q5/2P2PPP/R4RK1 b - - 4 21',
-    sol:['d4e2','b5e2','e5c3'], turn:'b' },
-  { fen:'r3r1k1/1p5p/pq2pnpR/3p4/5b2/P1N3Q1/1PP2PPP/4R1K1 w - - 0 20',
-    sol:['h6g6','h7g6','g3g6','g8h8','g6f6'], turn:'w' },
+  /* 25-39 AVANSAT */
+  { fen:'6k1/4q1pp/2Q1p3/5pP1/3P1P2/PpP1P2P/r7/1K1R1R2 b - - 0 27', sol:['a2a1', 'b1a1', 'e7a3', 'a1b1', 'a3a2', 'b1c1', 'a2c2'], turn:'b' },
+  { fen:'3r3k/8/2p3p1/pp2Np2/5n1q/P3Q3/2R1KP2/8 w - - 0 36', sol:['e3f4', 'h4f4', 'e5g6', 'h8g7', 'g6f4'], turn:'w' },
+  { fen:'r4r1k/1bq1bPpp/pp6/2n5/P1B5/1QB1P3/1P4PP/R4RK1 w - - 1 19', sol:['c3g7', 'h8g7', 'b3c3', 'g7g6', 'c4d3', 'c5d3', 'c3c7'], turn:'w' },
+  { fen:'r1q2rk1/ppp1b1pp/3p2n1/P2Pp3/4Pp2/2P2N1b/P1B1QPPK/RNB2R2 b - - 1 14', sol:['h3g2', 'h2g2', 'c8g4'], turn:'b' },
+  { fen:'k1r2b1r/p3np2/3P4/N3P3/Q1p1PP2/6B1/P1R5/1q3BK1 b - - 0 31', sol:['h8h1', 'g1h1', 'b1f1', 'h1h2', 'f8g7'], turn:'b' },
+  { fen:'rnb2rk1/pp2Qppp/8/5pB1/2q5/8/PPP2PPP/2KR3R w - - 0 15', sol:['e7f8', 'g8f8', 'd1d8'], turn:'w' },
+  { fen:'r1b2rkb/pp3p1p/1n1p1PpB/8/3p4/1B1P2q1/PPP3PP/4RRK1 w - - 0 19', sol:['b3f7', 'g8f7', 'e1e7', 'f7g8', 'f6f7', 'f8f7', 'e7e8', 'f7f8', 'f1f8'], turn:'w' },
+  { fen:'3r4/pp2kppp/1n2pq2/1Q6/1P6/P4N2/2r2PPP/1R1R2K1 w - - 0 20', sol:['d1d8', 'e7d8', 'b5d3', 'd8e8', 'd3c2'], turn:'w' },
+  { fen:'3r4/2q2pkp/p2p1np1/2pb4/5Q2/2N2N1P/PP3PP1/4R1K1 w - - 0 21', sol:['f4f6', 'g7f6', 'c3d5', 'f6g7', 'd5c7'], turn:'w' },
+  { fen:'1r3rk1/ppp2ppp/5q2/3p1n2/3P1Q2/2PB1P2/P1P2PKP/1R2R3 b - - 6 17', sol:['f5h4', 'g2g3', 'f6f4', 'g3f4', 'h4g2', 'f4g3', 'g2e1'], turn:'b' },
+  { fen:'5rk1/p5b1/6QP/2p5/N1P5/1P3pP1/P2pqP2/5RK1 b - - 0 40', sol:['e2f1', 'g1f1', 'd2d1q'], turn:'b' },
+  { fen:'2q1rrk1/6p1/1pp2p1p/p2n3P/4QP2/P4N2/1PP5/2K1R1R1 w - - 2 30', sol:['g1g7', 'g8g7', 'e4g6', 'g7h8', 'g6h6'], turn:'w' },
+  { fen:'2r4k/6pp/1p4n1/p2QP1N1/1b1P4/8/5PPP/2r2NK1 b - - 2 31', sol:['c1f1', 'g1f1', 'c8c1', 'f1e2', 'g6f4', 'e2f3', 'f4d5'], turn:'b' },
+  { fen:'4Q3/2p2pk1/1p3b1p/4p3/1pP4q/3b2N1/6PP/5R1K w - - 4 41', sol:['f1f6', 'h4f6', 'g3h5', 'g7g6', 'h5f6'], turn:'w' },
+  { fen:'4rrk1/p6p/1bp1p2q/3p2p1/1P3p2/P1NB1QP1/2PB1P1P/R3R1K1 b - - 1 23', sol:['f4g3', 'f3g3', 'b6f2', 'g1g2', 'f2g3'], turn:'b' },
 
-  /* 19-44 AVANSAT (nou) */
-  { fen:'4k3/p3n1p1/5p1p/4p3/r3P3/7P/P3Q1P1/6K1 w - - 0 1', sol:['e2b5'], turn:'w' },
-  { fen:'r2q2k1/pp3p2/2p3p1/3p4/1N1P4/1P4B1/P3B1PP/5R1K b - - 0 1', sol:['d8e7'], turn:'b' },
-  { fen:'6k1/6p1/5q2/1p5R/1P6/P5P1/2B3KP/8 b - - 0 1', sol:['f6c6'], turn:'b' },
-  { fen:'6k1/r4p1p/p1p2np1/1r2p3/4P3/P1B4P/1P1Q2P1/6K1 w - - 0 1', sol:['d2f2'], turn:'w' },
-  { fen:'2r3k1/bp3npp/5n2/8/8/2N2QPP/1P3PK1/8 w - - 0 1', sol:['f3b7'], turn:'w' },
-  { fen:'1k6/2p3pr/r4p2/8/8/5QP1/1P4KP/8 w - - 0 1', sol:['f3d3'], turn:'w' },
-  { fen:'r3k2r/1pp3pp/p1p5/4p1n1/8/4R3/PPP2PPP/R5K1 w kq - 0 1', sol:['e3e5','e8f7','e5g5'], turn:'w' },
-  { fen:'b5k1/4r1pp/1p6/2p5/8/5N1P/1P1R1PPK/8 w - - 0 1', sol:['d2d8'], turn:'w' },
-  { fen:'1r2r2k/n4bpp/1p6/pq3p2/5P2/8/PP3BPP/1QRR1NK1 w - - 0 1', sol:['c1c7'], turn:'w' },
-  { fen:'3r4/8/p4n2/1pb3kp/4P3/1BN5/1P2K1P1/5R2 w - - 0 1', sol:['f1f5'], turn:'w' },
-  { fen:'8/1p4pk/p5qp/3b1r2/P2B4/2P4P/1PQ3P1/4R2K b - - 0 1', sol:['f5f1','h1h2','g6c2'], turn:'b' },
-  { fen:'5bk1/8/3n4/3R4/2B5/8/8/6K1 w - - 0 1', sol:['d5d6'], turn:'w' },
-  { fen:'r5k1/6pp/8/3n4/8/6P1/5PBP/6K1 w - - 0 1', sol:['g2d5'], turn:'w' },
-  { fen:'8/p3bkpp/5p2/4p3/1pn5/1N3B1P/PP3PP1/6K1 w - - 0 1', sol:['f3d5'], turn:'w' },
-  { fen:'3q1rk1/4ppbp/1r3np1/p1Q5/1p1P1B2/2N3P1/PPP2P1P/3RR1K1 w - - 0 1', sol:['f4c7'], turn:'w' },
-  { fen:'6k1/2q3pp/8/3R4/2B5/8/8/6K1 w - - 0 1', sol:['d5d8'], turn:'w' },
-  { fen:'6k1/5p2/3p2n1/3P1P1p/2Q5/5KP1/1P3R1P/4r3 b - - 0 1', sol:['g6e5','f3f4','e5c4'], turn:'b' },
-  { fen:'6k1/6pp/1p1npp2/2p5/2P1PP1n/P5P1/1B1Q1K1P/8 b - - 0 1', sol:['h4e4','f2e3','e4d2'], turn:'b' },
-  { fen:'br4r1/3RR1pk/4p2p/p3p3/p5N1/1P6/2P2PPP/5K2 w - - 0 1', sol:['g4f6','h7h8','f6g8'], turn:'w' },
-  { fen:'3rrbk1/6pp/p2p4/2q1nQ2/p1P2B2/4N1PP/1P2R3/4R1K1 b - - 0 1', sol:['e5f3','g1f2','f3e1'], turn:'b' },
-  { fen:'4b3/6pp/2rknp2/8/1P1PQ3/5P1P/6PK/8 w - - 2 2', sol:['d4d5'], turn:'w' },
-  { fen:'r3r1k1/1b1n1pb1/pp1q1npp/4p3/P2P4/2P1N2P/1P2BPPB/R2R1QK1 w - - 0 1', sol:['d4e5','d6c5','e5f6'], turn:'w' },
-  { fen:'r5k1/pp2p2p/4p1p1/2Pqn1r1/3B4/2P5/P3QPPP/3RR1K1 w - - 0 1', sol:['f2f4','e5f3','g1h1','f3e1','f4g5'], turn:'w' },
-  { fen:'6b1/1B2k1p1/P6p/4N2P/1p4P1/1n2K3/rP1p4/3R4 w - - 0 1', sol:['a6a7','a2a7','e5c6','e7d6','c6a7'], turn:'w' },
-  { fen:'2k5/2p3p1/1p2p3/p7/3nP3/3PN1B1/1nPK3P/8 w - - 0 1', sol:['d3c3'], turn:'w' },
-  { fen:'kn3q1r/pp5p/8/5p2/1P3Np1/P5P1/1Q4P1/2R3K1 w - - 0 1', sol:['f4e6'], turn:'w' },
+  /* 40-44 BONUS — exemple din lecție */
+  { fen:'5nk1/5p1p/8/5N2/8/Q4p1q/3r4/1R4K1 w - - 0 1', sol:['a3f8', 'g8f8', 'b1b8', 'd2d8', 'b8d8'], turn:'w' },
+  { fen:'rnb1kb1r/pp3ppp/2p5/4q3/4n3/3Q4/PPPB1PPP/2KR1BNR w kq - 0 9', sol:['d3d8', 'e8d8', 'd2g5', 'd8c7', 'g5d8'], turn:'w' },
+  { fen:'r2B3r/3n2pp/p1kbR3/1b1p1P2/1qpP4/4PQPP/2B2P1K/8 w - - 0 1', sol:['f3d5', 'c6d5', 'c2e4'], turn:'w' },
+  { fen:'r4Bk1/5p2/4b1p1/q7/3P4/8/P1P2Q2/K6R w - - 0 1', sol:['h1h8', 'g8h8', 'f2f6', 'h8g8', 'f6g7'], turn:'w' },
+  { fen:'r3r1k1/p1p2pp1/3b3p/6R1/1PB1Q3/7q/2P2R2/6K1 w - - 0 1', sol:['g5g7', 'g8g7', 'f2f7', 'g7h8', 'e4h7'], turn:'w' },
 ];
 
 /* ── STATE ── */
@@ -305,23 +285,23 @@ let chess       = null;
 let board       = null;
 let selSq       = null;
 let solved      = false;
-let phase       = 'waiting';   /* 'waiting' | 'computer' | 'done' */
-let solIdx      = 0;           /* index in PUZZLES[curIdx].sol */
+let phase       = 'waiting';
+let solIdx      = 0;
 let completed   = {};
-let moveHistory = [];          /* {from, to, prom} played so far */
+let moveHistory = [];
 let viewIdx     = 0;
 let autoPlayTimer = null;
 
-const SAVE_KEY = 'fork_progress';
+const SAVE_KEY = 'attraction_progress';
 
 /* ── LEVEL HELPERS ── */
 function levelOf(idx) {
-  if (idx < 5)  return 0;
-  if (idx < 12) return 1;
+  if (idx < 12) return 0;
+  if (idx < 25) return 1;
   return 2;
 }
-const LEVEL_LABELS  = ['UȘOR',    'MEDIU',   'AVANSAT'];
-const LEVEL_CLASSES = ['',        'med',     'hard'];
+const LEVEL_LABELS  = ['UȘOR',  'MEDIU', 'AVANSAT'];
+const LEVEL_CLASSES = ['',      'med',   'hard'];
 
 /* ── SOUND ── */
 const SND = {
@@ -379,8 +359,8 @@ function setMsg(type, text) {
   el.className = 'task-msg ' + type;
   el.innerHTML = text;
 }
-function idleMsg() { setMsg('idle', 'Găsește atacul dublu!'); }
-function contMsg() { setMsg('idle', '🎯 Continuă atacul!'); }
+function idleMsg() { setMsg('idle', 'Atrage piesa adversă!'); }
+function contMsg() { setMsg('idle', '🎯 Continuă secvența!'); }
 
 /* ── PROGRESS ── */
 function updateProgress() {
@@ -410,7 +390,7 @@ function updateArenaBtn() {
     if (!ab) return;
     const allDone = done >= PUZZLES.length;
     if (done > 0) {
-      ab.textContent = '🎯 Arenă Atac Dublu (' + done + '/' + PUZZLES.length + ' rezolvate)';
+      ab.textContent = '🎯 Arenă Atragerea (' + done + '/' + PUZZLES.length + ' rezolvate)';
       if (cb) {
         if (allDone) {
           cb.style.display = 'none';
@@ -423,7 +403,7 @@ function updateArenaBtn() {
       }
       if (rb) rb.style.display = allDone ? 'flex' : 'none';
     } else {
-      ab.textContent = '🎯 Arenă Atac Dublu →';
+      ab.textContent = '🎯 Arenă Atragerea →';
       if (cb) cb.style.display = 'none';
       if (rb) rb.style.display = 'none';
     }
@@ -470,7 +450,6 @@ function loadPuzzle(idx) {
   if (completed[idx]) {
     setMsg('ok', '✅ Deja rezolvat — poți încerca din nou!');
     document.getElementById('nextBtn').disabled = (curIdx === PUZZLES.length - 1);
-    /* solved rămâne false → puzzle-ul poate fi rejucat */
   } else {
     idleMsg();
   }
@@ -485,12 +464,13 @@ function tryMove(from, to) {
 
   if (from !== expected.slice(0, 2) || to !== expected.slice(2, 4)) {
     playWrong(); shakeBoard();
-    setMsg('err', '❌ Nu este atacul corect — mai încearcă!');
+    setMsg('err', '❌ Nu este mutarea corectă — mai încearcă!');
     setTimeout(solIdx === 0 ? idleMsg : contMsg, 1400);
     return 'snapback';
   }
 
-  const move = chess.move({ from, to, promotion: 'q' });
+  const prom = expected.length === 5 ? expected[4] : 'q';
+  const move = chess.move({ from, to, promotion: prom });
   if (!move) return 'snapback';
 
   playMoveSound(!!move.captured);
@@ -504,7 +484,6 @@ function tryMove(from, to) {
     return undefined;
   }
 
-  /* computer responds */
   phase = 'computer';
   setMsg('idle', '⏳ Adversarul răspunde...');
   setTimeout(playComputerMove, 700);
@@ -512,8 +491,9 @@ function tryMove(from, to) {
 }
 
 function playComputerMove() {
-  const uci = PUZZLES[curIdx].sol[solIdx];
-  const cm  = chess.move({ from: uci.slice(0,2), to: uci.slice(2,4), promotion: 'q' });
+  const uci  = PUZZLES[curIdx].sol[solIdx];
+  const prom = uci.length === 5 ? uci[4] : 'q';
+  const cm   = chess.move({ from: uci.slice(0,2), to: uci.slice(2,4), promotion: prom });
   if (cm) {
     playMoveSound(!!cm.captured);
     board.position(chess.fen(), true);
@@ -536,7 +516,7 @@ function finishPuzzle() {
   updateProgress(); saveProgress();
   celebrate();
   setTimeout(playWin, 250);
-  setMsg('ok', '✅ Excelent! Ai câștigat material!');
+  setMsg('ok', '✅ Excelent! Ai atras piesa adversă!');
   document.getElementById('nextBtn').disabled = (curIdx === PUZZLES.length - 1);
 }
 
@@ -591,7 +571,7 @@ function showHint() {
 function showSolution() {
   if (autoPlayTimer) { clearTimeout(autoPlayTimer); autoPlayTimer = null; }
   const pz   = PUZZLES[curIdx];
-  moveHistory = pz.sol.map(uci => ({ from: uci.slice(0,2), to: uci.slice(2,4), prom: 'q' }));
+  moveHistory = pz.sol.map(uci => ({ from: uci.slice(0,2), to: uci.slice(2,4), prom: uci.length===5 ? uci[4] : 'q' }));
   chess = new Chess(pz.fen);
   viewIdx = 0;
   board.position(pz.fen, false);
@@ -607,7 +587,7 @@ function autoPlaySol() {
   if (viewIdx < moveHistory.length) autoPlayTimer = setTimeout(autoPlaySol, 800);
 }
 
-/* ── MOVE HISTORY (step back/forward) ── */
+/* ── MOVE HISTORY ── */
 function recordMove(from, to) {
   moveHistory.push({ from, to, prom: 'q' });
   viewIdx = moveHistory.length;
@@ -645,9 +625,7 @@ function updateNavBtns() {
 /* ── NAVIGARE PUZZLE ── */
 function prevPuzzle()  { if (curIdx > 0) loadPuzzle(curIdx - 1); }
 function nextPuzzle()  { if (curIdx < PUZZLES.length - 1) loadPuzzle(curIdx + 1); }
-function resetPuzzle() {
-  loadPuzzle(curIdx);
-}
+function resetPuzzle() { loadPuzzle(curIdx); }
 
 /* ── ARENĂ ── */
 function enterArena(idx) {
