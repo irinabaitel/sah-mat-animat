@@ -243,17 +243,21 @@ const chapters = [
     }
   },
 
-  /* 4 — Absolut 5 (propriu): nebun leagă cal față de rege (diagonală) */
+  /* 4 — Absolut 5: doi atacatori, un singur apărător care nu poate captura piesa apărată */
   {
-    fen: '4k3/8/2n5/1B6/8/8/3K4/4R3 w - - 0 1',
-    san: ['Re6'],
+    fen: '4k3/8/2n5/1B6/8/8/3K4/1R6 w - - 0 1',
+    san: ['Rc1', 'Kd7', 'Bxc6+'],
     ann: {
-      0: 'Nebunul alb de pe b5 leagă <strong>absolut</strong> calul de pe c6 față de regele de pe e8.',
-      1: 'Turnul atacă calul legat de pe e6! Calul nu poate fugi (ar lăsa regele în șah) — este pierdut.'
+      0: 'Nebunul alb de pe b5 leagă <strong>absolut</strong> calul de pe c6 față de regele de pe e8. Albul aduce un al doilea atacator!',
+      1: 'Turnul vine pe c1 — acum <strong>doi atacatori</strong> (turnul și nebunul) presează calul legat pe c6.',
+      2: 'Regele negru vine pe d7 ca singurul apărător al calului. Calul rămâne legat — acum față de regele de pe d7.',
+      3: 'Nebunul ia calul cu șah! Regele de pe d7 <strong>nu poate captura</strong> nebunul — turnul de pe c1 îl apără. Doi atacatori, un singur apărător: calul este pierdut!'
     },
     arrows: {
       0: [{from:'b5',to:'c6',color:'R'},{from:'c6',to:'e8',color:'Y'}],
-      1: [{from:'b5',to:'c6',color:'R'},{from:'c6',to:'e8',color:'Y'},{from:'e6',to:'c6',color:'G'}]
+      1: [{from:'c1',to:'c6',color:'G'},{from:'b5',to:'c6',color:'R'},{from:'c6',to:'e8',color:'Y'}],
+      2: [{from:'c1',to:'c6',color:'G'},{from:'b5',to:'c6',color:'R'},{from:'c6',to:'d7',color:'Y'}],
+      3: [{from:'c1',to:'c6',color:'G'}]
     }
   },
 
