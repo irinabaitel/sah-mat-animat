@@ -88,6 +88,20 @@
     }
     .board-shake { animation: shake 0.35s ease-out; }
 
+    .last-move-from { background: rgba(170,162,58,0.42) !important; }
+    .last-move-to   { background: rgba(170,162,58,0.62) !important; }
+
+    .btn-vol {
+      position: fixed; top: 10px; right: 12px; z-index: 1000;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,0.88); border: 1.5px solid rgba(26,58,107,0.18);
+      font-size: 1.05rem; cursor: pointer; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.14); transition: background .15s;
+      padding: 0;
+    }
+    .btn-vol:hover { background: rgba(26,58,107,0.10); }
+
     .progress-outer { position: relative; margin-bottom: 12px; }
     .progress-outer::after {
       content: attr(data-tip);
@@ -175,6 +189,9 @@
             <button class="btn-sm btn-hint" onclick="showHint()">&#128161; Indiciu</button>
             <button class="btn-sm btn-sol"  onclick="showSolution()">&#9658;&#9658; Soluție</button>
           </div>
+          <button class="btn-arena" id="playAgainBtn"
+                  style="display:none; margin-top:12px; background:rgba(39,174,96,0.82);"
+                  onclick="resetAllProgress()">🎉 Toți rezolvați! Joacă din nou →</button>
         </div>
 
       </div>
@@ -199,6 +216,8 @@
       <span class="label">Frigăruia</span>
     </a>
   </footer>
+
+<button class="btn-vol" id="volBtn" onclick="toggleVol()" title="Sunet on/off">🔊</button>
 
 </div>
 
@@ -274,6 +293,14 @@ let autoPlayTimer = null;
 
 const SAVE_KEY = 'pin_progress';
 
+let muted = (() => { try { return localStorage.getItem('arena_muted') === '1'; } catch(e) { return false; } })();
+function toggleVol() {
+  muted = !muted;
+  try { localStorage.setItem('arena_muted', muted ? '1' : '0'); } catch(e) {}
+  const btn = document.getElementById('volBtn');
+  if (btn) btn.textContent = muted ? '🔇' : '🔊';
+}
+
 /* ── LEVEL HELPERS ── */
 function levelOf(idx) { return PUZZLES[idx].lvl; }
 const LEVEL_LABELS  = ['UȘOR', 'MEDIU', 'GREU'];
@@ -286,12 +313,15 @@ const SND = {
   mate:    new Audio('Sounds/Mate.mp3'),
 };
 function playMoveSound(isCapture) {
+  if (muted) return;
   try { const s = isCapture ? SND.capture : SND.move; s.currentTime = 0; s.play(); } catch(e) {}
 }
 function playWin() {
+  if (muted) return;
   try { SND.mate.currentTime = 0; SND.mate.play(); } catch(e) {}
 }
 function playWrong() {
+  if (muted) return;
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator(), gain = ctx.createGain();
@@ -320,12 +350,18 @@ function celebrate() {
 function debounce(fn, d) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; }
 
 function clearHL() {
-  document.querySelectorAll('.square-selected, .highlight-check')
-    .forEach(el => el.classList.remove('square-selected', 'highlight-check'));
+  document.querySelectorAll('.square-selected, .highlight-check, .last-move-from, .last-move-to')
+    .forEach(el => el.classList.remove('square-selected', 'highlight-check', 'last-move-from', 'last-move-to'));
 }
 function applyHL(sq, cls) {
   const el = document.querySelector('.square-' + sq);
   if (el) el.classList.add(cls);
+}
+function setLastMoveHL(from, to) {
+  document.querySelectorAll('.last-move-from, .last-move-to')
+    .forEach(el => el.classList.remove('last-move-from', 'last-move-to'));
+  applyHL(from, 'last-move-from');
+  applyHL(to,   'last-move-to');
 }
 
 /* ── MESSAGES ── */
@@ -413,6 +449,8 @@ function loadPuzzle(idx) {
   curIdx = idx; solved = false; selSq = null;
   phase = 'waiting'; solIdx = 0;
   moveHistory = []; viewIdx = 0;
+  const pab = document.getElementById('playAgainBtn');
+  if (pab) pab.style.display = 'none';
   if (window._annClear) window._annClear();
   chess = new Chess(PUZZLES[idx].fen);
   board.position(PUZZLES[idx].fen, false);
@@ -450,7 +488,7 @@ function tryMove(from, to) {
   playMoveSound(!!move.captured);
   board.position(chess.fen(), true);
   recordMove(from, to);
-  clearHL(); selSq = null;
+  setLastMoveHL(from, to); selSq = null;
   solIdx++;
 
   if (solIdx >= PUZZLES[curIdx].sol.length) {
@@ -471,6 +509,7 @@ function playComputerMove() {
     playMoveSound(!!cm.captured);
     board.position(chess.fen(), true);
     recordMove(uci.slice(0,2), uci.slice(2,4));
+    setLastMoveHL(uci.slice(0,2), uci.slice(2,4));
   }
   solIdx++;
 
@@ -491,6 +530,10 @@ function finishPuzzle() {
   setTimeout(playWin, 250);
   setMsg('ok', '&#10003; Excelent! Ai exploatat legătura!');
   document.getElementById('nextBtn').disabled = (curIdx === PUZZLES.length - 1);
+  if (Object.keys(completed).length >= PUZZLES.length) {
+    const pab = document.getElementById('playAgainBtn');
+    if (pab) pab.style.display = 'flex';
+  }
 }
 
 /* ── DRAG & CLICK ── */
@@ -575,6 +618,11 @@ function replayToPos(idx) {
   }
   board.position(temp.fen(), false);
   clearHL();
+  if (idx > 0 && moveHistory[idx - 1]) {
+    const lm = moveHistory[idx - 1];
+    applyHL(lm.from, 'last-move-from');
+    applyHL(lm.to,   'last-move-to');
+  }
 }
 function stepBack() {
   if (viewIdx <= 0) return;
@@ -641,7 +689,11 @@ board = Chessboard('board', {
   onDragStart, onDrop, onSnapEnd,
 });
 window.addEventListener('resize', debounce(() => { board.resize(); if (window._annRender) window._annRender(); }, 150));
-$(document).ready(() => { updateArenaBtn(); });
+$(document).ready(() => {
+  updateArenaBtn();
+  const vb = document.getElementById('volBtn');
+  if (vb) vb.textContent = muted ? '🔇' : '🔊';
+});
 </script>
 
 <script src="board-utils.js"></script>
