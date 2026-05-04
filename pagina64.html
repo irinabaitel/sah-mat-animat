@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Arenă Interferența</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    .panel-heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.15rem, 2.5vw, 1.4rem);
+      font-weight: 900; color: var(--c-navy);
+      line-height: 1.25; margin-bottom: 8px;
+    }
+    .btn-arena {
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 14px; padding: 11px 20px; border-radius: 50px;
+      background: var(--c-navy); color: white; text-decoration: none;
+      font-family: var(--font-display); font-size: 0.97rem; font-weight: 700;
+      border: none; cursor: pointer; width: 100%; transition: opacity .18s;
+    }
+    .btn-arena:hover { opacity: 0.86; }
+
+    #puzzleView { display: none; }
+
+    .turn-badge {
+      display: inline-block; padding: 3px 14px; border-radius: 50px;
+      font-family: var(--font-display); font-size: 0.82rem; font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .turn-badge.white { background: #f0f0f0; color: var(--c-navy); border: 1.5px solid #ccc; }
+    .turn-badge.black { background: #222; color: #fff; border: 1.5px solid #000; }
+
+    .level-badge {
+      display: inline-block; margin-left: 6px;
+      padding: 2px 10px; border-radius: 50px;
+      font-family: var(--font-display); font-size: 0.75rem; font-weight: 700;
+      background: rgba(39,174,96,0.18); color: #1a6b3a;
+    }
+    .level-badge.med   { background: rgba(230,126,34,0.18); color: #8a3a00; }
+    .level-badge.hard  { background: rgba(192,57,43,0.18);  color: #7a1800; }
+
+    .ctrl-row { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; }
+    .btn-sm {
+      padding: 7px 15px; border-radius: 50px;
+      font-family: var(--font-display); font-size: 0.86rem; font-weight: 700;
+      cursor: pointer; transition: background .15s, opacity .15s;
+      border: 1.5px solid transparent;
+    }
+    .btn-sm:disabled { opacity: 0.28; cursor: default; }
+    .btn-prev  { border-color: rgba(26,58,107,0.35); background: rgba(255,255,255,0.55); color: var(--c-navy); }
+    .btn-prev:hover:not(:disabled)  { background: rgba(26,58,107,0.10); }
+    .btn-reset { border-color: rgba(192,57,43,0.40); background: rgba(255,255,255,0.55); color: #8b1a00; }
+    .btn-reset:hover:not(:disabled) { background: rgba(192,57,43,0.10); }
+    .btn-cont  { border-color: var(--c-success); background: var(--c-success); color: white; }
+    .btn-cont:hover:not(:disabled)  { opacity: 0.86; }
+    .btn-next  { border-color: var(--c-navy); background: var(--c-navy); color: white; }
+    .btn-next:hover:not(:disabled)  { opacity: 0.86; }
+
+    .square-selected { background: rgba(255,200,0,0.55) !important; }
+    #boardWrapper { touch-action: none; -webkit-touch-callout: none; }
+    .hint-square { background: rgba(80,200,80,0.65) !important; }
+    .btn-tri  { padding: 7px 11px; min-width: 34px; }
+    .btn-hint { border-color: rgba(39,174,96,0.45); background: rgba(39,174,96,0.08); color: #1a6b3a; }
+    .btn-hint:hover:not(:disabled) { background: rgba(39,174,96,0.18); }
+    .btn-sol  { border-color: rgba(142,68,173,0.45); background: rgba(142,68,173,0.08); color: #6c3483; }
+    .btn-sol:hover:not(:disabled)  { background: rgba(142,68,173,0.18); }
+    .arena-back-btn {
+      display: block; margin-top: 10px; width: 100%;
+      padding: 8px 16px; border-radius: 50px;
+      font-family: var(--font-display); font-size: 0.86rem; font-weight: 700;
+      color: var(--c-navy); cursor: pointer;
+      background: rgba(255,255,255,0.55);
+      border: 1.5px solid rgba(26,58,107,0.25);
+      text-align: center; text-decoration: none; transition: background .15s;
+    }
+    .arena-back-btn:hover { background: rgba(26,58,107,0.10); }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-8px); }
+      40%       { transform: translateX(8px); }
+      60%       { transform: translateX(-5px); }
+      80%       { transform: translateX(5px); }
+    }
+    .board-shake { animation: shake 0.35s ease-out; }
+
+    .last-move-from { background: rgba(170,162,58,0.42) !important; }
+    .last-move-to   { background: rgba(170,162,58,0.62) !important; }
+
+    .btn-vol {
+      position: fixed; top: 10px; right: 12px; z-index: 1000;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,0.88); border: 1.5px solid rgba(26,58,107,0.18);
+      font-size: 1.05rem; cursor: pointer; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.14); transition: background .15s;
+      padding: 0;
+    }
+    .btn-vol:hover { background: rgba(26,58,107,0.10); }
+
+    .progress-outer {
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .progress-outer::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(26,26,46,0.88);
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .progress-outer:hover::after { opacity: 1; }
+    .progress-outer .progress-wrap { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title" id="pageTitle">Arenă Interferența</span>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll" id="panelScroll">
+
+        <!-- LECTIE -->
+        <div id="lectureView">
+          <div class="panel-heading">Arenă Interferența</div>
+
+          <p><strong>Interferența</strong> blochează linia dintre o piesă adversă și ce apără ea. Interpui o piesă sacrificabilă pe un câmp protejat — dacă adversarul capturează, pierde mai mult decât câștigă.</p>
+
+          <div class="hl-box" style="margin: 12px 0;">
+            <strong>🧩 Cum funcționează arena:</strong>
+            <ul style="margin-top: 6px; padding-left: 1.3em; line-height: 1.8;">
+              <li>Identifici piesa adversă care apără ceva important și linia prin care o face</li>
+              <li>Interpui o piesă pe un câmp protejat din acea linie</li>
+              <li>Exploatezi piesa sau câmpul lăsat fără apărare!</li>
+            </ul>
+            <p style="margin-top:8px; font-size:0.88em; opacity:0.75;">
+              40 puzzle-uri · 3 niveluri de dificultate (Ușor → Mediu → Avansat)
+            </p>
+          </div>
+
+          <button class="btn-arena" id="arenaBtn" onclick="startArena()">🎯 Arenă Interferența →</button>
+          <button class="btn-arena" id="continueBtn" onclick="continueArena()"
+                  style="display:none; margin-top:8px; background:var(--c-success);">
+            ▶ Continuă
+          </button>
+          <button class="btn-arena" id="resetAllBtn" onclick="resetAllProgress()"
+                  style="display:none; margin-top:8px; background:rgba(192,57,43,0.82);">
+            ↺ Joacă din nou (resetează tot)
+          </button>
+        </div>
+
+        <!-- PUZZLE -->
+        <div id="puzzleView">
+          <div class="panel-heading">Interferența</div>
+          <span class="turn-badge white" id="turnBadge">⬜ Albul mută</span>
+          <span class="level-badge" id="levelBadge">UȘOR</span>
+
+          <div class="progress-outer" id="progressOuter">
+            <div class="progress-wrap">
+              <div class="progress-fill" id="progressFill" style="width:0%"></div>
+            </div>
+          </div>
+
+          <div class="task-msg idle" id="taskMsg">Identifică și execută interferența!</div>
+
+          <div class="ctrl-row">
+            <button class="btn-sm btn-prev"  id="prevBtn"  onclick="prevPuzzle()" disabled>← Precedentul</button>
+            <button class="btn-sm btn-reset" onclick="resetPuzzle()">↺ Resetează</button>
+            <button class="btn-sm btn-cont"  onclick="continueArena()">Continuă</button>
+            <button class="btn-sm btn-next"  id="nextBtn"  onclick="nextPuzzle()" disabled>Următorul →</button>
+          </div>
+          <div class="ctrl-row" style="margin-top:5px">
+            <button class="btn-sm btn-tri btn-prev" id="stepBackBtn" onclick="stepBack()" disabled>◄</button>
+            <button class="btn-sm btn-tri btn-prev" id="stepFwdBtn"  onclick="stepForward()" disabled>►</button>
+            <button class="btn-sm btn-hint" onclick="showHint()">💡 Indiciu</button>
+            <button class="btn-sm btn-sol"  onclick="showSolution()">▶▶ Soluție</button>
+          </div>
+          <button class="btn-arena" id="playAgainBtn"
+                  style="display:none; margin-top:12px; background:rgba(39,174,96,0.82);"
+                  onclick="resetAllProgress()">🎉 Toți rezolvați! Joacă din nou →</button>
+        </div>
+
+      </div>
+      <button class="arena-back-btn" id="arenaBackBtn" style="display:none"
+              onclick="backToLecture()">← Interferența</button>
+      <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="pagina63.html" class="nav-btn nav-btn--back">
+      <span class="icon" aria-hidden="true">←</span>
+      <span class="label">Interferența</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon" aria-hidden="true">⊞</span>
+      <span class="label">Cuprins</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--forward">
+      <span class="icon" aria-hidden="true">→</span>
+      <span class="label">Cuprins</span>
+    </a>
+  </footer>
+
+<button class="btn-vol" id="volBtn" onclick="toggleVol()" title="Sunet on/off">🔊</button>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+const PIECE_THEME = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+const LECTURE_FEN = '1r2r1k1/p1pbqppp/Q2b1n2/3p4/P2P4/2P5/1P2BPPP/R1B1KN1R b KQ - 2 14';
+
+/* ── PUZZLE DATA ── */
+const PUZZLES = [
+  /* 0-12 USOR */
+  { fen:'3rr1k1/pppq1ppp/2n3n1/2B3Q1/2B5/P2P3P/1PP2PP1/3R1RK1 b - - 10 19', sol:['e8e5', 'g5c1', 'e5c5'], turn:'b' },  // mev4t r=1452
+  { fen:'2kr2nr/ppp3pp/2n2p2/3p4/8/1P1Pb1qP/PBPNB1P1/R2Q1R1K w - - 5 15', sol:['e2g4', 'c8b8', 'f1f3', 'g3d6', 'f3e3'], turn:'w' },  // oFkoP r=1373
+  { fen:'rn1qkb1r/pQpbpppp/8/4P3/8/8/PPP2PPP/RNB1K1NR b KQkq - 0 9', sol:['d7c6', 'b7b3', 'c6g2'], turn:'b' },  // wRW8D r=1555
+  { fen:'1rbk2nr/ppNp1pbp/3Pp1p1/4n3/2B5/5N2/PP3PPP/R1B1K2R w KQ - 5 13', sol:['c1g5', 'g8f6', 'f3e5'], turn:'w' },  // cnA1K r=1490
+  { fen:'rnb1k1nr/ppp2ppp/4p3/8/4p3/8/PqPBNPPP/R2QKB1R w KQkq - 0 8', sol:['d2c3', 'b2a3', 'c3g7'], turn:'w' },  // wWLeL r=1613
+  { fen:'4r3/pp2rkp1/2p4p/8/2p1nPP1/5N1P/PP4K1/4RR2 w - - 0 28', sol:['f3e5', 'f7g8', 'e1e4'], turn:'w' },  // nP9Uz r=1374
+  { fen:'6r1/3b4/3p1k2/p1pP3p/PpP2p2/1P3RrP/6BK/4R3 w - - 0 39', sol:['f3f4', 'f6g5', 'h2g3'], turn:'w' },  // IGznX r=1479
+  { fen:'r1b1q3/ppp2k1p/2n3p1/2Q3B1/3pr3/8/PPPN1PPP/R4RK1 b - - 3 13', sol:['e4e5', 'c5a3', 'e5g5'], turn:'b' },  // vgCVJ r=1580
+  { fen:'r1b3k1/pp5p/2p1prp1/3q4/3P4/2PB2Q1/PP3P1P/R3R1K1 b - - 3 23', sol:['f6f3', 'g3g4', 'f3d3'], turn:'b' },  // GFBW5 r=1504
+  { fen:'r1bq1rk1/pp3pbp/3B2p1/2p4n/2B1P3/2N2P2/PPP3PP/R2Q1RK1 b - - 0 12', sol:['g7d4', 'g1h1', 'd8d6'], turn:'b' },  // qJeS5 r=1454
+  { fen:'r1bk3r/ppppb1Q1/3q3p/2n5/2B5/5N2/PPP2PPP/RN2R1K1 b - - 0 13', sol:['e7f6', 'g7g6', 'f6b2', 'g6d6', 'c7d6'], turn:'b' },  // J1rMb r=1477
+  { fen:'r3k1nr/p3bpQp/4q3/8/8/4B3/PPP2PPP/RN2K2R b KQkq - 2 13', sol:['e7f6', 'g7g3', 'f6b2'], turn:'b' },  // QV9yn r=1575
+  { fen:'r1bqr1k1/pp4pp/2np4/3n4/4p3/1PP2N1P/PB2BPP1/R2QK2R w KQ - 0 14', sol:['d1d5', 'c8e6', 'd5e4'], turn:'w' },  // KX5AP r=1350
+
+  /* 13-25 MEDIU */
+  { fen:'r6r/pp1k1ppp/4qn2/8/4Q3/8/4N1PP/2RK3R w - - 0 19', sol:['e4b7', 'd7e8', 'b7a8'], turn:'w' },  // MXGPC r=1472
+  { fen:'2r2r2/5pkp/4pqp1/pp1p4/6Pn/1BP1R1QP/PP3P2/R5K1 w - - 0 22', sol:['g4g5', 'f6e7', 'g3h4'], turn:'w' },  // G79Dz r=1481
+  { fen:'6k1/1q2npbp/p3p1p1/1r1p4/3PnB2/1P1Q1NP1/4NP1P/2R3K1 w - - 2 29', sol:['c1c7', 'b7a8', 'c7e7'], turn:'w' },  // aupOi r=1527
+  { fen:'7r/1p1q1kb1/rB4p1/p2p1p2/5PpP/1P1PQ1P1/P3P3/2R2RK1 b - - 3 27', sol:['d5d4', 'e3d2', 'a6b6'], turn:'b' },  // ByKAs r=1385
+  { fen:'r3k2r/ppp2ppp/8/2bpn3/3p4/3B2qP/PPP4N/RNB2Q1K w kq - 0 16', sol:['c1f4', 'g3h4', 'f4e5'], turn:'w' },  // XbF0l r=1485
+  { fen:'2k4r/p1pnqp2/bp2pnrp/8/2PPB2Q/P3B1P1/2P1NP1P/R4RK1 b - - 0 19', sol:['g6g4', 'h4h3', 'g4e4'], turn:'b' },  // 5Tb9k r=1578
+  { fen:'r2q2k1/pp2b1pp/4p1r1/3pB2Q/2p5/2P1P2P/PP3PP1/R4RK1 b - - 3 18', sol:['g6g5', 'h5e2', 'g5e5'], turn:'b' },  // Btdnv r=1520
+  { fen:'2r2rk1/ppq4p/4p1p1/4Np2/2P1b3/1P3PQ1/PK4PP/3R3R b - - 0 23', sol:['f5f4', 'g3e1', 'c7e5'], turn:'b' },  // BrjVL r=1509
+  { fen:'r3k1nr/pp1b1ppp/4p3/8/2Q1P3/8/Pq1B2PP/R3KB1R w KQkq - 0 13', sol:['d2c3', 'b2b6', 'c3g7'], turn:'w' },  // Oy5pM r=1454
+  { fen:'3r1r1k/2p3p1/p5Pp/1pbP1p1P/4q3/1Q3B2/PPP3R1/2KR4 b - - 1 27', sol:['c5e3', 'c1b1', 'e4f3'], turn:'b' },  // uWfPy r=1502
+  { fen:'r3kb1r/pp2pppp/1q3n2/3Pnb2/3N4/1BN2P2/PP4PP/R1BQK2R b KQkq - 4 11', sol:['e5d3', 'e1e2', 'b6d4'], turn:'b' },  // RmtLY r=1414
+  { fen:'5r2/2p3k1/3p3N/2p4R/R4n1P/P1r5/6PK/8 w - - 2 36', sol:['h6f5', 'g7f6', 'a4f4'], turn:'w' },  // tibyG r=1470
+  { fen:'rn1qkb1r/pQ3ppp/8/3b4/8/8/PP1P1PPP/R1B1KB1R w KQkq - 1 12', sol:['f1b5', 'b8d7', 'b7d5'], turn:'w' },  // 63yGN r=1509
+
+  /* 26-39 AVANSAT */
+  { fen:'1q2r1k1/5pbp/R2pp1p1/1bp5/2N1PP2/2PP2PP/3Q2BK/8 w - - 2 25', sol:['a6b6', 'b8c7', 'b6b5'], turn:'w' },  // Bc41E r=1485
+  { fen:'2rqr1k1/3n1pp1/p2P3p/1p2p3/1Q2B3/P3P2P/1P3PP1/R4RK1 b - - 7 23', sol:['c8c4', 'b4d2', 'c4e4'], turn:'b' },  // rLScp r=1449
+  { fen:'1k6/1p3K2/pPp5/2Pp3P/1P1Pb3/8/4Bp2/8 b - - 1 58', sol:['e4f3', 'e2f1', 'f3h5'], turn:'b' },  // Ce0fZ r=1469
+  { fen:'2bq3r/3n1pkn/p2p2p1/4p1QP/3PP1P1/P2P4/4NN2/1R4K1 w - - 2 27', sol:['h5h6', 'g7g8', 'g5d8'], turn:'w' },  // FaDM0 r=1312
+  { fen:'r3qr1k/pp4b1/n1p5/4pbQP/2P5/2N5/PP3PP1/2KR1B1R w - - 1 19', sol:['h5h6', 'g7f6', 'g5f5'], turn:'w' },  // yeOZD r=1422
+  { fen:'k2r3r/1p1bb1pp/p2ppp2/4nPP1/1P1NPB2/1Pq3Q1/2P3BP/2KRR3 b - - 1 20', sol:['c3a1', 'c1d2', 'a1d4'], turn:'b' },  // mP2Jj r=1514
+  { fen:'3rkb1r/pN2nppp/1p6/1b5q/4QB2/2P2N2/PP3PPP/R3K2R b KQk - 4 16', sol:['b5c6', 'e4e3', 'c6b7'], turn:'b' },  // z0TrR r=1516
+  { fen:'r2r2k1/p3qpbp/6p1/2nPPp2/5P2/3PB3/1R2Q1PP/1R4K1 w - - 5 26', sol:['d5d6', 'e7e8', 'e3c5'], turn:'w' },  // mPefF r=1499
+  { fen:'2k5/pq4pp/1p6/2r5/4p3/1Q1n2RP/5r2/1R4K1 w - - 0 35', sol:['b3g8', 'c8d7', 'g3g7'], turn:'w' },  // lSzbi r=1315
+  { fen:'r4rk1/1pp2ppb/3p1q1p/p2P3P/2P3P1/1PNn1P2/P2Q2B1/4RRK1 w - - 0 21', sol:['c3e4', 'f6h4', 'd2d3'], turn:'w' },  // UoGK3 r=1414
+  { fen:'3r2k1/p4p1p/1p2bnp1/2p1N3/1qP5/1P6/P1B1QPPP/4R1K1 b - - 1 20', sol:['d8d2', 'e2e3', 'd2c2'], turn:'b' },  // ORLPJ r=1436
+  { fen:'rnbqkb1r/pp2pppp/3p4/6B1/3N2n1/2P2Q2/PP3PPP/RN2KB1R w KQkq - 4 8', sol:['f1b5', 'b8d7', 'f3g4'], turn:'w' },  // cau5a r=1507
+  { fen:'r1bqk2r/p4ppp/npp1p3/2P5/1P1bN3/P7/5PPP/R2QKBNR w KQkq - 0 11', sol:['e4d6', 'e8f8', 'd1d4'], turn:'w' },  // JuZq6 r=1409
+  { fen:'r5r1/1p2kpQ1/2p1bp2/1p2p3/4P1B1/2q4P/P2R1PP1/3R2K1 w - - 4 28', sol:['d2d7', 'e6d7', 'd1d7', 'e7e8', 'g7g8'], turn:'w' },  // wl3qX r=1369
+];
+
+/* ── STATE ── */
+let mode        = 'lecture';
+let curIdx      = 0;
+let chess       = null;
+let board       = null;
+let selSq       = null;
+let solved      = false;
+let phase       = 'waiting';
+let solIdx      = 0;
+let completed   = {};
+let moveHistory = [];
+let viewIdx     = 0;
+let autoPlayTimer = null;
+
+const SAVE_KEY = 'interference_progress';
+
+let muted = (() => { try { return localStorage.getItem('arena_muted') === '1'; } catch(e) { return false; } })();
+function toggleVol() {
+  muted = !muted;
+  try { localStorage.setItem('arena_muted', muted ? '1' : '0'); } catch(e) {}
+  const btn = document.getElementById('volBtn');
+  if (btn) btn.textContent = muted ? '🔇' : '🔊';
+}
+
+/* ── LEVEL HELPERS ── */
+function levelOf(idx) {
+  if (idx < 13) return 0;
+  if (idx < 26) return 1;
+  return 2;
+}
+const LEVEL_LABELS  = ['UȘOR',  'MEDIU', 'AVANSAT'];
+const LEVEL_CLASSES = ['',      'med',   'hard'];
+
+/* ── SOUND ── */
+const SND = {
+  move:    new Audio('Sounds/Move.mp3'),
+  capture: new Audio('Sounds/Capture.mp3'),
+  mate:    new Audio('Sounds/Mate.mp3'),
+};
+function playMoveSound(isCapture) {
+  if (muted) return;
+  try { const s = isCapture ? SND.capture : SND.move; s.currentTime = 0; s.play(); } catch(e) {}
+}
+function playWin() {
+  if (muted) return;
+  try { SND.mate.currentTime = 0; SND.mate.play(); } catch(e) {}
+}
+function playWrong() {
+  if (muted) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(380, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.28);
+    gain.gain.setValueAtTime(0.22, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+    osc.start(); osc.stop(ctx.currentTime + 0.28);
+  } catch(e) {}
+}
+
+function shakeBoard() {
+  const bw = document.getElementById('boardWrapper');
+  bw.classList.remove('board-shake');
+  void bw.offsetWidth;
+  bw.classList.add('board-shake');
+  bw.addEventListener('animationend', () => bw.classList.remove('board-shake'), { once: true });
+}
+
+function celebrate() {
+  confetti({ particleCount: 80, spread: 60, origin: { y: 0.60 } });
+}
+
+/* ── UTILS ── */
+function debounce(fn, d) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; }
+
+function clearHL() {
+  document.querySelectorAll('.square-selected, .highlight-check, .last-move-from, .last-move-to')
+    .forEach(el => el.classList.remove('square-selected', 'highlight-check', 'last-move-from', 'last-move-to'));
+}
+function applyHL(sq, cls) {
+  const el = document.querySelector('.square-' + sq);
+  if (el) el.classList.add(cls);
+}
+function setLastMoveHL(from, to) {
+  document.querySelectorAll('.last-move-from, .last-move-to')
+    .forEach(el => el.classList.remove('last-move-from', 'last-move-to'));
+  applyHL(from, 'last-move-from');
+  applyHL(to,   'last-move-to');
+}
+
+/* ── MESSAGES ── */
+function setMsg(type, text) {
+  const el = document.getElementById('taskMsg');
+  el.className = 'task-msg ' + type;
+  el.innerHTML = text;
+}
+function idleMsg() { setMsg('idle', 'Identifică și execută interferența!'); }
+function contMsg() { setMsg('idle', '🎯 Continuă secvența!'); }
+
+/* ── PROGRESS ── */
+function updateProgress() {
+  const n    = Object.keys(completed).length;
+  const fill = document.getElementById('progressFill');
+  fill.style.width = (n / PUZZLES.length * 100) + '%';
+  const outer = document.getElementById('progressOuter');
+  if (outer) outer.setAttribute('data-tip', n + ' / ' + PUZZLES.length + ' rezolvate');
+}
+function saveProgress() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ idx: curIdx, done: completed })); } catch(e) {}
+}
+function loadSavedProgress() {
+  try {
+    const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+    if (d) { completed = d.done || {}; return typeof d.idx === 'number' ? d.idx : 0; }
+  } catch(e) {}
+  return 0;
+}
+function updateArenaBtn() {
+  try {
+    const d    = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+    const done = d ? Object.keys(d.done || {}).length : 0;
+    const ab   = document.getElementById('arenaBtn');
+    const cb   = document.getElementById('continueBtn');
+    const rb   = document.getElementById('resetAllBtn');
+    if (!ab) return;
+    const allDone = done >= PUZZLES.length;
+    if (done > 0) {
+      ab.textContent = '🎯 Arenă Interferența (' + done + '/' + PUZZLES.length + ' rezolvate)';
+      if (cb) {
+        if (allDone) {
+          cb.style.display = 'none';
+        } else {
+          const max = Math.max(...Object.keys(d.done).map(Number));
+          const nxt = Math.min(max + 1, PUZZLES.length - 1);
+          cb.textContent = '▶ Continuă de la #' + (nxt + 1);
+          cb.style.display = 'flex';
+        }
+      }
+      if (rb) rb.style.display = allDone ? 'flex' : 'none';
+    } else {
+      ab.textContent = '🎯 Arenă Interferența →';
+      if (cb) cb.style.display = 'none';
+      if (rb) rb.style.display = 'none';
+    }
+  } catch(e) {}
+}
+
+function resetAllProgress() {
+  try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+  completed = {};
+  updateArenaBtn();
+  enterArena(0);
+}
+
+/* ── PUZZLE UI ── */
+function updatePuzzleUI() {
+  const p     = PUZZLES[curIdx];
+  const badge = document.getElementById('turnBadge');
+  if (p.turn === 'w') { badge.textContent = '⬜ Albul mută'; badge.className = 'turn-badge white'; }
+  else                { badge.textContent = '⬛ Negrul mută'; badge.className = 'turn-badge black'; }
+
+  const lv = levelOf(curIdx);
+  const lb = document.getElementById('levelBadge');
+  lb.textContent = LEVEL_LABELS[lv];
+  lb.className   = 'level-badge ' + LEVEL_CLASSES[lv];
+
+  document.getElementById('prevBtn').disabled = (curIdx === 0);
+  document.getElementById('nextBtn').disabled = true;
+}
+
+function loadPuzzle(idx) {
+  if (autoPlayTimer) { clearTimeout(autoPlayTimer); autoPlayTimer = null; }
+  curIdx = idx; solved = false; selSq = null;
+  phase = 'waiting'; solIdx = 0;
+  moveHistory = []; viewIdx = 0;
+  const pab = document.getElementById('playAgainBtn');
+  if (pab) pab.style.display = 'none';
+  if (window._annClear) window._annClear();
+  chess = new Chess(PUZZLES[idx].fen);
+  board.position(PUZZLES[idx].fen, false);
+  board.orientation(PUZZLES[idx].turn === 'w' ? 'white' : 'black');
+  clearHL();
+  updatePuzzleUI();
+  updateProgress();
+  updateNavBtns();
+  saveProgress();
+  if (completed[idx]) {
+    setMsg('ok', '✅ Deja rezolvat — poți încerca din nou!');
+    document.getElementById('nextBtn').disabled = (curIdx === PUZZLES.length - 1);
+  } else {
+    idleMsg();
+  }
+}
+
+/* ── MOVE LOGIC ── */
+function tryMove(from, to) {
+  if (solved || phase !== 'waiting') return 'snapback';
+
+  const expected = PUZZLES[curIdx].sol[solIdx];
+  if (!expected) return 'snapback';
+
+  if (from !== expected.slice(0, 2) || to !== expected.slice(2, 4)) {
+    playWrong(); shakeBoard();
+    setMsg('err', '❌ Nu este mutarea corectă — mai încearcă!');
+    setTimeout(solIdx === 0 ? idleMsg : contMsg, 1400);
+    return 'snapback';
+  }
+
+  const prom = expected.length === 5 ? expected[4] : 'q';
+  const move = chess.move({ from, to, promotion: prom });
+  if (!move) return 'snapback';
+
+  playMoveSound(!!move.captured);
+  board.position(chess.fen(), true);
+  recordMove(from, to);
+  setLastMoveHL(from, to); selSq = null;
+  solIdx++;
+
+  if (solIdx >= PUZZLES[curIdx].sol.length) {
+    finishPuzzle();
+    return undefined;
+  }
+
+  phase = 'computer';
+  setMsg('idle', '⏳ Adversarul răspunde...');
+  setTimeout(playComputerMove, 700);
+  return undefined;
+}
+
+function playComputerMove() {
+  const uci  = PUZZLES[curIdx].sol[solIdx];
+  const prom = uci.length === 5 ? uci[4] : 'q';
+  const cm   = chess.move({ from: uci.slice(0,2), to: uci.slice(2,4), promotion: prom });
+  if (cm) {
+    playMoveSound(!!cm.captured);
+    board.position(chess.fen(), true);
+    recordMove(uci.slice(0,2), uci.slice(2,4));
+    setLastMoveHL(uci.slice(0,2), uci.slice(2,4));
+  }
+  solIdx++;
+
+  if (solIdx >= PUZZLES[curIdx].sol.length) {
+    finishPuzzle();
+    return;
+  }
+
+  phase = 'waiting';
+  contMsg();
+}
+
+function finishPuzzle() {
+  solved = true; phase = 'done';
+  completed[curIdx] = true;
+  updateProgress(); saveProgress();
+  celebrate();
+  setTimeout(playWin, 250);
+  setMsg('ok', '✅ Excelent! Interferența a funcționat!');
+  document.getElementById('nextBtn').disabled = (curIdx === PUZZLES.length - 1);
+  if (Object.keys(completed).length >= PUZZLES.length) {
+    const pab = document.getElementById('playAgainBtn');
+    if (pab) pab.style.display = 'flex';
+  }
+}
+
+/* ── DRAG & CLICK ── */
+function onDragStart(source, piece) {
+  if (mode === 'lecture' || phase !== 'waiting') return false;
+  if (viewIdx < moveHistory.length) return false;
+  if (solved) return false;
+  if (!chess || piece[0] !== chess.turn()) return false;
+  return true;
+}
+function onDrop(source, target) {
+  if (target === 'offboard') return 'snapback';
+  clearHL(); selSq = null;
+  return tryMove(source, target);
+}
+function onSnapEnd() { if (chess) board.position(chess.fen()); }
+
+$(document).on('click', '.square-55d63', function () {
+  if (mode === 'lecture' || phase !== 'waiting') return;
+  if (viewIdx < moveHistory.length) return;
+  if (solved) return;
+  const sq    = $(this).data('square');
+  const piece = chess.get(sq);
+  const moverColor = chess.turn();
+
+  if (selSq) {
+    const prevSq = selSq;
+    clearHL(); selSq = null;
+    if (sq === prevSq) return;
+    if (piece && piece.color === moverColor) {
+      selSq = sq; applyHL(sq, 'square-selected');
+    } else {
+      tryMove(prevSq, sq);
+    }
+  } else {
+    if (!piece || piece.color !== moverColor) return;
+    selSq = sq; applyHL(sq, 'square-selected');
+  }
+});
+
+/* ── INDICIU ── */
+function showHint() {
+  if (phase !== 'waiting' || solved) return;
+  if (viewIdx < moveHistory.length) return;
+  const from = PUZZLES[curIdx].sol[solIdx].slice(0, 2);
+  clearHL();
+  applyHL(from, 'hint-square');
+}
+
+/* ── SOLUTIE ── */
+function showSolution() {
+  if (autoPlayTimer) { clearTimeout(autoPlayTimer); autoPlayTimer = null; }
+  const pz   = PUZZLES[curIdx];
+  moveHistory = pz.sol.map(uci => ({ from: uci.slice(0,2), to: uci.slice(2,4), prom: uci.length===5 ? uci[4] : 'q' }));
+  chess = new Chess(pz.fen);
+  viewIdx = 0;
+  board.position(pz.fen, false);
+  clearHL();
+  updateNavBtns();
+  autoPlaySol();
+}
+function autoPlaySol() {
+  if (viewIdx >= moveHistory.length) return;
+  viewIdx++;
+  replayToPos(viewIdx);
+  updateNavBtns();
+  if (viewIdx < moveHistory.length) autoPlayTimer = setTimeout(autoPlaySol, 800);
+}
+
+/* ── MOVE HISTORY ── */
+function recordMove(from, to) {
+  moveHistory.push({ from, to, prom: 'q' });
+  viewIdx = moveHistory.length;
+  updateNavBtns();
+}
+function replayToPos(idx) {
+  const pz   = PUZZLES[curIdx];
+  const temp = new Chess(pz.fen);
+  for (let i = 0; i < idx; i++) {
+    const m = moveHistory[i];
+    temp.move({ from: m.from, to: m.to, promotion: m.prom });
+  }
+  board.position(temp.fen(), false);
+  clearHL();
+  if (idx > 0 && moveHistory[idx - 1]) {
+    const lm = moveHistory[idx - 1];
+    applyHL(lm.from, 'last-move-from');
+    applyHL(lm.to,   'last-move-to');
+  }
+}
+function stepBack() {
+  if (viewIdx <= 0) return;
+  viewIdx--;
+  replayToPos(viewIdx);
+  updateNavBtns();
+}
+function stepForward() {
+  if (viewIdx >= moveHistory.length) return;
+  viewIdx++;
+  replayToPos(viewIdx);
+  updateNavBtns();
+}
+function updateNavBtns() {
+  const bb = document.getElementById('stepBackBtn');
+  const fb = document.getElementById('stepFwdBtn');
+  if (bb) bb.disabled = viewIdx <= 0;
+  if (fb) fb.disabled = viewIdx >= moveHistory.length;
+}
+
+/* ── NAVIGARE PUZZLE ── */
+function prevPuzzle()  { if (curIdx > 0) loadPuzzle(curIdx - 1); }
+function nextPuzzle()  { if (curIdx < PUZZLES.length - 1) loadPuzzle(curIdx + 1); }
+function resetPuzzle() { loadPuzzle(curIdx); }
+
+/* ── ARENA ── */
+function enterArena(idx) {
+  mode = 'puzzle';
+  document.getElementById('lectureView').style.display  = 'none';
+  document.getElementById('puzzleView').style.display   = 'block';
+  document.getElementById('arenaBackBtn').style.display = 'block';
+  loadPuzzle(idx);
+}
+function startArena() {
+  loadSavedProgress();
+  enterArena(0);
+}
+function continueArena() {
+  loadSavedProgress();
+  const keys = Object.keys(completed).map(Number);
+  const max  = keys.length ? Math.max(...keys) : -1;
+  const next = Math.min(max + 1, PUZZLES.length - 1);
+  if (mode === 'puzzle') loadPuzzle(next);
+  else enterArena(next);
+}
+function backToLecture() {
+  mode = 'lecture';
+  document.getElementById('lectureView').style.display  = 'block';
+  document.getElementById('puzzleView').style.display   = 'none';
+  document.getElementById('arenaBackBtn').style.display = 'none';
+  updateArenaBtn();
+  board.orientation('black');
+  board.position(LECTURE_FEN, true);
+  chess = null; selSq = null;
+  if (window._annClear) window._annClear();
+  clearHL();
+}
+
+/* ── INIT ── */
+board = Chessboard('board', {
+  position:   LECTURE_FEN,
+  pieceTheme: PIECE_THEME,
+  draggable:  true,
+  onDragStart, onDrop, onSnapEnd,
+});
+window.addEventListener('resize', debounce(() => { board.resize(); if (window._annRender) window._annRender(); }, 150));
+$(document).ready(() => {
+  updateArenaBtn();
+  const vb = document.getElementById('volBtn');
+  if (vb) vb.textContent = muted ? '🔇' : '🔊';
+});
+</script>
+
+<script src="board-utils.js"></script>
+</body>
+</html>

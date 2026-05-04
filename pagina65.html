@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Matul pe ultima linie — Nivelul V</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <style>
+    .info-content { display: flex; flex-direction: column; gap: 10px; }
+    .card {
+      background: var(--c-surface); border: 2px solid var(--c-border);
+      border-radius: var(--radius); padding: 14px 16px;
+    }
+    .card p {
+      font-size: var(--fs-md); line-height: 1.75; color: var(--c-text);
+      margin-bottom: 8px; text-align: justify;
+    }
+    .card p:last-child { margin-bottom: 0; }
+    .card p strong { color: var(--c-navy); }
+    .gold-rule {
+      background: linear-gradient(135deg, #fff8e1, #fff3cd);
+      border: 2px solid #f4c842; border-radius: var(--radius); padding: 12px 14px;
+    }
+    .gold-rule p { margin-bottom: 0; }
+    .step-controls {
+      display: flex; align-items: center; justify-content: center; gap: 8px; padding: 4px 0;
+    }
+    .ctrl-btn {
+      background: var(--c-navy); color: white; border: none; border-radius: 50%;
+      width: 36px; height: 36px; font-size: 0.9em; cursor: pointer;
+      transition: background 0.2s; display: flex; align-items: center; justify-content: center;
+    }
+    .ctrl-btn:hover:not(:disabled) { background: #2a5aab; }
+    .ctrl-btn:disabled { background: rgba(26,58,107,0.22); cursor: not-allowed; }
+    .move-counter {
+      background: var(--c-surface); border: 2px solid var(--c-border); border-radius: 20px;
+      padding: 4px 12px; font-weight: 700; color: var(--c-navy);
+      font-size: 0.85em; min-width: 104px; text-align: center;
+    }
+    .annotation-box {
+      background: var(--c-surface); border: 2px solid var(--c-border);
+      border-left: 4px solid var(--c-navy); border-radius: var(--radius);
+      padding: 12px 14px; font-size: var(--fs-md); line-height: 1.7;
+      color: var(--c-text); min-height: 60px;
+    }
+    .square-selected { background: rgba(255,200,0,0.55) !important; }
+    .acc-list { display: flex; flex-direction: column; gap: 5px; }
+    .acc-item {
+      border: 2px solid var(--c-border); border-radius: var(--radius);
+      overflow: hidden; background: var(--c-surface); transition: border-color 0.15s;
+    }
+    .acc-item:hover, .acc-item.open { border-color: var(--c-navy); }
+    .acc-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 14px; cursor: pointer; user-select: none; transition: background 0.15s;
+    }
+    .acc-item.open .acc-header, .acc-header:hover { background: rgba(26,58,107,0.07); }
+    .acc-num { font-family: var(--font-display); font-weight: 900; color: var(--c-navy); font-size: var(--fs-sm); min-width: 22px; }
+    .acc-title { flex: 1; font-weight: 700; color: var(--c-navy); font-size: var(--fs-md); font-family: var(--font-display); }
+    .acc-chevron { font-size: 0.7em; color: var(--c-navy); transition: transform 0.22s; display: inline-block; }
+    .acc-item.open .acc-chevron { transform: rotate(90deg); }
+    .acc-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .acc-item.open .acc-body { max-height: 600px; }
+    .acc-inner { padding: 2px 14px 12px; }
+    .acc-desc { font-size: var(--fs-md); line-height: 1.7; color: var(--c-text); margin-bottom: 10px; }
+    .acc-examples { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .ex-btn {
+      padding: 5px 14px; border-radius: 20px;
+      border: 2px solid var(--c-navy); background: transparent;
+      color: var(--c-navy); font-family: var(--font-display);
+      font-weight: 700; font-size: var(--fs-sm); cursor: pointer; transition: all 0.15s;
+    }
+    .ex-btn:hover, .ex-btn.active { background: var(--c-navy); color: white; }
+    #navControls { display: flex; flex-direction: column; gap: 10px; padding: 4px 0 6px; }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Matul pe ultima linie</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Nivelul V</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="info-content">
+
+          <div class="card">
+            <p><strong>Matul pe ultima linie</strong> este dat de tură sau regină pe liniile 1 sau 8 (ori coloanele a sau h), atunci când regele atacat nu poate părăsi marginea tablei deoarece este blocat de propriile piese (de obicei pioni). Uneori câmpurile din vecinătate sunt controlate de piesele adversarului, făcând imposibilă orice fugă.</p>
+          </div>
+
+          <div class="gold-rule card">
+            <p>&#127775; <strong>Regula de aur:</strong> Identifică un rege blocat la marginea tablei de proprii pioni. Adu o tură sau damă pe aceeași linie sau coloană — dacă nu există câmp de fugă, e mat!</p>
+          </div>
+
+          <div id="accList" class="acc-list"></div>
+
+          <div id="navControls" style="display:none">
+            <div class="step-controls">
+              <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima poziție">&#9198;</button>
+              <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="Înapoi">&#9664;</button>
+              <div class="move-counter" id="moveCounter">Start</div>
+              <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="Înainte">&#9654;</button>
+              <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima poziție">&#9197;</button>
+            </div>
+            <div class="annotation-box" id="annotationBox"></div>
+            <div class="moves-log" id="movesLog"></div>
+          </div>
+
+          <a href="pagina66.html" class="btn-primary" style="display:flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 20px;border-radius:50px;background:var(--c-navy);color:white;text-decoration:none;font-family:var(--font-display);font-size:0.97rem;font-weight:700;border:none;cursor:pointer;width:100%;box-sizing:border-box;transition:opacity .18s;" onmouseover="this.style.opacity='.86'" onmouseout="this.style.opacity='1'">&#8594; Arenă Mat pe ultima linie</a>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="pagina64.html" class="nav-btn nav-btn--back">
+      <span class="icon">&#8592;</span><span class="label">Înapoi</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon">&#8862;</span><span class="label">Cuprins</span>
+    </a>
+    <a href="pagina66.html" class="nav-btn nav-btn--forward">
+      <span class="icon">&#8594;</span><span class="label">Arenă Mat pe ultima linie</span>
+    </a>
+  </footer>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+function toRo(san) {
+  const map = { K:'R', Q:'D', R:'T', B:'N', N:'C' };
+  return san.replace(/[KQRBN]/g, m => map[m]);
+}
+
+const chapters = [
+
+  /* 0 — Mat în 1: Td8# pe linia 8 */
+  {
+    fen: '6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 1 1',
+    san: ['Rd8#'],
+    ann: {
+      0: 'Albul mută. Regele negru este blocat pe linia 8 de proprii pioni (f7, g7, h7). Unde poate merge tura albă pentru mat?',
+      1: '1.Td8# — tura merge direct pe ultima linie. Regele negru nu poate fugi: g7, h7, f7 sunt blocate de proprii pioni, iar f8 și h8 sunt controlate de tură. <strong>Mat pe ultima linie!</strong>'
+    },
+    arrows: {
+      0: [{from:'d1',to:'d8',color:'G'}],
+      1: []
+    }
+  },
+
+  /* 1 — Mat în 1: Ta1# pe coloana a */
+  {
+    fen: '8/1p6/kp6/1p6/8/8/5PPP/5RK1 w - - 0 1',
+    san: ['Ra1#'],
+    ann: {
+      0: 'Albul mută. Regele negru este blocat pe coloana a de proprii pioni (b7, b6, b5). Tura albă poate da mat pe coloana a!',
+      1: '1.Ta1# — tura merge pe coloana a, la marginea tablei. Regele negru nu are unde fugi: b7, b6, b5 sunt blocate de proprii pioni, iar a7 și a5 sunt controlate de tură. <strong>Mat pe coloana a!</strong>'
+    },
+    arrows: {
+      0: [{from:'f1',to:'a1',color:'G'}],
+      1: []
+    }
+  },
+
+  /* 2 — Mat în 2: Txe8+ Txe8 Dxe8# */
+  {
+    fen: '2r1r1k1/5ppp/8/8/Q7/8/5PPP/4R1K1 w - - 0 1',
+    san: ['Rxe8+', 'Rxe8', 'Qxe8#'],
+    ann: {
+      0: 'Albul mută. Regele negru este blocat de pioni pe f7, g7, h7. Există două ture negre pe ultima linie — cum le elimini pentru a ajunge la rege?',
+      1: '1.Txe8+ — tura albă se sacrifică pe e8, forțând tura neagră să recaptureze.',
+      2: '1...Txe8 — tura neagră din c8 este forțată să recaptureze (singura mișcare legală).',
+      3: '2.Dxe8# — dama vine pe ultima linie. Regele negru este blocat de pioni pe f7, g7, h7. Nu există câmp de fugă. <strong>Mat!</strong>'
+    },
+    arrows: {
+      0: [{from:'e1',to:'e8',color:'G'},{from:'a4',to:'e8',color:'B'}],
+      1: [{from:'c8',to:'e8',color:'R'}],
+      2: [{from:'a4',to:'e8',color:'G'}],
+      3: []
+    }
+  },
+
+  /* 3 — Mat în 3: Df7+ Rh8 Df8+ Nxf8 Txf8# */
+  {
+    fen: '6k1/3qb1pp/4p3/ppp1P3/8/2PP1Q2/PP4PP/5RK1 w - - 0 1',
+    san: ['Qf7+', 'Kh8', 'Qf8+', 'Bxf8', 'Rxf8#'],
+    ann: {
+      0: 'Albul mută. Regele negru este pe g8, blocat parțial de pioni pe g7 și h7. Există o combinație de 3 mutări care duce la mat pe ultima linie.',
+      1: '1.Df7+ — dama atacă regele de pe f7 (diagonala f7–g8). Regele nu poate merge pe g7 (pion) sau f8 (damă).',
+      2: '1...Rh8 — regele se retrage în colțul tablei. Acum g8 și g7 sunt blocate de pioni.',
+      3: '2.Df8+! — dama se <strong>sacrifică</strong> pe ultima linie, atrăgând nebunul.',
+      4: '2...Nxf8 — nebunul este forțat să captureze (singura mișcare legală).',
+      5: '3.Txf8# — tura completă matul pe ultima linie. Rege blocat de nebunul f8 și pioni g7, h7. <strong>Mat!</strong>'
+    },
+    arrows: {
+      0: [],
+      1: [{from:'g8',to:'h8',color:'R'}],
+      2: [{from:'f7',to:'f8',color:'G'}],
+      3: [{from:'e7',to:'f8',color:'R'}],
+      4: [{from:'f1',to:'f8',color:'G'}],
+      5: []
+    }
+  },
+
+  /* 4 — hEyYN: De2+ Rg1 Dxe1+ Txe1 Txe1# (mat pe prima linie) */
+  {
+    fen: '4r1k1/p1p1qppp/3p4/3n4/3Q4/PP6/2P2PPP/1R2NK2 b - - 0 23',
+    san: ['Qe2+', 'Kg1', 'Qxe1+', 'Rxe1', 'Rxe1#'],
+    ann: {
+      0: 'Negrul mută. Regele alb este pe f1, blocat de pioni pe f2, g2, h2. Dama neagră de pe e7 vizează câmpul e2 — ce secvență duce la mat pe prima linie?',
+      1: '1...De2+ — dama neagră atacă regele alb de pe e2. Regele nu poate rămâne pe f1.',
+      2: '2.Rg1 — regele se retrage la g1 (singurul câmp disponibil).',
+      3: '2...Dxe1+! — dama se <strong>sacrifică</strong> pe prima linie, capturând calul alb de pe e1.',
+      4: '3.Txe1 — tura albă din b1 este forțată să recaptureze dama.',
+      5: '3...Txe1# — tura neagră din e8 vine pe e1 și dă mat! Rege alb blocat de pioni pe f2, g2, h2. <strong>Mat pe prima linie!</strong>'
+    },
+    arrows: {
+      0: [{from:'e7',to:'e1',color:'G'}],
+      1: [{from:'f1',to:'g1',color:'R'}],
+      2: [{from:'e2',to:'e1',color:'G'}],
+      3: [{from:'b1',to:'e1',color:'R'}],
+      4: [{from:'e8',to:'e1',color:'G'}],
+      5: []
+    }
+  }
+
+];
+
+let curChapterIdx = 0;
+let positions     = [];
+
+function computePositions(ch) {
+  const c = new Chess(ch.fen);
+  const fens = [c.fen()];
+  for (const mv of ch.san) {
+    const result = c.move(mv);
+    if (!result) { console.error('Mutare invalida:', mv, 'in', c.fen()); break; }
+    fens.push(c.fen());
+  }
+  return fens;
+}
+
+let selSq   = null;
+let rmbDown = false;
+
+document.addEventListener('mousedown', function (e) { if (e.button === 2) rmbDown = true;  }, true);
+document.addEventListener('mouseup',   function (e) { if (e.button === 2) rmbDown = false; }, true);
+
+function clearSel() {
+  document.querySelectorAll('.square-selected').forEach(function (el) { el.classList.remove('square-selected'); });
+  selSq = null;
+}
+function onDragStart() { if (rmbDown) return false; clearSel(); return true; }
+function onDrop(source, target) { if (target === 'offboard') return 'snapback'; }
+function onSnapEnd() {}
+
+const board = Chessboard('board', {
+  position:   chapters[0].fen,
+  pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+  draggable:  true,
+  orientation: 'white',
+  onDragStart, onDrop, onSnapEnd
+});
+
+$(document).on('click', '.square-55d63', function (e) {
+  if (e.button !== 0) return;
+  const sq  = $(this).data('square');
+  const pos = board.position();
+  if (selSq) {
+    const prevSq = selSq;
+    clearSel();
+    if (sq !== prevSq && pos[prevSq]) {
+      pos[sq] = pos[prevSq];
+      delete pos[prevSq];
+      board.position(pos, false);
+    }
+  } else {
+    if (pos[sq]) {
+      selSq = sq;
+      const el = document.querySelector('.square-' + sq);
+      if (el) el.classList.add('square-selected');
+    }
+  }
+});
+
+window.addEventListener('resize', function () {
+  board.resize();
+  redrawStudyArrows(curChapterIdx, currentStep());
+  if (window._annRender) window._annRender();
+});
+
+function currentStep() {
+  return parseInt(document.getElementById('moveCounter').dataset.step || '0');
+}
+
+function loadChapter(idx) {
+  curChapterIdx = idx;
+  const ch = chapters[idx];
+  positions = computePositions(ch);
+  const firstTurn = ch.fen.split(' ')[1];
+  board.orientation(ch.orient || (firstTurn === 'b' ? 'black' : 'white'));
+  buildMovesList();
+  goToStep(0);
+}
+
+function goToStep(s) {
+  clearSel();
+  if (window._annClear) window._annClear();
+  document.getElementById('moveCounter').dataset.step = s;
+  board.position(positions[s], false);
+  redrawStudyArrows(curChapterIdx, s);
+  updateUI(s);
+}
+
+function goFirst() { goToStep(0); }
+function goLast()  { goToStep(positions.length - 1); }
+function goPrev()  { const s = currentStep(); if (s > 0) goToStep(s - 1); }
+function goNext()  { const s = currentStep(); if (s < positions.length - 1) goToStep(s + 1); }
+
+function getMoveLabel(s) {
+  if (s === 0) return 'Start';
+  const preFen  = positions[s - 1];
+  const parts   = preFen.split(' ');
+  const turn    = parts[1];
+  const moveNum = parts[5];
+  const san     = chapters[curChapterIdx].san[s - 1];
+  return turn === 'w' ? moveNum + '. ' + toRo(san) : moveNum + '... ' + toRo(san);
+}
+
+function updateUI(s) {
+  const total = positions.length - 1;
+  const mc = document.getElementById('moveCounter');
+  mc.textContent = getMoveLabel(s);
+  mc.dataset.step = s;
+  document.getElementById('btnFirst').disabled = s === 0;
+  document.getElementById('btnPrev').disabled  = s === 0;
+  document.getElementById('btnNext').disabled  = s === total;
+  document.getElementById('btnLast').disabled  = s === total;
+  document.querySelectorAll('.mlog-token').forEach(function (b) {
+    b.classList.toggle('active', parseInt(b.dataset.step) === s);
+  });
+  const active = document.querySelector('.mlog-token.active');
+  if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  const ch  = chapters[curChapterIdx];
+  const box = document.getElementById('annotationBox');
+  const txt = (ch.ann && ch.ann[s] !== undefined) ? ch.ann[s] : '';
+  box.className = 'annotation-box';
+  if (txt) {
+    box.innerHTML = txt;
+  } else {
+    box.innerHTML = s === 0
+      ? '<em style="opacity:.55">Apasă &#9654; pentru a avansa prin mutări.</em>'
+      : '';
+  }
+}
+
+function createMoveBtn(san, step, cls) {
+  const btn = document.createElement('button');
+  btn.className = 'mlog-token ' + cls;
+  btn.textContent = toRo(san);
+  btn.dataset.step = step;
+  btn.onclick = function () { goToStep(step); };
+  return btn;
+}
+
+function buildMovesList() {
+  const ch  = chapters[curChapterIdx];
+  const log = document.getElementById('movesLog');
+  log.innerHTML = '';
+  const total = ch.san.length;
+  if (total === 0) return;
+  let i = 0;
+  while (i < total) {
+    const preFen  = positions[i];
+    const parts   = preFen.split(' ');
+    const turn    = parts[1];
+    const moveNum = parts[5];
+    const row = document.createElement('div');
+    row.className = 'mlog-row';
+    const numSpan = document.createElement('span');
+    numSpan.className = 'mlog-num';
+    numSpan.textContent = moveNum + '.';
+    row.appendChild(numSpan);
+    if (turn === 'b') {
+      const plh = document.createElement('span');
+      plh.className = 'mlog-token mlog-w';
+      plh.textContent = '…';
+      plh.style.cssText = 'opacity:0.28;cursor:default;pointer-events:none;';
+      row.appendChild(plh);
+      row.appendChild(createMoveBtn(ch.san[i], i + 1, 'mlog-b'));
+      i++;
+    } else {
+      row.appendChild(createMoveBtn(ch.san[i], i + 1, 'mlog-w'));
+      i++;
+      if (i < total) {
+        row.appendChild(createMoveBtn(ch.san[i], i + 1, 'mlog-b'));
+        i++;
+      }
+    }
+    log.appendChild(row);
+  }
+}
+
+function clearStudyArrows() {
+  const ex = document.getElementById('study-arrows-svg');
+  if (ex) ex.remove();
+}
+
+function redrawStudyArrows(chIdx, step) {
+  clearStudyArrows();
+  const ch = chapters[chIdx];
+  const arrows = ch.arrows && ch.arrows[step];
+  if (!arrows || arrows.length === 0) return;
+  const NS  = 'http://www.w3.org/2000/svg';
+  const bw  = document.getElementById('boardWrapper');
+  if (!bw) return;
+  const ori    = board.orientation();
+  const tlName = ori === 'white' ? 'a8' : 'h1';
+  const tlSq   = bw.querySelector('[data-square="' + tlName + '"]');
+  let sqSz, svgX = 0, svgY = 0;
+  if (tlSq) {
+    sqSz = tlSq.offsetWidth;
+    const bwRect = bw.getBoundingClientRect();
+    const tlRect = tlSq.getBoundingClientRect();
+    svgX = Math.round(tlRect.left - bwRect.left);
+    svgY = Math.round(tlRect.top  - bwRect.top);
+  } else {
+    sqSz = bw.offsetWidth / 8;
+  }
+  const sz = sqSz * 8;
+  const svg = document.createElementNS(NS, 'svg');
+  svg.id = 'study-arrows-svg';
+  svg.style.cssText = 'position:absolute;pointer-events:none;z-index:20;';
+  svg.style.left   = svgX + 'px';
+  svg.style.top    = svgY + 'px';
+  svg.style.width  = sz + 'px';
+  svg.style.height = sz + 'px';
+  const defs = document.createElementNS(NS, 'defs');
+  svg.appendChild(defs);
+  const COL = {
+    G: 'rgba(60,190,80,0.85)',
+    R: 'rgba(220,55,55,0.85)',
+    B: 'rgba(50,130,210,0.85)',
+    Y: 'rgba(215,165,20,0.85)'
+  };
+  function sqCenter(sq) {
+    let c = sq.charCodeAt(0) - 97, r = parseInt(sq[1]) - 1;
+    if (ori === 'black') { c = 7 - c; r = 7 - r; }
+    const s = sz / 8;
+    return { x: c * s + s / 2, y: (7 - r) * s + s / 2 };
+  }
+  const SW = 5;
+  arrows.forEach(function (arr, i) {
+    if (arr.from === arr.to) return;
+    const col = COL[arr.color] || COL.G;
+    const mid = 'sarr' + i;
+    const mk  = document.createElementNS(NS, 'marker');
+    mk.setAttribute('id', mid); mk.setAttribute('markerWidth', '10');
+    mk.setAttribute('markerHeight', '7'); mk.setAttribute('refX', '8');
+    mk.setAttribute('refY', '3.5');       mk.setAttribute('orient', 'auto');
+    const mp = document.createElementNS(NS, 'path');
+    mp.setAttribute('d', 'M0,0 L9,3.5 L0,7 L2.5,3.5 Z');
+    mp.setAttribute('fill', col);
+    mk.appendChild(mp); defs.appendChild(mk);
+    const f  = sqCenter(arr.from), t = sqCenter(arr.to);
+    const dx = t.x - f.x, dy = t.y - f.y;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    if (len < 1) return;
+    const ux = dx / len, uy = dy / len;
+    const ln = document.createElementNS(NS, 'line');
+    ln.setAttribute('x1', f.x);           ln.setAttribute('y1', f.y);
+    ln.setAttribute('x2', t.x - ux * SW); ln.setAttribute('y2', t.y - uy * SW);
+    ln.setAttribute('stroke', col);
+    ln.setAttribute('stroke-width', String(SW));
+    ln.setAttribute('stroke-linecap', 'round');
+    ln.setAttribute('marker-end', 'url(#' + mid + ')');
+    svg.appendChild(ln);
+  });
+  bw.appendChild(svg);
+}
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'ArrowRight') goNext();
+  if (e.key === 'ArrowLeft')  goPrev();
+  if (e.key === 'Home')       goFirst();
+  if (e.key === 'End')        goLast();
+});
+
+const matTypes = [
+  {
+    num: '1.',
+    title: 'Mat în 1 mișcare',
+    desc: 'Regele este deja blocat la marginea tablei — o singură mutare cu tura sau dama este suficientă pentru mat. Identifică linia sau coloana liberă.',
+    examples: [
+      { ch: 0, label: 'Ex. 1' },
+      { ch: 1, label: 'Ex. 2' }
+    ]
+  },
+  {
+    num: '2.',
+    title: 'Mat în 2 mișcări',
+    desc: 'Există o piesă care apără ultima linie. Sacrifică tura pentru a elimina apărătorul — dama vine și dă mat.',
+    examples: [
+      { ch: 2, label: 'Ex. 3' }
+    ]
+  },
+  {
+    num: '3.',
+    title: 'Mat în 3 mișcări',
+    desc: 'Secvența de mat necesită pregătire: mai întâi forțezi regele adversarului în colț sau eliberezi ultima linie, apoi aduci piesa decisivă.',
+    examples: [
+      { ch: 3, label: 'Ex. 4' },
+      { ch: 4, label: 'Ex. 5' }
+    ]
+  }
+];
+
+let activeExBtn = null;
+
+function buildAccordion() {
+  const list = document.getElementById('accList');
+  if (!list) return;
+  matTypes.forEach(function (type) {
+    const item = document.createElement('div');
+    item.className = 'acc-item';
+    const hdr = document.createElement('div');
+    hdr.className = 'acc-header';
+    hdr.innerHTML =
+      '<span class="acc-num">' + type.num + '</span>' +
+      '<span class="acc-title">' + type.title + '</span>' +
+      '<span class="acc-chevron">&#9658;</span>';
+    const body  = document.createElement('div');
+    body.className = 'acc-body';
+    const inner = document.createElement('div');
+    inner.className = 'acc-inner';
+    let html = '<p class="acc-desc">' + type.desc + '</p><div class="acc-examples">';
+    type.examples.forEach(function (ex) {
+      html += '<button class="ex-btn" data-ch="' + ex.ch + '"' +
+              ' onclick="loadExAcc(this,' + ex.ch + ')">' + ex.label + '</button>';
+    });
+    html += '</div>';
+    inner.innerHTML = html;
+    body.appendChild(inner);
+    item.appendChild(hdr);
+    item.appendChild(body);
+    list.appendChild(item);
+    item.addEventListener('mouseenter', function () { openAcc(item); });
+    hdr.addEventListener('click', function () {
+      item.classList.contains('open') ? closeAcc(item) : openAcc(item);
+    });
+  });
+}
+
+function openAcc(item) {
+  document.querySelectorAll('#accList .acc-item.open').forEach(function (o) {
+    if (o !== item) closeAcc(o, true);
+  });
+  item.classList.add('open');
+  item.querySelector('.acc-body').style.maxHeight = '600px';
+  const controls = document.getElementById('navControls');
+  item.parentNode.insertBefore(controls, item.nextElementSibling);
+  controls.style.display = '';
+}
+
+function closeAcc(item, keepControls) {
+  item.classList.remove('open');
+  item.querySelector('.acc-body').style.maxHeight = '0';
+  if (!keepControls) {
+    const controls = document.getElementById('navControls');
+    controls.style.display = 'none';
+  }
+}
+
+function loadExAcc(btn, chIdx) {
+  if (activeExBtn) activeExBtn.classList.remove('active');
+  activeExBtn = btn;
+  btn.classList.add('active');
+  loadChapter(chIdx);
+}
+
+buildAccordion();
+loadChapter(0);
+</script>
+
+<script src="board-utils.js"></script>
+</body>
+</html>
