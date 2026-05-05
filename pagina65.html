@@ -263,9 +263,10 @@ document.addEventListener('mousedown', function (e) { if (e.button === 2) rmbDow
 document.addEventListener('mouseup',   function (e) { if (e.button === 2) rmbDown = false; }, true);
 
 function clearSel() {
-  document.querySelectorAll('.square-selected').forEach(function (el) { el.classList.remove('square-selected'); });
+  document.querySelectorAll('.square-selected,.highlight-check').forEach(function (el) { el.classList.remove('square-selected','highlight-check'); });
   selSq = null;
 }
+function applyHL(sq, cls) { const el = document.querySelector('.square-' + sq); if (el) el.classList.add(cls); }
 function onDragStart() { if (rmbDown) return false; clearSel(); return true; }
 function onDrop(source, target) { if (target === 'offboard') return 'snapback'; }
 function onSnapEnd() {}
@@ -326,6 +327,11 @@ function goToStep(s) {
   board.position(positions[s], false);
   redrawStudyArrows(curChapterIdx, s);
   updateUI(s);
+  const cg = new Chess(positions[s]);
+  if (cg.in_checkmate()) {
+    const t = cg.turn();
+    cg.board().forEach(function(row,ri){ row.forEach(function(pc,ci){ if(pc&&pc.type==='k'&&pc.color===t) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check'); }); });
+  }
 }
 
 function goFirst() { goToStep(0); }

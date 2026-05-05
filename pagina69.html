@@ -229,7 +229,8 @@ let selSq=null, rmbDown=false;
 document.addEventListener('mousedown',e=>{if(e.button===2)rmbDown=true;},true);
 document.addEventListener('mouseup',  e=>{if(e.button===2)rmbDown=false;},true);
 
-function clearSel(){ document.querySelectorAll('.square-selected').forEach(el=>el.classList.remove('square-selected')); selSq=null; }
+function clearSel(){ document.querySelectorAll('.square-selected,.highlight-check').forEach(el=>el.classList.remove('square-selected','highlight-check')); selSq=null; }
+function applyHL(sq,cls){ const el=document.querySelector('.square-'+sq); if(el)el.classList.add(cls); }
 function onDragStart(){ if(rmbDown)return false; clearSel(); return true; }
 function onDrop(s,t){ if(t==='offboard')return'snapback'; }
 function onSnapEnd(){}
@@ -261,6 +262,8 @@ function goToStep(s){
   clearSel(); if(window._annClear)window._annClear();
   document.getElementById('moveCounter').dataset.step=s;
   board.position(positions[s],false); redrawArrows(curChapterIdx,s); updateUI(s);
+  const cg=new Chess(positions[s]);
+  if(cg.in_checkmate()){ const t=cg.turn(); cg.board().forEach((row,ri)=>row.forEach((pc,ci)=>{ if(pc&&pc.type==='k'&&pc.color===t) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check'); })); }
 }
 
 function goFirst(){ goToStep(0); }

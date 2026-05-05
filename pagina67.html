@@ -155,16 +155,16 @@ function toRo(san) {
 
 const chapters = [
 
-  /* 0 — Mat în 1: Re8# (intro) */
+  /* 0 — Mat în 1: Ta8# (intro) */
   {
-    fen: 'R7/4kp2/5N2/4P3/8/8/8/6K1 w - - 0 1',
+    fen: '7k/6pp/5N2/4P3/8/8/8/R5K1 w - - 0 1',
     san: ['Ra8'],
     ann: {
-      0: 'Albul mută. Turnul alb este pe a8 gata de mat — calul e pe f6 (2 câmpuri diagonal față de rege), pionul e5 apără calul, iar propriul pion f7 blochează fuga regelui. Aceasta este forma clasică a matului cârlig!',
-      1: '1.Ta8# — turnul ajunge pe linia 8 (vârful cârligului). Regele nu poate fugi: e8 e atacat de turn, f8 e atacat de cal, d7 e atacat de cal, d8 e atacat de turn. <strong>Matul cârlig!</strong>'
+      0: 'Albul mută. Turnul este pe a1, calul pe f6 (la 2 câmpuri diagonal față de rege), pionul e5 apără calul, iar proprii pioni g7 și h7 îi blochează regelui fuga. O singură mutare completează cârligul!',
+      1: '1.Ta8# — turnul sare pe linia 8 (vârful cârligului). Regele pe h8 nu poate fugi: g8 controlat de turn, g7 și h7 pioni proprii. <strong>Matul cârlig!</strong>'
     },
     arrows: {
-      0: [{from:'a8',to:'e8',color:'G'},{from:'f6',to:'e8',color:'B'},{from:'f6',to:'d7',color:'B'}],
+      0: [{from:'a1',to:'a8',color:'G'},{from:'f6',to:'g8',color:'B'},{from:'e5',to:'f6',color:'Y'}],
       1: []
     }
   },
@@ -260,7 +260,7 @@ const chapters = [
       3: '2.Te4# — turnul alb vine pe e4 (vârful cârligului). Calul de pe c5 controlează b3, d3, b7 și d7, dar mai important: pionii a4 și b3 blochează fuga. Regele negru este matuit! <strong>Matul cârlig!</strong>'
     },
     arrows: {
-      0: [{from:'b4',to:'c4',color:'G'},{from:'c5',to:'d3',color:'B'},{from:'c5',to:'b3',color:'B'}],
+      0: [{from:'c3',to:'c4',color:'G'},{from:'c5',to:'d3',color:'B'},{from:'c5',to:'b3',color:'B'}],
       1: [{from:'d5',to:'d4',color:'R'}],
       2: [{from:'e6',to:'e4',color:'G'}],
       3: []
@@ -312,9 +312,10 @@ document.addEventListener('mousedown', function (e) { if (e.button === 2) rmbDow
 document.addEventListener('mouseup',   function (e) { if (e.button === 2) rmbDown = false; }, true);
 
 function clearSel() {
-  document.querySelectorAll('.square-selected').forEach(function (el) { el.classList.remove('square-selected'); });
+  document.querySelectorAll('.square-selected,.highlight-check').forEach(function (el) { el.classList.remove('square-selected','highlight-check'); });
   selSq = null;
 }
+function applyHL(sq, cls) { const el = document.querySelector('.square-' + sq); if (el) el.classList.add(cls); }
 function onDragStart() { if (rmbDown) return false; clearSel(); return true; }
 function onDrop(source, target) { if (target === 'offboard') return 'snapback'; }
 function onSnapEnd() {}
@@ -375,6 +376,11 @@ function goToStep(s) {
   board.position(positions[s], false);
   redrawStudyArrows(curChapterIdx, s);
   updateUI(s);
+  const cg = new Chess(positions[s]);
+  if (cg.in_checkmate()) {
+    const t = cg.turn();
+    cg.board().forEach(function(row,ri){ row.forEach(function(pc,ci){ if(pc&&pc.type==='k'&&pc.color===t) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check'); }); });
+  }
 }
 
 function goFirst() { goToStep(0); }
