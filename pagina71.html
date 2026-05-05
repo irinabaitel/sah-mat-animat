@@ -20,7 +20,7 @@
     .ctrl-btn:hover:not(:disabled) { background:#2a5aab; }
     .ctrl-btn:disabled { background:rgba(26,58,107,0.22); cursor:not-allowed; }
     .move-counter { background:var(--c-surface); border:2px solid var(--c-border); border-radius:20px; padding:4px 12px; font-weight:700; color:var(--c-navy); font-size:0.85em; min-width:104px; text-align:center; }
-    .annotation-box { background:var(--c-surface); border:2px solid var(--c-border); border-left:4px solid var(--c-navy); border-radius:var(--radius); padding:12px 14px; font-size:var(--fs-md); line-height:1.7; color:var(--c-text); min-height:60px; }
+    .annotation-box { background:var(--c-surface); border:2px solid var(--c-border); border-left:4px solid var(--c-navy); border-radius:var(--radius); padding:12px 14px; font-size:var(--fs-md); line-height:1.7; color:var(--c-text); height:120px;overflow-y:auto; }
     .square-selected { background:rgba(255,200,0,0.55) !important; }
     .acc-list { display:flex; flex-direction:column; gap:5px; }
     .acc-item { border:2px solid var(--c-border); border-radius:var(--radius); overflow:hidden; background:var(--c-surface); transition:border-color .15s; }
@@ -170,10 +170,10 @@ const chapters = [
   /* 2 — Exemplul 2: 5 mutări, cu replică de pion */
   {
     fen:'5rk1/1R1R1p1p/4N1p1/p7/5p2/1P4P1/r2nP1KP/8 w - - 0 1',
-    san:['Rdxf7','f3+','Kh3','Rc8','Rg7+','Kh8','Rxh7+','Kg8','Rbg7#'],
+    san:['Rxf7','f3+','Kh3','Rc8','Rg7+','Kh8','Rxh7+','Kg8','Rbg7#'],
     ann:{
       0:'Albul mută. Turnurile de pe b7 și d7 lucrează împreună. Atenție — negrul are o replică surpriză cu pionul!',
-      1:'1.Tdxf7 — turnul de pe d7 capturează pionul f7.',
+      1:'1.Txf7 — turnul de pe d7 capturează pionul f7.',
       2:'1...f3+! — pionul negru înaintează la f3 dând șah regelui alb pe g2! Surpriză tactică.',
       3:'2.Rh3 — regele alb se retrage la h3 pentru a evita șahul.',
       4:'2...Tc8 — turnul negru se repoziționează pe c8.',
@@ -394,7 +394,7 @@ const matTypes=[
     desc:'Doi porci pe a 7-a linie: unul alungă regele cu șah, celălalt vine pentru lovitura finală. Un turn nu vede matul pe care îl pregătește celălalt.',
     examples:[{ch:0,label:'Ex. intro'}] },
   { num:'2.', title:'Modele cu secvență lungă',
-    desc:'Porcii deschid drumul eliminând apărătorii. Regele advers e alungat în serie, iar matul vine inevitabil după 5-6 mutări.',
+    desc:'Turnurile deschid drumul eliminând apărătorii. Regele advers e alungat în serie, iar matul vine inevitabil după 5-6 mutări.',
     examples:[{ch:1,label:'Ex. 1'},{ch:2,label:'Ex. 2'}] },
   { num:'3.', title:'Mat în 2 mutări',
     desc:'Porcii sunt deja pe linie — un șah forțează regele, celălalt turn vine imediat pentru mat.',
