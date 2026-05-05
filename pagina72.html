@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Arenă Matul Porcului Orb</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    .panel-heading { font-family:var(--font-display); font-size:clamp(1.15rem,2.5vw,1.4rem); font-weight:900; color:var(--c-navy); line-height:1.25; margin-bottom:8px; }
+    .btn-arena { display:flex; align-items:center; justify-content:center; margin-top:14px; padding:11px 20px; border-radius:50px; background:var(--c-navy); color:white; text-decoration:none; font-family:var(--font-display); font-size:0.97rem; font-weight:700; border:none; cursor:pointer; width:100%; transition:opacity .18s; }
+    .btn-arena:hover { opacity:0.86; }
+    #puzzleView { display:none; }
+    .turn-badge { display:inline-block; padding:3px 14px; border-radius:50px; font-family:var(--font-display); font-size:0.82rem; font-weight:700; margin-bottom:6px; }
+    .turn-badge.white { background:#f0f0f0; color:var(--c-navy); border:1.5px solid #ccc; }
+    .turn-badge.black { background:#222; color:#fff; border:1.5px solid #000; }
+    .level-badge { display:inline-block; margin-left:6px; padding:2px 10px; border-radius:50px; font-family:var(--font-display); font-size:0.75rem; font-weight:700; background:rgba(39,174,96,0.18); color:#1a6b3a; }
+    .level-badge.med  { background:rgba(230,126,34,0.18); color:#8a3a00; }
+    .level-badge.hard { background:rgba(192,57,43,0.18);  color:#7a1800; }
+    .ctrl-row { display:flex; gap:7px; margin-top:10px; flex-wrap:wrap; }
+    .btn-sm { padding:7px 15px; border-radius:50px; font-family:var(--font-display); font-size:0.86rem; font-weight:700; cursor:pointer; transition:background .15s,opacity .15s; border:1.5px solid transparent; }
+    .btn-sm:disabled { opacity:0.28; cursor:default; }
+    .btn-prev  { border-color:rgba(26,58,107,0.35); background:rgba(255,255,255,0.55); color:var(--c-navy); }
+    .btn-prev:hover:not(:disabled)  { background:rgba(26,58,107,0.10); }
+    .btn-reset { border-color:rgba(192,57,43,0.40); background:rgba(255,255,255,0.55); color:#8b1a00; }
+    .btn-reset:hover:not(:disabled) { background:rgba(192,57,43,0.10); }
+    .btn-cont  { border-color:var(--c-success); background:var(--c-success); color:white; }
+    .btn-cont:hover:not(:disabled)  { opacity:0.86; }
+    .btn-next  { border-color:var(--c-navy); background:var(--c-navy); color:white; }
+    .btn-next:hover:not(:disabled)  { opacity:0.86; }
+    .square-selected { background:rgba(255,200,0,0.55) !important; }
+    #boardWrapper { touch-action:none; -webkit-touch-callout:none; }
+    .hint-square  { background:rgba(80,200,80,0.65) !important; }
+    .btn-tri  { padding:7px 11px; min-width:34px; }
+    .btn-hint { border-color:rgba(39,174,96,0.45); background:rgba(39,174,96,0.08); color:#1a6b3a; }
+    .btn-hint:hover:not(:disabled) { background:rgba(39,174,96,0.18); }
+    .btn-sol  { border-color:rgba(142,68,173,0.45); background:rgba(142,68,173,0.08); color:#6c3483; }
+    .btn-sol:hover:not(:disabled)  { background:rgba(142,68,173,0.18); }
+    .arena-back-btn { display:block; margin-top:10px; width:100%; padding:8px 16px; border-radius:50px; font-family:var(--font-display); font-size:0.86rem; font-weight:700; color:var(--c-navy); cursor:pointer; background:rgba(255,255,255,0.55); border:1.5px solid rgba(26,58,107,0.25); text-align:center; text-decoration:none; transition:background .15s; }
+    .arena-back-btn:hover { background:rgba(26,58,107,0.10); }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+    .board-shake { animation:shake .35s ease-out; }
+    .last-move-from { background:rgba(170,162,58,0.42) !important; }
+    .last-move-to   { background:rgba(170,162,58,0.62) !important; }
+    .btn-vol { position:fixed; top:10px; right:12px; z-index:1000; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.88); border:1.5px solid rgba(26,58,107,0.18); font-size:1.05rem; cursor:pointer; line-height:1; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 6px rgba(0,0,0,0.14); transition:background .15s; padding:0; }
+    .btn-vol:hover { background:rgba(26,58,107,0.10); }
+    .progress-outer { position:relative; margin-bottom:12px; }
+    .progress-outer::after { content:attr(data-tip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:rgba(26,26,46,0.88); color:#fff; font-family:var(--font-display); font-size:0.78rem; font-weight:700; padding:4px 10px; border-radius:6px; white-space:nowrap; pointer-events:none; z-index:100; opacity:0; transition:opacity .15s; }
+    .progress-outer:hover::after { opacity:1; }
+    .progress-outer .progress-wrap { margin-bottom:0; }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="page-header" role="banner">
+    <span class="header-title" id="pageTitle">Arenă Matul Porcului Orb</span>
+  </header>
+  <main class="page-main" role="main">
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper"><div id="board"></div></div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-scroll" id="panelScroll">
+
+        <div id="lectureView">
+          <div class="panel-heading">Arenă Matul Porcului Orb</div>
+          <p><strong>Matul Porcului Orb</strong>: doi porci (turnuri) pe a 7-a linie — unul alungă regele cu șah, celălalt vine pentru mat. Regele nu vede pericolul!</p>
+          <div class="hl-box" style="margin:12px 0;">
+            <strong>&#129513; Cum funcționează arena:</strong>
+            <ul style="margin-top:6px;padding-left:1.3em;line-height:1.8;">
+              <li>Identifică cei doi porci pe a 7-a (sau a 2-a) linie</li>
+              <li>Alungă regele cu un șah spre colțul tablei</li>
+              <li>Aduce celălalt turn pentru lovitura de grație!</li>
+            </ul>
+            <p style="margin-top:8px;font-size:0.88em;opacity:0.75;">40 puzzle-uri &middot; 3 niveluri de dificultate (Ușor &rarr; Mediu &rarr; Avansat)</p>
+          </div>
+          <button class="btn-arena" id="arenaBtn" onclick="startArena()">&#127919; Arenă Matul Porcului Orb &rarr;</button>
+          <button class="btn-arena" id="continueBtn" onclick="continueArena()" style="display:none;margin-top:8px;background:var(--c-success);">&#9654; Continuă</button>
+          <button class="btn-arena" id="resetAllBtn" onclick="resetAllProgress()" style="display:none;margin-top:8px;background:rgba(192,57,43,0.82);">&#8634; Joacă din nou (resetează tot)</button>
+        </div>
+
+        <div id="puzzleView">
+          <div class="panel-heading">Matul Porcului Orb</div>
+          <span class="turn-badge white" id="turnBadge">&#11036; Albul mută</span>
+          <span class="level-badge" id="levelBadge">UȘOR</span>
+          <div class="progress-outer" id="progressOuter">
+            <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+          </div>
+          <div class="task-msg idle" id="taskMsg">Găsește matul Porcului Orb!</div>
+          <div class="ctrl-row">
+            <button class="btn-sm btn-prev" id="prevBtn" onclick="prevPuzzle()" disabled>&#8592; Precedentul</button>
+            <button class="btn-sm btn-reset" onclick="resetPuzzle()">&#8634; Resetează</button>
+            <button class="btn-sm btn-cont"  onclick="continueArena()">Continuă</button>
+            <button class="btn-sm btn-next" id="nextBtn" onclick="nextPuzzle()" disabled>Următorul &#8594;</button>
+          </div>
+          <div class="ctrl-row" style="margin-top:5px">
+            <button class="btn-sm btn-tri btn-prev" id="stepBackBtn" onclick="stepBack()" disabled>&#9668;</button>
+            <button class="btn-sm btn-tri btn-prev" id="stepFwdBtn"  onclick="stepForward()" disabled>&#9658;</button>
+            <button class="btn-sm btn-hint" onclick="showHint()">&#128161; Indiciu</button>
+            <button class="btn-sm btn-sol"  onclick="showSolution()">&#9658;&#9658; Soluție</button>
+          </div>
+          <button class="btn-arena" id="playAgainBtn" style="display:none;margin-top:12px;background:rgba(39,174,96,0.82);" onclick="resetAllProgress()">&#127881; Toți rezolvați! Joacă din nou &rarr;</button>
+        </div>
+
+      </div>
+      <button class="arena-back-btn" id="arenaBackBtn" style="display:none" onclick="backToLecture()">&#8592; Matul Porcului Orb</button>
+      <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
+    </div>
+  </main>
+  <footer class="page-footer" role="navigation">
+    <a href="pagina71.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">Matul Porcului Orb</span></a>
+    <a href="hub.html"      class="nav-btn nav-btn--contents"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
+    <a href="hub.html"      class="nav-btn nav-btn--forward"><span class="icon">&#8594;</span><span class="label">Cuprins</span></a>
+  </footer>
+  <button class="btn-vol" id="volBtn" onclick="toggleVol()" title="Sunet on/off">&#128266;</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+const PIECE_THEME='https://lichess1.org/assets/piece/caliente/{piece}.svg';
+const LECTURE_FEN='5rk1/1R2R1pp/8/8/8/8/8/1K6 w - - 0 1';
+const SAVE_KEY='blindswine_progress';
+
+/* ── PUZZLES ── */
+const PUZZLES=[
+  /* 0-13 UȘOR */
+  {id:'3FkcZ',fen:'8/6k1/5pp1/5rP1/r4PK1/4R1RP/8/8 b - - 1 62',sol:['a4f4'],turn:'b'},
+  {id:'pm9ev',fen:'8/8/p2k4/Pr1p1p1p/KP3P1P/R2R2P1/8/1r6 b - - 9 47',sol:['b1b4'],turn:'b'},
+  {id:'XTjUq',fen:'6k1/pp5p/2p3r1/4b1P1/5R2/7P/P1Pr4/5R1K w - - 1 36',sol:['f4f8','g8g7','f1f7'],turn:'w'},
+  {id:'RzxGE',fen:'6k1/pp4p1/7p/2pp4/4R3/2P5/PP3rPP/R1B1rNK1 b - - 0 22',sol:['e1f1'],turn:'b'},
+  {id:'N3CaK',fen:'7r/8/R7/1pkp3r/8/3B1RP1/PPP2P2/6K1 b - - 0 41',sol:['h5h1','g1g2','h8h2'],turn:'b'},
+  {id:'zx2zu',fen:'1r5k/7p/1r6/5pp1/B2PpP2/P1P1P1PP/3R3R/2K5 b - - 0 38',sol:['b6b1','c1c2','b8b2'],turn:'b'},
+  {id:'lJT8o',fen:'k6r/P6r/4p3/1RBpPp2/3P2p1/2P3P1/5P2/6K1 b - - 2 37',sol:['h7h1','g1g2','h8h2'],turn:'b'},
+  {id:'NZvWG',fen:'r5k1/3Q1pp1/r7/3p4/1p1R1P2/1P4P1/2P4P/1K6 b - - 0 37',sol:['a6a1','b1b2','a8a2'],turn:'b'},
+  {id:'tKI9A',fen:'4k3/3R1p2/4p1p1/2r1P2p/7P/1P4r1/8/1K1R4 w - - 0 32',sol:['d7d8','e8e7','d1d7'],turn:'w'},
+  {id:'NOYzX',fen:'k2r4/2R5/1R5p/1p4p1/p4p2/P1P2P2/1P1r2PP/2K5 b - - 15 38',sol:['d2d1','c1c2','d8d2'],turn:'b'},
+  {id:'0zYMN',fen:'2k5/p2r1pp1/2p1p2p/4P2P/r7/8/PR3P2/KR6 w - - 0 31',sol:['b2b8','c8c7','b1b7'],turn:'w'},
+  {id:'NfxlE',fen:'6k1/1ppn2pp/p6r/1P1p3r/3P4/4PPP1/P1Q2R2/1RB3K1 b - - 0 22',sol:['h5h1','g1g2','h6h2'],turn:'b'},
+  {id:'woObl',fen:'8/4k3/4r3/pR6/P4R1p/5P1P/4r1P1/5K2 b - - 0 46',sol:['e2e1','f1f2','e6e2'],turn:'b'},
+  {id:'XJ8Ja',fen:'1k6/2p4r/1p1p2pp/1q1Pp3/1P2P2P/RKN3r1/8/R7 w - - 4 35',sol:['a3a8','b8b7','a1a7'],turn:'w'},
+  /* 14-27 MEDIU */
+  {id:'thH1i',fen:'r5k1/5pp1/7p/8/2B2PP1/rPR5/2P4P/1K6 b - - 0 31',sol:['a3a1','b1b2','a8a2'],turn:'b'},
+  {id:'KfxEl',fen:'rn5k/pp3b1p/4q1pR/6P1/4p3/8/PPP2P2/1K5R w - - 0 30',sol:['h6h7','h8g8','h7h8','g8g7','h1h7'],turn:'w'},
+  {id:'ZrPA7',fen:'r7/p2R2p1/1pk4p/2p5/2P1q3/8/P5PP/2BR2K1 w - - 0 36',sol:['d1d6'],turn:'w'},
+  {id:'dDAT9',fen:'6k1/p1p2p2/1p1p1rpR/8/7R/3n3P/6P1/7K w - - 0 39',sol:['h6h8','g8g7','h4h7'],turn:'w'},
+  {id:'k4VKy',fen:'4k3/3R1p2/p3p1p1/Pp2P2p/1P3P2/8/r1r3PP/3R2K1 w - - 1 35',sol:['d7d8','e8e7','d1d7'],turn:'w'},
+  {id:'U8H7K',fen:'2k5/1p1R1p2/2p5/K7/2r5/5r2/PP5P/3R4 w - - 0 23',sol:['d7d8','c8c7','d1d7'],turn:'w'},
+  {id:'8Yall',fen:'6k1/5p2/4p1p1/6P1/1prr4/3pK2R/p6R/8 w - - 0 58',sol:['h3h8','g8g7','h2h7'],turn:'w'},
+  {id:'CQqMm',fen:'2k5/1p3Kp1/p1p2p2/P7/6rp/5r2/1P1R4/3R4 w - - 0 35',sol:['d2d8','c8c7','d1d7'],turn:'w'},
+  {id:'Sqvt9',fen:'7r/2Cb1k1r/p1p2P2/2PpP3/5Rp1/2P3P1/Q4R2/6K1 b - - 0 38',sol:['h7h1','g1g2','h8h2'],turn:'b'},
+  {id:'2U3Wn',fen:'5k2/1p2r2n/p4p1p/2pp1P2/6RP/1P1P2R1/1Pr3P1/6K1 w - - 0 35',sol:['g4g8','f8f7','g3g7'],turn:'w'},
+  {id:'nEvGa',fen:'7k/pp4R1/7p/1P5q/P4KR1/8/8/8 w - - 2 43',sol:['g7g8','h8h7','g4g7'],turn:'w'},
+  {id:'iSG0t',fen:'4r1k1/6pp/3R4/2R5/8/1P3PP1/4r1P1/5K2 b - - 0 33',sol:['e2e1','f1f2','e8e2'],turn:'b'},
+  {id:'x19k3',fen:'r5k1/3R1ppp/4p3/7P/rp2P1P1/1P2BP2/2P1N3/1K6 b - - 0 26',sol:['a4a1','b1b2','a8a2'],turn:'b'},
+  {id:'WRybJ',fen:'3r2k1/1p1r2b1/6Q1/4p1RP/p7/P1P5/1P4P1/2K5 b - - 0 30',sol:['d7d1','c1c2','d8d2'],turn:'b'},
+  /* 28-39 AVANSAT */
+  {id:'KDkUC',fen:'7k/1R6/5P2/pPpP3p/6r1/7R/6r1/7K b - - 12 61',sol:['g2g1','h1h2','g4g2'],turn:'b'},
+  {id:'XJ1Sr',fen:'6k1/5p2/4prp1/pp6/6r1/8/PP2K2R/1B5R w - - 0 39',sol:['h2h8','g8g7','h1h7'],turn:'w'},
+  {id:'Fm9JP',fen:'6kb/1pq2p2/4p1p1/1p1pP3/5P2/7R/PPr3P1/1K5R w - - 0 28',sol:['h3h8','g8g7','h1h7'],turn:'w'},
+  {id:'UTnvP',fen:'4k3/1p3p2/p1p1r1p1/6P1/5K2/1P1R1P2/P2R4/6r1 w - - 2 52',sol:['d3d8','e8e7','d2d7'],turn:'w'},
+  {id:'aHP6J',fen:'rn4k1/3n1r2/1q2p1p1/ppppP1P1/5B1R/PN2P3/1P2BP2/2K4R w - - 0 21',sol:['h4h8','g8g7','h1h7'],turn:'w'},
+  {id:'Ws7i7',fen:'4k3/pp3p2/4pr2/7p/3R4/3R3P/PPr3PK/8 w - - 0 30',sol:['d4d8','e8e7','d3d7'],turn:'w'},
+  {id:'5b7ro',fen:'4r3/p3rkpp/2R5/2p5/2Pp4/1P1R1PP1/P5P1/5K2 b - - 0 30',sol:['e7e1','f1f2','e8e2'],turn:'b'},
+  {id:'dmF6r',fen:'7r/R3bkp1/1P2p3/2p1Pp1r/3p1P2/1P1P1RP1/1BP5/6K1 b - - 0 30',sol:['h5h1','g1g2','h8h2'],turn:'b'},
+  {id:'A8LPg',fen:'1k6/2p2p2/1p1p4/3P3p/R2P4/8/4r2r/R4K2 w - - 0 44',sol:['a4a8','b8b7','a1a7'],turn:'w'},
+  {id:'86Afy',fen:'2r5/2RKbkpp/p4p2/8/2r5/5N2/P4PPP/4R3 b - - 6 31',sol:['c4c7'],turn:'b'},
+  {id:'a6xm0',fen:'5k2/p1p1R1p1/1pr2p1p/7P/8/8/3r1PP1/4R1K1 w - - 0 31',sol:['e7e8','f8f7','e1e7'],turn:'w'},
+  {id:'4CUvk',fen:'6k1/pp3p2/2p1n1p1/4P3/4K3/2Pr2P1/P2r1P1R/7R w - - 0 30',sol:['h2h8','g8g7','h1h7'],turn:'w'}
+];
+
+/* ── STATE ── */
+let mode='lecture', curIdx=0, chess=null, board=null, selSq=null, solved=false;
+let phase='waiting', solIdx=0, completed={}, moveHistory=[], viewIdx=0, autoPlayTimer=null;
+
+let muted=(()=>{try{return localStorage.getItem('arena_muted')==='1';}catch(e){return false;}})();
+function toggleVol(){ muted=!muted; try{localStorage.setItem('arena_muted',muted?'1':'0');}catch(e){} const b=document.getElementById('volBtn'); if(b)b.innerHTML=muted?'&#128263;':'&#128266;'; }
+
+function levelOf(idx){ if(idx<14)return 0; if(idx<28)return 1; return 2; }
+const LEVEL_LABELS=['UȘOR','MEDIU','AVANSAT'], LEVEL_CLASSES=['','med','hard'];
+
+const SND={ move:new Audio('Sounds/Move.mp3'), capture:new Audio('Sounds/Capture.mp3'), mate:new Audio('Sounds/Mate.mp3') };
+function playMoveSound(cap){ if(muted)return; try{const s=cap?SND.capture:SND.move;s.currentTime=0;s.play();}catch(e){} }
+function playWin(){ if(muted)return; try{SND.mate.currentTime=0;SND.mate.play();}catch(e){} }
+function playWrong(){ if(muted)return; try{ const ctx=new(window.AudioContext||window.webkitAudioContext)(),osc=ctx.createOscillator(),g=ctx.createGain(); osc.connect(g);g.connect(ctx.destination); osc.type='sine'; osc.frequency.setValueAtTime(380,ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(180,ctx.currentTime+0.28); g.gain.setValueAtTime(0.22,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.28); osc.start();osc.stop(ctx.currentTime+0.28); }catch(e){} }
+
+function shakeBoard(){ const bw=document.getElementById('boardWrapper'); bw.classList.remove('board-shake'); void bw.offsetWidth; bw.classList.add('board-shake'); bw.addEventListener('animationend',()=>bw.classList.remove('board-shake'),{once:true}); }
+function celebrate(){ confetti({particleCount:80,spread:60,origin:{y:0.60}}); }
+function debounce(fn,d){ let t; return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),d);}; }
+
+function clearHL(){ document.querySelectorAll('.square-selected,.highlight-check,.last-move-from,.last-move-to').forEach(el=>el.classList.remove('square-selected','highlight-check','last-move-from','last-move-to')); }
+function applyHL(sq,cls){ const el=document.querySelector('.square-'+sq); if(el)el.classList.add(cls); }
+function setLastMoveHL(f,t){ document.querySelectorAll('.last-move-from,.last-move-to').forEach(el=>el.classList.remove('last-move-from','last-move-to')); applyHL(f,'last-move-from'); applyHL(t,'last-move-to'); }
+
+function setMsg(type,text){ const el=document.getElementById('taskMsg'); el.className='task-msg '+type; el.innerHTML=text; }
+function idleMsg(){ setMsg('idle','Găsește matul Porcului Orb!'); }
+function contMsg(){ setMsg('idle','&#127919; Continuă secvența!'); }
+
+function updateProgress(){ const n=Object.keys(completed).length; document.getElementById('progressFill').style.width=(n/PUZZLES.length*100)+'%'; const o=document.getElementById('progressOuter'); if(o)o.setAttribute('data-tip',n+' / '+PUZZLES.length+' rezolvate'); }
+function saveProgress(){ try{localStorage.setItem(SAVE_KEY,JSON.stringify({idx:curIdx,done:completed}));}catch(e){} }
+function loadSavedProgress(){ try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null'); if(d){completed=d.done||{};return typeof d.idx==='number'?d.idx:0;}}catch(e){} return 0; }
+
+function updateArenaBtn(){
+  try{
+    const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null'), done=d?Object.keys(d.done||{}).length:0;
+    const ab=document.getElementById('arenaBtn'),cb=document.getElementById('continueBtn'),rb=document.getElementById('resetAllBtn');
+    if(!ab)return;
+    const allDone=done>=PUZZLES.length;
+    if(done>0){
+      ab.textContent='\u{1F3AF} Arenă Matul Porcului Orb ('+done+'/'+PUZZLES.length+' rezolvate)';
+      if(cb){ if(allDone){cb.style.display='none';}else{const max=Math.max(...Object.keys(d.done).map(Number));cb.textContent='▶ Continuă de la #'+(Math.min(max+1,PUZZLES.length-1)+1);cb.style.display='flex';} }
+      if(rb)rb.style.display=allDone?'flex':'none';
+    }else{
+      ab.textContent='\u{1F3AF} Arenă Matul Porcului Orb →';
+      if(cb)cb.style.display='none'; if(rb)rb.style.display='none';
+    }
+  }catch(e){}
+}
+
+function resetAllProgress(){ try{localStorage.removeItem(SAVE_KEY);}catch(e){} completed={}; updateArenaBtn(); enterArena(0); }
+
+function updatePuzzleUI(){
+  const p=PUZZLES[curIdx], badge=document.getElementById('turnBadge');
+  if(p.turn==='w'){badge.textContent='⬜ Albul mută';badge.className='turn-badge white';}
+  else{badge.textContent='⬛ Negrul mută';badge.className='turn-badge black';}
+  const lv=levelOf(curIdx), lb=document.getElementById('levelBadge'); lb.textContent=LEVEL_LABELS[lv]; lb.className='level-badge '+LEVEL_CLASSES[lv];
+  document.getElementById('prevBtn').disabled=(curIdx===0);
+  document.getElementById('nextBtn').disabled=true;
+}
+
+function loadPuzzle(idx){
+  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
+  curIdx=idx;solved=false;selSq=null;phase='waiting';solIdx=0;moveHistory=[];viewIdx=0;
+  const pab=document.getElementById('playAgainBtn'); if(pab)pab.style.display='none';
+  if(window._annClear)window._annClear();
+  chess=new Chess(PUZZLES[idx].fen);
+  board.position(PUZZLES[idx].fen,false);
+  board.orientation(PUZZLES[idx].turn==='w'?'white':'black');
+  clearHL(); updatePuzzleUI(); updateProgress(); updateNavBtns(); saveProgress();
+  if(completed[idx]){setMsg('ok','✅ Deja rezolvat — poți încerca din nou!');document.getElementById('nextBtn').disabled=(curIdx===PUZZLES.length-1);}
+  else idleMsg();
+}
+
+function tryMove(from,to){
+  if(solved||phase!=='waiting')return'snapback';
+  const expected=PUZZLES[curIdx].sol[solIdx]; if(!expected)return'snapback';
+  if(from!==expected.slice(0,2)||to!==expected.slice(2,4)){ playWrong();shakeBoard(); setMsg('err','❌ Nu este mutarea corectă — mai încearcă!'); setTimeout(solIdx===0?idleMsg:contMsg,1400); return'snapback'; }
+  const prom=expected.length===5?expected[4]:'q', move=chess.move({from,to,promotion:prom}); if(!move)return'snapback';
+  playMoveSound(!!move.captured); board.position(chess.fen(),true); recordMove(from,to); setLastMoveHL(from,to); selSq=null; solIdx++;
+  if(solIdx>=PUZZLES[curIdx].sol.length){finishPuzzle();return undefined;}
+  phase='computer'; setMsg('idle','⏳ Adversarul răspunde...'); setTimeout(playComputerMove,700); return undefined;
+}
+
+function playComputerMove(){
+  const uci=PUZZLES[curIdx].sol[solIdx], prom=uci.length===5?uci[4]:'q';
+  const cm=chess.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:prom});
+  if(cm){playMoveSound(!!cm.captured);board.position(chess.fen(),true);recordMove(uci.slice(0,2),uci.slice(2,4));setLastMoveHL(uci.slice(0,2),uci.slice(2,4));}
+  solIdx++; if(solIdx>=PUZZLES[curIdx].sol.length){finishPuzzle();return;} phase='waiting'; contMsg();
+}
+
+function finishPuzzle(){
+  solved=true;phase='done';completed[curIdx]=true; updateProgress();saveProgress(); celebrate(); setTimeout(playWin,250);
+  setMsg('ok','✅ Excelent! Matul Porcului Orb!'); document.getElementById('nextBtn').disabled=(curIdx===PUZZLES.length-1);
+  if(Object.keys(completed).length>=PUZZLES.length){const pab=document.getElementById('playAgainBtn');if(pab)pab.style.display='flex';}
+}
+
+function onDragStart(source,piece){ if(mode==='lecture'||phase!=='waiting')return false; if(viewIdx<moveHistory.length)return false; if(solved)return false; if(!chess||piece[0]!==chess.turn())return false; return true; }
+function onDrop(source,target){ if(target==='offboard')return'snapback'; clearHL();selSq=null; return tryMove(source,target); }
+function onSnapEnd(){ if(chess)board.position(chess.fen()); }
+
+$(document).on('click','.square-55d63',function(){
+  if(mode==='lecture'||phase!=='waiting')return; if(viewIdx<moveHistory.length)return; if(solved)return;
+  const sq=$(this).data('square'), piece=chess.get(sq), mc=chess.turn();
+  if(selSq){ const p=selSq; clearHL();selSq=null; if(sq===p)return; if(piece&&piece.color===mc){selSq=sq;applyHL(sq,'square-selected');}else tryMove(p,sq); }
+  else{ if(!piece||piece.color!==mc)return; selSq=sq;applyHL(sq,'square-selected'); }
+});
+
+function showHint(){ if(phase!=='waiting'||solved)return; if(viewIdx<moveHistory.length)return; clearHL(); applyHL(PUZZLES[curIdx].sol[solIdx].slice(0,2),'hint-square'); }
+
+function showSolution(){
+  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
+  const pz=PUZZLES[curIdx]; moveHistory=pz.sol.map(u=>({from:u.slice(0,2),to:u.slice(2,4),prom:u.length===5?u[4]:'q'}));
+  chess=new Chess(pz.fen); viewIdx=0; board.position(pz.fen,false); clearHL(); updateNavBtns(); autoPlaySol();
+}
+function autoPlaySol(){ if(viewIdx>=moveHistory.length)return; viewIdx++;replayToPos(viewIdx);updateNavBtns(); if(viewIdx<moveHistory.length)autoPlayTimer=setTimeout(autoPlaySol,800); }
+
+function recordMove(f,t){ moveHistory.push({from:f,to:t,prom:'q'}); viewIdx=moveHistory.length; updateNavBtns(); }
+function replayToPos(idx){ const pz=PUZZLES[curIdx],temp=new Chess(pz.fen); for(let i=0;i<idx;i++){const m=moveHistory[i];temp.move({from:m.from,to:m.to,promotion:m.prom});} board.position(temp.fen(),false); clearHL(); if(idx>0&&moveHistory[idx-1]){const lm=moveHistory[idx-1];applyHL(lm.from,'last-move-from');applyHL(lm.to,'last-move-to');} }
+function stepBack(){ if(viewIdx<=0)return; viewIdx--;replayToPos(viewIdx);updateNavBtns(); }
+function stepForward(){ if(viewIdx>=moveHistory.length)return; viewIdx++;replayToPos(viewIdx);updateNavBtns(); }
+function updateNavBtns(){ const bb=document.getElementById('stepBackBtn'),fb=document.getElementById('stepFwdBtn'); if(bb)bb.disabled=viewIdx<=0; if(fb)fb.disabled=viewIdx>=moveHistory.length; }
+
+function prevPuzzle(){ if(curIdx>0)loadPuzzle(curIdx-1); }
+function nextPuzzle(){ if(curIdx<PUZZLES.length-1)loadPuzzle(curIdx+1); }
+function resetPuzzle(){ loadPuzzle(curIdx); }
+
+function enterArena(idx){ mode='puzzle'; document.getElementById('lectureView').style.display='none'; document.getElementById('puzzleView').style.display='block'; document.getElementById('arenaBackBtn').style.display='block'; loadPuzzle(idx); }
+function startArena(){ loadSavedProgress(); enterArena(0); }
+function continueArena(){ loadSavedProgress(); const keys=Object.keys(completed).map(Number); const max=keys.length?Math.max(...keys):-1; const next=Math.min(max+1,PUZZLES.length-1); if(mode==='puzzle')loadPuzzle(next); else enterArena(next); }
+function backToLecture(){ mode='lecture'; document.getElementById('lectureView').style.display='block'; document.getElementById('puzzleView').style.display='none'; document.getElementById('arenaBackBtn').style.display='none'; updateArenaBtn(); board.orientation('white'); board.position(LECTURE_FEN,true); chess=null;selSq=null; if(window._annClear)window._annClear(); clearHL(); }
+
+board=Chessboard('board',{position:LECTURE_FEN,pieceTheme:PIECE_THEME,draggable:true,onDragStart,onDrop,onSnapEnd});
+window.addEventListener('resize',debounce(()=>{board.resize();if(window._annRender)window._annRender();},150));
+$(document).ready(()=>{ updateArenaBtn(); const vb=document.getElementById('volBtn'); if(vb)vb.innerHTML=muted?'&#128263;':'&#128266;'; });
+</script>
+<script src="board-utils.js"></script>
+</body>
+</html>

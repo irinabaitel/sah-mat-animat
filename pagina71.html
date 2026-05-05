@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Matul Porcului Orb — Nivelul V</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <style>
+    .info-content { display:flex; flex-direction:column; gap:10px; }
+    .card { background:var(--c-surface); border:2px solid var(--c-border); border-radius:var(--radius); padding:14px 16px; }
+    .card p { font-size:var(--fs-md); line-height:1.75; color:var(--c-text); margin-bottom:8px; text-align:justify; }
+    .card p:last-child { margin-bottom:0; }
+    .card p strong { color:var(--c-navy); }
+    .gold-rule { background:linear-gradient(135deg,#fff8e1,#fff3cd); border:2px solid #f4c842; border-radius:var(--radius); padding:12px 14px; }
+    .gold-rule p { margin-bottom:0; }
+    .step-controls { display:flex; align-items:center; justify-content:center; gap:8px; padding:4px 0; }
+    .ctrl-btn { background:var(--c-navy); color:white; border:none; border-radius:50%; width:36px; height:36px; font-size:0.9em; cursor:pointer; transition:background .2s; display:flex; align-items:center; justify-content:center; }
+    .ctrl-btn:hover:not(:disabled) { background:#2a5aab; }
+    .ctrl-btn:disabled { background:rgba(26,58,107,0.22); cursor:not-allowed; }
+    .move-counter { background:var(--c-surface); border:2px solid var(--c-border); border-radius:20px; padding:4px 12px; font-weight:700; color:var(--c-navy); font-size:0.85em; min-width:104px; text-align:center; }
+    .annotation-box { background:var(--c-surface); border:2px solid var(--c-border); border-left:4px solid var(--c-navy); border-radius:var(--radius); padding:12px 14px; font-size:var(--fs-md); line-height:1.7; color:var(--c-text); min-height:60px; }
+    .square-selected { background:rgba(255,200,0,0.55) !important; }
+    .acc-list { display:flex; flex-direction:column; gap:5px; }
+    .acc-item { border:2px solid var(--c-border); border-radius:var(--radius); overflow:hidden; background:var(--c-surface); transition:border-color .15s; }
+    .acc-item:hover, .acc-item.open { border-color:var(--c-navy); }
+    .acc-header { display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer; user-select:none; transition:background .15s; }
+    .acc-item.open .acc-header, .acc-header:hover { background:rgba(26,58,107,0.07); }
+    .acc-num { font-family:var(--font-display); font-weight:900; color:var(--c-navy); font-size:var(--fs-sm); min-width:22px; }
+    .acc-title { flex:1; font-weight:700; color:var(--c-navy); font-size:var(--fs-md); font-family:var(--font-display); }
+    .acc-chevron { font-size:0.7em; color:var(--c-navy); transition:transform .22s; display:inline-block; }
+    .acc-item.open .acc-chevron { transform:rotate(90deg); }
+    .acc-body { max-height:0; overflow:hidden; transition:max-height .3s ease; }
+    .acc-item.open .acc-body { max-height:600px; }
+    .acc-inner { padding:2px 14px 12px; }
+    .acc-desc { font-size:var(--fs-md); line-height:1.7; color:var(--c-text); margin-bottom:10px; }
+    .acc-examples { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .ex-btn { padding:5px 14px; border-radius:20px; border:2px solid var(--c-navy); background:transparent; color:var(--c-navy); font-family:var(--font-display); font-weight:700; font-size:var(--fs-sm); cursor:pointer; transition:all .15s; }
+    .ex-btn:hover, .ex-btn.active { background:var(--c-navy); color:white; }
+    #navControls { display:flex; flex-direction:column; gap:10px; padding:4px 0 6px; }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="page-header" role="banner">
+    <span class="header-title">Matul Porcului Orb</span>
+    <div class="header-progress"><span class="lesson-badge">Nivelul V</span></div>
+  </header>
+  <main class="page-main" role="main">
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="info-content">
+
+          <div class="card">
+            <p><strong>Matul Porcului Orb</strong> (Blind Swine Mate) a fost botezat de maestrul francez David Janowski la sfârșitul secolului XIX. Cei doi <strong>„porci"</strong> sunt turnurile care se infiltrează pe a 7-a linie adversă — atât de agresivi, încât „nu văd" matul pe care urmează să-l dea.</p>
+            <p>Tiparul: un turn dă șah, alungând regele într-un colț. Celălalt turn vine pe linie. Regele e prins între cele două turnuri și nu poate scăpa.</p>
+          </div>
+
+          <div class="gold-rule card">
+            <p>&#127775; <strong>Regula de aur:</strong> Cei doi porci (turnuri) se instalează pe a 7-a linie (sau a 2-a). Un turn alungă regele cu șah dintr-o parte în alta, celălalt vine pentru lovitura finală. Regele advers <strong>nu vede</strong> pericolul — e prins între cei doi porci!</p>
+          </div>
+
+          <div id="accList" class="acc-list"></div>
+
+          <div id="navControls" style="display:none">
+            <div class="step-controls">
+              <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima poziție">&#9198;</button>
+              <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="Înapoi">&#9664;</button>
+              <div class="move-counter" id="moveCounter">Start</div>
+              <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="Înainte">&#9654;</button>
+              <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima poziție">&#9197;</button>
+            </div>
+            <div class="annotation-box" id="annotationBox"></div>
+            <div class="moves-log" id="movesLog"></div>
+          </div>
+
+          <a href="pagina72.html" style="display:flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 20px;border-radius:50px;background:var(--c-navy);color:white;text-decoration:none;font-family:var(--font-display);font-size:0.97rem;font-weight:700;width:100%;box-sizing:border-box;transition:opacity .18s;" onmouseover="this.style.opacity='.86'" onmouseout="this.style.opacity='1'">&#8594; Arenă Matul Porcului Orb</a>
+
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="page-footer" role="navigation">
+    <a href="pagina70.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">Înapoi</span></a>
+    <a href="hub.html"      class="nav-btn nav-btn--contents"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
+    <a href="pagina72.html" class="nav-btn nav-btn--forward"><span class="icon">&#8594;</span><span class="label">Arenă Matul Porcului Orb</span></a>
+  </footer>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+function toRo(san) {
+  const map = {K:'R',Q:'D',R:'T',B:'N',N:'C'};
+  return san.replace(/[KQRBN]/g, m => map[m]);
+}
+
+const chapters = [
+
+  /* 0 — intro: Porcii orbi clasici, mat în 3 */
+  {
+    fen:'5rk1/1R2R1pp/8/8/8/8/8/1K6 w - - 0 1',
+    san:['Rxg7+','Kh8','Rxh7+','Kg8','Rbg7#'],
+    ann:{
+      0:'Albul mută. Cei doi „porci" — turnurile de pe b7 și e7 — sunt deja pe a 7-a linie. Regele negru pe g8 este prins. Urmează secvența clasică a Matului Porcului Orb!',
+      1:'1.Txg7+ — turnul de pe e7 capturează pionul g7 cu șah. Regele negru e forțat să se retragă la h8.',
+      2:'1...Rh8 — singura retragere posibilă.',
+      3:'2.Txh7+ — turnul de pe g7 vine pe h7 capturând pionul, dând șah din nou! Regele e măturat înapoi la g8.',
+      4:'2...Rg8 — regele revine pe g8.',
+      5:'3.Tbg7# — turnul b vine pe g7. Regele pe g8 nu are nicio scăpare: h8 controlat de Th7, g7 controlat de Tg7 nou sosit. <strong>Matul Porcului Orb!</strong>'
+    },
+    arrows:{
+      0:[{from:'e7',to:'g7',color:'G'},{from:'b7',to:'g7',color:'B'}],
+      1:[{from:'g8',to:'h8',color:'R'}],
+      2:[{from:'g7',to:'h7',color:'G'}],
+      3:[{from:'h8',to:'g8',color:'R'}],
+      4:[{from:'b7',to:'g7',color:'G'}],
+      5:[]
+    }
+  },
+
+  /* 1 — Exemplul 1: 6 mutări, turnuri pe c7 și c5 */
+  {
+    fen:'r4rk1/2R5/1n2N1pp/2Rp4/p2P4/P3P2P/qP3PPK/8 w - - 0 1',
+    san:['Rg7+','Kh8','Rcc7','Ra7','Rxa7','Rf7','Raxf7','Nd7','Rh7+','Kg8','Rfg7#'],
+    ann:{
+      0:'Albul mută. Turnurile de pe c7 și c5 urmează să colonizeze a 7-a linie. Regele negru pe g8 va fi alungat înainte și înapoi timp de trei runde!',
+      1:'1.Tg7+ — turnul de pe c7 vine pe g7 cu șah.',
+      2:'1...Rh8',
+      3:'2.Tcc7 — turnul de pe c5 vine pe c7, consolidând controlul pe a 7-a linie.',
+      4:'2...Ta7 — negrul încearcă să atace unul dintre turnuri.',
+      5:'3.Txa7 — albul capturează turnul advers.',
+      6:'3...Tf7 — negrul aduce un alt turn pentru apărare.',
+      7:'4.Taxf7 — albul elimină și al doilea turn advers.',
+      8:'4...Cd7 — calul negru vine în apărare, dar e prea târziu.',
+      9:'5.Th7+ — turnul de pe g7 vine pe h7 cu șah, alungând regele la g8.',
+      10:'5...Rg8',
+      11:'6.Tfg7# — turnul de pe f7 vine pe g7. Calul de pe e6 controlează f8, Th7 controlează h8. <strong>Matul Porcului Orb în 6 mutări!</strong>'
+    },
+    arrows:{
+      0:[{from:'c7',to:'g7',color:'G'},{from:'c5',to:'c7',color:'B'}],
+      1:[{from:'g8',to:'h8',color:'R'}],
+      2:[{from:'c5',to:'c7',color:'G'}],
+      3:[{from:'a8',to:'a7',color:'R'}],
+      4:[{from:'c7',to:'a7',color:'G'}],
+      5:[{from:'f8',to:'f7',color:'R'}],
+      6:[{from:'a7',to:'f7',color:'G'}],
+      7:[{from:'b6',to:'d7',color:'R'}],
+      8:[{from:'g7',to:'h7',color:'G'}],
+      9:[{from:'h8',to:'g8',color:'R'}],
+      10:[{from:'f7',to:'g7',color:'G'}],
+      11:[]
+    }
+  },
+
+  /* 2 — Exemplul 2: 5 mutări, cu replică de pion */
+  {
+    fen:'5rk1/1R1R1p1p/4N1p1/p7/5p2/1P4P1/r2nP1KP/8 w - - 0 1',
+    san:['Rdxf7','f3+','Kh3','Rc8','Rg7+','Kh8','Rxh7+','Kg8','Rbg7#'],
+    ann:{
+      0:'Albul mută. Turnurile de pe b7 și d7 lucrează împreună. Atenție — negrul are o replică surpriză cu pionul!',
+      1:'1.Tdxf7 — turnul de pe d7 capturează pionul f7.',
+      2:'1...f3+! — pionul negru înaintează la f3 dând șah regelui alb pe g2! Surpriză tactică.',
+      3:'2.Rh3 — regele alb se retrage la h3 pentru a evita șahul.',
+      4:'2...Tc8 — turnul negru se repoziționează pe c8.',
+      5:'3.Tg7+ — turnul de pe f7 vine pe g7 cu șah.',
+      6:'3...Rh8',
+      7:'4.Txh7+ — turnul capturează pionul h7 cu șah.',
+      8:'4...Rg8',
+      9:'5.Tbg7# — turnul b vine pe g7. Regele pe g8 nu are scăpare. <strong>Matul Porcului Orb în 5 mutări!</strong>'
+    },
+    arrows:{
+      0:[{from:'d7',to:'f7',color:'G'}],
+      1:[{from:'f4',to:'f3',color:'R'}],
+      2:[{from:'g2',to:'h3',color:'G'}],
+      3:[{from:'f8',to:'c8',color:'R'}],
+      4:[{from:'f7',to:'g7',color:'G'}],
+      5:[{from:'g8',to:'h8',color:'R'}],
+      6:[{from:'g7',to:'h7',color:'G'}],
+      7:[{from:'h8',to:'g8',color:'R'}],
+      8:[{from:'b7',to:'g7',color:'G'}],
+      9:[]
+    }
+  },
+
+  /* 3 — CSV tKI9A: mat în 2, turnuri pe d7 și d1 */
+  {
+    fen:'4k3/3R1p2/4p1p1/2r1P2p/7P/1P4r1/8/1K1R4 w - - 0 32',
+    san:['R7d8+','Ke7','R1d7#'],
+    ann:{
+      0:'Albul mută. Turnurile de pe d7 și d1 sunt ambele pe coloana d — doi „porci" verticali. Regele negru pe e8 nu are unde fugi!',
+      1:'1.T7d8+ — turnul de pe d7 vine pe d8 cu șah, forțând regele la e7.',
+      2:'1...Re7 — regele se retrage pe e7.',
+      3:'2.T1d7# — turnul de pe d1 vine pe d7. Regele pe e7 e prins între d8 și d7. <strong>Mat în 2!</strong>'
+    },
+    arrows:{
+      0:[{from:'d7',to:'d8',color:'G'},{from:'d1',to:'d7',color:'B'}],
+      1:[{from:'e8',to:'e7',color:'R'}],
+      2:[{from:'d1',to:'d7',color:'G'}],
+      3:[]
+    }
+  },
+
+  /* 4 — CSV U8H7K: mat în 2, turnuri pe d7 și d1 */
+  {
+    fen:'2k5/1p1R1p2/2p5/K7/2r5/5r2/PP5P/3R4 w - - 0 23',
+    san:['R7d8+','Kc7','R1d7#'],
+    ann:{
+      0:'Albul mută. Turnuri pe d7 și d1, regele negru pe c8. Regele alb de pe a5 controlează b6 — o capcană perfectă pentru doi porci!',
+      1:'1.T7d8+ — turnul de pe d7 vine pe d8 cu șah, forțând regele la c7.',
+      2:'1...Rc7 — regele se mută la c7.',
+      3:'2.T1d7# — turnul de pe d1 vine pe d7. Regele pe c7: d8 controlat de T, b7 pion propriu, b6 controlat de regele alb. <strong>Mat în 2!</strong>'
+    },
+    arrows:{
+      0:[{from:'d7',to:'d8',color:'G'},{from:'d1',to:'d7',color:'B'}],
+      1:[{from:'c8',to:'c7',color:'R'}],
+      2:[{from:'d1',to:'d7',color:'G'}],
+      3:[]
+    }
+  },
+
+  /* 5 — CSV 8Yall: mat în 2, turnuri pe h3 și h2 */
+  {
+    fen:'6k1/5p2/4p1p1/6P1/1prr4/3pK2R/p6R/8 w - - 0 58',
+    san:['R3h8+','Kg7','R2h7#'],
+    ann:{
+      0:'Albul mută. Turnurile de pe h3 și h2 sunt pe coloana h — „porci verticali"! Regele negru pe g8 nu poate fugi spre linia 7 (turnuri acolo).',
+      1:'1.T3h8+ — turnul de pe h3 vine pe h8 cu șah, alungând regele la g7.',
+      2:'1...Rg7 — regele se retrage pe g7.',
+      3:'2.T2h7# — turnul de pe h2 vine pe h7. Regele pe g7: h8 controlat de Th8, g6 blocat de pion propriu. <strong>Mat în 2!</strong>'
+    },
+    arrows:{
+      0:[{from:'h3',to:'h8',color:'G'},{from:'h2',to:'h7',color:'B'}],
+      1:[{from:'g8',to:'g7',color:'R'}],
+      2:[{from:'h2',to:'h7',color:'G'}],
+      3:[]
+    }
+  }
+
+];
+
+let curChapterIdx=0, positions=[];
+
+function computePositions(ch) {
+  const c=new Chess(ch.fen); const fens=[c.fen()];
+  for(const mv of ch.san){ const r=c.move(mv); if(!r){console.error('Invalid:',mv,c.fen());break;} fens.push(c.fen()); }
+  return fens;
+}
+
+let selSq=null, rmbDown=false;
+document.addEventListener('mousedown',e=>{if(e.button===2)rmbDown=true;},true);
+document.addEventListener('mouseup',  e=>{if(e.button===2)rmbDown=false;},true);
+
+function clearSel(){ document.querySelectorAll('.square-selected').forEach(el=>el.classList.remove('square-selected')); selSq=null; }
+function onDragStart(){ if(rmbDown)return false; clearSel(); return true; }
+function onDrop(s,t){ if(t==='offboard')return'snapback'; }
+function onSnapEnd(){}
+
+const board=Chessboard('board',{
+  position:chapters[0].fen, pieceTheme:'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+  draggable:true, orientation:'white', onDragStart, onDrop, onSnapEnd
+});
+
+$(document).on('click','.square-55d63',function(e){
+  if(e.button!==0)return;
+  const sq=$(this).data('square'), pos=board.position();
+  if(selSq){ const p=selSq; clearSel(); if(sq!==p&&pos[p]){pos[sq]=pos[p];delete pos[p];board.position(pos,false);} }
+  else{ if(pos[sq]){selSq=sq;const el=document.querySelector('.square-'+sq);if(el)el.classList.add('square-selected');} }
+});
+
+window.addEventListener('resize',()=>{ board.resize(); redrawArrows(curChapterIdx,currentStep()); if(window._annRender)window._annRender(); });
+
+function currentStep(){ return parseInt(document.getElementById('moveCounter').dataset.step||'0'); }
+
+function loadChapter(idx){
+  curChapterIdx=idx; const ch=chapters[idx]; positions=computePositions(ch);
+  const t=ch.fen.split(' ')[1];
+  board.orientation(ch.orient||(t==='b'?'black':'white'));
+  buildMovesList(); goToStep(0);
+}
+
+function goToStep(s){
+  clearSel(); if(window._annClear)window._annClear();
+  document.getElementById('moveCounter').dataset.step=s;
+  board.position(positions[s],false); redrawArrows(curChapterIdx,s); updateUI(s);
+}
+
+function goFirst(){ goToStep(0); }
+function goLast(){  goToStep(positions.length-1); }
+function goPrev(){  const s=currentStep(); if(s>0)goToStep(s-1); }
+function goNext(){  const s=currentStep(); if(s<positions.length-1)goToStep(s+1); }
+
+function getMoveLabel(s){
+  if(s===0)return'Start';
+  const parts=positions[s-1].split(' '), turn=parts[1], mn=parts[5], san=chapters[curChapterIdx].san[s-1];
+  return turn==='w'?mn+'. '+toRo(san):mn+'... '+toRo(san);
+}
+
+function updateUI(s){
+  const total=positions.length-1, mc=document.getElementById('moveCounter');
+  mc.textContent=getMoveLabel(s); mc.dataset.step=s;
+  document.getElementById('btnFirst').disabled=s===0;
+  document.getElementById('btnPrev').disabled=s===0;
+  document.getElementById('btnNext').disabled=s===total;
+  document.getElementById('btnLast').disabled=s===total;
+  document.querySelectorAll('.mlog-token').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.step)===s));
+  const act=document.querySelector('.mlog-token.active'); if(act)act.scrollIntoView({block:'nearest',behavior:'smooth'});
+  const box=document.getElementById('annotationBox'), ch=chapters[curChapterIdx];
+  const txt=(ch.ann&&ch.ann[s]!==undefined)?ch.ann[s]:'';
+  box.className='annotation-box';
+  box.innerHTML=txt||( s===0?'<em style="opacity:.55">Apasă &#9654; pentru a avansa.</em>':'' );
+}
+
+function createMoveBtn(san,step,cls){
+  const btn=document.createElement('button'); btn.className='mlog-token '+cls;
+  btn.textContent=toRo(san); btn.dataset.step=step; btn.onclick=()=>goToStep(step); return btn;
+}
+
+function buildMovesList(){
+  const ch=chapters[curChapterIdx], log=document.getElementById('movesLog'); log.innerHTML='';
+  const total=ch.san.length; if(!total)return; let i=0;
+  while(i<total){
+    const preFen=positions[i], parts=preFen.split(' '), turn=parts[1], mn=parts[5];
+    const row=document.createElement('div'); row.className='mlog-row';
+    const ns=document.createElement('span'); ns.className='mlog-num'; ns.textContent=mn+'.'; row.appendChild(ns);
+    if(turn==='b'){
+      const plh=document.createElement('span'); plh.className='mlog-token mlog-w'; plh.textContent='…';
+      plh.style.cssText='opacity:0.28;cursor:default;pointer-events:none;'; row.appendChild(plh);
+      row.appendChild(createMoveBtn(ch.san[i],i+1,'mlog-b')); i++;
+    } else {
+      row.appendChild(createMoveBtn(ch.san[i],i+1,'mlog-w')); i++;
+      if(i<total){ row.appendChild(createMoveBtn(ch.san[i],i+1,'mlog-b')); i++; }
+    }
+    log.appendChild(row);
+  }
+}
+
+function clearStudyArrows(){ const ex=document.getElementById('study-arrows-svg'); if(ex)ex.remove(); }
+
+function redrawArrows(chIdx,step){
+  clearStudyArrows();
+  const ch=chapters[chIdx], arrows=ch.arrows&&ch.arrows[step];
+  if(!arrows||!arrows.length)return;
+  const NS='http://www.w3.org/2000/svg', bw=document.getElementById('boardWrapper'); if(!bw)return;
+  const ori=board.orientation(), tlName=ori==='white'?'a8':'h1', tlSq=bw.querySelector('[data-square="'+tlName+'"]');
+  let sqSz,svgX=0,svgY=0;
+  if(tlSq){ sqSz=tlSq.offsetWidth; const br=bw.getBoundingClientRect(),tr=tlSq.getBoundingClientRect(); svgX=Math.round(tr.left-br.left); svgY=Math.round(tr.top-br.top); }
+  else sqSz=bw.offsetWidth/8;
+  const sz=sqSz*8, svg=document.createElementNS(NS,'svg');
+  svg.id='study-arrows-svg'; svg.style.cssText='position:absolute;pointer-events:none;z-index:20;';
+  svg.style.left=svgX+'px'; svg.style.top=svgY+'px'; svg.style.width=sz+'px'; svg.style.height=sz+'px';
+  const defs=document.createElementNS(NS,'defs'); svg.appendChild(defs);
+  const COL={G:'rgba(60,190,80,0.85)',R:'rgba(220,55,55,0.85)',B:'rgba(50,130,210,0.85)',Y:'rgba(215,165,20,0.85)'};
+  function sqC(sq){ let c=sq.charCodeAt(0)-97,r=parseInt(sq[1])-1; if(ori==='black'){c=7-c;r=7-r;} const s=sz/8; return{x:c*s+s/2,y:(7-r)*s+s/2}; }
+  const SW=5;
+  arrows.forEach((arr,i)=>{
+    if(arr.from===arr.to)return;
+    const col=COL[arr.color]||COL.G, mid='sarr'+i;
+    const mk=document.createElementNS(NS,'marker'); mk.setAttribute('id',mid); mk.setAttribute('markerWidth','10'); mk.setAttribute('markerHeight','7'); mk.setAttribute('refX','8'); mk.setAttribute('refY','3.5'); mk.setAttribute('orient','auto');
+    const mp=document.createElementNS(NS,'path'); mp.setAttribute('d','M0,0 L9,3.5 L0,7 L2.5,3.5 Z'); mp.setAttribute('fill',col); mk.appendChild(mp); defs.appendChild(mk);
+    const f=sqC(arr.from),t=sqC(arr.to),dx=t.x-f.x,dy=t.y-f.y,len=Math.sqrt(dx*dx+dy*dy); if(len<1)return;
+    const ux=dx/len,uy=dy/len, ln=document.createElementNS(NS,'line');
+    ln.setAttribute('x1',f.x); ln.setAttribute('y1',f.y); ln.setAttribute('x2',t.x-ux*SW); ln.setAttribute('y2',t.y-uy*SW);
+    ln.setAttribute('stroke',col); ln.setAttribute('stroke-width',String(SW)); ln.setAttribute('stroke-linecap','round'); ln.setAttribute('marker-end','url(#'+mid+')');
+    svg.appendChild(ln);
+  });
+  bw.appendChild(svg);
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')goNext(); if(e.key==='ArrowLeft')goPrev();
+  if(e.key==='Home')goFirst();     if(e.key==='End')goLast();
+});
+
+const matTypes=[
+  { num:'1.', title:'Tiparul de mat',
+    desc:'Doi porci pe a 7-a linie: unul alungă regele cu șah, celălalt vine pentru lovitura finală. Un turn nu vede matul pe care îl pregătește celălalt.',
+    examples:[{ch:0,label:'Ex. intro'}] },
+  { num:'2.', title:'Modele cu secvență lungă',
+    desc:'Porcii deschid drumul eliminând apărătorii. Regele advers e alungat în serie, iar matul vine inevitabil după 5-6 mutări.',
+    examples:[{ch:1,label:'Ex. 1'},{ch:2,label:'Ex. 2'}] },
+  { num:'3.', title:'Mat în 2 mișcări',
+    desc:'Porcii sunt deja pe linie — un șah forțează regele, celălalt turn vine imediat pentru mat.',
+    examples:[{ch:3,label:'Ex. 3'},{ch:4,label:'Ex. 4'},{ch:5,label:'Ex. 5'}] }
+];
+
+let activeExBtn=null;
+
+function buildAccordion(){
+  const list=document.getElementById('accList'); if(!list)return;
+  matTypes.forEach(type=>{
+    const item=document.createElement('div'); item.className='acc-item';
+    const hdr=document.createElement('div'); hdr.className='acc-header';
+    hdr.innerHTML='<span class="acc-num">'+type.num+'</span><span class="acc-title">'+type.title+'</span><span class="acc-chevron">&#9658;</span>';
+    const body=document.createElement('div'); body.className='acc-body';
+    const inner=document.createElement('div'); inner.className='acc-inner';
+    let html='<p class="acc-desc">'+type.desc+'</p><div class="acc-examples">';
+    type.examples.forEach(ex=>{ html+='<button class="ex-btn" data-ch="'+ex.ch+'" onclick="loadExAcc(this,'+ex.ch+')">'+ex.label+'</button>'; });
+    html+='</div>'; inner.innerHTML=html; body.appendChild(inner);
+    item.appendChild(hdr); item.appendChild(body); list.appendChild(item);
+    item.addEventListener('mouseenter',()=>openAcc(item));
+    hdr.addEventListener('click',()=>item.classList.contains('open')?closeAcc(item):openAcc(item));
+  });
+}
+
+function openAcc(item){
+  document.querySelectorAll('#accList .acc-item.open').forEach(o=>{ if(o!==item)closeAcc(o,true); });
+  item.classList.add('open'); item.querySelector('.acc-body').style.maxHeight='600px';
+  const ctrl=document.getElementById('navControls');
+  item.parentNode.insertBefore(ctrl,item.nextElementSibling); ctrl.style.display='';
+}
+function closeAcc(item,keep){
+  item.classList.remove('open'); item.querySelector('.acc-body').style.maxHeight='0';
+  if(!keep){ const ctrl=document.getElementById('navControls'); ctrl.style.display='none'; }
+}
+function loadExAcc(btn,chIdx){
+  if(activeExBtn)activeExBtn.classList.remove('active');
+  activeExBtn=btn; btn.classList.add('active'); loadChapter(chIdx);
+}
+
+buildAccordion();
+loadChapter(0);
+</script>
+<script src="board-utils.js"></script>
+</body>
+</html>
