@@ -268,7 +268,7 @@ function finishPuzzle(){
 }
 
 function onDragStart(source,piece){ if(mode==='lecture'||phase!=='waiting')return false; if(viewIdx<moveHistory.length)return false; if(solved)return false; if(!chess||piece[0]!==chess.turn())return false; return true; }
-function onDrop(source,target){ if(target==='offboard')return'snapback'; clearHL();selSq=null; return tryMove(source,target); }
+function onDrop(source,target){ if(target==='offboard'||source===target)return'snapback'; clearHL();selSq=null; return tryMove(source,target); }
 function onSnapEnd(){ if(chess)board.position(chess.fen()); }
 
 $(document).on('click','.square-55d63',function(){

@@ -527,7 +527,7 @@ function onDragStart(source, piece) {
   return piece[0] === moverColor;
 }
 function onDrop(source, target) {
-  if (target === 'offboard') return 'snapback';
+  if (target === 'offboard' || source === target) return 'snapback';
   clearHL(); selSq = null;
   return tryMove(source, target);
 }
