@@ -415,7 +415,6 @@ function buildAccordion(){
     type.examples.forEach(ex=>{ html+='<button class="ex-btn" data-ch="'+ex.ch+'" onclick="loadExAcc(this,'+ex.ch+')">'+ex.label+'</button>'; });
     html+='</div>'; inner.innerHTML=html; body.appendChild(inner);
     item.appendChild(hdr); item.appendChild(body); list.appendChild(item);
-    item.addEventListener('mouseenter',()=>openAcc(item));
     hdr.addEventListener('click',()=>item.classList.contains('open')?closeAcc(item):openAcc(item));
   });
 }
@@ -423,12 +422,11 @@ function buildAccordion(){
 function openAcc(item){
   document.querySelectorAll('#accList .acc-item.open').forEach(o=>{ if(o!==item)closeAcc(o,true); });
   item.classList.add('open'); item.querySelector('.acc-body').style.maxHeight='600px';
-  const ctrl=document.getElementById('navControls');
-  item.parentNode.insertBefore(ctrl,item.nextElementSibling); ctrl.style.display='';
+  document.getElementById('navControls').style.display='';
 }
 function closeAcc(item,keep){
   item.classList.remove('open'); item.querySelector('.acc-body').style.maxHeight='0';
-  if(!keep){ const ctrl=document.getElementById('navControls'); ctrl.style.display='none'; }
+  if(!keep){ document.getElementById('navControls').style.display='none'; }
 }
 function loadExAcc(btn,chIdx){
   if(activeExBtn)activeExBtn.classList.remove('active');
