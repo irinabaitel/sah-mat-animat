@@ -97,11 +97,11 @@
         <div class="info-content">
 
           <div class="card">
-            <p><strong>Matul pe ultima linie</strong> este dat de tură sau regină pe liniile 1 sau 8 (ori coloanele a sau h), atunci când regele atacat nu poate părăsi marginea tablei deoarece este blocat de propriile piese (de obicei pioni). Uneori câmpurile din vecinătate sunt controlate de piesele adversarului, făcând imposibilă orice fugă.</p>
+            <p><strong>Matul pe ultima linie</strong> este dat de turn sau regină pe liniile 1 sau 8 (ori coloanele a sau h), atunci când regele atacat nu poate părăsi marginea tablei deoarece este blocat de propriile piese (de obicei pioni). Uneori câmpurile din vecinătate sunt controlate de piesele adversarului, făcând imposibilă orice fugă.</p>
           </div>
 
           <div class="gold-rule card">
-            <p>&#127775; <strong>Regula de aur:</strong> Identifică un rege blocat la marginea tablei de proprii pioni. Adu o tură sau damă pe aceeași linie sau coloană — dacă nu există câmp de fugă, e mat!</p>
+            <p>&#127775; <strong>Regula de aur:</strong> Identifică un rege blocat la marginea tablei de proprii pioni. Adu un turn sau damă pe aceeași linie sau coloană — dacă nu există câmp de fugă, e mat!</p>
           </div>
 
           <div id="accList" class="acc-list"></div>
@@ -155,8 +155,8 @@ const chapters = [
     fen: '6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 1 1',
     san: ['Rd8#'],
     ann: {
-      0: 'Albul mută. Regele negru este blocat pe linia 8 de proprii pioni (f7, g7, h7). Unde poate merge tura albă pentru mat?',
-      1: '1.Td8# — tura merge direct pe ultima linie. Regele negru nu poate fugi: g7, h7, f7 sunt blocate de proprii pioni, iar f8 și h8 sunt controlate de tură. <strong>Mat pe ultima linie!</strong>'
+      0: 'Albul mută. Regele negru este blocat pe linia 8 de proprii pioni (f7, g7, h7). Unde poate merge turnul alb pentru mat?',
+      1: '1.Td8# — turnul merge direct pe ultima linie. Regele negru nu poate fugi: g7, h7, f7 sunt blocate de proprii pioni, iar f8 și h8 sunt controlate de turn. <strong>Mat pe ultima linie!</strong>'
     },
     arrows: {
       0: [{from:'d1',to:'d8',color:'G'}],
@@ -169,8 +169,8 @@ const chapters = [
     fen: '8/1p6/kp6/1p6/8/8/5PPP/5RK1 w - - 0 1',
     san: ['Ra1#'],
     ann: {
-      0: 'Albul mută. Regele negru este blocat pe coloana a de proprii pioni (b7, b6, b5). Tura albă poate da mat pe coloana a!',
-      1: '1.Ta1# — tura merge pe coloana a, la marginea tablei. Regele negru nu are unde fugi: b7, b6, b5 sunt blocate de proprii pioni, iar a7 și a5 sunt controlate de tură. <strong>Mat pe coloana a!</strong>'
+      0: 'Albul mută. Regele negru este blocat pe coloana a de proprii pioni (b7, b6, b5). Turnul alb poate da mat pe coloana a!',
+      1: '1.Ta1# — turnul merge pe coloana a, la marginea tablei. Regele negru nu are unde fugi: b7, b6, b5 sunt blocate de proprii pioni, iar a7 și a5 sunt controlate de turn. <strong>Mat pe coloana a!</strong>'
     },
     arrows: {
       0: [{from:'f1',to:'a1',color:'G'}],
@@ -183,9 +183,9 @@ const chapters = [
     fen: '2r1r1k1/5ppp/8/8/Q7/8/5PPP/4R1K1 w - - 0 1',
     san: ['Rxe8+', 'Rxe8', 'Qxe8#'],
     ann: {
-      0: 'Albul mută. Regele negru este blocat de pioni pe f7, g7, h7. Există două ture negre pe ultima linie — cum le elimini pentru a ajunge la rege?',
-      1: '1.Txe8+ — tura albă se sacrifică pe e8, forțând tura neagră să recaptureze.',
-      2: '1...Txe8 — tura neagră din c8 este forțată să recaptureze (singura mișcare legală).',
+      0: 'Albul mută. Regele negru este blocat de pioni pe f7, g7, h7. Există două turnuri negre pe ultima linie — cum le elimini pentru a ajunge la rege?',
+      1: '1.Txe8+ — turnul alb se sacrifică pe e8, forțând turnul negru să recaptureze.',
+      2: '1...Txe8 — turnul negru din c8 este forțată să recaptureze (singura mișcare legală).',
       3: '2.Dxe8# — dama vine pe ultima linie. Regele negru este blocat de pioni pe f7, g7, h7. Nu există câmp de fugă. <strong>Mat!</strong>'
     },
     arrows: {
@@ -206,7 +206,7 @@ const chapters = [
       2: '1...Rh8 — regele se retrage în colțul tablei. Acum g8 și g7 sunt blocate de pioni.',
       3: '2.Df8+! — dama se <strong>sacrifică</strong> pe ultima linie, atrăgând nebunul.',
       4: '2...Nxf8 — nebunul este forțat să captureze (singura mișcare legală).',
-      5: '3.Txf8# — tura completă matul pe ultima linie. Rege blocat de nebunul f8 și pioni g7, h7. <strong>Mat!</strong>'
+      5: '3.Txf8# — turnul completă matul pe ultima linie. Rege blocat de nebunul f8 și pioni g7, h7. <strong>Mat!</strong>'
     },
     arrows: {
       0: [],
@@ -227,8 +227,8 @@ const chapters = [
       1: '1...De2+ — dama neagră atacă regele alb de pe e2. Regele nu poate rămâne pe f1.',
       2: '2.Rg1 — regele se retrage la g1 (singurul câmp disponibil).',
       3: '2...Dxe1+! — dama se <strong>sacrifică</strong> pe prima linie, capturând calul alb de pe e1.',
-      4: '3.Txe1 — tura albă din b1 este forțată să recaptureze dama.',
-      5: '3...Txe1# — tura neagră din e8 vine pe e1 și dă mat! Rege alb blocat de pioni pe f2, g2, h2. <strong>Mat pe prima linie!</strong>'
+      4: '3.Txe1 — turnul alb din b1 este forțată să recaptureze dama.',
+      5: '3...Txe1# — turnul negru din e8 vine pe e1 și dă mat! Rege alb blocat de pioni pe f2, g2, h2. <strong>Mat pe prima linie!</strong>'
     },
     arrows: {
       0: [{from:'e7',to:'e1',color:'G'}],
@@ -506,7 +506,7 @@ const matTypes = [
   {
     num: '1.',
     title: 'Mat în 1 mișcare',
-    desc: 'Regele este deja blocat la marginea tablei — o singură mutare cu tura sau dama este suficientă pentru mat. Identifică linia sau coloana liberă.',
+    desc: 'Regele este deja blocat la marginea tablei — o singură mutare cu turnul sau dama este suficientă pentru mat. Identifică linia sau coloana liberă.',
     examples: [
       { ch: 0, label: 'Ex. 1' },
       { ch: 1, label: 'Ex. 2' }
@@ -515,7 +515,7 @@ const matTypes = [
   {
     num: '2.',
     title: 'Mat în 2 mișcări',
-    desc: 'Există o piesă care apără ultima linie. Sacrifică tura pentru a elimina apărătorul — dama vine și dă mat.',
+    desc: 'Există o piesă care apără ultima linie. Sacrifică turnul pentru a elimina apărătorul — dama vine și dă mat.',
     examples: [
       { ch: 2, label: 'Ex. 3' }
     ]

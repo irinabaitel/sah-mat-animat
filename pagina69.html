@@ -58,11 +58,11 @@
         <div class="info-content">
 
           <div class="card">
-            <p><strong>Matul Anastasia</strong> și-a primit numele dintr-un roman celebru din 1803, <em>„Anastasia și jocul de șah"</em> de Johann Jakob Wilhelm Heinse. Un <strong>cal</strong> și o <strong>tură</strong> fac echipă pentru a prinde regele advers în capcana dintre marginea tablei și o piesă proprie a adversarului (de obicei proprii pioni care îl blochează).</p>
+            <p><strong>Matul Anastasia</strong> și-a primit numele dintr-un roman celebru din 1803, <em>„Anastasia și jocul de șah"</em> de Johann Jakob Wilhelm Heinse. Un <strong>cal</strong> și un <strong>turn</strong> fac echipă pentru a prinde regele advers în capcana dintre marginea tablei și o piesă proprie a adversarului (de obicei proprii pioni care îl blochează).</p>
           </div>
 
           <div class="gold-rule card">
-            <p>&#127775; <strong>Regula de aur:</strong> Calul controlează câmpurile de fugă ale regelui, iar tura vine pe linia sau coloana de margine pentru mat. Adesea, un <strong>sacrificiu de damă</strong> pe câmpul h7 (sau h2) deschide calea!</p>
+            <p>&#127775; <strong>Regula de aur:</strong> Calul controlează câmpurile de fugă ale regelui, iar turnul vine pe linia sau coloana de margine pentru mat. Adesea, un <strong>sacrificiu de damă</strong> pe câmpul h7 (sau h2) deschide calea!</p>
           </div>
 
           <div id="accList" class="acc-list"></div>
@@ -108,8 +108,8 @@ const chapters = [
     fen:'5r2/1b2Nppk/8/2R5/8/8/5PPP/6K1 w - - 0 1',
     san:['Rh5#'],
     ann:{
-      0:'Albul mută. Regele negru pe h7 este prins între propriii pioni (f7, g7) și marginea tablei. Calul de pe e7 controlează g6 și g8. Tura de pe c5 poate da mat imediat!',
-      1:'1.Th5# — tura vine pe h5. Regele nu poate fugi: g7 și f7 sunt pioni proprii, g6 și g8 sunt controlate de cal, h6 și h8 sunt controlate de tură. <strong>Matul Anastasia!</strong>'
+      0:'Albul mută. Regele negru pe h7 este prins între propriii pioni (f7, g7) și marginea tablei. Calul de pe e7 controlează g6 și g8. Turnul de pe c5 poate da mat imediat!',
+      1:'1.Th5# — turnul vine pe h5. Regele nu poate fugi: g7 și f7 sunt pioni proprii, g6 și g8 sunt controlate de cal, h6 și h8 sunt controlate de turn. <strong>Matul Anastasia!</strong>'
     },
     arrows:{
       0:[{from:'c5',to:'h5',color:'G'},{from:'e7',to:'g6',color:'B'},{from:'e7',to:'g8',color:'B'}],
@@ -122,10 +122,10 @@ const chapters = [
     fen:'5r1k/1b2Nppp/8/2R5/4Q3/8/5PPP/6K1 w - - 0 1',
     san:['Qxh7+','Kxh7','Rh5#'],
     ann:{
-      0:'Albul mută. Regele negru pe h8, calul alb pe e7 controlează g6 și g8. Dama albă pe e4 vede câmpul h7 — un sacrificiu deschide calea pentru tură!',
+      0:'Albul mută. Regele negru pe h8, calul alb pe e7 controlează g6 și g8. Dama albă pe e4 vede câmpul h7 — un sacrificiu deschide calea pentru turn!',
       1:'1.Dxh7+! — dama se sacrifică pe h7, forțând regele să captureze.',
-      2:'1...Rxh7 — regele negru este forțat să ia dama (f8 are tură, g8 e controlat de cal).',
-      3:'2.Th5# — tura vine pe h5. Regele pe h7: g7 pion propriu, g6 și g8 controlate de cal, h8 și h6 controlate de tură. <strong>Matul Anastasia!</strong>'
+      2:'1...Rxh7 — regele negru este forțat să ia dama (f8 are turn, g8 e controlat de cal).',
+      3:'2.Th5# — turnul vine pe h5. Regele pe h7: g7 pion propriu, g6 și g8 controlate de cal, h8 și h6 controlate de turn. <strong>Matul Anastasia!</strong>'
     },
     arrows:{
       0:[{from:'e4',to:'h7',color:'G'},{from:'c5',to:'h5',color:'B'}],
@@ -140,12 +140,12 @@ const chapters = [
     fen:'5rk1/1b3ppp/8/2RN4/8/8/2Q2PPP/6K1 w - - 0 1',
     san:['Ne7+','Kh8','Qxh7+','Kxh7','Rh5#'],
     ann:{
-      0:'Albul mută. Regele negru pe g8, calul alb pe d5 urmează să ajungă pe e7. Dama pe c2 și tura pe c5 completează atacul. 3 mutări!',
+      0:'Albul mută. Regele negru pe g8, calul alb pe d5 urmează să ajungă pe e7. Dama pe c2 și turnul pe c5 completează atacul. 3 mutări!',
       1:'1.Ce7+ — calul sare pe e7 cu șah, forțând regele în colț.',
       2:'1...Rh8 — regele se retrage la h8 (g8 este atacat de cal).',
       3:'2.Dxh7+! — dama se sacrifică capturând pionul h7.',
       4:'2...Rxh7 — regele este forțat să captureze dama.',
-      5:'3.Th5# — tura vine pe h5 și dă mat. <strong>Matul Anastasia!</strong>'
+      5:'3.Th5# — turnul vine pe h5 și dă mat. <strong>Matul Anastasia!</strong>'
     },
     arrows:{
       0:[{from:'d5',to:'e7',color:'G'},{from:'c2',to:'h7',color:'B'},{from:'c5',to:'h5',color:'B'}],
@@ -167,7 +167,7 @@ const chapters = [
       2:'2.Rh1 — regele este forțat la h1 (singurul câmp liber).',
       3:'2...Dxh2+! — dama neagră se sacrifică capturând pionul alb pe h2.',
       4:'3.Rxh2 — regele este forțat să ia dama.',
-      5:'3...Th6# — tura vine pe h6 (pe coloana h). Calul de pe e2 controlează g1 și g3, pionul g2 blochează fuga. <strong>Matul Anastasia!</strong>'
+      5:'3...Th6# — turnul vine pe h6 (pe coloana h). Calul de pe e2 controlează g1 și g3, pionul g2 blochează fuga. <strong>Matul Anastasia!</strong>'
     },
     arrows:{
       0:[{from:'f4',to:'e2',color:'G'},{from:'h5',to:'h2',color:'B'},{from:'d6',to:'h6',color:'B'}],
@@ -184,10 +184,10 @@ const chapters = [
     fen:'r6r/pR2b3/4N1k1/2p1P3/2P5/P7/4nPPB/5R1K b - - 0 1',
     san:['Rxh2+','Kxh2','Rh8#'],
     ann:{
-      0:'Negrul mută. Regele alb pe h1, calul negru pe e2 controlează g1 și g3. Tura neagră de pe h8 poate forța o secvență de mat în 3!',
-      1:'1...Txh2+! — tura neagră se sacrifică capturând nebunul alb pe h2, dând șah.',
-      2:'2.Rxh2 — regele alb este forțat să ia tura.',
-      3:'3.Th8# — tura de pe a8 vine pe h8 (pe coloana h). Calul de pe e2 controlează g1 și g3, pionul g2 blochează fuga. <strong>Matul Anastasia!</strong>'
+      0:'Negrul mută. Regele alb pe h1, calul negru pe e2 controlează g1 și g3. Turnul negru de pe h8 poate forța o secvență de mat în 3!',
+      1:'1...Txh2+! — turnul negru se sacrifică capturând nebunul alb pe h2, dând șah.',
+      2:'2.Rxh2 — regele alb este forțat să ia turnul.',
+      3:'3.Th8# — turnul de pe a8 vine pe h8 (pe coloana h). Calul de pe e2 controlează g1 și g3, pionul g2 blochează fuga. <strong>Matul Anastasia!</strong>'
     },
     arrows:{
       0:[{from:'h8',to:'h2',color:'G'},{from:'e2',to:'g1',color:'B'},{from:'e2',to:'g3',color:'B'}],
@@ -202,10 +202,10 @@ const chapters = [
     fen:'5r1k/pp2Nrpp/2p5/8/3nR2Q/3q1p2/6PP/4R2K w - - 0 1',
     san:['Qxh7+','Kxh7','Rh4#'],
     ann:{
-      0:'Albul mută. Regele negru pe h8, calul alb pe e7 controlează g6 și g8. Dama pe h4 și tura pe e4 completează matul Anastasia!',
+      0:'Albul mută. Regele negru pe h8, calul alb pe e7 controlează g6 și g8. Dama pe h4 și turnul pe e4 completează matul Anastasia!',
       1:'1.Dxh7+! — dama albă se sacrifică pe h7 (capturează pionul).',
       2:'1...Rxh7 — regele este forțat să ia dama.',
-      3:'2.Th4# — tura de pe e4 vine pe h4. Calul de pe e7 controlează g6 și g8. <strong>Matul Anastasia!</strong>'
+      3:'2.Th4# — turnul de pe e4 vine pe h4. Calul de pe e7 controlează g6 și g8. <strong>Matul Anastasia!</strong>'
     },
     arrows:{
       0:[{from:'h4',to:'h7',color:'G'},{from:'e4',to:'h4',color:'B'}],
@@ -352,13 +352,13 @@ document.addEventListener('keydown',e=>{
 
 const matTypes=[
   { num:'1.', title:'Mat în 2 mișcări',
-    desc:'Calul este deja pe e7, blocând câmpurile de fugă. Un sacrificiu de damă pe h7 eliberează linia pentru tură.',
+    desc:'Calul este deja pe e7, blocând câmpurile de fugă. Un sacrificiu de damă pe h7 eliberează linia pentru turn.',
     examples:[{ch:1,label:'Ex. 1'}] },
   { num:'2.', title:'Mat în 3 mișcări — cu sacrificiu',
-    desc:'Calul ajunge pe e7 cu șah, forțând regele în colț. Urmează sacrificiul damei pe h7, apoi tura dă mat.',
+    desc:'Calul ajunge pe e7 cu șah, forțând regele în colț. Urmează sacrificiul damei pe h7, apoi turnul dă mat.',
     examples:[{ch:2,label:'Ex. 2'},{ch:3,label:'Ex. 3'}] },
   { num:'3.', title:'Modele variate',
-    desc:'Matul Anastasia poate apărea și pe coloana h (rege pe h7/h2), cu tura lovind de sus sau de jos.',
+    desc:'Matul Anastasia poate apărea și pe coloana h (rege pe h7/h2), cu turnul lovind de sus sau de jos.',
     examples:[{ch:4,label:'Ex. 4'},{ch:5,label:'Ex. 5'}] }
 ];
 

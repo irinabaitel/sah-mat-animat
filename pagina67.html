@@ -97,16 +97,16 @@
         <div class="info-content">
 
           <div class="card">
-            <p><strong>Matul cârlig</strong> și-a primit numele de la forma caracteristică pe care o capătă piesele pe tablă. O <strong>tură</strong> ajunge pe marginea tablei — acesta este <em>vârful cârligului</em>. Un <strong>cal</strong> se plasează la două câmpuri diagonal față de regele advers, controlând câmpurile de fugă. Un <strong>pion sau o piesă</strong> apără calul, iar o <strong>piesă adversă</strong> (de obicei propriul rege blocat) completează capcana.</p>
+            <p><strong>Matul cârlig</strong> și-a primit numele de la forma caracteristică pe care o capătă piesele pe tablă. Un <strong>turn</strong> ajunge pe marginea tablei — acesta este <em>vârful cârligului</em>. Un <strong>cal</strong> se plasează la două câmpuri diagonal față de regele advers, controlând câmpurile de fugă. Un <strong>pion sau o piesă</strong> apără calul, iar o <strong>piesă adversă</strong> (de obicei propriul rege blocat) completează capcana.</p>
             <p>Combinația apare adesea în finaluri și poziții cu pioni blocați pe flanc, când regele adversarului nu poate fugi nici pe coloana adiacentă.</p>
           </div>
 
           <div class="gold-rule card">
             <p>&#127775; <strong>Regula de aur — 4 pași:</strong></p>
-            <p>1. <strong>Tura pe margine</strong> — pune tura pe linia sau coloana de margine (vârful cârligului).<br>
+            <p>1. <strong>Turnul pe margine</strong> — pune turnul pe linia sau coloana de margine (vârful cârligului).<br>
             2. <strong>Calul la locul lui</strong> — plasează calul la două câmpuri diagonal față de regele advers (controlează câmpurile de fugă).<br>
             3. <strong>Apărătorul calului</strong> — asigură-te că un pion sau o piesă proprie apără calul.<br>
-            4. <strong>Piesa „inconvenientă"</strong> — o piesă din armata regelui advers îl blochează chiar pe el, împiedicându-l să fugă.</p>
+            4. <strong>Piesa incomodă</strong> — o piesă din armata regelui advers îl blochează chiar pe el, împiedicându-l să fugă.</p>
           </div>
 
           <div id="accList" class="acc-list"></div>
@@ -160,8 +160,8 @@ const chapters = [
     fen: 'R7/4kp2/5N2/4P3/8/8/8/6K1 w - - 0 1',
     san: ['Ra8'],
     ann: {
-      0: 'Albul mută. Tura albă este pe a8 gata de mat — calul e pe f6 (2 câmpuri diagonal față de rege), pionul e5 apără calul, iar propriul pion f7 blochează fuga regelui. Aceasta este forma clasică a matului cârlig!',
-      1: '1.Ta8# — tura ajunge pe linia 8 (vârful cârligului). Regele nu poate fugi: e8 e atacat de tură, f8 e atacat de cal, d7 e atacat de cal, d8 e atacat de tură. <strong>Matul cârlig!</strong>'
+      0: 'Albul mută. Turnul alb este pe a8 gata de mat — calul e pe f6 (2 câmpuri diagonal față de rege), pionul e5 apără calul, iar propriul pion f7 blochează fuga regelui. Aceasta este forma clasică a matului cârlig!',
+      1: '1.Ta8# — turnul ajunge pe linia 8 (vârful cârligului). Regele nu poate fugi: e8 e atacat de turn, f8 e atacat de cal, d7 e atacat de cal, d8 e atacat de turn. <strong>Matul cârlig!</strong>'
     },
     arrows: {
       0: [{from:'a8',to:'e8',color:'G'},{from:'f6',to:'e8',color:'B'},{from:'f6',to:'d7',color:'B'}],
@@ -175,11 +175,11 @@ const chapters = [
     san: ['Rg7+', 'Bxg7', 'Rxg7+', 'Rg6', 'Rxg6#'],
     ann: {
       0: 'Albul mută. Există o combinație de sacrificiu pentru a crea matul cârlig. Regele negru este la g5, calul la h4 controlează câmpurile. Cum atragi apărătorii?',
-      1: '1.Tg7+! — tura albă din e7 se sacrifică pe g7, atacând nebunul negru care apără.',
-      2: '1...Nxg7 — nebunul negru este forțat să captureze tura.',
-      3: '2.Txg7+ — tura albă din c7 vine pe g7 cu șah! Regele este forțat.',
-      4: '2...Tg6 — tura neagră din f6 blochează fuga la g6 (se interpune forțat).',
-      5: '3.Txg6# — tura albă capturează tura neagră și dă mat! Regele negru nu are unde fugi — calul h4 controlează f5 și g6 nu mai e disponibil. <strong>Matul cârlig!</strong>'
+      1: '1.Tg7+! — turnul alb din e7 se sacrifică pe g7, atacând nebunul negru care apără.',
+      2: '1...Nxg7 — nebunul negru este forțat să captureze turnul.',
+      3: '2.Txg7+ — turnul alb din c7 vine pe g7 cu șah! Regele este forțat.',
+      4: '2...Tg6 — turnul negru din f6 blochează fuga la g6 (se interpune forțat).',
+      5: '3.Txg6# — turnul alb capturează turnul negru și dă mat! Regele negru nu are unde fugi — calul h4 controlează f5 și g6 nu mai e disponibil. <strong>Matul cârlig!</strong>'
     },
     arrows: {
       0: [{from:'e7',to:'g7',color:'G'},{from:'h4',to:'g6',color:'B'},{from:'h4',to:'f5',color:'B'}],
@@ -199,9 +199,9 @@ const chapters = [
       0: 'Albul mută. Regele negru este la b7, aproape prins. Există un sacrificiu de damă care deschide calea pentru matul cârlig.',
       1: '1.Dxc8+! — dama albă se sacrifică pe c8, capturând nebunul și dând șah!',
       2: '1...Rxc8 — regele negru este forțat să captureze dama.',
-      3: '2.Te8+ — tura albă vine pe e8 cu șah, împingând regele înapoi.',
+      3: '2.Te8+ — turnul alb vine pe e8 cu șah, împingând regele înapoi.',
       4: '2...Rb7 — regele negru se retrage la b7 (singurul câmp disponibil).',
-      5: '3.Tb8# — tura albă merge pe b8, iar calul de pe c6 controlează b8 (apără), d8 și a7. Regele negru este prins: a8 e controlat de tură, a6 și c6 de cal, c8 de tură. <strong>Matul cârlig!</strong>'
+      5: '3.Tb8# — turnul alb merge pe b8, iar calul de pe c6 controlează b8 (apără), d8 și a7. Regele negru este prins: a8 e controlat de turn, a6 și c6 de cal, c8 de turn. <strong>Matul cârlig!</strong>'
     },
     arrows: {
       0: [{from:'e8',to:'c8',color:'G'},{from:'c6',to:'b8',color:'B'},{from:'c6',to:'a7',color:'B'}],
@@ -218,10 +218,10 @@ const chapters = [
     fen: '6k1/p5p1/4R1Np/3p1P2/3K4/P3P3/1r1p1nPP/2r5 w - - 2 37',
     san: ['Re8+', 'Kf7', 'Rf8#'],
     ann: {
-      0: 'Albul mută. Regele negru este la g8 — calul alb de pe g6 controlează f8 și h8. Cum aduci tura pe poziție de mat?',
-      1: '1.Te8+ — tura albă din e6 merge pe e8 cu șah, forțând regele să se mute.',
+      0: 'Albul mută. Regele negru este la g8 — calul alb de pe g6 controlează f8 și h8. Cum aduci turnul pe poziție de mat?',
+      1: '1.Te8+ — turnul alb din e6 merge pe e8 cu șah, forțând regele să se mute.',
       2: '1...Rf7 — regele negru este forțat pe f7 (h8 e atacat de cal, g7 e blocat de pion propriu).',
-      3: '2.Tf8# — tura albă ajunge pe f8 (vârful cârligului)! Calul din g6 controlează e7 și h8. Regele negru nu are fugă: g7 blocat de pion, e7 și h8 controlate de cal, e8 și f7 controlate de tură. <strong>Matul cârlig!</strong>'
+      3: '2.Tf8# — turnul alb ajunge pe f8 (vârful cârligului)! Calul din g6 controlează e7 și h8. Regele negru nu are fugă: g7 blocat de pion, e7 și h8 controlate de cal, e8 și f7 controlate de turn. <strong>Matul cârlig!</strong>'
     },
     arrows: {
       0: [{from:'e6',to:'e8',color:'G'},{from:'g6',to:'f8',color:'B'},{from:'g6',to:'h8',color:'B'}],
@@ -236,10 +236,10 @@ const chapters = [
     fen: '3r1r2/p3k1p1/1npNp2p/1p2P3/8/P3PR2/1P2K1PP/5R2 w - - 0 26',
     san: ['Rf7+', 'Rxf7', 'Rxf7#'],
     ann: {
-      0: 'Albul mută. Regele negru este la e7. Calul alb de pe d6 controlează e8 și f7 (diagonal față de rege). Există o combinație cu două ture!',
-      1: '1.Tf7+! — prima tură se sacrifică pe f7 cu șah, forțând regele să captureze.',
-      2: '1...Rxf7 — regele negru este forțat să captureze tura (singurul câmp).',
-      3: '2.Txf7# — a doua tură vine pe f7 (vârful cârligului). Calul de pe d6 controlează e8 și f8. Regele negru nu poate fugi — e6 e blocat de pion propriu, e8 și f8 controlate de cal, e7 de tură. <strong>Matul cârlig!</strong>'
+      0: 'Albul mută. Regele negru este la e7. Calul alb de pe d6 controlează e8 și f7 (diagonal față de rege). Există o combinație cu două turnuri!',
+      1: '1.Tf7+! — prima turn se sacrifică pe f7 cu șah, forțând regele să captureze.',
+      2: '1...Rxf7 — regele negru este forțat să captureze turnul (singurul câmp).',
+      3: '2.Txf7# — a doua turn vine pe f7 (vârful cârligului). Calul de pe d6 controlează e8 și f8. Regele negru nu poate fugi — e6 e blocat de pion propriu, e8 și f8 controlate de cal, e7 de turn. <strong>Matul cârlig!</strong>'
     },
     arrows: {
       0: [{from:'f3',to:'f7',color:'G'},{from:'d6',to:'e8',color:'B'},{from:'d6',to:'f7',color:'B'}],
@@ -255,9 +255,9 @@ const chapters = [
     san: ['c4+', 'Kd4', 'Re4#'],
     ann: {
       0: 'Albul mută. Regele negru este la d5, calul alb de pe c5 îl presează. Există un mat surprinzător în 2 mutări!',
-      1: '1.c4+! — pionul avansează cu șah descoperit de pe tură! Regele negru este forțat să se mute.',
+      1: '1.c4+! — pionul avansează cu șah descoperit de pe turn! Regele negru este forțat să se mute.',
       2: '1...Rd4 — regele negru se mută la d4 (singura opțiune, d6 și c6 sunt controlate de cal).',
-      3: '2.Te4# — tura albă vine pe e4 (vârful cârligului). Calul de pe c5 controlează b3, d3, b7 și d7, dar mai important: pionii a4 și b3 blochează fuga. Regele negru este matuit! <strong>Matul cârlig!</strong>'
+      3: '2.Te4# — turnul alb vine pe e4 (vârful cârligului). Calul de pe c5 controlează b3, d3, b7 și d7, dar mai important: pionii a4 și b3 blochează fuga. Regele negru este matuit! <strong>Matul cârlig!</strong>'
     },
     arrows: {
       0: [{from:'b4',to:'c4',color:'G'},{from:'c5',to:'d3',color:'B'},{from:'c5',to:'b3',color:'B'}],
@@ -273,11 +273,11 @@ const chapters = [
     san: ['Rg4+', 'Kf8', 'Rg8+', 'Ke7', 'Re8#'],
     ann: {
       0: 'Albul mută. Regele negru este la g7, calul alb de pe f6 îl presează. O secvență de 3 mutări duce la matul cârlig clasic.',
-      1: '1.Tg4+! — tura albă din f4 merge pe g4 cu șah, forțând regele.',
+      1: '1.Tg4+! — turnul alb din f4 merge pe g4 cu șah, forțând regele.',
       2: '1...Rf8 — regele negru se retrage la f8 (singurul câmp, g6 e controlat de cal).',
-      3: '2.Tg8+! — tura albă atacă din g8, forțând regele să continue fuga.',
+      3: '2.Tg8+! — turnul alb atacă din g8, forțând regele să continue fuga.',
       4: '2...Re7 — regele negru se mută la e7 (f7 e blocat de pion propriu).',
-      5: '3.Te8# — tura albă ajunge pe e8 (vârful cârligului). Calul de pe f6 controlează d7, d5 și g8. Regele negru nu poate fugi: f7 blocat de pion propriu, d7 și g8 controlate de cal, f8 și d8 controlate de tură. <strong>Matul cârlig!</strong>'
+      5: '3.Te8# — turnul alb ajunge pe e8 (vârful cârligului). Calul de pe f6 controlează d7, d5 și g8. Regele negru nu poate fugi: f7 blocat de pion propriu, d7 și g8 controlate de cal, f8 și d8 controlate de turn. <strong>Matul cârlig!</strong>'
     },
     arrows: {
       0: [{from:'f4',to:'g4',color:'G'},{from:'f6',to:'g8',color:'B'},{from:'f6',to:'d7',color:'B'}],
@@ -554,8 +554,8 @@ document.addEventListener('keydown', function (e) {
 const matTypes = [
   {
     num: '1.',
-    title: 'Mat în 1 mișcare',
-    desc: 'Toate piesele sunt deja pe poziție — tura, calul și apărătorul. O singură mutare cu tura completează cârligul.',
+    title: 'Tiparul de mat',
+    desc: 'Toate piesele sunt deja pe poziție — turnul, calul și apărătorul. O singură mutare cu turnul completează cârligul.',
     examples: [
       { ch: 0, label: 'Ex. 1' }
     ]
@@ -563,7 +563,7 @@ const matTypes = [
   {
     num: '2.',
     title: 'Mat în 2–3 mișcări',
-    desc: 'Calul și tura sunt aproape de poziție. Un sacrificiu sau o mutare forțată aduce tura pe marginea tablei pentru mat.',
+    desc: 'Calul și turnul sunt aproape de poziție. Un sacrificiu sau o mutare forțată aduce turnul pe marginea tablei pentru mat.',
     examples: [
       { ch: 3, label: 'Ex. 2' },
       { ch: 4, label: 'Ex. 3' },
