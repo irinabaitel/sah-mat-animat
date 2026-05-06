@@ -86,6 +86,24 @@
     box-shadow: 0 2px 8px rgba(26,107,74,0.35); transition: background 0.2s;
   }
   #btn-next:hover { background: #27ae60; }
+
+  .animal-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .animal-btn { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:12px; padding:7px 4px; cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.74em; font-weight:700; color:#1a3a6b; text-align:center; transition:all 0.18s; line-height:1.4; }
+  .animal-btn:hover { background:rgba(255,255,255,0.82); transform:translateY(-2px); }
+  .animal-btn.active { background:#1a3a6b; color:white; border-color:#1a3a6b; box-shadow:0 3px 10px rgba(26,58,107,0.4); }
+  .animal-btn .emoji { font-size:1.4em; display:block; }
+  .animal-btn .name  { display:block; margin-top:2px; }
+
+  .time-opts { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .time-opt { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:10px; padding:6px 11px; cursor:pointer; font-family:'Baloo 2',cursive; font-size:0.8em; font-weight:700; color:#1a3a6b; transition:all 0.18s; }
+  .time-opt:hover { background:rgba(255,255,255,0.82); }
+  .time-opt.active { background:#1a3a6b; color:white; border-color:#1a3a6b; }
+  .clocks { display:flex; gap:8px; margin-bottom:8px; }
+  .clock-box { flex:1; background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:10px; padding:8px; text-align:center; }
+  .clock-box.active { border-color:#1a3a6b; background:rgba(26,58,107,0.1); }
+  .clock-box.low { border-color:rgba(192,57,43,0.5); background:rgba(255,200,200,0.6); }
+  .clock-lbl { font-family:var(--font-display); font-size:0.7em; color:rgba(26,58,107,0.6); margin-bottom:2px; }
+  .clock-time { font-family:var(--font-display); font-size:1.2em; font-weight:900; color:var(--c-navy); }
 </style>
 </head>
 <body>
@@ -108,6 +126,18 @@
 
     <div class="panel-col">
       <div class="panel-scroll">
+
+        <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:6px">Alege adversarul:</div>
+        <div class="animal-grid" style="margin-bottom:10px">
+          <button class="animal-btn active" data-random="0.9" onclick="selectAnimal(this)"><span class="emoji">&#128423;</span><span class="name">Pui de găină</span></button>
+          <button class="animal-btn" data-random="0.7" onclick="selectAnimal(this)"><span class="emoji">&#128037;</span><span class="name">Boboc</span></button>
+          <button class="animal-btn" data-random="0.5" onclick="selectAnimal(this)"><span class="emoji">&#128049;</span><span class="name">Pisoi</span></button>
+          <button class="animal-btn" data-random="0.35" onclick="selectAnimal(this)"><span class="emoji">&#128054;</span><span class="name">Cățel</span></button>
+          <button class="animal-btn" data-random="0.2" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
+          <button class="animal-btn" data-random="0.1" onclick="selectAnimal(this)"><span class="emoji">&#128021;</span><span class="name">Dulău</span></button>
+          <button class="animal-btn" data-random="0.05" onclick="selectAnimal(this)"><span class="emoji">&#128047;</span><span class="name">Tigru</span></button>
+          <button class="animal-btn" data-random="0" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
+        </div>
 
         <div class="level-toggle">
           <button class="lvl-btn active" id="lvl1" onclick="setLevel(1)">Nivel 1 — Un Cal</button>
@@ -141,6 +171,18 @@
         </div>
 
         <div id="status-box">♘ Mută Albul — apasă pe Cal!</div>
+
+        <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:6px">&#9203; Timp per juc&#259;tor:</div>
+        <div class="time-opts" id="timeOpts">
+          <button class="time-opt active" data-secs="0"   onclick="selectTime(this)">&#8734; Liber</button>
+          <button class="time-opt" data-secs="60"  onclick="selectTime(this)">1 min</button>
+          <button class="time-opt" data-secs="120" onclick="selectTime(this)">2 min</button>
+          <button class="time-opt" data-secs="300" onclick="selectTime(this)">5 min</button>
+        </div>
+        <div class="clocks" id="clocksDiv" style="display:none">
+          <div class="clock-box" id="clockW"><div class="clock-lbl">&#9823; Tu (Alb)</div><div class="clock-time" id="cwTime">&#8734;</div></div>
+          <div class="clock-box" id="clockB"><div class="clock-lbl">&#129302; Robot</div><div class="clock-time" id="cbTime">&#8734;</div></div>
+        </div>
 
         <button class="btn-game" onclick="restartGame()">↺ Restart</button>
         <button id="btn-next" onclick="location.href='nivel1_joc_cursa.html'">♖ Jocul următor ▶</button>
@@ -329,6 +371,7 @@ function updateUI() {
 }
 
 function endGame(result) {
+    stopClock();
     gameOver=true; clearHL();
     let msg, cls;
     if (result==='draw') {
@@ -351,12 +394,73 @@ function endGame(result) {
     updateUI();
 }
 
+var aiRandomChance = 0.9;
+function selectAnimal(btn) {
+    document.querySelectorAll('.animal-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    aiRandomChance = parseFloat(btn.dataset.random);
+}
+
+function getRandomMove() {
+    var allMoves = [];
+    bKnights.forEach(function(knight, idx) {
+        var c = COLS.indexOf(knight[0]), r = parseInt(knight[1]);
+        for (var i = 0; i < KM.length; i++) {
+            var nc = c + KM[i][0], nr = r + KM[i][1];
+            if (nc < 0 || nc > 7 || nr < 1 || nr > 8) continue;
+            var dest = COLS[nc] + nr;
+            var others = bKnights.filter(function(_, j){ return j !== idx; });
+            var obs = new Set([...bPawns, ...others]);
+            if (obs.has(dest) || wKnights.includes(dest)) continue;
+            allMoves.push({knightIdx: idx, dest: dest});
+        }
+    });
+    return allMoves.length ? allMoves[Math.floor(Math.random() * allMoves.length)] : null;
+}
+
+var clockMax = 0;
+var clock = {w: 0, b: 0};
+var clockTick = null;
+
+function selectTime(btn) {
+    document.querySelectorAll('.time-opt').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+}
+function fmtClock(s){var m=Math.floor(s/60),ss=s%60;return m+':'+(ss<10?'0':'')+ss;}
+function updateClocks(){
+    var cwEl=document.getElementById('cwTime'),cbEl=document.getElementById('cbTime');
+    var wBox=document.getElementById('clockW'),bBox=document.getElementById('clockB');
+    if(!cwEl)return;
+    if(clockMax===0){
+        cwEl.textContent='∞';cbEl.textContent='∞';
+        wBox.className='clock-box'+(turn==='w'&&!gameOver?' active':'');
+        bBox.className='clock-box'+(turn==='b'&&!gameOver?' active':'');
+        return;
+    }
+    cwEl.textContent=fmtClock(clock.w);cbEl.textContent=fmtClock(clock.b);
+    var wLow=clock.w<=15,bLow=clock.b<=15;
+    wBox.className='clock-box'+(turn==='w'&&!gameOver?(wLow?' low':' active'):'');
+    bBox.className='clock-box'+(turn==='b'&&!gameOver?(bLow?' low':' active'):'');
+}
+function startClock(){
+    if(clockMax===0)return;
+    stopClock();
+    clockTick=setInterval(function(){
+        if(gameOver){stopClock();return;}
+        var c=turn==='w'?'w':'b';
+        clock[c]--;
+        updateClocks();
+        if(clock[c]<=0){stopClock();endGame(turn==='w'?'black':'white');}
+    },1000);
+}
+function stopClock(){if(clockTick){clearInterval(clockTick);clockTick=null;}}
+
 function aiBlackTurn() {
     setStatus('🤖 Calculatorul gândește…','');
     document.getElementById('pp-b').className='player-panel active';
     document.getElementById('pp-w').className='player-panel';
     setTimeout(() => {
-        const mv = aiPickMove();
+        const mv = (Math.random() < aiRandomChance) ? getRandomMove() : aiPickMove();
         if (mv) {
             const {knightIdx, dest} = mv;
             $(`.square-${bKnights[knightIdx]}`).addClass('sq-ai');
@@ -374,6 +478,7 @@ function aiBlackTurn() {
                     else                        endGame('black');
                 } else {
                     turn='w';
+                    updateClocks();
                     setStatus('♘ Mută Albul!','');
                     document.getElementById('pp-w').className='player-panel active';
                     document.getElementById('pp-b').className='player-panel';
@@ -410,6 +515,7 @@ $(document).on('click', function(e) {
             if (bPawns.size===0) wFinished=true;
             updateUI();
             turn='b';
+            updateClocks();
             aiBlackTurn();
         } else if (wKnights.includes(sq)) {
             selSq=sq;
@@ -448,6 +554,13 @@ function restartGame() {
     document.getElementById('pp-w').className='player-panel active';
     document.getElementById('pp-b').className='player-panel';
     document.getElementById('btn-next').style.display='none';
+    var tb = document.querySelector('.time-opt.active');
+    clockMax = tb ? parseInt(tb.dataset.secs) : 0;
+    clock = {w: clockMax, b: clockMax};
+    stopClock();
+    document.getElementById('clocksDiv').style.display = clockMax > 0 ? '' : 'none';
+    updateClocks();
+    if (clockMax > 0) startClock();
 }
 
 board = Chessboard('board', {
@@ -474,6 +587,7 @@ board = Chessboard('board', {
         if (bPawns.size === 0) wFinished = true;
         updateUI();
         turn = 'b';
+        updateClocks();
         aiBlackTurn();
     },
     onSnapEnd: function() {
