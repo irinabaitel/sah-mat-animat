@@ -6,6 +6,7 @@
     <title>Jocul Pionilor — Șah Mat Animat</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="master-template.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
@@ -29,7 +30,7 @@
         .board-section { flex: 0 0 auto; }
         .info-section  { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 10px; }
 
-        #board-wrap { width: min(460px, calc(100vw - 40px)); }
+        #board-wrap { width: min(460px, calc(100vw - 40px)); touch-action:none; user-select:none; -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent; }
         #myBoard    { width: 100%; }
 
         /* ===== HIGHLIGHTS ===== */
@@ -147,6 +148,7 @@
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
 
 <script>
 /* ===== SOUNDS ===== */

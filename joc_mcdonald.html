@@ -6,6 +6,7 @@
 <title>Old McDonald Has a Farm</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
@@ -82,7 +83,7 @@ h1.page-title { font-family: 'Baloo 2', cursive; font-size: clamp(1.5em,4.5vw,2.
 .score-badge.active { background: #1a3a6b; color: white; }
 
 .game-layout { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
-#board-wrap { flex-shrink: 0; width: min(460px, calc(100vw - 40px)); }
+#board-wrap { flex-shrink: 0; width: min(460px, calc(100vw - 40px)); touch-action:none; user-select:none; -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent; }
 #mcBoard { width: 100%; }
 #mcBoard .sq-sel { box-shadow: inset 0 0 0 5px rgba(255,200,0,0.9)  !important; }
 #mcBoard .sq-mv  { box-shadow: inset 0 0 0 5px rgba(40,180,40,0.85) !important; }
@@ -260,6 +261,7 @@ h1.page-title { font-family: 'Baloo 2', cursive; font-size: clamp(1.5em,4.5vw,2.
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
 <script>
 /* ═══════════════════════════════════════════════════
    SOUNDS
