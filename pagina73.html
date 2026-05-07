@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Matul Sufocat — Nivelul V</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    .info-content { display:flex; flex-direction:column; gap:10px; }
+    .card { background:var(--c-surface); border:2px solid var(--c-border); border-radius:var(--radius); padding:14px 16px; }
+    .card p { font-size:var(--fs-md); line-height:1.75; color:var(--c-text); margin-bottom:8px; text-align:justify; }
+    .card p:last-child { margin-bottom:0; }
+    .card p strong { color:var(--c-navy); }
+    .gold-rule { background:linear-gradient(135deg,#fff8e1,#fff3cd); border:2px solid #f4c842; border-radius:var(--radius); padding:12px 14px; }
+    .gold-rule p { margin-bottom:0; }
+    .step-controls { display:flex; align-items:center; justify-content:center; gap:8px; padding:4px 0; }
+    .ctrl-btn { background:var(--c-navy); color:white; border:none; border-radius:50%; width:36px; height:36px; font-size:0.9em; cursor:pointer; transition:background .2s; display:flex; align-items:center; justify-content:center; }
+    .ctrl-btn:hover:not(:disabled) { background:#2a5aab; }
+    .ctrl-btn:disabled { background:rgba(26,58,107,0.22); cursor:not-allowed; }
+    .move-counter { background:var(--c-surface); border:2px solid var(--c-border); border-radius:20px; padding:4px 12px; font-weight:700; color:var(--c-navy); font-size:0.85em; min-width:104px; text-align:center; }
+    .annotation-box { background:var(--c-surface); border:2px solid var(--c-border); border-left:4px solid var(--c-navy); border-radius:var(--radius); padding:12px 14px; font-size:var(--fs-md); line-height:1.7; color:var(--c-text); height:120px; overflow-y:auto; }
+    .square-selected { background:rgba(255,200,0,0.55) !important; }
+    .acc-list { display:flex; flex-direction:column; gap:5px; }
+    .acc-item { border:2px solid var(--c-border); border-radius:var(--radius); overflow:hidden; background:var(--c-surface); transition:border-color .15s; }
+    .acc-item:hover, .acc-item.open { border-color:var(--c-navy); }
+    .acc-header { display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer; user-select:none; transition:background .15s; }
+    .acc-item.open .acc-header, .acc-header:hover { background:rgba(26,58,107,0.07); }
+    .acc-num { font-family:var(--font-display); font-weight:900; color:var(--c-navy); font-size:var(--fs-sm); min-width:22px; }
+    .acc-title { flex:1; font-weight:700; color:var(--c-navy); font-size:var(--fs-md); font-family:var(--font-display); }
+    .acc-chevron { font-size:0.7em; color:var(--c-navy); transition:transform .22s; display:inline-block; }
+    .acc-item.open .acc-chevron { transform:rotate(90deg); }
+    .acc-body { max-height:0; overflow:hidden; transition:max-height .3s ease; }
+    .acc-item.open .acc-body { max-height:600px; }
+    .acc-inner { padding:2px 14px 12px; }
+    .acc-desc { font-size:var(--fs-md); line-height:1.7; color:var(--c-text); margin-bottom:10px; }
+    .acc-examples { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .ex-btn { padding:5px 14px; border-radius:20px; border:2px solid var(--c-navy); background:transparent; color:var(--c-navy); font-family:var(--font-display); font-weight:700; font-size:var(--fs-sm); cursor:pointer; transition:all .15s; }
+    .ex-btn:hover, .ex-btn.active { background:var(--c-navy); color:white; }
+    #navControls { display:flex; flex-direction:column; gap:10px; padding:4px 0 6px; }
+    .moves-log { height:104px; overflow-y:auto; }
+    .panel-heading { font-family:var(--font-display); font-size:clamp(1.15rem,2.5vw,1.4rem); font-weight:900; color:var(--c-navy); line-height:1.25; margin-bottom:8px; }
+    .arena-intro-desc { margin-top:14px; padding:10px 14px; background:rgba(255,255,255,0.06); border-left:3px solid var(--c-gold); border-radius:0 6px 6px 0; font-size:0.88rem; color:var(--c-text); line-height:1.5; }
+    .btn-arena { display:flex; align-items:center; justify-content:center; margin-top:14px; padding:11px 20px; border-radius:50px; background:var(--c-navy); color:white; text-decoration:none; font-family:var(--font-display); font-size:0.97rem; font-weight:700; border:none; cursor:pointer; width:100%; transition:opacity .18s; box-sizing:border-box; }
+    .btn-arena:hover { opacity:0.86; }
+    #puzzleView { display:none; }
+    .turn-badge { display:inline-block; padding:3px 14px; border-radius:50px; font-family:var(--font-display); font-size:0.82rem; font-weight:700; margin-bottom:6px; }
+    .turn-badge.white { background:#f0f0f0; color:var(--c-navy); border:1.5px solid #ccc; }
+    .turn-badge.black { background:#222; color:#fff; border:1.5px solid #000; }
+    .level-badge { display:inline-block; margin-left:6px; padding:2px 10px; border-radius:50px; font-family:var(--font-display); font-size:0.75rem; font-weight:700; background:rgba(39,174,96,0.18); color:#1a6b3a; }
+    .level-badge.med  { background:rgba(230,126,34,0.18); color:#8a3a00; }
+    .level-badge.hard { background:rgba(192,57,43,0.18);  color:#7a1800; }
+    .ctrl-row { display:flex; gap:7px; margin-top:10px; flex-wrap:wrap; }
+    .btn-sm { padding:7px 15px; border-radius:50px; font-family:var(--font-display); font-size:0.86rem; font-weight:700; cursor:pointer; transition:background .15s,opacity .15s; border:1.5px solid transparent; }
+    .btn-sm:disabled { opacity:0.28; cursor:default; }
+    .btn-prev  { border-color:rgba(26,58,107,0.35); background:rgba(255,255,255,0.55); color:var(--c-navy); }
+    .btn-prev:hover:not(:disabled)  { background:rgba(26,58,107,0.10); }
+    .btn-reset { border-color:rgba(192,57,43,0.40); background:rgba(255,255,255,0.55); color:#8b1a00; }
+    .btn-reset:hover:not(:disabled) { background:rgba(192,57,43,0.10); }
+    .btn-cont  { border-color:var(--c-success); background:var(--c-success); color:white; }
+    .btn-cont:hover:not(:disabled)  { opacity:0.86; }
+    .btn-next  { border-color:var(--c-navy); background:var(--c-navy); color:white; }
+    .btn-next:hover:not(:disabled)  { opacity:0.86; }
+    #boardWrapper { touch-action:none; -webkit-touch-callout:none; }
+    .hint-square  { background:rgba(80,200,80,0.65) !important; }
+    .btn-tri  { padding:7px 11px; min-width:34px; }
+    .btn-hint { border-color:rgba(39,174,96,0.45); background:rgba(39,174,96,0.08); color:#1a6b3a; }
+    .btn-hint:hover:not(:disabled) { background:rgba(39,174,96,0.18); }
+    .btn-sol  { border-color:rgba(142,68,173,0.45); background:rgba(142,68,173,0.08); color:#6c3483; }
+    .btn-sol:hover:not(:disabled)  { background:rgba(142,68,173,0.18); }
+    .arena-back-btn { display:block; margin-top:10px; width:100%; padding:8px 16px; border-radius:50px; font-family:var(--font-display); font-size:0.86rem; font-weight:700; color:var(--c-navy); cursor:pointer; background:rgba(255,255,255,0.55); border:1.5px solid rgba(26,58,107,0.25); text-align:center; text-decoration:none; transition:background .15s; }
+    .arena-back-btn:hover { background:rgba(26,58,107,0.10); }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+    .board-shake { animation:shake .35s ease-out; }
+    .last-move-from { background:rgba(80,180,80,0.35) !important; }
+    .last-move-to   { background:rgba(80,180,80,0.55) !important; }
+    .btn-vol { position:fixed; top:10px; right:12px; z-index:1000; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.88); border:1.5px solid rgba(26,58,107,0.18); font-size:1.05rem; cursor:pointer; line-height:1; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 6px rgba(0,0,0,0.14); transition:background .15s; padding:0; }
+    .btn-vol:hover { background:rgba(26,58,107,0.10); }
+    .header-progress { margin-right:42px; }
+    .progress-outer { position:relative; margin-bottom:12px; }
+    .progress-outer::after { content:attr(data-tip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:rgba(26,26,46,0.88); color:#fff; font-family:var(--font-display); font-size:0.78rem; font-weight:700; padding:4px 10px; border-radius:6px; white-space:nowrap; pointer-events:none; z-index:100; opacity:0; transition:opacity .15s; }
+    .progress-outer:hover::after { opacity:1; }
+    .progress-outer .progress-wrap { margin-bottom:0; }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="page-header" role="banner">
+    <span class="header-title">Matul Sufocat</span>
+    <div class="header-progress"><span class="lesson-badge">Nivelul V</span></div>
+  </header>
+  <main class="page-main" role="main">
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="info-content" id="lectureView">
+
+          <div class="card">
+            <p><strong>Matul sufocat</strong> apare atunci când un cal dă mat unui rege care este înconjurat (sufocat) de propriile piese și nu are unde muta &mdash; și nicio piesă nu poate captura acel cal.</p>
+            <p>De multe ori este precedat de un <strong>sacrificiu spectaculos de regină</strong> care aduce încă o piesă inamică lângă rege pentru a-i bloca ultima cale de scăpare.</p>
+          </div>
+
+          <div class="gold-rule card">
+            <p>&#127775; <strong>Tiparul:</strong> Calul dă mat &mdash; regele nu poate fugi pentru că e blocat de propriile piese (pioni, ture, nebuni). Calul nu poate fi capturat de rege.</p>
+          </div>
+
+          <div id="accList" class="acc-list"></div>
+
+          <div id="navControls" style="display:none">
+            <div class="step-controls">
+              <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima poziție">&#9198;</button>
+              <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="Înapoi">&#9664;</button>
+              <div class="move-counter" id="moveCounter">Start</div>
+              <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="Înainte">&#9654;</button>
+              <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima poziție">&#9197;</button>
+            </div>
+            <div class="annotation-box" id="annotationBox"></div>
+            <div class="moves-log" id="movesLog"></div>
+          </div>
+
+          <div class="arena-intro-desc">Matul este dat de un cal, iar regele nu se mai poate mi&#537;ca din cauza pieselor proprii care îl sufocă. Exersează tiparele în 35 de puzzle-uri cu dificultate crescătoare.</div>
+          <button class="btn-arena" id="arenaBtn" onclick="startArena()">&#127919; Arenă Matul Sufocat &rarr;</button>
+          <button class="btn-arena" id="continueBtn" onclick="continueArena()" style="display:none;margin-top:8px;background:var(--c-success);">&#9654; Continuă</button>
+          <button class="btn-arena" id="resetAllBtn" onclick="resetAllProgress()" style="display:none;margin-top:8px;background:rgba(192,57,43,0.82);">&#8634; Joacă din nou (resetează tot)</button>
+
+        </div>
+
+        <div id="puzzleView">
+          <div class="panel-heading">Matul Sufocat</div>
+          <span class="turn-badge white" id="turnBadge">&#11036; Albul mută</span>
+          <span class="level-badge" id="levelBadge">UȘOR</span>
+          <div class="progress-outer" id="progressOuter">
+            <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+          </div>
+          <div class="task-msg idle" id="taskMsg">Găsește matul sufocat!</div>
+          <div class="ctrl-row">
+            <button class="btn-sm btn-prev" id="prevBtn" onclick="prevPuzzle()" disabled>&#8592; Precedentul</button>
+            <button class="btn-sm btn-reset" onclick="resetPuzzle()">&#8634; Resetează</button>
+            <button class="btn-sm btn-cont"  onclick="continueArena()">Continuă</button>
+            <button class="btn-sm btn-next" id="nextBtn" onclick="nextPuzzle()" disabled>Următorul &#8594;</button>
+          </div>
+          <div class="ctrl-row" style="margin-top:5px">
+            <button class="btn-sm btn-tri btn-prev" id="stepBackBtn" onclick="stepBack()" disabled>&#9668;</button>
+            <button class="btn-sm btn-tri btn-prev" id="stepFwdBtn"  onclick="stepForward()" disabled>&#9658;</button>
+            <button class="btn-sm btn-hint" onclick="showHint()">&#128161; Indiciu</button>
+            <button class="btn-sm btn-sol"  onclick="showSolution()">&#9658;&#9658; Soluție</button>
+          </div>
+          <a href="pagina74.html" class="btn-arena" id="nextPageBtn" style="display:none;margin-top:12px;background:rgba(39,174,96,0.82);">&#127881; Finalizat! Matul cu 2 Nebuni &rarr;</a>
+        </div>
+
+      </div>
+      <button class="arena-back-btn" id="arenaBackBtn" style="display:none" onclick="backToLecture()">&#8592; Matul Sufocat</button>
+      <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
+    </div>
+  </main>
+  <footer class="page-footer" role="navigation">
+    <a href="pagina72.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">Matul Porcului Orb</span></a>
+    <a href="hub.html"      class="nav-btn nav-btn--contents"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
+    <a href="pagina74.html" class="nav-btn nav-btn--forward"><span class="icon">&#8594;</span><span class="label">Matul cu 2 Nebuni</span></a>
+  </footer>
+  <button class="btn-vol" id="volBtn" onclick="toggleVol()" title="Sunet on/off">&#128266;</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+const PIECE_THEME = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+const SAVE_KEY = 'smothered_progress';
+
+function toRo(san) {
+  const map = {K:'R',Q:'D',R:'T',B:'N',N:'C'};
+  return san.replace(/[KQRBN]/g, m => map[m]);
+}
+
+/* ── LECȚIE ── */
+const chapters = [
+  {
+    fen: '6rk/6pp/8/6N1/8/8/8/7K w - - 0 1',
+    san: ['Nf7#'],
+    ann: {
+      0: 'Albul mută. Regele negru pe h8 este sufocat — propriul turn pe g8 și proprii pioni pe g7 și h7 îi blochează toate câmpurile de fugă. <em>Încearcă: mută calul pe f7!</em>',
+      1: '<strong>Cf7#</strong> — Mat sufocat! Calul dă mat regelui prins între propriile piese. Regele nu poate captura calul — h8 este câmpul regelui, nu f7.'
+    },
+    arrows: {
+      0: [{from:'g5',to:'f7',color:'G'}],
+      1: []
+    },
+    interactive: true
+  },
+  {
+    fen: '6rk/6pp/6q1/6N1/8/7Q/6PP/6K1 w - - 0 1',
+    san: ['Qxh7+', 'Qxh7', 'Nf7#'],
+    ann: {
+      0: 'Albul mută. Regele negru pe h8 are h7 și g7 blocate de proprii pioni. Există un sacrificiu de regină care deschide calea pentru mat sufocat!',
+      1: '<strong>1.Dxh7+!</strong> — Sacrificiul spectaculos de regină! Regina albă capturează pionul h7 dând șah. Regina inamică este forțată să ia.',
+      2: '<strong>1...Dxh7</strong> — Regina neagră capturează pe h7. Acum h7 este blocat de propria regină — regele nu mai are nicio cale de fugă.',
+      3: '<strong>2.Cf7#</strong> — Mat sufocat! Calul vine pe f7. Regele pe h8 nu poate merge nicăieri: h7 blocat de propria regină, g8 blocat de turn, g7 blocat de pion.'
+    },
+    arrows: {
+      0: [{from:'h3',to:'h7',color:'G'}],
+      1: [{from:'g6',to:'h7',color:'R'}],
+      2: [{from:'g5',to:'f7',color:'G'}],
+      3: []
+    }
+  },
+  {
+    fen: '3r3k/1p1b1Qbp/1n2B1p1/p5N1/Pq6/8/1P4PP/R6K w - - 0 1',
+    san: ['Qg8+', 'Rxg8', 'Nf7#'],
+    ann: {
+      0: 'Albul mută. Regele negru pe h8 este înconjurat: nebun g7, pion h7, tur d8. Există un sacrificiu de regină care duce la mat sufocat în 2 mutări!',
+      1: '<strong>1.Dg8+!</strong> — Regina albă se sacrifică pe g8, forțând turnul negru să captureze pe g8.',
+      2: '<strong>1...Txg8</strong> — Turnul negru este forțat să captureze pe g8. Acum g8 blocat de turn, g7 de nebun, h7 de pion — regele complet sufocat.',
+      3: '<strong>2.Cf7#</strong> — Mat sufocat! Calul vine pe f7. Regele pe h8 nu poate merge nicăieri. Turnul, nebunul și pionul îi blochează orice fugă!'
+    },
+    arrows: {
+      0: [{from:'f7',to:'g8',color:'G'}],
+      1: [{from:'d8',to:'g8',color:'R'}],
+      2: [{from:'g5',to:'f7',color:'G'}],
+      3: []
+    }
+  },
+  {
+    fen: 'r1k4r/ppp1bq1p/2n1N3/6B1/3p2Q1/8/PPP2PPP/R5K1 w - - 0 1',
+    san: ['Nc5+', 'Qe6', 'Qxe6+', 'Kb8', 'Nd7+', 'Kc8', 'Nb6+', 'Kb8', 'Qc8+', 'Rxc8', 'Nd7#'],
+    ann: {
+      0:  'Albul mută. Regele negru pe c8 pare în siguranță, dar o combinație de 6 mutări duce la mat sufocat spectaculos. Calul albului va jongli, regina se va sacrifica!',
+      1:  '<strong>1.Cc5+!</strong> — Șah prin descoperire! Calul eliberează diagonala reginei albe (g4–f5–e6–d7–c8), dând șah regelui negru de la distanță.',
+      2:  '<strong>1...De6</strong> — Regina neagră blochează diagonala pe e6 pentru a para șahul. Este singura apărare rezonabilă.',
+      3:  '<strong>2.Dxe6+!</strong> — Regina albă capturează pe e6, continuând atacul pe diagonală spre c8. Regele e din nou în șah!',
+      4:  '<strong>2...Rb8</strong> — Regele se retrage la b8. Singura mutare.',
+      5:  '<strong>3.Cd7+!</strong> — Calul sare la d7, atacând regele pe b8 direct! (Calul de pe d7 controlează câmpul b8.)',
+      6:  '<strong>3...Rc8</strong> — Regele este forțat să se întoarcă la c8.',
+      7:  '<strong>4.Cb6+!</strong> — Calul sare la b6, atacând regele pe c8 direct! (Calul de pe b6 controlează câmpul c8.)',
+      8:  '<strong>4...Rb8</strong> — Regele se întoarce la b8. A parcurs un drum circular!',
+      9:  '<strong>5.Dc8+!</strong> — Al doilea sacrificiu de regină! Regina se aruncă pe c8, forțând turnul să captureze și să se apropie de rege.',
+      10: '<strong>5...Txc8</strong> — Turnul de pe h8 capturează regina pe c8, blocând câmpul c8.',
+      11: '<strong>6.Cd7#</strong> — Mat sufocat! Calul vine pe d7. Regele pe b8 nu poate fugi: a7 și b7 blocate de pioni proprii, c8 blocat de propriul turn, a8 blocat de propriul turn!'
+    },
+    arrows: {
+      0:  [{from:'e6',to:'c5',color:'G'},{from:'g4',to:'c8',color:'B'}],
+      1:  [{from:'f7',to:'e6',color:'R'}],
+      2:  [{from:'g4',to:'e6',color:'G'}],
+      3:  [{from:'c8',to:'b8',color:'R'}],
+      4:  [{from:'c5',to:'d7',color:'G'}],
+      5:  [{from:'b8',to:'c8',color:'R'}],
+      6:  [{from:'d7',to:'b6',color:'G'}],
+      7:  [{from:'c8',to:'b8',color:'R'}],
+      8:  [{from:'e6',to:'c8',color:'G'}],
+      9:  [{from:'a8',to:'c8',color:'R'}],
+      10: [{from:'b6',to:'d7',color:'G'}],
+      11: []
+    }
+  }
+];
+
+/* ── ARENĂ: 35 puzzle-uri de mat sufocat ── */
+const PUZZLES = [
+  /* 0-11 UȘOR */
+  {id:'NAyWn',fen:'r1b2rk1/p1p2pP1/2p5/3pP2Q/8/1nNB3P/PPP5/RKR5 b - - 0 24',sol:['b3d2'],turn:'b'},
+  {id:'MzScv',fen:'2kr1bnr/ppp3pp/5P2/3n1b2/5P2/P7/1PPNB1PP/R1BKN2R b - - 0 12',sol:['d5e3'],turn:'b'},
+  {id:'Qg8VA',fen:'1nkr3r/nppq4/8/5p1p/2NpP2N/P5P1/5P2/2RQ1RK1 w - - 0 26',sol:['c4b6'],turn:'w'},
+  {id:'rqDrj',fen:'2kr3r/Qppqb1pp/p1np1n2/1N6/2P1P3/8/PP3PPP/R1BR2K1 w - - 2 15',sol:['a7a8','c6b8','b5a7'],turn:'w'},
+  {id:'Lmhzo',fen:'2r1k2r/3bbpp1/p2ppP1p/7P/1n1NP3/4BP2/1PPQ4/qNKR1B1R b k - 2 17',sol:['b4a2'],turn:'b'},
+  {id:'DfaEZ',fen:'1r2k2r/4bppp/p2ppP2/q1p3B1/1nP3PP/2N2N2/1PPQ1P2/2KR3R b k - 0 17',sol:['a5a1','c3b1','b4a2'],turn:'b'},
+  {id:'47ccU',fen:'r1b1n1kr/pp3ppp/6n1/q4N2/2p5/P1P3B1/2P2PPP/2KRR3 w - - 0 18',sol:['e1e8','g6f8','f5e7'],turn:'w'},
+  {id:'EuraP',fen:'4rknr/p3bpp1/4pN1p/q7/2p1N1bB/2PP4/PP3PPP/R3K2R w KQ - 0 17',sol:['f6d7'],turn:'w'},
+  {id:'z480G',fen:'rq6/kp2r2p/pn4b1/8/R7/2N1Q2P/PPP3P1/7K w - - 0 37',sol:['c3b5'],turn:'w'},
+  {id:'33LPf',fen:'r4rk1/ppp2ppp/5b2/q2n1b2/1P1P1p2/PB3N2/KP2Q1PP/RNB4R b - - 0 16',sol:['d5b4'],turn:'b'},
+  {id:'UpzI0',fen:'r2Qr1k1/pp3pbp/5np1/4n3/2P1p3/1P2B1P1/P4PNP/R4RKB b - - 0 17',sol:['e5f3'],turn:'b'},
+  {id:'UJrQg',fen:'1b1r2r1/5qk1/p6R/1p1Q1p2/2pP4/2Pn4/PP1B2BP/6RK b - - 0 36',sol:['d3f2'],turn:'b'},
+  /* 12-23 MEDIU */
+  {id:'qxYWM',fen:'r6r/5kp1/2p1pn2/ppPp1p2/3Pn3/4P1PP/PP1BR1BK/6RQ b - - 0 27',sol:['f6g4'],turn:'b'},
+  {id:'YQRBI',fen:'rn2k2r/pp3ppp/2p1p3/4b2q/4N1n1/3P1N2/PPPBBPP1/R2QRK2 b kq - 5 13',sol:['h5h1','f3g1','g4h2'],turn:'b'},
+  {id:'oM5yG',fen:'r2qkb1r/pp1npppp/2p2nb1/8/3PN3/3B1N2/PPP1QPPP/R1B1K2R w KQkq - 7 8',sol:['e4d6'],turn:'w'},
+  {id:'up8Dh',fen:'3rkb1r/1p1bpp1p/p2B1np1/3N4/1P1q4/4P1N1/P4PPP/2R2RK1 w k - 0 16',sol:['d5c7'],turn:'w'},
+  {id:'itZ8B',fen:'r1bqr1k1/p1p2ppp/3b1p2/1P2n3/1P6/P2P1N2/3BPPPP/R2QKB1R b KQ - 2 12',sol:['e5d3'],turn:'b'},
+  {id:'G0FeK',fen:'2kr3r/ppp2ppp/2n1p3/7q/2PP2n1/2N1B1b1/PP2BPP1/R2QRKN1 b - - 5 14',sol:['g4h2'],turn:'b'},
+  {id:'eVh1x',fen:'1r4k1/5p1p/2p1bPpQ/2n1p3/p3P2P/PqN5/1P3P2/KR5R b - - 10 31',sol:['b3a2','c3a2','c5b3'],turn:'b'},
+  {id:'IU7wQ',fen:'r4rk1/ppp2p1p/3p4/4pp1n/7q/P1BP3P/1PPNB1n1/R1QK2R1 b - - 1 18',sol:['h4e1','g1e1','g2e3'],turn:'b'},
+  {id:'8cgH7',fen:'1nkr4/pppr1p2/2N3bp/1P6/4P3/P1q3P1/5PBP/1RR3K1 w - - 0 24',sol:['c6a7'],turn:'w'},
+  {id:'Sz9cE',fen:'rk5r/ppp2ppp/8/2N5/3P4/qP5Q/P1P2P1P/R3K2b w Q - 5 20',sol:['c5d7','b8c8','d7b6','c8b8','h3c8','h8c8','b6d7'],turn:'w'},
+  {id:'xet7i',fen:'1r4k1/4b1pp/p2p1P2/2rP4/3Q3P/n1B2P1B/PPq5/K2R2R1 b - - 0 29',sol:['c2b1','d1b1','a3c2'],turn:'b'},
+  {id:'qzuCI',fen:'r1b1r1k1/4qpp1/p3pn2/3p2N1/1ppP1P1Q/2P1R3/PP3PPP/2K4R w - - 0 20',sol:['e3h3','g8f8','h4h8','f6g8','g5h7'],turn:'w'},
+  /* 24-34 AVANSAT */
+  {id:'wEtqo',fen:'1r6/kp6/pN5p/1nQp4/8/q7/5PPP/2R4K w - - 3 34',sol:['b6c8','a7a8','c5a7','b5a7','c8b6'],turn:'w'},
+  {id:'wOFJ0',fen:'4Rrk1/p5p1/Pp1p2q1/2pP4/2P2n1p/2P2b2/3Q1PPP/R4BKN b - - 0 29',sol:['f4h3'],turn:'b'},
+  {id:'cAqzu',fen:'5k1r/p3q1pp/1bQ2p2/8/3P1nb1/2P2N2/PP1N1PPP/R1B2K1R b - - 0 17',sol:['e7e2','f1g1','e2d1','f3e1','d1e1','d2f1','f4e2'],turn:'b'},
+  {id:'qbi5t',fen:'r5k1/1p2n1bp/P2p3r/3Pp2n/P3PN2/2N2Ppq/7P/R2QRBBK b - - 0 25',sol:['g3g2','f4g2','h5g3'],turn:'b'},
+  {id:'125yA',fen:'2kr4/pppq1ppp/8/2Q1p2b/2B1P3/5n2/PPP1N2P/R1K4R b - - 0 17',sol:['d7d2','c1b1','d2d1','h1d1','d8d1','e2c1','f3d2'],turn:'b'},
+  {id:'sSUpN',fen:'1r3r1k/Q2R2pp/2p5/4P3/2P1n3/3B4/P5PP/7K b - - 2 25',sol:['b8b1','d3b1','f8f1','a7g1','e4f2'],turn:'b'},
+  {id:'0Di6g',fen:'2rqkbQ1/1p1bn2N/2n5/1pp2r2/3p4/3P4/PPP2PPP/R3R1K1 w - - 2 18',sol:['g8g6','f5f7','h7f6'],turn:'w'},
+  {id:'sDPAo',fen:'1k1r2nr/pp1nb2p/6p1/3N1q2/1P3p2/B1Q5/P2P2PP/2R2R1K w - - 6 18',sol:['c3c7','b8a8','c7c8','d8c8','c1c8','d7b8','d5c7'],turn:'w'},
+  {id:'IBQWF',fen:'6rk/2q1rpbp/p4np1/1pp1p1N1/4P2N/3P3Q/PPP3PP/R4R1K w - - 2 25',sol:['g5f7','e7f7','h4g6'],turn:'w'},
+  {id:'OYRcO',fen:'r2qkn1r/pp1bpp2/5n2/1B2pN1p/6p1/8/PPP2PPP/R1BQR1K1 w kq - 0 15',sol:['f5g7'],turn:'w'},
+  {id:'5teid',fen:'r4rk1/1b4pp/4p1p1/4N3/P1B1nP2/7Q/1P1q3P/2R3K1 w - - 3 33',sol:['h3e6','f8f7','e6f7','g8h8','f7g8','a8g8','e5f7'],turn:'w'},
+];
+
+/* ── STARE GLOBALĂ ── */
+let mode = 'lecture';
+let chess = null;
+let board;
+let curChapterIdx = 0, positions = [];
+let interactiveSolved = false;
+let selSq = null, rmbDown = false;
+let curIdx = 0, solved = false, phase = 'waiting', solIdx = 0;
+let moveHistory = [], viewIdx = 0, autoPlayTimer = null;
+let completed = {};
+let muted = (()=>{ try{return localStorage.getItem('arena_muted')==='1';}catch(e){return false;} })();
+let activeExBtn = null;
+
+function toggleVol(){ muted=!muted; try{localStorage.setItem('arena_muted',muted?'1':'0');}catch(e){} const b=document.getElementById('volBtn'); if(b)b.innerHTML=muted?'&#128263;':'&#128266;'; }
+function levelOf(idx){ if(idx<12)return 0; if(idx<24)return 1; return 2; }
+const LEVEL_LABELS=['UȘOR','MEDIU','AVANSAT'], LEVEL_CLASSES=['','med','hard'];
+const SND={ move:new Audio('Sounds/Move.mp3'), capture:new Audio('Sounds/Capture.mp3'), mate:new Audio('Sounds/Mate.mp3') };
+function playMoveSound(cap){ if(muted)return; try{const s=cap?SND.capture:SND.move;s.currentTime=0;s.play();}catch(e){} }
+function playWin(){ if(muted)return; try{SND.mate.currentTime=0;SND.mate.play();}catch(e){} }
+function playWrong(){ if(muted)return; try{ const ctx=new(window.AudioContext||window.webkitAudioContext)(),osc=ctx.createOscillator(),g=ctx.createGain(); osc.connect(g);g.connect(ctx.destination); osc.type='sine'; osc.frequency.setValueAtTime(380,ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(180,ctx.currentTime+0.28); g.gain.setValueAtTime(0.22,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.28); osc.start();osc.stop(ctx.currentTime+0.28); }catch(e){} }
+function shakeBoard(){ const bw=document.getElementById('boardWrapper'); bw.classList.remove('board-shake'); void bw.offsetWidth; bw.classList.add('board-shake'); bw.addEventListener('animationend',()=>bw.classList.remove('board-shake'),{once:true}); }
+function celebrate(){ confetti({particleCount:80,spread:60,origin:{y:0.60}}); }
+function debounce(fn,d){ let t; return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),d);}; }
+
+document.addEventListener('mousedown',e=>{if(e.button===2)rmbDown=true;},true);
+document.addEventListener('mouseup',  e=>{if(e.button===2)rmbDown=false;},true);
+
+function clearSel(){ document.querySelectorAll('.square-selected,.highlight-check').forEach(el=>el.classList.remove('square-selected','highlight-check')); selSq=null; }
+function clearHL(){ document.querySelectorAll('.square-selected,.highlight-check,.last-move-from,.last-move-to').forEach(el=>el.classList.remove('square-selected','highlight-check','last-move-from','last-move-to')); }
+function applyHL(sq,cls){ const el=document.querySelector('.square-'+sq); if(el)el.classList.add(cls); }
+function setLastMoveHL(f,t){ document.querySelectorAll('.last-move-from,.last-move-to').forEach(el=>el.classList.remove('last-move-from','last-move-to')); applyHL(f,'last-move-from'); applyHL(t,'last-move-to'); }
+
+/* ════════════════ LECȚIE ════════════════ */
+
+function computePositions(ch) {
+  const c=new Chess(ch.fen); const fens=[c.fen()];
+  for(const mv of ch.san){ const r=c.move(mv); if(!r){console.error('Invalid SAN:',mv,c.fen());break;} fens.push(c.fen()); }
+  return fens;
+}
+
+function loadChapter(idx) {
+  curChapterIdx=idx; const ch=chapters[idx];
+  interactiveSolved=false;
+  if(idx===0){
+    positions=[ch.fen];
+    chess=new Chess(ch.fen);
+  } else {
+    positions=computePositions(ch);
+    chess=null;
+  }
+  const t=ch.fen.split(' ')[1];
+  board.orientation(ch.orient||(t==='b'?'black':'white'));
+  buildMovesList(); goToStep(0);
+}
+
+function goToStep(s) {
+  clearSel(); if(window._annClear)window._annClear();
+  document.getElementById('moveCounter').dataset.step=s;
+  board.position(positions[s],false); redrawArrows(curChapterIdx,s); updateUI(s);
+  const cg=new Chess(positions[s]);
+  if(cg.in_checkmate()){ const t=cg.turn(); cg.board().forEach((row,ri)=>row.forEach((pc,ci)=>{ if(pc&&pc.type==='k'&&pc.color===t) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check'); })); }
+}
+
+function goFirst(){ goToStep(0); }
+function goLast(){  goToStep(positions.length-1); }
+function goPrev(){  const s=currentStep(); if(s>0)goToStep(s-1); }
+function goNext(){  const s=currentStep(); if(s<positions.length-1)goToStep(s+1); }
+function currentStep(){ return parseInt(document.getElementById('moveCounter').dataset.step||'0'); }
+
+function getMoveLabel(s) {
+  if(s===0) return 'Start';
+  const parts=positions[s-1].split(' '), turn=parts[1], mn=parts[5], san=chapters[curChapterIdx].san[s-1];
+  return turn==='w' ? mn+'. '+toRo(san) : mn+'... '+toRo(san);
+}
+
+function updateUI(s) {
+  const total=positions.length-1, mc=document.getElementById('moveCounter');
+  mc.textContent=getMoveLabel(s); mc.dataset.step=s;
+  document.getElementById('btnFirst').disabled=s===0;
+  document.getElementById('btnPrev').disabled=s===0;
+  document.getElementById('btnNext').disabled=s===total;
+  document.getElementById('btnLast').disabled=s===total;
+  document.querySelectorAll('.mlog-token').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.step)===s));
+  const act=document.querySelector('.mlog-token.active'); if(act)act.scrollIntoView({block:'nearest',behavior:'smooth'});
+  const box=document.getElementById('annotationBox'), ch=chapters[curChapterIdx];
+  const txt=(ch.ann&&ch.ann[s]!==undefined)?ch.ann[s]:'';
+  box.className='annotation-box';
+  box.innerHTML=txt||(s===0?'<em style="opacity:.55">Apasă &#9654; pentru a avansa.</em>':'');
+}
+
+function createMoveBtn(san,step,cls) {
+  const btn=document.createElement('button'); btn.className='mlog-token '+cls;
+  btn.textContent=toRo(san); btn.dataset.step=step; btn.onclick=()=>goToStep(step); return btn;
+}
+
+function buildMovesList() {
+  const ch=chapters[curChapterIdx], log=document.getElementById('movesLog'); log.innerHTML='';
+  const total=Math.min(ch.san.length, positions.length-1); if(!total)return; let i=0;
+  while(i<total){
+    const preFen=positions[i], parts=preFen.split(' '), turn=parts[1], mn=parts[5];
+    const row=document.createElement('div'); row.className='mlog-row';
+    const ns=document.createElement('span'); ns.className='mlog-num'; ns.textContent=mn+'.'; row.appendChild(ns);
+    if(turn==='b'){
+      const plh=document.createElement('span'); plh.className='mlog-token mlog-w'; plh.textContent='…';
+      plh.style.cssText='opacity:0.28;cursor:default;pointer-events:none;'; row.appendChild(plh);
+      row.appendChild(createMoveBtn(ch.san[i],i+1,'mlog-b')); i++;
+    } else {
+      row.appendChild(createMoveBtn(ch.san[i],i+1,'mlog-w')); i++;
+      if(i<total){ row.appendChild(createMoveBtn(ch.san[i],i+1,'mlog-b')); i++; }
+    }
+    log.appendChild(row);
+  }
+}
+
+function handleInteractiveMate() {
+  interactiveSolved=true;
+  positions=[positions[0], chess.fen()];
+  buildMovesList();
+  celebrate(); setTimeout(playWin,250);
+  goToStep(1);
+}
+
+function clearStudyArrows(){ const ex=document.getElementById('study-arrows-svg'); if(ex)ex.remove(); }
+
+function redrawArrows(chIdx,step) {
+  clearStudyArrows();
+  const ch=chapters[chIdx], arrows=ch.arrows&&ch.arrows[step];
+  if(!arrows||!arrows.length)return;
+  const NS='http://www.w3.org/2000/svg', bw=document.getElementById('boardWrapper'); if(!bw)return;
+  const ori=board.orientation(), tlName=ori==='white'?'a8':'h1', tlSq=bw.querySelector('[data-square="'+tlName+'"]');
+  let sqSz,svgX=0,svgY=0;
+  if(tlSq){ sqSz=tlSq.offsetWidth; const br=bw.getBoundingClientRect(),tr=tlSq.getBoundingClientRect(); svgX=Math.round(tr.left-br.left); svgY=Math.round(tr.top-br.top); }
+  else sqSz=bw.offsetWidth/8;
+  const sz=sqSz*8, svg=document.createElementNS(NS,'svg');
+  svg.id='study-arrows-svg'; svg.style.cssText='position:absolute;pointer-events:none;z-index:20;';
+  svg.style.left=svgX+'px'; svg.style.top=svgY+'px'; svg.style.width=sz+'px'; svg.style.height=sz+'px';
+  const defs=document.createElementNS(NS,'defs'); svg.appendChild(defs);
+  const COL={G:'rgba(60,190,80,0.85)',R:'rgba(220,55,55,0.85)',B:'rgba(50,130,210,0.85)',Y:'rgba(215,165,20,0.85)'};
+  function sqC(sq){ let c=sq.charCodeAt(0)-97,r=parseInt(sq[1])-1; if(ori==='black'){c=7-c;r=7-r;} const s=sz/8; return{x:c*s+s/2,y:(7-r)*s+s/2}; }
+  const SW=5;
+  arrows.forEach((arr,i)=>{
+    if(arr.from===arr.to)return;
+    const col=COL[arr.color]||COL.G, mid='sarr'+i;
+    const mk=document.createElementNS(NS,'marker'); mk.setAttribute('id',mid); mk.setAttribute('markerWidth','10'); mk.setAttribute('markerHeight','7'); mk.setAttribute('refX','8'); mk.setAttribute('refY','3.5'); mk.setAttribute('orient','auto');
+    const mp=document.createElementNS(NS,'path'); mp.setAttribute('d','M0,0 L9,3.5 L0,7 L2.5,3.5 Z'); mp.setAttribute('fill',col); mk.appendChild(mp); defs.appendChild(mk);
+    const f=sqC(arr.from),t=sqC(arr.to),dx=t.x-f.x,dy=t.y-f.y,len=Math.sqrt(dx*dx+dy*dy); if(len<1)return;
+    const ux=dx/len,uy=dy/len, ln=document.createElementNS(NS,'line');
+    ln.setAttribute('x1',f.x); ln.setAttribute('y1',f.y); ln.setAttribute('x2',t.x-ux*SW); ln.setAttribute('y2',t.y-uy*SW);
+    ln.setAttribute('stroke',col); ln.setAttribute('stroke-width',String(SW)); ln.setAttribute('stroke-linecap','round'); ln.setAttribute('marker-end','url(#'+mid+')');
+    svg.appendChild(ln);
+  });
+  bw.appendChild(svg);
+}
+
+document.addEventListener('keydown',e=>{
+  if(mode!=='lecture')return;
+  if(e.key==='ArrowRight')goNext(); if(e.key==='ArrowLeft')goPrev();
+  if(e.key==='Home')goFirst();     if(e.key==='End')goLast();
+});
+
+const matTypes = [
+  { num:'1.', title:'Tiparul de bază',
+    desc:'Un cal dă mat regelui sufocat de propriile piese. Descoperă singur mișcarea decisivă!',
+    examples:[{ch:0,label:'Ex. bază'}]
+  },
+  { num:'2.', title:'Sacrificiul de regină',
+    desc:'Matul sufocat este adesea precedat de un sacrificiu spectacular de regină care aduce o piesă proprie lângă rege, blocând ultima cale de scăpare.',
+    examples:[{ch:1,label:'Ex. 1'},{ch:2,label:'Ex. 2'},{ch:3,label:'Ex. 3'}]
+  }
+];
+
+function buildAccordion() {
+  const list=document.getElementById('accList'); if(!list)return;
+  matTypes.forEach(type=>{
+    const item=document.createElement('div'); item.className='acc-item';
+    const hdr=document.createElement('div'); hdr.className='acc-header';
+    hdr.innerHTML='<span class="acc-num">'+type.num+'</span><span class="acc-title">'+type.title+'</span><span class="acc-chevron">&#9658;</span>';
+    const body=document.createElement('div'); body.className='acc-body';
+    const inner=document.createElement('div'); inner.className='acc-inner';
+    let html='<p class="acc-desc">'+type.desc+'</p><div class="acc-examples">';
+    type.examples.forEach(ex=>{ html+='<button class="ex-btn" data-ch="'+ex.ch+'" onclick="loadExAcc(this,'+ex.ch+')">'+ex.label+'</button>'; });
+    html+='</div>'; inner.innerHTML=html; body.appendChild(inner);
+    item.appendChild(hdr); item.appendChild(body); list.appendChild(item);
+    hdr.addEventListener('click',()=>item.classList.contains('open')?closeAcc(item):openAcc(item));
+  });
+}
+
+function openAcc(item) {
+  document.querySelectorAll('#accList .acc-item.open').forEach(o=>{ if(o!==item)closeAcc(o,true); });
+  item.classList.add('open'); item.querySelector('.acc-body').style.maxHeight='600px';
+  document.getElementById('navControls').style.display='';
+}
+function closeAcc(item,keep) {
+  item.classList.remove('open'); item.querySelector('.acc-body').style.maxHeight='0';
+  if(!keep){ document.getElementById('navControls').style.display='none'; }
+}
+function loadExAcc(btn,chIdx) {
+  if(activeExBtn)activeExBtn.classList.remove('active');
+  activeExBtn=btn; btn.classList.add('active'); loadChapter(chIdx);
+}
+
+/* ════════════════ ARENĂ ════════════════ */
+
+function setMsg(type,text){ const el=document.getElementById('taskMsg'); el.className='task-msg '+type; el.innerHTML=text; }
+function idleMsg(){ setMsg('idle','Găsește matul sufocat!'); }
+function contMsg(){ setMsg('idle','&#127919; Continuă secvența!'); }
+
+function updateProgress(){ const n=Object.keys(completed).length; document.getElementById('progressFill').style.width=(n/PUZZLES.length*100)+'%'; const o=document.getElementById('progressOuter'); if(o)o.setAttribute('data-tip',n+' / '+PUZZLES.length+' rezolvate'); }
+function saveProgress(){ try{localStorage.setItem(SAVE_KEY,JSON.stringify({idx:curIdx,done:completed}));}catch(e){} }
+function loadSavedProgress(){ try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null'); if(d){completed=d.done||{};return typeof d.idx==='number'?d.idx:0;}}catch(e){} return 0; }
+
+function updateArenaBtn() {
+  try{
+    const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null'), done=d?Object.keys(d.done||{}).length:0;
+    const ab=document.getElementById('arenaBtn'),cb=document.getElementById('continueBtn'),rb=document.getElementById('resetAllBtn');
+    if(!ab)return;
+    const allDone=done>=PUZZLES.length;
+    if(done>0){
+      ab.textContent='\u{1F3AF} Arenă Matul Sufocat ('+done+'/'+PUZZLES.length+' rezolvate)';
+      if(cb){ if(allDone){cb.style.display='none';}else{const max=Math.max(...Object.keys(d.done).map(Number));cb.textContent='▶ Continuă de la #'+(Math.min(max+1,PUZZLES.length-1)+1);cb.style.display='flex';} }
+      if(rb)rb.style.display='flex';
+    }else{
+      ab.textContent='\u{1F3AF} Arenă Matul Sufocat →';
+      if(cb)cb.style.display='none'; if(rb)rb.style.display='none';
+    }
+  }catch(e){}
+}
+
+function resetAllProgress(){ try{localStorage.removeItem(SAVE_KEY);}catch(e){} completed={}; updateArenaBtn(); enterArena(0); }
+
+function updatePuzzleUI() {
+  const p=PUZZLES[curIdx], badge=document.getElementById('turnBadge');
+  if(p.turn==='w'){badge.textContent='⬜ Albul mută';badge.className='turn-badge white';}
+  else{badge.textContent='⬛ Negrul mută';badge.className='turn-badge black';}
+  const lv=levelOf(curIdx), lb=document.getElementById('levelBadge'); lb.textContent=LEVEL_LABELS[lv]; lb.className='level-badge '+LEVEL_CLASSES[lv];
+  document.getElementById('prevBtn').disabled=(curIdx===0);
+  document.getElementById('nextBtn').disabled=true;
+}
+
+function loadPuzzle(idx) {
+  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
+  curIdx=idx; solved=false; selSq=null; phase='waiting'; solIdx=0; moveHistory=[]; viewIdx=0;
+  const np=document.getElementById('nextPageBtn'); if(np)np.style.display='none';
+  if(window._annClear)window._annClear();
+  chess=new Chess(PUZZLES[idx].fen);
+  board.position(PUZZLES[idx].fen,false);
+  board.orientation(PUZZLES[idx].turn==='w'?'white':'black');
+  clearHL(); updatePuzzleUI(); updateProgress(); updateNavBtns(); saveProgress();
+  if(completed[idx]){setMsg('ok','✅ Deja rezolvat — poți încerca din nou!');document.getElementById('nextBtn').disabled=(curIdx===PUZZLES.length-1);}
+  else idleMsg();
+}
+
+function tryMove(from,to) {
+  if(solved||phase!=='waiting')return'snapback';
+  const expected=PUZZLES[curIdx].sol[solIdx]; if(!expected)return'snapback';
+  if(from!==expected.slice(0,2)||to!==expected.slice(2,4)){ playWrong();shakeBoard(); setMsg('err','❌ Nu este mutarea corectă — mai încearcă!'); setTimeout(solIdx===0?idleMsg:contMsg,1400); return'snapback'; }
+  const prom=expected.length===5?expected[4]:'q', move=chess.move({from,to,promotion:prom}); if(!move)return'snapback';
+  playMoveSound(!!move.captured); board.position(chess.fen(),true); recordMove(from,to); setLastMoveHL(from,to); selSq=null; solIdx++;
+  if(solIdx>=PUZZLES[curIdx].sol.length){finishPuzzle();return undefined;}
+  phase='computer'; setMsg('idle','⏳ Adversarul răspunde...'); setTimeout(playComputerMove,700); return undefined;
+}
+
+function playComputerMove() {
+  const uci=PUZZLES[curIdx].sol[solIdx], prom=uci.length===5?uci[4]:'q';
+  const cm=chess.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:prom});
+  if(cm){playMoveSound(!!cm.captured);board.position(chess.fen(),true);recordMove(uci.slice(0,2),uci.slice(2,4));setLastMoveHL(uci.slice(0,2),uci.slice(2,4));}
+  solIdx++; if(solIdx>=PUZZLES[curIdx].sol.length){finishPuzzle();return;} phase='waiting'; contMsg();
+}
+
+function finishPuzzle() {
+  solved=true; phase='done'; completed[curIdx]=true; updateProgress(); saveProgress();
+  celebrate(); setTimeout(playWin,250);
+  setMsg('ok','✅ Excelent! Mat sufocat!'); document.getElementById('nextBtn').disabled=(curIdx===PUZZLES.length-1);
+  if(Object.keys(completed).length>=PUZZLES.length){
+    const np=document.getElementById('nextPageBtn'); if(np)np.style.display='flex';
+  }
+}
+
+function recordMove(f,t){ moveHistory.push({from:f,to:t,prom:'q'}); viewIdx=moveHistory.length; updateNavBtns(); }
+function replayToPos(idx){ const pz=PUZZLES[curIdx],temp=new Chess(pz.fen); for(let i=0;i<idx;i++){const m=moveHistory[i];temp.move({from:m.from,to:m.to,promotion:m.prom});} board.position(temp.fen(),false); clearHL(); if(idx>0&&moveHistory[idx-1]){const lm=moveHistory[idx-1];applyHL(lm.from,'last-move-from');applyHL(lm.to,'last-move-to');} }
+function stepBack(){ if(viewIdx<=0)return; viewIdx--;replayToPos(viewIdx);updateNavBtns(); }
+function stepForward(){ if(viewIdx>=moveHistory.length)return; viewIdx++;replayToPos(viewIdx);updateNavBtns(); }
+function updateNavBtns(){ const bb=document.getElementById('stepBackBtn'),fb=document.getElementById('stepFwdBtn'); if(bb)bb.disabled=viewIdx<=0; if(fb)fb.disabled=viewIdx>=moveHistory.length; }
+function showHint(){ if(phase!=='waiting'||solved)return; if(viewIdx<moveHistory.length)return; clearHL(); applyHL(PUZZLES[curIdx].sol[solIdx].slice(0,2),'hint-square'); }
+function showSolution() {
+  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
+  const pz=PUZZLES[curIdx]; moveHistory=pz.sol.map(u=>({from:u.slice(0,2),to:u.slice(2,4),prom:u.length===5?u[4]:'q'}));
+  chess=new Chess(pz.fen); viewIdx=0; board.position(pz.fen,false); clearHL(); updateNavBtns(); autoPlaySol();
+}
+function autoPlaySol(){ if(viewIdx>=moveHistory.length)return; viewIdx++;replayToPos(viewIdx);updateNavBtns(); if(viewIdx<moveHistory.length)autoPlayTimer=setTimeout(autoPlaySol,800); }
+function prevPuzzle(){ if(curIdx>0)loadPuzzle(curIdx-1); }
+function nextPuzzle(){ if(curIdx<PUZZLES.length-1)loadPuzzle(curIdx+1); }
+function resetPuzzle(){ loadPuzzle(curIdx); }
+
+function enterArena(idx) {
+  mode='puzzle'; chess=null;
+  document.getElementById('lectureView').style.display='none';
+  document.getElementById('puzzleView').style.display='block';
+  document.getElementById('arenaBackBtn').style.display='block';
+  clearStudyArrows(); loadPuzzle(idx);
+}
+function startArena(){ loadSavedProgress(); enterArena(0); }
+function continueArena() {
+  loadSavedProgress(); const keys=Object.keys(completed).map(Number); const max=keys.length?Math.max(...keys):-1;
+  const next=Math.min(max+1,PUZZLES.length-1);
+  if(mode==='puzzle') loadPuzzle(next); else enterArena(next);
+}
+function backToLecture() {
+  mode='lecture';
+  document.getElementById('lectureView').style.display='';
+  document.getElementById('puzzleView').style.display='none';
+  document.getElementById('arenaBackBtn').style.display='none';
+  updateArenaBtn(); if(window._annClear)window._annClear(); clearHL(); clearStudyArrows();
+  if(curChapterIdx===0){ chess=new Chess(chapters[0].fen); interactiveSolved=false; }
+  else chess=null;
+  board.orientation('white');
+  const step=currentStep();
+  board.position(positions[step]||chapters[0].fen,false);
+  redrawArrows(curChapterIdx,step);
+}
+
+/* ════════════════ BOARD EVENTS ════════════════ */
+
+function onDragStart(source,piece) {
+  if(rmbDown)return false;
+  if(mode==='puzzle'){
+    if(phase!=='waiting'||viewIdx<moveHistory.length||solved)return false;
+    if(!chess||piece[0]!==chess.turn())return false;
+    return true;
+  }
+  if(curChapterIdx===0&&!interactiveSolved&&currentStep()===0){
+    if(!chess||piece[0]!=='w')return false;
+    return true;
+  }
+  clearSel(); return true;
+}
+
+function onDrop(source,target) {
+  if(target==='offboard'||source===target)return'snapback';
+  if(mode==='puzzle'){ clearHL(); selSq=null; return tryMove(source,target); }
+  if(curChapterIdx===0&&!interactiveSolved&&currentStep()===0&&chess){
+    clearSel();
+    const move=chess.move({from:source,to:target,promotion:'q'});
+    if(!move){ shakeBoard(); return'snapback'; }
+    if(!chess.in_checkmate()){ chess.undo(); shakeBoard(); return'snapback'; }
+    board.position(chess.fen(),false);
+    handleInteractiveMate();
+    return undefined;
+  }
+  return undefined;
+}
+
+function onSnapEnd(){
+  if(mode==='puzzle'&&chess) board.position(chess.fen());
+}
+
+$(document).on('click','.square-55d63',function(e){
+  if(e.button!==0)return;
+  if(mode==='puzzle'){
+    if(phase!=='waiting')return; if(viewIdx<moveHistory.length)return; if(solved)return;
+    const sq=$(this).data('square'), piece=chess&&chess.get(sq), mc=chess&&chess.turn();
+    if(selSq){ const p=selSq; clearHL();selSq=null; if(sq===p)return; if(piece&&piece.color===mc){selSq=sq;applyHL(sq,'square-selected');}else tryMove(p,sq); }
+    else{ if(!piece||piece.color!==mc)return; selSq=sq;applyHL(sq,'square-selected'); }
+    return;
+  }
+  if(curChapterIdx===0&&!interactiveSolved&&currentStep()===0&&chess){
+    const sq=$(this).data('square'), piece=chess.get(sq), mc=chess.turn();
+    if(selSq){
+      const p=selSq; clearSel();
+      if(sq===p)return;
+      if(piece&&piece.color===mc){ selSq=sq; applyHL(sq,'square-selected'); }
+      else {
+        const move=chess.move({from:p,to:sq,promotion:'q'});
+        if(!move){ shakeBoard(); return; }
+        if(!chess.in_checkmate()){ chess.undo(); shakeBoard(); return; }
+        board.position(chess.fen(),false);
+        handleInteractiveMate();
+      }
+    } else {
+      if(!piece||piece.color!==mc)return;
+      selSq=sq; applyHL(sq,'square-selected');
+    }
+    return;
+  }
+  const sq=$(this).data('square'), pos=board.position();
+  if(selSq){ const p=selSq; clearSel(); if(sq!==p&&pos[p]){pos[sq]=pos[p];delete pos[p];board.position(pos,false);} }
+  else{ if(pos[sq]){selSq=sq;const el=document.querySelector('.square-'+sq);if(el)el.classList.add('square-selected');} }
+});
+
+/* ════════════════ INIT ════════════════ */
+
+board=Chessboard('board',{
+  position:chapters[0].fen,
+  pieceTheme:PIECE_THEME,
+  draggable:true,
+  orientation:'white',
+  onDragStart,onDrop,onSnapEnd
+});
+
+window.addEventListener('resize',debounce(()=>{
+  board.resize();
+  if(mode==='lecture') redrawArrows(curChapterIdx,currentStep());
+  if(window._annRender)window._annRender();
+},150));
+
+$(document).ready(()=>{
+  buildAccordion();
+  loadChapter(0);
+  updateArenaBtn();
+  const vb=document.getElementById('volBtn'); if(vb)vb.innerHTML=muted?'&#128263;':'&#128266;';
+});
+</script>
+<script src="board-utils.js"></script>
+</body>
+</html>
