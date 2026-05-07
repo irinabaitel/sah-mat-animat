@@ -148,7 +148,7 @@
               <li>Câștigai material prin legătură!</li>
             </ul>
             <p style="margin-top:8px; font-size:0.88em; opacity:0.75;">
-              40 puzzle-uri · 3 niveluri de dificultate (Ușor → Mediu → Greu)
+              38 puzzle-uri · 3 niveluri de dificultate (Ușor → Mediu → Greu)
             </p>
           </div>
 
@@ -159,7 +159,7 @@
           </button>
           <button class="btn-arena" id="resetAllBtn" onclick="resetAllProgress()"
                   style="display:none; margin-top:8px; background:rgba(192,57,43,0.82);">
-            &#8634; Joacă din nou (resetează tot)
+            &#8634; Resetează progresul
           </button>
         </div>
 
@@ -255,11 +255,9 @@ const PUZZLES = [
   { fen:"6k1/pppr2pp/5p2/3N1n2/6RP/8/P4KP1/8 w - - 4 32", sol:["d5f6", "g8f8", "f6d7"], turn:"w", lvl:1 },  /* 1nECw */
   { fen:"r4k2/4pq1p/p2pbbp1/1pnP4/4P3/5Q1P/PP3PP1/2R2RK1 w - - 0 23", sol:["d5e6", "f7e6", "e4e5"], turn:"w", lvl:1 },  /* bOyCt */
   { fen:"2r5/pp1k4/1q2p3/3p4/3P2PP/b4P2/PP2N3/1KBR3R b - - 4 32", sol:["c8c1", "b1c1", "b6b2"], turn:"b", lvl:1 },  /* DNHHI */
-  { fen:"3r2k1/pb2brp1/4p1QB/1p3q2/2p1N3/2P5/PPB2PPP/R5K1 w - - 5 25", sol:["e4f6", "e7f6", "c2f5"], turn:"w", lvl:1 },  /* ljTTG */
   { fen:"5r1k/3pb2p/p3p1B1/4P2Q/5q2/np3N1P/5PPK/8 w - - 3 29", sol:["g2g3", "f4f7", "g6f7"], turn:"w", lvl:1 },  /* hIts6 */
   { fen:"6k1/1p5p/p4bp1/2p5/2P2P2/6P1/PP3Q1P/3qN1K1 b - - 0 31", sol:["f6d4", "g1g2", "d4f2"], turn:"b", lvl:1 },  /* kjtP9 */
   { fen:"1k5r/2R3p1/Bp6/3b4/1P1Q1P1r/P3p2P/6P1/7K b - - 0 31", sol:["h4h3", "h1g1", "h3h1"], turn:"b", lvl:1 },  /* aHrlX */
-  { fen:"r3r2k/ppp2p1p/5p2/n6Q/2PP3N/7q/P1P2P2/R4RK1 w - - 2 19", sol:["h4g6", "f7g6", "h5h3"], turn:"w", lvl:1 },  /* S16Fw */
 
   /* ── GREU (3 mutări) ── */
   { fen:"8/ppp3p1/7p/7k/4r3/2Pr2PK/PP5N/4RR2 b - - 2 33", sol:["e4h4", "h3g2", "d3d2", "g2f3", "h4h2"], turn:"b", lvl:2 },  /* Dgdgu */
@@ -412,7 +410,7 @@ function updateArenaBtn() {
           cb.style.display = 'flex';
         }
       }
-      if (rb) rb.style.display = allDone ? 'flex' : 'none';
+      if (rb) rb.style.display = 'flex';
     } else {
       ab.textContent = '🎯 Arenă Legătură →';
       if (cb) cb.style.display = 'none';
