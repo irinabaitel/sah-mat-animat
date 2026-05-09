@@ -22,7 +22,7 @@
     .move-counter { background:var(--c-surface); border:2px solid var(--c-border); border-radius:20px; padding:4px 12px; font-weight:700; color:var(--c-navy); font-size:0.85em; min-width:104px; text-align:center; }
     .annotation-box { background:var(--c-surface); border:2px solid var(--c-border); border-left:4px solid var(--c-navy); border-radius:var(--radius); padding:12px 14px; font-size:var(--fs-md); line-height:1.7; color:var(--c-text); height:120px; overflow-y:auto; }
     .square-selected { background:rgba(255,200,0,0.55) !important; }
-    .highlight-escape { background:rgba(40,180,40,0.55) !important; }
+    .sq-hl { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(40,180,40,0.45); pointer-events:none; z-index:5; }
     .acc-list { display:flex; flex-direction:column; gap:5px; }
     .acc-item { border:2px solid var(--c-border); border-radius:var(--radius); overflow:hidden; background:var(--c-surface); transition:border-color .15s; }
     .acc-item:hover, .acc-item.open { border-color:var(--c-navy); }
@@ -215,9 +215,11 @@ document.addEventListener('mouseup',  e=>{if(e.button===2)rmbDown=false;},true);
 function clearSel(){
   document.querySelectorAll('.square-selected,.highlight-check,.highlight-escape')
     .forEach(el=>el.classList.remove('square-selected','highlight-check','highlight-escape'));
+  document.querySelectorAll('#board .sq-hl').forEach(el=>el.remove());
   selSq=null;
 }
 function applyHL(sq,cls){ const el=document.querySelector('.square-'+sq); if(el)el.classList.add(cls); }
+function addSqHl(sq){ const el=document.querySelector('#board .square-'+sq); if(!el)return; const hl=document.createElement('div'); hl.className='sq-hl'; el.appendChild(hl); }
 function onDragStart(){ if(rmbDown)return false; clearSel(); return true; }
 function onDrop(s,t){ if(t==='offboard')return'snapback'; }
 function onSnapEnd(){}
@@ -255,9 +257,9 @@ function goToStep(s){
   if(cg.in_checkmate()){
     const t=cg.turn();
     cg.board().forEach((row,ri)=>row.forEach((pc,ci)=>{
-      if(pc&&pc.type==='k'&&pc.color===t) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-escape');
+      if(pc&&pc.type==='k'&&pc.color===t) addSqHl(String.fromCharCode(97+ci)+(8-ri));
     }));
-    computeRedSquares(positions[s]).forEach(sq=>applyHL(sq,'highlight-escape'));
+    computeRedSquares(positions[s]).forEach(sq=>addSqHl(sq));
   }
 }
 
