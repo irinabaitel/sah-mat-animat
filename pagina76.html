@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Matul Balestra — Nivelul VI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <style>
+    .info-content { display:flex; flex-direction:column; gap:10px; }
+    .card { background:var(--c-surface); border:2px solid var(--c-border); border-radius:var(--radius); padding:14px 16px; }
+    .card p { font-size:var(--fs-md); line-height:1.75; color:var(--c-text); margin-bottom:8px; text-align:justify; }
+    .card p:last-child { margin-bottom:0; }
+    .card p strong { color:var(--c-navy); }
+    .gold-rule { background:linear-gradient(135deg,#fff8e1,#fff3cd); border:2px solid #f4c842; border-radius:var(--radius); padding:12px 14px; }
+    .gold-rule p { margin-bottom:0; }
+    .step-controls { display:flex; align-items:center; justify-content:center; gap:8px; padding:4px 0; }
+    .ctrl-btn { background:var(--c-navy); color:white; border:none; border-radius:50%; width:36px; height:36px; font-size:0.9em; cursor:pointer; transition:background .2s; display:flex; align-items:center; justify-content:center; }
+    .ctrl-btn:hover:not(:disabled) { background:#2a5aab; }
+    .ctrl-btn:disabled { background:rgba(26,58,107,0.22); cursor:not-allowed; }
+    .move-counter { background:var(--c-surface); border:2px solid var(--c-border); border-radius:20px; padding:4px 12px; font-weight:700; color:var(--c-navy); font-size:0.85em; min-width:104px; text-align:center; }
+    .annotation-box { background:var(--c-surface); border:2px solid var(--c-border); border-left:4px solid var(--c-navy); border-radius:var(--radius); padding:12px 14px; font-size:var(--fs-md); line-height:1.7; color:var(--c-text); height:120px; overflow-y:auto; }
+    .square-selected { background:rgba(255,200,0,0.55) !important; }
+    .highlight-escape { background:rgba(210,40,40,0.28) !important; }
+    .acc-list { display:flex; flex-direction:column; gap:5px; }
+    .acc-item { border:2px solid var(--c-border); border-radius:var(--radius); overflow:hidden; background:var(--c-surface); transition:border-color .15s; }
+    .acc-item:hover, .acc-item.open { border-color:var(--c-navy); }
+    .acc-header { display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer; user-select:none; transition:background .15s; }
+    .acc-item.open .acc-header, .acc-header:hover { background:rgba(26,58,107,0.07); }
+    .acc-title { flex:1; font-weight:700; color:var(--c-navy); font-size:var(--fs-md); font-family:var(--font-display); }
+    .acc-chevron { font-size:0.7em; color:var(--c-navy); transition:transform .22s; display:inline-block; }
+    .acc-item.open .acc-chevron { transform:rotate(90deg); }
+    .acc-body { max-height:0; overflow:hidden; transition:max-height .3s ease; }
+    .acc-item.open .acc-body { max-height:600px; }
+    .acc-inner { padding:2px 14px 12px; }
+    .acc-desc { font-size:var(--fs-md); line-height:1.7; color:var(--c-text); margin-bottom:10px; }
+    .acc-examples { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .ex-btn { padding:5px 14px; border-radius:20px; border:2px solid var(--c-navy); background:transparent; color:var(--c-navy); font-family:var(--font-display); font-weight:700; font-size:var(--fs-sm); cursor:pointer; transition:all .15s; }
+    .ex-btn:hover, .ex-btn.active { background:var(--c-navy); color:white; }
+    #navControls { display:flex; flex-direction:column; gap:10px; padding:4px 0 6px; }
+    .moves-log { height:80px; overflow-y:auto; }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="page-header" role="banner">
+    <span class="header-title">Matul Balestra</span>
+    <div class="header-progress"><span class="lesson-badge">Nivelul VI</span></div>
+  </header>
+  <main class="page-main" role="main">
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="info-content">
+
+          <div class="card">
+            <p>Matul Balestra seamănă cu <strong>Matul lui Boden</strong>, dar în locul unui nebun apare <strong>regina</strong>. Nebunul dă șahul final, iar regina blochează câmpurile de retragere ale regelui.</p>
+          </div>
+
+          <div class="gold-rule card">
+            <p>&#127775; <strong>Tiparul Balestra:</strong></p>
+            <ol style="margin-top:8px;padding-left:1.4em;line-height:1.9;">
+              <li>Nebunul dă șahul decisiv pe o diagonală spre regele advers.</li>
+              <li>Regina controlează câmpurile de fugă rămase.</li>
+              <li>Regina stă pe un pătrățel de culoarea opusă nebunului.</li>
+            </ol>
+          </div>
+
+          <div id="accList" class="acc-list"></div>
+
+          <div id="navControls">
+            <div class="step-controls">
+              <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima poziție">&#9198;</button>
+              <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="Înapoi">&#9664;</button>
+              <div class="move-counter" id="moveCounter">Start</div>
+              <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="Înainte">&#9654;</button>
+              <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima poziție">&#9197;</button>
+            </div>
+            <div class="annotation-box" id="annotationBox"></div>
+            <div class="moves-log" id="movesLog"></div>
+          </div>
+
+          <a href="pagina77.html" style="display:flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 20px;border-radius:50px;background:var(--c-navy);color:white;text-decoration:none;font-family:var(--font-display);font-size:0.97rem;font-weight:700;width:100%;box-sizing:border-box;transition:opacity .18s;" onmouseover="this.style.opacity='.86'" onmouseout="this.style.opacity='1'">&#8594; Arenă Matul Balestra</a>
+
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="page-footer" role="navigation">
+    <a href="pagina75.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">Arenă Doi Nebuni</span></a>
+    <a href="hub.html"      class="nav-btn nav-btn--contents"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
+    <a href="pagina77.html" class="nav-btn nav-btn--forward"><span class="icon">&#8594;</span><span class="label">Arenă Matul Balestra</span></a>
+  </footer>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+function toRo(san) {
+  const map = {K:'R',Q:'D',R:'T',B:'N',N:'C'};
+  return san.replace(/[KQRBN]/g, m => map[m]);
+}
+
+const chapters = [
+
+  /* 0 — Tiparul pur */
+  {
+    fen: '5k2/8/6Q1/8/8/6B1/8/6K1 w - - 0 1',
+    san: ['Bd6'],
+    ann: {
+      0: 'Albul mută. Regele negru pe f8 este prins la margine — nu are unde fugi. Regina de pe g6 controlează g7, g8 și f7. Nebunul de pe g3 are o mutare decisivă pe diagonală!',
+      1: '<strong>Nd6#!</strong> — nebunul de pe g3 vine pe d6! Diagonala d6–e7–f8 aduce șahul. Regina de pe g6 acoperă g7, g8, f7 și e8 — regele nu are nicio ieșire. <strong>Matul Balestra!</strong>'
+    }
+  },
+
+  /* 1 — Din partidă, 1 mutare */
+  {
+    fen: 'r4k1r/pp5p/1nn1Q1p1/3q4/8/2P5/P4PPP/R1B1KB1R w KQ - 0 1',
+    san: ['Bh6'],
+    ann: {
+      0: 'Albul mută. Regele negru pe f8 este flancat de propriii cai de pe b6 și c6 — nu se poate retrage. Regina de pe e6 domină câmpurile din față. Nebunul de pe c1 are o lovitură fulger pe diagonala lungă!',
+      1: '<strong>Nh6#!</strong> — nebunul de pe c1 vine pe h6! Diagonala h6–g7–f8 aduce șahul decisiv. Regina de pe e6 acoperă e7, e8, f7 și g8 — regele nu are nicio ieșire. <strong>Matul Balestra!</strong>'
+    }
+  },
+
+  /* 2 — Avans de pion, mat în 3 */
+  {
+    fen: 'r3qr2/pbp1bk1p/1p6/3Pp1Qn/2B1n3/1P4P1/PBP2P1P/4R1K1 w - - 0 21',
+    san: ['d6', 'Bd5', 'Bxd5'],
+    ann: {
+      0: 'Albul mută. Regele negru pe f7 pare în siguranță, dar pionul de pe d5 poate face o mișcare surpriză — ce se deschide după ce avansează?',
+      1: '<strong>d6+!</strong> — pionul avansează la d6, descoperind șahul nebunului de pe c4 pe diagonala c4–e6–f7! Negrul este forțat să blocheze.',
+      2: '<strong>1...Nd5</strong> — nebunul negru de pe b7 vine pe d5, blocând diagonala. Acum d5 devine câmpul decisiv!',
+      3: '<strong>2.Nxd5#</strong> — nebunul de pe c4 capturează pe d5! Diagonala d5–e6–f7 aduce matul. Regina de pe g5 acoperă celelalte câmpuri. <strong>Matul Balestra!</strong>'
+    }
+  },
+
+  /* 3 — Șah, blocare, captură */
+  {
+    fen: 'r2r2k1/pp1b4/7Q/5p2/8/2P3qP/PPB2pP1/5R1K w - - 0 28',
+    san: ['Bb3', 'Be6', 'Bxe6'],
+    ann: {
+      0: 'Albul mută. Regele negru pe g8 pare apărat. Regina de pe h6 domină diagonala spre g7 și f8. Nebunul de pe c2 are o mutare îndrăzneață pe diagonala lungă!',
+      1: '<strong>Nb3+!</strong> — nebunul vine pe b3, dând șah regelui de pe g8 prin diagonala lungă b3–c4–d5–e6–f7–g8! Negrul este forțat să blocheze.',
+      2: '<strong>1...Ne6</strong> — nebunul negru de pe d7 vine pe e6, blocând diagonala. Dar acum e6 devine câmpul decisiv!',
+      3: '<strong>2.Nxe6#</strong> — nebunul de pe b3 capturează pe e6! Diagonala e6–f7–g8 aduce matul. Regina de pe h6 controlează g7 și f8. <strong>Matul Balestra!</strong>'
+    }
+  },
+
+  /* 4 — Negrul mută, aceeași schemă */
+  {
+    fen: '6Q1/p3kp2/2p4B/b3P2P/8/7q/PP6/R5K1 b - - 0 35',
+    orient: 'black',
+    san: ['Bb6', 'Be3', 'Bxe3'],
+    ann: {
+      0: 'Negrul mută. Regele alb pe g1 pare în siguranță. Regina neagră de pe h3 domină câmpurile cheie. Nebunul negru de pe a5 poate da șah prin diagonala lungă spre g1 — cum?',
+      1: '<strong>1...Nb6+!</strong> — nebunul vine pe b6, dând șah regelui alb de pe g1 prin diagonala b6–c5–d4–e3–f2–g1! Albul trebuie să blocheze.',
+      2: '<strong>2.Ne3</strong> — nebunul alb de pe h6 blochează pe e3, tăind diagonala. Dar acum e3 devine câmpul fatal!',
+      3: '<strong>2...Nxe3#</strong> — nebunul negru capturează pe e3! Diagonala e3–f2–g1 dă mat regelui alb. Regina de pe h3 controlează h2, g2 și alte câmpuri de fugă. <strong>Matul Balestra!</strong>'
+    }
+  },
+
+];
+
+let curChapterIdx=0, positions=[];
+
+function computePositions(ch) {
+  const c=new Chess(ch.fen); const fens=[c.fen()];
+  for(const mv of ch.san){ const r=c.move(mv); if(!r){console.error('Invalid:',mv,c.fen());break;} fens.push(c.fen()); }
+  return fens;
+}
+
+/* ── Red escape squares after checkmate ── */
+function computeRedSquares(fen) {
+  const c=new Chess(fen);
+  if(!c.in_checkmate()) return [];
+  const mated=c.turn();
+  let kSq=null;
+  c.board().forEach((row,ri)=>row.forEach((pc,ci)=>{
+    if(pc&&pc.type==='k'&&pc.color===mated) kSq=String.fromCharCode(97+ci)+(8-ri);
+  }));
+  if(!kSq) return [];
+
+  const kf=kSq.charCodeAt(0)-97, kr=parseInt(kSq[1])-1;
+  const fenParts=c.fen().split(' ');
+
+  function expandBoard(bp){
+    return bp.split('/').map(rank=>{
+      let r=''; for(const ch of rank) r+=/\d/.test(ch)?'.'.repeat(+ch):ch; return r;
+    });
+  }
+  function compressRank(r){ return r.replace(/\.+/g,m=>m.length.toString()); }
+
+  const red=[];
+  for(let df=-1;df<=1;df++){
+    for(let dr=-1;dr<=1;dr++){
+      if(!df&&!dr) continue;
+      const nf=kf+df, nr=kr+dr;
+      if(nf<0||nf>7||nr<0||nr>7) continue;
+      const sq=String.fromCharCode(97+nf)+(nr+1);
+      const pc=c.get(sq);
+      if(pc&&pc.color===mated) continue;
+
+      let rows=expandBoard(fenParts[0]);
+      rows[7-kr]=rows[7-kr].substring(0,kf)+'.'+rows[7-kr].substring(kf+1);
+      rows[7-nr]=rows[7-nr].substring(0,nf)+'.'+rows[7-nr].substring(nf+1);
+      rows[7-nr]=rows[7-nr].substring(0,nf)+(mated==='w'?'K':'k')+rows[7-nr].substring(nf+1);
+      const newFen=rows.map(compressRank).join('/')+' '+mated+' - - 0 1';
+      try{ const tc=new Chess(newFen); if(tc&&tc.in_check()) red.push(sq); }catch(e){}
+    }
+  }
+  return red;
+}
+
+let selSq=null, rmbDown=false;
+document.addEventListener('mousedown',e=>{if(e.button===2)rmbDown=true;},true);
+document.addEventListener('mouseup',  e=>{if(e.button===2)rmbDown=false;},true);
+
+function clearSel(){
+  document.querySelectorAll('.square-selected,.highlight-check,.highlight-escape')
+    .forEach(el=>el.classList.remove('square-selected','highlight-check','highlight-escape'));
+  selSq=null;
+}
+function applyHL(sq,cls){ const el=document.querySelector('.square-'+sq); if(el)el.classList.add(cls); }
+function onDragStart(){ if(rmbDown)return false; clearSel(); return true; }
+function onDrop(s,t){ if(t==='offboard')return'snapback'; }
+function onSnapEnd(){}
+
+const board=Chessboard('board',{
+  position:chapters[0].fen, pieceTheme:'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+  draggable:true, orientation:'white', onDragStart, onDrop, onSnapEnd
+});
+
+$(document).on('click','.square-55d63',function(e){
+  if(e.button!==0)return;
+  const sq=$(this).data('square'), pos=board.position();
+  if(selSq){ const p=selSq; clearSel(); if(sq!==p&&pos[p]){pos[sq]=pos[p];delete pos[p];board.position(pos,false);} }
+  else{ if(pos[sq]){selSq=sq;const el=document.querySelector('.square-'+sq);if(el)el.classList.add('square-selected');} }
+});
+
+window.addEventListener('resize',()=>{ board.resize(); if(window._annRender)window._annRender(); });
+
+function currentStep(){ return parseInt(document.getElementById('moveCounter').dataset.step||'0'); }
+
+function loadChapter(idx){
+  curChapterIdx=idx; const ch=chapters[idx]; positions=computePositions(ch);
+  const t=ch.fen.split(' ')[1];
+  board.orientation(ch.orient||(t==='b'?'black':'white'));
+  buildMovesList(); goToStep(0);
+}
+
+function goToStep(s){
+  clearSel();
+  if(window._annClear)window._annClear();
+  document.getElementById('moveCounter').dataset.step=s;
+  board.position(positions[s],false);
+  updateUI(s);
+
+  const cg=new Chess(positions[s]);
+  if(cg.in_checkmate()){
+    const t=cg.turn();
+    cg.board().forEach((row,ri)=>row.forEach((pc,ci)=>{
+      if(pc&&pc.type==='k'&&pc.color===t) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');
+    }));
+    computeRedSquares(positions[s]).forEach(sq=>applyHL(sq,'highlight-escape'));
+  }
+}
+
+function goFirst(){ goToStep(0); }
+function goLast(){  goToStep(positions.length-1); }
+function goPrev(){  const s=currentStep(); if(s>0)goToStep(s-1); }
+function goNext(){  const s=currentStep(); if(s<positions.length-1)goToStep(s+1); }
+
+function getMoveLabel(s){
+  if(s===0)return'Start';
+  const parts=positions[s-1].split(' '), turn=parts[1], mn=parts[5], san=chapters[curChapterIdx].san[s-1];
+  return turn==='w'?mn+'. '+toRo(san):mn+'... '+toRo(san);
+}
+
+function updateUI(s){
+  const total=positions.length-1, mc=document.getElementById('moveCounter');
+  mc.textContent=getMoveLabel(s); mc.dataset.step=s;
+  document.getElementById('btnFirst').disabled=s===0;
+  document.getElementById('btnPrev').disabled=s===0;
+  document.getElementById('btnNext').disabled=s===total;
+  document.getElementById('btnLast').disabled=s===total;
+  document.querySelectorAll('.mlog-token').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.step)===s));
+  const act=document.querySelector('.mlog-token.active'); if(act)act.scrollIntoView({block:'nearest',behavior:'smooth'});
+  const box=document.getElementById('annotationBox'), ch=chapters[curChapterIdx];
+  const txt=(ch.ann&&ch.ann[s]!==undefined)?ch.ann[s]:'';
+  box.innerHTML=txt||( s===0?'<em style="opacity:.55">Apasă &#9654; pentru a avansa.</em>':'' );
+}
+
+function createMoveBtn(san,step,cls){
+  const btn=document.createElement('button'); btn.className='mlog-token '+cls;
+  btn.textContent=toRo(san); btn.dataset.step=step; btn.onclick=()=>goToStep(step); return btn;
+}
+
+function buildMovesList(){
+  const ch=chapters[curChapterIdx], log=document.getElementById('movesLog'); log.innerHTML='';
+  const total=ch.san.length; if(!total)return; let i=0;
+  while(i<total){
+    const preFen=positions[i], parts=preFen.split(' '), turn=parts[1], mn=parts[5];
+    const row=document.createElement('div'); row.className='mlog-row';
+    const ns=document.createElement('span'); ns.className='mlog-num'; ns.textContent=mn+'.'; row.appendChild(ns);
+    if(turn==='b'){
+      const plh=document.createElement('span'); plh.className='mlog-token mlog-w'; plh.textContent='…';
+      plh.style.cssText='opacity:0.28;cursor:default;pointer-events:none;'; row.appendChild(plh);
+      row.appendChild(createMoveBtn(ch.san[i],i+1,'mlog-b')); i++;
+    } else {
+      row.appendChild(createMoveBtn(ch.san[i],i+1,'mlog-w')); i++;
+      if(i<total){ row.appendChild(createMoveBtn(ch.san[i],i+1,'mlog-b')); i++; }
+    }
+    log.appendChild(row);
+  }
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')goNext(); if(e.key==='ArrowLeft')goPrev();
+  if(e.key==='Home')goFirst();     if(e.key==='End')goLast();
+});
+
+/* ── Single accordion with all examples ── */
+const allExamples = {
+  title: 'Exemple',
+  desc: 'Studiază cele 5 poziții și urmărește cum nebunul și regina cooperează pentru a da mat.',
+  examples: [
+    {ch:0,label:'Ex. 1'},{ch:1,label:'Ex. 2'},{ch:2,label:'Ex. 3'},
+    {ch:3,label:'Ex. 4'},{ch:4,label:'Ex. 5'}
+  ]
+};
+
+let activeExBtn=null;
+
+function buildAccordion(){
+  const list=document.getElementById('accList'); if(!list)return;
+  const item=document.createElement('div'); item.className='acc-item';
+  const hdr=document.createElement('div'); hdr.className='acc-header';
+  hdr.innerHTML='<span class="acc-title">'+allExamples.title+'</span><span class="acc-chevron">&#9658;</span>';
+  const body=document.createElement('div'); body.className='acc-body';
+  const inner=document.createElement('div'); inner.className='acc-inner';
+  let html='<p class="acc-desc">'+allExamples.desc+'</p><div class="acc-examples">';
+  allExamples.examples.forEach(ex=>{ html+='<button class="ex-btn" data-ch="'+ex.ch+'" onclick="loadExAcc(this,'+ex.ch+')">'+ex.label+'</button>'; });
+  html+='</div>'; inner.innerHTML=html; body.appendChild(inner);
+  item.appendChild(hdr); item.appendChild(body); list.appendChild(item);
+  hdr.addEventListener('click',()=>{ item.classList.toggle('open'); body.style.maxHeight=item.classList.contains('open')?'600px':'0'; });
+  /* open by default */
+  item.classList.add('open'); body.style.maxHeight='600px';
+}
+
+function loadExAcc(btn,chIdx){
+  if(activeExBtn)activeExBtn.classList.remove('active');
+  activeExBtn=btn; btn.classList.add('active'); loadChapter(chIdx);
+}
+
+buildAccordion();
+/* auto-activate Ex.1 button */
+const firstBtn=document.querySelector('.ex-btn[data-ch="0"]');
+if(firstBtn){ activeExBtn=firstBtn; firstBtn.classList.add('active'); }
+loadChapter(0);
+</script>
+<script src="board-utils.js"></script>
+</body>
+</html>
