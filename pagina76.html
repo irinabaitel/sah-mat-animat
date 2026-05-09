@@ -266,7 +266,7 @@ function goToStep(s){
   if(cg.in_checkmate()){
     const t=cg.turn();
     cg.board().forEach((row,ri)=>row.forEach((pc,ci)=>{
-      if(pc&&pc.type==='k'&&pc.color===t) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');
+      if(pc&&pc.type==='k'&&pc.color===t) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-escape');
     }));
     computeRedSquares(positions[s]).forEach(sq=>applyHL(sq,'highlight-escape'));
   }
