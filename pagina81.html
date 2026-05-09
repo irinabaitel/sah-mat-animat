@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Arenă Matul în Colț</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    .panel-heading { font-family:var(--font-display); font-size:clamp(1.15rem,2.5vw,1.4rem); font-weight:900; color:var(--c-navy); line-height:1.25; margin-bottom:8px; }
+    .arena-intro-desc { margin-top:14px; padding:10px 14px; background:rgba(255,255,255,0.06); border-left:3px solid var(--c-gold); border-radius:0 6px 6px 0; color:var(--c-text); line-height:1.6; }
+    .btn-arena { display:flex; align-items:center; justify-content:center; margin-top:14px; padding:11px 20px; border-radius:50px; background:var(--c-navy); color:white; text-decoration:none; font-family:var(--font-display); font-size:0.97rem; font-weight:700; border:none; cursor:pointer; width:100%; transition:opacity .18s; }
+    .btn-arena:hover { opacity:0.86; }
+    #puzzleView { display:none; }
+    .turn-badge { display:inline-block; padding:3px 14px; border-radius:50px; font-family:var(--font-display); font-size:0.82rem; font-weight:700; margin-bottom:6px; }
+    .turn-badge.white { background:#f0f0f0; color:var(--c-navy); border:1.5px solid #ccc; }
+    .turn-badge.black { background:#222; color:#fff; border:1.5px solid #000; }
+    .level-badge { display:inline-block; margin-left:6px; padding:2px 10px; border-radius:50px; font-family:var(--font-display); font-size:0.75rem; font-weight:700; background:rgba(39,174,96,0.18); color:#1a6b3a; }
+    .level-badge.med  { background:rgba(230,126,34,0.18); color:#8a3a00; }
+    .level-badge.hard { background:rgba(192,57,43,0.18);  color:#7a1800; }
+    .ctrl-row { display:flex; gap:7px; margin-top:10px; flex-wrap:wrap; }
+    .btn-sm { padding:7px 15px; border-radius:50px; font-family:var(--font-display); font-size:0.86rem; font-weight:700; cursor:pointer; transition:background .15s,opacity .15s; border:1.5px solid transparent; }
+    .btn-sm:disabled { opacity:0.28; cursor:default; }
+    .btn-prev  { border-color:rgba(26,58,107,0.35); background:rgba(255,255,255,0.55); color:var(--c-navy); }
+    .btn-prev:hover:not(:disabled)  { background:rgba(26,58,107,0.10); }
+    .btn-reset { border-color:rgba(192,57,43,0.40); background:rgba(255,255,255,0.55); color:#8b1a00; }
+    .btn-reset:hover:not(:disabled) { background:rgba(192,57,43,0.10); }
+    .btn-cont  { border-color:var(--c-success); background:var(--c-success); color:white; }
+    .btn-cont:hover:not(:disabled)  { opacity:0.86; }
+    .btn-next  { border-color:var(--c-navy); background:var(--c-navy); color:white; }
+    .btn-next:hover:not(:disabled)  { opacity:0.86; }
+    .square-selected { background:rgba(255,200,0,0.55) !important; }
+    .highlight-mat { background:rgba(200,40,40,0.38) !important; }
+    #boardWrapper { touch-action:none; -webkit-touch-callout:none; }
+    .hint-square  { background:rgba(80,200,80,0.65) !important; }
+    .btn-tri  { padding:7px 11px; min-width:34px; }
+    .btn-hint { border-color:rgba(39,174,96,0.45); background:rgba(39,174,96,0.08); color:#1a6b3a; }
+    .btn-hint:hover:not(:disabled) { background:rgba(39,174,96,0.18); }
+    .btn-sol  { border-color:rgba(142,68,173,0.45); background:rgba(142,68,173,0.08); color:#6c3483; }
+    .btn-sol:hover:not(:disabled)  { background:rgba(142,68,173,0.18); }
+    .arena-back-btn { display:block; margin-top:10px; width:100%; padding:8px 16px; border-radius:50px; font-family:var(--font-display); font-size:0.86rem; font-weight:700; color:var(--c-navy); cursor:pointer; background:rgba(255,255,255,0.55); border:1.5px solid rgba(26,58,107,0.25); text-align:center; text-decoration:none; transition:background .15s; }
+    .arena-back-btn:hover { background:rgba(26,58,107,0.10); }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+    .board-shake { animation:shake .35s ease-out; }
+    .last-move-from { background:rgba(80,180,80,0.35) !important; }
+    .last-move-to   { background:rgba(80,180,80,0.55) !important; }
+    .btn-vol { position:fixed; top:10px; right:12px; z-index:1000; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.88); border:1.5px solid rgba(26,58,107,0.18); font-size:1.05rem; cursor:pointer; line-height:1; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 6px rgba(0,0,0,0.14); transition:background .15s; padding:0; }
+    .btn-vol:hover { background:rgba(26,58,107,0.10); }
+    .progress-outer { position:relative; margin-bottom:12px; }
+    .progress-outer::after { content:attr(data-tip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:rgba(26,26,46,0.88); color:#fff; font-family:var(--font-display); font-size:0.78rem; font-weight:700; padding:4px 10px; border-radius:6px; white-space:nowrap; pointer-events:none; z-index:100; opacity:0; transition:opacity .15s; }
+    .progress-outer:hover::after { opacity:1; }
+    .progress-outer .progress-wrap { margin-bottom:0; }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="page-header" role="banner">
+    <span class="header-title" id="pageTitle">Arenă Matul în Colț</span>
+  </header>
+  <main class="page-main" role="main">
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper"><div id="board"></div></div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-scroll" id="panelScroll">
+
+        <div id="lectureView">
+          <div class="panel-heading">Arenă Matul în Colț</div>
+          <p><strong>Matul în colț</strong>: regele advers este prins în colțul tablei cu ajutorul unui turn sau a unei regine și a unei piese proprii, iar un cal dă mat.</p>
+          <div class="hl-box" style="margin:12px 0;">
+            <strong>&#9816; Tiparul de mat:</strong>
+            <p style="margin-top:6px;line-height:1.7;">Regele este blocat în colț, turnul sau regina taie căile de scăpare, iar calul sare pe câmpul de mat.</p>
+            <p style="margin-top:8px;font-size:0.88em;opacity:0.75;">31 puzzle-uri &middot; 3 niveluri de dificultate (Ușor &rarr; Mediu &rarr; Avansat)</p>
+          </div>
+          <div class="arena-intro-desc">Uneori e nevoie de un sacrificiu pregătitor care să forțeze regele în colț — fii atent cum cooperează calul cu turnul sau regina!</div>
+          <button class="btn-arena" id="arenaBtn" onclick="startArena()">&#127919; Arenă Matul în Colț &rarr;</button>
+          <button class="btn-arena" id="continueBtn" onclick="continueArena()" style="display:none;margin-top:8px;background:var(--c-success);">&#9654; Continuă</button>
+          <button class="btn-arena" id="resetAllBtn" onclick="resetAllProgress()" style="display:none;margin-top:8px;background:rgba(192,57,43,0.82);">&#8634; Joacă din nou (resetează tot)</button>
+        </div>
+
+        <div id="puzzleView">
+          <div class="panel-heading">Matul în Colț</div>
+          <span class="turn-badge white" id="turnBadge">&#11036; Albul mută</span>
+          <span class="level-badge" id="levelBadge">UȘOR</span>
+          <div class="progress-outer" id="progressOuter">
+            <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+          </div>
+          <div class="task-msg idle" id="taskMsg">Găsește matul în Colț!</div>
+          <div class="ctrl-row">
+            <button class="btn-sm btn-prev" id="prevBtn" onclick="prevPuzzle()" disabled>&#8592; Precedentul</button>
+            <button class="btn-sm btn-reset" onclick="resetPuzzle()">&#8634; Resetează</button>
+            <button class="btn-sm btn-cont"  onclick="continueArena()">Continuă</button>
+            <button class="btn-sm btn-next" id="nextBtn" onclick="nextPuzzle()" disabled>Următorul &#8594;</button>
+          </div>
+          <div class="ctrl-row" style="margin-top:5px">
+            <button class="btn-sm btn-tri btn-prev" id="stepBackBtn" onclick="stepBack()" disabled>&#9668;</button>
+            <button class="btn-sm btn-tri btn-prev" id="stepFwdBtn"  onclick="stepForward()" disabled>&#9658;</button>
+            <button class="btn-sm btn-hint" onclick="showHint()">&#128161; Indiciu</button>
+            <button class="btn-sm btn-sol"  onclick="showSolution()">&#9658;&#9658; Soluție</button>
+          </div>
+          <button class="btn-arena" id="playAgainBtn" style="display:none;margin-top:12px;background:rgba(39,174,96,0.82);" onclick="resetAllProgress()">&#127881; Totul rezolvat! Joacă din nou &rarr;</button>
+        </div>
+
+      </div>
+      <button class="arena-back-btn" id="arenaBackBtn" style="display:none" onclick="backToLecture()">&#8592; Matul în Colț</button>
+      <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
+    </div>
+  </main>
+  <footer class="page-footer" role="navigation">
+    <a href="pagina80.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">Matul în Colț</span></a>
+    <a href="hub.html"      class="nav-btn nav-btn--contents"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
+    <a href="pagina82.html" class="nav-btn nav-btn--forward"><span class="icon">&#8594;</span><span class="label">Matul lui Morphy</span></a>
+  </footer>
+  <button class="btn-vol" id="volBtn" onclick="toggleVol()" title="Sunet on/off">&#128266;</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+const PIECE_THEME='https://lichess1.org/assets/piece/caliente/{piece}.svg';
+const LECTURE_FEN='7k/7p/8/6N1/8/8/8/6RK w - - 0 1';
+const SAVE_KEY='corner_progress';
+
+/* ── PUZZLES ── */
+const PUZZLES=[
+  /* 0-9 USOR */
+  {id:'RRRIX',fen:'3rkq1r/1b2nppp/p7/1p1N4/8/P7/1PP2PPP/R2QR1K1 w k - 1 21',sol:['d5c7'],turn:'w'},
+  {id:'DFEUO',fen:'r1bqk1nQ/ppp4p/4p1p1/5pN1/4pB2/8/PP2KPPP/nN3B1R b q - 0 12',sol:['d8d3','e2e1','a1c2'],turn:'b'},
+  {id:'XoIHp',fen:'rn2kbnr/ppp1ppp1/7p/3N3q/8/4Bb2/PPP1BP2/R2QKR2 w Qkq - 0 12',sol:['d5c7'],turn:'w'},
+  {id:'fJeMZ',fen:'2r3k1/pp3p2/3p1Qpp/1n1p4/1P1n2P1/P4N1P/1K6/4R3 b - - 1 38',sol:['c8c2','b2a1','d4b3','a1b1','b5a3'],turn:'b'},
+  {id:'hM01W',fen:'5r1k/p2QR3/7p/3P3n/8/6PB/Pq3PK1/8 b - - 4 31',sol:['b2f2','g2h1','h5g3'],turn:'b'},
+  {id:'BAtUW',fen:'7k/ppp2Qp1/7p/2P2pq1/4n2N/5BPP/PP3R1K/8 b - - 0 30',sol:['g5g3','h2h1','e4f2'],turn:'b'},
+  {id:'jEorh',fen:'k7/P2R3p/6p1/1ppN1p2/8/6P1/5PK1/q7 w - - 4 33',sol:['d5b6'],turn:'w'},
+  {id:'wSadq',fen:'r1bq2rk/2p1b3/p2p1nQ1/4p1N1/1p2P1nP/3P4/PPP1NPP1/R3K2R w KQ - 0 19',sol:['g5f7'],turn:'w'},
+  {id:'DulrB',fen:'4R3/3r1p2/4b1kp/p5pN/5bP1/1P6/P2p1P2/3K4 w - - 0 39',sol:['e8g8','g6h7','h5f6'],turn:'w'},
+  {id:'vOJz2',fen:'8/1pR1N1bk/5rp1/p2Pp2p/4P2P/1Q5B/3R1nPK/5r2 b - - 0 34',sol:['f1h1','h2g3','f2e4'],turn:'b'},
+  /* 10-19 MEDIU */
+  {id:'XtFGb',fen:'4R3/2b2p2/6kp/8/2r1NPK1/7P/8/8 w - - 1 42',sol:['e8g8','g6h7','e4f6'],turn:'w'},
+  {id:'2e9KW',fen:'r3kb2/2p2pp1/ppp3r1/4P3/4PQ1p/1N3P1n/PPP2P1P/R1B1R2K b q - 0 18',sol:['h3f2'],turn:'b'},
+  {id:'5CCei',fen:'r4r1k/1pp4p/p1pq1p2/4N3/4Pp2/3P3P/PPPNbPR1/2K3R1 w - - 0 21',sol:['g2g8','f8g8','e5f7'],turn:'w'},
+  {id:'vQW6k',fen:'3Q2R1/R6p/7p/6nk/4b3/1P5P/3r4/5K2 b - - 0 41',sol:['e4g2','f1e1','g5f3'],turn:'b'},
+  {id:'xHQOT',fen:'r1b4r/pp1k1p1p/2pp4/1N1P2B1/3KP1n1/8/PPP5/5R2 w - - 0 23',sol:['f1f7','d7e8','b5d6'],turn:'w'},
+  {id:'vOwEu',fen:'r4rnk/pp5p/2p1p2q/3pN3/2PPpP2/1P2P3/P5RP/6RK w - - 0 28',sol:['g2g8','f8g8','e5f7'],turn:'w'},
+  {id:'aaFWL',fen:'6k1/R5P1/5p2/3N4/2nPr2p/4r3/5K2/6R1 b - - 0 38',sol:['e3e2','f2f3','c4d2'],turn:'b'},
+  {id:'n6UsM',fen:'4R3/5p2/6kp/2p4N/2Pp2K1/1P4P1/P6P/q7 w - - 2 37',sol:['e8g8','g6h7','h5f6'],turn:'w'},
+  {id:'WRMh0',fen:'7k/2pR4/5b1p/4pN2/3p1p1N/3b3P/5PPK/2r5 w - - 4 34',sol:['h4g6','h8g8','f5h6'],turn:'w'},
+  {id:'cLOTj',fen:'8/p1p1N1kp/1p3p2/6p1/3P2P1/1QPr1p2/PP3K1P/2q5 w - - 8 33',sol:['b3g8','g7h6','e7f5'],turn:'w'},
+  /* 20-30 AVANSAT */
+  {id:'7qIrM',fen:'5r2/6bp/6p1/1N1pk1P1/7P/1R4K1/1P6/8 w - - 1 41',sol:['b3e3','e5f5','b5d6'],turn:'w'},
+  {id:'54yN7',fen:'r3r1k1/2p3Pp/1p6/4pN2/4R3/2q1Q2P/5PK1/q7 w - - 0 29',sol:['f5h6','g8g7','e3g5','g7h8','h6f7'],turn:'w'},
+  {id:'PtUqn',fen:'5Nk1/p3npp1/4p2n/p2pP2K/5P1P/6r1/1P1B4/2R3R1 b - - 4 41',sol:['g7g6','f8g6','f7g6','h5h6','e7f5'],turn:'b'},
+  {id:'n9uY8',fen:'r1b2k2/p6p/2Np2p1/2p5/PpP1Pn2/1P1Pq3/6BP/Q6K w - - 2 22',sol:['a1f6','f8g8','c6e7'],turn:'w'},
+  {id:'wp4CN',fen:'8/k2n3p/1p1r4/8/PN6/1KR2BP1/5r2/8 w - - 3 47',sol:['c3c7','a7b8','b4a6'],turn:'w'},
+  {id:'yi7qq',fen:'6k1/1r3R2/bp5p/p1b1N1pN/P7/1n4P1/1P4PP/7K w - - 9 29',sol:['h5f6','g8h8','e5g6'],turn:'w'},
+  {id:'m6z0a',fen:'r4r2/4bp1k/p1p4p/2q1N3/P2pn3/1P4QP/2P3P1/R4RK1 w - - 0 20',sol:['f1f7','f8f7','g3g6','h7h8','e5f7'],turn:'w'},
+  {id:'eMCkO',fen:'3N4/7Q/5k2/8/1p1n4/pP4P1/2r5/1K6 b - - 1 41',sol:['a3a2','b1a1','d4b3'],turn:'b'},
+  {id:'hTJRT',fen:'2q1rb1k/5Rp1/3p2Pp/1ppNn3/7Q/2P4P/1P4B1/6K1 w - - 2 36',sol:['h4h6','g7h6','f7h7','h8g8','d5f6'],turn:'w'},
+  {id:'DR111',fen:'k5r1/1p3p2/p2Q3p/P3p1r1/1P2P3/7n/5P1P/2R2R1K b - - 0 29',sol:['g5g1','f1g1','h3f2'],turn:'b'},
+  {id:'NWvUA',fen:'5R2/R5P1/4k3/1p1n4/2p5/P2p4/1P4r1/4K3 b - - 2 59',sol:['d3d2','e1d1','d5e3'],turn:'b'},
+];
+
+/* ── STATE ── */
+let mode='lecture', curIdx=0, chess=null, board=null, selSq=null, solved=false;
+let phase='waiting', solIdx=0, completed={}, moveHistory=[], viewIdx=0, autoPlayTimer=null;
+
+let muted=(()=>{try{return localStorage.getItem('arena_muted')==='1';}catch(e){return false;}})();
+function toggleVol(){ muted=!muted; try{localStorage.setItem('arena_muted',muted?'1':'0');}catch(e){} const b=document.getElementById('volBtn'); if(b)b.innerHTML=muted?'&#128263;':'&#128266;'; }
+
+function levelOf(idx){ if(idx<10)return 0; if(idx<20)return 1; return 2; }
+const LEVEL_LABELS=['UȘOR','MEDIU','AVANSAT'], LEVEL_CLASSES=['','med','hard'];
+
+const SND={ move:new Audio('Sounds/Move.mp3'), capture:new Audio('Sounds/Capture.mp3'), mate:new Audio('Sounds/Mate.mp3') };
+function playMoveSound(cap){ if(muted)return; try{const s=cap?SND.capture:SND.move;s.currentTime=0;s.play();}catch(e){} }
+function playWin(){ if(muted)return; try{SND.mate.currentTime=0;SND.mate.play();}catch(e){} }
+function playWrong(){ if(muted)return; try{ const ctx=new(window.AudioContext||window.webkitAudioContext)(),osc=ctx.createOscillator(),g=ctx.createGain(); osc.connect(g);g.connect(ctx.destination); osc.type='sine'; osc.frequency.setValueAtTime(380,ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(180,ctx.currentTime+0.28); g.gain.setValueAtTime(0.22,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.28); osc.start();osc.stop(ctx.currentTime+0.28); }catch(e){} }
+
+function shakeBoard(){ const bw=document.getElementById('boardWrapper'); bw.classList.remove('board-shake'); void bw.offsetWidth; bw.classList.add('board-shake'); bw.addEventListener('animationend',()=>bw.classList.remove('board-shake'),{once:true}); }
+function celebrate(){ confetti({particleCount:80,spread:60,origin:{y:0.60}}); }
+function debounce(fn,d){ let t; return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),d);}; }
+
+function clearHL(){ document.querySelectorAll('.square-selected,.highlight-check,.highlight-mat,.last-move-from,.last-move-to').forEach(el=>el.classList.remove('square-selected','highlight-check','highlight-mat','last-move-from','last-move-to')); }
+function applyHL(sq,cls){ const el=document.querySelector('.square-'+sq); if(el)el.classList.add(cls); }
+function setLastMoveHL(f,t){ document.querySelectorAll('.last-move-from,.last-move-to').forEach(el=>el.classList.remove('last-move-from','last-move-to')); applyHL(f,'last-move-from'); applyHL(t,'last-move-to'); }
+
+function setMsg(type,text){ const el=document.getElementById('taskMsg'); el.className='task-msg '+type; el.innerHTML=text; }
+function idleMsg(){ setMsg('idle','Găsește matul în Colț!'); }
+function contMsg(){ setMsg('idle','&#127919; Continuă secvența!'); }
+
+function updateProgress(){ const n=Object.keys(completed).length; document.getElementById('progressFill').style.width=(n/PUZZLES.length*100)+'%'; const o=document.getElementById('progressOuter'); if(o)o.setAttribute('data-tip',n+' / '+PUZZLES.length+' rezolvate'); }
+function saveProgress(){ try{localStorage.setItem(SAVE_KEY,JSON.stringify({idx:curIdx,done:completed}));}catch(e){} }
+function loadSavedProgress(){ try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null'); if(d){completed=d.done||{};return typeof d.idx==='number'?d.idx:0;}}catch(e){} return 0; }
+
+function updateArenaBtn(){
+  try{
+    const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null'), done=d?Object.keys(d.done||{}).length:0;
+    const ab=document.getElementById('arenaBtn'),cb=document.getElementById('continueBtn'),rb=document.getElementById('resetAllBtn');
+    if(!ab)return;
+    const allDone=done>=PUZZLES.length;
+    if(done>0){
+      ab.textContent='\u{1F3AF} Arenă Matul în Colț ('+done+'/'+PUZZLES.length+' rezolvate)';
+      if(cb){ if(allDone){cb.style.display='none';}else{const max=Math.max(...Object.keys(d.done).map(Number));cb.textContent='▶ Continuă de la #'+(Math.min(max+1,PUZZLES.length-1)+1);cb.style.display='flex';} }
+      if(rb)rb.style.display='flex';
+    }else{
+      ab.textContent='\u{1F3AF} Arenă Matul în Colț →';
+      if(cb)cb.style.display='none'; if(rb)rb.style.display='none';
+    }
+  }catch(e){}
+}
+
+function resetAllProgress(){ try{localStorage.removeItem(SAVE_KEY);}catch(e){} completed={}; updateArenaBtn(); enterArena(0); }
+
+function updatePuzzleUI(){
+  const p=PUZZLES[curIdx], badge=document.getElementById('turnBadge');
+  if(p.turn==='w'){badge.textContent='⬜ Albul mută';badge.className='turn-badge white';}
+  else{badge.textContent='⬛ Negrul mută';badge.className='turn-badge black';}
+  const lv=levelOf(curIdx), lb=document.getElementById('levelBadge'); lb.textContent=LEVEL_LABELS[lv]; lb.className='level-badge '+LEVEL_CLASSES[lv];
+  document.getElementById('prevBtn').disabled=(curIdx===0);
+  document.getElementById('nextBtn').disabled=true;
+}
+
+function loadPuzzle(idx){
+  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
+  curIdx=idx;solved=false;selSq=null;phase='waiting';solIdx=0;moveHistory=[];viewIdx=0;
+  const pab=document.getElementById('playAgainBtn'); if(pab)pab.style.display='none';
+  if(window._annClear)window._annClear();
+  chess=new Chess(PUZZLES[idx].fen);
+  board.position(PUZZLES[idx].fen,false);
+  board.orientation(PUZZLES[idx].turn==='w'?'white':'black');
+  clearHL(); updatePuzzleUI(); updateProgress(); updateNavBtns(); saveProgress();
+  if(completed[idx]){setMsg('ok','✅ Deja rezolvat — poți încerca din nou!');document.getElementById('nextBtn').disabled=(curIdx===PUZZLES.length-1);}
+  else idleMsg();
+}
+
+function tryMove(from,to){
+  if(solved||phase!=='waiting')return'snapback';
+  const expected=PUZZLES[curIdx].sol[solIdx]; if(!expected)return'snapback';
+  if(from!==expected.slice(0,2)||to!==expected.slice(2,4)){ playWrong();shakeBoard(); setMsg('err','❌ Nu este mutarea corectă — mai încearcă!'); setTimeout(solIdx===0?idleMsg:contMsg,1400); return'snapback'; }
+  const prom=expected.length===5?expected[4]:'q', move=chess.move({from,to,promotion:prom}); if(!move)return'snapback';
+  playMoveSound(!!move.captured); board.position(chess.fen(),true); recordMove(from,to); setLastMoveHL(from,to); selSq=null; solIdx++;
+  if(solIdx>=PUZZLES[curIdx].sol.length){finishPuzzle();return undefined;}
+  phase='computer'; setMsg('idle','⏳ Adversarul răspunde...'); setTimeout(playComputerMove,700); return undefined;
+}
+
+function playComputerMove(){
+  const uci=PUZZLES[curIdx].sol[solIdx], prom=uci.length===5?uci[4]:'q';
+  const cm=chess.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:prom});
+  if(cm){playMoveSound(!!cm.captured);board.position(chess.fen(),true);recordMove(uci.slice(0,2),uci.slice(2,4));setLastMoveHL(uci.slice(0,2),uci.slice(2,4));}
+  solIdx++; if(solIdx>=PUZZLES[curIdx].sol.length){finishPuzzle();return;} phase='waiting'; contMsg();
+}
+
+function finishPuzzle(){
+  solved=true;phase='done';completed[curIdx]=true; updateProgress();saveProgress(); celebrate(); setTimeout(playWin,250);
+  setMsg('ok','✅ Excelent! Matul în Colț!'); document.getElementById('nextBtn').disabled=(curIdx===PUZZLES.length-1);
+  if(Object.keys(completed).length>=PUZZLES.length){const pab=document.getElementById('playAgainBtn');if(pab)pab.style.display='flex';}
+  chess.board().forEach((row,ri)=>row.forEach((pc,ci)=>{
+    if(pc&&pc.type==='k'&&pc.color===chess.turn()) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-mat');
+  }));
+}
+
+function onDragStart(source,piece){ if(mode==='lecture'||phase!=='waiting')return false; if(viewIdx<moveHistory.length)return false; if(solved)return false; if(!chess||piece[0]!==chess.turn())return false; return true; }
+function onDrop(source,target){ if(target==='offboard'||source===target)return'snapback'; clearHL();selSq=null; return tryMove(source,target); }
+function onSnapEnd(){ if(chess)board.position(chess.fen()); }
+
+$(document).on('click','.square-55d63',function(){
+  if(mode==='lecture'||phase!=='waiting')return; if(viewIdx<moveHistory.length)return; if(solved)return;
+  const sq=$(this).data('square'), piece=chess.get(sq), mc=chess.turn();
+  if(selSq){ const p=selSq; clearHL();selSq=null; if(sq===p)return; if(piece&&piece.color===mc){selSq=sq;applyHL(sq,'square-selected');}else tryMove(p,sq); }
+  else{ if(!piece||piece.color!==mc)return; selSq=sq;applyHL(sq,'square-selected'); }
+});
+
+function showHint(){ if(phase!=='waiting'||solved)return; if(viewIdx<moveHistory.length)return; clearHL(); applyHL(PUZZLES[curIdx].sol[solIdx].slice(0,2),'hint-square'); }
+
+function showSolution(){
+  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
+  const pz=PUZZLES[curIdx]; moveHistory=pz.sol.map(u=>({from:u.slice(0,2),to:u.slice(2,4),prom:u.length===5?u[4]:'q'}));
+  chess=new Chess(pz.fen); viewIdx=0; board.position(pz.fen,false); clearHL(); updateNavBtns(); autoPlaySol();
+}
+function autoPlaySol(){ if(viewIdx>=moveHistory.length)return; viewIdx++;replayToPos(viewIdx);updateNavBtns(); if(viewIdx<moveHistory.length)autoPlayTimer=setTimeout(autoPlaySol,800); }
+
+function recordMove(f,t){ moveHistory.push({from:f,to:t,prom:'q'}); viewIdx=moveHistory.length; updateNavBtns(); }
+function replayToPos(idx){ const pz=PUZZLES[curIdx],temp=new Chess(pz.fen); for(let i=0;i<idx;i++){const m=moveHistory[i];temp.move({from:m.from,to:m.to,promotion:m.prom});} board.position(temp.fen(),false); clearHL(); if(idx>0&&moveHistory[idx-1]){const lm=moveHistory[idx-1];applyHL(lm.from,'last-move-from');applyHL(lm.to,'last-move-to');} }
+function stepBack(){ if(viewIdx<=0)return; viewIdx--;replayToPos(viewIdx);updateNavBtns(); }
+function stepForward(){ if(viewIdx>=moveHistory.length)return; viewIdx++;replayToPos(viewIdx);updateNavBtns(); }
+function updateNavBtns(){ const bb=document.getElementById('stepBackBtn'),fb=document.getElementById('stepFwdBtn'); if(bb)bb.disabled=viewIdx<=0; if(fb)fb.disabled=viewIdx>=moveHistory.length; }
+
+function prevPuzzle(){ if(curIdx>0)loadPuzzle(curIdx-1); }
+function nextPuzzle(){ if(curIdx<PUZZLES.length-1)loadPuzzle(curIdx+1); }
+function resetPuzzle(){ loadPuzzle(curIdx); }
+
+function enterArena(idx){ mode='puzzle'; document.getElementById('lectureView').style.display='none'; document.getElementById('puzzleView').style.display='block'; document.getElementById('arenaBackBtn').style.display='block'; loadPuzzle(idx); }
+function startArena(){ loadSavedProgress(); enterArena(0); }
+function continueArena(){ loadSavedProgress(); const keys=Object.keys(completed).map(Number); const max=keys.length?Math.max(...keys):-1; const next=Math.min(max+1,PUZZLES.length-1); if(mode==='puzzle')loadPuzzle(next); else enterArena(next); }
+function backToLecture(){ mode='lecture'; document.getElementById('lectureView').style.display='block'; document.getElementById('puzzleView').style.display='none'; document.getElementById('arenaBackBtn').style.display='none'; updateArenaBtn(); board.orientation('white'); board.position(LECTURE_FEN,true); chess=null;selSq=null; if(window._annClear)window._annClear(); clearHL(); }
+
+board=Chessboard('board',{position:LECTURE_FEN,pieceTheme:PIECE_THEME,draggable:true,onDragStart,onDrop,onSnapEnd});
+window.addEventListener('resize',debounce(()=>{board.resize();if(window._annRender)window._annRender();},150));
+updateArenaBtn();
+</script>
+<script src="board-utils.js"></script>
+</body>
+</html>
