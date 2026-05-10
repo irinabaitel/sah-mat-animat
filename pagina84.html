@@ -283,12 +283,12 @@ function goToStep(s){
   board.position(positions[s],false);
   updateUI(s);
   const cg=new Chess(positions[s]);
-  if(cg.in_checkmate()){
+  if(cg.in_check()){
     const t=cg.turn();
     cg.board().forEach((row,ri)=>row.forEach((pc,ci)=>{
       if(pc&&pc.type==='k'&&pc.color===t) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');
     }));
-    computeRedSquares(positions[s]).forEach(sq=>addSqHl(sq));
+    if(cg.in_checkmate()) computeRedSquares(positions[s]).forEach(sq=>addSqHl(sq));
   }
 }
 
