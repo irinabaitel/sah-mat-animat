@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Arenă Matul cu Doi Nebuni</title>
+  <title>Arenă Matul lui Morphy</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     .panel-heading { font-family:var(--font-display); font-size:clamp(1.15rem,2.5vw,1.4rem); font-weight:900; color:var(--c-navy); line-height:1.25; margin-bottom:8px; }
-    .arena-intro-desc { margin-top:14px; padding:10px 14px; background:rgba(255,255,255,0.06); border-left:3px solid var(--c-gold); border-radius:0 6px 6px 0; font-size:0.88rem; color:var(--c-text); line-height:1.5; }
+    .arena-intro-desc { margin-top:14px; padding:10px 14px; background:rgba(255,255,255,0.06); border-left:3px solid var(--c-gold); border-radius:0 6px 6px 0; color:var(--c-text); line-height:1.6; }
     .btn-arena { display:flex; align-items:center; justify-content:center; margin-top:14px; padding:11px 20px; border-radius:50px; background:var(--c-navy); color:white; text-decoration:none; font-family:var(--font-display); font-size:0.97rem; font-weight:700; border:none; cursor:pointer; width:100%; transition:opacity .18s; }
     .btn-arena:hover { opacity:0.86; }
     #puzzleView { display:none; }
@@ -56,7 +56,7 @@
 <body>
 <div class="page-wrapper">
   <header class="page-header" role="banner">
-    <span class="header-title" id="pageTitle">Arenă Matul cu Doi Nebuni</span>
+    <span class="header-title" id="pageTitle">Arenă Matul lui Morphy</span>
   </header>
   <main class="page-main" role="main">
     <div class="board-col">
@@ -66,27 +66,27 @@
       <div class="panel-scroll" id="panelScroll">
 
         <div id="lectureView">
-          <div class="panel-heading">Arenă Matul cu Doi Nebuni</div>
-          <p><strong>Matul cu Doi Nebuni</strong>: fie pe diagonale alăturate (Diagonale Adiacente), fie încrucișate (Matul lui Boden). Regele este prins în colț sau pe latura tablei, obstrucționat de propriile piese.</p>
+          <div class="panel-heading">Arenă Matul lui Morphy</div>
+          <p><strong>Matul lui Morphy</strong>: regele advers este prins în colțul tablei, un turn sau o regină controlează coloana deschisă, iar nebunul dă matul pe diagonală.</p>
           <div class="hl-box" style="margin:12px 0;">
-            <strong>&#9820; Tiparul de mat:</strong>
-            <p style="margin-top:6px;line-height:1.7;">Doi nebuni atacă regele pe diagonale — paralele sau încrucișate. Recunoaște poziția și execută secvența!</p>
-            <p style="margin-top:8px;font-size:0.88em;opacity:0.75;">40 puzzle-uri &middot; 3 niveluri de dificultate (Ușor &rarr; Mediu &rarr; Avansat)</p>
+            <strong>&#9815; Tiparul de mat:</strong>
+            <p style="margin-top:6px;line-height:1.7;">Regele este blocat în colț de propriul pion, turnul taie calea de scăpare pe coloana deschisă, iar nebunul dă mat pe diagonală.</p>
+            <p style="margin-top:8px;font-size:0.88em;opacity:0.75;">40 puzzle-uri &middot; 3 niveluri de dificultate (Ușor &rarr; Mediu &rarr; Greu)</p>
           </div>
-          <div class="arena-intro-desc">Doi nebuni cooperează pentru a da mat regelui. Uneori e nevoie de o sacrificare pregătitoare — fii atent la cum se deschid diagonalele!</div>
-          <button class="btn-arena" id="arenaBtn" onclick="startArena()">&#127919; Arenă Matul cu Doi Nebuni &rarr;</button>
+          <div class="arena-intro-desc">Caută combinații pregătitoare care forțează regele în colț — uneori e nevoie de un sacrificiu de turn sau de regină înainte ca nebunul să dea lovitura finală!</div>
+          <button class="btn-arena" id="arenaBtn" onclick="startArena()">&#127919; Arenă Matul lui Morphy &rarr;</button>
           <button class="btn-arena" id="continueBtn" onclick="continueArena()" style="display:none;margin-top:8px;background:var(--c-success);">&#9654; Continuă</button>
           <button class="btn-arena" id="resetAllBtn" onclick="resetAllProgress()" style="display:none;margin-top:8px;background:rgba(192,57,43,0.82);">&#8634; Joacă din nou (resetează tot)</button>
         </div>
 
         <div id="puzzleView">
-          <div class="panel-heading">Matul cu Doi Nebuni</div>
+          <div class="panel-heading">Matul lui Morphy</div>
           <span class="turn-badge white" id="turnBadge">&#11036; Albul mută</span>
           <span class="level-badge" id="levelBadge">UȘOR</span>
           <div class="progress-outer" id="progressOuter">
             <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
           </div>
-          <div class="task-msg idle" id="taskMsg">Găsește matul cu doi nebuni!</div>
+          <div class="task-msg idle" id="taskMsg">Găsește Matul lui Morphy!</div>
           <div class="ctrl-row">
             <button class="btn-sm btn-prev" id="prevBtn" onclick="prevPuzzle()" disabled>&#8592; Precedentul</button>
             <button class="btn-sm btn-reset" onclick="resetPuzzle()">&#8634; Resetează</button>
@@ -103,14 +103,14 @@
         </div>
 
       </div>
-      <button class="arena-back-btn" id="arenaBackBtn" style="display:none" onclick="backToLecture()">&#8592; Matul cu Doi Nebuni</button>
+      <button class="arena-back-btn" id="arenaBackBtn" style="display:none" onclick="backToLecture()">&#8592; Matul lui Morphy</button>
       <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
     </div>
   </main>
   <footer class="page-footer" role="navigation">
-    <a href="pagina74.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">Matul cu Doi Nebuni</span></a>
+    <a href="pagina82.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">Matul lui Morphy</span></a>
     <a href="hub.html"      class="nav-btn nav-btn--contents"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
-    <a href="pagina76.html" class="nav-btn nav-btn--forward"><span class="icon">&#8594;</span><span class="label">Matul Balestra</span></a>
+    <a href="hub.html"      class="nav-btn nav-btn--forward"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
   </footer>
   <button class="btn-vol" id="volBtn" onclick="toggleVol()" title="Sunet on/off">&#128266;</button>
 </div>
@@ -120,54 +120,54 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script>
 const PIECE_THEME='https://lichess1.org/assets/piece/caliente/{piece}.svg';
-const LECTURE_FEN='2kr4/3p4/8/8/5B2/8/8/5BK1 w - - 0 1';
-const SAVE_KEY='boden_progress';
+const LECTURE_FEN='7k/5p1p/8/8/7B/8/8/6RK w - - 0 1';
+const SAVE_KEY='morphy_progress';
 
 /* ── PUZZLES ── */
 const PUZZLES=[
-  /* 0-19 USOR */
-  {id:'pfO53',fen:'3rk2r/3n1p2/1p2q1p1/4p2p/1B2B3/7Q/5PPP/1R4K1 w k - 2 26',sol:['h3e6','f7e6','e4g6'],turn:'w'},  // BM r1211 x240
-  {id:'tv2vB',fen:'2rq1rk1/p3bppp/1p2pn2/3pN3/3P2PB/2Pb4/PP1N1P1P/2KRQ2R b - - 1 17',sol:['c8c3','b2c3','e7a3'],turn:'b'},  // BM r1222 x4513
-  {id:'LhJ3c',fen:'3r1r1k/pp5p/3p1ppn/1qpB4/5P2/1PQ5/P1P5/BK4R1 w - - 0 33',sol:['c3f6','f8f6','a1f6'],turn:'w'},  // DB r1227 x889
-  {id:'SRLJw',fen:'r4rk1/ppp1bppp/3p4/2n4b/3NPP2/2P4P/PP1N2P1/R3KB1R b KQ - 0 13',sol:['e7h4','g2g3','h4g3'],turn:'b'},  // DB r1240 x1848
-  {id:'NmI0x',fen:'2kr3r/pp1n1ppp/2pBpn2/7q/2BP4/2P2Q2/PP3PPP/R4RK1 w - - 3 15',sol:['f3c6','b7c6','c4a6'],turn:'w'},  // BM r1255 x1648
-  {id:'7kly4',fen:'r3rk2/1ppqn1pb/5n2/p1b5/P3P1PN/1BP2Q1P/1P3P2/R1B1K2R w KQ - 0 22',sol:['f3f6','g7f6','c1h6'],turn:'w'},  // BM r1262 x19714
-  {id:'134aR',fen:'2kr2r1/pp1n1p1p/2p5/8/3q1B2/3B1Q2/P1P3PP/5R1K w - - 0 18',sol:['f3c6','b7c6','d3a6'],turn:'w'},  // BM r1265 x2127
-  {id:'tKzgF',fen:'2kr1b1r/p2np1pb/1pp2p1p/5P2/1q1PPB2/2PB1NP1/P6P/RR4K1 w - - 0 17',sol:['d3a6'],turn:'w'},  // BM r1289 x781
-  {id:'48ZEX',fen:'2kr3r/pp1n1pp1/2p1p2p/7q/3Pn1b1/2Q2NB1/PPP1BPPP/R4RK1 w - - 1 15',sol:['c3c6','b7c6','e2a6'],turn:'w'},  // BM r1304 x2152
-  {id:'bgx8u',fen:'2r1k2r/5ppp/p2bp3/np1p2P1/3Pb2P/2P1B3/PP1NBP2/2KR2R1 b k - 1 18',sol:['c8c3','b2c3','d6a3'],turn:'b'},  // BM r1313 x6733
-  {id:'Kw0g6',fen:'2kr3r/pp1n1p1p/2pBppb1/8/2B4q/5Q2/PPP2PPP/R4RK1 w - - 0 15',sol:['f3c6','b7c6','c4a6'],turn:'w'},  // BM r1317 x3634
-  {id:'ZxSXo',fen:'2kr3r/pp1n1pp1/2p1p2p/6q1/2BPQ3/P1P2P1n/2P2P1B/R4R1K w - - 0 20',sol:['e4c6','b7c6','c4a6'],turn:'w'},  // BM r1323 x798
-  {id:'1FHZ6',fen:'2rN1r2/p5k1/8/6p1/1b2p3/2Qb2P1/PP1N1PP1/2KR3R b - - 2 25',sol:['c8c3','b2c3','b4a3'],turn:'b'},  // BM r1333 x11178
-  {id:'p7m8u',fen:'2kr3r/pp1n4/2p1R3/2bp4/5Bn1/P1NB4/1P1K2PP/7R w - - 1 20',sol:['e6c6','b7c6','d3a6'],turn:'w'},  // BM r1334 x1315
-  {id:'PEehk',fen:'2kr1b1r/pp1npppq/2p2np1/8/2QP1BP1/5P2/PPPN4/2KR1B2 w - - 0 15',sol:['c4c6','b7c6','f1a6'],turn:'w'},  // BM r1345 x2084
-  {id:'zMyQQ',fen:'2kr3q/pp1n1p2/2p3pb/5p2/Q2P1B2/2PB4/PP3PP1/2KR4 w - - 4 19',sol:['a4c6','b7c6','d3a6'],turn:'w'},  // BM r1352 x2324
-  {id:'aU4zq',fen:'2kr1b1r/ppp3pp/2n1bp2/4p3/8/1PP1BNPP/P3PPB1/R1K4R b - - 0 12',sol:['f8a3','c1b1','e6f5'],turn:'b'},  // BM r1354 x12422
-  {id:'bnoUS',fen:'8/1pp2Bp1/p1kb3p/3np3/8/4B1KP/P1P2PP1/8 w - - 0 27',sol:['f7e8'],turn:'w'},  // DB r1355 x1017
-  {id:'nRSpd',fen:'2kr2r1/pp1n1b2/2p1pq2/8/2BPQB2/2N5/PPP2PP1/R3K3 w Q - 1 17',sol:['e4c6','b7c6','c4a6'],turn:'w'},  // BM r1361 x1064
-  {id:'TmNpP',fen:'2kr1b1r/pp1n1q2/2p2n1p/2p3p1/N2p2P1/3B1QBP/PP3P2/2KR3R w - - 0 19',sol:['f3c6','b7c6','d3a6'],turn:'w'},  // BM r1388 x2193
-  /* 20-33 MEDIU */
-  {id:'CdeTT',fen:'r3kb1r/1p1b4/p3pB2/3pq3/P7/1NPB1p2/5P2/R3R1K1 w kq - 0 23',sol:['d3g6'],turn:'w'},  // DB r1390 x1433
-  {id:'i7Mzc',fen:'2kr2r1/pp1n4/2p1pq2/2b2p2/2B4p/P1P3BP/2P3Q1/R4R1K w - - 0 32',sol:['g2c6','b7c6','c4a6'],turn:'w'},  // BM r1391 x959
-  {id:'gl3da',fen:'5r1k/1b1n3p/1q1P2pQ/p3p1B1/1pBp4/8/PPP3P1/R5K1 w - - 0 24',sol:['h6f8','d7f8','g5f6'],turn:'w'},  // DB r1392 x5908
-  {id:'mWhzd',fen:'2kr1b1r/1p1n1pp1/1Rn1p1p1/3p4/3P1BP1/2P1PP2/3N3P/4KB1R w K - 1 20',sol:['b6c6','b7c6','f1a6'],turn:'w'},  // BM r1397 x3128
-  {id:'tzwTo',fen:'2kr3r/pp1n1ppp/2p1pn2/8/1P1P1B2/2NB1Q1P/2PK1PP1/7q w - - 0 14',sol:['f3c6','b7c6','d3a6'],turn:'w'},  // BM r1397 x844
-  {id:'QtxRD',fen:'2r1kb1r/3p2p1/p3pB1p/np6/8/8/PPB2PPP/R2bR1K1 w k - 0 20',sol:['c2g6'],turn:'w'},  // DB r1398 x2810
-  {id:'T74XT',fen:'r3kb1r/2pb2p1/2pp3p/p1n2pB1/2P4P/P1N2B2/1P3PP1/R4RK1 w kq - 0 18',sol:['f3h5','g7g6','h5g6'],turn:'w'},  // DB r1447 x1393
-  {id:'mM5om',fen:'5R2/p5p1/Pkpp2r1/1p1b2B1/2nP2B1/2P5/8/3K4 w - - 7 38',sol:['g5d8','b6a6','g4c8'],turn:'w'},  // DB r1460 x2107
-  {id:'g2Yj1',fen:'r3kb1r/1p2pppp/pB1p4/3P4/5Pnq/1R1Q4/P1P1B1P1/5RK1 w kq - 1 18',sol:['d3b5','a6b5','e2b5'],turn:'w'},  // DB r1471 x2838
-  {id:'POqSM',fen:'5rk1/3b1pp1/P6p/2B5/2Pp4/1P1P2P1/4Pb1P/R6K b - - 0 28',sol:['d7c6','e2e4','d4e3'],turn:'b'},  // DB r1490 x21904
-  {id:'Z9nh3',fen:'r3kb1r/p2n1pp1/1p2p3/q2p2B1/2P4p/3B4/P1P1QP1P/R2K2R1 w kq - 0 19',sol:['e2e6','f7e6','d3g6'],turn:'w'},  // DB r1537 x7590
-  {id:'ksKJh',fen:'N4k1r/pp2b1pp/2n5/6q1/4Q1b1/8/PPPP2P1/R1B1KB1R b KQ - 0 14',sol:['g5h4','h1h4','e7h4','g2g3','h4g3'],turn:'b'},  // DB r1540 x5164
-  {id:'TDQrD',fen:'k7/pb4p1/6Bp/1pp5/5B2/2q5/P2r1PPP/4R1K1 w - - 0 30',sol:['e1e8','b7c8','g6e4','d2d5','e4d5'],turn:'w'},  // DB r1592 x8702
-  {id:'r0qdL',fen:'3r3k/pp1rRBbp/1nb3p1/2p3B1/8/2P4P/PP4P1/2K1R3 w - - 1 23',sol:['e7e8','d8e8','e1e8','g7f8','g5f6'],turn:'w'},  // DB r1634 x152177
-  /* 34-39 AVANSAT */
-  {id:'pObiw',fen:'3q3k/4n2p/6p1/p7/n1B1pp1B/Q1b1pP2/Pr4PP/K6R w - - 0 28',sol:['a3c3','a4c3','h4f6'],turn:'w'},  // DB r1651 x4675
-  {id:'RAjSG',fen:'7k/p3n2p/1p2B1p1/2p3B1/2PbP3/P5qP/8/3Q3K w - - 0 36',sol:['d1d4','c5d4','g5f6'],turn:'w'},  // DB r1660 x8738
-  {id:'9baDG',fen:'r1b1kb1r/pp1n1pp1/4p2p/q5B1/3pQ3/3B1N2/PPP2PPP/R4K1R w kq - 0 11',sol:['e4e6','f7e6','d3g6'],turn:'w'},  // DB r1716 x17764
-  {id:'jJmVy',fen:'r3r2k/1p4Rp/2p1P3/3B2q1/p1P3b1/P1Q1b1P1/1B5P/R6K b - - 1 28',sol:['g5d5','c4d5','g4f3'],turn:'b'},  // DB r1722 x3645
-  {id:'5g8Sg',fen:'5rk1/ppQ2ppp/3p4/3P3b/4Pb2/P4PqP/1P2N1P1/2R3BK b - - 4 24',sol:['g3h3','g2h3','h5f3'],turn:'b'},  // DB r1818 x4493
-  {id:'a7dBS',fen:'1k1r4/p1p3pp/1bQ5/3B4/4P3/P2n2Pq/1P1Nb2P/R1B2R1K b - - 2 21',sol:['h3f1','d2f1','e2f3'],turn:'b'},  // DB r1871 x14229
+  /* 0-9 USOR */
+  {id:'2JuOA',fen:'4rn2/1b3k2/p3p2p/1p1r4/2pP4/2P2P2/PPQ2P1P/1B3RK1 b - - 0 29',sol:['d5g5','g1h1','b7f3'],turn:'b'},
+  {id:'0fEOu',fen:'2r1r2k/pp2b2p/2pnp3/8/3P1B2/1P4R1/P4PPP/5RK1 w - - 1 24',sol:['f4e5','e7f6','e5f6'],turn:'w'},
+  {id:'1b2mq',fen:'r2q1r1k/2p2p1p/3P1b2/2p5/p1N2n2/1PQ2P2/PBP2P1P/2K3R1 w - - 3 20',sol:['c3f6','d8f6','b2f6'],turn:'w'},
+  {id:'01yBt',fen:'4k1r1/2p4Q/pN3r2/1p6/1P6/P2B3P/7K/3b4 b - - 0 44',sol:['f6f2','h2h1','d1f3'],turn:'b'},
+  {id:'0GSXS',fen:'8/1pP2kpp/2p1b3/p1P5/5r2/P7/4pP1P/2R1R1K1 b - - 1 33',sol:['f4g4','g1h1','e6d5','f2f3','d5f3'],turn:'b'},
+  {id:'0X4Lc',fen:'r3r1k1/ppp1Bp1p/3pbp2/b7/4P3/3R4/PPP2PPP/2K4R w - - 0 17',sol:['d3g3','e6g4','g3g4','g8h8','e7f6'],turn:'w'},
+  {id:'26ITe',fen:'6k1/1bbp2pp/1Nr5/1pP1p3/pP6/P3PP2/5P1P/R4RK1 b - - 0 23',sol:['c6g6','g1h1','b7f3'],turn:'b'},
+  {id:'0bCo5',fen:'2r2r1k/p6p/1p1B4/2n5/8/2P5/P4P2/6RK w - - 1 30',sol:['d6e5','f8f6','e5f6'],turn:'w'},
+  {id:'1vYup',fen:'1k4rN/pp1n4/2p4b/2Pp3p/Q2P2b1/8/PP2BP1P/R3R1K1 b - - 0 21',sol:['g4e2','h8g6','g8g6','g1h1','e2f3'],turn:'b'},
+  {id:'0wQfp',fen:'r6k/pp3r1p/5p2/2p5/4pP2/1PQnP2q/PB1P2RP/5RK1 w - - 9 27',sol:['c3f6','f7f6','b2f6'],turn:'w'},
+  /* 10-29 MEDIU */
+  {id:'4LCTP',fen:'r4r1k/1p5p/1pp5/4p3/1PPB1p2/P4q2/5PRP/R6K w - - 0 26',sol:['d4e5','f8f6','e5f6'],turn:'w'},
+  {id:'4Fp4y',fen:'7k/p4p1p/3B4/1p6/2p5/5P2/r6P/6RK w - - 2 37',sol:['d6e5','f7f6','e5f6'],turn:'w'},
+  {id:'4xDsL',fen:'3R4/N4p1k/6pp/4r3/8/2P5/PPB1bP1P/4R1K1 b - - 1 25',sol:['e5g5','g1h1','e2f3'],turn:'b'},
+  {id:'3Mtqr',fen:'4r1k1/1p2Bp1p/p3b3/2R4p/7K/6P1/PP3P1P/3r4 w - - 8 36',sol:['c5g5','g8h8','e7f6'],turn:'w'},
+  {id:'2Vo8i',fen:'7k/6p1/2Q4p/2Pp4/p2P1P2/3bP3/Pr1b3P/3R2K1 b - - 5 36',sol:['d2e3','g1h1','d3e4'],turn:'b'},
+  {id:'3MXBu',fen:'r6k/pp4pp/5r2/8/2B2P2/2R1P3/PP2bP1P/R5K1 b - - 2 24',sol:['f6g6','g1h1','e2f3'],turn:'b'},
+  {id:'2yX5I',fen:'r6k/1p3p1p/3Bb3/p2p2R1/3P4/8/7P/6K1 w - - 0 30',sol:['d6e5','f7f6','e5f6'],turn:'w'},
+  {id:'3LDkU',fen:'2r3k1/pp3p1p/3B4/2n2p2/8/2P2P2/P6P/2K4R w - - 0 27',sol:['h1g1','g8h8','d6e5','f7f6','e5f6'],turn:'w'},
+  {id:'4Huv0',fen:'r6k/ppp4N/2b5/8/5p2/5P2/PPP2P1P/3R1RK1 b - - 0 25',sol:['a8g8','h7g5','g8g5','g1h1','c6f3'],turn:'b'},
+  {id:'501qt',fen:'4r3/p4k2/7p/8/PP6/3P1P2/2P1bP1P/4R1K1 b - - 0 32',sol:['e8g8','g1h1','e2f3'],turn:'b'},
+  {id:'44Mw3',fen:'4r3/p1p2p1k/2p4p/8/qb1pP1RB/7P/1P4P1/5R1K w - - 0 30',sol:['f1f7','h7h8','h4f6'],turn:'w'},
+  {id:'515NC',fen:'1rr3k1/4Bp1p/4p3/pn1p1p2/P4KP1/1P5P/8/6R1 w - - 0 34',sol:['g4f5','g8h8','e7f6'],turn:'w'},
+  {id:'2a4O3',fen:'4rrk1/pbpp1p1p/1p1n1p2/8/8/3BR3/PB3PPP/1R4K1 w - - 4 24',sol:['e3g3','g8h8','b2f6'],turn:'w'},
+  {id:'2lJMv',fen:'r4rk1/1pp4p/3p2pB/p2Pp3/2P1p1bP/2N3Pn/PP3PK1/R3RN2 b - - 0 20',sol:['f8f2','g2h1','g4f3'],turn:'b'},
+  {id:'3iM4J',fen:'r3r1k1/p1b1Bp1p/2b5/2P5/8/5N2/PP5p/R4R1K w - - 3 24',sol:['f1g1','h2g1q','a1g1','c7g3','g1g3','g8h8','e7f6'],turn:'w'},
+  {id:'2hw6b',fen:'4r1k1/3rPp1p/5p2/1p6/1Pp2P2/p1B1R3/P5KP/8 w - - 0 31',sol:['e3g3','g8h8','c3f6'],turn:'w'},
+  {id:'2AR7K',fen:'r1r1q2k/pb2n2p/np1pN2P/3P1B2/1P4R1/P1b1B3/2Q1KP2/R7 w - - 1 27',sol:['c2c3','c8c3','e3d4'],turn:'w'},
+  {id:'18AIY',fen:'2r3k1/6p1/1Q5p/3b4/1P1P4/P5P1/5r1P/4RRK1 b - - 4 35',sol:['f2g2','g1h1','g2g3','e1e4','d5e4','f1f3','e4f3'],turn:'b'},
+  {id:'5CLPu',fen:'r6k/1p4Rp/p7/3P4/P2BP2n/5q2/5P1P/7K w - - 2 32',sol:['g7g2','f3f6','d4f6'],turn:'w'},
+  {id:'2299T',fen:'r1k5/2p5/p1bn4/1p6/4B1rQ/4P3/P1P1NP1P/R2R3K b - - 3 27',sol:['c6e4','f2f3','e4f3'],turn:'b'},
+  /* 30-39 GREU */
+  {id:'5gUHL',fen:'5rk1/6pp/Q3pp2/3b4/P2PP3/2P3r1/7P/5R1K b - - 0 30',sol:['d5e4','f1f3','e4f3'],turn:'b'},
+  {id:'62Z6h',fen:'6r1/pb3p1k/1p6/3p4/5P2/8/2N4P/1R3R1K b - - 0 31',sol:['d5d4','f1f3','b7f3'],turn:'b'},
+  {id:'69rCN',fen:'1r4k1/5p1p/p7/2Bp4/8/P4K1P/r1p2P2/2R5 w - - 2 33',sol:['c1g1','g8h8','c5d4','f7f6','d4f6'],turn:'w'},
+  {id:'5NP4x',fen:'4r2k/1p1bq2p/p2p1p2/1p1P4/1PrQPP2/8/PB5P/R5RK w - - 0 25',sol:['d4f6','e7f6','b2f6'],turn:'w'},
+  {id:'1ymEd',fen:'5rk1/pp2Bpn1/4p2p/8/3P4/2r5/Pq3P1P/1B1R2RK w - - 0 25',sol:['g1g7','g8g7','d1g1','c3g3','g1g3','g7h8','e7f6'],turn:'w'},
+  {id:'0MZdu',fen:'3r1r1k/p4pb1/2p1p2p/1p2P3/3q1PQ1/1P1B2B1/P1P2P1K/6R1 w - - 7 27',sol:['g4g7','h8g7','g3h4','g7h8','h4f6'],turn:'w'},
+  {id:'5wxzB',fen:'3rr2k/4b2p/p3q3/1pp1p1R1/4p3/1PQ1P3/PBP4P/6K1 w - - 0 29',sol:['c3e5','e7f6','e5f6','e6f6','b2f6'],turn:'w'},
+  {id:'4vjpT',fen:'5rk1/p4pp1/b1n1p2p/2np3P/P1p4B/2P1PN1P/1rBK1P2/R5R1 w - - 3 22',sol:['g1g7','g8g7','a1g1','g7h8','h4f6'],turn:'w'},
+  {id:'1bKP9',fen:'2k3rr/7p/p1pp4/Q3pp2/3p2bP/8/PPP2P1P/R3R1K1 b - - 0 21',sol:['g4e2','g1h1','e2f3'],turn:'b'},
+  {id:'4mne6',fen:'8/1p1k3B/2b1p3/8/3P4/4P3/PP3r1P/R4RK1 b - - 1 30',sol:['f2g2','g1h1','g2g6','d4d5','c6d5','e3e4','d5e4','f1f3','e4f3'],turn:'b'},
 ];
 
 /* ── STATE ── */
@@ -177,8 +177,8 @@ let phase='waiting', solIdx=0, completed={}, moveHistory=[], viewIdx=0, autoPlay
 let muted=(()=>{try{return localStorage.getItem('arena_muted')==='1';}catch(e){return false;}})();
 function toggleVol(){ muted=!muted; try{localStorage.setItem('arena_muted',muted?'1':'0');}catch(e){} const b=document.getElementById('volBtn'); if(b)b.innerHTML=muted?'&#128263;':'&#128266;'; }
 
-function levelOf(idx){ if(idx<20)return 0; if(idx<34)return 1; return 2; }
-const LEVEL_LABELS=['UȘOR','MEDIU','AVANSAT'], LEVEL_CLASSES=['','med','hard'];
+function levelOf(idx){ if(idx<10)return 0; if(idx<30)return 1; return 2; }
+const LEVEL_LABELS=['UȘOR','MEDIU','GREU'], LEVEL_CLASSES=['','med','hard'];
 
 const SND={ move:new Audio('Sounds/Move.mp3'), capture:new Audio('Sounds/Capture.mp3'), mate:new Audio('Sounds/Mate.mp3') };
 function playMoveSound(cap){ if(muted)return; try{const s=cap?SND.capture:SND.move;s.currentTime=0;s.play();}catch(e){} }
@@ -194,7 +194,7 @@ function applyHL(sq,cls){ const el=document.querySelector('.square-'+sq); if(el)
 function setLastMoveHL(f,t){ document.querySelectorAll('.last-move-from,.last-move-to').forEach(el=>el.classList.remove('last-move-from','last-move-to')); applyHL(f,'last-move-from'); applyHL(t,'last-move-to'); }
 
 function setMsg(type,text){ const el=document.getElementById('taskMsg'); el.className='task-msg '+type; el.innerHTML=text; }
-function idleMsg(){ setMsg('idle','Găsește matul cu doi nebuni!'); }
+function idleMsg(){ setMsg('idle','Găsește Matul lui Morphy!'); }
 function contMsg(){ setMsg('idle','&#127919; Continuă secvența!'); }
 
 function updateProgress(){ const n=Object.keys(completed).length; document.getElementById('progressFill').style.width=(n/PUZZLES.length*100)+'%'; const o=document.getElementById('progressOuter'); if(o)o.setAttribute('data-tip',n+' / '+PUZZLES.length+' rezolvate'); }
@@ -208,11 +208,11 @@ function updateArenaBtn(){
     if(!ab)return;
     const allDone=done>=PUZZLES.length;
     if(done>0){
-      ab.textContent='\u{1F3AF} Arenă Matul cu Doi Nebuni ('+done+'/'+PUZZLES.length+' rezolvate)';
+      ab.textContent='\u{1F3AF} Arenă Matul lui Morphy ('+done+'/'+PUZZLES.length+' rezolvate)';
       if(cb){ if(allDone){cb.style.display='none';}else{const max=Math.max(...Object.keys(d.done).map(Number));cb.textContent='▶ Continuă de la #'+(Math.min(max+1,PUZZLES.length-1)+1);cb.style.display='flex';} }
       if(rb)rb.style.display='flex';
     }else{
-      ab.textContent='\u{1F3AF} Arenă Matul cu Doi Nebuni →';
+      ab.textContent='\u{1F3AF} Arenă Matul lui Morphy →';
       if(cb)cb.style.display='none'; if(rb)rb.style.display='none';
     }
   }catch(e){}
@@ -264,9 +264,11 @@ function playComputerMove(){
 
 function finishPuzzle(){
   solved=true;phase='done';completed[curIdx]=true; updateProgress();saveProgress(); celebrate(); setTimeout(playWin,250);
-  setMsg('ok','✅ Excelent! Matul cu Doi Nebuni!'); document.getElementById('nextBtn').disabled=(curIdx===PUZZLES.length-1);
+  setMsg('ok','✅ Excelent! Matul lui Morphy!'); document.getElementById('nextBtn').disabled=(curIdx===PUZZLES.length-1);
   if(Object.keys(completed).length>=PUZZLES.length){const pab=document.getElementById('playAgainBtn');if(pab)pab.style.display='flex';}
-  if(chess&&chess.in_checkmate()){const t=chess.turn();chess.board().forEach((row,ri)=>row.forEach((pc,ci)=>{if(pc&&pc.type==='k'&&pc.color===t)applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');}));}
+  chess.board().forEach((row,ri)=>row.forEach((pc,ci)=>{
+    if(pc&&pc.type==='k'&&pc.color===chess.turn()) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');
+  }));
 }
 
 function onDragStart(source,piece){ if(mode==='lecture'||phase!=='waiting')return false; if(viewIdx<moveHistory.length)return false; if(solved)return false; if(!chess||piece[0]!==chess.turn())return false; return true; }

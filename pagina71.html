@@ -39,6 +39,7 @@
     .ex-btn { padding:5px 14px; border-radius:20px; border:2px solid var(--c-navy); background:transparent; color:var(--c-navy); font-family:var(--font-display); font-weight:700; font-size:var(--fs-sm); cursor:pointer; transition:all .15s; }
     .ex-btn:hover, .ex-btn.active { background:var(--c-navy); color:white; }
     #navControls { display:flex; flex-direction:column; gap:10px; padding:4px 0 6px; }
+    .moves-log { height:104px; overflow-y:auto; }
   </style>
 </head>
 <body>
@@ -197,60 +198,6 @@ const chapters = [
     }
   },
 
-  /* 3 — CSV tKI9A: mat în 2, turnuri pe d7 și d1 */
-  {
-    fen:'4k3/3R1p2/4p1p1/2r1P2p/7P/1P4r1/8/1K1R4 w - - 0 32',
-    san:['Rd8+','Ke7','R1d7#'],
-    ann:{
-      0:'Albul mută. Turnurile de pe d7 și d1 sunt ambele pe coloana d — doi „porci" verticali. Regele negru pe e8 nu are unde fugi!',
-      1:'1.Td8+ — turnul de pe d7 vine pe d8 cu șah, forțând regele la e7.',
-      2:'1...Re7 — regele se retrage pe e7.',
-      3:'2.T1d7# — turnul de pe d1 vine pe d7. Regele pe e7 e prins între d8 și d7. <strong>Mat în 2!</strong>'
-    },
-    arrows:{
-      0:[{from:'d7',to:'d8',color:'G'},{from:'d1',to:'d7',color:'B'}],
-      1:[{from:'e8',to:'e7',color:'R'}],
-      2:[{from:'d1',to:'d7',color:'G'}],
-      3:[]
-    }
-  },
-
-  /* 4 — CSV U8H7K: mat în 2, turnuri pe d7 și d1 */
-  {
-    fen:'2k5/1p1R1p2/2p5/K7/2r5/5r2/PP5P/3R4 w - - 0 23',
-    san:['Rd8+','Kc7','R1d7#'],
-    ann:{
-      0:'Albul mută. Turnuri pe d7 și d1, regele negru pe c8. Regele alb de pe a5 controlează b6 — o capcană perfectă pentru doi porci!',
-      1:'1.Td8+ — turnul de pe d7 vine pe d8 cu șah, forțând regele la c7.',
-      2:'1...Rc7 — regele se mută la c7.',
-      3:'2.T1d7# — turnul de pe d1 vine pe d7. Regele pe c7: d8 controlat de T, b7 pion propriu, b6 controlat de regele alb. <strong>Mat în 2!</strong>'
-    },
-    arrows:{
-      0:[{from:'d7',to:'d8',color:'G'},{from:'d1',to:'d7',color:'B'}],
-      1:[{from:'c8',to:'c7',color:'R'}],
-      2:[{from:'d1',to:'d7',color:'G'}],
-      3:[]
-    }
-  },
-
-  /* 5 — CSV 8Yall: mat în 2, turnuri pe h3 și h2 */
-  {
-    fen:'6k1/5p2/4p1p1/6P1/1prr4/3pK2R/p6R/8 w - - 0 58',
-    san:['Rh8+','Kg7','R2h7#'],
-    ann:{
-      0:'Albul mută. Turnurile de pe h3 și h2 sunt pe coloana h — „porci verticali"! Regele negru pe g8 nu poate fugi spre linia 7 (turnuri acolo).',
-      1:'1.Th8+ — turnul de pe h3 vine pe h8 cu șah, alungând regele la g7.',
-      2:'1...Rg7 — regele se retrage pe g7.',
-      3:'2.T2h7# — turnul de pe h2 vine pe h7. Regele pe g7: h8 controlat de Th8, g6 blocat de pion propriu. <strong>Mat în 2!</strong>'
-    },
-    arrows:{
-      0:[{from:'h3',to:'h8',color:'G'},{from:'h2',to:'h7',color:'B'}],
-      1:[{from:'g8',to:'g7',color:'R'}],
-      2:[{from:'h2',to:'h7',color:'G'}],
-      3:[]
-    }
-  }
-
 ];
 
 let curChapterIdx=0, positions=[];
@@ -393,12 +340,9 @@ const matTypes=[
   { num:'1.', title:'Tiparul de mat',
     desc:'Doi porci pe a 7-a linie: unul alungă regele cu șah, celălalt vine pentru lovitura finală. Un turn nu vede matul pe care îl pregătește celălalt.',
     examples:[{ch:0,label:'Ex. intro'}] },
-  { num:'2.', title:'Modele cu secvență lungă',
+  { num:'2.', title:'Exemple',
     desc:'Turnurile deschid drumul eliminând apărătorii. Regele advers e alungat în serie, iar matul vine inevitabil după 5-6 mutări.',
-    examples:[{ch:1,label:'Ex. 1'},{ch:2,label:'Ex. 2'}] },
-  { num:'3.', title:'Mat în 2 mutări',
-    desc:'Turnurile sunt deja pe linie — un șah forțează regele, celălalt turn vine imediat pentru mat.',
-    examples:[{ch:3,label:'Ex. 3'},{ch:4,label:'Ex. 4'},{ch:5,label:'Ex. 5'}] }
+    examples:[{ch:1,label:'Ex. 1'},{ch:2,label:'Ex. 2'}] }
 ];
 
 let activeExBtn=null;

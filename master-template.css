@@ -258,7 +258,7 @@ html, body {
  * Colțurile pătratului (la ~141% din rază) rămân culoarea normală a tablei.
  */
 .highlight-check {
-  background: radial-gradient(
+  background-image: radial-gradient(
     ellipse at center,
     rgba(255,   0, 0, 1)  0%,
     rgba(231,   0, 0, 1) 25%,
@@ -742,24 +742,30 @@ html, body {
  * ──────────────────────────────────────────────────────────── */
 
 
-/* ── 14. Efect mat pe pătratul regelui ───────────────────────
+/* ── 14. Efect șah/mat pe pătratul regelui ───────────────────
  *
- * Folosește clasa existentă .highlight-check (sec. 6) —
- * radial gradient roșu, stil Lichess. NU inventa efecte noi.
+ * Folosește clasa .highlight-check (sec. 6) — radial gradient
+ * roșu, stil Lichess. Aplicabil atât la șah cât și la mat.
+ * NU inventa efecte noi, nu folosi .highlight-mat local.
  *
- * Pattern JS (copiază din pagina5.html):
+ * Se aplică pe pătratul regelui (nu al piesei care dă șahul):
+ *   - la fiecare șah intermediar în tryMove / playComputerMove
+ *   - la mat în finishPuzzle (chess.in_checkmate)
+ *   - la navigare în replayToPos (temp.in_check)
+ *
+ * Pattern JS standard (copiază din pagina5.html):
  *
  *   function applyHL(sq, cls) {
  *     var el = document.querySelector('.square-' + sq);
  *     if (el) el.classList.add(cls);
  *   }
- *   function removeKingOverlay() {
- *     document.querySelectorAll('.highlight-check')
- *       .forEach(function(el) { el.classList.remove('highlight-check'); });
- *   }
- *   function redKingOverlay(sq) {
- *     removeKingOverlay();
- *     applyHL(sq, 'highlight-check');
+ *   // găsire automată a regelui în șah:
+ *   if (chess.in_check()) {
+ *     const t = chess.turn();
+ *     chess.board().forEach((row, ri) => row.forEach((pc, ci) => {
+ *       if (pc && pc.type === 'k' && pc.color === t)
+ *         applyHL(String.fromCharCode(97 + ci) + (8 - ri), 'highlight-check');
+ *     }));
  *   }
  * ──────────────────────────────────────────────────────────── */
 

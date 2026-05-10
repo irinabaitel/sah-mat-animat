@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Matul în Colț — Nivelul VI</title>
+  <title>Matul lui Morphy — Nivelul VI</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -45,7 +45,7 @@
 <body>
 <div class="page-wrapper">
   <header class="page-header" role="banner">
-    <span class="header-title">Matul în Colț</span>
+    <span class="header-title">Matul lui Morphy</span>
     <div class="header-progress"><span class="lesson-badge">Nivelul VI</span></div>
   </header>
   <main class="page-main" role="main">
@@ -59,16 +59,17 @@
         <div class="info-content">
 
           <div class="card">
-            <p>Matul în colț apare când regele advers este <strong>blocat în colțul tablei</strong> cu ajutorul unui turn sau a unei regine și a unei piese proprii, iar <strong>un cal dă mat</strong>.</p>
+            <p>Numit după marele jucător american <strong>Paul Morphy</strong>, acest mat seamănă cu matul în colț, cu excepția faptului că matul îl dă un <strong>nebun</strong>, nu un cal, în timp ce un <strong>turn atacator</strong> și un <strong>pion din armata proprie</strong> limitează mutările regelui.</p>
           </div>
 
           <div class="gold-rule card">
-            <p>&#9816; <strong>Tiparul de mat:</strong></p>
+            <p>&#9815; <strong>Tiparul de mat:</strong></p>
             <ol style="margin-top:8px;padding-left:1.4em;line-height:1.9;">
               <li>Regele advers este prins în colțul tablei.</li>
-              <li>Un turn sau o regină taie căile de scăpare.</li>
-              <li>Calul dă mat atacând regele din colț.</li>
+              <li>Un turn taie căile de scăpare pe coloana din față.</li>
+              <li>Nebunul dă mat atacând regele din colț pe diagonală.</li>
             </ol>
+            <p style="margin-top:8px;font-size:0.88em;opacity:0.72;">Un pion din propria armată blochează casa de retragere a regelui — acesta este elementul distinctiv față de matul în colț!</p>
           </div>
 
           <div id="accList" class="acc-list"></div>
@@ -85,16 +86,16 @@
             <div class="moves-log" id="movesLog"></div>
           </div>
 
-          <a href="pagina81.html" style="display:flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 20px;border-radius:50px;background:var(--c-navy);color:white;text-decoration:none;font-family:var(--font-display);font-size:0.97rem;font-weight:700;width:100%;box-sizing:border-box;transition:opacity .18s;" onmouseover="this.style.opacity='.86'" onmouseout="this.style.opacity='1'">&#8594; Arenă Matul în Colț</a>
+          <a href="pagina83.html" style="display:flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 20px;border-radius:50px;background:var(--c-navy);color:white;text-decoration:none;font-family:var(--font-display);font-size:0.97rem;font-weight:700;width:100%;box-sizing:border-box;transition:opacity .18s;" onmouseover="this.style.opacity='.86'" onmouseout="this.style.opacity='1'">&#8594; Arenă Matul lui Morphy</a>
 
         </div>
       </div>
     </div>
   </main>
   <footer class="page-footer" role="navigation">
-    <a href="pagina79.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">Arenă Arab</span></a>
+    <a href="pagina81.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">Arenă Colț</span></a>
     <a href="hub.html"      class="nav-btn nav-btn--contents"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
-    <a href="pagina81.html" class="nav-btn nav-btn--forward"><span class="icon">&#8594;</span><span class="label">Arenă Colț</span></a>
+    <a href="pagina83.html" class="nav-btn nav-btn--forward"><span class="icon">&#8594;</span><span class="label">Arenă Morphy</span></a>
   </footer>
 </div>
 
@@ -111,57 +112,65 @@ const chapters = [
 
   /* 0 — Tiparul pur, 1 mutare */
   {
-    fen: '7k/7p/8/6N1/8/8/8/6RK w - - 0 1',
-    san: ['Nf7'],
+    fen: '7k/5p1p/8/8/7B/8/8/6RK w - - 0 1',
+    san: ['Bf6'],
     ann: {
-      0: 'Albul mută. Tiparul clasic: regele negru este prins în colțul h8, blocat de propriul pion de pe h7. Turnul de pe g1 controlează coloana g. Ce mutare decisivă are calul?',
-      1: '<strong>Cf7#!</strong> — calul sare pe f7, mat! Regele nu poate fugi: h7 blocat de propriul pion, g8 și g7 controlate de turnul de pe g1. Matul în Colț!'
+      0: 'Albul mută. Regele negru este prins în colțul h8, blocat de propriul pion de pe h7. Turnul de pe g1 controlează coloana g. Ce mutare decisivă are nebunul?',
+      1: '<strong>Nf6#!</strong> — nebunul vine pe f6, mat! Regele nu poate fugi: h7 blocat de propriul pion, g8 și g7 controlate de turnul de pe g1. Matul lui Morphy!'
     }
   },
 
-  /* 1 — Lichess jEorh, 1 mutare, regele în colțul a8 */
+  /* 1 — Rg4+ Kh8 Bxf6# (2 mutări alb) */
   {
-    fen: 'k7/P2R3p/6p1/1ppN1p2/8/6P1/5PK1/q7 w - - 4 33',
-    san: ['Nb6'],
+    fen: '5rk1/p4p1p/1p1rpp2/3qB3/3PR3/7P/PP3PP1/6K1 w - - 0 1',
+    san: ['Rg4+', 'Kh8', 'Bxf6'],
     ann: {
-      0: 'Albul mută. Regele negru este în colțul a8. Turnul de pe d7 controlează întregul rând 7. Calul de pe d5 are o mutare decisivă!',
-      1: '<strong>Cb6#!</strong> — calul vine pe b6, mat! Regele nu poate fugi: a7 și b7 sunt controlate de turn (rândul 7), b8 este controlat de pionul alb de pe a7. Matul în Colț!'
+      0: 'Albul mută. Regele negru pe g8 pare în siguranță, dar turnul de pe e4 poate forța mutarea decisivă!',
+      1: '<strong>1.Tg4+!</strong> — turnul sare pe g4, dând șah! Regele negru este forțat să se retragă în colțul h8.',
+      2: '<strong>1...Rh8</strong> — regele fuge în colțul h8. Coloana g este acum sub controlul turnului. Nebunul de pe e5 poate lovi!',
+      3: '<strong>2.Nxf6#!</strong> — nebunul captează pe f6, mat! Regele nu poate fugi: h7 blocat de propriul pion, g8 și g7 controlate de turnul de pe g4. Matul lui Morphy!'
     }
   },
 
-  /* 2 — Lichess hM01W, 3 mutări, Df2+/Rh1/Cg3# */
+  /* 2 — Combinație de 6 mutări cu diagonala lungă a1–h8 */
   {
-    fen: '5r1k/p2QR3/7p/3P3n/8/6PB/Pq3PK1/8 b - - 4 31',
-    san: ['Qf2+', 'Kh1', 'Nxg3'],
+    fen: '2r2rk1/5ppp/pp6/2q5/2P2P2/3pP1RP/P5P1/B1R3K1 w - - 0 1',
+    san: ['Rxg7+', 'Kh8', 'Rxf7+', 'Kg8', 'Rg7+', 'Kh8', 'Rg3+', 'Qd4', 'Bxd4+', 'Rf6', 'Bxf6'],
     ann: {
-      0: 'Negrul mută. Regele alb pe g2 pare apărat. Dama neagră de pe b2 poate pătrunde dramatic în zona regelui!',
-      1: '<strong>1...Df2+!</strong> — dama sare pe f2, dând șah! Regele alb este forțat în colțul h1.',
-      2: '<strong>2.Rh1</strong> — regele fuge în colțul h1. Acum calul din h5 poate da lovitura finală!',
-      3: '<strong>2...Cxg3#!</strong> — calul sare pe g3, mat! Regele nu poate fugi: h2 blocat de propriul pion, g2 și g1 controlate de damă. Matul în Colț!'
+      0: 'Albul mută. Regele negru pe g8 pare sigur, dar nebunul alb de pe a1 pândește pe diagonala lungă a1-h8. Turnul de pe g3 poate deschide această diagonală!',
+      1: '<strong>1.Txg7+!</strong> — turnul captează pionul g7, dând șah! Regele trebuie să se mute.',
+      2: '<strong>1...Rh8</strong> — regele fuge în colțul h8.',
+      3: '<strong>2.Txf7+!</strong> — șah prin descoperire! Turnul eliberează diagonala a1-h8 și nebunul atacă regele.',
+      4: '<strong>2...Rg8</strong> — regele încearcă să scape pe g8.',
+      5: '<strong>3.Tg7+!</strong> — turnul revine pe g7, șah din nou! Regele este forțat înapoi în colț.',
+      6: '<strong>3...Rh8</strong> — regele nu are altă opțiune.',
+      7: '<strong>4.Tg3+!</strong> — alt șah prin descoperire! Turnul se retrage, iar nebunul de pe a1 atacă din nou regele pe diagonala lungă.',
+      8: '<strong>4...Dd4</strong> — dama încearcă să blocheze diagonala pe câmpul d4.',
+      9: '<strong>5.Nxd4+!</strong> — nebunul captează dama! Regele rămâne în șah pe diagonala lungă. Negrul trebuie să blocheze din nou.',
+      10: '<strong>5...Tf6</strong> — turnul încearcă să blocheze pe f6.',
+      11: '<strong>6.Nxf6#!</strong> — nebunul captează turnul pe f6, mat! Regele nu poate fugi: h7 blocat de propriul pion, g8 și g7 controlate de turn. Matul lui Morphy după o combinație de 6 mutări!'
     }
   },
 
-  /* 3 — Lichess WRMh0, 3 mutări, doi cai */
+  /* 3 — Poziție reală (Lichess 1JIW5): Bxf6# */
   {
-    fen: '7k/2pR4/5b1p/4pN2/3p1p1N/3b3P/5PPK/2r5 w - - 4 34',
-    san: ['Ng6+', 'Kg8', 'Nxh6'],
+    fen: 'rn3r1k/pp3p1p/2pp1b2/3q4/8/2B5/P5RP/6RK w - - 5 26',
+    san: ['Bxf6'],
     ann: {
-      0: 'Albul mută. Regele negru pe h8 este flancat de doi cai! Calul de pe h4 poate intra spectaculos în acțiune.',
-      1: '<strong>1.Cg6+!</strong> — calul sare pe g6, dând șah! Turnul de pe d7 blochează rândul 7, împingând regele spre colț.',
-      2: '<strong>1...Rg8</strong> — regele fuge pe g8 (h7 controlat de turn). Coloana h devine decisivă!',
-      3: '<strong>2.Cxh6#!</strong> — al doilea cal captură pe h6, mat! Regele nu poate fugi: f8 și h8 controlate de primul cal, g7 și h7 controlate de turn. Matul în Colț cu doi cai!'
+      0: 'Albul mută. O poziție din o partidă reală. Regele negru pe h8 este prins în colț, turnul de pe g2 controlează coloana g, iar pionul h7 blochează retragerea regelui. Nebunul alb are o mutare decisivă!',
+      1: '<strong>Nf6#!</strong> — nebunul vine pe f6, mat! Regele nu poate fugi: h7 blocat de propriul pion, g7 și g8 controlate de turn. Matul lui Morphy la mutarea 26!'
     }
   },
 
-  /* 4 — Exemplul utilizatorului: sacrificiu de damă, Dxf1+/Nxf1/Cf2# */
+  /* 4 — Bd4+! Tf6 Nxf6# (nebun pe diagonala lungă) */
   {
-    fen: '5rk1/3Q1p2/6p1/P5r1/R1q1n3/7B/7P/5R1K b - - 0 1',
-    san: ['Qxf1+', 'Bxf1', 'Nf2'],
+    fen: '2r2r1k/pb5p/8/1p6/4P3/1P1PB1R1/1Pq4P/R6K w - - 0 31',
+    san: ['Bd4+', 'Rf6', 'Bxf6'],
     ann: {
-      0: 'Negrul mută. Regele alb pe h1 pare apărat de nebun și turn. Dama neagră de pe c4 poate face un sacrificiu spectaculos!',
-      1: '<strong>1...Dxf1+!</strong> — dama sacrifică pe f1, capturând turnul și dând șah! Albul este forțat să recaptureze.',
-      2: '<strong>2.Nxf1</strong> — nebunul captură dama. Regele rămâne captiv în colțul h1!',
-      3: '<strong>2...Cf2#!</strong> — calul sare pe f2, mat! Regele nu poate fugi: h2 blocat de propriul pion, g1 și g2 controlate de turnul negru de pe g5. Matul în Colț!'
+      0: 'Albul mută. Regele negru pe h8. Nebunul de pe e3 poate deschide un atac pe diagonala lungă d4-h8. Cum continuă albul?',
+      1: '<strong>1.Nd4+!</strong> — nebunul sare pe d4, dând șah pe diagonala lungă a1-h8! Negrul trebuie să blocheze.',
+      2: '<strong>1...Tf6</strong> — turnul negru încearcă să blocheze diagonala pe câmpul f6.',
+      3: '<strong>2.Nxf6#!</strong> — nebunul captează turnul pe f6, mat! Regele nu poate fugi: h7 blocat de propriul pion, g8 și g7 controlate de turnul de pe g3. Matul lui Morphy!'
     }
   },
 
@@ -220,9 +229,26 @@ function clearSel(){
 }
 function applyHL(sq,cls){ const el=document.querySelector('.square-'+sq); if(el)el.classList.add(cls); }
 function addSqHl(sq){ const el=document.querySelector('#board .square-'+sq); if(!el)return; const hl=document.createElement('div'); hl.className='sq-hl'; el.appendChild(hl); }
+
+function checkAfterHandMove(from, to){
+  const s=currentStep();
+  if(!positions[s]) return;
+  const cg=new Chess(positions[s]);
+  const mv=cg.move({from,to,promotion:'q'});
+  if(!mv) return;
+  if(cg.in_check()||cg.in_checkmate()){
+    const t=cg.turn();
+    cg.board().forEach((row,ri)=>row.forEach((pc,ci)=>{
+      if(pc&&pc.type==='k'&&pc.color===t) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');
+    }));
+    if(cg.in_checkmate()) computeRedSquares(cg.fen()).forEach(sq=>addSqHl(sq));
+  }
+}
+
+let lastDrop=null;
 function onDragStart(){ if(rmbDown)return false; clearSel(); return true; }
-function onDrop(s,t){ if(t==='offboard')return'snapback'; }
-function onSnapEnd(){}
+function onDrop(s,t){ if(t==='offboard')return'snapback'; lastDrop={from:s,to:t}; }
+function onSnapEnd(){ if(lastDrop){checkAfterHandMove(lastDrop.from,lastDrop.to);lastDrop=null;} }
 
 const board=Chessboard('board',{
   position:chapters[0].fen, pieceTheme:'https://lichess1.org/assets/piece/caliente/{piece}.svg',
@@ -232,7 +258,10 @@ const board=Chessboard('board',{
 $(document).on('click','.square-55d63',function(e){
   if(e.button!==0)return;
   const sq=$(this).data('square'), pos=board.position();
-  if(selSq){ const p=selSq; clearSel(); if(sq!==p&&pos[p]){pos[sq]=pos[p];delete pos[p];board.position(pos,false);} }
+  if(selSq){
+    const p=selSq; clearSel();
+    if(sq!==p&&pos[p]){ pos[sq]=pos[p];delete pos[p];board.position(pos,false); checkAfterHandMove(p,sq); }
+  }
   else{ if(pos[sq]){selSq=sq;const el=document.querySelector('.square-'+sq);if(el)el.classList.add('square-selected');} }
 });
 
@@ -319,7 +348,7 @@ document.addEventListener('keydown',e=>{
 
 const allExamples = {
   title: 'Exemple',
-  desc: 'Studiază cele 5 poziții și urmărește cum calul dă matul final în colțul tablei.',
+  desc: 'Studiază cele 5 poziții și urmărește cum nebunul dă matul final în colțul tablei.',
   examples: [
     {ch:0,label:'Ex. 1'},{ch:1,label:'Ex. 2'},{ch:2,label:'Ex. 3'},
     {ch:3,label:'Ex. 4'},{ch:4,label:'Ex. 5'}

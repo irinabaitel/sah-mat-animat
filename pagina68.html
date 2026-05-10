@@ -515,6 +515,7 @@ function tryMove(from, to) {
     return undefined;
   }
 
+  if(chess.in_check()){const t=chess.turn();chess.board().forEach((row,ri)=>row.forEach((pc,ci)=>{if(pc&&pc.type==='k'&&pc.color===t)applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');}));}
   phase = 'computer';
   setMsg('idle', '⏳ Adversarul răspunde...');
   setTimeout(playComputerMove, 700);
@@ -538,6 +539,7 @@ function playComputerMove() {
     return;
   }
 
+  if(chess.in_check()){const t=chess.turn();chess.board().forEach((row,ri)=>row.forEach((pc,ci)=>{if(pc&&pc.type==='k'&&pc.color===t)applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');}));}
   phase = 'waiting';
   contMsg();
 }
@@ -553,6 +555,13 @@ function finishPuzzle() {
   if (Object.keys(completed).length >= PUZZLES.length) {
     const pab = document.getElementById('playAgainBtn');
     if (pab) pab.style.display = 'flex';
+  }
+  if (chess && chess.in_checkmate()) {
+    const t = chess.turn();
+    chess.board().forEach((row, ri) => row.forEach((pc, ci) => {
+      if (pc && pc.type === 'k' && pc.color === t)
+        applyHL(String.fromCharCode(97 + ci) + (8 - ri), 'highlight-check');
+    }));
   }
 }
 
@@ -642,6 +651,13 @@ function replayToPos(idx) {
     const lm = moveHistory[idx - 1];
     applyHL(lm.from, 'last-move-from');
     applyHL(lm.to,   'last-move-to');
+  }
+  if (temp.in_check()) {
+    const t = temp.turn();
+    temp.board().forEach((row, ri) => row.forEach((pc, ci) => {
+      if (pc && pc.type === 'k' && pc.color === t)
+        applyHL(String.fromCharCode(97 + ci) + (8 - ri), 'highlight-check');
+    }));
   }
 }
 function stepBack() {

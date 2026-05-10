@@ -243,6 +243,7 @@ function tryMove(from,to){
   const prom=expected.length===5?expected[4]:'q', move=chess.move({from,to,promotion:prom}); if(!move)return'snapback';
   playMoveSound(!!move.captured); board.position(chess.fen(),true); recordMove(from,to); setLastMoveHL(from,to); selSq=null; solIdx++;
   if(solIdx>=PUZZLES[curIdx].sol.length){finishPuzzle();return undefined;}
+  if(chess.in_check()){const t=chess.turn();chess.board().forEach((row,ri)=>row.forEach((pc,ci)=>{if(pc&&pc.type==='k'&&pc.color===t)applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');}));}
   phase='computer'; setMsg('idle','⏳ Adversarul răspunde...'); setTimeout(playComputerMove,700); return undefined;
 }
 
@@ -250,7 +251,9 @@ function playComputerMove(){
   const uci=PUZZLES[curIdx].sol[solIdx], prom=uci.length===5?uci[4]:'q';
   const cm=chess.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:prom});
   if(cm){playMoveSound(!!cm.captured);board.position(chess.fen(),true);recordMove(uci.slice(0,2),uci.slice(2,4));setLastMoveHL(uci.slice(0,2),uci.slice(2,4));}
-  solIdx++; if(solIdx>=PUZZLES[curIdx].sol.length){finishPuzzle();return;} phase='waiting'; contMsg();
+  solIdx++; if(solIdx>=PUZZLES[curIdx].sol.length){finishPuzzle();return;}
+  if(chess.in_check()){const t=chess.turn();chess.board().forEach((row,ri)=>row.forEach((pc,ci)=>{if(pc&&pc.type==='k'&&pc.color===t)applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');}));}
+  phase='waiting'; contMsg();
 }
 
 function finishPuzzle(){
@@ -258,7 +261,7 @@ function finishPuzzle(){
   setMsg('ok','✅ Excelent! Matul Balestra!'); document.getElementById('nextBtn').disabled=(curIdx===PUZZLES.length-1);
   if(Object.keys(completed).length>=PUZZLES.length){const pab=document.getElementById('playAgainBtn');if(pab)pab.style.display='flex';}
   chess.board().forEach((row,ri)=>row.forEach((pc,ci)=>{
-    if(pc&&pc.type==='k'&&pc.color===chess.turn()) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-mat');
+    if(pc&&pc.type==='k'&&pc.color===chess.turn()) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');
   }));
 }
 
@@ -283,7 +286,7 @@ function showSolution(){
 function autoPlaySol(){ if(viewIdx>=moveHistory.length)return; viewIdx++;replayToPos(viewIdx);updateNavBtns(); if(viewIdx<moveHistory.length)autoPlayTimer=setTimeout(autoPlaySol,800); }
 
 function recordMove(f,t){ moveHistory.push({from:f,to:t,prom:'q'}); viewIdx=moveHistory.length; updateNavBtns(); }
-function replayToPos(idx){ const pz=PUZZLES[curIdx],temp=new Chess(pz.fen); for(let i=0;i<idx;i++){const m=moveHistory[i];temp.move({from:m.from,to:m.to,promotion:m.prom});} board.position(temp.fen(),false); clearHL(); if(idx>0&&moveHistory[idx-1]){const lm=moveHistory[idx-1];applyHL(lm.from,'last-move-from');applyHL(lm.to,'last-move-to');} }
+function replayToPos(idx){ const pz=PUZZLES[curIdx],temp=new Chess(pz.fen); for(let i=0;i<idx;i++){const m=moveHistory[i];temp.move({from:m.from,to:m.to,promotion:m.prom});} board.position(temp.fen(),false); clearHL(); if(idx>0&&moveHistory[idx-1]){const lm=moveHistory[idx-1];applyHL(lm.from,'last-move-from');applyHL(lm.to,'last-move-to');} if(temp.in_check()){const t=temp.turn();temp.board().forEach((row,ri)=>row.forEach((pc,ci)=>{if(pc&&pc.type==='k'&&pc.color===t)applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');}));} }
 function stepBack(){ if(viewIdx<=0)return; viewIdx--;replayToPos(viewIdx);updateNavBtns(); }
 function stepForward(){ if(viewIdx>=moveHistory.length)return; viewIdx++;replayToPos(viewIdx);updateNavBtns(); }
 function updateNavBtns(){ const bb=document.getElementById('stepBackBtn'),fb=document.getElementById('stepFwdBtn'); if(bb)bb.disabled=viewIdx<=0; if(fb)fb.disabled=viewIdx>=moveHistory.length; }
