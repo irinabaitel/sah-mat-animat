@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Arenă Matul Pillsbury</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    .panel-heading { font-family:var(--font-display); font-size:clamp(1.15rem,2.5vw,1.4rem); font-weight:900; color:var(--c-navy); line-height:1.25; margin-bottom:8px; }
+    .arena-intro-desc { margin-top:14px; padding:10px 14px; background:rgba(255,255,255,0.06); border-left:3px solid var(--c-gold); border-radius:0 6px 6px 0; color:var(--c-text); line-height:1.6; }
+    .btn-arena { display:flex; align-items:center; justify-content:center; margin-top:14px; padding:11px 20px; border-radius:50px; background:var(--c-navy); color:white; text-decoration:none; font-family:var(--font-display); font-size:0.97rem; font-weight:700; border:none; cursor:pointer; width:100%; transition:opacity .18s; }
+    .btn-arena:hover { opacity:0.86; }
+    #puzzleView { display:none; }
+    .turn-badge { display:inline-block; padding:3px 14px; border-radius:50px; font-family:var(--font-display); font-size:0.82rem; font-weight:700; margin-bottom:6px; }
+    .turn-badge.white { background:#f0f0f0; color:var(--c-navy); border:1.5px solid #ccc; }
+    .turn-badge.black { background:#222; color:#fff; border:1.5px solid #000; }
+    .level-badge { display:inline-block; margin-left:6px; padding:2px 10px; border-radius:50px; font-family:var(--font-display); font-size:0.75rem; font-weight:700; background:rgba(39,174,96,0.18); color:#1a6b3a; }
+    .level-badge.med  { background:rgba(230,126,34,0.18); color:#8a3a00; }
+    .level-badge.hard { background:rgba(192,57,43,0.18);  color:#7a1800; }
+    .ctrl-row { display:flex; gap:7px; margin-top:10px; flex-wrap:wrap; }
+    .btn-sm { padding:7px 15px; border-radius:50px; font-family:var(--font-display); font-size:0.86rem; font-weight:700; cursor:pointer; transition:background .15s,opacity .15s; border:1.5px solid transparent; }
+    .btn-sm:disabled { opacity:0.28; cursor:default; }
+    .btn-prev  { border-color:rgba(26,58,107,0.35); background:rgba(255,255,255,0.55); color:var(--c-navy); }
+    .btn-prev:hover:not(:disabled)  { background:rgba(26,58,107,0.10); }
+    .btn-reset { border-color:rgba(192,57,43,0.40); background:rgba(255,255,255,0.55); color:#8b1a00; }
+    .btn-reset:hover:not(:disabled) { background:rgba(192,57,43,0.10); }
+    .btn-cont  { border-color:var(--c-success); background:var(--c-success); color:white; }
+    .btn-cont:hover:not(:disabled)  { opacity:0.86; }
+    .btn-next  { border-color:var(--c-navy); background:var(--c-navy); color:white; }
+    .btn-next:hover:not(:disabled)  { opacity:0.86; }
+    .square-selected { background:rgba(255,200,0,0.55) !important; }
+    #boardWrapper { touch-action:none; -webkit-touch-callout:none; }
+    .hint-square  { background:rgba(80,200,80,0.65) !important; }
+    .btn-tri  { padding:7px 11px; min-width:34px; }
+    .btn-hint { border-color:rgba(39,174,96,0.45); background:rgba(39,174,96,0.08); color:#1a6b3a; }
+    .btn-hint:hover:not(:disabled) { background:rgba(39,174,96,0.18); }
+    .btn-sol  { border-color:rgba(142,68,173,0.45); background:rgba(142,68,173,0.08); color:#6c3483; }
+    .btn-sol:hover:not(:disabled)  { background:rgba(142,68,173,0.18); }
+    .arena-back-btn { display:block; margin-top:10px; width:100%; padding:8px 16px; border-radius:50px; font-family:var(--font-display); font-size:0.86rem; font-weight:700; color:var(--c-navy); cursor:pointer; background:rgba(255,255,255,0.55); border:1.5px solid rgba(26,58,107,0.25); text-align:center; text-decoration:none; transition:background .15s; }
+    .arena-back-btn:hover { background:rgba(26,58,107,0.10); }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+    .board-shake { animation:shake .35s ease-out; }
+    .last-move-from { background:rgba(80,180,80,0.35) !important; }
+    .last-move-to   { background:rgba(80,180,80,0.55) !important; }
+    .btn-vol { position:fixed; top:10px; right:12px; z-index:1000; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.88); border:1.5px solid rgba(26,58,107,0.18); font-size:1.05rem; cursor:pointer; line-height:1; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 6px rgba(0,0,0,0.14); transition:background .15s; padding:0; }
+    .btn-vol:hover { background:rgba(26,58,107,0.10); }
+    .progress-outer { position:relative; margin-bottom:12px; }
+    .progress-outer::after { content:attr(data-tip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:rgba(26,26,46,0.88); color:#fff; font-family:var(--font-display); font-size:0.78rem; font-weight:700; padding:4px 10px; border-radius:6px; white-space:nowrap; pointer-events:none; z-index:100; opacity:0; transition:opacity .15s; }
+    .progress-outer:hover::after { opacity:1; }
+    .progress-outer .progress-wrap { margin-bottom:0; }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="page-header" role="banner">
+    <span class="header-title" id="pageTitle">Arenă Matul Pillsbury</span>
+  </header>
+  <main class="page-main" role="main">
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper"><div id="board"></div></div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-scroll" id="panelScroll">
+
+        <div id="lectureView">
+          <div class="panel-heading">Arenă Matul Pillsbury</div>
+          <p><strong>Matul Pillsbury</strong>: turnul dă matul în timp ce nebunul interzice accesul regelui în colțul de scăpare; propriile piese ale regelui blochează restul câmpurilor.</p>
+          <div class="hl-box" style="margin:12px 0;">
+            <strong>&#9814; Tiparul de mat:</strong>
+            <p style="margin-top:6px;line-height:1.7;">Turnul atacă pe rang sau coloană, nebunul controlează colțul și câmpul alăturat, propriile piese ale regelui fac restul.</p>
+            <p style="margin-top:8px;font-size:0.88em;opacity:0.75;">40 puzzle-uri &middot; 3 niveluri de dificultate (Ușor &rarr; Mediu &rarr; Greu)</p>
+          </div>
+          <div class="arena-intro-desc">Caută sacrificiile de regină sau turn care forțează regele în poziția finală — uneori e nevoie de câteva mutări pregătitoare înainte ca turnul să dea lovitura!</div>
+          <button class="btn-arena" id="arenaBtn" onclick="startArena()">&#127919; Arenă Matul Pillsbury &rarr;</button>
+          <button class="btn-arena" id="continueBtn" onclick="continueArena()" style="display:none;margin-top:8px;background:var(--c-success);">&#9654; Continuă</button>
+          <button class="btn-arena" id="resetAllBtn" onclick="resetAllProgress()" style="display:none;margin-top:8px;background:rgba(192,57,43,0.82);">&#8634; Joacă din nou (resetează tot)</button>
+        </div>
+
+        <div id="puzzleView">
+          <div class="panel-heading">Matul Pillsbury</div>
+          <span class="turn-badge white" id="turnBadge">&#11036; Albul mută</span>
+          <span class="level-badge" id="levelBadge">UȘOR</span>
+          <div class="progress-outer" id="progressOuter">
+            <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+          </div>
+          <div class="task-msg idle" id="taskMsg">Găsește Matul Pillsbury!</div>
+          <div class="ctrl-row">
+            <button class="btn-sm btn-prev" id="prevBtn" onclick="prevPuzzle()" disabled>&#8592; Precedentul</button>
+            <button class="btn-sm btn-reset" onclick="resetPuzzle()">&#8634; Resetează</button>
+            <button class="btn-sm btn-cont"  onclick="continueArena()">Continuă</button>
+            <button class="btn-sm btn-next" id="nextBtn" onclick="nextPuzzle()" disabled>Următorul &#8594;</button>
+          </div>
+          <div class="ctrl-row" style="margin-top:5px">
+            <button class="btn-sm btn-tri btn-prev" id="stepBackBtn" onclick="stepBack()" disabled>&#9668;</button>
+            <button class="btn-sm btn-tri btn-prev" id="stepFwdBtn"  onclick="stepForward()" disabled>&#9658;</button>
+            <button class="btn-sm btn-hint" onclick="showHint()">&#128161; Indiciu</button>
+            <button class="btn-sm btn-sol"  onclick="showSolution()">&#9658;&#9658; Soluție</button>
+          </div>
+          <button class="btn-arena" id="playAgainBtn" style="display:none;margin-top:12px;background:rgba(39,174,96,0.82);" onclick="resetAllProgress()">&#127881; Totul rezolvat! Joacă din nou &rarr;</button>
+        </div>
+
+      </div>
+      <button class="arena-back-btn" id="arenaBackBtn" style="display:none" onclick="backToLecture()">&#8592; Matul Pillsbury</button>
+      <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
+    </div>
+  </main>
+  <footer class="page-footer" role="navigation">
+    <a href="pagina84.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">Matul Pillsbury</span></a>
+    <a href="hub.html"      class="nav-btn nav-btn--contents"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
+    <a href="hub.html"      class="nav-btn nav-btn--forward"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
+  </footer>
+  <button class="btn-vol" id="volBtn" onclick="toggleVol()" title="Sunet on/off">&#128266;</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+const PIECE_THEME='https://lichess1.org/assets/piece/caliente/{piece}.svg';
+const LECTURE_FEN='5rk1/5p1p/8/8/8/8/1B6/4K2R w - - 0 1';
+const SAVE_KEY='pillsbury_progress';
+
+/* ── PUZZLES ── */
+const PUZZLES=[
+  /* 0-9 USOR */
+  {id:'03Mld',fen:'5R2/6pp/1kr5/4b3/Q3p3/7P/1P3PP1/6K1 b - - 1 45',sol:['c6c1','a4d1','c1d1'],turn:'b'},  // r511
+  {id:'03ba5',fen:'6k1/1R3p1p/2r1p1p1/3p1b2/2pB4/4P2P/5PP1/6K1 w - - 0 35',sol:['b7b8','c6c8','b8c8'],turn:'w'},  // r561
+  {id:'00KVb',fen:'2k2r2/pp5p/3p4/3Nb1p1/8/1P1P3P/P1PR4/1K3R2 b - - 0 28',sol:['f8f1','d2d1','f1d1'],turn:'b'},  // r588
+  {id:'01jc0',fen:'4r2k/6p1/p5p1/1p1p4/3NrP2/P1PR2Pb/1P5P/3R3K b - - 2 31',sol:['e4e1','d1e1','e8e1'],turn:'b'},  // r615
+  {id:'02Ofv',fen:'8/p3R3/k4p2/3b2p1/7P/7P/PPr2P1B/6KR b - - 0 33',sol:['c2c1','e7e1','c1e1'],turn:'b'},  // r652
+  {id:'01Md6',fen:'6k1/p4pp1/7p/4r3/P2pB3/4n2P/1r4P1/2R1R2K w - - 0 30',sol:['c1c8','e5e8','c8e8'],turn:'w'},  // r936
+  {id:'00gJf',fen:'7r/2N2p1p/p2p4/1p6/3B2b1/8/P3k2P/2RR3K b - - 3 35',sol:['g4f3','h1g1','h8g8','d4g7','g8g7'],turn:'b'},  // r1068
+  {id:'00d5g',fen:'2b2r1k/pp4p1/2p5/4r3/2B5/1P6/P4pK1/5R2 w - - 5 33',sol:['f1h1','c8h3','h1h3','e5h5','h3h5'],turn:'w'},  // r1090
+  {id:'02L8F',fen:'6r1/1p2kp2/p1r1p3/4B2p/4b3/P5P1/1PPR3P/2K2R2 w - - 4 26',sol:['e5f6','e7f8','d2d8'],turn:'w'},  // r1145
+  {id:'01lTa',fen:'r4k2/1bp2pp1/1p1b3p/1N1P4/1PP5/5B1P/4RPP1/6K1 b - - 0 30',sol:['a8a1','e2e1','a1e1'],turn:'b'},  // r1223
+  /* 10-29 MEDIU */
+  {id:'04FOX',fen:'6k1/4pp1p/6pB/8/b2R4/2P5/r5PP/6K1 w - - 0 25',sol:['d4d8','a4e8','d8e8'],turn:'w'},  // r400
+  {id:'05rKP',fen:'4r1k1/2q2pp1/p1r2n1p/8/N2p4/5PP1/PP2Q2K/1B2R3 w - - 0 36',sol:['e2e8','f6e8','e1e8'],turn:'w'},  // r528
+  {id:'06koP',fen:'4r1k1/pp3ppp/2p1q3/8/1PPQ4/P4BPb/5P1P/3R2K1 b - - 2 22',sol:['e6e1','d1e1','e8e1'],turn:'b'},  // r586
+  {id:'03hf0',fen:'4r2k/pppb2p1/3p3p/8/1n2BQ2/3P3P/PqPKN1P1/5R2 w - - 2 21',sol:['f4f8','e8f8','f1f8'],turn:'w'},  // r684
+  {id:'04jD6',fen:'6k1/2pb1pp1/3p4/3q4/p7/2P5/2B5/1RK5 w - - 0 39',sol:['b1b8','d7c8','b8c8'],turn:'w'},  // r716
+  {id:'053wO',fen:'3rr1k1/2p2p1p/p5p1/1p1n3q/1P3b2/P4N1P/BB2QPP1/4R1K1 w - - 0 24',sol:['e2e8','d8e8','e1e8'],turn:'w'},  // r855
+  {id:'06CsJ',fen:'3q1r1k/4b3/p2p1pPp/2rBpP2/2p4R/7P/PP3P2/5RK1 w - - 0 27',sol:['h4h6','h8g7','h6h7'],turn:'w'},  // r920
+  {id:'03oqC',fen:'r3k2r/pp3pp1/2n1p3/2bpPnP1/Q6p/2N5/PP1B2PP/R4R1K b kq - 0 16',sol:['f5g3','h2g3','h4g3','a4h4','h8h4'],turn:'b'},  // r969
+  {id:'04xS4',fen:'r7/ppp2k2/2b5/2b1PP2/6P1/2P5/PP4P1/R1B2R1K b - - 0 28',sol:['a8h8','c1h6','h8h6'],turn:'b'},  // r1064
+  {id:'04iAq',fen:'r5kb/ppp2N1p/3p2p1/6B1/2P1r3/PP4P1/2n1P1KP/R4R2 w - - 2 24',sol:['f7h6','g8g7','f1f7'],turn:'w'},  // r1136
+  {id:'05sUs',fen:'1r3k2/p5r1/2n3pR/1pp1b1B1/2B1P3/1PP5/PK3P2/8 w - - 0 36',sol:['h6h8','g7g8','h8g8'],turn:'w'},  // r1246
+  {id:'06LcK',fen:'2kr3r/1pp3p1/p3p3/3pPp2/4b3/PP2b1PP/1BP1Q2K/R4R2 b - - 1 22',sol:['h8h3','h2h3','d8h8','e2h5','h8h5'],turn:'b'},  // r1279
+  {id:'06Fqx',fen:'2k1r3/1pp2ppp/p3r3/8/6n1/2PQB1Pq/PP1R1P1P/5RK1 w - - 6 19',sol:['d3d7','c8b8','d7d8','e8d8','d2d8'],turn:'w'},  // r1295
+  {id:'03eaM',fen:'3Qr2k/q5p1/2p1r1Bp/p7/Pp6/5P1P/1P4P1/4R2K w - - 2 39',sol:['d8e8','e6e8','e1e8'],turn:'w'},  // r1339
+  {id:'04tpr',fen:'7r/7k/p4N2/1p2Pb2/1P3p1K/P4P2/1P6/R4R2 b - - 2 41',sol:['h7g6','f6h7','h8h7'],turn:'b'},  // r1407
+  {id:'039ga',fen:'r2q2r1/4p2k/3p1bpB/p7/1P6/2N2P2/1PP3P1/2KR3R w - - 0 24',sol:['h6f8','f6h4','h1h4'],turn:'w'},  // r1448
+  {id:'03ylE',fen:'5r1k/5BRp/1n1p1P2/2p5/p1P5/Pp1P1R2/1P4K1/4q3 w - - 8 48',sol:['g7h7','h8h7','f3h3','e1h4','h3h4'],turn:'w'},  // r1501
+  {id:'042eg',fen:'8/5R1p/6pk/p2B4/3P1PPP/3b4/7K/1rq5 w - - 0 41',sol:['g4g5','h6h5','d5f3','h5h4','f7h7'],turn:'w'},  // r1563
+  {id:'05QFF',fen:'5r1k/4bp1p/pr5B/4P3/1P6/P3n1RP/5PP1/6K1 w - - 0 31',sol:['h6g7','h8g8','g7f6','e3g4','g3g4'],turn:'w'},  // r1669
+  {id:'01h56',fen:'r3n2k/2q1b2p/3p2p1/2n2N2/2B1P3/8/1Pp2B2/1NKR3R w - - 2 30',sol:['h1h7','h8h7','d1h1','e7h4','h1h4'],turn:'w'},  // r1771
+  /* 30-39 GREU */
+  {id:'06z5j',fen:'2b4k/1p3rp1/p1p4p/7n/8/P6P/1P4P1/1B1R2K1 w - - 0 31',sol:['d1d8','f7f8','d8f8'],turn:'w'},  // r473
+  {id:'07vQr',fen:'r5k1/5p1p/1p1P1B2/2n2b2/p1r5/P7/4R1PP/4R1K1 w - - 0 29',sol:['e2e8','a8e8','e1e8'],turn:'w'},  // r647
+  {id:'07MUp',fen:'1r4k1/5pp1/4R2p/p2p4/2pP4/2P3qP/Pr3PP1/1B2R1K1 w - - 0 29',sol:['e6e8','b8e8','e1e8'],turn:'w'},  // r744
+  {id:'07mJq',fen:'5rk1/6pp/2p2r2/1P1p4/3Pp3/8/1B2QbPK/R4R2 b - - 0 27',sol:['f6h6','e2h5','h6h5'],turn:'b'},  // r859
+  {id:'07n8C',fen:'r2r4/pp3Bpk/3b2n1/2p1n3/3p4/3P1R2/PPP3PP/R1B4K w - - 3 22',sol:['f3h3','g6h4','h3h4'],turn:'w'},  // r975
+  {id:'07KFP',fen:'3r4/1k3p2/1p3N2/8/4p3/8/PB2nbPP/R6K b - - 1 29',sol:['e2g3','h2g3','d8h8','f6h5','h8h5'],turn:'b'},  // r1325
+  {id:'01faz',fen:'3nrr1k/1ppR2p1/p6p/6NQ/2B2p1P/1P6/P1PK1PP1/7q w - - 0 23',sol:['h5h6','g7h6','d7h7'],turn:'w'},  // r1804
+  {id:'07iOg',fen:'1r1k4/7R/8/4Pp2/3PbP2/qPp5/Q7/K3R3 b - - 2 41',sol:['a3a2','a1a2','b8a8','h7a7','a8a7'],turn:'b'},  // r1849
+  {id:'06NfA',fen:'4r1k1/1p3p2/p3r1p1/3pq3/7R/1PB3Pb/PQ2P2P/4R1K1 b - - 1 28',sol:['e5e3','g1h1','e3f3','e2f3','e6e1','c3e1','e8e1'],turn:'b'},  // r2020
+  {id:'01hzW',fen:'3r4/1p5p/2kb3R/p4NP1/Prp2P2/K3P3/1P6/3R4 b - - 0 34',sol:['b4a4','a3a4','b7b5','a4a5','d8a8'],turn:'b'},  // r2124
+];
+
+/* ── STATE ── */
+let mode='lecture', curIdx=0, chess=null, board=null, selSq=null, solved=false;
+let phase='waiting', solIdx=0, completed={}, moveHistory=[], viewIdx=0, autoPlayTimer=null;
+
+let muted=(()=>{try{return localStorage.getItem('arena_muted')==='1';}catch(e){return false;}})();
+function toggleVol(){ muted=!muted; try{localStorage.setItem('arena_muted',muted?'1':'0');}catch(e){} const b=document.getElementById('volBtn'); if(b)b.innerHTML=muted?'&#128263;':'&#128266;'; }
+
+function levelOf(idx){ if(idx<10)return 0; if(idx<30)return 1; return 2; }
+const LEVEL_LABELS=['UȘOR','MEDIU','GREU'], LEVEL_CLASSES=['','med','hard'];
+
+const SND={ move:new Audio('Sounds/Move.mp3'), capture:new Audio('Sounds/Capture.mp3'), mate:new Audio('Sounds/Mate.mp3') };
+function playMoveSound(cap){ if(muted)return; try{const s=cap?SND.capture:SND.move;s.currentTime=0;s.play();}catch(e){} }
+function playWin(){ if(muted)return; try{SND.mate.currentTime=0;SND.mate.play();}catch(e){} }
+function playWrong(){ if(muted)return; try{ const ctx=new(window.AudioContext||window.webkitAudioContext)(),osc=ctx.createOscillator(),g=ctx.createGain(); osc.connect(g);g.connect(ctx.destination); osc.type='sine'; osc.frequency.setValueAtTime(380,ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(180,ctx.currentTime+0.28); g.gain.setValueAtTime(0.22,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.28); osc.start();osc.stop(ctx.currentTime+0.28); }catch(e){} }
+
+function shakeBoard(){ const bw=document.getElementById('boardWrapper'); bw.classList.remove('board-shake'); void bw.offsetWidth; bw.classList.add('board-shake'); bw.addEventListener('animationend',()=>bw.classList.remove('board-shake'),{once:true}); }
+function celebrate(){ confetti({particleCount:80,spread:60,origin:{y:0.60}}); }
+function debounce(fn,d){ let t; return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),d);}; }
+
+function clearHL(){ document.querySelectorAll('.square-selected,.highlight-check,.last-move-from,.last-move-to').forEach(el=>el.classList.remove('square-selected','highlight-check','last-move-from','last-move-to')); }
+function applyHL(sq,cls){ const el=document.querySelector('.square-'+sq); if(el)el.classList.add(cls); }
+function setLastMoveHL(f,t){ document.querySelectorAll('.last-move-from,.last-move-to').forEach(el=>el.classList.remove('last-move-from','last-move-to')); applyHL(f,'last-move-from'); applyHL(t,'last-move-to'); }
+
+function setMsg(type,text){ const el=document.getElementById('taskMsg'); el.className='task-msg '+type; el.innerHTML=text; }
+function idleMsg(){ setMsg('idle','Găsește Matul Pillsbury!'); }
+function contMsg(){ setMsg('idle','&#127919; Continuă secvența!'); }
+
+function updateProgress(){ const n=Object.keys(completed).length; document.getElementById('progressFill').style.width=(n/PUZZLES.length*100)+'%'; const o=document.getElementById('progressOuter'); if(o)o.setAttribute('data-tip',n+' / '+PUZZLES.length+' rezolvate'); }
+function saveProgress(){ try{localStorage.setItem(SAVE_KEY,JSON.stringify({idx:curIdx,done:completed}));}catch(e){} }
+function loadSavedProgress(){ try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null'); if(d){completed=d.done||{};return typeof d.idx==='number'?d.idx:0;}}catch(e){} return 0; }
+
+function updateArenaBtn(){
+  try{
+    const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null'), done=d?Object.keys(d.done||{}).length:0;
+    const ab=document.getElementById('arenaBtn'),cb=document.getElementById('continueBtn'),rb=document.getElementById('resetAllBtn');
+    if(!ab)return;
+    const allDone=done>=PUZZLES.length;
+    if(done>0){
+      ab.textContent='\u{1F3AF} Arenă Matul Pillsbury ('+done+'/'+PUZZLES.length+' rezolvate)';
+      if(cb){ if(allDone){cb.style.display='none';}else{const max=Math.max(...Object.keys(d.done).map(Number));cb.textContent='▶ Continuă de la #'+(Math.min(max+1,PUZZLES.length-1)+1);cb.style.display='flex';} }
+      if(rb)rb.style.display='flex';
+    }else{
+      ab.textContent='\u{1F3AF} Arenă Matul Pillsbury →';
+      if(cb)cb.style.display='none'; if(rb)rb.style.display='none';
+    }
+  }catch(e){}
+}
+
+function resetAllProgress(){ try{localStorage.removeItem(SAVE_KEY);}catch(e){} completed={}; updateArenaBtn(); enterArena(0); }
+
+function updatePuzzleUI(){
+  const p=PUZZLES[curIdx], badge=document.getElementById('turnBadge');
+  if(p.turn==='w'){badge.textContent='⬜ Albul mută';badge.className='turn-badge white';}
+  else{badge.textContent='⬛ Negrul mută';badge.className='turn-badge black';}
+  const lv=levelOf(curIdx), lb=document.getElementById('levelBadge'); lb.textContent=LEVEL_LABELS[lv]; lb.className='level-badge '+LEVEL_CLASSES[lv];
+  document.getElementById('prevBtn').disabled=(curIdx===0);
+  document.getElementById('nextBtn').disabled=true;
+}
+
+function loadPuzzle(idx){
+  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
+  curIdx=idx;solved=false;selSq=null;phase='waiting';solIdx=0;moveHistory=[];viewIdx=0;
+  const pab=document.getElementById('playAgainBtn'); if(pab)pab.style.display='none';
+  if(window._annClear)window._annClear();
+  chess=new Chess(PUZZLES[idx].fen);
+  board.position(PUZZLES[idx].fen,false);
+  board.orientation(PUZZLES[idx].turn==='w'?'white':'black');
+  clearHL(); updatePuzzleUI(); updateProgress(); updateNavBtns(); saveProgress();
+  if(completed[idx]){setMsg('ok','✅ Deja rezolvat — poți încerca din nou!');document.getElementById('nextBtn').disabled=(curIdx===PUZZLES.length-1);}
+  else idleMsg();
+}
+
+function tryMove(from,to){
+  if(solved||phase!=='waiting')return'snapback';
+  const expected=PUZZLES[curIdx].sol[solIdx]; if(!expected)return'snapback';
+  if(from!==expected.slice(0,2)||to!==expected.slice(2,4)){ playWrong();shakeBoard(); setMsg('err','❌ Nu este mutarea corectă — mai încearcă!'); setTimeout(solIdx===0?idleMsg:contMsg,1400); return'snapback'; }
+  const prom=expected.length===5?expected[4]:'q', move=chess.move({from,to,promotion:prom}); if(!move)return'snapback';
+  playMoveSound(!!move.captured); board.position(chess.fen(),true); recordMove(from,to); setLastMoveHL(from,to); selSq=null; solIdx++;
+  if(solIdx>=PUZZLES[curIdx].sol.length){finishPuzzle();return undefined;}
+  if(chess.in_check()){const t=chess.turn();chess.board().forEach((row,ri)=>row.forEach((pc,ci)=>{if(pc&&pc.type==='k'&&pc.color===t)applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');}));}
+  phase='computer'; setMsg('idle','⏳ Adversarul răspunde...'); setTimeout(playComputerMove,700); return undefined;
+}
+
+function playComputerMove(){
+  const uci=PUZZLES[curIdx].sol[solIdx], prom=uci.length===5?uci[4]:'q';
+  const cm=chess.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:prom});
+  if(cm){playMoveSound(!!cm.captured);board.position(chess.fen(),true);recordMove(uci.slice(0,2),uci.slice(2,4));setLastMoveHL(uci.slice(0,2),uci.slice(2,4));}
+  solIdx++; if(solIdx>=PUZZLES[curIdx].sol.length){finishPuzzle();return;}
+  if(chess.in_check()){const t=chess.turn();chess.board().forEach((row,ri)=>row.forEach((pc,ci)=>{if(pc&&pc.type==='k'&&pc.color===t)applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');}));}
+  phase='waiting'; contMsg();
+}
+
+function finishPuzzle(){
+  solved=true;phase='done';completed[curIdx]=true; updateProgress();saveProgress(); celebrate(); setTimeout(playWin,250);
+  setMsg('ok','✅ Excelent! Matul Pillsbury!'); document.getElementById('nextBtn').disabled=(curIdx===PUZZLES.length-1);
+  if(Object.keys(completed).length>=PUZZLES.length){const pab=document.getElementById('playAgainBtn');if(pab)pab.style.display='flex';}
+  chess.board().forEach((row,ri)=>row.forEach((pc,ci)=>{
+    if(pc&&pc.type==='k'&&pc.color===chess.turn()) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');
+  }));
+}
+
+function onDragStart(source,piece){ if(mode==='lecture'||phase!=='waiting')return false; if(viewIdx<moveHistory.length)return false; if(solved)return false; if(!chess||piece[0]!==chess.turn())return false; return true; }
+function onDrop(source,target){ if(target==='offboard'||source===target)return'snapback'; clearHL();selSq=null; return tryMove(source,target); }
+function onSnapEnd(){ if(chess)board.position(chess.fen()); }
+
+$(document).on('click','.square-55d63',function(){
+  if(mode==='lecture'||phase!=='waiting')return; if(viewIdx<moveHistory.length)return; if(solved)return;
+  const sq=$(this).data('square'), piece=chess.get(sq), mc=chess.turn();
+  if(selSq){ const p=selSq; clearHL();selSq=null; if(sq===p)return; if(piece&&piece.color===mc){selSq=sq;applyHL(sq,'square-selected');}else tryMove(p,sq); }
+  else{ if(!piece||piece.color!==mc)return; selSq=sq;applyHL(sq,'square-selected'); }
+});
+
+function showHint(){ if(phase!=='waiting'||solved)return; if(viewIdx<moveHistory.length)return; clearHL(); applyHL(PUZZLES[curIdx].sol[solIdx].slice(0,2),'hint-square'); }
+
+function showSolution(){
+  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
+  const pz=PUZZLES[curIdx]; moveHistory=pz.sol.map(u=>({from:u.slice(0,2),to:u.slice(2,4),prom:u.length===5?u[4]:'q'}));
+  chess=new Chess(pz.fen); viewIdx=0; board.position(pz.fen,false); clearHL(); updateNavBtns(); autoPlaySol();
+}
+function autoPlaySol(){ if(viewIdx>=moveHistory.length)return; viewIdx++;replayToPos(viewIdx);updateNavBtns(); if(viewIdx<moveHistory.length)autoPlayTimer=setTimeout(autoPlaySol,800); }
+
+function recordMove(f,t){ moveHistory.push({from:f,to:t,prom:'q'}); viewIdx=moveHistory.length; updateNavBtns(); }
+function replayToPos(idx){ const pz=PUZZLES[curIdx],temp=new Chess(pz.fen); for(let i=0;i<idx;i++){const m=moveHistory[i];temp.move({from:m.from,to:m.to,promotion:m.prom});} board.position(temp.fen(),false); clearHL(); if(idx>0&&moveHistory[idx-1]){const lm=moveHistory[idx-1];applyHL(lm.from,'last-move-from');applyHL(lm.to,'last-move-to');} if(temp.in_check()){const t=temp.turn();temp.board().forEach((row,ri)=>row.forEach((pc,ci)=>{if(pc&&pc.type==='k'&&pc.color===t)applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');}));} }
+function stepBack(){ if(viewIdx<=0)return; viewIdx--;replayToPos(viewIdx);updateNavBtns(); }
+function stepForward(){ if(viewIdx>=moveHistory.length)return; viewIdx++;replayToPos(viewIdx);updateNavBtns(); }
+function updateNavBtns(){ const bb=document.getElementById('stepBackBtn'),fb=document.getElementById('stepFwdBtn'); if(bb)bb.disabled=viewIdx<=0; if(fb)fb.disabled=viewIdx>=moveHistory.length; }
+
+function prevPuzzle(){ if(curIdx>0)loadPuzzle(curIdx-1); }
+function nextPuzzle(){ if(curIdx<PUZZLES.length-1)loadPuzzle(curIdx+1); }
+function resetPuzzle(){ loadPuzzle(curIdx); }
+
+function enterArena(idx){ mode='puzzle'; document.getElementById('lectureView').style.display='none'; document.getElementById('puzzleView').style.display='block'; document.getElementById('arenaBackBtn').style.display='block'; loadPuzzle(idx); }
+function startArena(){ loadSavedProgress(); enterArena(0); }
+function continueArena(){ loadSavedProgress(); const keys=Object.keys(completed).map(Number); const max=keys.length?Math.max(...keys):-1; const next=Math.min(max+1,PUZZLES.length-1); if(mode==='puzzle')loadPuzzle(next); else enterArena(next); }
+function backToLecture(){ mode='lecture'; document.getElementById('lectureView').style.display='block'; document.getElementById('puzzleView').style.display='none'; document.getElementById('arenaBackBtn').style.display='none'; updateArenaBtn(); board.orientation('white'); board.position(LECTURE_FEN,true); chess=null;selSq=null; if(window._annClear)window._annClear(); clearHL(); }
+
+board=Chessboard('board',{position:LECTURE_FEN,pieceTheme:PIECE_THEME,draggable:true,onDragStart,onDrop,onSnapEnd});
+window.addEventListener('resize',debounce(()=>{board.resize();if(window._annRender)window._annRender();},150));
+updateArenaBtn();
+</script>
+<script src="board-utils.js"></script>
+</body>
+</html>
