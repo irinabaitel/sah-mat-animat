@@ -21,6 +21,30 @@ Include întotdeauna **`<script src="board-utils.js"></script>`** în orice pagi
 ## Clase CSS globale
 `.hl-box` / `.hl-box.ok` / `.hl-box.warn` sunt în `master-template.css` — nu le redefini local.
 
+## Butoane reset progres în arene
+**Orice pagină de arenă trebuie să aibă buton de resetare a progresului.** Pattern standard:
+
+```html
+<!-- în lectureView, după continueBtn -->
+<button class="btn-arena" id="resetAllBtn" onclick="resetAllProgress()"
+        style="display:none; margin-top:8px; background:rgba(192,57,43,0.82);">
+  ↺ Joacă din nou (resetează tot)
+</button>
+```
+
+```js
+function resetAllProgress() {
+  try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+  completed = {};
+  updateArenaBtn();
+  enterArena(0);
+}
+```
+
+- `resetAllBtn` se afișează **imediat ce `done > 0`** (după primul puzzle rezolvat) — adaugă `if (rb) rb.style.display = 'flex';` în blocul `if (done > 0)` din `updateArenaBtn()`
+- Există și `playAgainBtn` în puzzleView (pentru când toate puzzle-urile sunt rezolvate)
+- Model de referință: `pagina52.html`
+
 ## Efect mat pe pătrat rege
 Folosește clasa **`.highlight-check`** (sec. 6 din `master-template.css`) — radial gradient roșu, stil Lichess.
 **Nu inventa efecte noi.** Pattern JS standard (copiază din `pagina5.html`):

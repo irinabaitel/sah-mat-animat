@@ -213,7 +213,7 @@ function updateArenaBtn(){
     if(done>0){
       ab.textContent='\u{1F3AF} Arenă Matul Anastasia ('+done+'/'+PUZZLES.length+' rezolvate)';
       if(cb){ if(allDone){cb.style.display='none';}else{const max=Math.max(...Object.keys(d.done).map(Number));cb.textContent='▶ Continuă de la #'+(Math.min(max+1,PUZZLES.length-1)+1);cb.style.display='flex';} }
-      if(rb)rb.style.display=allDone?'flex':'none';
+      if(rb)rb.style.display='flex';
     }else{
       ab.textContent='\u{1F3AF} Arenă Matul Anastasia →';
       if(cb)cb.style.display='none'; if(rb)rb.style.display='none';
