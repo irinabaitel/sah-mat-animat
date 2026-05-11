@@ -71,7 +71,7 @@
           <div class="hl-box" style="margin:12px 0;">
             <strong>&#9813; Tiparul de mat:</strong>
             <p style="margin-top:6px;line-height:1.7;">Regele este prins în colț sau pe margine; dama atacă pe coloana h sau g, o piesă blochează singura evadare.</p>
-            <p style="margin-top:8px;font-size:0.88em;opacity:0.75;">40 puzzle-uri &middot; 3 niveluri de dificultate (Ușor &rarr; Mediu &rarr; Greu)</p>
+            <p style="margin-top:8px;font-size:0.88em;opacity:0.75;">7 puzzle-uri</p>
           </div>
           <div class="arena-intro-desc">Caută sacrificiile de turn care atrag piesele apărătoare, lăsând dama să execute lovitura finală pe coloana h sau g!</div>
           <button class="btn-arena" id="arenaBtn" onclick="startArena()">&#127919; Arenă Matul lui Damiano &rarr;</button>
@@ -120,54 +120,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script>
 const PIECE_THEME='https://lichess1.org/assets/piece/caliente/{piece}.svg';
-const LECTURE_FEN='5rk1/6p1/6P1/7Q/8/8/8/6K1 w - - 0 1';
+const LECTURE_FEN='5qk1/6p1/6P1/8/8/7Q/7P/6K1 w - - 0 1';
 const SAVE_KEY='damiano_progress';
 
 /* ── PUZZLES ── */
 const PUZZLES=[
-  /* 0-9 USOR */
-  {id:'9XmWv',fen:'rnbqk1nr/ppp2pbp/3p2p1/4P3/2P5/2N4P/PP1PP1P1/R1BQKBNR b KQkq - 0 5',sol:['d8h4','g2g3','h4g3'],turn:'b'},  // r1000 x310 3mut
-  {id:'GaoK7',fen:'2r2k2/Q4ppp/6q1/2p5/1p1p4/1P1P4/5PPP/4R1K1 w - - 2 36',sol:['a7e7','f8g8','e7e8','c8e8','e1e8'],turn:'w'},  // r1007 x209 5mut
-  {id:'Yt7ST',fen:'6k1/p6p/bp2p1pB/2p4n/6RQ/2P4P/PP2qrPK/8 w - - 6 28',sol:['h4d8','f2f8','d8f8'],turn:'w'},  // r1028 x696 3mut
-  {id:'Ho5fK',fen:'4r3/8/p7/1p1Q1p2/kP6/P7/2P2PPP/q2R2K1 b - - 3 36',sol:['e8e1','d1e1','a1e1'],turn:'b'},  // r1031 x216 3mut
-  {id:'eRwCR',fen:'6k1/5p2/4r2Q/p4q2/2p1p3/2P4P/P4P1K/3R4 w - - 2 37',sol:['d1d8','e6e8','d8e8'],turn:'w'},  // r1055 x1224 3mut
-  {id:'HRzt3',fen:'8/1p6/1kp1Qb1p/5B2/8/PPqp4/K1P5/1R3R2 b - - 1 36',sol:['c3c2','b1b2','c2b2'],turn:'b'},  // r1066 x417 3mut
-  {id:'Khfxr',fen:'4k3/p2p4/1p2p3/7p/4q2P/4r3/P1r3R1/5QK1 w - - 2 31',sol:['g2g8','e8e7','f1f8'],turn:'w'},  // r1073 x252 3mut
-  {id:'4MWiC',fen:'3R4/1p3pk1/p3b1p1/4P3/6r1/5Q2/1r4P1/4K3 w - - 2 52',sol:['f3f6','g7h7','d8h8'],turn:'w'},  // r1082 x1366 3mut
-  {id:'2zUAV',fen:'3q1r1k/ppr5/2p2pQ1/5R2/3P2P1/2P4P/PP5b/R4K2 w - - 5 26',sol:['f5h5','c7h7','g6h7'],turn:'w'},  // r1082 x1924 3mut
-  {id:'PuOpl',fen:'5N2/4rn2/2pq4/4Qb1k/5Pp1/8/6PK/8 w - - 2 43',sol:['e5f5','f7g5','f5g5'],turn:'w'},  // r1098 x1261 3mut
-  /* 10-29 MEDIU */
-  {id:'rE1dG',fen:'r1bbk3/5pp1/p2q2n1/3N4/2B1P1n1/P5P1/2P4N/R1BQ1RK1 b q - 0 22',sol:['d6g3','g1h1','g3h2'],turn:'b'},  // r1323 x13986 3mut
-  {id:'bIheX',fen:'5rk1/1Q3ppp/p7/8/2n3q1/1N1r4/P5PP/4RR1K w - - 4 31',sol:['b7f7','f8f7','e1e8','f7f8','f1f8'],turn:'w'},  // r1345 x4974 5mut
-  {id:'0pOpk',fen:'4rrk1/1p3p2/p2p2p1/6R1/3Q4/1P3q2/P1P4P/1K4R1 w - - 2 28',sol:['g5g6','f7g6','g1g6','g8f7','d4g7'],turn:'w'},  // r1353 x308 5mut
-  {id:'3xrAF',fen:'8/6p1/2Nn1pkp/1q2p3/3P3P/1Q3PPK/8/8 w - - 0 53',sol:['c6e7','g6h7','b3g8'],turn:'w'},  // r1355 x11154 3mut
-  {id:'nQDbB',fen:'r1b2rk1/pp1n1pb1/6B1/2p3q1/5p2/2P1P3/PPQN1PP1/2K4R w - - 0 17',sol:['g6h7','g8h8','h7g8','g5h6','h1h6','g7h6','c2h7'],turn:'w'},  // r1357 x6413 7mut
-  {id:'hKPLI',fen:'1k6/1P4Rp/2K5/6p1/8/8/8/1r6 w - - 0 50',sol:['g7g8','b8a7','g8a8'],turn:'w'},  // r1359 x280 3mut
-  {id:'ZOKHR',fen:'1Rr3k1/5ppp/3Qp3/3p4/3P4/4P2P/r1q2PP1/1R4K1 b - - 2 29',sol:['c2f2','g1h2','f2g2'],turn:'b'},  // r1367 x317 3mut
-  {id:'ZzkSN',fen:'r7/pppqnrpk/3bNp1B/3p1P2/5P1R/8/PP4PP/4R1K1 w - - 0 27',sol:['h6g7','h7g8','h4h8'],turn:'w'},  // r1368 x674 3mut
-  {id:'BC0l6',fen:'1k3r2/ppp5/3b1r1p/3p1q2/6B1/2P1P1PP/PP2QPK1/6RR b - - 12 26',sol:['f5f2','e2f2','f6f2'],turn:'b'},  // r1372 x5061 3mut
-  {id:'4zLQr',fen:'2r4k/p2Q2pp/1p1Bp3/3pPp2/3P4/P3KPR1/q4P1P/8 b - - 0 26',sol:['c8c3','e3f4','a2d2'],turn:'b'},  // r1375 x14170 3mut
-  {id:'hrlbN',fen:'3rn1k1/pp1r1pp1/q6p/3p4/2P5/P1Q2P2/1B4PP/3RR1K1 w - - 0 24',sol:['e1e8','d8e8','c3g7'],turn:'w'},  // r1379 x888 3mut
-  {id:'3jti1',fen:'r1b2rk1/1pq2p1p/p1np1p2/5N2/2P1Pp2/3B4/PP4PP/R2Q1RK1 w - - 0 16',sol:['d1g4','g8h8','g4g7'],turn:'w'},  // r1388 x27508 3mut
-  {id:'n4B2g',fen:'R7/5p2/2r1p1k1/4P3/3bN1Pp/p1p4K/P7/8 w - - 2 48',sol:['a8g8','g6h7','e4f6','h7h6','g4g5'],turn:'w'},  // r1390 x1394 5mut
-  {id:'Q7kO4',fen:'b4rk1/5pp1/pbqN3p/1p2P3/1P3P1n/P5Q1/BB4PP/2R4K b - - 4 31',sol:['c6g2','g3g2','a8g2'],turn:'b'},  // r1393 x1483 3mut
-  {id:'OS1CZ',fen:'3b2r1/B1kn3p/Q1p5/4qp1B/8/8/P1P2P2/1R5K b - - 3 26',sol:['e5e4','f2f3','e4h4'],turn:'b'},  // r1395 x934 3mut
-  {id:'enldU',fen:'8/8/1k6/npr5/1K6/8/1Q6/8 b - - 15 63',sol:['c5c4','b4a3','c4a4'],turn:'b'},  // r1396 x9802 3mut
-  {id:'OChhH',fen:'2r1k2r/3q1p2/pQpp4/3Np2p/B3P2K/5P2/PP3P1n/R4R2 b k - 2 24',sol:['h2f3','h4g3','d7g4'],turn:'b'},  // r1398 x1262 3mut
-  {id:'6tCTh',fen:'r1b2b2/1pp2Qpk/pn5p/1P2P3/2P1N3/3n4/P5PP/q1B2R1K w - - 0 21',sol:['e4f6','h7h8','f7f8'],turn:'w'},  // r1401 x1253 3mut
-  {id:'oAvNO',fen:'8/1p6/p7/k7/Pn2q3/1PQ3PP/5P1K/8 w - - 0 48',sol:['c3c5','b7b5','c5c7'],turn:'w'},  // r1403 x1951 3mut
-  {id:'E5a9D',fen:'5rk1/pp1P1ppp/6q1/4p3/1Q6/P4P2/r5PP/3R2nK w - - 0 26',sol:['b4f8','g8f8','d7d8q'],turn:'w'},  // r1404 x2975 3mut
-  /* 30-39 GREU */
-  {id:'pzfFJ',fen:'r3k3/ppp2p2/2nq1p1p/3p1N2/3P4/2P1P1rb/PP2BR1K/RNBQ4 b q - 3 15',sol:['g3g2','h2h3','d6h2'],turn:'b'},  // r1623 x2339 3mut
-  {id:'gM5Rv',fen:'5rk1/2p2ppp/8/p3q3/4N3/1B2PQ2/1r4PP/3R2K1 w - - 2 22',sol:['f3f7','f8f7','d1d8','e5e8','d8e8'],turn:'w'},  // r1627 x1747 5mut
-  {id:'qmSNy',fen:'1r3r2/p4pkP/4p1p1/q1p1P3/2bp1Q2/5N2/1PK2PP1/3R4 w - - 2 27',sol:['f4f6','g7h7','d1h1','h7g8','h1h8'],turn:'w'},  // r1632 x13822 5mut
-  {id:'snpUl',fen:'r1b1k2r/1pp1qp2/2n5/pNPBp3/P3P1p1/2P1N1p1/5PP1/R2Q1RK1 b kq - 0 20',sol:['h8h1','g1h1','e7h4','h1g1','h4h2'],turn:'b'},  // r1637 x4718 5mut
-  {id:'TKAJW',fen:'r4r2/1pp2k2/1p2pp2/4p1q1/8/2P4R/PP4PK/R2Q4 w - - 0 26',sol:['d1d7','f7g6','d7h7'],turn:'w'},  // r1639 x8752 3mut
-  {id:'dIlMW',fen:'3r1k2/pp3P2/3p1q2/2p1b2B/6Q1/2P4P/PP6/6K1 w - - 2 36',sol:['g4g8','f8e7','g8e8','d8e8','f7e8q'],turn:'w'},  // r1644 x2680 5mut
-  {id:'VDifC',fen:'2r2k1r/pp3ppp/1q4P1/8/3bpB2/P1P2Q1P/1P6/2K4R w - - 0 26',sol:['f4d6','f8e8','f3f7','e8d8','f7e7'],turn:'w'},  // r1650 x535 5mut
-  {id:'rPdcc',fen:'r5k1/pp4pp/2n5/3p4/Q2Nn1Pq/2P1R3/PP5P/RN3BK1 b - - 0 18',sol:['h4f2','g1h1','f2f1'],turn:'b'},  // r1651 x18543 3mut
-  {id:'mGoJt',fen:'5k2/5pp1/8/4p1q1/6b1/3P3r/PPQN1P2/3RKR2 b - - 0 24',sol:['h3e3','f2e3','g5e3'],turn:'b'},  // r1662 x8369 3mut
-  {id:'21tPF',fen:'r3r1k1/p1q2ppp/b1pb4/3p4/3N4/2P1P1B1/PP1N2PP/R2QK2R b KQ - 0 15',sol:['d6g3','h2g3','c7g3'],turn:'b'},  // r1687 x7997 3mut
+  /* 1 mutare */
+  {id:'dam1',fen:'5qk1/6p1/6P1/8/8/7Q/7P/6K1 w - - 0 1',sol:['h3h7'],turn:'w'},
+  /* Qd5+ Re6 Rh8+ Kxh8 Qh1+ Kg8 Qh7# */
+  {id:'dam2',fen:'4rqk1/4r1p1/5pP1/8/5P2/6P1/4R2R/3Q2K1 w - - 1 1',sol:['d1d5','e7e6','h2h8','g8h8','d5h1','h8g8','h1h7'],turn:'w'},
+  /* Rh8+ Kxh8 Rh2+ Kg8 Rh8+ Kxh8 Qh5+ Kg8 Qh7# */
+  {id:'dam3',fen:'4rqk1/4r1p1/5pP1/8/5P2/6P1/4R2R/3Q2K1 w - - 1 1',sol:['h2h8','g8h8','e2h2','h8g8','h2h8','g8h8','d1h5','h8g8','h5h7'],turn:'w'},
+  /* Ng3+ hxg3 hxg3+(disc) Kg1 Rh1+ Kxh1 Rh8+ Kg1 Rh1+ Kxh1 Qh8+ Kg1 Qh2+ Kf1 Qh1# */
+  {id:'dam4',fen:'k1qr3r/p1p2p2/1p2p1p1/P2pPn2/3P3p/1N3P2/3BQ1PP/RR5K b - - 1 1',sol:['f5g3','h2g3','h4g3','h1g1','h8h1','g1h1','d8h8','h1g1','h8h1','g1h1','c8h8','h1g1','h8h2','g1f1','h2h1'],turn:'b'},
+  /* Rh8+ Kxh8 Rh1+ Kg8 Rh8+ Kxh8 Qh1+ Kg8 Qh7# */
+  {id:'dam5',fen:'r4rk1/p5p1/4p1P1/1p3p2/8/qPp2P2/P1P5/1K1Q1R1R w - - 1 1',sol:['h1h8','g8h8','f1h1','h8g8','h1h8','g8h8','d1h1','h8g8','h1h7'],turn:'w'},
+  /* Bxh7+ Kh8 Bg6+(disc) Kg8 Qh7# */
+  {id:'dam6',fen:'5rk1/3p2pp/4pb2/7Q/1p3P2/qPpBP3/P1P5/1K1R4 w - - 3 5',sol:['d3h7','g8h8','h7g6','h8g8','h5h7'],turn:'w'},
+  /* Qh2+ Kf1 Qxf2# */
+  {id:'dam7',fen:'4r1k1/pp3pp1/2p5/1PPB4/P2P3P/6bq/3B1P2/3Q2K1 b - - 4 7',sol:['h3h2','g1f1','h2f2'],turn:'b'},
 ];
 
 /* ── STATE ── */
