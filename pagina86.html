@@ -143,19 +143,37 @@ const chapters = [
     }
   },
 
-  /* 3 — Sacrificiu de turn + urmărire, 7 mutări (Lichess Cfl8Z) */
+  /* 3 — Nh7+ Rh8 Ng8 Dh6 Txh6 Nxh6 Dh7# (Lichess nQDbB) */
   {
-    fen: '2r1k3/pp4QR/1n2q3/3pBp2/b2P4/3PP3/PP3PP1/1K6 b - - 0 1',
-    san: ['Rc1+', 'Kxc1', 'Qc6+', 'Kb1', 'Qc2+', 'Ka1', 'Qc1'],
+    fen: 'r1b2rk1/pp1n1pb1/6B1/2p3q1/5p2/2P1P3/PPQN1PP1/2K4R w - - 0 17',
+    san: ['Bh7+', 'Kh8', 'Bg8', 'Qh6', 'Rxh6', 'Bxh6', 'Qh7'],
     ann: {
-      0: 'Negrul mută. Regele alb pe b1 pare în siguranță, dar e o capcană! Nebunul negru stă pe a4 — aceeași coloană (a) unde regele va fi alungat. Propriul pion alb de pe a2 îl va bloca pe a2. Turnul negru de pe c8 deschide dansul!',
-      1: '<strong>1...Tc1+!</strong> — turnul negru se sacrifică pe c1, șah! Regele este forțat să captureze.',
-      2: '<strong>2.Rxc1</strong> — regele captează turnul, ajungând pe c1.',
-      3: '<strong>2...Dc6+!</strong> — dama neagră vine pe c6, șah! Regele trebuie să se retragă.',
-      4: '<strong>3.Rb1</strong> — regele se întoarce la b1.',
-      5: '<strong>3...Dc2+!</strong> — dama urmărește, șah pe c2! Regele e forțat spre colțul a1.',
-      6: '<strong>4.Ra1</strong> — regele ajunge în colțul a1. Acum vine lovitura finală!',
-      7: '<strong>4...Dc1#!</strong> — dama mută pe c1, mat! Regele nu poate fugi: b1 controlat de damă, a2 blocat de propriul pion. Nebunul negru de pe a4 este pe aceeași coloană cu regele — iar propriul pion alb de pe a2, ADJACENT regelui pe a1, îl blochează. Tipar Damiano pe coloana a!'
+      0: 'Albul mută. Regele negru pe g8 pare apărat de nebunul de pe g7 și turnul de pe f8. Albul lansează o combinație cu trei sacrificii consecutive — o bijuterie tactică!',
+      1: '<strong>1.Nh7+!</strong> — nebunul mută pe h7, șah! Regele este forțat spre colțul h8.',
+      2: '<strong>1...Rh8</strong> — regele se retrage la h8, singura mutare.',
+      3: '<strong>2.Ng8!</strong> — nebunul se mută pe g8, ocupând câmpul de fugă al regelui! Acum Dh7# este amenințată. Dama neagră încearcă să blocheze coloana h.',
+      4: '<strong>2...Dh6</strong> — dama neagră vine pe h6, cel mai bun blocaj posibil.',
+      5: '<strong>3.Txh6!</strong> — turnul alb capturează dama neagră pe h6! Turn sacrificat contra damă.',
+      6: '<strong>3...Nxh6</strong> — nebunul negru recaptează pe h6. Câmpul g7 s-a eliberat — exact ce planificase albul!',
+      7: '<strong>4.Dh7#!</strong> — dama albă mută pe h7, mat! Regele nu poate fugi: g8 blocat de nebunul alb (apărat de damă!), g7 atacat de damă pe linia 7, h6 ocupat de nebunul negru. Tiparul Damiano pe coloana h!'
+    }
+  },
+
+  /* 4 — Dublă capcană de turn, 9 mutări */
+  {
+    fen: 'q1r4r/1b2kpp1/p3p3/P1b5/1pN1P3/3BBPp1/1P4P1/R3QRK1 b - - 0 1',
+    san: ['Rh1+', 'Kxh1', 'Rh8+', 'Kg1', 'Rh1+', 'Kxh1', 'Qh8+', 'Bh6', 'Qxh6'],
+    ann: {
+      0: 'Negrul mută. Regele alb pe g1 este vizat de dama neagră pe a8 și de ambele turnuri (c8 și h8). O combinație de dublu sacrificiu de turn forțează matul lui Damiano!',
+      1: '<strong>1...Th1+!</strong> — turnul de pe h8 se sacrifică pe h1, șah! Regele este forțat să captureze.',
+      2: '<strong>2.Rxh1</strong> — regele captează turnul, mutând pe h1.',
+      3: '<strong>2...Th8+!</strong> — al doilea turn (de pe c8) vine pe h8, șah! Regele trebuie să se întoarcă.',
+      4: '<strong>3.Rg1</strong> — regele se retrage la g1.',
+      5: '<strong>3...Th1+!</strong> — același turn se sacrifică din nou pe h1! A doua capcană de turn.',
+      6: '<strong>4.Rxh1</strong> — regele captează al doilea turn. Coloana h este liberă — dama intră!',
+      7: '<strong>4...Dh8+!</strong> — dama neagră vine pe h8, șah pe coloana h! Albul trebuie să blocheze.',
+      8: '<strong>5.Nh6</strong> — nebunul alb se interpune pe h6, singurul blocaj.',
+      9: '<strong>5...Dxh6#!</strong> — dama captează nebunul, mat! Regele în h1 nu poate scăpa: h2 controlat de damă, g1 atacat de nebunul negru de pe c5 (diagonala c5–g1 este liberă!), g2 blocat de pion propriu. Matul lui Damiano după un magistral dublu sacrificiu de turn!'
     }
   },
 
@@ -333,10 +351,10 @@ document.addEventListener('keydown',e=>{
 
 const allExamples = {
   title: 'Exemple',
-  desc: 'Studiază cele 4 poziții și urmărește cum dama dă matul final — uneori după sacrificarea unui turn.',
+  desc: 'Studiază cele 5 poziții și urmărește cum dama dă matul final — adesea după sacrificii spectaculoase pe coloana h.',
   examples: [
     {ch:0,label:'Ex. 1'},{ch:1,label:'Ex. 2'},{ch:2,label:'Ex. 3'},
-    {ch:3,label:'Ex. 4'}
+    {ch:3,label:'Ex. 4'},{ch:4,label:'Ex. 5'}
   ]
 };
 
