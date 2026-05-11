@@ -176,6 +176,10 @@
             <div class="progress-wrap"><div class="progress-fill" id="hubProg1" style="width:0%"></div></div>
             <div class="hub-card-stats" id="hubStats1">0 / 140 rezolvate</div>
             <button class="btn-arena" onclick="goToArena(1)">♟ Mat în 1 →</button>
+            <button class="btn-arena" id="resetMat1Btn" onclick="resetMat1Progress()"
+                    style="display:none; margin-top:8px; background:rgba(192,57,43,0.82);">
+              ↺ Joacă din nou (resetează tot)
+            </button>
           </div>
 
           <div class="arena-hub-card">
@@ -434,6 +438,11 @@ function resetProgress() {
   try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
   completed = {};
   loadPuzzle(0);
+}
+function resetMat1Progress() {
+  try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+  completed = {};
+  showArenaHub();
 }
 
 /* ── UTILS ─────────────────────────────────────────── */
@@ -741,6 +750,12 @@ function showArenaHub() {
       document.getElementById(cfg.stats).textContent   = done + ' / ' + cfg.total + ' rezolvate';
     } catch(e) {}
   });
+  try {
+    const d1   = JSON.parse(localStorage.getItem('mat1_progress') || 'null');
+    const done1 = d1 ? Object.keys(d1.done || {}).length : 0;
+    const rb   = document.getElementById('resetMat1Btn');
+    if (rb) rb.style.display = (done1 >= 140) ? 'flex' : 'none';
+  } catch(e) {}
 }
 
 function goToArena(n) {

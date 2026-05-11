@@ -120,6 +120,10 @@
                   style="display:none; margin-top:8px; background:var(--c-success);">
             ▶ Continuă
           </button>
+          <button class="btn-arena" id="resetAllBtn" onclick="resetAllProgress()"
+                  style="display:none; margin-top:8px; background:rgba(192,57,43,0.82);">
+            ↺ Joacă din nou (resetează tot)
+          </button>
         </div>
 
         <div id="puzzleView">
@@ -332,24 +336,37 @@ function loadSavedProgress() {
 }
 function updateArenaBtn() {
   try {
-    const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
-    const done = d ? Object.keys(d.done || {}).length : 0;
-    const ab = document.getElementById('arenaBtn');
-    const cb = document.getElementById('continueBtn');
+    const d       = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+    const done    = d ? Object.keys(d.done || {}).length : 0;
+    const allDone = done >= PUZZLES.length;
+    const ab      = document.getElementById('arenaBtn');
+    const cb      = document.getElementById('continueBtn');
+    const rb      = document.getElementById('resetAllBtn');
     if (!ab) return;
     if (done > 0) {
       ab.textContent = '♟ Arenă Mat în 4 (' + done + '/' + PUZZLES.length + ' rezolvate)';
       if (cb) {
-        const max = Math.max(...Object.keys(d.done).map(Number));
-        const nxt = Math.min(max + 1, PUZZLES.length - 1);
-        cb.textContent = '▶ Continuă de la #' + (nxt + 1);
-        cb.style.display = 'flex';
+        if (allDone) { cb.style.display = 'none'; }
+        else {
+          const max = Math.max(...Object.keys(d.done).map(Number));
+          const nxt = Math.min(max + 1, PUZZLES.length - 1);
+          cb.textContent = '▶ Continuă de la #' + (nxt + 1);
+          cb.style.display = 'flex';
+        }
       }
+      if (rb) rb.style.display = allDone ? 'flex' : 'none';
     } else {
       ab.textContent = '♟ Arenă Mat în 4 →';
       if (cb) cb.style.display = 'none';
+      if (rb) rb.style.display = 'none';
     }
   } catch(e) {}
+}
+function resetAllProgress() {
+  try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+  completed = {};
+  updateArenaBtn();
+  enterArena(0);
 }
 
 /* ── PUZZLE UI ── */
