@@ -71,7 +71,7 @@
           <div class="hl-box" style="margin:12px 0;">
             <strong>&#9813; Tiparul de mat:</strong>
             <p style="margin-top:6px;line-height:1.7;">Regele este prins în colț sau pe margine; dama atacă pe coloana h sau g, o piesă blochează singura evadare.</p>
-            <p style="margin-top:8px;font-size:0.88em;opacity:0.75;">7 puzzle-uri</p>
+            <p style="margin-top:8px;font-size:0.88em;opacity:0.75;">18 puzzle-uri</p>
           </div>
           <div class="arena-intro-desc">Caută sacrificiile de turn care atrag piesele apărătoare, lăsând dama să execute lovitura finală pe coloana h sau g!</div>
           <button class="btn-arena" id="arenaBtn" onclick="startArena()">&#127919; Arenă Matul lui Damiano &rarr;</button>
@@ -139,6 +139,28 @@ const PUZZLES=[
   {id:'dam6',fen:'5rk1/3p2pp/4pb2/7Q/1p3P2/qPpBP3/P1P5/1K1R4 w - - 3 5',sol:['d3h7','g8h8','h7g6','h8g8','h5h7'],turn:'w'},
   /* Qh2+ Kf1 Qxf2# */
   {id:'dam7',fen:'4r1k1/pp3pp1/2p5/1PPB4/P2P3P/6bq/3B1P2/3Q2K1 b - - 4 7',sol:['h3h2','g1f1','h2f2'],turn:'b'},
+  /* Qc4+ Kh8 Qh4+ Kg8 Qh7# */
+  {id:'dam8',fen:'5rk1/pp4p1/5pP1/q7/8/4P3/P1Q2PP1/4R1K1 w - - 0 1',sol:['c2c4','g8h8','c4h4','h8g8','h4h7'],turn:'w'},
+  /* Rh8+ Kxh8 Rxc8+ Rxc8 Qh3+ Kg8 Qxc8+ Qe8 Qxe8+ Rf8 Qe6+ Rf7 Qxf7+ Kh8 Qf8# */
+  {id:'dam9',fen:'r1b3k1/p5p1/1p4P1/3pp3/q2N1r2/4Q2R/7P/2R4K w - - 0 1',sol:['h3h8','g8h8','c1c8','a8c8','e3h3','h8g8','h3c8','a4e8','c8e8','f4f8','e8e6','f8f7','e6f7','g8h8','f7f8'],turn:'w'},
+  /* Nhg3+ Nxg3 Nxg3+ hxg3 hxg3+ Kg1 Rh1+ Kxh1 Qh6+ Bh5 Qxh5+ Qh4 Qxh4+ Kg1 Qh2# */
+  {id:'dam10',fen:'1kr4r/1p3pp1/p2q4/N4n1n/PP2Q2p/2P2B2/4N1PP/2R2R1K b - - 0 1',sol:['h5g3','e2g3','f5g3','h2g3','h4g3','h1g1','h8h1','g1h1','d6h6','f3h5','h6h5','e4h4','h5h4','h1g1','h4h2'],turn:'b'},
+  /* Qd5+ Rf7 Qxf7# */
+  {id:'dam11',fen:'r4rk1/6p1/6P1/8/q7/8/4P1K1/3Q1R1R w - - 0 1',sol:['d1d5','f8f7','d5f7'],turn:'w'},
+  /* hxg5+(disc) Kg8 Rh8+ Kxh8 Qh5+ Kg8 g6 Rf7 Qh7+ Kf8 Qh8# */
+  {id:'dam12',fen:'r1bq1r2/pp1pb1pk/2n1p3/4P1p1/3P3P/2P5/P4PP1/R1BQK2R w KQ - 0 1',sol:['h4g5','h7g8','h1h8','g8h8','d1h5','h8g8','g5g6','f8f7','h5h7','g8f8','h7h8'],turn:'w'},
+  /* Ng3+ hxg3 hxg3+(disc) Kg1 Rh1+ Kxh1 Rh8+ Kg1 Rh1+ Kxh1 Qh8+ Bh6 Qxh6+ Kg1 Qh2+ Kf1 Qh1# */
+  {id:'dam13',fen:'k1qr3r/p1p2p2/1p2p1p1/P2pPn2/2nP3p/1NP2P2/2PBQ1PP/RR5K b - - 0 1',sol:['f5g3','h2g3','h4g3','h1g1','h8h1','g1h1','d8h8','h1g1','h8h1','g1h1','c8h8','d2h6','h8h6','h1g1','h6h2','g1f1','h2h1'],turn:'b'},
+  /* Bxh7+ Kxh7 hxg5+(disc) Kg8 Rh8+ Kxh8 Qh5+ Kg8 g6 Nf6 exf6 Rxf6 Qh7+ Kf8 Qh8# */
+  {id:'dam14',fen:'rnbq1rk1/p2nb1pp/1p2p3/2ppP1p1/3P3P/2PB4/PP1N1PP1/R1BQK2R w KQ - 0 1',sol:['d3h7','g8h7','h4g5','h7g8','h1h8','g8h8','d1h5','h8g8','g5g6','d7f6','e5f6','f8f6','h5h7','g8f8','h7h8'],turn:'w'},
+  /* Nxg6 fxg6 Qxg6+ Ng7 Rh8+ Kxh8 Qh6+ Kg8 g6 Rf5 Qh7+ Kf8 Qh8# */
+  {id:'dam15',fen:'r4rk1/1bq1bp2/ppn1p1pQ/2ppN1Pn/3P1P2/2P1P2R/PP1N3P/R1B3K1 w - - 0 1',sol:['e5g6','f7g6','h6g6','h5g7','h3h8','g8h8','g6h6','h8g8','g5g6','f8f5','h6h7','g8f8','h7h8'],turn:'w'},
+  /* Bh7+ Kh8 Bg6+(disc) Kg8 Rh8+ Kxh8 Qh5+ Kg8 Qh7# */
+  {id:'dam16',fen:'r4rk1/pp2npp1/2p2q2/3p3R/2PP4/3BP3/PP2QP2/2KR4 w - - 0 1',sol:['d3h7','g8h8','h7g6','h8g8','h5h8','g8h8','e2h5','h8g8','h5h7'],turn:'w'},
+  /* Qh6 Qf8 Qxh7+ Kxh7 Rh1+ Qh6 Rxh6+ Kxh6 Rh1# */
+  {id:'dam17',fen:'r3r1k1/p4p1p/5Bp1/2q5/8/8/PP1Q4/KR1R4 w - - 0 1',sol:['d2h6','c5f8','h6h7','g8h7','d1h1','f8h6','h1h6','h7h6','b1h1'],turn:'w'},
+  /* Rh8+ Rg8 Rxg8+ Kxg8 Rh1 Kf8 Rh8+ Nxh8 Qg7# */
+  {id:'dam18',fen:'4rk2/1p1q1pr1/3p1Bn1/p1pP1p2/P1P5/1PK3Q1/8/5R1R w - - 0 1',sol:['h1h8','g7g8','h8g8','f8g8','f1h1','g8f8','h1h8','g6h8','g3g7'],turn:'w'},
 ];
 
 /* ── STATE ── */
