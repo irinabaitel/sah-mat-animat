@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Chaturanga — Cum se mișcă piesele</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
+<style>
+  /* ── Tabla MONOCROMĂ + X-uri (ashtapada autentic) ──
+     ATENȚIE: NU adăuga `background-image: none !important;` aici —
+     ar bloca clasele sq-move/sq-piece/sq-capture care folosesc
+     background-image pentru highlight. */
+  #board .white-1e1d7,
+  #board .black-3c85d {
+    background-color: #e8d4a0 !important;
+    position: relative;
+  }
+  #board .square-55d63 {
+    box-shadow:
+      inset -1px 0 0 rgba(90, 58, 28, .35),
+      inset 0 -1px 0 rgba(90, 58, 28, .35);
+  }
+  /* X-urile Schema B — foarte șterse, doar amintire */
+  #board .square-a1::after, #board .square-a4::after, #board .square-a5::after, #board .square-a8::after,
+  #board .square-d1::after, #board .square-d4::after, #board .square-d5::after, #board .square-d8::after,
+  #board .square-e1::after, #board .square-e4::after, #board .square-e5::after, #board .square-e8::after,
+  #board .square-h1::after, #board .square-h4::after, #board .square-h5::after, #board .square-h8::after {
+    content: "";
+    position: absolute;
+    inset: 18%;
+    background:
+      linear-gradient(45deg,  transparent 47%, rgba(58,31,16,.18) 47%, rgba(58,31,16,.18) 53%, transparent 53%),
+      linear-gradient(-45deg, transparent 47%, rgba(58,31,16,.18) 47%, rgba(58,31,16,.18) 53%, transparent 53%);
+    pointer-events: none;
+  }
+  /* Notația (a-h, 1-8) — culoare lizibilă pe lemn */
+  #board .notation-322f9 { color: rgba(60, 35, 10, .7) !important; }
+
+  /* Ierarhie de mărime a pieselor pe tablă — toate ≤ 1.0 ca să nu iasă din pătrat */
+  #board .piece-417db { object-fit: contain; transform-origin: center center; }
+  #board .piece-417db[data-piece="wK"], #board .piece-417db[data-piece="bK"] { transform: scale(0.98); }
+  #board .piece-417db[data-piece="wQ"], #board .piece-417db[data-piece="bQ"] { transform: scale(0.92); }
+  #board .piece-417db[data-piece="wR"], #board .piece-417db[data-piece="bR"] { transform: scale(0.88); }
+  #board .piece-417db[data-piece="wB"], #board .piece-417db[data-piece="bB"] { transform: scale(0.86); }
+  #board .piece-417db[data-piece="wN"], #board .piece-417db[data-piece="bN"] { transform: scale(0.84); }
+  #board .piece-417db[data-piece="wP"], #board .piece-417db[data-piece="bP"] { transform: scale(0.74); }
+
+  /* ── SLIDE NAV ── */
+  .slide-nav { display: flex; align-items: center; gap: 8px; flex-shrink: 0; padding: 4px 0; }
+  .slide-nav-btn {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 2px solid rgba(26,58,107,0.3);
+    background: rgba(255,255,255,0.6);
+    font-family: var(--font-display); font-size: 1rem;
+    color: var(--c-navy); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background .15s;
+  }
+  .slide-nav-btn:hover:not(:disabled) { background: rgba(26,58,107,0.15); }
+  .slide-nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .slide-dots { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; justify-content: center; flex: 1; }
+  .slide-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(26,58,107,0.15); cursor: pointer; transition: all .2s; }
+  .slide-dot.done   { background: rgba(26,58,107,0.38); }
+  .slide-dot.active { background: var(--c-navy); transform: scale(1.3); box-shadow: 0 0 0 2px rgba(26,58,107,0.2); }
+
+  /* ── PANEL TEXT ── */
+  .slide-badge {
+    display: inline-block;
+    background: rgba(26,58,107,0.09);
+    border: 1.5px solid rgba(26,58,107,0.2);
+    border-radius: 20px; padding: 4px 18px;
+    font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+    color: var(--c-navy); margin-bottom: 8px;
+  }
+  .slide-title { font-family: var(--font-display); font-size: 1.15rem; color: var(--c-navy); margin-bottom: 10px; line-height: 1.3; }
+  .slide-text { font-size: 1.05rem; line-height: 1.75; color: #2a2a3e; }
+  .slide-text p { margin-bottom: 8px; }
+  .slide-text p:last-child { margin-bottom: 0; }
+
+  /* ── ARMY GRID ── */
+  .army-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+  .piece-card {
+    background: rgba(255,255,255,0.65);
+    border: 2px solid rgba(255,255,255,0.9);
+    border-radius: 14px; padding: 10px 8px;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s; position: relative;
+  }
+  .piece-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .piece-card.selected { border-color: var(--c-navy); background: rgba(26,58,107,0.12); }
+  .piece-card img { width: 48px; height: 48px; object-fit: contain; display: block; margin: 0 auto; }
+  .piece-name { font-family: var(--font-display); font-size: 0.85em; color: var(--c-navy); margin: 4px 0 1px; }
+  .piece-count { font-size: 0.7em; color: rgba(26,26,46,0.5); }
+  .piece-card .piece-value {
+    position: absolute; top: 5px; right: 8px;
+    font-family: var(--font-display); font-size: 0.7em; color: rgba(26,26,46,0.35);
+  }
+
+  /* ── PIECE TABS ── */
+  .piece-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+  .ptab {
+    padding: 5px 11px; border-radius: 50px;
+    border: 2px solid rgba(26,58,107,0.3);
+    background: rgba(255,255,255,0.5);
+    font-family: var(--font-display); font-size: 0.78em; font-weight: 700;
+    color: var(--c-navy); cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .ptab img { width: 18px; height: 18px; object-fit: contain; }
+  .ptab:hover { background: rgba(26,58,107,0.12); }
+  .ptab.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
+
+  /* ── PIECE DESC ── */
+  .piece-desc-box {
+    background: rgba(26,58,107,0.08);
+    border: 2px solid rgba(26,58,107,0.18);
+    border-radius: 14px; padding: 12px 14px;
+    font-size: 0.9em; line-height: 1.65; color: #1a1a2e;
+    margin-bottom: 10px;
+  }
+  .piece-desc-box .pd-name {
+    font-family: var(--font-display); font-size: 1.05em;
+    color: var(--c-navy); margin-bottom: 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .piece-desc-box .pd-name img { width: 32px; height: 32px; object-fit: contain; }
+
+  /* ── LEGEND ── */
+  .legend { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .leg-item { display: flex; align-items: center; gap: 8px; font-size: 0.85em; color: #2a2a3e; }
+  .leg-dot { width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0; }
+  .dot-move    { background: rgba(80,200,100,0.65); border: 2px solid rgba(80,200,100,1); }
+  .dot-capture { background: rgba(230,60,50,0.65);  border: 2px solid rgba(230,60,50,1); }
+  .dot-piece   { background: rgba(26,120,255,0.5);  border: 2px solid rgba(26,120,255,0.8); }
+
+  /* ── BOARD HIGHLIGHTS ── */
+  .sq-move    { background-image: linear-gradient(rgba(80,200,100,0.45), rgba(80,200,100,0.45)) !important; }
+  .sq-piece   { background-image: linear-gradient(rgba(26,120,255,0.35), rgba(26,120,255,0.35)) !important; }
+  .sq-capture { background-image: linear-gradient(rgba(230,60,50,0.45), rgba(230,60,50,0.45))   !important; }
+  .sq-ask     { background-image: linear-gradient(rgba(255,200,0,0.60), rgba(255,200,0,0.60))   !important; }
+
+  /* ── QUIZ ── */
+  .quiz-box {
+    background: rgba(26,58,107,0.09);
+    border: 2px solid rgba(26,58,107,0.2);
+    border-radius: 14px; padding: 12px 14px;
+    font-size: 0.9em; line-height: 1.6; color: #1a1a2e;
+    min-height: 56px; transition: background 0.3s, border-color 0.3s;
+  }
+  .quiz-box.ok   { background: rgba(40,180,80,0.18);  border-color: rgba(40,180,80,0.5); }
+  .quiz-box.err  { background: rgba(200,50,50,0.15);  border-color: rgba(200,50,50,0.4); }
+  .quiz-box.done { background: rgba(245,200,66,0.2);  border-color: rgba(245,200,66,0.6); }
+  .quiz-btn {
+    padding: 7px 12px; border-radius: 10px;
+    border: 2px solid rgba(26,58,107,0.3);
+    background: rgba(255,255,255,0.6);
+    font-family: var(--font-display); font-size: 0.88em; font-weight: 700;
+    color: var(--c-navy); cursor: pointer; text-align: left;
+    transition: all 0.2s; width: 100%;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .quiz-btn img { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
+  .quiz-btn:hover:not(:disabled) { background: rgba(26,58,107,0.12); }
+  .quiz-btn:disabled { cursor: default; }
+
+  /* ── PRACTICE BUTTONS ── */
+  .practice-btn {
+    display: block; width: 100%; padding: 14px; border-radius: 14px;
+    border: none; text-align: center; cursor: pointer;
+    font-family: var(--font-display); font-size: 0.92em; font-weight: 700;
+    margin-bottom: 8px; transition: all 0.2s;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.18); color: white;
+    text-decoration: none;
+  }
+  .practice-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+  .practice-btn small {
+    display: block; font-family: var(--font-body);
+    font-size: 0.78em; opacity: 0.85; font-weight: 400; margin-top: 2px;
+  }
+  .pb-blue   { background: var(--c-navy); }
+  .pb-green  { background: #1a6b4a; }
+  .pb-purple { background: #7d3c98; }
+
+  /* ── SETUP ── */
+  .sq-new { background-image: linear-gradient(rgba(245,200,50,0.55),rgba(245,200,50,0.55)) !important; }
+
+  .setup-step-box {
+    background: rgba(26,58,107,0.08);
+    border: 2px solid rgba(26,58,107,0.18);
+    border-radius: 14px; padding: 12px 14px;
+    font-size: 0.92em; line-height: 1.65; color: #1a1a2e;
+    margin-bottom: 10px;
+  }
+  .setup-step-title { font-family: var(--font-display); font-size: 1em; color: var(--c-navy); font-weight: 700; margin-bottom: 6px; }
+  .setup-btns { display: flex; gap: 8px; margin-top: 10px; }
+  .setup-btn {
+    flex: 1; padding: 9px; border-radius: 12px; border: none;
+    font-family: var(--font-display); font-size: 0.88em; font-weight: 700;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .setup-btn-next { background: var(--c-navy); color: white; box-shadow: 0 2px 8px rgba(26,58,107,0.28); }
+  .setup-btn-next:hover { background: #2a5aab; }
+  .setup-btn-prev { background: rgba(255,255,255,0.6); border: 2px solid rgba(26,58,107,0.25) !important; color: var(--c-navy); }
+  .setup-btn-prev:hover:not(:disabled) { background: rgba(255,255,255,0.9); }
+  .setup-btn-prev:disabled, .setup-btn-next:disabled { opacity: 0.4; cursor: default; }
+  .setup-done-box {
+    background: rgba(40,180,80,0.15); border: 2px solid rgba(40,180,80,0.4);
+    border-radius: 12px; padding: 10px 14px;
+    font-family: var(--font-display); font-size: 0.9em;
+    color: #1a5c35; text-align: center; line-height: 1.5;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Chaturanga — Cum se mișcă piesele</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Strămoșii șahului</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll" id="panelScroll" role="region" aria-label="Conținut lecție">
+
+        <span class="slide-badge" id="slideBadge">Armata</span>
+        <div class="slide-title" id="slideTitle"></div>
+
+        <!-- SLIDE 0: Armata -->
+        <div id="slide0">
+          <div class="slide-text">
+            <p>Fiecare jucător comandă o armată de <strong>16 piese</strong>. Sunt <strong>6 feluri de luptători</strong>, fiecare cu un rol propriu.</p>
+            <p>Apasă pe o piesă ca s-o explorezi pe tablă:</p>
+          </div>
+          <div class="army-grid" id="armyGrid"></div>
+        </div>
+
+        <!-- SLIDE 1: Explorator mutări -->
+        <div id="slide1" style="display:none">
+          <div class="piece-tabs" id="pieceTabs"></div>
+          <div class="piece-desc-box">
+            <div class="pd-name" id="pd-name">Padati</div>
+            <div id="pd-text">Selectează o piesă!</div>
+          </div>
+          <div class="legend">
+            <div class="leg-item"><div class="leg-dot dot-move"></div> <span id="legend-move-text">Poate merge aici</span></div>
+            <div class="leg-item" id="legend-capture-row"><div class="leg-dot dot-capture"></div> Poate captura aici</div>
+            <div class="leg-item"><div class="leg-dot dot-piece"></div> Piesa selectată</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 2: Quiz -->
+        <div id="slide2" style="display:none">
+          <div class="slide-text">
+            <p>Pe tablă vezi mutările unei piese din chaturanga — dar piesa e ascunsă. Ghicești care e?</p>
+          </div>
+          <div id="quiz-question" style="font-family:var(--font-display);font-size:1em;color:var(--c-navy);margin-bottom:8px;"></div>
+          <div id="quiz-buttons" style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px;"></div>
+          <div class="quiz-box" id="quiz-feedback">Alege răspunsul corect!</div>
+        </div>
+
+        <!-- SLIDE 3: Așezarea pieselor -->
+        <div id="slide3" style="display:none">
+          <div class="slide-text" style="margin-bottom:10px;">
+            <p>Acum că știi cum se mișcă fiecare piesă, hai să le așezăm pe tablă — exact ca la începutul unei partide!</p>
+          </div>
+          <div class="setup-step-box">
+            <div class="setup-step-title" id="setup-title">Tabla goală</div>
+            <div id="setup-text">Avem tabla pregătită. Vom plasa piesele pe rând!</div>
+          </div>
+          <div class="setup-btns">
+            <button class="setup-btn setup-btn-prev" id="setup-prev-btn" onclick="prevSetup()" disabled>◀ Înapoi</button>
+            <button class="setup-btn setup-btn-next" id="setup-next-btn" onclick="nextSetup()">Pune Ratha (carele) ▶</button>
+          </div>
+          <div class="setup-done-box" id="setup-done-box">
+            🎉 Ai parcurs toată așezarea!<br>Acum știi cum arată tabla la startul unei partide de chaturanga.
+          </div>
+        </div>
+
+        <!-- SLIDE 4: Practică -->
+        <div id="slide4" style="display:none">
+          <div class="slide-text" style="margin-bottom:12px;">
+            <p>Acum că știi piesele, hai în <strong>Arenă</strong> — joacă o partidă reală de chaturanga vs. calculator!</p>
+          </div>
+          <a href="#" class="practice-btn pb-blue">
+            ⚔️ Arena chaturanga
+            <small>(în lucru) — partidă completă vs. 🤖</small>
+          </a>
+          <a href="chaturanga_pagina1.html" class="practice-btn pb-green">
+            📜 Înapoi la lecție
+            <small>Citește din nou despre chaturanga</small>
+          </a>
+        </div>
+
+      </div><!-- /.panel-scroll -->
+
+      <div class="slide-nav">
+        <button class="slide-nav-btn" id="prevBtn" onclick="prevSlide()" disabled>◀</button>
+        <div class="slide-dots" id="slideDots"></div>
+        <button class="slide-nav-btn" id="nextBtn" onclick="nextSlide()">▶</button>
+      </div>
+    </div><!-- /.panel-col -->
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="chaturanga_pagina1.html" class="nav-btn nav-btn--back">
+      <span class="icon">⟵</span>
+      <span class="label">Lecția</span>
+    </a>
+    <a href="hub_epoci.html" class="nav-btn nav-btn--contents">
+      <span class="label">Strămoșii</span>
+    </a>
+    <a href="#" class="nav-btn nav-btn--forward">
+      <span class="label">Arena</span>
+      <span class="icon">⟶</span>
+    </a>
+  </footer>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+/* ── PIECE THEME: PNG-urile nanobanana din img/chaturanga/
+   Folosim copiile cu nume scurte (wK.png, bN.png etc.) ca să mergem
+   cu string-template-ul standard al chessboard.js. ── */
+const TYPE_MAP = { P:'padati', R:'ratha', N:'ashva', B:'gaja', Q:'mantri', K:'raja' };
+const CACHE_BUST = '?t=' + Date.now();
+function pieceImg(code) {
+  // code: 'wP', 'bN' — folosit pentru icoanele din panel (numele lung)
+  return 'img/chaturanga/' + TYPE_MAP[code[1]] + '_' + code[0] + '.png';
+}
+
+const board = Chessboard('board', {
+  position: 'empty',
+  showNotation: true,
+  pieceTheme: 'img/chaturanga/{piece}.png' + CACHE_BUST,
+  draggable: false,
+});
+$(window).resize(() => board.resize());
+
+/* ── PIECE DATA ── */
+const PIECES = {
+  // PADATI (pion): un pas înainte (NU 2!), captură diagonal
+  P: {
+    name: 'Padati',
+    title: 'Padati — pedestrașul',
+    count: 8, pos: 'e4', fen: 'wP',
+    text: '<strong>Padati</strong> înseamnă „pedestraș" — soldatul indian care merge pe jos. Mută <strong>doar un pas înainte</strong> — atenție: <strong>și de la poziția lui de start poate face tot un singur pas</strong>, NU doi ca la șahul modern! Capturează <strong>pe diagonală</strong> înainte. Când ajunge la capăt, se transformă în <strong>mantri</strong>.',
+    getMoves(sq) {
+      const col=sq[0], row=parseInt(sq[1]), moves=[], captures=[];
+      if(row<8) moves.push(col+(row+1));
+      const l=String.fromCharCode(col.charCodeAt(0)-1), r=String.fromCharCode(col.charCodeAt(0)+1);
+      if(row<8 && l>='a') captures.push(l+(row+1));
+      if(row<8 && r<='h') captures.push(r+(row+1));
+      return {moves, captures};
+    }
+  },
+  // RATHA (turn): linie dreaptă, oricâte
+  R: {
+    name: 'Ratha',
+    title: 'Ratha — carul de luptă',
+    count: 2, pos: 'e4', fen: 'wR',
+    text: '<strong>Ratha</strong> înseamnă „car de luptă" — un car tras de cai, foarte rapid. Mută <strong>pe orizontală și verticală</strong>, oricâte căsuțe — exact ca turnul de azi!',
+    getMoves(sq) {
+      const col=sq[0], row=parseInt(sq[1]), moves=[];
+      'abcdefgh'.split('').forEach(c => { if(c!==col) moves.push(c+row); });
+      for(let r=1;r<=8;r++) { if(r!==row) moves.push(col+r); }
+      return {moves, captures:[]};
+    }
+  },
+  // ASHVA (cal): identic cu calul modern
+  N: {
+    name: 'Ashva',
+    title: 'Ashva — calul',
+    count: 2, pos: 'e4', fen: 'wN',
+    text: '<strong>Ashva</strong> înseamnă „cal". Singurul care poate <strong>sări peste alte piese</strong>! Se mișcă în formă de <strong>L</strong>: două căsuțe într-o direcție, apoi una în unghi drept. La fel ca la șahul de azi.',
+    getMoves(sq) {
+      const col=sq[0], row=parseInt(sq[1]), ci='abcdefgh'.indexOf(col), moves=[];
+      [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(([dc,dr]) => {
+        const nc=ci+dc, nr=row+dr;
+        if(nc>=0&&nc<8&&nr>=1&&nr<=8) moves.push('abcdefgh'[nc]+nr);
+      });
+      return {moves, captures:[]};
+    }
+  },
+  // GAJA (elefant): 2 pătrate diagonal — SARE peste piese (Murray)
+  B: {
+    name: 'Gaja',
+    title: 'Gaja — elefantul',
+    count: 2, pos: 'e4', fen: 'wB',
+    text: '<strong>Gaja</strong> înseamnă „elefant". Sare exact <strong>2 pătrate pe diagonală</strong>, peste orice piesă (chiar peste propria armată)! Foarte diferit de nebunul modern, care merge oricâte căsuțe pe diagonală.',
+    getMoves(sq) {
+      const col=sq[0], row=parseInt(sq[1]), ci='abcdefgh'.indexOf(col), moves=[];
+      [[-2,-2],[-2,2],[2,-2],[2,2]].forEach(([dc,dr]) => {
+        const nc=ci+dc, nr=row+dr;
+        if(nc>=0&&nc<8&&nr>=1&&nr<=8) moves.push('abcdefgh'[nc]+nr);
+      });
+      return {moves, captures:[]};
+    }
+  },
+  // MANTRI (sfetnic/ferz): un pătrat diagonal
+  Q: {
+    name: 'Mantri',
+    title: 'Mantri — sfetnicul',
+    count: 1, pos: 'e4', fen: 'wQ',
+    text: '<strong>Mantri</strong> înseamnă „sfetnic" — consilierul cel mai apropiat al regelui. Mută <strong>un singur pătrat pe diagonală</strong>. E mult mai slab decât regina modernă — ea a apărut abia târziu, în Europa!',
+    getMoves(sq) {
+      const col=sq[0], row=parseInt(sq[1]), ci='abcdefgh'.indexOf(col), moves=[];
+      [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([dc,dr]) => {
+        const nc=ci+dc, nr=row+dr;
+        if(nc>=0&&nc<8&&nr>=1&&nr<=8) moves.push('abcdefgh'[nc]+nr);
+      });
+      return {moves, captures:[]};
+    }
+  },
+  // RAJA (rege): un pas în orice direcție
+  K: {
+    name: 'Raja',
+    title: 'Raja — regele',
+    count: 1, pos: 'e4', fen: 'wK',
+    text: '<strong>Raja</strong> înseamnă „rege" — căpetenia armatei. Face <strong>un singur pas</strong> în orice direcție — exact ca regele de azi. Trebuie protejat cu grijă: dacă e capturat, partida se termină!',
+    getMoves(sq) {
+      const col=sq[0], row=parseInt(sq[1]), ci='abcdefgh'.indexOf(col), moves=[];
+      for(let dc=-1;dc<=1;dc++) for(let dr=-1;dr<=1;dr++) {
+        if(dc===0&&dr===0) continue;
+        const nc=ci+dc, nr=row+dr;
+        if(nc>=0&&nc<8&&nr>=1&&nr<=8) moves.push('abcdefgh'[nc]+nr);
+      }
+      return {moves, captures:[]};
+    }
+  }
+};
+
+const PIECE_ORDER = ['P','R','N','B','Q','K'];
+
+/* ── BUILD ARMY GRID & TABS ── */
+function buildArmyGrid() {
+  const grid = document.getElementById('armyGrid');
+  grid.innerHTML = '';
+  PIECE_ORDER.forEach(code => {
+    const p = PIECES[code];
+    const c = document.createElement('div');
+    c.className = 'piece-card';
+    c.id = 'pcard-' + code;
+    c.onclick = () => exploreFromCard(code);
+    c.innerHTML =
+      '<span class="piece-value">' + p.count + '×</span>' +
+      '<img src="' + pieceImg('w'+code) + CACHE_BUST + '" alt="' + p.name + '">' +
+      '<div class="piece-name">' + p.name + '</div>' +
+      '<div class="piece-count">' + p.count + (p.count===1?' piesă':' piese') + '</div>';
+    grid.appendChild(c);
+  });
+}
+function buildTabs() {
+  const tabs = document.getElementById('pieceTabs');
+  tabs.innerHTML = '';
+  PIECE_ORDER.forEach(code => {
+    const p = PIECES[code];
+    const b = document.createElement('button');
+    b.className = 'ptab'; b.id = 'ptab-' + code;
+    b.onclick = () => selectPiece(code);
+    b.innerHTML = '<img src="' + pieceImg('w'+code) + CACHE_BUST + '" alt=""> ' + p.name;
+    tabs.appendChild(b);
+  });
+}
+
+/* ── BOARD HIGHLIGHTS ── */
+const ALL_HL = 'sq-move sq-piece sq-capture sq-ask';
+function clearHL() {
+  'abcdefgh'.split('').forEach(c => { for(let r=1;r<=8;r++) $('.square-'+c+r).removeClass(ALL_HL); });
+}
+
+let slideTimer = null;
+let movesTimer = null;
+
+function showMoves(code) {
+  const p = PIECES[code];
+  const pos = {}; pos[p.pos] = p.fen;
+  board.position(pos, false);
+  if(movesTimer) clearTimeout(movesTimer);
+  movesTimer = setTimeout(() => {
+    clearHL();
+    const {moves, captures} = p.getMoves(p.pos);
+    moves.forEach(sq => $('.square-'+sq).addClass('sq-move'));
+    captures.forEach(sq => $('.square-'+sq).addClass('sq-capture'));
+    $('.square-'+p.pos).addClass('sq-piece');
+  }, 80);
+}
+
+function selectPiece(code) {
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+  const tab = document.getElementById('ptab-'+code);
+  if(tab) tab.classList.add('active');
+  const p = PIECES[code];
+  document.getElementById('pd-name').innerHTML =
+    '<img src="' + pieceImg('w'+code) + CACHE_BUST + '" alt=""> ' + p.title;
+  document.getElementById('pd-text').innerHTML = p.text;
+  document.getElementById('legend-capture-row').style.display = (code==='P') ? '' : 'none';
+  document.getElementById('legend-move-text').textContent = (code==='P')
+    ? 'Poate merge aici'
+    : 'Poate merge / captura aici';
+  showMoves(code);
+}
+
+function exploreFromCard(code) {
+  goTo(1);
+  if(slideTimer) { clearTimeout(slideTimer); slideTimer=null; }
+  selectPiece(code);
+}
+
+/* ── QUIZ ── */
+/* Bibliotecă de întrebări — câte 2 poziții pentru fiecare piesă.
+   La fiecare „Reia testul" se amestecă aleator pentru variație. */
+const QUIZ_BANK = [
+  // Padati (pion)
+  { code:'P', pos:'d4', hint:'Doar înainte! Capturează pe diagonală.' },
+  { code:'P', pos:'b2', hint:'Și de la poziția de start tot un singur pas — nu doi!' },
+  // Ratha (turn)
+  { code:'R', pos:'d4', hint:'Aleargă pe linii drepte, ca un car de luptă pe șine.' },
+  { code:'R', pos:'a1', hint:'Controlează tot rândul și toată coloana, oricâte pătrate.' },
+  // Ashva (cal)
+  { code:'N', pos:'d4', hint:'Sare în formă de L peste orice piesă!' },
+  { code:'N', pos:'h1', hint:'Sare în L — chiar și din colț are doar 2 mutări.' },
+  // Gaja (elefant)
+  { code:'B', pos:'d4', hint:'Sare exact 2 pătrate pe diagonală.' },
+  { code:'B', pos:'b2', hint:'Din colț de tablă e prins în cușcă — o singură mutare îi rămâne!' },
+  // Mantri (sfetnic)
+  { code:'Q', pos:'d4', hint:'Pe diagonală, dar foarte timid — doar un pas.' },
+  { code:'Q', pos:'a1', hint:'Doar un pas pe diagonală — din colț, o singură ieșire.' },
+  // Raja (rege)
+  { code:'K', pos:'d5', hint:'Doar un pas în orice direcție. Cel mai important!' },
+  { code:'K', pos:'h8', hint:'Din colț are doar 3 vecini — fugă strâmtă!' },
+];
+
+let QUIZ_Q = [];
+
+function shuffleQuiz() {
+  QUIZ_Q = [...QUIZ_BANK];
+  // Fisher-Yates shuffle
+  for (let i = QUIZ_Q.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [QUIZ_Q[i], QUIZ_Q[j]] = [QUIZ_Q[j], QUIZ_Q[i]];
+  }
+}
+
+let quizIdx=0, quizAnswered=false, quizCorrect=0;
+
+function showQuizQ(i) {
+  if(i>=QUIZ_Q.length) { quizDone(); return; }
+  quizIdx=i; quizAnswered=false;
+  const q=QUIZ_Q[i], p=PIECES[q.code];
+  board.position('empty', false);
+  setTimeout(() => {
+    clearHL();
+    const {moves, captures} = p.getMoves(q.pos);
+    moves.forEach(sq => $('.square-'+sq).addClass('sq-move'));
+    captures.forEach(sq => $('.square-'+sq).addClass('sq-capture'));
+    $('.square-'+q.pos).addClass('sq-piece');
+  }, 80);
+
+  document.getElementById('quiz-question').textContent =
+    'Întrebarea ' + (i+1) + '/' + QUIZ_Q.length + ': Care piesă face aceste mutări?';
+
+  const container = document.getElementById('quiz-buttons');
+  container.innerHTML = '';
+  const codes = [...PIECE_ORDER].sort(()=>Math.random()-0.5);
+  codes.forEach(code => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-btn';
+    btn.innerHTML = '<img src="' + pieceImg('w'+code) + CACHE_BUST + '" alt=""> ' + PIECES[code].name;
+    btn.onclick = () => answerQuiz(code, btn);
+    container.appendChild(btn);
+  });
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = 'quiz-box';
+  fb.textContent = q.hint;
+}
+
+function answerQuiz(code, btn) {
+  if(quizAnswered) return;
+  quizAnswered = true;
+  const q = QUIZ_Q[quizIdx], fb = document.getElementById('quiz-feedback');
+  document.querySelectorAll('.quiz-btn').forEach(b => b.disabled = true);
+  if(code === q.code) {
+    quizCorrect++;
+    btn.style.background = 'rgba(40,180,80,0.35)';
+    btn.style.borderColor = 'rgba(40,180,80,0.7)';
+    fb.className = 'quiz-box ok';
+    fb.textContent = '✅ Corect! Era ' + PIECES[code].name + '.';
+  } else {
+    btn.style.background = 'rgba(200,50,50,0.25)';
+    btn.style.borderColor = 'rgba(200,50,50,0.6)';
+    fb.className = 'quiz-box err';
+    fb.textContent = '❌ Nu exact... Era ' + PIECES[q.code].name + '! ' + q.hint;
+    document.querySelectorAll('.quiz-btn').forEach(b => {
+      if(b.textContent.trim().endsWith(PIECES[q.code].name)) {
+        b.style.background = 'rgba(40,180,80,0.3)';
+        b.style.borderColor = 'rgba(40,180,80,0.7)';
+      }
+    });
+  }
+  setTimeout(() => showQuizQ(quizIdx+1), 1800);
+}
+
+function quizDone() {
+  document.getElementById('quiz-question').innerHTML =
+    '🏆 <strong>Bravo!</strong> ' + quizCorrect + '/' + QUIZ_Q.length + ' corecte!';
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = 'quiz-box done';
+  fb.innerHTML = quizCorrect >= (QUIZ_Q.length * 5 / 6)
+    ? '⭐⭐⭐ Excelent! Cunoști toate piesele chaturanga!'
+    : '💡 Mai exersează din lista de piese, apoi revino!';
+  board.position('empty', false);
+  clearHL();
+  document.getElementById('quiz-buttons').innerHTML =
+    '<button class="quiz-btn" onclick="restartQuiz()" style="text-align:center;justify-content:center;">🔄 Reia testul</button>';
+}
+
+function restartQuiz() { quizCorrect=0; shuffleQuiz(); showQuizQ(0); }
+
+/* ── SETUP BOARD ── */
+const POS_R = {a1:'wR', h1:'wR', a8:'bR', h8:'bR'};
+const POS_N = {...POS_R, b1:'wN', g1:'wN', b8:'bN', g8:'bN'};
+const POS_B = {...POS_N, c1:'wB', f1:'wB', c8:'bB', f8:'bB'};
+/* Așezarea istorică Murray:
+   - Raja alb pe e1, raja negru pe d8 — pe diagonală, NU vis-à-vis!
+   - Mantri alb pe d1, mantri negru pe e8 */
+const POS_K = {...POS_B, e1:'wK', d8:'bK'};
+const POS_Q = {...POS_K, d1:'wQ', e8:'bQ'};
+const POS_P = {...POS_Q,
+  a2:'wP',b2:'wP',c2:'wP',d2:'wP',e2:'wP',f2:'wP',g2:'wP',h2:'wP',
+  a7:'bP',b7:'bP',c7:'bP',d7:'bP',e7:'bP',f7:'bP',g7:'bP',h7:'bP'};
+
+const SETUP_STEPS = [
+  {pos:{},    title:'Tabla goală', text:'Avem ashtapada pregătită. Vom plasa piesele pe rând, exact ca la începutul unei partide!', newSq:[], btn:'Pune Ratha (carele) ▶'},
+  {pos:POS_R, title:'Ratha — în colțuri', text:'Cele 4 <strong>care de luptă</strong> stau în <strong>colțurile tablei</strong>.<br>🟡 Alb: <strong>a1</strong>, <strong>h1</strong>  •  ⬛ Negru: <strong>a8</strong>, <strong>h8</strong>', newSq:['a1','h1','a8','h8'], btn:'Pune Ashva (caii) ▶'},
+  {pos:POS_N, title:'Ashva — lângă care', text:'<strong>Caii</strong> stau lângă carele de luptă.<br>🟡 Alb: <strong>b1</strong>, <strong>g1</strong>  •  ⬛ Negru: <strong>b8</strong>, <strong>g8</strong>', newSq:['b1','g1','b8','g8'], btn:'Pune Gaja (elefanții) ▶'},
+  {pos:POS_B, title:'Gaja — al treilea rând', text:'<strong>Elefanții</strong> intră în luptă lângă cai.<br>🟡 Alb: <strong>c1</strong>, <strong>f1</strong>  •  ⬛ Negru: <strong>c8</strong>, <strong>f8</strong>', newSq:['c1','f1','c8','f8'], btn:'Pune Raja (regii) ▶'},
+  {pos:POS_K, title:'Raja — pe diagonală!', text:'Surpriză! La chaturanga regii <strong>NU</strong> stau față în față.<br>🟡 Raja alb: <strong>e1</strong>  •  ⬛ Raja negru: <strong>d8</strong><br><br>Sunt pe <strong>diagonală</strong> — așa, regii pot „să se vadă" peste tablă.', newSq:['e1','d8'], btn:'Pune Mantri (sfetnicii) ▶'},
+  {pos:POS_Q, title:'Mantri — lângă raja, pe coloana opusă', text:'Sfetnicii stau lângă regii lor — dar pe coloanele inverse.<br>🟡 Mantri alb: <strong>d1</strong>  •  ⬛ Mantri negru: <strong>e8</strong>', newSq:['d1','e8'], btn:'Pune Padati (pionii) ▶'},
+  {pos:POS_P, title:'Padati — soldații din față', text:'8 <strong>pedestrași</strong> de fiecare parte, ca un zid de scuturi.<br>🟡 Alb: <strong>linia 2</strong>  •  ⬛ Negru: <strong>linia 7</strong><br><br>🎉 <strong>Armata e completă!</strong> 32 de piese pe tablă.', newSq:['a2','b2','c2','d2','e2','f2','g2','h2','a7','b7','c7','d7','e7','f7','g7','h7'], btn:null},
+];
+
+let setupIdx = 0;
+function clearSetupHL() {
+  'abcdefgh'.split('').forEach(c => { for(let r=1;r<=8;r++) $('.square-'+c+r).removeClass('sq-new'); });
+}
+function applySetupHL(step) {
+  clearSetupHL();
+  step.newSq.forEach(sq => $('.square-'+sq).addClass('sq-new'));
+}
+function renderSetup(idx) {
+  const step = SETUP_STEPS[idx];
+  board.position(step.pos, false);
+  document.getElementById('setup-title').textContent = step.title;
+  document.getElementById('setup-text').innerHTML = step.text;
+  document.getElementById('setup-prev-btn').disabled = idx===0;
+  const nextBtn = document.getElementById('setup-next-btn');
+  const doneBox = document.getElementById('setup-done-box');
+  if(step.btn) {
+    nextBtn.textContent = step.btn;
+    nextBtn.style.display = 'block';
+    nextBtn.disabled = false;
+    doneBox.style.display = 'none';
+  } else {
+    nextBtn.style.display = 'none';
+    doneBox.style.display = 'block';
+  }
+  setTimeout(() => applySetupHL(step), 60);
+}
+function nextSetup() { if(setupIdx<SETUP_STEPS.length-1) { setupIdx++; renderSetup(setupIdx); } }
+function prevSetup() { if(setupIdx>0) { setupIdx--; renderSetup(setupIdx); } }
+
+/* ── SLIDE ENGINE ── */
+const SLIDE_COUNT = 5;
+const SLIDE_TITLES = [
+  '⚔️ Armata chaturanga',
+  'Cum mișcă fiecare piesă?',
+  '🧠 Mini-test: Ghicește piesa!',
+  '🏰 Cum așezăm piesele?',
+  '🎮 Joacă o partidă!'
+];
+const SLIDE_BADGES = ['Armata', 'Explorează', 'Quiz', 'Așezare', 'Practică'];
+
+let current = 0;
+
+function renderDots() {
+  const c = document.getElementById('slideDots');
+  c.innerHTML = '';
+  for(let i=0;i<SLIDE_COUNT;i++) {
+    const d = document.createElement('div');
+    d.className = 'slide-dot' + (i<current?' done':'') + (i===current?' active':'');
+    d.onclick = () => goTo(i);
+    c.appendChild(d);
+  }
+}
+
+function goTo(idx) {
+  if(slideTimer) { clearTimeout(slideTimer); slideTimer=null; }
+  if(movesTimer) { clearTimeout(movesTimer); movesTimer=null; }
+  current = idx;
+  clearHL(); clearSetupHL();
+  board.position('empty', false);
+  $('#board .piece-417db').remove();
+  for(let i=0;i<SLIDE_COUNT;i++) {
+    document.getElementById('slide'+i).style.display = (i===idx) ? 'block' : 'none';
+  }
+  document.getElementById('slideBadge').textContent = SLIDE_BADGES[idx];
+  document.getElementById('slideTitle').textContent = SLIDE_TITLES[idx];
+  document.getElementById('prevBtn').disabled = idx===0;
+  document.getElementById('nextBtn').disabled = idx===SLIDE_COUNT-1;
+  document.getElementById('panelScroll').scrollTop = 0;
+  renderDots();
+  if(idx===0) { slideTimer = setTimeout(() => { board.position(POS_P, false); board.resize(); }, 50); }
+  if(idx===1) { slideTimer = setTimeout(() => selectPiece('P'), 50); }
+  if(idx===2) { quizCorrect=0; quizIdx=0; shuffleQuiz(); slideTimer = setTimeout(() => showQuizQ(0), 50); }
+  if(idx===3) { setupIdx=0; slideTimer = setTimeout(() => renderSetup(0), 50); }
+}
+
+function prevSlide() { if(current>0) goTo(current-1); }
+function nextSlide() { if(current<SLIDE_COUNT-1) goTo(current+1); }
+
+/* ── INIT ── */
+buildArmyGrid();
+buildTabs();
+setTimeout(() => { board.resize(); goTo(0); }, 100);
+</script>
+</body>
+</html>

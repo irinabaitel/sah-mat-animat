@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Chaturanga — strămoșul indian al șahului</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="master-template.css">
+<style>
+/* ── Tabla statică de chaturanga ───────────────────────── */
+/* Container query: aflăm dimensiunile board-wrapper-ului */
+.board-wrapper {
+  container-type: size;
+  container-name: bw;
+}
+
+.chaturanga-board {
+  /* Tabla = un pătrat cu latura = MINIMUL dintre lățimea și înălțimea containerului.
+     Așa, indiferent dacă containerul iese dreptunghi, tabla rămâne pătrată. */
+  width:  min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows:    repeat(8, 1fr);
+  background: #5a3a1c;
+}
+.csq {
+  aspect-ratio: 1 / 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Tabla MONOCROMĂ — toate căsuțele aceeași culoare (lemn deschis).
+   Original chaturanga: tabla ashtapada NU avea pătrate alternative
+   alb-negru — modelul bicolor a apărut abia în Europa, sec. XI. */
+.csq.light, .csq.dark { background: #e8d4a0; }
+
+/* Linii subtile de delimitare între căsuțe, ca pe o tablă desenată */
+.csq {
+  box-shadow:
+    inset -1px 0 0 rgba(90, 58, 28, .35),
+    inset 0 -1px 0 rgba(90, 58, 28, .35);
+}
+
+/* X-ul — pictat pe fundalul căsuței, sub piesă.
+   Foarte șters intenționat: în chaturanga X-urile nu mai au funcție,
+   sunt doar o amintire grafică de la jocul de zaruri anterior. */
+.csq.xmark::before {
+  content: "";
+  position: absolute;
+  inset: 18%;
+  background:
+    linear-gradient(45deg,  transparent 47%, rgba(58,31,16,.18) 47%, rgba(58,31,16,.18) 53%, transparent 53%),
+    linear-gradient(-45deg, transparent 47%, rgba(58,31,16,.18) 47%, rgba(58,31,16,.18) 53%, transparent 53%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Piesa stă DEASUPRA X-ului — acoperă marcajul cu corpul ei.
+   object-fit: contain păstrează proporțiile PNG-ului și încadrează în pătrat. */
+.csq img {
+  position: relative;
+  z-index: 2;
+  object-fit: contain;
+  pointer-events: none;
+  /* dimensiune implicită — suprascrisă de clasele de mai jos */
+  width: 78%;
+  height: 78%;
+}
+/* Ierarhie vizuală — piesele „importante" sunt mai mari pe tablă */
+.csq img.p-raja   { width: 96%; height: 96%; }
+.csq img.p-mantri { width: 90%; height: 90%; }
+.csq img.p-ratha  { width: 86%; height: 86%; }
+.csq img.p-gaja   { width: 84%; height: 84%; }
+.csq img.p-ashva  { width: 82%; height: 82%; }
+.csq img.p-padati { width: 72%; height: 72%; }
+
+/* ── Burdufuri (accordion) ─────────────────────────────── */
+.acc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.acc-item {
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--c-surface);
+  transition: border-color .15s;
+}
+.acc-item:hover,
+.acc-item.open { border-color: var(--c-navy); }
+
+.acc-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s;
+}
+.acc-item.open .acc-header,
+.acc-header:hover { background: rgba(26,58,107,.07); }
+
+.acc-num {
+  font-family: var(--font-display);
+  font-weight: 900;
+  color: var(--c-navy);
+  font-size: var(--fs-sm);
+  min-width: 22px;
+}
+.acc-title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--c-navy);
+  font-size: var(--fs-md);
+}
+.acc-chevron {
+  font-size: .7em;
+  color: var(--c-navy);
+  transition: transform .22s;
+  display: inline-block;
+}
+.acc-item.open .acc-chevron { transform: rotate(90deg); }
+
+.acc-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .35s ease;
+}
+.acc-item.open .acc-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.acc-inner { padding: 4px 16px 14px; }
+.acc-inner p {
+  font-size: var(--fs-md);
+  line-height: 1.7;
+  color: var(--c-text);
+  margin-bottom: .6em;
+}
+.acc-inner p:last-child { margin-bottom: 0; }
+.acc-inner ul {
+  padding-left: 1.4em;
+  margin: .4em 0 .8em;
+}
+.acc-inner li {
+  line-height: 1.7;
+  margin-bottom: .25em;
+}
+.acc-inner em { color: var(--c-text-muted); }
+
+/* Lista cu piesele reale lângă nume — pentru identificare rapidă */
+.piese-list {
+  list-style: none;
+  padding-left: 0;
+  margin: .4em 0 .8em;
+}
+.piese-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  line-height: 1.4;
+}
+.piese-list li img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Chaturanga — strămoșul indian al șahului</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Strămoșii șahului</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper">
+        <div class="chaturanga-board" id="chBoard"></div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div id="accList" class="acc-list"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer" role="navigation">
+    <a class="nav-btn nav-btn--back" href="hub_epoci.html"><span class="icon">⟵</span> <span class="label">Înapoi</span></a>
+    <a class="nav-btn nav-btn--contents" href="hub.html"><span class="label">Cuprins</span></a>
+    <a class="nav-btn nav-btn--forward" href="#"><span class="label">Arenă</span> <span class="icon">⟶</span></a>
+  </footer>
+
+</div>
+
+<script>
+/* ── Construiește tabla statică ───────────────────────────
+   În chaturanga clasică (Murray), raja și mantri NU sunt simetrici pe
+   ambele rânduri. Albul: mantri pe d1, raja pe e1. Negrul: raja pe d8,
+   mantri pe e8. Așa regii nu sunt vis-à-vis, ci pe diagonală. */
+const back_w = ['ratha','ashva','gaja','mantri','raja','gaja','ashva','ratha'];
+const back_b = ['ratha','ashva','gaja','raja','mantri','gaja','ashva','ratha'];
+const xSet = new Set(['a1','a4','a5','a8','d1','d4','d5','d8','e1','e4','e5','e8','h1','h4','h5','h8']);
+const cols = ['a','b','c','d','e','f','g','h'];
+const board = document.getElementById('chBoard');
+for (let r = 8; r >= 1; r--) {
+  for (let c = 0; c < 8; c++) {
+    const sq = cols[c] + r;
+    const isLight = (c + r) % 2 === 1;
+    const div = document.createElement('div');
+    div.className = 'csq ' + (isLight ? 'light' : 'dark') + (xSet.has(sq) ? ' xmark' : '');
+    let piece = null;
+    if      (r === 1) piece = back_w[c] + '_w';
+    else if (r === 2) piece = 'padati_w';
+    else if (r === 7) piece = 'padati_b';
+    else if (r === 8) piece = back_b[c] + '_b';
+    if (piece) {
+      const img = document.createElement('img');
+      img.src = 'img/chaturanga/' + piece + '.png?t=' + Date.now();
+      img.alt = piece.replace('_',' ');
+      img.className = 'p-' + piece.split('_')[0];
+      div.appendChild(img);
+    }
+    board.appendChild(div);
+  }
+}
+
+/* ── Burdufurile ───────────────────────────────────────── */
+const burdufuri = [
+  {
+    num: '1.',
+    title: 'Povestea jocului',
+    bodyHTML: `
+<p>Cu mai bine de <strong>1400 de ani în urmă</strong>, departe în <strong>India</strong>, într-o vreme în care regii încă mergeau la luptă pe spinarea elefanților, s-a născut un joc. Nu avea încă numele de „șah". I se spunea <strong>chaturanga</strong>.</p>
+
+<p>În limba veche a Indiei — sanscrita — <em>chatur</em> înseamnă <strong>patru</strong>, iar <em>anga</em> înseamnă <strong>părți</strong> sau <strong>brațe</strong>. Așadar, <strong>chaturanga = „cele patru părți"</strong>.</p>
+
+<p>De ce patru? Pentru că armata regelui indian avea, pe atunci, <strong>patru feluri de luptători</strong>:</p>
+<ul>
+  <li>🦶 <strong>pedestrașii</strong> — soldații care mergeau pe jos</li>
+  <li>🐎 <strong>călăreții</strong> — luptătorii de pe cai</li>
+  <li>🐘 <strong>elefanții</strong> — uriași blânzi, dar de neoprit în luptă</li>
+  <li>🛞 <strong>carele de luptă</strong> — trase de cai, repezi ca vântul</li>
+</ul>
+
+<p>Cineva isteț — nu știm cine, și nici exact când — s-a gândit: <em>„Dacă am așeza armata asta pe o tablă, am putea purta o bătălie întreagă… stând la masă!"</em></p>
+
+<p>Și așa a apărut chaturanga. Cele patru feluri de luptători au devenit <strong>piesele jocului</strong>, iar tabla a devenit câmpul lor de luptă.</p>
+
+<p>La început, jocul se juca chiar cu <strong>zaruri</strong>! Aruncai zarul și cifra de pe el îți spunea care piesă trebuie mutată. Mai târziu, jucătorii au renunțat la zaruri și au început să aleagă singuri ce piesă mută — așa cum facem și noi azi la șah.</p>
+
+<p>Mai exista și o variantă pentru <strong>patru jucători</strong>, jucată în colțurile tablei. Se numea <strong>chaturaji</strong>, adică <em>„cei patru regi"</em>. Despre ea ne-a povestit un savant persan, Al-Biruni, care a călătorit în India acum aproape o mie de ani.</p>
+
+<p>Cu timpul, chaturanga a călătorit din India în Persia, de acolo la arabi, apoi tocmai până la noi în Europa. Pe drum și-a schimbat numele și câteva reguli — dar <strong>inima lui a rămas aceeași</strong>.</p>
+
+<p>Elefanții au devenit <strong>nebuni</strong>, carele de luptă au devenit <strong>turnuri</strong>, călăreții au rămas <strong>cai</strong>, iar pedestrașii — <strong>pionii</strong> noștri de azi.</p>
+
+<p>Așa s-a născut, dintr-o armată indiană, <strong>bunicul șahului</strong>. 👑</p>
+`
+  },
+  {
+    num: '2.',
+    title: 'Tabla și piesele',
+    bodyHTML: `
+<p>Tabla de chaturanga are <strong>8 rânduri și 8 coloane</strong> — exact ca tabla de șah de azi. În sanscrită i se spune <strong>ashtapada</strong>, adică <em>„cele opt câmpuri"</em> (<em>ashta</em> = opt, <em>pada</em> = câmp).</p>
+
+<p>Dacă te uiți cu atenție, vei vedea că pe unele căsuțe sunt desenate niște <strong>cruci mici, ca niște X-uri</strong>. Te-ai întreba: la ce folosesc?</p>
+
+<p>Ei bine — în chaturanga, <strong>la nimic!</strong> Sunt acolo… din amintire. 🤫</p>
+
+<p>Cu mult înainte de chaturanga, pe aceeași tablă se juca <strong>alt joc</strong>: un joc cu <strong>zaruri</strong>, în care pionii alergau unul după altul, ca într-o cursă. Pe căsuțele cu X, piesa era <strong>la adăpost</strong> — nimeni nu o putea captura. Era „casa sigură", așa cum la jocul de-a v-ați ascunselea există un copac unde ești salvat.</p>
+
+<p>Când chaturanga a apărut, jocul vechi a fost uitat… dar X-urile au rămas pictate pe tablă, ca o pată de cerneală care nu se mai poate șterge.</p>
+
+<p>Și azi, în India, copiii încă joacă jocuri de cursă cu zaruri (cum e <em>chowka bhara</em>) pe table cu X-uri — la fel ca în vremea când chaturanga încă nici nu se inventase.</p>
+
+<p><strong>Piesele jocului sunt de șase feluri:</strong></p>
+<ul class="piese-list">
+  <li><img src="img/chaturanga/raja_b.png?t=2" alt="raja"><span><strong>Raja</strong> — regele</span></li>
+  <li><img src="img/chaturanga/mantri_b.png?t=2" alt="mantri"><span><strong>Mantri</strong> — sfetnicul regelui (cel mai apropiat sfătuitor)</span></li>
+  <li><img src="img/chaturanga/gaja_b.png?t=2" alt="gaja"><span><strong>Gaja</strong> — elefantul</span></li>
+  <li><img src="img/chaturanga/ashva_b.png?t=2" alt="ashva"><span><strong>Ashva</strong> — calul</span></li>
+  <li><img src="img/chaturanga/ratha_b.png?t=2" alt="ratha"><span><strong>Ratha</strong> — carul de luptă</span></li>
+  <li><img src="img/chaturanga/padati_b.png?t=2" alt="padati"><span><strong>Padati</strong> — pedestrașul</span></li>
+</ul>
+
+<p>Fiecare jucător are <strong>16 piese</strong>: un raja, un mantri, doi gaja, doi ashva, doi ratha și opt padati — exact câte sunt și la șahul de azi.</p>
+`
+  },
+  { num: '3.', title: 'Mutări și capturi',   bodyHTML: `
+<p>Fiecare piesă mută diferit. Padati merge un pas, raja un pătrat în orice direcție, ashva sare în L, ratha aleargă pe linii drepte… iar gaja sare exact 2 pătrate pe diagonală!</p>
+<p style="text-align:center; margin-top: 14px;">
+  <a href="chaturanga_mutari.html" style="display:inline-block; padding:12px 22px; background:var(--c-navy); color:#fff; border-radius:50px; font-family:var(--font-display); font-weight:700; text-decoration:none; box-shadow:0 3px 12px rgba(26,58,107,.3);">
+    🎯 Explorează mutările &nbsp;⟶
+  </a>
+</p>
+<p style="font-size:.92em; opacity:.8; text-align:center; margin-top:6px;"><em>(tabla interactivă cu toate piesele și un mini-quiz)</em></p>
+` },
+  { num: '4.', title: 'Cine câștigă și cum', bodyHTML: `
+<p>La chaturanga, scopul nu e doar să ataci frumos — trebuie <strong>să-l prinzi pe raja adversarului</strong>. Există trei feluri în care poți câștiga:</p>
+
+<p>🏆 <strong>1. Prinzi raja</strong></p>
+<p>Dacă raja adversarului nu mai are unde să fugă și e atacat — partida s-a încheiat, ai câștigat! Asta seamănă cu <em>șah-mat</em>-ul de azi. Diferența: la chaturanga, dacă cineva uită să-și apere raja și îl pierde la o tură, partida tot se termină — nu există „revenire".</p>
+
+<p>🏆 <strong>2. Lași adversarul singur cu raja lui</strong></p>
+<p>Dacă reușești să capturezi <strong>toate piesele</strong> adversarului și el rămâne <strong>doar cu raja</strong> pe tablă — câștigi! Asta se numește <em>„rajă goală"</em> (în engleză <em>bare king</em>). E o regulă specifică chaturangăi: nu poți să te ascunzi la nesfârșit doar cu regele.</p>
+
+<p>🏆 <strong>3. Îl blochezi pe raja</strong></p>
+<p>Surpriză! La chaturanga, dacă blochezi raja adversarului așa încât <strong>să nu mai poată muta nicio piesă</strong> (chiar dacă nu e atacat), tot tu câștigi! Asta e <em>opusul șahului modern</em>, unde pat-ul e remiză. La chaturanga, dacă l-ai blocat — ai câștigat.</p>
+
+<div class="hl-box" style="margin-top: 14px;">
+🌟 <strong>Promovare:</strong> când un <strong>padati</strong> al tău ajunge până la capătul tablei (rândul 8 pentru alb, rândul 1 pentru negru), se transformă în <strong>mantri</strong>. La chaturanga, sfetnicul e cea mai puternică piesă pe care o poți primi în plus — nu există regină!
+</div>
+` },
+  { num: '5.', title: 'Tactici',             bodyHTML: '<p><em>(de scris)</em></p>' }
+];
+
+const list = document.getElementById('accList');
+burdufuri.forEach(function (b) {
+  const item = document.createElement('div');
+  item.className = 'acc-item';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'acc-header';
+  hdr.innerHTML =
+    '<span class="acc-num">' + b.num + '</span>' +
+    '<span class="acc-title">' + b.title + '</span>' +
+    '<span class="acc-chevron">&#9658;</span>';
+
+  const body = document.createElement('div');
+  body.className = 'acc-body';
+  const inner = document.createElement('div');
+  inner.className = 'acc-inner';
+  inner.innerHTML = b.bodyHTML;
+  body.appendChild(inner);
+
+  item.appendChild(hdr);
+  item.appendChild(body);
+  list.appendChild(item);
+
+  hdr.addEventListener('click', function () { item.classList.toggle('open'); });
+});
+</script>
+</body>
+</html>
