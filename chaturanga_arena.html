@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Chaturanga — Arena</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
+<style>
+  /* Tabla MONOCROMĂ + X-uri (ashtapada autentic) */
+  #board .white-1e1d7, #board .black-3c85d {
+    background-color: #e8d4a0 !important;
+    position: relative;
+  }
+  #board .square-55d63 {
+    box-shadow: inset -1px 0 0 rgba(90, 58, 28, .35), inset 0 -1px 0 rgba(90, 58, 28, .35);
+  }
+  #board .square-a1::after, #board .square-a4::after, #board .square-a5::after, #board .square-a8::after,
+  #board .square-d1::after, #board .square-d4::after, #board .square-d5::after, #board .square-d8::after,
+  #board .square-e1::after, #board .square-e4::after, #board .square-e5::after, #board .square-e8::after,
+  #board .square-h1::after, #board .square-h4::after, #board .square-h5::after, #board .square-h8::after {
+    content: ""; position: absolute; inset: 18%;
+    background:
+      linear-gradient(45deg,  transparent 47%, rgba(58,31,16,.18) 47%, rgba(58,31,16,.18) 53%, transparent 53%),
+      linear-gradient(-45deg, transparent 47%, rgba(58,31,16,.18) 47%, rgba(58,31,16,.18) 53%, transparent 53%);
+    pointer-events: none;
+  }
+  #board .notation-322f9 { color: rgba(60, 35, 10, .7) !important; }
+
+  /* Ierarhie de mărime piese */
+  #board .piece-417db { object-fit: contain; transform-origin: center center; }
+  #board .piece-417db[data-piece="wK"], #board .piece-417db[data-piece="bK"] { transform: scale(0.98); }
+  #board .piece-417db[data-piece="wQ"], #board .piece-417db[data-piece="bQ"] { transform: scale(0.92); }
+  #board .piece-417db[data-piece="wR"], #board .piece-417db[data-piece="bR"] { transform: scale(0.88); }
+  #board .piece-417db[data-piece="wB"], #board .piece-417db[data-piece="bB"] { transform: scale(0.86); }
+  #board .piece-417db[data-piece="wN"], #board .piece-417db[data-piece="bN"] { transform: scale(0.84); }
+  #board .piece-417db[data-piece="wP"], #board .piece-417db[data-piece="bP"] { transform: scale(0.74); }
+
+  /* Highlights */
+  .sq-move    { background-image: radial-gradient(rgba(80,200,100,0.55) 22%, transparent 23%) !important; }
+  .sq-capture { background-image: radial-gradient(transparent 73%, rgba(230,60,50,0.7) 87%) !important; }
+  .sq-piece   { background-color: rgba(26,120,255,0.35) !important; }
+  .sq-last    { background-color: rgba(255,210,0,0.35) !important; }
+
+  /* ── Panel arena ── */
+  .arena-info { display: flex; flex-direction: column; gap: 10px; }
+
+  /* Clepsidră — sus pentru bot, jos pentru tine */
+  .clep-card {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.62);
+    border: 2px solid rgba(255,255,255,0.85);
+    border-radius: 14px; padding: 10px 14px;
+    transition: all .25s;
+  }
+  .clep-card.active {
+    border-color: var(--c-navy);
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 4px 16px rgba(26,58,107,0.18);
+  }
+  .clep-card.bot { background: rgba(58, 40, 24, 0.10); }
+  .clep-card.bot.active { background: rgba(58, 40, 24, 0.20); border-color: #3a2818; }
+
+  .clep-emoji {
+    font-size: 2rem; line-height: 1;
+    transition: transform 1s ease;
+  }
+  .clep-card.active .clep-emoji { animation: clep-flow 1.2s ease-in-out infinite alternate; }
+  @keyframes clep-flow {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(8deg); }
+  }
+  .clep-card.bot .clep-emoji { transform: rotate(180deg); }
+  .clep-card.bot.active .clep-emoji { animation: clep-flow-rev 1.2s ease-in-out infinite alternate; }
+  @keyframes clep-flow-rev {
+    0%   { transform: rotate(180deg); }
+    100% { transform: rotate(188deg); }
+  }
+
+  .clep-info { flex: 1; line-height: 1.2; }
+  .clep-who {
+    font-family: var(--font-display); font-size: .82rem; font-weight: 700;
+    color: var(--c-navy); opacity: 0.75; letter-spacing: 0.5px;
+  }
+  .clep-card.bot .clep-who { color: #3a2818; }
+  .clep-time {
+    font-family: var(--font-display); font-size: 1.4rem; font-weight: 900;
+    color: var(--c-navy);
+  }
+  .clep-card.bot .clep-time { color: #3a2818; }
+  .clep-card.low .clep-time { color: var(--c-error); }
+  .clep-card.unlim .clep-time { font-size: 1.1rem; opacity: 0.6; }
+
+  /* Status & captures */
+  .status-box {
+    background: rgba(26,58,107,0.08);
+    border: 2px solid rgba(26,58,107,0.18);
+    border-radius: 14px; padding: 10px 14px;
+    font-size: 0.93em; line-height: 1.55; color: var(--c-text);
+    min-height: 52px;
+  }
+  .status-box.ok   { background: rgba(40,180,80,0.18);  border-color: rgba(40,180,80,0.5); }
+  .status-box.warn { background: rgba(245,200,66,0.20); border-color: rgba(245,200,66,0.6); }
+  .status-box.win  { background: rgba(40,180,80,0.22);  border-color: rgba(40,180,80,0.7); }
+  .status-box.lose { background: rgba(200,50,50,0.16);  border-color: rgba(200,50,50,0.5); }
+
+  .capt-row {
+    background: rgba(255,255,255,0.4);
+    border-radius: 10px; padding: 6px 8px;
+    display: flex; flex-wrap: wrap; gap: 3px;
+    min-height: 36px;
+    align-items: center;
+  }
+  .capt-row img { width: 24px; height: 24px; object-fit: contain; }
+  .capt-row:empty::before {
+    content: '—'; opacity: 0.4; font-size: 0.85em;
+  }
+
+  /* Acțiuni */
+  .panel-actions { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .btn-arena {
+    flex: 1; min-width: 0;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 12px; border-radius: 50px;
+    background: var(--c-navy); color: white;
+    border: none; cursor: pointer;
+    font-family: var(--font-display); font-size: 0.88em; font-weight: 700;
+    transition: background .15s, transform .1s;
+    white-space: nowrap;
+  }
+  .btn-arena:hover  { background: #2a5aab; }
+  .btn-arena:active { transform: scale(0.97); }
+  .btn-arena.secondary {
+    background: rgba(255,255,255,0.6); color: var(--c-navy);
+    border: 2px solid rgba(26,58,107,0.3);
+  }
+  .btn-arena.secondary:hover { background: rgba(255,255,255,0.85); }
+
+  /* Setting timp */
+  .time-setting {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.45);
+    border-radius: 10px; padding: 8px 10px;
+    font-size: 0.85em;
+  }
+  .time-setting label {
+    font-family: var(--font-display); font-weight: 700;
+    color: var(--c-navy);
+  }
+  .time-setting select {
+    flex: 1;
+    padding: 5px 8px; border-radius: 8px;
+    border: 2px solid rgba(26,58,107,0.3);
+    background: white; color: var(--c-text);
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 0.95em;
+  }
+
+  /* Modal overlay pentru final de joc */
+  .modal {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.45);
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal.show { display: flex; }
+  .modal-box {
+    background: var(--c-bg);
+    border: 2px solid white;
+    border-radius: 20px;
+    padding: 28px 24px;
+    max-width: 380px; text-align: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+  .modal-box h2 {
+    font-family: var(--font-display);
+    color: var(--c-navy);
+    font-size: 1.4em; margin-bottom: 8px;
+  }
+  .modal-box p {
+    color: var(--c-text); margin-bottom: 16px;
+    line-height: 1.55;
+  }
+  .modal-box .btn-arena { width: 100%; }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <span class="header-title">Chaturanga — Arena</span>
+    <div class="header-progress">
+      <span class="lesson-badge">⚔️ Joacă</span>
+    </div>
+  </header>
+
+  <main class="page-main">
+
+    <div class="board-col">
+      <div class="board-wrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="arena-info">
+
+          <!-- Clepsidra BOT (sus) -->
+          <div class="clep-card bot" id="clepBot">
+            <span class="clep-emoji">⏳</span>
+            <div class="clep-info">
+              <div class="clep-who">🤖 Bot (Negru)</div>
+              <div class="clep-time" id="timeBot">10:00</div>
+            </div>
+          </div>
+
+          <!-- Status box -->
+          <div class="status-box" id="statusBox">
+            Apasă pe o piesă albă, apoi trage-o sau atinge unde să meargă.
+          </div>
+
+          <!-- Capturi -->
+          <div class="capt-row" id="captBlack" title="Piesele negre capturate de tine"></div>
+          <div class="capt-row" id="captWhite" title="Piesele tale capturate de bot"></div>
+
+          <!-- Clepsidra TU (jos, lângă tabla ta) -->
+          <div class="clep-card active" id="clepYou">
+            <span class="clep-emoji">⌛</span>
+            <div class="clep-info">
+              <div class="clep-who">🟡 Tu (Alb)</div>
+              <div class="clep-time" id="timeYou">10:00</div>
+            </div>
+          </div>
+
+          <!-- Setting timp -->
+          <div class="time-setting">
+            <label for="timeSelect">Timp:</label>
+            <select id="timeSelect" onchange="onTimeChange()">
+              <option value="180">3 min</option>
+              <option value="300">5 min</option>
+              <option value="600" selected>10 min</option>
+              <option value="900">15 min</option>
+              <option value="0">∞ fără limită</option>
+            </select>
+          </div>
+
+          <div class="panel-actions">
+            <button class="btn-arena" onclick="resetGame()">↺ Joc nou</button>
+            <button class="btn-arena secondary" onclick="undoMove()">↶ Înapoi</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer">
+    <a class="nav-btn nav-btn--back" href="chaturanga_mutari.html"><span class="icon">⟵</span> <span class="label">Mutări</span></a>
+    <a class="nav-btn nav-btn--contents" href="istoria_sahului.html"><span class="label">Strămoșii</span></a>
+    <a class="nav-btn nav-btn--forward" href="chaturanga_pagina1.html"><span class="label">Lecția</span> <span class="icon">⟶</span></a>
+  </footer>
+
+</div>
+
+<!-- Modal pentru final de joc -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h2 id="modalTitle">🏆 Felicitări!</h2>
+    <p id="modalText"></p>
+    <button class="btn-arena" onclick="hideModal(); resetGame();">↺ Joc nou</button>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
+<script>
+const CACHE_BUST = '?t=' + Date.now();
+const COLS = ['a','b','c','d','e','f','g','h'];
+
+/* ── STATE ── */
+let pos = {};           // {sq: 'wK', ...}
+let turn = 'w';         // 'w' = tu, 'b' = bot
+let history = [];
+let captures = { w: [], b: [] };
+let gameOver = false;
+let lastFrom = null, lastTo = null;
+let timerInterval = null;
+let timeLimit = 600;    // secunde per parte (0 = unlimited)
+let timeLeft = { w: 600, b: 600 };
+let firstMoveMade = false;
+
+/* Poziția inițială Murray (TU = jos, alb pe rândurile 1-2): */
+function initialPosition() {
+  return {
+    a1:'wR', b1:'wN', c1:'wB', d1:'wQ', e1:'wK', f1:'wB', g1:'wN', h1:'wR',
+    a2:'wP', b2:'wP', c2:'wP', d2:'wP', e2:'wP', f2:'wP', g2:'wP', h2:'wP',
+    a7:'bP', b7:'bP', c7:'bP', d7:'bP', e7:'bP', f7:'bP', g7:'bP', h7:'bP',
+    a8:'bR', b8:'bN', c8:'bB', d8:'bK', e8:'bQ', f8:'bN', g8:'bB', h8:'bR'
+  };
+}
+
+/* ── Chessboard.js cu drag-and-drop ── */
+const board = Chessboard('board', {
+  position: initialPosition(),
+  orientation: 'white',          // ← FORȚEZ albul jos (tu)
+  showNotation: true,
+  pieceTheme: 'img/chaturanga/{piece}.png' + CACHE_BUST,
+  draggable: true,
+  onDragStart: handleDragStart,
+  onDrop: handleDrop,
+  onSnapEnd: handleSnapEnd
+});
+$(window).resize(() => board.resize());
+
+function sqToCR(sq) { return { c: COLS.indexOf(sq[0]), r: parseInt(sq[1]) }; }
+function crToSq(c, r) { return COLS[c] + r; }
+function inBoard(c, r) { return c >= 0 && c < 8 && r >= 1 && r <= 8; }
+
+/* ── REGULI DE MUTARE (chaturanga, după Murray) ── */
+function legalMoves(sq, position) {
+  const piece = position[sq];
+  if (!piece) return [];
+  const color = piece[0], type = piece[1];
+  const { c, r } = sqToCR(sq);
+  const moves = [];
+
+  function tryAdd(nc, nr) {
+    if (!inBoard(nc, nr)) return;
+    const tgt = crToSq(nc, nr);
+    const tp = position[tgt];
+    if (!tp || tp[0] !== color) moves.push(tgt);
+  }
+  function trySlide(dc, dr) {
+    let nc = c + dc, nr = r + dr;
+    while (inBoard(nc, nr)) {
+      const tgt = crToSq(nc, nr);
+      const tp = position[tgt];
+      if (tp) {
+        if (tp[0] !== color) moves.push(tgt);
+        return;
+      }
+      moves.push(tgt);
+      nc += dc; nr += dr;
+    }
+  }
+
+  if (type === 'K') {
+    for (let dc=-1; dc<=1; dc++) for (let dr=-1; dr<=1; dr++) {
+      if (dc===0 && dr===0) continue;
+      tryAdd(c+dc, r+dr);
+    }
+  } else if (type === 'Q') {            // Mantri — 1 pătrat diagonal
+    [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([dc,dr]) => tryAdd(c+dc, r+dr));
+  } else if (type === 'B') {            // Gaja — 2 pătrate diagonal, sare peste piese
+    [[-2,-2],[-2,2],[2,-2],[2,2]].forEach(([dc,dr]) => tryAdd(c+dc, r+dr));
+  } else if (type === 'N') {            // Ashva — în L
+    [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(([dc,dr]) => tryAdd(c+dc, r+dr));
+  } else if (type === 'R') {            // Ratha — linie dreaptă
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dc,dr]) => trySlide(dc, dr));
+  } else if (type === 'P') {            // Padati — 1 pas înainte, captură diagonal
+    const dir = (color === 'w') ? 1 : -1;
+    const nr = r + dir;
+    if (inBoard(c, nr) && !position[crToSq(c, nr)]) moves.push(crToSq(c, nr));
+    [-1, 1].forEach(dc => {
+      const nc = c + dc;
+      if (inBoard(nc, nr)) {
+        const tgt = crToSq(nc, nr);
+        const tp = position[tgt];
+        if (tp && tp[0] !== color) moves.push(tgt);
+      }
+    });
+  }
+
+  return moves;
+}
+
+/* ── APLICĂ MUTAREA ── */
+function applyMove(from, to) {
+  const piece = pos[from];
+  if (!piece) return null;
+  const captured = pos[to] || null;
+  delete pos[from];
+  let placed = piece;
+  if (piece[1] === 'P') {
+    const tr = parseInt(to[1]);
+    if ((piece[0] === 'w' && tr === 8) || (piece[0] === 'b' && tr === 1)) {
+      placed = piece[0] + 'Q';
+    }
+  }
+  pos[to] = placed;
+  history.push({ from, to, piece, placed, captured, prevTurn: turn });
+  if (captured) {
+    (captured[0] === 'b' ? captures.w : captures.b).push(captured);
+  }
+  turn = (turn === 'w') ? 'b' : 'w';
+  lastFrom = from; lastTo = to;
+  return { piece, captured, placed };
+}
+
+/* ── DETECȚIE FINAL ── */
+function gameStatus() {
+  const allP = Object.values(pos);
+  if (!allP.includes('wK')) return { over: true, winner: 'b', reason: 'Raja ta a fost capturată' };
+  if (!allP.includes('bK')) return { over: true, winner: 'w', reason: 'Raja botului a fost capturată' };
+  const wC = allP.filter(p => p[0]==='w').length;
+  const bC = allP.filter(p => p[0]==='b').length;
+  if (wC === 1 && bC > 1) return { over: true, winner: 'b', reason: 'Rajă goală — ai rămas singur cu raja' };
+  if (bC === 1 && wC > 1) return { over: true, winner: 'w', reason: 'Rajă goală — botul a rămas singur cu raja' };
+  let anyMove = false;
+  for (const sq in pos) {
+    if (pos[sq][0] !== turn) continue;
+    if (legalMoves(sq, pos).length > 0) { anyMove = true; break; }
+  }
+  if (!anyMove) {
+    return { over: true, winner: (turn==='w' ? 'b' : 'w'),
+             reason: (turn==='w' ? 'Tu ești blocat' : 'Botul e blocat') + ' — fără mutări legale (la chaturanga, asta înseamnă pierdere!)' };
+  }
+  return { over: false };
+}
+
+/* ── HIGHLIGHTS ── */
+function clearHL() {
+  COLS.forEach(c => { for (let r=1; r<=8; r++)
+    $('.square-'+c+r).removeClass('sq-move sq-piece sq-capture sq-last'); });
+}
+function showLast() {
+  if (lastFrom) $('.square-'+lastFrom).addClass('sq-last');
+  if (lastTo)   $('.square-'+lastTo).addClass('sq-last');
+}
+function showMovesFor(sq) {
+  clearHL();
+  showLast();
+  $('.square-'+sq).addClass('sq-piece');
+  legalMoves(sq, pos).forEach(m => {
+    if (pos[m]) $('.square-'+m).addClass('sq-capture');
+    else       $('.square-'+m).addClass('sq-move');
+  });
+}
+
+/* ── SELECT (pentru click-click) ── */
+let selectedSq = null;
+function setSelected(sq) {
+  selectedSq = sq;
+  showMovesFor(sq);
+}
+function clearSelected() {
+  selectedSq = null;
+  clearHL();
+  showLast();
+}
+
+/* ── DRAG-AND-DROP HANDLERS ── */
+function handleDragStart(source, piece) {
+  if (gameOver) return false;
+  if (turn !== 'w') return false;
+  if (piece[0] !== 'w') return false;
+  selectedSq = null;     // anulez select-ul de click — drag-ul îl înlocuiește
+  showMovesFor(source);
+  return true;
+}
+
+/* În loc de setTimeout (poate fi suspendat pe mobil), folosesc o variabilă
+   cu timestamp-ul când botul trebuie să mute, verificată dintr-un interval
+   continuu (vezi gameLoop mai jos). */
+let botMoveAt = 0;
+function scheduleBot() {
+  if (gameOver || turn !== 'b') return;
+  if (botMoveAt > 0) return;
+  botMoveAt = Date.now() + 1500 + Math.floor(Math.random() * 1500);
+}
+
+function handleDrop(source, target, piece) {
+  if (target === 'offboard') { clearHL(); showLast(); return 'snapback'; }
+  if (gameOver || turn !== 'w') { clearHL(); showLast(); return 'snapback'; }
+  const moves = legalMoves(source, pos);
+  if (!moves.includes(target)) { clearHL(); showLast(); return 'snapback'; }
+  const res = applyMove(source, target);
+  startTimer();
+  notifyMove(res, true);
+  refreshUI();
+  scheduleBot();   // programare bot — cu gardă, sigur o singură dată
+}
+
+function handleSnapEnd() {
+  board.position(pos, false);
+  clearHL();
+  showLast();
+  scheduleBot();   // fallback dacă onDrop n-a apucat să programeze
+}
+
+/* ── CLICK-CLICK pe pătrate ── */
+function handleSquareClick(sq) {
+  if (gameOver || turn !== 'w') return;
+  const piece = pos[sq];
+
+  if (selectedSq) {
+    // există piesă selectată
+    const moves = legalMoves(selectedSq, pos);
+    if (moves.includes(sq)) {
+      // mutare legală
+      const res = applyMove(selectedSq, sq);
+      selectedSq = null;
+      board.position(pos, false);
+      clearHL();
+      $('.square-'+lastFrom).addClass('sq-last');
+      $('.square-'+lastTo).addClass('sq-last');
+      startTimer();
+      notifyMove(res, true);
+      refreshUI();
+      scheduleBot();
+      return;
+    }
+    // click pe altă piesă proprie → schimbă selecția
+    if (piece && piece[0] === 'w') {
+      setSelected(sq);
+    } else {
+      // click pe gol / piesă inamică nelegală → deselect
+      clearSelected();
+    }
+  } else {
+    // niciun pătrat selectat → încearcă selectare
+    if (piece && piece[0] === 'w') setSelected(sq);
+  }
+}
+
+/* Hook jQuery — click și touchend pe orice pătrat */
+$(document).on('click', '#board .square-55d63', function() {
+  const sq = $(this).attr('data-square');
+  if (sq) handleSquareClick(sq);
+});
+
+/* ── TIMER cu clepsidre ── */
+function fmtTime(s) {
+  if (timeLimit === 0) return '∞';
+  const m = Math.floor(s / 60), sec = s % 60;
+  return m + ':' + (sec < 10 ? '0' + sec : sec);
+}
+function renderClocks() {
+  document.getElementById('timeYou').textContent = fmtTime(timeLeft.w);
+  document.getElementById('timeBot').textContent = fmtTime(timeLeft.b);
+  const youCard = document.getElementById('clepYou');
+  const botCard = document.getElementById('clepBot');
+  youCard.classList.toggle('active', turn === 'w' && !gameOver);
+  botCard.classList.toggle('active', turn === 'b' && !gameOver);
+  if (timeLimit === 0) {
+    youCard.classList.add('unlim');
+    botCard.classList.add('unlim');
+  } else {
+    youCard.classList.remove('unlim');
+    botCard.classList.remove('unlim');
+    youCard.classList.toggle('low', timeLeft.w < 30);
+    botCard.classList.toggle('low', timeLeft.b < 30);
+  }
+}
+/* Bucla principală — rulează permanent la 250ms, deci nu poate fi „suspendată":
+   - decrementă ceasul jucătorului curent (la fiecare 1s)
+   - verifică dacă a sosit momentul ca botul să mute */
+let lastTick = 0;
+function gameLoop() {
+  if (gameOver) return;
+  const now = Date.now();
+  // Tick de 1s pentru ceasuri
+  if (firstMoveMade && timeLimit > 0 && now - lastTick >= 1000) {
+    lastTick = now;
+    timeLeft[turn] = Math.max(0, timeLeft[turn] - 1);
+    renderClocks();
+    if (timeLeft[turn] === 0) {
+      gameOver = true;
+      const winner = (turn === 'w') ? 'b' : 'w';
+      const reason = (turn === 'w') ? 'Ai rămas fără timp' : 'Botul a rămas fără timp';
+      showWinModal(winner, reason);
+      return;
+    }
+  }
+  // Bot trebuie să mute?
+  if (botMoveAt > 0 && now >= botMoveAt && turn === 'b') {
+    botMoveAt = 0;
+    botMove();
+  }
+}
+let mainInterval = setInterval(gameLoop, 250);
+
+function startTimer() {
+  if (firstMoveMade) return;
+  if (timeLimit === 0) return;
+  firstMoveMade = true;
+  lastTick = Date.now();
+}
+function stopTimer() { /* nu mai oprim — gameLoop are gardă pe gameOver */ }
+function onTimeChange() {
+  const sel = document.getElementById('timeSelect');
+  timeLimit = parseInt(sel.value);
+  timeLeft = { w: timeLimit, b: timeLimit };
+  stopTimer();
+  firstMoveMade = false;
+  renderClocks();
+}
+
+/* ── CAPTURES & STATUS ── */
+function renderCaptures() {
+  document.getElementById('captBlack').innerHTML =
+    captures.w.map(p => `<img src="img/chaturanga/${p}.png${CACHE_BUST}" alt="${p}">`).join('');
+  document.getElementById('captWhite').innerHTML =
+    captures.b.map(p => `<img src="img/chaturanga/${p}.png${CACHE_BUST}" alt="${p}">`).join('');
+}
+function setStatus(html, kind='') {
+  const sb = document.getElementById('statusBox');
+  sb.className = 'status-box' + (kind ? ' ' + kind : '');
+  sb.innerHTML = html;
+}
+
+const NAMES = {K:'raja', Q:'mantri', R:'ratha', B:'gaja', N:'ashva', P:'padati'};
+function notifyMove(res, byYou) {
+  if (!res) return;
+  let msg = '';
+  if (byYou) {
+    msg = res.captured ? ('⚔️ Ai capturat ' + NAMES[res.captured[1]] + '!') : 'Bot, e rândul tău…';
+    if (res.placed !== res.piece) msg += ' 🌟 Padati promovat la mantri!';
+    setStatus(msg, res.captured ? 'ok' : '');
+  } else {
+    msg = res.captured ? ('😬 Botul ți-a capturat ' + NAMES[res.captured[1]] + '!') : 'Botul a mutat. E rândul tău!';
+    if (res.placed !== res.piece) msg += ' Și-a promovat padati la mantri!';
+    setStatus(msg, res.captured ? 'warn' : '');
+  }
+}
+
+/* ── BOT cu evaluare simplă (1 ply look-ahead) ──
+   - +valoarea piesei capturate
+   - −valoarea propriei piese dacă ea poate fi capturată în mutarea următoare
+   - + mic bonus pentru centralizare
+   - + zgomot pentru variație */
+const VALUE = { K: 1000, R: 5, Q: 2, B: 2, N: 3, P: 1 };
+const CENTER = new Set(['d4','d5','e4','e5','c4','c5','f4','f5','d3','d6','e3','e6']);
+
+function simulateMove(position, from, to) {
+  const np = Object.assign({}, position);
+  const piece = np[from];
+  delete np[from];
+  let placed = piece;
+  if (piece[1] === 'P') {
+    const tr = parseInt(to[1]);
+    if ((piece[0]==='w' && tr===8) || (piece[0]==='b' && tr===1)) placed = piece[0] + 'Q';
+  }
+  np[to] = placed;
+  return np;
+}
+
+function canBeAttackedBy(target, position, attackerColor) {
+  for (const sq in position) {
+    if (position[sq][0] !== attackerColor) continue;
+    if (legalMoves(sq, position).includes(target)) return true;
+  }
+  return false;
+}
+
+function scoreBotMove(from, to) {
+  const piece = pos[from];
+  const victim = pos[to];
+  let score = 0;
+  if (victim) score += VALUE[victim[1]] * 10;
+  const newPos = simulateMove(pos, from, to);
+  // dacă piesa mea poate fi capturată în mutarea următoare → penalizare
+  if (canBeAttackedBy(to, newPos, 'w')) {
+    score -= VALUE[piece[1]] * 8;
+  }
+  // bonus centralizare (mici)
+  if (CENTER.has(to)) score += 0.5;
+  // mic zgomot ca să nu joace identic mereu
+  score += Math.random() * 0.4;
+  return score;
+}
+
+function botMove() {
+  if (gameOver || turn !== 'b') return;
+  const all = [];
+  for (const sq in pos) {
+    if (pos[sq][0] !== 'b') continue;
+    for (const to of legalMoves(sq, pos)) {
+      all.push({ from: sq, to, score: scoreBotMove(sq, to) });
+    }
+  }
+  if (all.length === 0) { refreshUI(); return; }
+  all.sort((a, b) => b.score - a.score);
+  // alege din top 2 ca să mai aibă variație, dar mai puțin întâmplător
+  const top = all.slice(0, Math.min(2, all.length));
+  const pick = top[Math.floor(Math.random() * top.length)];
+  const res = applyMove(pick.from, pick.to);
+  clearHL();
+  // FĂRĂ animație — pe tabletă animația poate fi suspendată
+  board.position(pos, false);
+  $('.square-'+lastFrom).addClass('sq-last');
+  $('.square-'+lastTo).addClass('sq-last');
+  notifyMove(res, false);
+  refreshUI();
+}
+
+/* ── MODAL FINAL ── */
+function showWinModal(winner, reason) {
+  const m = document.getElementById('modal');
+  const t = document.getElementById('modalTitle');
+  const txt = document.getElementById('modalText');
+  if (winner === 'w') {
+    t.textContent = '🏆 Felicitări!';
+    txt.innerHTML = '<strong>Ai câștigat!</strong><br>' + reason + '.';
+  } else {
+    t.textContent = '🤖 Botul a câștigat';
+    txt.innerHTML = reason + '. Mai încearcă!';
+  }
+  m.classList.add('show');
+}
+function hideModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+/* ── REFRESH UI ── */
+function refreshUI() {
+  renderCaptures();
+  renderClocks();
+  if (gameOver) return;
+  const gs = gameStatus();
+  if (gs.over) {
+    gameOver = true;
+    stopTimer();
+    showWinModal(gs.winner, gs.reason);
+  }
+}
+
+/* ── CONTROALE ── */
+function resetGame() {
+  pos = initialPosition();
+  turn = 'w';
+  history = [];
+  captures = { w: [], b: [] };
+  gameOver = false;
+  lastFrom = null; lastTo = null;
+  stopTimer();
+  firstMoveMade = false;
+  timeLeft = { w: timeLimit, b: timeLimit };
+  clearHL();
+  board.position(pos, false);
+  setStatus('Apasă pe o piesă albă, apoi trage-o (sau atinge unde să meargă).');
+  refreshUI();
+}
+
+function undoMove() {
+  if (history.length === 0 || gameOver) return;
+  const stepsToUndo = (turn === 'w' && history.length >= 2) ? 2 : 1;
+  for (let i = 0; i < stepsToUndo; i++) {
+    if (history.length === 0) break;
+    const h = history.pop();
+    delete pos[h.to];
+    pos[h.from] = h.piece;
+    if (h.captured) pos[h.to] = h.captured;
+    turn = h.prevTurn;
+    if (h.captured) {
+      const list = (h.captured[0] === 'b') ? captures.w : captures.b;
+      const idx = list.lastIndexOf(h.captured);
+      if (idx !== -1) list.splice(idx, 1);
+    }
+  }
+  lastFrom = history.length ? history[history.length-1].from : null;
+  lastTo   = history.length ? history[history.length-1].to   : null;
+  clearHL();
+  board.position(pos, true);
+  setStatus('Mutare anulată.');
+  refreshUI();
+}
+
+/* ── INIT ── */
+onTimeChange();    // setează timer-ul la valoarea default
+refreshUI();
+setTimeout(() => board.resize(), 100);
+</script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Chaturanga — Tactici</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
+<style>
+  /* Tabla MONOCROMĂ + X-uri */
+  #board .white-1e1d7, #board .black-3c85d {
+    background-color: #e8d4a0 !important;
+    position: relative;
+  }
+  #board .square-55d63 {
+    box-shadow: inset -1px 0 0 rgba(90, 58, 28, .35), inset 0 -1px 0 rgba(90, 58, 28, .35);
+  }
+  #board .square-a1::after, #board .square-a4::after, #board .square-a5::after, #board .square-a8::after,
+  #board .square-d1::after, #board .square-d4::after, #board .square-d5::after, #board .square-d8::after,
+  #board .square-e1::after, #board .square-e4::after, #board .square-e5::after, #board .square-e8::after,
+  #board .square-h1::after, #board .square-h4::after, #board .square-h5::after, #board .square-h8::after {
+    content: ""; position: absolute; inset: 18%;
+    background:
+      linear-gradient(45deg,  transparent 47%, rgba(58,31,16,.18) 47%, rgba(58,31,16,.18) 53%, transparent 53%),
+      linear-gradient(-45deg, transparent 47%, rgba(58,31,16,.18) 47%, rgba(58,31,16,.18) 53%, transparent 53%);
+    pointer-events: none;
+  }
+  #board .notation-322f9 { color: rgba(60, 35, 10, .7) !important; }
+  #board .piece-417db { object-fit: contain; transform-origin: center center; }
+  #board .piece-417db[data-piece="wK"], #board .piece-417db[data-piece="bK"] { transform: scale(0.98); }
+  #board .piece-417db[data-piece="wQ"], #board .piece-417db[data-piece="bQ"] { transform: scale(0.92); }
+  #board .piece-417db[data-piece="wR"], #board .piece-417db[data-piece="bR"] { transform: scale(0.88); }
+  #board .piece-417db[data-piece="wB"], #board .piece-417db[data-piece="bB"] { transform: scale(0.86); }
+  #board .piece-417db[data-piece="wN"], #board .piece-417db[data-piece="bN"] { transform: scale(0.84); }
+  #board .piece-417db[data-piece="wP"], #board .piece-417db[data-piece="bP"] { transform: scale(0.74); }
+
+  /* Highlights */
+  .sq-from { background-color: rgba(255,210,0,0.45) !important; }
+  .sq-to   { background-color: rgba(255,150,0,0.50) !important; }
+  .sq-attack::before {
+    content: ''; position: absolute; inset: 0;
+    border: 3px solid rgba(230,60,50,0.75); border-radius: 50%;
+    pointer-events: none; z-index: 5;
+  }
+
+  /* Panel */
+  .tactici-list { display: flex; flex-direction: column; gap: 10px; }
+  .tac-section {
+    background: rgba(255,255,255,0.55);
+    border: 2px solid rgba(255,255,255,0.85);
+    border-radius: 14px; padding: 10px 12px;
+  }
+  .tac-title {
+    font-family: var(--font-display); font-weight: 700;
+    color: var(--c-navy); font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  .tac-desc {
+    font-size: 0.88em; line-height: 1.55; color: var(--c-text);
+    margin-bottom: 8px;
+  }
+  .ex-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .ex-btn {
+    flex: 1; min-width: 0;
+    padding: 6px 10px; border-radius: 50px;
+    border: 2px solid var(--c-navy); background: transparent;
+    color: var(--c-navy); font-family: var(--font-display);
+    font-weight: 700; font-size: 0.85em; cursor: pointer;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .ex-btn:hover { background: rgba(26,58,107,0.12); }
+  .ex-btn.active { background: var(--c-navy); color: white; }
+
+  /* Player (controale derulare) */
+  .player {
+    margin-top: 10px;
+    background: rgba(26,58,107,0.08);
+    border-radius: 12px; padding: 10px;
+    display: none;
+  }
+  .player.show { display: block; }
+  .player-desc {
+    font-size: 0.92em; line-height: 1.5; color: var(--c-text);
+    margin-bottom: 8px; min-height: 42px;
+  }
+  .player-controls {
+    display: flex; align-items: center; gap: 8px;
+    justify-content: center;
+  }
+  .ctrl-btn {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 2px solid var(--c-navy); background: white;
+    color: var(--c-navy); font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .ctrl-btn:hover:not(:disabled) { background: var(--c-navy); color: white; }
+  .ctrl-btn:disabled { opacity: 0.3; cursor: default; }
+  .move-counter {
+    flex: 1; text-align: center;
+    font-family: var(--font-display); font-size: 0.9em; font-weight: 700;
+    color: var(--c-navy);
+  }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <span class="header-title">Chaturanga — Tactici</span>
+    <div class="header-progress">
+      <span class="lesson-badge">🎯 Învață trucurile</span>
+    </div>
+  </header>
+
+  <main class="page-main">
+
+    <div class="board-col">
+      <div class="board-wrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+
+        <div class="tactici-list" id="tacticiList"></div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer">
+    <a class="nav-btn nav-btn--back" href="chaturanga_pagina1.html"><span class="icon">⟵</span> <span class="label">Lecția</span></a>
+    <a class="nav-btn nav-btn--contents" href="istoria_sahului.html"><span class="label">Strămoșii</span></a>
+    <a class="nav-btn nav-btn--forward" href="chaturanga_arena.html"><span class="label">Arena</span> <span class="icon">⟶</span></a>
+  </footer>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+const CACHE_BUST = '?t=' + Date.now();
+
+const board = Chessboard('board', {
+  position: {},
+  orientation: 'white',
+  showNotation: true,
+  pieceTheme: 'img/chaturanga/{piece}.png' + CACHE_BUST,
+  draggable: false,
+});
+$(window).resize(() => board.resize());
+
+/* ── EXEMPLE TACTICI ──
+   Fiecare pas:
+     pos    — obiect cu pieselele de pe tablă
+     desc   — descrierea mutării sau a poziției
+     from,to — pătratele de evidențiat (mutarea curentă)
+     attack — pătrate de evidențiat cu inel roșu (piese atacate)
+*/
+const TACTICS = [
+  {
+    name: '⚔️ Furculița cu ashva',
+    desc: 'Ashva (calul) sare în formă de L și atacă două piese deodată. Adversarul nu le poate salva pe amândouă!',
+    examples: [
+      { /* Ex 1: Mecanism — raja + ratha */
+        title: 'Furculița rege–turn',
+        steps: [
+          { pos: {e1:'wK', a1:'wR', d4:'bN'},
+            desc: 'Raja alb pe <b>e1</b>, ratha alb pe <b>a1</b>. Ashva negru e pe <b>d4</b> — pregătit. Vezi mutarea-cheie?' },
+          { pos: {e1:'wK', a1:'wR', c2:'bN'},
+            from: 'd4', to: 'c2', attack: ['e1','a1'],
+            desc: 'Ashva sare la <b>c2</b> 🐎 — și atacă DEODATĂ raja (e1) și ratha (a1)! Raja trebuie să fugă, iar ashva ia ratha. <b>Furculița perfectă!</b>' },
+        ],
+      },
+      { /* Ex 2: Furculița raja+mantri prin sacrificiu */
+        title: 'Furculița rege–sfetnic',
+        steps: [
+          { pos: {e1:'wK', d2:'wQ', g5:'bN'},
+            desc: 'Raja alb pe <b>e1</b>, mantri alb pe <b>d2</b>. Ashva negru e departe, pe <b>g5</b>.' },
+          { pos: {e1:'wK', d2:'wQ', f3:'bN'},
+            from: 'g5', to: 'f3', attack: ['e1','d2'],
+            desc: 'Ashva sare prima dată la <b>f3</b> — apropie ținta.' },
+          { pos: {d2:'wK', f3:'bN'},
+            from: 'e1', to: 'd2', // simulează raja capturând mantri
+            desc: 'Raja fuge la d2 (dar acolo era mantri!). Apoi ashva mănâncă <b>raja</b> direct! Atenție: la chaturanga raja se ia ca orice piesă.' },
+        ],
+      },
+      { /* Ex 3: Furculița ratha+ashva */
+        title: 'Furculița sfetnic–turn',
+        steps: [
+          { pos: {e1:'wK', d1:'wQ', a5:'wR', d4:'bN'},
+            desc: 'Trei piese albe valoroase: raja (e1), mantri (d1), ratha (a5).' },
+          { pos: {e1:'wK', d1:'wQ', a5:'wR', c3:'bN'},
+            from: 'd4', to: 'c3', attack: ['d1','a5'],
+            desc: 'Ashva la <b>c3</b> atacă DEODATĂ mantri (d1) ȘI ratha (a5)! Albul își salvează una și pierde cealaltă.' },
+        ],
+      },
+    ],
+  },
+
+  {
+    name: '🎭 Atacul prin descoperire',
+    desc: 'Muți o piesă din față și „descoperi" o altă piesă a ta din spate, care atacă direct adversarul. Două piese muncesc deodată!',
+    examples: [
+      { /* Ex 1: Gaja se mută, ratha descoperă atacul */
+        title: 'Gaja descoperă ratha',
+        steps: [
+          { pos: {e8:'bK', e4:'wB', e1:'wR'},
+            desc: 'Ratha alb pe <b>e1</b> ar putea ataca raja neagră pe <b>e8</b> — dar e blocat de propriul gaja pe <b>e4</b>.' },
+          { pos: {e8:'bK', g6:'wB', e1:'wR'},
+            from: 'e4', to: 'g6', attack: ['e8'],
+            desc: 'Gaja sare la <b>g6</b> (diagonal 2 pătrate). Coloana e e liberă — ratha atacă direct <b>raja</b>! Două piese muncesc deodată.' },
+        ],
+      },
+      { /* Ex 2: Ashva sare + capturează, ratha descoperă */
+        title: 'Ashva descoperă cu captură',
+        steps: [
+          { pos: {e8:'bK', e3:'wN', e1:'wR', c4:'bB'},
+            desc: 'Ratha alb pe <b>e1</b>, blocat de propriul ashva pe <b>e3</b>. Pe <b>c4</b> stă o gaja neagră.' },
+          { pos: {e8:'bK', c4:'wN', e1:'wR'},
+            from: 'e3', to: 'c4', attack: ['e8'],
+            desc: 'Ashva sare în L la <b>c4</b> — capturează gaja neagră! Și, ÎN ACELAȘI TIMP, descoperă ratha pe coloana e, care acum atacă <b>raja</b>. Două câștiguri într-o mutare!' },
+        ],
+      },
+      { /* Ex 3: Padati capturează diagonal, ratha descoperă, gaja apără padati */
+        title: 'Padati descoperă cu captură',
+        steps: [
+          { pos: {e8:'bK', e6:'wP', e1:'wR', d7:'bR', b5:'wB'},
+            desc: 'Ratha alb pe <b>e1</b>, blocat de propriul padati pe <b>e6</b>. Pe <b>d7</b> stă o ratha neagră. <b>Gaja alb pe b5</b> apără în secret căsuța d7 (sare diagonal 2 → d7).' },
+          { pos: {e8:'bK', d7:'wP', e1:'wR', b5:'wB'},
+            from: 'e6', to: 'd7', attack: ['e8'],
+            desc: 'Padati capturează ratha pe <b>d7</b>. Acum se întâmplă 3 lucruri: <b>(1)</b> ratha alb atacă raja prin descoperire pe coloana e; <b>(2)</b> padati însuși atacă raja diagonal de pe d7; <b>(3)</b> dacă raja capturează padati, gaja alb recapturează raja de pe b5! Triplă amenințare.' },
+        ],
+      },
+    ],
+  },
+
+  {
+    name: '🐘 Promovarea pionului',
+    desc: 'Dacă un padati ajunge la rândul 8 (sau 1 pentru negru), se transformă în mantri! Ai 2 sfetnici!',
+    examples: [
+      { /* Ex 1: Mecanism — padati simplu ajunge la 8 */
+        title: 'Mecanismul de bază',
+        steps: [
+          { pos: {a1:'wK', h8:'bK', d7:'wP'},
+            desc: 'Padati alb pe <b>d7</b> — un singur pas până la promovare!' },
+          { pos: {a1:'wK', h8:'bK', d8:'wQ'},
+            from: 'd7', to: 'd8',
+            desc: '🌟 Padati a ajuns la <b>d8</b> — se transformă în <b>MANTRI</b>! Acum ai un sfetnic în plus!' },
+        ],
+      },
+      { /* Ex 2: Padati capturează ca să ajungă la rândul 8 */
+        title: 'Promovare prin captură',
+        steps: [
+          { pos: {a1:'wK', h8:'bK', d7:'wP', c8:'bR'},
+            desc: 'Padati pe d7 e blocat: ratha negru pe d8? Nu, pe c8. Și pe d8 e gol. Dar dacă padati capturează ratha de pe c8...' },
+          { pos: {a1:'wK', h8:'bK', c8:'wQ'},
+            from: 'd7', to: 'c8',
+            desc: '🌟 Padati capturează ratha pe <b>c8</b> (mișcare diagonală, deci e captură). Și ajunge la rândul 8 — devine MANTRI! Două câștiguri într-o mutare!' },
+        ],
+      },
+      { /* Ex 3: Doi padati în cursă spre promovare */
+        title: 'Doi padati colaborează',
+        steps: [
+          { pos: {a1:'wK', h8:'bK', d6:'wP', e6:'wP', e7:'bP'},
+            desc: 'Doi padati albi (d6, e6) vs un padati negru pe e7. Cum ajunge unul la rândul 8?' },
+          { pos: {a1:'wK', h8:'bK', e7:'wP', e6:'wP'},
+            from: 'd6', to: 'e7',
+            desc: 'Padati d6 capturează padati negru pe <b>e7</b> (captură diagonal).' },
+          { pos: {a1:'wK', h8:'bK', e8:'wQ', e6:'wP'},
+            from: 'e7', to: 'e8',
+            desc: '🌟 Padati avansează un pas până la <b>e8</b> — promovat! Al doilea padati (e6) îl urmează în viitoare ture.' },
+        ],
+      },
+    ],
+  },
+];
+
+/* ── STATE ── */
+let curTactic = -1;
+let curExample = -1;
+let curStep = 0;
+
+/* ── RENDER butoane tactici + exemple ── */
+function buildList() {
+  const list = document.getElementById('tacticiList');
+  list.innerHTML = '';
+  TACTICS.forEach((tac, ti) => {
+    const sec = document.createElement('div');
+    sec.className = 'tac-section';
+    sec.dataset.ti = ti;
+    sec.innerHTML = `
+      <div class="tac-title">${tac.name}</div>
+      <div class="tac-desc">${tac.desc}</div>
+      <div class="ex-btns">
+        ${tac.examples.map((ex, ei) =>
+          `<button class="ex-btn" data-ti="${ti}" data-ei="${ei}">Ex. ${ei+1}</button>`
+        ).join('')}
+      </div>
+      <div class="player">
+        <div class="player-desc">—</div>
+        <div class="player-controls">
+          <button class="ctrl-btn" data-act="first" title="Start">⏮</button>
+          <button class="ctrl-btn" data-act="prev"  title="Înapoi">◀</button>
+          <div class="move-counter">—</div>
+          <button class="ctrl-btn" data-act="next"  title="Înainte">▶</button>
+          <button class="ctrl-btn" data-act="last"  title="Final">⏭</button>
+        </div>
+      </div>
+    `;
+    list.appendChild(sec);
+  });
+  // Click pe butoanele de exemplu
+  document.querySelectorAll('.ex-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      loadExample(parseInt(b.dataset.ti), parseInt(b.dataset.ei), b);
+    });
+  });
+  // Click pe controlele player-ului
+  document.querySelectorAll('.ctrl-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      const act = b.dataset.act;
+      if (act === 'first') stepGo(0);
+      else if (act === 'prev')  stepPrev();
+      else if (act === 'next')  stepNext();
+      else if (act === 'last')  stepGo(-1);
+    });
+  });
+}
+
+/* ── Helper: găsește player-ul tacticii curente ── */
+function curPlayer() {
+  if (curTactic < 0) return null;
+  return document.querySelectorAll('.tac-section')[curTactic].querySelector('.player');
+}
+function hideAllPlayers() {
+  document.querySelectorAll('.player').forEach(p => p.classList.remove('show'));
+}
+
+/* ── ÎNCARCĂ exemplu ── */
+function loadExample(ti, ei, btn) {
+  document.querySelectorAll('.ex-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  curTactic = ti;
+  curExample = ei;
+  curStep = 0;
+  hideAllPlayers();
+  curPlayer().classList.add('show');
+  renderStep();
+}
+
+/* ── RENDER pas curent ── */
+function clearHL() {
+  $('#board [class*="square-"]').removeClass('sq-from sq-to sq-attack');
+}
+function renderStep() {
+  const ex = TACTICS[curTactic].examples[curExample];
+  const step = ex.steps[curStep];
+  board.position(step.pos, false);
+  clearHL();
+  setTimeout(() => {
+    if (step.from) $('.square-'+step.from).addClass('sq-from');
+    if (step.to)   $('.square-'+step.to).addClass('sq-to');
+    if (step.attack) step.attack.forEach(s => $('.square-'+s).addClass('sq-attack'));
+  }, 50);
+
+  const p = curPlayer();
+  if (!p) return;
+  p.querySelector('.player-desc').innerHTML = step.desc;
+  p.querySelector('.move-counter').textContent = (curStep + 1) + ' / ' + ex.steps.length;
+  p.querySelector('[data-act="prev"]').disabled  = (curStep === 0);
+  p.querySelector('[data-act="first"]').disabled = (curStep === 0);
+  p.querySelector('[data-act="next"]').disabled  = (curStep === ex.steps.length - 1);
+  p.querySelector('[data-act="last"]').disabled  = (curStep === ex.steps.length - 1);
+}
+
+/* ── NAVIGARE ── */
+function stepNext() {
+  if (curTactic < 0) return;
+  const ex = TACTICS[curTactic].examples[curExample];
+  if (curStep < ex.steps.length - 1) { curStep++; renderStep(); }
+}
+function stepPrev() {
+  if (curTactic < 0) return;
+  if (curStep > 0) { curStep--; renderStep(); }
+}
+function stepGo(idx) {
+  if (curTactic < 0) return;
+  const ex = TACTICS[curTactic].examples[curExample];
+  curStep = (idx === -1) ? ex.steps.length - 1 : idx;
+  renderStep();
+}
+
+/* ── INIT ── */
+buildList();
+setTimeout(() => board.resize(), 100);
+
+/* Săgeți tastatură (pentru desktop) */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') stepNext();
+  if (e.key === 'ArrowLeft')  stepPrev();
+});
+</script>
+</body>
+</html>
