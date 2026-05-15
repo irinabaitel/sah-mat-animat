@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Shatranj — șahul perșilor și al arabilor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="master-template.css">
+<style>
+/* ── Tabla statică de shatranj ─────────────────────────── */
+/* Container query: aflăm dimensiunile board-wrapper-ului */
+.board-wrapper {
+  container-type: size;
+  container-name: bw;
+}
+
+.shatranj-board {
+  /* Tabla = un pătrat cu latura = MINIMUL dintre lățimea și înălțimea containerului,
+     ca să rămână pătrată indiferent de forma containerului. */
+  width:  min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows:    repeat(8, 1fr);
+  background: #5a3a1c;
+}
+.csq {
+  aspect-ratio: 1 / 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Tabla MONOCROMĂ — toate căsuțele aceeași culoare (lemn deschis).
+   Shatranj-ul arab NU avea pătrate alternative alb-negru: modelul
+   bicolor a apărut abia în Europa, sec. XI–XIII. Iar X-urile vechi
+   de pe ashtapada au DISPĂRUT cu totul la arabi — de aceea tabla
+   de shatranj e complet curată, fără niciun marcaj. */
+.csq.light, .csq.dark { background: #e8d4a0; }
+
+/* Linii subtile de delimitare între căsuțe, ca pe o tablă desenată */
+.csq {
+  box-shadow:
+    inset -1px 0 0 rgba(90, 58, 28, .35),
+    inset 0 -1px 0 rgba(90, 58, 28, .35);
+}
+
+/* object-fit: contain păstrează proporțiile PNG-ului și încadrează în pătrat. */
+.csq img {
+  position: relative;
+  z-index: 2;
+  object-fit: contain;
+  pointer-events: none;
+  width: 78%;
+  height: 78%;
+}
+/* Ierarhie vizuală — piesele „importante" sunt mai mari pe tablă */
+.csq img.p-shah   { width: 96%; height: 96%; }
+.csq img.p-firzan { width: 90%; height: 90%; }
+.csq img.p-rukh   { width: 86%; height: 86%; }
+.csq img.p-fil    { width: 84%; height: 84%; }
+.csq img.p-asb    { width: 82%; height: 82%; }
+.csq img.p-baidaq { width: 72%; height: 72%; }
+
+/* ── Burdufuri (accordion) ─────────────────────────────── */
+.acc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.acc-item {
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--c-surface);
+  transition: border-color .15s;
+}
+.acc-item:hover,
+.acc-item.open { border-color: var(--c-navy); }
+
+.acc-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s;
+}
+.acc-item.open .acc-header,
+.acc-header:hover { background: rgba(26,58,107,.07); }
+
+.acc-num {
+  font-family: var(--font-display);
+  font-weight: 900;
+  color: var(--c-navy);
+  font-size: var(--fs-sm);
+  min-width: 22px;
+}
+.acc-title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--c-navy);
+  font-size: var(--fs-md);
+}
+.acc-chevron {
+  font-size: .7em;
+  color: var(--c-navy);
+  transition: transform .22s;
+  display: inline-block;
+}
+.acc-item.open .acc-chevron { transform: rotate(90deg); }
+
+.acc-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .35s ease;
+}
+.acc-item.open .acc-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.acc-inner { padding: 4px 16px 14px; }
+.acc-inner p {
+  font-size: var(--fs-md);
+  line-height: 1.7;
+  color: var(--c-text);
+  margin-bottom: .6em;
+}
+.acc-inner p:last-child { margin-bottom: 0; }
+.acc-inner ul {
+  padding-left: 1.4em;
+  margin: .4em 0 .8em;
+}
+.acc-inner li {
+  line-height: 1.7;
+  margin-bottom: .25em;
+}
+.acc-inner em { color: var(--c-text-muted); }
+
+/* Lista cu piesele reale lângă nume — pentru identificare rapidă */
+.piese-list {
+  list-style: none;
+  padding-left: 0;
+  margin: .4em 0 .8em;
+}
+.piese-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  line-height: 1.4;
+}
+.piese-list li img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Shatranj — șahul perșilor și al arabilor</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Strămoșii șahului</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper">
+        <div class="shatranj-board" id="shBoard"></div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div id="accList" class="acc-list"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer" role="navigation">
+    <a class="nav-btn nav-btn--back" href="istoria_sahului.html"><span class="icon">⟵</span> <span class="label">Înapoi</span></a>
+    <a class="nav-btn nav-btn--contents" href="hub.html"><span class="label">Cuprins</span></a>
+    <a class="nav-btn nav-btn--forward" href="shatranj_arena.html"><span class="label">Arenă</span> <span class="icon">⟶</span></a>
+  </footer>
+
+</div>
+
+<script>
+/* ── Construiește tabla statică ───────────────────────────
+   Ca în chaturanga, shah și firzan NU sunt simetrici pe ambele
+   rânduri. Albul: firzan pe d1, shah pe e1. Negrul: shah pe d8,
+   firzan pe e8. Așa regii nu sunt vis-à-vis, ci pe coloane alăturate —
+   o particularitate moștenită din chaturanga. Tabla NU are X-uri:
+   arabii le-au eliminat odată cu zarurile. */
+const back_w = ['rukh','asb','fil','firzan','shah','fil','asb','rukh'];
+const back_b = ['rukh','asb','fil','shah','firzan','fil','asb','rukh'];
+const cols = ['a','b','c','d','e','f','g','h'];
+const board = document.getElementById('shBoard');
+for (let r = 8; r >= 1; r--) {
+  for (let c = 0; c < 8; c++) {
+    const sq = cols[c] + r;
+    const isLight = (c + r) % 2 === 1;
+    const div = document.createElement('div');
+    div.className = 'csq ' + (isLight ? 'light' : 'dark');
+    let piece = null;
+    if      (r === 1) piece = back_w[c] + '_w';
+    else if (r === 2) piece = 'baidaq_w';
+    else if (r === 7) piece = 'baidaq_b';
+    else if (r === 8) piece = back_b[c] + '_b';
+    if (piece) {
+      const img = document.createElement('img');
+      img.src = 'img/shatranj/' + piece + '.png?t=' + Date.now();
+      img.alt = piece.replace('_',' ');
+      img.className = 'p-' + piece.split('_')[0];
+      div.appendChild(img);
+    }
+    board.appendChild(div);
+  }
+}
+
+/* ── Burdufurile ───────────────────────────────────────── */
+const burdufuri = [
+  {
+    num: '1.',
+    title: 'Povestea jocului',
+    bodyHTML: `
+<p>Îți amintești de <strong>chaturanga</strong>, jocul indian cu elefanți și care de luptă? Ei bine, jocul nostru nu a stat pe loc. A pornit la drum — un drum lung de sute de ani și mii de kilometri.</p>
+
+<p>Prima oprire: <strong>Persia</strong> (țara care azi se numește Iran). Acolo trăia, acum aproape <strong>1500 de ani</strong>, un rege pe nume <strong>Khosrow</strong>. Se spune că i-a venit în dar, tocmai din India, o tablă cu <strong>16 piese din smarald și 16 din rubin</strong> — dar fără nicio explicație cum se joacă! Înțeleptul curții, vizirul <strong>Bozorgmehr</strong>, s-a gândit zile întregi și a descoperit singur regulile. Toată lumea a rămas uimită.</p>
+
+<p>Perșii au schimbat numele jocului în <strong>chatrang</strong>, iar regelui i-au spus <strong>shah</strong> — adică <em>„rege"</em> în limba lor. Ține minte cuvântul ăsta: <strong>shah</strong>. Îl folosești și azi, fără să știi, de fiecare dată când spui <strong>„șah!"</strong> 😊</p>
+
+<p>A doua oprire: <strong>lumea arabă</strong>. Arabii au îndrăgit jocul atât de mult încât i-au spus <strong>shatranj</strong> și l-au transformat într-un joc al minții — au aruncat zarurile și jucau numai cu gândirea. Califul <strong>Harun al-Rashid</strong> (cel din poveștile <em>O mie și una de nopți</em>) a trimis cadou un set de șah din fildeș tocmai împăratului <strong>Carol cel Mare</strong>, în Europa!</p>
+
+<p>Pe atunci trăiau mari maeștri. Cel mai vestit, <strong>As-Suli</strong>, juca atât de bine încât și azi, în limba arabă, despre cineva foarte priceput se spune: <em>„joacă precum As-Suli"</em>.</p>
+
+<p>Ultima oprire: <strong>Europa</strong>. Jocul a intrat prin <strong>Spania</strong>. Acolo, un rege înțelept, <strong>Alfonso al X-lea</strong>, a poruncit acum peste 700 de ani să se scrie o <strong>carte mare despre jocuri</strong>, cu desene minunate în care creștini, evrei și arabi joacă șah <strong>împreună, la aceeași masă</strong>.</p>
+
+<p>În Europa, numele s-au mai schimbat o dată: <em>shah mat</em> a rămas <strong>„șah mat"</strong>. Mulți cred că înseamnă „regele a murit" — dar nu e adevărat! În persană înseamnă <strong>„regele e neajutorat, nu mai are scăpare"</strong>. Nu moare nimeni — doar se predă. 🤴</p>
+`
+  },
+  {
+    num: '2.',
+    title: 'Tabla și piesele',
+    bodyHTML: `
+<p>Tabla de shatranj are tot <strong>8 rânduri și 8 coloane</strong>, ca tabla de șah de azi. Dar dacă o compari cu tabla de chaturanga, observi ceva: <strong>au dispărut X-urile!</strong> 🔍</p>
+
+<p>Mai ții minte că la chaturanga erau niște cruciulițe pictate pe tablă, rămase de la un joc vechi cu zaruri? Arabii au renunțat de tot la zaruri — pentru ei șahul a devenit un joc curat, <strong>doar de gândire</strong>. Așa că X-urile, care nu mai foloseau la nimic, au fost șterse. Tabla de shatranj e <strong>complet netedă</strong>.</p>
+
+<p>Și încă ceva: tabla e dintr-o singură culoare. <strong>Pătratele alb-negru pe care le știi azi nu existau încă</strong> — ele au apărut mult mai târziu, în Europa.</p>
+
+<p><strong>Piesele sunt tot șase feluri, dar cu nume noi:</strong></p>
+<ul class="piese-list">
+  <li><img src="img/shatranj/shah_b.png?t=2" alt="shah"><span><strong>Shah</strong> — regele. De la el avem cuvântul <em>„șah"</em>.</span></li>
+  <li><img src="img/shatranj/firzan_b.png?t=2" alt="firzan"><span><strong>Firzan</strong> — sfetnicul. În Europa a devenit, mai târziu… <em>dama (regina)</em>!</span></li>
+  <li><img src="img/shatranj/fil_b.png?t=2" alt="fil"><span><strong>Fil</strong> — elefantul. În Europa s-a transformat în <em>nebun</em> (la englezi: <em>bishop</em>).</span></li>
+  <li><img src="img/shatranj/asb_b.png?t=2" alt="asb"><span><strong>Asb</strong> (sau <strong>Faras</strong>) — calul. A rămas tot cal.</span></li>
+  <li><img src="img/shatranj/rukh_b.png?t=2" alt="rukh"><span><strong>Rukh</strong> — carul de luptă. De la el avem cuvântul <em>„tură"</em> și <em>„turn"</em> (engleză: <em>rook</em>).</span></li>
+  <li><img src="img/shatranj/baidaq_b.png?t=2" alt="baidaq"><span><strong>Baidaq</strong> — pedestrașul. Pionul nostru de azi.</span></li>
+</ul>
+
+<p>Și acum, <strong>cea mai tare surpriză</strong> — uită-te bine la tablă! 👀 La șahul de azi, regele alb stă <strong>fix în fața</strong> regelui negru, iar dama în fața damei. La shatranj <strong>nu e așa deloc</strong>.</p>
+
+<p>Aici, shah-ul alb stă în fața <strong>firzan-ului negru</strong>, iar firzan-ul alb în fața <strong>shah-ului negru</strong> — sunt așezați <strong>încrucișat</strong>. Așa că cei doi regi <strong>nu stau pe aceeași coloană, față în față</strong>, ci pe <strong>două coloane alăturate</strong> (vecine). La fel și cei doi firzani: tot pe coloane alăturate.</p>
+
+<p>E o particularitate veche, moștenită tocmai din chaturanga. Mult mai târziu, în Europa, lumea a „îndreptat" așezarea — și de-aia azi regele stă fix în fața regelui. Dar pe vremea perșilor și a arabilor, regii și sfetnicii stăteau pe <strong>coloane vecine</strong>, nu unul în fața celuilalt. 🤴</p>
+
+<p>Fiecare jucător are <strong>16 piese</strong>: un shah, un firzan, doi fil, doi asb, doi rukh și opt baidaq — exact câte sunt și la șahul de azi. Numele s-au schimbat, dar armata a rămas aceeași. ⚔️</p>
+`
+  },
+  { num: '3.', title: 'Mutări și capturi', bodyHTML: `
+<p>Multe piese mută la fel ca la chaturanga și ca la șahul de azi: <strong>rukh</strong> aleargă pe linii drepte, <strong>asb</strong> sare în L, <strong>shah</strong> face un pas în orice direcție.</p>
+
+<p>Dar atenție la două piese foarte <strong>slabe</strong>: <strong>firzan</strong> (sfetnicul) face <em>doar un pătrat pe diagonală</em> — atât! Iar <strong>fil</strong> (elefantul) sare <em>exact 2 pătrate pe diagonală</em> și ajunge doar pe 8 căsuțe din toată tabla. De-aia partidele de shatranj durau ore… uneori chiar zile!</p>
+
+<p style="text-align:center; margin-top: 14px;">
+  <a href="shatranj_mutari.html" style="display:inline-block; padding:12px 22px; background:var(--c-navy); color:#fff; border-radius:50px; font-family:var(--font-display); font-weight:700; text-decoration:none; box-shadow:0 3px 12px rgba(26,58,107,.3);">
+    🎯 Explorează mutările &nbsp;⟶
+  </a>
+</p>
+<p style="font-size:.92em; opacity:.8; text-align:center; margin-top:6px;"><em>(tabla interactivă cu toate piesele și un mini-quiz)</em></p>
+` },
+  { num: '4.', title: 'Cine câștigă și cum', bodyHTML: `
+<p>Ca la chaturanga, scopul e <strong>să-l prinzi pe shah-ul adversarului</strong>. Sunt trei feluri în care poți câștiga:</p>
+
+<p>🏆 <strong>1. Șah mat</strong></p>
+<p>Dacă shah-ul adversarului e atacat și nu mai are unde să fugă — ai câștigat! De aici vine chiar expresia pe care o spunem azi: <strong>„șah mat"</strong> = <em>„regele e fără scăpare"</em>.</p>
+
+<p>🏆 <strong>2. Shah-ul gol</strong></p>
+<p>Dacă îi capturezi adversarului <strong>toate piesele</strong> și îl lași <strong>doar cu shah-ul</strong> singur pe tablă — câștigi! (În engleză: <em>bare king</em>.) Nu te poți ascunde la nesfârșit doar cu regele.</p>
+
+<p>🏆 <strong>3. Îl blochezi (pat)</strong></p>
+<p>Surpriză mare! La shatranj, dacă adversarul nu mai poate muta <strong>nicio piesă</strong> (chiar dacă shah-ul lui nu e atacat) — <strong>tu câștigi</strong>! Asta e <em>exact pe dos</em> față de șahul de azi, unde situația asta (numită <em>pat</em>) e remiză. La shatranj, dacă l-ai înțepenit — ai învins.</p>
+
+<div class="hl-box" style="margin-top: 14px;">
+🌟 <strong>Promovare:</strong> când un <strong>baidaq</strong> (pion) ajunge la capătul tablei, se transformă <strong>obligatoriu în firzan</strong> — sfetnicul. Nu poți alege altă piesă, fiindcă regina nici nu exista încă. Și cum firzan e cam slab… promovarea nu te ajută la fel de mult ca azi!
+</div>
+` },
+  { num: '5.', title: 'Tactici', bodyHTML: `
+<p>Maeștrii arabi au inventat ceva uimitor: <strong>mansubat</strong> — primele <strong>probleme de șah din lume</strong>! Adică ghicitori pe tablă: <em>„dă mat în 3 mutări"</em>. Exact ca puzzle-urile pe care le rezolvi tu astăzi — doar că au peste <strong>o mie de ani</strong> vechime.</p>
+
+<p>🧩 <strong>Diamantul lui As-Suli</strong> — o problemă atât de grea, lăsată de maestrul As-Suli, încât nimeni n-a putut s-o dezlege… aproape <strong>1000 de ani</strong>! Abia în vremurile noastre a fost rezolvată.</p>
+
+<p>💎 <strong>Matul Dilaramei</strong> — o legendă frumoasă: un prinț era pe cale să piardă la șah tot, chiar și pe soția lui, Dilaram. Ea i-a strigat: <em>„Sacrifică turnurile, nu pe mine!"</em> Prințul a dat două rukh-uri la schimb… și a dat mat! A câștigat datorită ei. 💕</p>
+
+<p><strong>Trei trucuri pe care le poți încerca:</strong></p>
+<ul>
+  <li>⚔️ <strong>Furculița cu asb</strong> — calul atacă deodată două piese. Nimeni nu poate sări să apere, doar el sare!</li>
+  <li>🎭 <strong>Descoperirea cu rukh</strong> — ascunzi un rukh în spatele unei piese de-a ta; muți piesa și rukh-ul „iese la lumină" și atacă pe neașteptate.</li>
+  <li>🧩 <strong>Mansuba</strong> — gândește cu câteva mutări înainte, ca la o ghicitoare, și sacrifică o piesă dacă astfel dai mat mai repede.</li>
+</ul>
+
+<div class="hl-box ok" style="margin-top: 10px;">
+🎯 <strong>Sfat strategic:</strong> firzan și fil sunt slabi — ține-i lângă shah, pentru apărare. Pune <strong>rukh</strong> (carele) și <strong>asb</strong> (caii) la atac — ele sunt vedetele jocului, exact ca la chaturanga.
+</div>
+
+<p style="text-align:center; margin-top: 14px;">
+  <a href="shatranj_tactici.html" style="display:inline-block; padding:12px 22px; background:var(--c-navy); color:#fff; border-radius:50px; font-family:var(--font-display); font-weight:700; text-decoration:none; box-shadow:0 3px 12px rgba(26,58,107,.3);">
+    🎯 Vezi exemple interactive &nbsp;⟶
+  </a>
+</p>
+<p style="font-size:.92em; opacity:.8; text-align:center; margin-top:4px;"><em>(3 exemple pentru fiecare tactică, cu derulare pas cu pas)</em></p>
+` }
+];
+
+const list = document.getElementById('accList');
+burdufuri.forEach(function (b) {
+  const item = document.createElement('div');
+  item.className = 'acc-item';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'acc-header';
+  hdr.innerHTML =
+    '<span class="acc-num">' + b.num + '</span>' +
+    '<span class="acc-title">' + b.title + '</span>' +
+    '<span class="acc-chevron">&#9658;</span>';
+
+  const body = document.createElement('div');
+  body.className = 'acc-body';
+  const inner = document.createElement('div');
+  inner.className = 'acc-inner';
+  inner.innerHTML = b.bodyHTML;
+  body.appendChild(inner);
+
+  item.appendChild(hdr);
+  item.appendChild(body);
+  list.appendChild(item);
+
+  hdr.addEventListener('click', function () { item.classList.toggle('open'); });
+});
+</script>
+</body>
+</html>

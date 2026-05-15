@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Prompturi Shatranj — copiere cu un buton</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; padding: 18px 14px 60px;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #f3e7cf; color: #3a2c18; line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  .sub { color: #7a6443; margin: 0 0 18px; font-size: .95rem; }
+  .help {
+    background: #fff7e8; border: 2px solid #e0cba0; border-radius: 14px;
+    padding: 14px 16px; margin-bottom: 22px; font-size: .95rem;
+  }
+  .help b { color: #8a5a1a; }
+  .help ul { margin: 8px 0 0; padding-left: 20px; }
+  .help li { margin-bottom: 6px; }
+  .card {
+    background: #fffaf0; border: 2px solid #e0cba0; border-radius: 16px;
+    padding: 16px; margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(120,90,40,.08);
+  }
+  .card.done { border-color: #b9d8b0; background: #f4faf0; }
+  .card-head {
+    display: flex; align-items: center; gap: 10px;
+    flex-wrap: wrap; margin-bottom: 10px;
+  }
+  .num {
+    background: #8a5a1a; color: #fff; font-weight: 700;
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex: 0 0 auto;
+  }
+  .done .num { background: #4f9e3f; }
+  .title { font-size: 1.15rem; font-weight: 700; }
+  .badge {
+    font-size: .78rem; padding: 3px 10px; border-radius: 999px;
+    background: #f0dcae; color: #8a5a1a; font-weight: 600;
+  }
+  .done .badge { background: #cfe8c5; color: #2f6e22; }
+  .filerow {
+    display: flex; align-items: center; gap: 8px;
+    margin: 6px 0 12px; font-size: .92rem; flex-wrap: wrap;
+  }
+  .fname {
+    font-family: ui-monospace, "Courier New", monospace;
+    background: #efe2c6; padding: 4px 10px; border-radius: 8px;
+    font-weight: 700; color: #6b4a16;
+  }
+  pre.prompt {
+    white-space: pre-wrap; word-wrap: break-word;
+    background: #fdf4df; border: 1px dashed #d8bf8e; border-radius: 10px;
+    padding: 12px; margin: 0 0 12px; font-size: .82rem;
+    max-height: 165px; overflow: auto; color: #5a4424;
+    font-family: ui-monospace, "Courier New", monospace;
+  }
+  button.copy {
+    width: 100%; border: none; border-radius: 12px;
+    padding: 16px; font-size: 1.1rem; font-weight: 700;
+    background: #d8862b; color: #fff; cursor: pointer;
+    transition: background .15s, transform .05s;
+  }
+  button.copy:active { transform: scale(.985); }
+  button.copy.copied { background: #4f9e3f; }
+  button.copy.failed { background: #c0392b; }
+  button.mini {
+    border: none; border-radius: 8px; padding: 6px 12px;
+    font-size: .82rem; font-weight: 700;
+    background: #b9893f; color: #fff; cursor: pointer;
+  }
+  button.mini.copied { background: #4f9e3f; }
+  .section-t {
+    margin: 30px 0 12px; font-size: 1.2rem; font-weight: 700;
+    color: #8a5a1a; border-bottom: 2px solid #e0cba0; padding-bottom: 6px;
+  }
+  .fix .title { font-size: 1rem; }
+  .fix pre.prompt { max-height: 120px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>🎨 Prompturi Shatranj</h1>
+  <p class="sub">Apasă butonul portocaliu → textul exact e copiat. Apoi lipești în nanobanana. Gata, fără copiat cu degetul.</p>
+
+  <div class="help">
+    <b>Cum lucrezi:</b>
+    <ul>
+      <li>Generează piesele <b>una câte una</b>, în ordine.</li>
+      <li>Doar varianta <b>albă</b> (negrele le fac eu după).</li>
+      <li>Rămâi în <b>aceeași conversație</b> în nanobanana pentru toate — păstrează stilul unitar.</li>
+      <li>Salvează poza în Downloads cu <b>numele exact</b> scris pe fiecare căsuță.</li>
+      <li>Iese prost? Vezi jos secțiunea <b>„Dacă iese prost"</b> — tot cu butoane.</li>
+    </ul>
+  </div>
+
+  <!-- CARDURILE SE GENEREAZĂ DIN JS -->
+  <div id="cards"></div>
+
+  <div class="section-t">🛠️ Dacă iese prost</div>
+  <p class="sub">Trimite-i lui nanobanana, în aceeași conversație, textul potrivit:</p>
+  <div id="fixes"></div>
+
+</div>
+
+<script>
+// ---- Textele exacte (nu se ating) ----
+var STYLE = "ONE SINGLE CHESS PIECE, alone on a fully transparent PNG background (no checkerboard, no background pattern). Style: rough hand-drawn children's picture-book illustration — the black outline must be THICK, slightly UNEVEN and WOBBLY, like drawn with a felt-tip marker by hand, NOT clean vector art, NOT smooth digital line. Solid cream/beige body color (#dcc8a8), absolutely no shading, no gradients, no internal texture, no decorative color accents — just flat cream with a thick wobbly black outline. Side profile view. Sits on a simple rounded pedestal base. Minimal interior detail.";
+
+var PIECES = [
+  { n:1, key:"fil",    title:"FIL — elefantul cu howdah", file:"fil_w.png", done:true,
+    body:"The piece: a stylized war elephant. Visible curved tusks. Trunk curled downward. A small fortified howdah (riding platform with low crenellated walls) sitting on its back. One simple cartoon eye. Friendly children's-book look." },
+  { n:2, key:"shah",   title:"SHAH — regele persan (TEXT NOU)", file:"shah_w.png", done:false,
+    body:"The piece: a Persian king (shah). He wears NO crown at all. Instead, on top of his head there is ONE single tall smooth pointed cap shaped like a cone or a wizard-style pointed hat (a Persian 'kulah') rising straight up to a single point. NO crown, NO multiple spikes, NO zig-zag points, NO jewels, NO cross on top — just one single smooth tall cone-shaped cap. Long simple stylized beard. Calm regal face. Simple straight robe silhouette below." },
+  { n:3, key:"firzan", title:"FIRZAN — sfetnicul / vizirul", file:"firzan_w.png", done:true,
+    body:"The piece: a wise Persian vizier (sfetnic). He wears a simple flat turban (NOT a crown). Holds a small open scroll in his hands. Head slightly bowed in thought. Short beard. Clearly SHORTER and more modest in proportion than the king — about 80% of the king's height." },
+  { n:4, key:"rukh",   title:"RUKH — carul-turn", file:"rukh_w.png", done:true,
+    body:"The piece: a hybrid between a war chariot and a small fortified tower. At the bottom there must be TWO BIG SPOKED WHEELS visible (clearly chariot wheels). On top of the chariot base there is a small crenellated tower with battlements (small square notches along the top edge). The two elements together explain how the Persian \"rukh\" (chariot) evolved into the European \"rook/tower\" — show BOTH elements clearly: wheels below + tower above." },
+  { n:5, key:"asb",    title:"ASB — calul arab", file:"asb_w.png", done:true,
+    body:"The piece: head and neck of an Arabian horse (only head + neck, NOT the whole body). Elegantly arched neck — the typical proud arched curve of the Arabian breed. Small alert ears pointing forward. Flowing forelock between the ears. Refined narrow muzzle, slightly concave (typical Arabian profile, not blocky). One simple cartoon eye." },
+  { n:6, key:"baidaq", title:"BAIDAQ — pionul / soldatul", file:"baidaq_w.png", done:false,
+    body:"The piece: a simple Arab foot soldier. Small flat turban on the head. Holds a curved scimitar (NOT a straight sword — the blade must curve) in one hand and a small round shield in the other hand. Plain robe. Clearly the SHORTEST piece — about 60% of the king's height." }
+];
+
+var FIXES = [
+  { title:"Iese prea curat / „de logo”",
+    text:"Make the black outline much rougher and more uneven. Think of a thick felt-tip marker drawn by hand, with slight wobble in the line, not a clean digital vector. Like a children's picture book illustration, not like a logo or icon." },
+  { title:"Fundalul NU e transparent",
+    text:"Remove the background completely — fully transparent PNG, no checkerboard pattern, no white background, no colored background. Just the piece floating on transparent alpha." },
+  { title:"Culoarea e albă în loc de crem",
+    text:"The body color is wrong. It should be warm cream/beige #dcc8a8, not pure white. Like old parchment or aged ivory." }
+];
+
+// ---- Copiere robustă (merge și pe tablete vechi) ----
+function copyText(text, btn){
+  function done(ok){
+    var old = btn.getAttribute('data-label');
+    btn.classList.remove('copied','failed');
+    btn.classList.add(ok ? 'copied' : 'failed');
+    btn.textContent = ok ? '✓ Copiat!' : '⚠ Încearcă din nou';
+    setTimeout(function(){
+      btn.textContent = old;
+      btn.classList.remove('copied','failed');
+    }, 2200);
+  }
+  function fallback(){
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly','');
+      ta.style.position='fixed'; ta.style.top='0'; ta.style.left='-9999px';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      done(ok);
+    }catch(e){ done(false); }
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){done(true);}, fallback);
+  } else { fallback(); }
+}
+
+function makeBtn(label, text, cls){
+  var b = document.createElement('button');
+  b.className = cls;
+  b.textContent = label;
+  b.setAttribute('data-label', label);
+  b.addEventListener('click', function(){ copyText(text, b); });
+  return b;
+}
+
+// ---- Construiește cardurile ----
+var cards = document.getElementById('cards');
+PIECES.forEach(function(p){
+  var full = STYLE + "\n\n" + p.body;
+
+  var card = document.createElement('div');
+  card.className = 'card' + (p.done ? ' done' : '');
+
+  var head = document.createElement('div');
+  head.className = 'card-head';
+  var num = document.createElement('div'); num.className='num'; num.textContent=p.n;
+  var ttl = document.createElement('div'); ttl.className='title'; ttl.textContent=p.title;
+  var bdg = document.createElement('div'); bdg.className='badge';
+  bdg.textContent = p.done ? '✅ gata (regenerează la nevoie)' : 'de făcut';
+  head.appendChild(num); head.appendChild(ttl); head.appendChild(bdg);
+
+  var frow = document.createElement('div'); frow.className='filerow';
+  var lbl = document.createElement('span'); lbl.textContent='Salvează ca:';
+  var fn = document.createElement('span'); fn.className='fname'; fn.textContent=p.file;
+  frow.appendChild(lbl); frow.appendChild(fn);
+  frow.appendChild(makeBtn('Copiază numele', p.file, 'mini'));
+
+  var pre = document.createElement('pre'); pre.className='prompt'; pre.textContent=full;
+
+  card.appendChild(head);
+  card.appendChild(frow);
+  card.appendChild(pre);
+  card.appendChild(makeBtn('📋  Copiază promptul', full, 'copy'));
+  cards.appendChild(card);
+});
+
+// ---- Construiește butoanele de corectură ----
+var fixesBox = document.getElementById('fixes');
+FIXES.forEach(function(f){
+  var card = document.createElement('div');
+  card.className='card fix';
+  var ttl = document.createElement('div'); ttl.className='title'; ttl.textContent=f.title;
+  var pre = document.createElement('pre'); pre.className='prompt'; pre.textContent=f.text;
+  card.appendChild(ttl);
+  card.appendChild(pre);
+  card.appendChild(makeBtn('📋  Copiază corectura', f.text, 'copy'));
+  fixesBox.appendChild(card);
+});
+</script>
+</body>
+</html>

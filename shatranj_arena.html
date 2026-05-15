@@ -6,28 +6,18 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Chaturanga — Arena</title>
+<title>Shatranj — Arena</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
 <link rel="stylesheet" href="master-template.css">
 <style>
-  /* Tabla MONOCROMĂ + X-uri (ashtapada autentic) */
+  /* Tabla MONOCROMĂ, FĂRĂ X-uri (shatranj — arabii au eliminat marcajele) */
   #board .white-1e1d7, #board .black-3c85d {
     background-color: #e8d4a0 !important;
     position: relative;
   }
   #board .square-55d63 {
     box-shadow: inset -1px 0 0 rgba(90, 58, 28, .35), inset 0 -1px 0 rgba(90, 58, 28, .35);
-  }
-  #board .square-a1::after, #board .square-a4::after, #board .square-a5::after, #board .square-a8::after,
-  #board .square-d1::after, #board .square-d4::after, #board .square-d5::after, #board .square-d8::after,
-  #board .square-e1::after, #board .square-e4::after, #board .square-e5::after, #board .square-e8::after,
-  #board .square-h1::after, #board .square-h4::after, #board .square-h5::after, #board .square-h8::after {
-    content: ""; position: absolute; inset: 18%;
-    background:
-      linear-gradient(45deg,  transparent 47%, rgba(58,31,16,.18) 47%, rgba(58,31,16,.18) 53%, transparent 53%),
-      linear-gradient(-45deg, transparent 47%, rgba(58,31,16,.18) 47%, rgba(58,31,16,.18) 53%, transparent 53%);
-    pointer-events: none;
   }
   #board .notation-322f9 { color: rgba(60, 35, 10, .7) !important; }
 
@@ -194,7 +184,7 @@
 <div class="page-wrapper">
 
   <header class="page-header">
-    <span class="header-title">Chaturanga — Arena</span>
+    <span class="header-title">Shatranj — Arena</span>
     <div class="header-progress">
       <span class="lesson-badge">⚔️ Joacă</span>
     </div>
@@ -263,9 +253,9 @@
   </main>
 
   <footer class="page-footer">
-    <a class="nav-btn nav-btn--back" href="chaturanga_mutari.html"><span class="icon">⟵</span> <span class="label">Mutări</span></a>
+    <a class="nav-btn nav-btn--back" href="shatranj_mutari.html"><span class="icon">⟵</span> <span class="label">Mutări</span></a>
     <a class="nav-btn nav-btn--contents" href="istoria_sahului.html"><span class="label">Strămoșii</span></a>
-    <a class="nav-btn nav-btn--forward" href="chaturanga_pagina1.html"><span class="label">Lecția</span> <span class="icon">⟶</span></a>
+    <a class="nav-btn nav-btn--forward" href="shatranj_pagina1.html"><span class="label">Lecția</span> <span class="icon">⟶</span></a>
   </footer>
 
 </div>
@@ -298,7 +288,8 @@ let timeLimit = 600;    // secunde per parte (0 = unlimited)
 let timeLeft = { w: 600, b: 600 };
 let firstMoveMade = false;
 
-/* Poziția inițială Murray (TU = jos, alb pe rândurile 1-2): */
+/* Poziția inițială (ca în chaturanga: shah pe e1/d8, firzan pe d1/e8 —
+   regii pe coloane alăturate, NU vis-à-vis): */
 function initialPosition() {
   return {
     a1:'wR', b1:'wN', c1:'wB', d1:'wQ', e1:'wK', f1:'wB', g1:'wN', h1:'wR',
@@ -313,7 +304,7 @@ const board = Chessboard('board', {
   position: initialPosition(),
   orientation: 'white',          // ← FORȚEZ albul jos (tu)
   showNotation: true,
-  pieceTheme: 'img/chaturanga/{piece}.png' + CACHE_BUST,
+  pieceTheme: 'img/shatranj/{piece}.png' + CACHE_BUST,
   draggable: true,
   onDragStart: handleDragStart,
   onDrop: handleDrop,
@@ -325,7 +316,7 @@ function sqToCR(sq) { return { c: COLS.indexOf(sq[0]), r: parseInt(sq[1]) }; }
 function crToSq(c, r) { return COLS[c] + r; }
 function inBoard(c, r) { return c >= 0 && c < 8 && r >= 1 && r <= 8; }
 
-/* ── REGULI DE MUTARE (chaturanga, după Murray) ── */
+/* ── REGULI DE MUTARE (shatranj — identice cu chaturanga) ── */
 function legalMoves(sq, position) {
   const piece = position[sq];
   if (!piece) return [];
@@ -353,20 +344,20 @@ function legalMoves(sq, position) {
     }
   }
 
-  if (type === 'K') {
+  if (type === 'K') {                   // Shah — un pas în orice direcție
     for (let dc=-1; dc<=1; dc++) for (let dr=-1; dr<=1; dr++) {
       if (dc===0 && dr===0) continue;
       tryAdd(c+dc, r+dr);
     }
-  } else if (type === 'Q') {            // Mantri — 1 pătrat diagonal
+  } else if (type === 'Q') {            // Firzan — 1 pătrat diagonal
     [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([dc,dr]) => tryAdd(c+dc, r+dr));
-  } else if (type === 'B') {            // Gaja — 2 pătrate diagonal, sare peste piese
+  } else if (type === 'B') {            // Fil — 2 pătrate diagonal, sare peste piese
     [[-2,-2],[-2,2],[2,-2],[2,2]].forEach(([dc,dr]) => tryAdd(c+dc, r+dr));
-  } else if (type === 'N') {            // Ashva — în L
+  } else if (type === 'N') {            // Asb — în L
     [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(([dc,dr]) => tryAdd(c+dc, r+dr));
-  } else if (type === 'R') {            // Ratha — linie dreaptă
+  } else if (type === 'R') {            // Rukh — linie dreaptă
     [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dc,dr]) => trySlide(dc, dr));
-  } else if (type === 'P') {            // Padati — 1 pas înainte, captură diagonal
+  } else if (type === 'P') {            // Baidaq — 1 pas înainte, captură diagonal
     const dir = (color === 'w') ? 1 : -1;
     const nr = r + dir;
     if (inBoard(c, nr) && !position[crToSq(c, nr)]) moves.push(crToSq(c, nr));
@@ -393,7 +384,7 @@ function applyMove(from, to) {
   if (piece[1] === 'P') {
     const tr = parseInt(to[1]);
     if ((piece[0] === 'w' && tr === 8) || (piece[0] === 'b' && tr === 1)) {
-      placed = piece[0] + 'Q';
+      placed = piece[0] + 'Q';        // Baidaq → Firzan (promovare obligatorie)
     }
   }
   pos[to] = placed;
@@ -409,12 +400,12 @@ function applyMove(from, to) {
 /* ── DETECȚIE FINAL ── */
 function gameStatus() {
   const allP = Object.values(pos);
-  if (!allP.includes('wK')) return { over: true, winner: 'b', reason: 'Raja ta a fost capturată' };
-  if (!allP.includes('bK')) return { over: true, winner: 'w', reason: 'Raja botului a fost capturată' };
+  if (!allP.includes('wK')) return { over: true, winner: 'b', reason: 'Shah-ul tău a fost capturat' };
+  if (!allP.includes('bK')) return { over: true, winner: 'w', reason: 'Shah-ul botului a fost capturat' };
   const wC = allP.filter(p => p[0]==='w').length;
   const bC = allP.filter(p => p[0]==='b').length;
-  if (wC === 1 && bC > 1) return { over: true, winner: 'b', reason: 'Rajă goală — ai rămas singur cu raja' };
-  if (bC === 1 && wC > 1) return { over: true, winner: 'w', reason: 'Rajă goală — botul a rămas singur cu raja' };
+  if (wC === 1 && bC > 1) return { over: true, winner: 'b', reason: 'Shah gol — ai rămas singur cu shah-ul' };
+  if (bC === 1 && wC > 1) return { over: true, winner: 'w', reason: 'Shah gol — botul a rămas singur cu shah-ul' };
   let anyMove = false;
   for (const sq in pos) {
     if (pos[sq][0] !== turn) continue;
@@ -422,7 +413,7 @@ function gameStatus() {
   }
   if (!anyMove) {
     return { over: true, winner: (turn==='w' ? 'b' : 'w'),
-             reason: (turn==='w' ? 'Tu ești blocat' : 'Botul e blocat') + ' — fără mutări legale (la chaturanga, asta înseamnă pierdere!)' };
+             reason: (turn==='w' ? 'Tu ești blocat' : 'Botul e blocat') + ' — fără mutări legale (la shatranj, asta înseamnă pierdere!)' };
   }
   return { over: false };
 }
@@ -608,9 +599,9 @@ function onTimeChange() {
 /* ── CAPTURES & STATUS ── */
 function renderCaptures() {
   document.getElementById('captBlack').innerHTML =
-    captures.w.map(p => `<img src="img/chaturanga/${p}.png${CACHE_BUST}" alt="${p}">`).join('');
+    captures.w.map(p => `<img src="img/shatranj/${p}.png${CACHE_BUST}" alt="${p}">`).join('');
   document.getElementById('captWhite').innerHTML =
-    captures.b.map(p => `<img src="img/chaturanga/${p}.png${CACHE_BUST}" alt="${p}">`).join('');
+    captures.b.map(p => `<img src="img/shatranj/${p}.png${CACHE_BUST}" alt="${p}">`).join('');
 }
 function setStatus(html, kind='') {
   const sb = document.getElementById('statusBox');
@@ -618,17 +609,17 @@ function setStatus(html, kind='') {
   sb.innerHTML = html;
 }
 
-const NAMES = {K:'raja', Q:'mantri', R:'ratha', B:'gaja', N:'ashva', P:'padati'};
+const NAMES = {K:'shah', Q:'firzan', R:'rukh', B:'fil', N:'asb', P:'baidaq'};
 function notifyMove(res, byYou) {
   if (!res) return;
   let msg = '';
   if (byYou) {
     msg = res.captured ? ('⚔️ Ai capturat ' + NAMES[res.captured[1]] + '!') : 'Bot, e rândul tău…';
-    if (res.placed !== res.piece) msg += ' 🌟 Padati promovat la mantri!';
+    if (res.placed !== res.piece) msg += ' 🌟 Baidaq promovat la firzan!';
     setStatus(msg, res.captured ? 'ok' : '');
   } else {
     msg = res.captured ? ('😬 Botul ți-a capturat ' + NAMES[res.captured[1]] + '!') : 'Botul a mutat. E rândul tău!';
-    if (res.placed !== res.piece) msg += ' Și-a promovat padati la mantri!';
+    if (res.placed !== res.piece) msg += ' Și-a promovat baidaq la firzan!';
     setStatus(msg, res.captured ? 'warn' : '');
   }
 }
@@ -777,7 +768,7 @@ function undoMove() {
 
 /* ── INIT ── */
 onTimeChange();    // setează timer-ul la valoarea default
-resetGame();       // inițializează poziția de start (altfel jocul crede că raja ta lipsește și anunță greșit „botul a câștigat" la pornire)
+resetGame();       // inițializează poziția de start (altfel jocul crede că shah-ul tău lipsește și anunță greșit „botul a câștigat" la pornire)
 setTimeout(() => board.resize(), 100);
 </script>
 </body>
