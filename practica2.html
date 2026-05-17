@@ -8,8 +8,7 @@
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
 <link rel="stylesheet" href="master-template.css">
 <style>
-.board-col { flex-direction: column; gap: 6px; }
-#boardWrapper { --avail-h: calc(100dvh - var(--header-h) - var(--footer-h) - 2*var(--gap) - 96px); }
+/* tabla la dimensiunea master-template; setările + piesele sunt în caseta din dreapta */
 
 /* ── Bara timp ── */
 .arena-settings {
@@ -25,9 +24,9 @@
 
 /* ── Bandă piese ── */
 #piece-strip {
-  display: flex; flex-direction: row; align-items: center; gap: 3px; flex-shrink: 0; height: 40px;
+  display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 4px; flex-shrink: 0;
   background: var(--c-surface); border: 2px solid var(--c-border); border-radius: var(--radius-sm);
-  padding: 3px 8px; overflow-x: auto; overflow-y: hidden;
+  padding: 5px 8px; margin-bottom: 8px;
 }
 .strip-piece { height: 32px; width: 32px; object-fit: contain; flex-shrink: 0; cursor: pointer; border-radius: 5px; border: 2px solid transparent; transition: all 0.15s; }
 .strip-piece:hover  { background: rgba(26,58,107,0.1); border-color: rgba(26,58,107,0.3); }
@@ -143,8 +142,7 @@
 
 /* ── Responsive portret ── */
 @media (max-width:768px),(max-aspect-ratio:1/1) {
-  #boardWrapper { --avail-h: calc((100dvh - var(--header-h) - var(--footer-h) - 16px)*0.52 - 96px); }
-  .arena-clock { height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px)*0.52/8*0.65); min-height: 32px; padding: 0 10px; }
+  .arena-clock { min-height: 32px; padding: 0 10px; }
   .clock-time  { font-size: clamp(1.1rem,4.5vw,1.5rem); }
 }
 </style>
@@ -164,36 +162,6 @@
 
     <!-- ══ COLOANA TABLĂ ══ -->
     <div class="board-col">
-
-      <div class="arena-settings" id="settingsPanel">
-        <span class="settings-label">Timp:</span>
-        <div class="settings-btns">
-          <button class="s-btn active" onclick="setTime(0,this)">∞</button>
-          <button class="s-btn" onclick="setTime(60000,this)">1 min</button>
-          <button class="s-btn" onclick="setTime(180000,this)">3 min</button>
-          <button class="s-btn" onclick="setTime(300000,this)">5 min</button>
-          <button class="s-btn" onclick="setTime(600000,this)">10 min</button>
-        </div>
-      </div>
-
-      <div id="piece-strip">
-        <img class="strip-piece" data-code="wK" src="https://lichess1.org/assets/piece/caliente/wK.svg" title="Rege alb"    onclick="selectPiece('wK')">
-        <img class="strip-piece" data-code="wQ" src="https://lichess1.org/assets/piece/caliente/wQ.svg" title="Damă albă"   onclick="selectPiece('wQ')">
-        <img class="strip-piece" data-code="wR" src="https://lichess1.org/assets/piece/caliente/wR.svg" title="Turn alb"    onclick="selectPiece('wR')">
-        <img class="strip-piece" data-code="wB" src="https://lichess1.org/assets/piece/caliente/wB.svg" title="Nebun alb"   onclick="selectPiece('wB')">
-        <img class="strip-piece" data-code="wN" src="https://lichess1.org/assets/piece/caliente/wN.svg" title="Cal alb"     onclick="selectPiece('wN')">
-        <img class="strip-piece" data-code="wP" src="https://lichess1.org/assets/piece/caliente/wP.svg" title="Pion alb"    onclick="selectPiece('wP')">
-        <span class="strip-sep"></span>
-        <img class="strip-piece" data-code="bK" src="https://lichess1.org/assets/piece/caliente/bK.svg" title="Rege negru"  onclick="selectPiece('bK')">
-        <img class="strip-piece" data-code="bQ" src="https://lichess1.org/assets/piece/caliente/bQ.svg" title="Damă neagră" onclick="selectPiece('bQ')">
-        <img class="strip-piece" data-code="bR" src="https://lichess1.org/assets/piece/caliente/bR.svg" title="Turn negru"  onclick="selectPiece('bR')">
-        <img class="strip-piece" data-code="bB" src="https://lichess1.org/assets/piece/caliente/bB.svg" title="Nebun negru" onclick="selectPiece('bB')">
-        <img class="strip-piece" data-code="bN" src="https://lichess1.org/assets/piece/caliente/bN.svg" title="Cal negru"   onclick="selectPiece('bN')">
-        <img class="strip-piece" data-code="bP" src="https://lichess1.org/assets/piece/caliente/bP.svg" title="Pion negru"  onclick="selectPiece('bP')">
-        <span class="strip-sep"></span>
-        <span class="strip-clear" title="Dezactivează selecția" onclick="selectPiece(null)">✕</span>
-      </div>
-
       <div class="board-wrapper" id="boardWrapper">
         <div id="board"></div>
         <div class="promo-overlay" id="promoOverlay">
@@ -201,7 +169,6 @@
           <div class="promo-btns" id="promoBtns"></div>
         </div>
       </div>
-
     </div><!-- /board-col -->
 
     <!-- ══ COLOANA PANOU ══ -->
@@ -222,6 +189,35 @@
       </div>
 
       <div class="panel-scroll" id="panelScroll">
+
+        <div class="arena-settings" id="settingsPanel">
+          <span class="settings-label">Timp:</span>
+          <div class="settings-btns">
+            <button class="s-btn active" onclick="setTime(0,this)">∞</button>
+            <button class="s-btn" onclick="setTime(60000,this)">1 min</button>
+            <button class="s-btn" onclick="setTime(180000,this)">3 min</button>
+            <button class="s-btn" onclick="setTime(300000,this)">5 min</button>
+            <button class="s-btn" onclick="setTime(600000,this)">10 min</button>
+          </div>
+        </div>
+
+        <div id="piece-strip">
+          <img class="strip-piece" data-code="wK" src="https://lichess1.org/assets/piece/caliente/wK.svg" title="Rege alb" onclick="selectPiece('wK')">
+          <img class="strip-piece" data-code="wQ" src="https://lichess1.org/assets/piece/caliente/wQ.svg" title="Damă albă" onclick="selectPiece('wQ')">
+          <img class="strip-piece" data-code="wR" src="https://lichess1.org/assets/piece/caliente/wR.svg" title="Turn alb" onclick="selectPiece('wR')">
+          <img class="strip-piece" data-code="wB" src="https://lichess1.org/assets/piece/caliente/wB.svg" title="Nebun alb" onclick="selectPiece('wB')">
+          <img class="strip-piece" data-code="wN" src="https://lichess1.org/assets/piece/caliente/wN.svg" title="Cal alb" onclick="selectPiece('wN')">
+          <img class="strip-piece" data-code="wP" src="https://lichess1.org/assets/piece/caliente/wP.svg" title="Pion alb" onclick="selectPiece('wP')">
+          <span class="strip-sep"></span>
+          <img class="strip-piece" data-code="bK" src="https://lichess1.org/assets/piece/caliente/bK.svg" title="Rege negru" onclick="selectPiece('bK')">
+          <img class="strip-piece" data-code="bQ" src="https://lichess1.org/assets/piece/caliente/bQ.svg" title="Damă neagră" onclick="selectPiece('bQ')">
+          <img class="strip-piece" data-code="bR" src="https://lichess1.org/assets/piece/caliente/bR.svg" title="Turn negru" onclick="selectPiece('bR')">
+          <img class="strip-piece" data-code="bB" src="https://lichess1.org/assets/piece/caliente/bB.svg" title="Nebun negru" onclick="selectPiece('bB')">
+          <img class="strip-piece" data-code="bN" src="https://lichess1.org/assets/piece/caliente/bN.svg" title="Cal negru" onclick="selectPiece('bN')">
+          <img class="strip-piece" data-code="bP" src="https://lichess1.org/assets/piece/caliente/bP.svg" title="Pion negru" onclick="selectPiece('bP')">
+          <span class="strip-sep"></span>
+          <span class="strip-clear" title="Dezactivează selecția" onclick="selectPiece(null)">✕</span>
+        </div>
 
         <div id="settings-group">
           <div class="panel-card">
@@ -290,6 +286,8 @@
       <div class="panel-actions">
         <button class="btn-action" id="btn-play" onclick="startGame()"
                 style="background:var(--c-navy);color:white;border-color:var(--c-navy);">▶ Joacă!</button>
+        <a class="btn-action" href="arena_2jucatori.html"
+           style="text-decoration:none;text-align:center;">👥 Joacă în doi</a>
       </div>
 
     </div><!-- /panel-col -->
