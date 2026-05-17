@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Xiangqi — Tactici</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="master-template.css">
+<style>
+  .board-wrapper { container-type: size; container-name: bw; display:flex; align-items:center; justify-content:center; }
+  #board { max-width: 100cqw; max-height: 100cqh; width:auto; height:auto; display:block; }
+
+  .tactici-list { display: flex; flex-direction: column; gap: 10px; }
+  .tac-section { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.85); border-radius: 14px; padding: 10px 12px; }
+  .tac-title { font-family: var(--font-display); font-weight: 700; color: var(--c-navy); font-size: 1rem; margin-bottom: 8px; }
+  .tac-desc { font-size: 0.88em; line-height: 1.55; color: var(--c-text); margin-bottom: 8px; }
+  .ex-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .ex-btn {
+    flex: 1; min-width: 0; padding: 6px 10px; border-radius: 50px;
+    border: 2px solid var(--c-navy); background: transparent; color: var(--c-navy);
+    font-family: var(--font-display); font-weight: 700; font-size: 0.85em;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .ex-btn:hover { background: rgba(26,58,107,0.12); }
+  .ex-btn.active { background: var(--c-navy); color: white; }
+
+  .player { margin-top: 10px; background: rgba(26,58,107,0.08); border-radius: 12px; padding: 10px; display: none; }
+  .player.show { display: block; }
+  .player-desc { font-size: 0.92em; line-height: 1.5; color: var(--c-text); margin-bottom: 8px; min-height: 56px; }
+  .player-controls { display: flex; align-items: center; gap: 8px; justify-content: center; }
+  .ctrl-btn {
+    width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--c-navy);
+    background: white; color: var(--c-navy); font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .ctrl-btn:hover:not(:disabled) { background: var(--c-navy); color: white; }
+  .ctrl-btn:disabled { opacity: 0.3; cursor: default; }
+  .move-counter { flex: 1; text-align: center; font-family: var(--font-display); font-size: 0.9em; font-weight: 700; color: var(--c-navy); }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <span class="header-title">Xiangqi — Tactici</span>
+    <div class="header-progress"><span class="lesson-badge">🎯 Învață trucurile</span></div>
+  </header>
+
+  <main class="page-main">
+    <div class="board-col">
+      <div class="board-wrapper">
+        <svg id="board" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="tactici-list" id="tacticiList"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <a class="nav-btn nav-btn--back" href="xiangqi_pagina1.html"><span class="icon">⟵</span> <span class="label">Lecția</span></a>
+    <a class="nav-btn nav-btn--contents" href="istoria_sahului.html"><span class="label">Strămoșii</span></a>
+    <a class="nav-btn nav-btn--forward" href="xiangqi_arena.html"><span class="label">Arena</span> <span class="icon">⟶</span></a>
+  </footer>
+</div>
+
+<script src="xiangqi-core.js"></script>
+<script>
+const SVG = document.getElementById('board');
+
+const TACTICS = [
+  {
+    name: '💥 Tunul — vedeta xiangqi',
+    desc: 'Tunul e piesa pe care niciun alt șah din lume nu o are. Se plimbă liber ca un car. Ca să LOVEASCĂ are nevoie de exact UN „afet" între el și țintă — orice piesă (a ta sau a adversarului), la orice distanță. Lovește prima piesă de după afet, oriunde pe tablă.',
+    examples: [
+      { title: 'Se plimbă liber', steps: [
+        { pos:{ '4,2':{c:'r',t:'C'} }, from:'4,2',
+          desc:'Tunul roșu pe <b>4,2</b>. Cât timp NU capturează, se mișcă pe linii drepte, oricâte puncte — exact ca un car (turn).' },
+        { pos:{ '4,6':{c:'r',t:'C'} }, from:'4,2', to:'4,6',
+          desc:'S-a deplasat 4 puncte în sus, pe linie dreaptă. N-a capturat nimic — doar s-a mutat liber. Așa se MIȘCĂ tunul.' },
+      ]},
+      { title: 'Ca să lovească, sare peste un afet', steps: [
+        { pos:{ '4,2':{c:'r',t:'C'}, '4,7':{c:'b',t:'R'} }, from:'4,2',
+          desc:'Tun roșu pe <b>4,2</b>, un car negru pe <b>4,7</b>. Între ei drumul e GOL. Poate tunul să ia carul? <b>NU!</b> Fără o piesă peste care să sară, tunul nu poate captura.' },
+        { pos:{ '4,2':{c:'r',t:'C'}, '4,4':{c:'b',t:'S'}, '4,7':{c:'b',t:'R'} }, from:'4,2', attack:['4,4'],
+          desc:'Acum apare un soldat pe <b>4,4</b> — el devine <b>afet</b> (ecran). Tunul are peste ce să sară!' },
+        { pos:{ '4,4':{c:'b',t:'S'}, '4,7':{c:'r',t:'C'} }, from:'4,2', to:'4,7',
+          desc:'🎯 Tunul sare peste afetul de pe 4,4 și <b>capturează carul de pe 4,7</b>! Reține: tunul lovește DOAR sărind peste exact o piesă.' },
+      ]},
+      { title: 'Tunul dă șah peste un afet', steps: [
+        { pos:{ '4,9':{c:'b',t:'K'}, '4,5':{c:'b',t:'E'}, '4,1':{c:'r',t:'C'} }, from:'4,1',
+          desc:'Generalul negru pe <b>4,9</b>. Tunul roșu pe <b>4,1</b> țintește coloana 4; pe <b>4,5</b> e un elefant negru — exact un afet.' },
+        { pos:{ '4,9':{c:'b',t:'K'}, '4,5':{c:'b',t:'E'}, '4,1':{c:'r',t:'C'} }, from:'4,1', attack:['4,9'],
+          desc:'Tunul amenință generalul <b>sărind peste elefantul</b> de pe 4,5 — e <b>ȘAH</b>! Dacă ar mai intra o piesă între ei, ar fi 2 afeturi și tunul n-ar mai putea sări. Tunul lovește cu exact UN afet.' },
+      ]},
+    ],
+  },
+  {
+    name: '⚔️ Furculița cu calul',
+    desc: 'Calul sare în L și poate ataca două piese deodată. Atenție: calul poate fi blocat dacă o piesă îi stă în calea pasului („piciorul calului").',
+    examples: [
+      { title: 'Furculița general–car', steps: [
+        { pos:{ '4,9':{c:'b',t:'K'}, '6,9':{c:'b',t:'R'}, '4,5':{c:'r',t:'H'} }, from:'4,5',
+          desc:'General negru pe <b>4,9</b>, car negru pe <b>6,9</b>. Calul roșu pe <b>4,5</b> — vezi mutarea-cheie?' },
+        { pos:{ '4,9':{c:'b',t:'K'}, '6,9':{c:'b',t:'R'}, '5,7':{c:'r',t:'H'} }, from:'4,5', to:'5,7', attack:['4,9','6,9'],
+          desc:'Calul sare la <b>5,7</b> și atacă DEODATĂ generalul (4,9) și carul (6,9)! Generalul trebuie să fugă, iar calul ia carul. <b>Furculiță!</b>' },
+      ]},
+      { title: 'Calul blocat („piciorul calului")', steps: [
+        { pos:{ '4,4':{c:'r',t:'H'}, '4,5':{c:'b',t:'S'} }, from:'4,4', attack:['4,5'],
+          desc:'Calul merge întâi <b>un pas drept</b>, apoi unul pe diagonală. Calul roșu e pe <b>4,4</b>; soldatul de pe <b>4,5</b> stă exact pe pasul lui drept în sus — îi „pune piciorul" și-i taie calea în sus.' },
+        { pos:{ '2,3':{c:'r',t:'H'}, '4,5':{c:'b',t:'S'} }, from:'4,4', to:'2,3',
+          desc:'În sus calul NU poate sări (nici la 3,6, nici la 5,6 — piciorul blocat). Dar în jos sare liber: <b>4,4 → 2,3</b>. Așa se blochează un cal la xiangqi.' },
+      ]},
+      { title: 'Furculița pe două care', steps: [
+        { pos:{ '2,9':{c:'b',t:'R'}, '6,9':{c:'b',t:'R'}, '5,6':{c:'r',t:'H'} }, from:'5,6',
+          desc:'Două care negre, pe <b>2,9</b> și <b>6,9</b>. Calul roșu pe <b>5,6</b>.' },
+        { pos:{ '2,9':{c:'b',t:'R'}, '6,9':{c:'b',t:'R'}, '4,8':{c:'r',t:'H'} }, from:'5,6', to:'4,8', attack:['2,9','6,9'],
+          desc:'Calul sare la <b>4,8</b> și atacă ambele care deodată! Adversarul salvează doar unul.' },
+      ]},
+    ],
+  },
+  {
+    name: '🚗 Carul — cea mai puternică piesă',
+    desc: 'Carul aleargă pe linii drepte, oricâte puncte (ca tura de azi). Pe o linie liberă e de neoprit — și e perfect pentru atacuri prin descoperire.',
+    examples: [
+      { title: 'Stăpân pe o linie liberă', steps: [
+        { pos:{ '4,0':{c:'r',t:'R'} }, from:'4,0',
+          desc:'Carul roșu pe <b>4,0</b>. Pe o coloană sau un rând liber, ajunge oriunde dintr-o mutare.' },
+        { pos:{ '4,9':{c:'r',t:'R'} }, from:'4,0', to:'4,9',
+          desc:'Dintr-o singură mutare a străbătut toată coloana, până la <b>4,9</b>. Nimic nu-l oprește pe o linie liberă.' },
+      ]},
+      { title: 'Atacul prin descoperire', steps: [
+        { pos:{ '4,9':{c:'b',t:'K'}, '4,4':{c:'r',t:'H'}, '4,1':{c:'r',t:'R'} }, from:'4,1',
+          desc:'Carul roșu pe <b>4,1</b> ar lovi generalul negru pe coloana 4 — dar e blocat de propriul cal de pe <b>4,4</b>.' },
+        { pos:{ '4,9':{c:'b',t:'K'}, '6,5':{c:'r',t:'H'}, '4,1':{c:'r',t:'R'} }, from:'4,4', to:'6,5', attack:['4,9'],
+          desc:'Calul se mută (<b>4,4 → 6,5</b>) și „descoperă" carul: coloana 4 e liberă, carul atacă direct <b>generalul</b>! Două piese muncesc deodată.' },
+      ]},
+      { title: 'Aleargă și capturează', steps: [
+        { pos:{ '1,4':{c:'r',t:'R'}, '6,4':{c:'b',t:'C'} }, from:'1,4',
+          desc:'Car roșu pe <b>1,4</b>; un tun negru pe <b>6,4</b>, pe același rând, drumul liber.' },
+        { pos:{ '6,4':{c:'r',t:'R'} }, from:'1,4', to:'6,4',
+          desc:'Carul aleargă pe rând și <b>capturează tunul</b> de pe 6,4. Simplu și eficient.' },
+      ]},
+    ],
+  },
+];
+
+let curT = -1, curE = -1, curS = 0;
+
+function buildList() {
+  const list = document.getElementById('tacticiList'); list.innerHTML = '';
+  TACTICS.forEach((tac, ti) => {
+    const sec = document.createElement('div'); sec.className = 'tac-section';
+    sec.innerHTML = `
+      <div class="tac-title">${tac.name}</div>
+      <div class="tac-desc">${tac.desc}</div>
+      <div class="ex-btns">
+        ${tac.examples.map((ex, ei) => `<button class="ex-btn" data-ti="${ti}" data-ei="${ei}">Ex. ${ei+1}</button>`).join('')}
+      </div>
+      <div class="player">
+        <div class="player-desc">—</div>
+        <div class="player-controls">
+          <button class="ctrl-btn" data-act="first">⏮</button>
+          <button class="ctrl-btn" data-act="prev">◀</button>
+          <div class="move-counter">—</div>
+          <button class="ctrl-btn" data-act="next">▶</button>
+          <button class="ctrl-btn" data-act="last">⏭</button>
+        </div>
+      </div>`;
+    list.appendChild(sec);
+  });
+  document.querySelectorAll('.ex-btn').forEach(b =>
+    b.addEventListener('click', () => loadExample(+b.dataset.ti, +b.dataset.ei, b)));
+  document.querySelectorAll('.ctrl-btn').forEach(b =>
+    b.addEventListener('click', () => {
+      const a = b.dataset.act;
+      if (a === 'first') stepGo(0);
+      else if (a === 'prev') stepPrev();
+      else if (a === 'next') stepNext();
+      else if (a === 'last') stepGo(-1);
+    }));
+}
+function curPlayer() {
+  if (curT < 0) return null;
+  return document.querySelectorAll('.tac-section')[curT].querySelector('.player');
+}
+function loadExample(ti, ei, btn) {
+  document.querySelectorAll('.ex-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  curT = ti; curE = ei; curS = 0;
+  document.querySelectorAll('.player').forEach(p => p.classList.remove('show'));
+  curPlayer().classList.add('show');
+  renderStep();
+}
+function renderStep() {
+  const ex = TACTICS[curT].examples[curE], st = ex.steps[curS];
+  XQ.render(SVG, st.pos, {});
+  if (st.from) XQ.addHL(SVG, st.from, 'hl-from');
+  if (st.to)   XQ.addHL(SVG, st.to, 'hl-to');
+  if (st.attack) st.attack.forEach(s => XQ.addHL(SVG, s, 'hl-atk'));
+  const p = curPlayer(); if (!p) return;
+  p.querySelector('.player-desc').innerHTML = st.desc;
+  p.querySelector('.move-counter').textContent = (curS+1) + ' / ' + ex.steps.length;
+  p.querySelector('[data-act="prev"]').disabled  = (curS === 0);
+  p.querySelector('[data-act="first"]').disabled = (curS === 0);
+  p.querySelector('[data-act="next"]').disabled  = (curS === ex.steps.length-1);
+  p.querySelector('[data-act="last"]').disabled  = (curS === ex.steps.length-1);
+}
+function stepNext() { const ex = TACTICS[curT].examples[curE]; if (curS < ex.steps.length-1) { curS++; renderStep(); } }
+function stepPrev() { if (curS > 0) { curS--; renderStep(); } }
+function stepGo(i) { const ex = TACTICS[curT].examples[curE]; curS = (i === -1) ? ex.steps.length-1 : i; renderStep(); }
+
+buildList();
+XQ.render(SVG, XQ.startPosition(), {});
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') stepNext();
+  if (e.key === 'ArrowLeft')  stepPrev();
+});
+</script>
+</body>
+</html>

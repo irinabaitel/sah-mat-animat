@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Xiangqi — Cum se mișcă piesele</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="master-template.css">
+<style>
+  .board-wrapper { container-type: size; container-name: bw; display:flex; align-items:center; justify-content:center; }
+  #board { max-width: 100cqw; max-height: 100cqh; width:auto; height:auto; display:block; }
+
+  .slide-nav { display: flex; align-items: center; gap: 8px; flex-shrink: 0; padding: 4px 0; }
+  .slide-nav-btn {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 2px solid rgba(26,58,107,0.3); background: rgba(255,255,255,0.6);
+    font-family: var(--font-display); font-size: 1rem; color: var(--c-navy);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background .15s;
+  }
+  .slide-nav-btn:hover:not(:disabled) { background: rgba(26,58,107,0.15); }
+  .slide-nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .slide-dots { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; justify-content: center; flex: 1; }
+  .slide-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(26,58,107,0.15); cursor: pointer; transition: all .2s; }
+  .slide-dot.done   { background: rgba(26,58,107,0.38); }
+  .slide-dot.active { background: var(--c-navy); transform: scale(1.3); box-shadow: 0 0 0 2px rgba(26,58,107,0.2); }
+
+  .slide-badge {
+    display: inline-block; background: rgba(26,58,107,0.09);
+    border: 1.5px solid rgba(26,58,107,0.2); border-radius: 20px; padding: 4px 18px;
+    font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+    color: var(--c-navy); margin-bottom: 8px;
+  }
+  .slide-title { font-family: var(--font-display); font-size: 1.15rem; color: var(--c-navy); margin-bottom: 10px; line-height: 1.3; }
+  .slide-text { font-size: 1.05rem; line-height: 1.75; color: #2a2a3e; }
+  .slide-text p { margin-bottom: 8px; }
+
+  .army-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+  .piece-card {
+    background: rgba(255,255,255,0.65); border: 2px solid rgba(255,255,255,0.9);
+    border-radius: 14px; padding: 10px 8px; text-align: center; cursor: pointer;
+    transition: all 0.2s; position: relative;
+  }
+  .piece-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .piece-card img { width: 48px; height: 48px; object-fit: contain; display: block; margin: 0 auto; }
+  .piece-name { font-family: var(--font-display); font-size: 0.85em; color: var(--c-navy); margin: 4px 0 1px; }
+  .piece-count { font-size: 0.7em; color: rgba(26,26,46,0.5); }
+  .piece-card .piece-value {
+    position: absolute; top: 5px; right: 8px;
+    font-family: var(--font-display); font-size: 0.7em; color: rgba(26,26,46,0.35);
+  }
+
+  .piece-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+  .ptab {
+    padding: 5px 11px; border-radius: 50px; border: 2px solid rgba(26,58,107,0.3);
+    background: rgba(255,255,255,0.5); font-family: var(--font-display);
+    font-size: 0.78em; font-weight: 700; color: var(--c-navy); cursor: pointer;
+    transition: all 0.2s; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;
+  }
+  .ptab img { width: 18px; height: 18px; object-fit: contain; }
+  .ptab:hover { background: rgba(26,58,107,0.12); }
+  .ptab.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
+
+  .piece-desc-box {
+    background: rgba(26,58,107,0.08); border: 2px solid rgba(26,58,107,0.18);
+    border-radius: 14px; padding: 12px 14px; font-size: 0.9em;
+    line-height: 1.65; color: #1a1a2e; margin-bottom: 10px;
+  }
+  .piece-desc-box .pd-name {
+    font-family: var(--font-display); font-size: 1.05em; color: var(--c-navy);
+    margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+  }
+  .piece-desc-box .pd-name img { width: 32px; height: 32px; object-fit: contain; }
+
+  .legend { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .leg-item { display: flex; align-items: center; gap: 8px; font-size: 0.85em; color: #2a2a3e; }
+  .leg-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; }
+  .dot-move    { background: rgba(20,110,40,0.55); }
+  .dot-capture { background: transparent; border: 3px solid rgba(230,60,50,0.85); }
+  .dot-piece   { background: rgba(26,120,255,0.4); border: 2px solid rgba(26,120,255,0.8); }
+
+  .quiz-box {
+    background: rgba(26,58,107,0.09); border: 2px solid rgba(26,58,107,0.2);
+    border-radius: 14px; padding: 12px 14px; font-size: 0.9em; line-height: 1.6;
+    color: #1a1a2e; min-height: 56px; transition: background 0.3s, border-color 0.3s;
+  }
+  .quiz-box.ok   { background: rgba(40,180,80,0.18);  border-color: rgba(40,180,80,0.5); }
+  .quiz-box.err  { background: rgba(200,50,50,0.15);  border-color: rgba(200,50,50,0.4); }
+  .quiz-box.done { background: rgba(245,200,66,0.2);  border-color: rgba(245,200,66,0.6); }
+  .quiz-btn {
+    padding: 7px 12px; border-radius: 10px; border: 2px solid rgba(26,58,107,0.3);
+    background: rgba(255,255,255,0.6); font-family: var(--font-display);
+    font-size: 0.88em; font-weight: 700; color: var(--c-navy); cursor: pointer;
+    text-align: left; transition: all 0.2s; width: 100%;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .quiz-btn img { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
+  .quiz-btn:hover:not(:disabled) { background: rgba(26,58,107,0.12); }
+  .quiz-btn:disabled { cursor: default; }
+
+  .practice-btn {
+    display: block; width: 100%; padding: 14px; border-radius: 14px; border: none;
+    text-align: center; cursor: pointer; font-family: var(--font-display);
+    font-size: 0.92em; font-weight: 700; margin-bottom: 8px; transition: all 0.2s;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.18); color: white; text-decoration: none;
+  }
+  .practice-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+  .practice-btn small {
+    display: block; font-family: var(--font-body); font-size: 0.78em;
+    opacity: 0.85; font-weight: 400; margin-top: 2px;
+  }
+  .pb-blue { background: var(--c-navy); }
+  .pb-green { background: #1a6b4a; }
+
+  .setup-step-box {
+    background: rgba(26,58,107,0.08); border: 2px solid rgba(26,58,107,0.18);
+    border-radius: 14px; padding: 12px 14px; font-size: 0.92em;
+    line-height: 1.65; color: #1a1a2e; margin-bottom: 10px;
+  }
+  .setup-step-title { font-family: var(--font-display); font-size: 1em; color: var(--c-navy); font-weight: 700; margin-bottom: 6px; }
+  .setup-btns { display: flex; gap: 8px; margin-top: 10px; }
+  .setup-btn {
+    flex: 1; padding: 9px; border-radius: 12px; border: none;
+    font-family: var(--font-display); font-size: 0.88em; font-weight: 700;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .setup-btn-next { background: var(--c-navy); color: white; box-shadow: 0 2px 8px rgba(26,58,107,0.28); }
+  .setup-btn-next:hover { background: #2a5aab; }
+  .setup-btn-prev { background: rgba(255,255,255,0.6); border: 2px solid rgba(26,58,107,0.25) !important; color: var(--c-navy); }
+  .setup-btn-prev:disabled, .setup-btn-next:disabled { opacity: 0.4; cursor: default; }
+  .setup-done-box {
+    background: rgba(40,180,80,0.15); border: 2px solid rgba(40,180,80,0.4);
+    border-radius: 12px; padding: 10px 14px; font-family: var(--font-display);
+    font-size: 0.9em; color: #1a5c35; text-align: center; line-height: 1.5; display: none;
+  }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Xiangqi — Cum se mișcă piesele</span>
+    <div class="header-progress"><span class="lesson-badge">Strămoșii șahului</span></div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper">
+        <svg id="board" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll" id="panelScroll" role="region" aria-label="Conținut lecție">
+
+        <span class="slide-badge" id="slideBadge">Armata</span>
+        <div class="slide-title" id="slideTitle"></div>
+
+        <div id="slide0">
+          <div class="slide-text">
+            <p>Fiecare jucător comandă o armată de <strong>16 piese</strong>, de <strong>7 feluri</strong>.</p>
+            <p>Apasă pe o piesă ca s-o explorezi pe tablă:</p>
+          </div>
+          <div class="army-grid" id="armyGrid"></div>
+        </div>
+
+        <div id="slide1" style="display:none">
+          <div class="piece-tabs" id="pieceTabs"></div>
+          <div class="piece-desc-box">
+            <div class="pd-name" id="pd-name">Soldatul</div>
+            <div id="pd-text">Selectează o piesă!</div>
+          </div>
+          <div class="legend">
+            <div class="leg-item"><div class="leg-dot dot-piece"></div> Piesa</div>
+            <div class="leg-item"><div class="leg-dot dot-move"></div> Poate merge aici</div>
+            <div class="leg-item"><div class="leg-dot dot-capture"></div> Poate captura aici</div>
+          </div>
+        </div>
+
+        <div id="slide2" style="display:none">
+          <div class="slide-text"><p>Pe tablă vezi mutările unei piese de xiangqi — dar piesa e ascunsă. Ghicești care e?</p></div>
+          <div id="quiz-question" style="font-family:var(--font-display);font-size:1em;color:var(--c-navy);margin-bottom:8px;"></div>
+          <div id="quiz-buttons" style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px;"></div>
+          <div class="quiz-box" id="quiz-feedback">Alege răspunsul corect!</div>
+        </div>
+
+        <div id="slide3" style="display:none">
+          <div class="slide-text" style="margin-bottom:10px;">
+            <p>Hai să așezăm piesele pe tablă, pas cu pas — exact ca la începutul unei partide!</p>
+          </div>
+          <div class="setup-step-box">
+            <div class="setup-step-title" id="setup-title">Tabla goală</div>
+            <div id="setup-text">Avem tabla cu râul și palatele. Punem piesele pe rând!</div>
+          </div>
+          <div class="setup-btns">
+            <button class="setup-btn setup-btn-prev" id="setup-prev-btn" onclick="prevSetup()" disabled>◀ Înapoi</button>
+            <button class="setup-btn setup-btn-next" id="setup-next-btn" onclick="nextSetup()">Pune Carele ▶</button>
+          </div>
+          <div class="setup-done-box" id="setup-done-box">
+            🎉 Ai parcurs toată așezarea!<br>Acum știi cum arată tabla la startul unei partide de xiangqi.
+          </div>
+        </div>
+
+        <div id="slide4" style="display:none">
+          <div class="slide-text" style="margin-bottom:12px;">
+            <p>Acum că știi piesele, hai în <strong>Arenă</strong> — joacă o partidă reală de xiangqi vs. calculator!</p>
+          </div>
+          <a href="xiangqi_arena.html" class="practice-btn pb-blue">⚔️ Arena xiangqi<small>partidă completă vs. 🤖</small></a>
+          <a href="xiangqi_pagina1.html" class="practice-btn pb-green">📜 Înapoi la lecție<small>Citește din nou despre xiangqi</small></a>
+        </div>
+
+      </div>
+
+      <div class="slide-nav">
+        <button class="slide-nav-btn" id="prevBtn" onclick="prevSlide()" disabled>◀</button>
+        <div class="slide-dots" id="slideDots"></div>
+        <button class="slide-nav-btn" id="nextBtn" onclick="nextSlide()">▶</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="xiangqi_pagina1.html" class="nav-btn nav-btn--back"><span class="icon">⟵</span> <span class="label">Lecția</span></a>
+    <a href="istoria_sahului.html" class="nav-btn nav-btn--contents"><span class="label">Strămoșii</span></a>
+    <a href="xiangqi_arena.html" class="nav-btn nav-btn--forward"><span class="label">Arena</span> <span class="icon">⟶</span></a>
+  </footer>
+
+</div>
+
+<script src="xiangqi-core.js"></script>
+<script>
+const SVG = document.getElementById('board');
+
+/* helper: poziție = obiect {"f,r": {c,t}} ; ROȘU = 'r' */
+function P(list){ const o={}; list.forEach(([s,c,t])=>o[s]={c:c,t:t}); return o; }
+
+/* ── DATE PIESE (poziții demonstrative) ──
+   Folosim XQ.pseudoMoves (piesa singură n-are general → legalMoves ar
+   filtra tot). */
+const PIECES = {
+  S: { name:'Soldatul', count:5, demoSq:'4,5',
+       demoPos:{ '4,5':{c:'r',t:'S'}, '4,6':{c:'b',t:'S'}, '5,5':{c:'b',t:'S'} },
+       text:'<b>Soldatul</b> merge <b>un pas înainte</b>. <b>După ce trece râul</b> (ca aici) poate merge și <b>în lateral</b>. Important: <b>capturează exact cum merge</b> — drept înainte și în lateral (vezi inelele roșii), <b>NU pe diagonală</b> ca pionul de la șah! Niciodată înapoi, fără promovare.' },
+  R: { name:'Carul', count:2, demoSq:'4,4', demoPos:{ '4,4':{c:'r',t:'R'} },
+       text:'<b>Carul</b> aleargă pe <b>linii drepte</b>, oricâte puncte — exact ca tura de azi. Cea mai puternică piesă din xiangqi.' },
+  H: { name:'Calul', count:2, demoSq:'4,4',
+       demoPos:{ '4,4':{c:'r',t:'H'}, '4,5':{c:'b',t:'S'} },
+       text:'<b>Calul</b> merge <b>un pas drept, apoi unul pe diagonală în afară</b> (un „L"). DAR: dacă fix lângă el, pe pasul drept, stă o piesă, calul e <b>blocat</b> în acea direcție („piciorul calului"). Aici soldatul de pe 4,5 e chiar deasupra calului — de aceea calul <b>NU poate sări în sus</b> (lipsesc 2 mutări), dar în jos și lateral sare liber.' },
+  E: { name:'Elefantul', count:2, demoSq:'2,2', demoPos:{ '2,2':{c:'r',t:'E'} },
+       text:'<b>Elefantul</b> sare <b>2 puncte pe diagonală</b>. <b>NU trece niciodată râul</b> (rămâne pe partea lui). Poate fi blocat dacă punctul din mijloc e ocupat („ochiul elefantului").' },
+  C: { name:'Tunul', count:2, demoSq:'4,2',
+       demoPos:{ '4,2':{c:'r',t:'C'}, '4,5':{c:'r',t:'S'}, '4,8':{c:'b',t:'S'} },
+       text:'<b>Tunul</b> se plimbă liber ca un car. DAR ca să <b>captureze</b> trebuie să <b>sară peste exact o piesă</b> (un „ecran"). Aici sare peste soldatul de pe 4,5 și lovește piesa neagră de sus!' },
+  A: { name:'Sfetnicul', count:2, demoSq:'4,1', demoPos:{ '4,1':{c:'r',t:'A'} },
+       text:'<b>Sfetnicul</b> (garda) merge <b>un pas pe diagonală</b> și NU iese <b>din palat</b>. Poate ajunge doar pe 5 puncte — păzește generalul.' },
+  K: { name:'Generalul', count:1, demoSq:'4,1', demoPos:{ '4,1':{c:'r',t:'K'} },
+       text:'<b>Generalul</b> face <b>un pas drept</b> (nu diagonal) și NU iese <b>din palat</b>. În plus: cei doi generali nu pot sta față în față pe o coloană liberă.' },
+};
+const ORDER = ['S','R','H','E','C','A','K'];
+
+function showPieceMoves(code){
+  const p = PIECES[code];
+  XQ.render(SVG, p.demoPos, {});
+  const mv = XQ.pseudoMoves(p.demoPos, p.demoSq);
+  XQ.addHL(SVG, p.demoSq, 'hl-sel');
+  mv.forEach(s => XQ.addHL(SVG, s, p.demoPos[s] ? 'hl-cap' : 'hl-move'));
+}
+
+/* ── ARMY GRID & TABS ── */
+function buildArmy(){
+  const g = document.getElementById('armyGrid'); g.innerHTML='';
+  ORDER.forEach(code=>{
+    const p=PIECES[code];
+    const c=document.createElement('div'); c.className='piece-card';
+    c.onclick=()=>{ goTo(1); selectPiece(code); };
+    c.innerHTML='<span class="piece-value">'+p.count+'×</span>'+
+      '<img src="img/xiangqi/'+code+'_r.png" alt="'+p.name+'">'+
+      '<div class="piece-name">'+p.name+'</div>'+
+      '<div class="piece-count">'+p.count+(p.count===1?' piesă':' piese')+'</div>';
+    g.appendChild(c);
+  });
+}
+function buildTabs(){
+  const t=document.getElementById('pieceTabs'); t.innerHTML='';
+  ORDER.forEach(code=>{
+    const p=PIECES[code];
+    const b=document.createElement('button'); b.className='ptab'; b.id='ptab-'+code;
+    b.onclick=()=>selectPiece(code);
+    b.innerHTML='<img src="img/xiangqi/'+code+'_r.png" alt=""> '+p.name;
+    t.appendChild(b);
+  });
+}
+function selectPiece(code){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  const tab=document.getElementById('ptab-'+code); if(tab) tab.classList.add('active');
+  const p=PIECES[code];
+  document.getElementById('pd-name').innerHTML='<img src="img/xiangqi/'+code+'_r.png" alt=""> '+p.name;
+  document.getElementById('pd-text').innerHTML=p.text;
+  showPieceMoves(code);
+}
+
+/* ── QUIZ ── */
+const QUIZ_BANK = [
+  { code:'R', pos:{ '4,4':{c:'r',t:'R'} }, o:'4,4', hint:'Linii drepte, oricât de departe.' },
+  { code:'H', pos:{ '4,4':{c:'r',t:'H'} }, o:'4,4', hint:'Sare în L.' },
+  { code:'E', pos:{ '2,2':{c:'r',t:'E'} }, o:'2,2', hint:'2 pe diagonală, nu trece râul.' },
+  { code:'A', pos:{ '4,1':{c:'r',t:'A'} }, o:'4,1', hint:'Diagonal, doar în palat.' },
+  { code:'K', pos:{ '4,1':{c:'r',t:'K'} }, o:'4,1', hint:'Un pas drept, doar în palat.' },
+  { code:'S', pos:{ '4,5':{c:'r',t:'S'} }, o:'4,5', hint:'A trecut râul: înainte + lateral.' },
+  { code:'S', pos:{ '4,3':{c:'r',t:'S'} }, o:'4,3', hint:'Încă pe partea lui: doar înainte.' },
+  { code:'C', pos:{ '4,2':{c:'r',t:'C'}, '4,5':{c:'r',t:'S'}, '4,8':{c:'b',t:'S'} }, o:'4,2',
+    hint:'Sare peste o piesă ca să captureze.' },
+  { code:'R', pos:{ '0,0':{c:'r',t:'R'} }, o:'0,0', hint:'Din colț, tot rândul și toată coloana.' },
+  { code:'H', pos:{ '7,7':{c:'r',t:'H'} }, o:'7,7', hint:'Tot în L.' },
+];
+let QZ=[], qi=0, qAns=false, qOK=0;
+function shuffleQ(){ QZ=[...QUIZ_BANK]; for(let i=QZ.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [QZ[i],QZ[j]]=[QZ[j],QZ[i]];} }
+function showQ(i){
+  if(i>=QZ.length){ quizDone(); return; }
+  qi=i; qAns=false;
+  const q=QZ[i];
+  // randăm doar piesele de context (NU piesa întrebată)
+  const ctx={}; for(const k in q.pos) if(k!==q.o) ctx[k]=q.pos[k];
+  XQ.render(SVG, ctx, {});
+  const mv=XQ.pseudoMoves(q.pos, q.o);
+  XQ.addHL(SVG, q.o, 'hl-sel');
+  mv.forEach(s => XQ.addHL(SVG, s, q.pos[s] ? 'hl-cap' : 'hl-move'));
+  document.getElementById('quiz-question').textContent='Întrebarea '+(i+1)+'/'+QZ.length+': Care piesă face aceste mutări?';
+  const cont=document.getElementById('quiz-buttons'); cont.innerHTML='';
+  [...ORDER].sort(()=>Math.random()-0.5).forEach(code=>{
+    const b=document.createElement('button'); b.className='quiz-btn';
+    b.innerHTML='<img src="img/xiangqi/'+code+'_r.png" alt=""> '+PIECES[code].name;
+    b.onclick=()=>answerQ(code,b); cont.appendChild(b);
+  });
+  const fb=document.getElementById('quiz-feedback'); fb.className='quiz-box'; fb.textContent=q.hint;
+}
+function answerQ(code,btn){
+  if(qAns) return; qAns=true;
+  const q=QZ[qi], fb=document.getElementById('quiz-feedback');
+  document.querySelectorAll('.quiz-btn').forEach(b=>b.disabled=true);
+  if(code===q.code){
+    qOK++; btn.style.background='rgba(40,180,80,0.35)'; btn.style.borderColor='rgba(40,180,80,0.7)';
+    fb.className='quiz-box ok'; fb.textContent='✅ Corect! Era '+PIECES[code].name+'.';
+  } else {
+    btn.style.background='rgba(200,50,50,0.25)'; btn.style.borderColor='rgba(200,50,50,0.6)';
+    fb.className='quiz-box err'; fb.textContent='❌ Nu exact... Era '+PIECES[q.code].name+'! '+q.hint;
+    document.querySelectorAll('.quiz-btn').forEach(b=>{ if(b.textContent.trim().endsWith(PIECES[q.code].name)){ b.style.background='rgba(40,180,80,0.3)'; b.style.borderColor='rgba(40,180,80,0.7)'; }});
+  }
+  setTimeout(()=>showQ(qi+1),1800);
+}
+function quizDone(){
+  document.getElementById('quiz-question').innerHTML='🏆 <strong>Bravo!</strong> '+qOK+'/'+QZ.length+' corecte!';
+  const fb=document.getElementById('quiz-feedback'); fb.className='quiz-box done';
+  fb.innerHTML = qOK>=(QZ.length*5/6) ? '⭐⭐⭐ Excelent! Cunoști piesele xiangqi!' : '💡 Mai exersează din lista de piese, apoi revino!';
+  XQ.render(SVG, {}, {});
+  document.getElementById('quiz-buttons').innerHTML='<button class="quiz-btn" onclick="restartQuiz()" style="justify-content:center;">🔄 Reia testul</button>';
+}
+function restartQuiz(){ qOK=0; shuffleQ(); showQ(0); }
+
+/* ── AȘEZARE (setup) ── */
+const back=['R','H','E','A','K','A','E','H','R'];
+function rowPieces(r,c){ const a=[]; for(let f=0;f<9;f++) a.push([f+','+r,c,back[f]]); return a; }
+const ST_R = rowPieces(0,'r').concat(rowPieces(9,'b'));
+const ST_C = ST_R.concat([['1,2','r','C'],['7,2','r','C'],['1,7','b','C'],['7,7','b','C']]);
+const ST_S = ST_C.concat([0,2,4,6,8].flatMap(f=>[[f+',3','r','S'],[f+',6','b','S']]));
+function only(list,types){ return list.filter(([s,c,t])=>types.includes(t)); }
+const STEPS=[
+  { title:'Tabla goală', text:'Tabla are râul la mijloc și două palate (pătratele cu X). Punem piesele pe rând!', pos:P([]), nw:[], btn:'Pune Carele ▶' },
+  { title:'Carul — în colțuri', text:'Cele 4 <b>care</b> stau în colțurile tablei.', pos:P(only(ST_R,['R'])), nw:['0,0','8,0','0,9','8,9'], btn:'Pune Caii ▶' },
+  { title:'Calul — lângă care', text:'<b>Caii</b> stau lângă care.', pos:P(only(ST_R,['R','H'])), nw:['1,0','7,0','1,9','7,9'], btn:'Pune Elefanții ▶' },
+  { title:'Elefantul — al treilea punct', text:'<b>Elefanții</b> intră lângă cai (ei nu vor trece râul).', pos:P(only(ST_R,['R','H','E'])), nw:['2,0','6,0','2,9','6,9'], btn:'Pune Sfetnicii ▶' },
+  { title:'Sfetnicul — la marginea palatului', text:'<b>Sfetnicii</b> intră în palat, lângă locul generalului.', pos:P(only(ST_R,['R','H','E','A'])), nw:['3,0','5,0','3,9','5,9'], btn:'Pune Generalii ▶' },
+  { title:'Generalul — în mijlocul palatului', text:'<b>Generalul</b> stă în centrul palatului. Nu va ieși de acolo niciodată.', pos:P(ST_R), nw:['4,0','4,9'], btn:'Pune Tunurile ▶' },
+  { title:'Tunul — în spatele soldaților', text:'Cele 2 <b>tunuri</b> stau puțin în față, gata să sară peste piese.', pos:P(ST_C), nw:['1,2','7,2','1,7','7,7'], btn:'Pune Soldații ▶' },
+  { title:'Soldatul — pe linia râului', text:'5 <b>soldați</b> de fiecare parte, chiar lângă râu.<br>🎉 <b>Armata e completă!</b> 32 de piese.', pos:P(ST_S), nw:['0,3','2,3','4,3','6,3','8,3','0,6','2,6','4,6','6,6','8,6'], btn:null },
+];
+let si=0;
+function renderSetup(i){
+  const st=STEPS[i];
+  XQ.render(SVG, st.pos, {});
+  st.nw.forEach(s=>XQ.addHL(SVG, s, 'hl-from'));
+  document.getElementById('setup-title').textContent=st.title;
+  document.getElementById('setup-text').innerHTML=st.text;
+  document.getElementById('setup-prev-btn').disabled=(i===0);
+  const nb=document.getElementById('setup-next-btn'), db=document.getElementById('setup-done-box');
+  if(st.btn){ nb.textContent=st.btn; nb.style.display='block'; nb.disabled=false; db.style.display='none'; }
+  else { nb.style.display='none'; db.style.display='block'; }
+}
+function nextSetup(){ if(si<STEPS.length-1){ si++; renderSetup(si); } }
+function prevSetup(){ if(si>0){ si--; renderSetup(si); } }
+
+/* ── SLIDE ENGINE ── */
+const SLIDE_COUNT=5;
+const SLIDE_TITLES=['⚔️ Armata xiangqi','Cum mișcă fiecare piesă?','🧠 Mini-test: Ghicește piesa!','🏯 Cum așezăm piesele?','🎮 Joacă o partidă!'];
+const SLIDE_BADGES=['Armata','Explorează','Quiz','Așezare','Practică'];
+let current=0;
+function renderDots(){
+  const c=document.getElementById('slideDots'); c.innerHTML='';
+  for(let i=0;i<SLIDE_COUNT;i++){ const d=document.createElement('div');
+    d.className='slide-dot'+(i<current?' done':'')+(i===current?' active':'');
+    d.onclick=()=>goTo(i); c.appendChild(d); }
+}
+function goTo(idx){
+  current=idx;
+  XQ.render(SVG, {}, {});
+  for(let i=0;i<SLIDE_COUNT;i++) document.getElementById('slide'+i).style.display=(i===idx)?'block':'none';
+  document.getElementById('slideBadge').textContent=SLIDE_BADGES[idx];
+  document.getElementById('slideTitle').textContent=SLIDE_TITLES[idx];
+  document.getElementById('prevBtn').disabled=(idx===0);
+  document.getElementById('nextBtn').disabled=(idx===SLIDE_COUNT-1);
+  document.getElementById('panelScroll').scrollTop=0;
+  renderDots();
+  if(idx===1) selectPiece('S');
+  if(idx===2){ qOK=0; shuffleQ(); showQ(0); }
+  if(idx===3){ si=0; renderSetup(0); }
+}
+function prevSlide(){ if(current>0) goTo(current-1); }
+function nextSlide(){ if(current<SLIDE_COUNT-1) goTo(current+1); }
+
+/* ── INIT ── */
+buildArmy(); buildTabs(); goTo(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Xiangqi — șahul chinezesc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="master-template.css">
+<style>
+/* ── Tabla xiangqi (SVG desenat în cod, 9×10) ─────────────── */
+.board-wrapper {
+  container-type: size;
+  container-name: bw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#xqBoard {
+  /* SVG-ul are viewBox ~572×632 (mai înalt decât lat). Îl scalăm
+     să încapă în container păstrând proporția. */
+  max-width: 100cqw;
+  max-height: 100cqh;
+  width: auto;
+  height: auto;
+  display: block;
+}
+
+/* ── Burdufuri (accordion) — identic cu shatranj/chaturanga ── */
+.acc-list { display: flex; flex-direction: column; gap: 6px; }
+.acc-item {
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--c-surface);
+  transition: border-color .15s;
+}
+.acc-item:hover,
+.acc-item.open { border-color: var(--c-navy); }
+.acc-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; cursor: pointer; user-select: none;
+  transition: background .15s;
+}
+.acc-item.open .acc-header,
+.acc-header:hover { background: rgba(26,58,107,.07); }
+.acc-num {
+  font-family: var(--font-display); font-weight: 900;
+  color: var(--c-navy); font-size: var(--fs-sm); min-width: 22px;
+}
+.acc-title {
+  flex: 1; font-family: var(--font-display); font-weight: 700;
+  color: var(--c-navy); font-size: var(--fs-md);
+}
+.acc-chevron {
+  font-size: .7em; color: var(--c-navy);
+  transition: transform .22s; display: inline-block;
+}
+.acc-item.open .acc-chevron { transform: rotate(90deg); }
+.acc-body { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+.acc-item.open .acc-body { max-height: 70vh; overflow-y: auto; }
+.acc-inner { padding: 4px 16px 14px; }
+.acc-inner p {
+  font-size: var(--fs-md); line-height: 1.7;
+  color: var(--c-text); margin-bottom: .6em;
+}
+.acc-inner p:last-child { margin-bottom: 0; }
+.acc-inner ul { padding-left: 1.4em; margin: .4em 0 .8em; }
+.acc-inner li { line-height: 1.7; margin-bottom: .25em; }
+.acc-inner em { color: var(--c-text-muted); }
+
+.piese-list { list-style: none; padding-left: 0; margin: .4em 0 .8em; }
+.piese-list li {
+  display: flex; align-items: center; gap: 12px;
+  padding: 4px 0; line-height: 1.4;
+}
+.piese-list li img { width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Xiangqi — șahul chinezesc</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Strămoșii șahului</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper">
+        <svg id="xqBoard" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div id="accList" class="acc-list"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer" role="navigation">
+    <a class="nav-btn nav-btn--back" href="istoria_sahului.html"><span class="icon">⟵</span> <span class="label">Înapoi</span></a>
+    <a class="nav-btn nav-btn--contents" href="hub.html"><span class="label">Cuprins</span></a>
+    <a class="nav-btn nav-btn--forward" href="xiangqi_arena.html"><span class="label">Arenă</span> <span class="icon">⟶</span></a>
+  </footer>
+
+</div>
+
+<script src="xiangqi-core.js"></script>
+<script>
+/* Tabla statică — poziția de start, fără interacțiune */
+XQ.render(document.getElementById('xqBoard'), XQ.startPosition(), {});
+
+const burdufuri = [
+  {
+    num: '1.',
+    title: 'Povestea jocului',
+    bodyHTML: `
+<p>Ai cunoscut chaturanga din India și shatranj din Persia. Acum mergem tocmai în <strong>China</strong>, ca să vedem un alt văr al șahului: <strong>xiangqi</strong> (se citește cam „șiang-ci"). E poate cel mai jucat joc de tablă din China — în parcuri, pe stradă, bunici și copii deopotrivă.</p>
+
+<p>Numele lui ascunde o ghicitoare. Cuvântul chinezesc <strong>象</strong> (<em>xiàng</em>) înseamnă în același timp <strong>„elefant"</strong> și <strong>„imagine"</strong>. Așa că „xiangqi" poate însemna fie <em>„jocul-elefant"</em>, fie <em>„jocul-imagine"</em>. Nici savanții nu s-au pus de acord care a fost sensul de la început. Tu ce crezi? 🐘🤔</p>
+
+<p>Tabla nu e un câmp gol — e o <strong>hartă de poveste</strong>. La mijloc curge un <strong>râu</strong>, iar pe el scrie <em>„Râul Chu, Hotarul Han"</em>. Asta amintește de un război adevărat de acum peste 2000 de ani, dintre două armate: cea <strong>roșie</strong> (Han, a lui Liu Bang) și cea <strong>neagră</strong> (Chu, a lui Xiang Yu).</p>
+
+<p>O legendă spune că un general genial, <strong>Han Xin</strong>, ar fi inventat jocul ca soldaților lui să nu le mai fie dor de casă în timpul iernii. E o poveste frumoasă — dar doar o legendă, nu s-a întâmplat chiar așa. 🎖️</p>
+
+<p>Adevărul, după cercetători: xiangqi e foarte vechi (atestat clar acum vreo <strong>1200 de ani</strong>) și a căpătat forma de azi puțin mai târziu, când i s-a adăugat o piesă pe care <strong>niciun alt șah din lume nu o are: tunul</strong>. Despre el, mai încolo. 💥</p>
+
+<p>Xiangqi, șahul nostru, shatranjul și chaturanga sunt <strong>veri din aceeași mare familie de jocuri</strong>. Rădăcina e probabil tot în India — dar exact cum a călătorit ideea până în China, savanții încă se ceartă.</p>
+`
+  },
+  {
+    num: '2.',
+    title: 'Tabla și piesele',
+    bodyHTML: `
+<p>Aici e marea surpriză: la xiangqi piesele <strong>NU stau în pătrate</strong>, ci pe <strong>colțurile liniilor</strong> (pe „puncte", la intersecții). Tabla are <strong>9 linii verticale și 10 orizontale</strong>.</p>
+
+<p>🌊 <strong>Râul</strong> taie tabla în două, la mijloc. Unele piese nu au voie să-l treacă!</p>
+
+<p>🏯 <strong>Palatul</strong> e un pătrat mic de 3×3, cu un X desenat în el, la fiecare capăt. <strong>Generalul și cele 2 gărzi nu au voie să IASĂ din palat</strong> — niciodată. Dar atenție: <strong>piesele adversarului POT intra</strong> în palat ca să atace! Restricția e doar pentru general și gărzi (și pentru elefant, care nu trece râul).</p>
+
+<p>Cele două armate sunt <strong>roșie</strong> și <strong>neagră</strong> (roșul mută primul). În China, fiecare piesă are pe ea un caracter chinezesc — dar fiindcă noi nu citim chineza, pe discurile noastre ai și un <strong>desen</strong> care îți spune imediat ce piesă e. 😊</p>
+
+<p><strong>Cele 7 feluri de piese:</strong></p>
+<ul class="piese-list">
+  <li><img src="img/xiangqi/K_r.png?t=2" alt="general"><span><strong>Generalul</strong> — comandantul. Stă închis în palat.</span></li>
+  <li><img src="img/xiangqi/A_r.png?t=2" alt="sfetnic"><span><strong>Sfetnicul</strong> (×2) — garda de corp; merge doar pe diagonalele palatului.</span></li>
+  <li><img src="img/xiangqi/E_r.png?t=2" alt="elefant"><span><strong>Elefantul</strong> (×2) — înțeleptul; nu trece niciodată râul.</span></li>
+  <li><img src="img/xiangqi/H_r.png?t=2" alt="cal"><span><strong>Calul</strong> (×2) — sare în L, dar poate fi împiedicat.</span></li>
+  <li><img src="img/xiangqi/R_r.png?t=2" alt="car"><span><strong>Carul</strong> (×2) — cel mai puternic, ca tura de azi.</span></li>
+  <li><img src="img/xiangqi/C_r.png?t=2" alt="tun"><span><strong>Tunul</strong> (×2) — capturează doar sărind peste o piesă!</span></li>
+  <li><img src="img/xiangqi/S_r.png?t=2" alt="soldat"><span><strong>Soldatul</strong> (×5) — pedestrașul; devine mai curajos după ce trece râul.</span></li>
+</ul>
+
+<p>Fiecare jucător are <strong>16 piese</strong>: 1 general, 2 sfetnici, 2 elefanți, 2 cai, 2 care, 2 tunuri și 5 soldați.</p>
+`
+  },
+  { num: '3.', title: 'Mutări și capturi', bodyHTML: `
+<p>Multe piese par cunoscute: <strong>carul</strong> aleargă pe linii drepte (ca tura), <strong>generalul</strong> face un pas. Dar xiangqi are trei lucruri pe care <strong>niciun alt șah nu le are</strong>:</p>
+<ul>
+  <li>💥 <strong>Tunul</strong> se plimbă liber (ca un car). Ca să <strong>captureze</strong> trebuie <strong>exact o piesă între el și țintă</strong> — un „afet". Afetul poate fi <strong>orice piesă, a ta sau a adversarului</strong>, la <strong>orice distanță</strong>, iar tunul lovește prima piesă de după el. Funcționează <strong>oriunde pe tablă</strong> (tunul nu are râu).</li>
+  <li>⚔️ <strong>Soldatul</strong> capturează <strong>exact cum merge</strong> — drept înainte (și lateral după râu), <strong>nu pe diagonală</strong> ca pionul de la șah.</li>
+  <li>🐴 <strong>Calul poate fi blocat</strong>: merge un pas drept apoi unul pe diagonală; dacă fix lângă el, pe pasul drept, e o piesă, nu poate porni acolo („piciorul calului").</li>
+  <li>🐘 <strong>Elefantul poate fi blocat</strong> la fel („ochiul elefantului") și <strong>nu trece râul</strong>.</li>
+</ul>
+<p style="text-align:center; margin-top: 14px;">
+  <a href="xiangqi_mutari.html" style="display:inline-block; padding:12px 22px; background:var(--c-navy); color:#fff; border-radius:50px; font-family:var(--font-display); font-weight:700; text-decoration:none; box-shadow:0 3px 12px rgba(26,58,107,.3);">
+    🎯 Explorează mutările &nbsp;⟶
+  </a>
+</p>
+<p style="font-size:.92em; opacity:.8; text-align:center; margin-top:6px;"><em>(tabla interactivă cu toate piesele și un mini-quiz)</em></p>
+` },
+  { num: '4.', title: 'Cine câștigă și cum', bodyHTML: `
+<p>Scopul e <strong>să-l prinzi pe generalul advers</strong>. Sunt câteva feluri:</p>
+
+<p>🏆 <strong>1. Șah mat</strong></p>
+<p>Dacă generalul advers e atacat și nu mai poate scăpa — ai câștigat, exact ca la șahul de azi.</p>
+
+<p>🏆 <strong>2. Adversarul rămâne fără mutări</strong></p>
+<p>Surpriză! La xiangqi, dacă adversarul <strong>nu mai poate muta nimic</strong> (chiar dacă generalul lui nu e atacat) — <strong>tot tu câștigi</strong>. (La șahul modern asta e remiză; la xiangqi, ca la chaturanga, înseamnă pierdere pentru cel blocat.)</p>
+
+<p>🏆 <strong>3. Regula generalilor care nu se privesc</strong></p>
+<p>Cei doi generali <strong>nu au voie să stea față în față</strong> pe aceeași linie, dacă între ei nu e nicio piesă. Ar fi ca și cum și-ar „zbura" privirea unul spre altul. Mutarea care ar lăsa asta este interzisă.</p>
+
+<div class="hl-box" style="margin-top: 14px;">
+🌟 <strong>Soldatul:</strong> nu se promovează niciodată (nu există regină aici!). Dar are un secret: cât e pe partea lui, merge doar înainte; <strong>după ce trece râul</strong>, poate merge și în lateral — devine mai curajos. Înapoi nu se întoarce niciodată.
+</div>
+` },
+  { num: '5.', title: 'Tactici', bodyHTML: `
+<p>La xiangqi, vedeta tacticilor e <strong>tunul</strong> — fiindcă lovește sărind peste o piesă, poate ataca pe neașteptate, de departe.</p>
+<ul>
+  <li>💥 <strong>Tunul pe afet</strong> — pui un tun în spatele unei piese (a ta sau a adversarului), care devine „ecran". Dintr-odată tunul amenință tot ce e de cealaltă parte.</li>
+  <li>🐴 <strong>Calul care nu poate fi prins</strong> — dacă ții calul liber (fără piese care să-i blocheze piciorul), el face furculițe ca la șah.</li>
+  <li>🚗 <strong>Carul la atac</strong> — carul e cea mai tare piesă; pe o linie liberă e de neoprit.</li>
+</ul>
+<p style="text-align:center; margin-top: 14px;">
+  <a href="xiangqi_tactici.html" style="display:inline-block; padding:12px 22px; background:var(--c-navy); color:#fff; border-radius:50px; font-family:var(--font-display); font-weight:700; text-decoration:none; box-shadow:0 3px 12px rgba(26,58,107,.3);">
+    🎯 Vezi exemple interactive &nbsp;⟶
+  </a>
+</p>
+<p style="font-size:.92em; opacity:.8; text-align:center; margin-top:4px;"><em>(3 tactici, cu derulare pas cu pas)</em></p>
+` }
+];
+
+const list = document.getElementById('accList');
+burdufuri.forEach(function (b) {
+  const item = document.createElement('div');
+  item.className = 'acc-item';
+  const hdr = document.createElement('div');
+  hdr.className = 'acc-header';
+  hdr.innerHTML =
+    '<span class="acc-num">' + b.num + '</span>' +
+    '<span class="acc-title">' + b.title + '</span>' +
+    '<span class="acc-chevron">&#9658;</span>';
+  const body = document.createElement('div');
+  body.className = 'acc-body';
+  const inner = document.createElement('div');
+  inner.className = 'acc-inner';
+  inner.innerHTML = b.bodyHTML;
+  body.appendChild(inner);
+  item.appendChild(hdr);
+  item.appendChild(body);
+  list.appendChild(item);
+  hdr.addEventListener('click', function () { item.classList.toggle('open'); });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Xiangqi — Arena</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="master-template.css">
+<style>
+  .board-wrapper { container-type: size; container-name: bw; display:flex; align-items:center; justify-content:center; }
+  #board { max-width: 100cqw; max-height: 100cqh; width:auto; height:auto; display:block; }
+
+  .arena-info { display: flex; flex-direction: column; gap: 10px; }
+  .clep-card {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.62); border: 2px solid rgba(255,255,255,0.85);
+    border-radius: 14px; padding: 10px 14px; transition: all .25s;
+  }
+  .clep-card.active { border-color: var(--c-navy); background: rgba(255,255,255,0.85); box-shadow: 0 4px 16px rgba(26,58,107,0.18); }
+  .clep-card.bot { background: rgba(58, 40, 24, 0.10); }
+  .clep-card.bot.active { background: rgba(58, 40, 24, 0.20); border-color: #3a2818; }
+  .clep-emoji { font-size: 2rem; line-height: 1; transition: transform 1s ease; }
+  .clep-card.active .clep-emoji { animation: clep-flow 1.2s ease-in-out infinite alternate; }
+  @keyframes clep-flow { 0%{transform:rotate(0)} 100%{transform:rotate(8deg)} }
+  .clep-card.bot .clep-emoji { transform: rotate(180deg); }
+  .clep-card.bot.active .clep-emoji { animation: clep-flow-rev 1.2s ease-in-out infinite alternate; }
+  @keyframes clep-flow-rev { 0%{transform:rotate(180deg)} 100%{transform:rotate(188deg)} }
+  .clep-info { flex: 1; line-height: 1.2; }
+  .clep-who { font-family: var(--font-display); font-size: .82rem; font-weight: 700; color: var(--c-navy); opacity: 0.75; letter-spacing: 0.5px; }
+  .clep-card.bot .clep-who { color: #3a2818; }
+  .clep-time { font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; color: var(--c-navy); }
+  .clep-card.bot .clep-time { color: #3a2818; }
+  .clep-card.low .clep-time { color: var(--c-error); }
+  .clep-card.unlim .clep-time { font-size: 1.1rem; opacity: 0.6; }
+
+  .status-box {
+    background: rgba(26,58,107,0.08); border: 2px solid rgba(26,58,107,0.18);
+    border-radius: 14px; padding: 10px 14px; font-size: 0.93em;
+    line-height: 1.55; color: var(--c-text); min-height: 52px;
+  }
+  .status-box.ok   { background: rgba(40,180,80,0.18);  border-color: rgba(40,180,80,0.5); }
+  .status-box.warn { background: rgba(245,200,66,0.20); border-color: rgba(245,200,66,0.6); }
+
+  .capt-row { background: rgba(255,255,255,0.4); border-radius: 10px; padding: 6px 8px; display: flex; flex-wrap: wrap; gap: 3px; min-height: 36px; align-items: center; }
+  .capt-row img { width: 26px; height: 26px; object-fit: contain; }
+  .capt-row:empty::before { content: '—'; opacity: 0.4; font-size: 0.85em; }
+
+  .panel-actions { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .btn-arena {
+    flex: 1; min-width: 0; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 12px; border-radius: 50px; background: var(--c-navy); color: white;
+    border: none; cursor: pointer; font-family: var(--font-display); font-size: 0.88em;
+    font-weight: 700; transition: background .15s, transform .1s; white-space: nowrap;
+  }
+  .btn-arena:hover { background: #2a5aab; }
+  .btn-arena:active { transform: scale(0.97); }
+  .btn-arena.secondary { background: rgba(255,255,255,0.6); color: var(--c-navy); border: 2px solid rgba(26,58,107,0.3); }
+
+  .time-setting { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.45); border-radius: 10px; padding: 8px 10px; font-size: 0.85em; }
+  .time-setting label { font-family: var(--font-display); font-weight: 700; color: var(--c-navy); }
+  .time-setting select { flex: 1; padding: 5px 8px; border-radius: 8px; border: 2px solid rgba(26,58,107,0.3); background: white; color: var(--c-text); font-family: var(--font-display); font-weight: 700; font-size: 0.95em; }
+
+  .modal { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal.show { display: flex; }
+  .modal-box { background: var(--c-bg); border: 2px solid white; border-radius: 20px; padding: 28px 24px; max-width: 380px; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+  .modal-box h2 { font-family: var(--font-display); color: var(--c-navy); font-size: 1.4em; margin-bottom: 8px; }
+  .modal-box p { color: var(--c-text); margin-bottom: 16px; line-height: 1.55; }
+  .modal-box .btn-arena { width: 100%; }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <span class="header-title">Xiangqi — Arena</span>
+    <div class="header-progress"><span class="lesson-badge">⚔️ Joacă</span></div>
+  </header>
+
+  <main class="page-main">
+    <div class="board-col">
+      <div class="board-wrapper">
+        <svg id="board" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="arena-info">
+          <div class="clep-card bot" id="clepBot">
+            <span class="clep-emoji">⏳</span>
+            <div class="clep-info"><div class="clep-who">🤖 Bot (Negru)</div><div class="clep-time" id="timeBot">10:00</div></div>
+          </div>
+          <div class="status-box" id="statusBox">Apasă pe o piesă roșie, apoi pe punctul unde să meargă.</div>
+          <div class="capt-row" id="captBlack" title="Piese negre capturate de tine"></div>
+          <div class="capt-row" id="captRed" title="Piesele tale capturate de bot"></div>
+          <div class="clep-card active" id="clepYou">
+            <span class="clep-emoji">⌛</span>
+            <div class="clep-info"><div class="clep-who">🔴 Tu (Roșu)</div><div class="clep-time" id="timeYou">10:00</div></div>
+          </div>
+          <div class="time-setting">
+            <label for="timeSelect">Timp:</label>
+            <select id="timeSelect" onchange="onTimeChange()">
+              <option value="180">3 min</option>
+              <option value="300">5 min</option>
+              <option value="600" selected>10 min</option>
+              <option value="900">15 min</option>
+              <option value="0">∞ fără limită</option>
+            </select>
+          </div>
+          <div class="panel-actions">
+            <button class="btn-arena" onclick="resetGame()">↺ Joc nou</button>
+            <button class="btn-arena secondary" onclick="undoMove()">↶ Înapoi</button>
+          </div>
+          <a class="btn-arena secondary" href="xiangqi_2jucatori.html" style="text-decoration:none;">👥 Joacă în 2 (pe aceeași tabletă)</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <a class="nav-btn nav-btn--back" href="xiangqi_mutari.html"><span class="icon">⟵</span> <span class="label">Mutări</span></a>
+    <a class="nav-btn nav-btn--contents" href="istoria_sahului.html"><span class="label">Strămoșii</span></a>
+    <a class="nav-btn nav-btn--forward" href="xiangqi_pagina1.html"><span class="label">Lecția</span> <span class="icon">⟶</span></a>
+  </footer>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h2 id="modalTitle">🏆 Felicitări!</h2>
+    <p id="modalText"></p>
+    <button class="btn-arena" onclick="hideModal(); resetGame();">↺ Joc nou</button>
+  </div>
+</div>
+
+<script src="xiangqi-core.js"></script>
+<script>
+const SVG = document.getElementById('board');
+const YOU = XQ.RED, BOT = XQ.BLACK;   // joci cu ROȘU (jos), botul NEGRU (sus); roșul mută primul
+
+let pos, turn, history, captures, gameOver, lastFrom, lastTo, selected;
+let timeLimit = 600, timeLeft = { r:600, b:600 }, firstMoveMade = false, lastTick = 0, botMoveAt = 0;
+
+function renderAll() {
+  XQ.render(SVG, pos, { onPoint: handlePoint });
+  if (lastFrom) XQ.addHL(SVG, lastFrom, 'hl-last');
+  if (lastTo)   XQ.addHL(SVG, lastTo,   'hl-last');
+  // general în șah → marcaj roșu
+  [XQ.RED, XQ.BLACK].forEach(c => {
+    if (XQ.inCheck(pos, c)) { const g = XQ.findGeneral(pos, c); if (g) XQ.addHL(SVG, g, 'hl-chk'); }
+  });
+  if (selected) {
+    XQ.addHL(SVG, selected, 'hl-sel');
+    XQ.legalMoves(pos, selected).forEach(s => XQ.addHL(SVG, s, pos[s] ? 'hl-cap' : 'hl-move'));
+  }
+}
+
+function handlePoint(f, r) {
+  if (gameOver || turn !== YOU) return;
+  const s = f + ',' + r, pc = pos[s];
+  if (selected) {
+    if (XQ.legalMoves(pos, selected).includes(s)) { doMove(selected, s, true); return; }
+    if (pc && pc.c === YOU) { selected = s; renderAll(); return; }
+    selected = null; renderAll(); return;
+  }
+  if (pc && pc.c === YOU) { selected = s; renderAll(); }
+}
+
+function doMove(from, to, byYou) {
+  const captured = pos[to] || null;
+  pos = XQ.applyMove(pos, from, to);
+  history.push({ from, to, captured, prevTurn: turn });
+  if (captured) (captured.c === BOT ? captures.you : captures.bot).push(captured);
+  turn = (turn === XQ.RED) ? XQ.BLACK : XQ.RED;
+  lastFrom = from; lastTo = to; selected = null;
+  startTimer();
+  notify(captured, byYou);
+  renderAll();
+  if (checkEnd()) return;
+  if (turn === BOT) scheduleBot();
+}
+
+const VALUE = { K:1000, R:9, C:4.5, H:4, A:2, E:2, S:1 };
+function pseudoCapturers(position, target, color) {
+  for (const k in position) {
+    if (position[k].c !== color) continue;
+    if (XQ.pseudoMoves(position, k).includes(target)) return true;
+  }
+  return false;
+}
+function scoreMove(from, to) {
+  const piece = pos[from], victim = pos[to];
+  let s = 0;
+  if (victim) s += VALUE[victim.t] * 10;
+  const np = XQ.applyMove(pos, from, to);
+  if (pseudoCapturers(np, to, YOU)) s -= VALUE[piece.t] * 8;
+  const t = to.split(','); if (+t[0] >= 3 && +t[0] <= 5) s += 0.4;   // bonus centru
+  s += Math.random() * 0.5;
+  return s;
+}
+function botMove() {
+  if (gameOver || turn !== BOT) return;
+  const all = [];
+  for (const k in pos) {
+    if (pos[k].c !== BOT) continue;
+    for (const to of XQ.legalMoves(pos, k)) all.push({ from:k, to, s:scoreMove(k, to) });
+  }
+  if (!all.length) { checkEnd(); return; }
+  all.sort((a, b) => b.s - a.s);
+  const top = all.slice(0, Math.min(2, all.length));
+  const pick = top[Math.floor(Math.random() * top.length)];
+  doMove(pick.from, pick.to, false);
+}
+
+const NM = XQ.NAME;
+function notify(captured, byYou) {
+  let msg, kind = '';
+  if (byYou) {
+    msg = captured ? ('⚔️ Ai capturat ' + NM[captured.t].toLowerCase() + '!') : 'Bot, e rândul tău…';
+    kind = captured ? 'ok' : '';
+  } else {
+    msg = captured ? ('😬 Botul ți-a capturat ' + NM[captured.t].toLowerCase() + '!') : 'Botul a mutat. E rândul tău!';
+    kind = captured ? 'warn' : '';
+  }
+  if (!gameOver && XQ.inCheck(pos, turn)) msg += ' ⚠️ Șah la general!';
+  setStatus(msg, kind);
+}
+function setStatus(html, kind) {
+  const sb = document.getElementById('statusBox');
+  sb.className = 'status-box' + (kind ? ' ' + kind : '');
+  sb.innerHTML = html;
+}
+
+function checkEnd() {
+  const st = XQ.status(pos, turn);
+  if (!st.over) return false;
+  gameOver = true;
+  const youWin = (st.winner === YOU);
+  showModal(youWin, st.reason);
+  return true;
+}
+function showModal(youWin, reason) {
+  document.getElementById('modalTitle').textContent = youWin ? '🏆 Felicitări!' : '🤖 Botul a câștigat';
+  document.getElementById('modalText').innerHTML = youWin
+    ? ('<strong>Ai câștigat!</strong><br>' + reason)
+    : (reason + '. Mai încearcă!');
+  document.getElementById('modal').classList.add('show');
+}
+function hideModal() { document.getElementById('modal').classList.remove('show'); }
+
+/* ── Timer cu clepsidre (robust pe mobil) ── */
+function fmt(s) { if (timeLimit === 0) return '∞'; const m = Math.floor(s/60), x = s%60; return m + ':' + (x<10?'0'+x:x); }
+function renderClocks() {
+  document.getElementById('timeYou').textContent = fmt(timeLeft.r);
+  document.getElementById('timeBot').textContent = fmt(timeLeft.b);
+  const y = document.getElementById('clepYou'), b = document.getElementById('clepBot');
+  y.classList.toggle('active', turn === XQ.RED && !gameOver);
+  b.classList.toggle('active', turn === XQ.BLACK && !gameOver);
+  if (timeLimit === 0) { y.classList.add('unlim'); b.classList.add('unlim'); }
+  else {
+    y.classList.remove('unlim'); b.classList.remove('unlim');
+    y.classList.toggle('low', timeLeft.r < 30);
+    b.classList.toggle('low', timeLeft.b < 30);
+  }
+}
+function gameLoop() {
+  if (gameOver) return;
+  const now = Date.now();
+  if (firstMoveMade && timeLimit > 0 && now - lastTick >= 1000) {
+    lastTick = now;
+    const key = (turn === XQ.RED) ? 'r' : 'b';
+    timeLeft[key] = Math.max(0, timeLeft[key] - 1);
+    renderClocks();
+    if (timeLeft[key] === 0) {
+      gameOver = true;
+      showModal(turn !== YOU, (turn === YOU ? 'Ai rămas fără timp' : 'Botul a rămas fără timp'));
+      return;
+    }
+  }
+  if (botMoveAt > 0 && now >= botMoveAt && turn === BOT) { botMoveAt = 0; botMove(); }
+}
+setInterval(gameLoop, 250);
+function scheduleBot() { if (gameOver || turn !== BOT || botMoveAt > 0) return; botMoveAt = Date.now() + 1400 + Math.floor(Math.random()*1200); }
+function startTimer() { if (firstMoveMade || timeLimit === 0) return; firstMoveMade = true; lastTick = Date.now(); }
+function onTimeChange() {
+  timeLimit = parseInt(document.getElementById('timeSelect').value);
+  timeLeft = { r:timeLimit, b:timeLimit }; firstMoveMade = false; renderClocks();
+}
+
+function renderCaptures() {
+  const img = a => a.map(p => '<img src="img/xiangqi/'+p.t+'_'+p.c+'.png" alt="">').join('');
+  document.getElementById('captBlack').innerHTML = img(captures.you);
+  document.getElementById('captRed').innerHTML   = img(captures.bot);
+}
+
+function resetGame() {
+  pos = XQ.startPosition();
+  turn = XQ.RED;                 // roșul (tu) mută primul
+  history = []; captures = { you:[], bot:[] };
+  gameOver = false; lastFrom = null; lastTo = null; selected = null;
+  firstMoveMade = false; botMoveAt = 0;
+  timeLeft = { r:timeLimit, b:timeLimit };
+  setStatus('Apasă pe o piesă roșie, apoi pe punctul unde să meargă.', '');
+  renderAll(); renderCaptures(); renderClocks();
+}
+
+function undoMove() {
+  if (gameOver || !history.length) return;
+  const steps = (turn === YOU && history.length >= 2) ? 2 : 1;
+  for (let i = 0; i < steps; i++) {
+    const h = history.pop(); if (!h) break;
+    const moved = pos[h.to];
+    pos = XQ.applyMove(pos, h.to, h.from);
+    if (h.captured) {
+      pos[h.to] = h.captured;
+      const lst = (h.captured.c === BOT) ? captures.you : captures.bot;
+      const idx = lst.length - 1; if (idx >= 0) lst.pop();
+    }
+    turn = h.prevTurn;
+  }
+  const last = history[history.length - 1];
+  lastFrom = last ? last.from : null; lastTo = last ? last.to : null;
+  selected = null;
+  setStatus('Mutare anulată.', '');
+  renderAll(); renderCaptures(); renderClocks();
+}
+
+/* ── INIT (cu resetGame, NU doar status — vezi capcanele arenei) ── */
+onTimeChange();
+resetGame();
+</script>
+</body>
+</html>

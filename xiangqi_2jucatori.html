@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Xiangqi — 2 jucători</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="master-template.css">
+<style>
+  .board-wrapper { container-type: size; container-name: bw; display:flex; align-items:center; justify-content:center; }
+  #board { max-width: 100cqw; max-height: 100cqh; width:auto; height:auto; display:block; }
+
+  .arena-info { display: flex; flex-direction: column; gap: 10px; }
+  .clep-card { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.62); border:2px solid rgba(255,255,255,0.85); border-radius:14px; padding:10px 14px; transition:all .25s; }
+  .clep-card.active { border-color: var(--c-navy); background: rgba(255,255,255,0.9); box-shadow: 0 4px 16px rgba(26,58,107,0.18); }
+  .clep-card.p2 { background: rgba(58,40,24,0.10); }
+  .clep-card.p2.active { background: rgba(58,40,24,0.20); border-color:#3a2818; }
+  .clep-emoji { font-size:2rem; line-height:1; transition:transform 1s ease; }
+  .clep-card.active .clep-emoji { animation: cf 1.2s ease-in-out infinite alternate; }
+  @keyframes cf { 0%{transform:rotate(0)} 100%{transform:rotate(8deg)} }
+  .clep-card.p2 .clep-emoji { transform: rotate(180deg); }
+  .clep-card.p2.active .clep-emoji { animation: cfr 1.2s ease-in-out infinite alternate; }
+  @keyframes cfr { 0%{transform:rotate(180deg)} 100%{transform:rotate(188deg)} }
+  .clep-info { flex:1; line-height:1.2; }
+  .clep-who { font-family:var(--font-display); font-size:.82rem; font-weight:700; color:var(--c-navy); opacity:.75; }
+  .clep-card.p2 .clep-who { color:#3a2818; }
+  .clep-time { font-family:var(--font-display); font-size:1.4rem; font-weight:900; color:var(--c-navy); }
+  .clep-card.p2 .clep-time { color:#3a2818; }
+  .clep-card.low .clep-time { color: var(--c-error); }
+  .clep-card.unlim .clep-time { font-size:1.1rem; opacity:.6; }
+
+  .status-box { background: rgba(26,58,107,0.08); border:2px solid rgba(26,58,107,0.18); border-radius:14px; padding:10px 14px; font-size:0.95em; line-height:1.5; color:var(--c-text); min-height:48px; font-family:var(--font-display); font-weight:700; }
+  .status-box.ok { background: rgba(40,180,80,0.18); border-color: rgba(40,180,80,0.5); }
+  .status-box.warn { background: rgba(245,200,66,0.20); border-color: rgba(245,200,66,0.6); }
+  .capt-row { background: rgba(255,255,255,0.4); border-radius:10px; padding:6px 8px; display:flex; flex-wrap:wrap; gap:3px; min-height:36px; align-items:center; }
+  .capt-row img { width:26px; height:26px; object-fit:contain; }
+  .capt-row:empty::before { content:'—'; opacity:.4; font-size:.85em; }
+  .panel-actions { display:flex; gap:8px; margin-top:4px; flex-wrap:wrap; }
+  .btn-arena { flex:1; min-width:0; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 12px; border-radius:50px; background:var(--c-navy); color:#fff; border:none; cursor:pointer; font-family:var(--font-display); font-size:0.86em; font-weight:700; transition:background .15s, transform .1s; white-space:nowrap; }
+  .btn-arena:active { transform: scale(0.97); }
+  .btn-arena.secondary { background: rgba(255,255,255,0.6); color: var(--c-navy); border:2px solid rgba(26,58,107,0.3); }
+  .time-setting { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.45); border-radius:10px; padding:8px 10px; font-size:0.85em; }
+  .time-setting label { font-family:var(--font-display); font-weight:700; color:var(--c-navy); }
+  .time-setting select { flex:1; padding:5px 8px; border-radius:8px; border:2px solid rgba(26,58,107,0.3); background:#fff; color:var(--c-text); font-family:var(--font-display); font-weight:700; }
+  .modal { position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.45); display:none; align-items:center; justify-content:center; padding:20px; }
+  .modal.show { display:flex; }
+  .modal-box { background:var(--c-bg); border:2px solid #fff; border-radius:20px; padding:28px 24px; max-width:380px; text-align:center; box-shadow:0 12px 40px rgba(0,0,0,0.4); }
+  .modal-box h2 { font-family:var(--font-display); color:var(--c-navy); font-size:1.4em; margin-bottom:8px; }
+  .modal-box p { color:var(--c-text); margin-bottom:16px; line-height:1.55; }
+  .modal-box .btn-arena { width:100%; }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <span class="header-title">Xiangqi — 2 jucători</span>
+    <div class="header-progress"><span class="lesson-badge">👥 Voi doi</span></div>
+  </header>
+
+  <main class="page-main">
+    <div class="board-col">
+      <div class="board-wrapper"><svg id="board" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="arena-info">
+          <div class="clep-card p2" id="clepP2">
+            <span class="clep-emoji">⏳</span>
+            <div class="clep-info"><div class="clep-who">⚫ Jucătorul 2 (Negru)</div><div class="clep-time" id="timeP2">10:00</div></div>
+          </div>
+          <div class="status-box" id="statusBox">🔴 Rândul Jucătorului 1 (Roșu). Atinge o piesă, apoi punctul unde să meargă.</div>
+          <div class="capt-row" id="captBlack" title="Piese negre capturate"></div>
+          <div class="capt-row" id="captRed" title="Piese roșii capturate"></div>
+          <div class="clep-card active" id="clepP1">
+            <span class="clep-emoji">⌛</span>
+            <div class="clep-info"><div class="clep-who">🔴 Jucătorul 1 (Roșu)</div><div class="clep-time" id="timeP1">10:00</div></div>
+          </div>
+          <div class="time-setting">
+            <label for="timeSelect">Timp:</label>
+            <select id="timeSelect" onchange="onTimeChange()">
+              <option value="180">3 min</option><option value="300">5 min</option>
+              <option value="600" selected>10 min</option><option value="900">15 min</option>
+              <option value="0">∞ fără limită</option>
+            </select>
+          </div>
+          <div class="panel-actions">
+            <button class="btn-arena" onclick="resetGame()">↺ Joc nou</button>
+            <button class="btn-arena secondary" onclick="undoMove()">↶ Înapoi</button>
+            <button class="btn-arena secondary" onclick="flipBoard()">🔄 Rotește tabla</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <a class="nav-btn nav-btn--back" href="xiangqi_arena.html"><span class="icon">⟵</span> <span class="label">Arena</span></a>
+    <a class="nav-btn nav-btn--contents" href="istoria_sahului.html"><span class="label">Strămoșii</span></a>
+    <a class="nav-btn nav-btn--forward" href="xiangqi_pagina1.html"><span class="label">Lecția</span> <span class="icon">⟶</span></a>
+  </footer>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h2 id="modalTitle">🏆 Final!</h2>
+    <p id="modalText"></p>
+    <button class="btn-arena" onclick="hideModal(); resetGame();">↺ Joc nou</button>
+  </div>
+</div>
+
+<script src="xiangqi-core.js"></script>
+<script>
+const SVG = document.getElementById('board');
+let pos, turn, history, captures, gameOver, lastFrom, lastTo, selected, flipped;
+let timeLimit = 600, timeLeft = { r:600, b:600 }, firstMove = false, lastTick = 0;
+
+function renderAll() {
+  XQ.render(SVG, pos, { onPoint: handlePoint, flip: flipped });
+  if (lastFrom) XQ.addHL(SVG, lastFrom, 'hl-last');
+  if (lastTo)   XQ.addHL(SVG, lastTo,   'hl-last');
+  [XQ.RED, XQ.BLACK].forEach(c => { if (XQ.inCheck(pos, c)) { const g = XQ.findGeneral(pos, c); if (g) XQ.addHL(SVG, g, 'hl-chk'); } });
+  if (selected) {
+    XQ.addHL(SVG, selected, 'hl-sel');
+    XQ.legalMoves(pos, selected).forEach(s => XQ.addHL(SVG, s, pos[s] ? 'hl-cap' : 'hl-move'));
+  }
+}
+function whoTxt(c) { return c === XQ.RED ? '🔴 Jucătorul 1 (Roșu)' : '⚫ Jucătorul 2 (Negru)'; }
+
+function handlePoint(f, r) {
+  if (gameOver) return;
+  const s = f + ',' + r, pc = pos[s];
+  if (selected) {
+    if (XQ.legalMoves(pos, selected).includes(s)) { doMove(selected, s); return; }
+    if (pc && pc.c === turn) { selected = s; renderAll(); return; }
+    selected = null; renderAll(); return;
+  }
+  if (pc && pc.c === turn) { selected = s; renderAll(); }
+}
+function doMove(from, to) {
+  const captured = pos[to] || null;
+  pos = XQ.applyMove(pos, from, to);
+  history.push({ from, to, captured, prevTurn: turn });
+  if (captured) (captured.c === XQ.BLACK ? captures.r : captures.b).push(captured);
+  turn = (turn === XQ.RED) ? XQ.BLACK : XQ.RED;
+  lastFrom = from; lastTo = to; selected = null;
+  startTimer();
+  renderAll(); renderCaptures();
+  if (checkEnd()) return;
+  let msg = '▶️ Rândul: ' + whoTxt(turn) + '.';
+  if (XQ.inCheck(pos, turn)) msg += ' ⚠️ Șah la general!';
+  setStatus(msg, captured ? 'ok' : '');
+}
+function checkEnd() {
+  const st = XQ.status(pos, turn);
+  if (!st.over) return false;
+  gameOver = true;
+  const w = (st.winner === XQ.RED) ? 'Jucătorul 1 (Roșu)' : 'Jucătorul 2 (Negru)';
+  document.getElementById('modalTitle').textContent = '🏆 ' + w + ' a câștigat!';
+  document.getElementById('modalText').innerHTML = st.reason + '.';
+  document.getElementById('modal').classList.add('show');
+  return true;
+}
+function hideModal() { document.getElementById('modal').classList.remove('show'); }
+function setStatus(html, kind) {
+  const sb = document.getElementById('statusBox');
+  sb.className = 'status-box' + (kind ? ' ' + kind : '');
+  sb.innerHTML = html;
+}
+function renderCaptures() {
+  const im = a => a.map(p => '<img src="img/xiangqi/'+p.t+'_'+p.c+'.png" alt="">').join('');
+  document.getElementById('captBlack').innerHTML = im(captures.r);
+  document.getElementById('captRed').innerHTML   = im(captures.b);
+}
+
+/* ── Clepsidre ── */
+function fmt(s){ if(timeLimit===0) return '∞'; const m=Math.floor(s/60),x=s%60; return m+':'+(x<10?'0'+x:x); }
+function renderClocks() {
+  document.getElementById('timeP1').textContent = fmt(timeLeft.r);
+  document.getElementById('timeP2').textContent = fmt(timeLeft.b);
+  const p1 = document.getElementById('clepP1'), p2 = document.getElementById('clepP2');
+  p1.classList.toggle('active', turn === XQ.RED && !gameOver);
+  p2.classList.toggle('active', turn === XQ.BLACK && !gameOver);
+  if (timeLimit === 0) { p1.classList.add('unlim'); p2.classList.add('unlim'); }
+  else { p1.classList.remove('unlim'); p2.classList.remove('unlim');
+    p1.classList.toggle('low', timeLeft.r < 30); p2.classList.toggle('low', timeLeft.b < 30); }
+}
+function gameLoop() {
+  if (gameOver) return;
+  const now = Date.now();
+  if (firstMove && timeLimit > 0 && now - lastTick >= 1000) {
+    lastTick = now;
+    const k = (turn === XQ.RED) ? 'r' : 'b';
+    timeLeft[k] = Math.max(0, timeLeft[k] - 1);
+    renderClocks();
+    if (timeLeft[k] === 0) {
+      gameOver = true;
+      const w = (turn === XQ.RED) ? 'Jucătorul 2 (Negru)' : 'Jucătorul 1 (Roșu)';
+      document.getElementById('modalTitle').textContent = '⏰ Timp expirat';
+      document.getElementById('modalText').innerHTML = w + ' a câștigat — adversarul a rămas fără timp.';
+      document.getElementById('modal').classList.add('show');
+    }
+  }
+}
+setInterval(gameLoop, 250);
+function startTimer(){ if(firstMove||timeLimit===0) return; firstMove=true; lastTick=Date.now(); }
+function onTimeChange(){ timeLimit=parseInt(document.getElementById('timeSelect').value); timeLeft={r:timeLimit,b:timeLimit}; firstMove=false; renderClocks(); }
+
+function flipBoard(){ flipped = !flipped; renderAll(); }
+
+function resetGame() {
+  pos = XQ.startPosition(); turn = XQ.RED;
+  history = []; captures = { r:[], b:[] };
+  gameOver = false; lastFrom = null; lastTo = null; selected = null;
+  firstMove = false; timeLeft = { r:timeLimit, b:timeLimit };
+  setStatus('🔴 Rândul Jucătorului 1 (Roșu). Atinge o piesă, apoi punctul unde să meargă.', '');
+  renderAll(); renderCaptures(); renderClocks();
+}
+function undoMove() {
+  if (gameOver || !history.length) return;
+  const h = history.pop();
+  pos = XQ.applyMove(pos, h.to, h.from);
+  if (h.captured) {
+    pos[h.to] = h.captured;
+    const lst = (h.captured.c === XQ.BLACK) ? captures.r : captures.b;
+    if (lst.length) lst.pop();
+  }
+  turn = h.prevTurn;
+  const last = history[history.length - 1];
+  lastFrom = last ? last.from : null; lastTo = last ? last.to : null;
+  selected = null;
+  setStatus('↶ Mutare anulată. ▶️ Rândul: ' + whoTxt(turn) + '.', '');
+  renderAll(); renderCaptures(); renderClocks();
+}
+
+/* ── INIT (cu resetGame) ── */
+onTimeChange();
+resetGame();
+</script>
+</body>
+</html>

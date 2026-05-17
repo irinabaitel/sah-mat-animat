@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Shatranj — 2 jucători</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
+<style>
+  /* Tabla MONOCROMĂ, FĂRĂ X-uri (shatranj) */
+  #board .white-1e1d7, #board .black-3c85d { background-color: #e8d4a0 !important; position: relative; }
+  #board .square-55d63 { box-shadow: inset -1px 0 0 rgba(90,58,28,.35), inset 0 -1px 0 rgba(90,58,28,.35); }
+  #board .notation-322f9 { color: rgba(60,35,10,.7) !important; }
+  #board .piece-417db { object-fit: contain; transform-origin: center center; }
+  #board .piece-417db[data-piece="wK"], #board .piece-417db[data-piece="bK"] { transform: scale(0.98); }
+  #board .piece-417db[data-piece="wQ"], #board .piece-417db[data-piece="bQ"] { transform: scale(0.92); }
+  #board .piece-417db[data-piece="wR"], #board .piece-417db[data-piece="bR"] { transform: scale(0.88); }
+  #board .piece-417db[data-piece="wB"], #board .piece-417db[data-piece="bB"] { transform: scale(0.86); }
+  #board .piece-417db[data-piece="wN"], #board .piece-417db[data-piece="bN"] { transform: scale(0.84); }
+  #board .piece-417db[data-piece="wP"], #board .piece-417db[data-piece="bP"] { transform: scale(0.74); }
+  .sq-move    { background-image: radial-gradient(rgba(80,200,100,0.55) 22%, transparent 23%) !important; }
+  .sq-capture { background-image: radial-gradient(transparent 73%, rgba(230,60,50,0.7) 87%) !important; }
+  .sq-piece   { background-color: rgba(26,120,255,0.35) !important; }
+  .sq-last    { background-image: linear-gradient(rgba(20,110,40,0.35), rgba(20,110,40,0.35)) !important; }
+
+  .arena-info { display: flex; flex-direction: column; gap: 10px; }
+  .clep-card { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.62); border:2px solid rgba(255,255,255,0.85); border-radius:14px; padding:10px 14px; transition:all .25s; }
+  .clep-card.active { border-color: var(--c-navy); background: rgba(255,255,255,0.9); box-shadow:0 4px 16px rgba(26,58,107,0.18); }
+  .clep-card.p2 { background: rgba(58,40,24,0.10); }
+  .clep-card.p2.active { background: rgba(58,40,24,0.20); border-color:#3a2818; }
+  .clep-emoji { font-size:2rem; line-height:1; transition:transform 1s ease; }
+  .clep-card.active .clep-emoji { animation: cf 1.2s ease-in-out infinite alternate; }
+  @keyframes cf { 0%{transform:rotate(0)} 100%{transform:rotate(8deg)} }
+  .clep-card.p2 .clep-emoji { transform: rotate(180deg); }
+  .clep-card.p2.active .clep-emoji { animation: cfr 1.2s ease-in-out infinite alternate; }
+  @keyframes cfr { 0%{transform:rotate(180deg)} 100%{transform:rotate(188deg)} }
+  .clep-info { flex:1; line-height:1.2; }
+  .clep-who { font-family:var(--font-display); font-size:.82rem; font-weight:700; color:var(--c-navy); opacity:.75; }
+  .clep-card.p2 .clep-who { color:#3a2818; }
+  .clep-time { font-family:var(--font-display); font-size:1.4rem; font-weight:900; color:var(--c-navy); }
+  .clep-card.p2 .clep-time { color:#3a2818; }
+  .clep-card.low .clep-time { color: var(--c-error); }
+  .clep-card.unlim .clep-time { font-size:1.1rem; opacity:.6; }
+  .status-box { background:rgba(26,58,107,0.08); border:2px solid rgba(26,58,107,0.18); border-radius:14px; padding:10px 14px; font-size:0.95em; line-height:1.5; color:var(--c-text); min-height:48px; font-family:var(--font-display); font-weight:700; }
+  .status-box.ok { background: rgba(40,180,80,0.18); border-color: rgba(40,180,80,0.5); }
+  .capt-row { background:rgba(255,255,255,0.4); border-radius:10px; padding:6px 8px; display:flex; flex-wrap:wrap; gap:3px; min-height:36px; align-items:center; }
+  .capt-row img { width:24px; height:24px; object-fit:contain; }
+  .capt-row:empty::before { content:'—'; opacity:.4; font-size:.85em; }
+  .panel-actions { display:flex; gap:8px; margin-top:4px; flex-wrap:wrap; }
+  .btn-arena { flex:1; min-width:0; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 12px; border-radius:50px; background:var(--c-navy); color:#fff; border:none; cursor:pointer; font-family:var(--font-display); font-size:0.86em; font-weight:700; transition:background .15s, transform .1s; white-space:nowrap; }
+  .btn-arena:active { transform: scale(0.97); }
+  .btn-arena.secondary { background: rgba(255,255,255,0.6); color: var(--c-navy); border:2px solid rgba(26,58,107,0.3); }
+  .time-setting { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.45); border-radius:10px; padding:8px 10px; font-size:0.85em; }
+  .time-setting label { font-family:var(--font-display); font-weight:700; color:var(--c-navy); }
+  .time-setting select { flex:1; padding:5px 8px; border-radius:8px; border:2px solid rgba(26,58,107,0.3); background:#fff; color:var(--c-text); font-family:var(--font-display); font-weight:700; }
+  .modal { position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.45); display:none; align-items:center; justify-content:center; padding:20px; }
+  .modal.show { display:flex; }
+  .modal-box { background:var(--c-bg); border:2px solid #fff; border-radius:20px; padding:28px 24px; max-width:380px; text-align:center; box-shadow:0 12px 40px rgba(0,0,0,0.4); }
+  .modal-box h2 { font-family:var(--font-display); color:var(--c-navy); font-size:1.4em; margin-bottom:8px; }
+  .modal-box p { color:var(--c-text); margin-bottom:16px; line-height:1.55; }
+  .modal-box .btn-arena { width:100%; }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <span class="header-title">Shatranj — 2 jucători</span>
+    <div class="header-progress"><span class="lesson-badge">👥 Voi doi</span></div>
+  </header>
+
+  <main class="page-main">
+    <div class="board-col"><div class="board-wrapper"><div id="board"></div></div></div>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="arena-info">
+          <div class="clep-card p2" id="clepP2">
+            <span class="clep-emoji">⏳</span>
+            <div class="clep-info"><div class="clep-who">⚫ Jucătorul 2 (Negru)</div><div class="clep-time" id="timeP2">10:00</div></div>
+          </div>
+          <div class="status-box" id="statusBox">🟡 Rândul Jucătorului 1 (Alb). Atinge piesa, apoi unde să meargă.</div>
+          <div class="capt-row" id="captBlack" title="Piese negre capturate"></div>
+          <div class="capt-row" id="captWhite" title="Piese albe capturate"></div>
+          <div class="clep-card active" id="clepP1">
+            <span class="clep-emoji">⌛</span>
+            <div class="clep-info"><div class="clep-who">🟡 Jucătorul 1 (Alb)</div><div class="clep-time" id="timeP1">10:00</div></div>
+          </div>
+          <div class="time-setting">
+            <label for="timeSelect">Timp:</label>
+            <select id="timeSelect" onchange="onTimeChange()">
+              <option value="180">3 min</option><option value="300">5 min</option>
+              <option value="600" selected>10 min</option><option value="900">15 min</option>
+              <option value="0">∞ fără limită</option>
+            </select>
+          </div>
+          <div class="panel-actions">
+            <button class="btn-arena" onclick="resetGame()">↺ Joc nou</button>
+            <button class="btn-arena secondary" onclick="undoMove()">↶ Înapoi</button>
+            <button class="btn-arena secondary" onclick="flipBoard()">🔄 Rotește tabla</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <a class="nav-btn nav-btn--back" href="shatranj_arena.html"><span class="icon">⟵</span> <span class="label">Arena</span></a>
+    <a class="nav-btn nav-btn--contents" href="istoria_sahului.html"><span class="label">Strămoșii</span></a>
+    <a class="nav-btn nav-btn--forward" href="shatranj_pagina1.html"><span class="label">Lecția</span> <span class="icon">⟶</span></a>
+  </footer>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h2 id="modalTitle">🏆 Final!</h2>
+    <p id="modalText"></p>
+    <button class="btn-arena" onclick="hideModal(); resetGame();">↺ Joc nou</button>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
+<script>
+const CACHE_BUST = '?t=' + Date.now();
+const COLS = ['a','b','c','d','e','f','g','h'];
+const IMG = 'img/shatranj/';
+const NAMES = { K:'shah', Q:'firzan', R:'rukh', B:'fil', N:'asb', P:'baidaq' };
+
+let pos = {}, turn = 'w', history = [], captures = { w:[], b:[] }, gameOver = false;
+let lastFrom = null, lastTo = null, selectedSq = null;
+let timeLimit = 600, timeLeft = { w:600, b:600 }, firstMoveMade = false, lastTick = 0;
+
+function initialPosition() {
+  return {
+    a1:'wR', b1:'wN', c1:'wB', d1:'wQ', e1:'wK', f1:'wB', g1:'wN', h1:'wR',
+    a2:'wP', b2:'wP', c2:'wP', d2:'wP', e2:'wP', f2:'wP', g2:'wP', h2:'wP',
+    a7:'bP', b7:'bP', c7:'bP', d7:'bP', e7:'bP', f7:'bP', g7:'bP', h7:'bP',
+    a8:'bR', b8:'bN', c8:'bB', d8:'bK', e8:'bQ', f8:'bN', g8:'bB', h8:'bR'
+  };
+}
+const board = Chessboard('board', {
+  position: initialPosition(), orientation: 'white', showNotation: true,
+  pieceTheme: IMG + '{piece}.png' + CACHE_BUST,
+  draggable: true, onDragStart: handleDragStart, onDrop: handleDrop, onSnapEnd: handleSnapEnd
+});
+$(window).resize(() => board.resize());
+
+function sqCR(s){ return { c: COLS.indexOf(s[0]), r: parseInt(s[1]) }; }
+function crSq(c,r){ return COLS[c]+r; }
+function inB(c,r){ return c>=0&&c<8&&r>=1&&r<=8; }
+
+/* Reguli shatranj — identice cu chaturanga */
+function legalMoves(s, position) {
+  const pc = position[s]; if (!pc) return [];
+  const col = pc[0], t = pc[1], { c, r } = sqCR(s), m = [];
+  const tryAdd=(nc,nr)=>{ if(!inB(nc,nr))return; const tp=position[crSq(nc,nr)]; if(!tp||tp[0]!==col) m.push(crSq(nc,nr)); };
+  const trySlide=(dc,dr)=>{ let nc=c+dc,nr=r+dr; while(inB(nc,nr)){ const tp=position[crSq(nc,nr)]; if(tp){ if(tp[0]!==col) m.push(crSq(nc,nr)); return;} m.push(crSq(nc,nr)); nc+=dc; nr+=dr; } };
+  if (t==='K'){ for(let dc=-1;dc<=1;dc++) for(let dr=-1;dr<=1;dr++){ if(dc===0&&dr===0)continue; tryAdd(c+dc,r+dr);} }
+  else if (t==='Q'){ [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([dc,dr])=>tryAdd(c+dc,r+dr)); }
+  else if (t==='B'){ [[-2,-2],[-2,2],[2,-2],[2,2]].forEach(([dc,dr])=>tryAdd(c+dc,r+dr)); }
+  else if (t==='N'){ [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(([dc,dr])=>tryAdd(c+dc,r+dr)); }
+  else if (t==='R'){ [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dc,dr])=>trySlide(dc,dr)); }
+  else if (t==='P'){ const dir=(col==='w')?1:-1, nr=r+dir;
+    if(inB(c,nr)&&!position[crSq(c,nr)]) m.push(crSq(c,nr));
+    [-1,1].forEach(dc=>{ const nc=c+dc; if(inB(nc,nr)){ const tp=position[crSq(nc,nr)]; if(tp&&tp[0]!==col) m.push(crSq(nc,nr)); } }); }
+  return m;
+}
+function applyMove(from,to){
+  const piece=pos[from]; if(!piece) return null;
+  const captured=pos[to]||null; delete pos[from];
+  let placed=piece;
+  if(piece[1]==='P'){ const tr=parseInt(to[1]); if((piece[0]==='w'&&tr===8)||(piece[0]==='b'&&tr===1)) placed=piece[0]+'Q'; }
+  pos[to]=placed;
+  history.push({from,to,piece,placed,captured,prevTurn:turn});
+  if(captured) (captured[0]==='b'?captures.w:captures.b).push(captured);
+  turn=(turn==='w')?'b':'w'; lastFrom=from; lastTo=to;
+  return {piece,captured,placed};
+}
+function gameStatus(){
+  const all=Object.values(pos);
+  if(!all.includes('wK')) return {over:true,winner:'b',reason:'Shah-ul alb a fost capturat'};
+  if(!all.includes('bK')) return {over:true,winner:'w',reason:'Shah-ul negru a fost capturat'};
+  const w=all.filter(p=>p[0]==='w').length, b=all.filter(p=>p[0]==='b').length;
+  if(w===1&&b>1) return {over:true,winner:'b',reason:'Shah gol — Albul a rămas singur cu shah-ul'};
+  if(b===1&&w>1) return {over:true,winner:'w',reason:'Shah gol — Negrul a rămas singur cu shah-ul'};
+  let any=false;
+  for(const s in pos){ if(pos[s][0]!==turn) continue; if(legalMoves(s,pos).length>0){any=true;break;} }
+  if(!any) return {over:true,winner:(turn==='w'?'b':'w'),reason:(turn==='w'?'Albul e blocat':'Negrul e blocat')+' — fără mutări legale (la shatranj, asta înseamnă pierdere!)'};
+  return {over:false};
+}
+
+function clearHL(){ COLS.forEach(c=>{ for(let r=1;r<=8;r++) $('.square-'+c+r).removeClass('sq-move sq-piece sq-capture sq-last'); }); }
+function showLast(){ if(lastFrom)$('.square-'+lastFrom).addClass('sq-last'); if(lastTo)$('.square-'+lastTo).addClass('sq-last'); }
+function showMovesFor(s){ clearHL(); showLast(); $('.square-'+s).addClass('sq-piece'); legalMoves(s,pos).forEach(x=>{ if(pos[x])$('.square-'+x).addClass('sq-capture'); else $('.square-'+x).addClass('sq-move'); }); }
+function setSelected(s){ selectedSq=s; showMovesFor(s); }
+function clearSelected(){ selectedSq=null; clearHL(); showLast(); }
+
+function whoTxt(c){ return c==='w' ? '🟡 Jucătorul 1 (Alb)' : '⚫ Jucătorul 2 (Negru)'; }
+
+function handleDragStart(source,piece){ if(gameOver) return false; if(piece[0]!==turn) return false; selectedSq=null; showMovesFor(source); return true; }
+function handleDrop(source,target){
+  if(target==='offboard'){ clearHL(); showLast(); return 'snapback'; }
+  if(gameOver){ clearHL(); showLast(); return 'snapback'; }
+  if(pos[source]&&pos[source][0]!==turn){ clearHL(); showLast(); return 'snapback'; }
+  if(!legalMoves(source,pos).includes(target)){ clearHL(); showLast(); return 'snapback'; }
+  const res=applyMove(source,target); startTimer(); afterMove(res);
+}
+function handleSnapEnd(){ board.position(pos,false); clearHL(); showLast(); }
+function handleSquareClick(sq){
+  if(gameOver) return;
+  const piece=pos[sq];
+  if(selectedSq){
+    if(legalMoves(selectedSq,pos).includes(sq)){
+      const res=applyMove(selectedSq,sq); selectedSq=null;
+      board.position(pos,false); clearHL(); showLast(); startTimer(); afterMove(res); return;
+    }
+    if(piece&&piece[0]===turn) setSelected(sq); else clearSelected();
+  } else { if(piece&&piece[0]===turn) setSelected(sq); }
+}
+$(document).on('click','#board .square-55d63',function(){ const sq=$(this).attr('data-square'); if(sq) handleSquareClick(sq); });
+
+function afterMove(res){
+  renderCaptures(); renderClocks();
+  const gs=gameStatus();
+  if(gs.over){ gameOver=true; showWinModal(gs.winner,gs.reason); return; }
+  let msg='▶️ Rândul: '+whoTxt(turn)+'.';
+  if(res && res.captured) msg='⚔️ '+whoTxt(res.piece[0])+' a capturat '+NAMES[res.captured[1]]+'! '+msg;
+  if(res && res.placed!==res.piece) msg+=' 🌟 Baidaq promovat la firzan!';
+  setStatus(msg, res&&res.captured?'ok':'');
+}
+function setStatus(html,kind){ const sb=document.getElementById('statusBox'); sb.className='status-box'+(kind?' '+kind:''); sb.innerHTML=html; }
+function renderCaptures(){
+  document.getElementById('captBlack').innerHTML=captures.w.map(p=>'<img src="'+IMG+p+'.png'+CACHE_BUST+'">').join('');
+  document.getElementById('captWhite').innerHTML=captures.b.map(p=>'<img src="'+IMG+p+'.png'+CACHE_BUST+'">').join('');
+}
+function showWinModal(winner,reason){
+  document.getElementById('modalTitle').textContent='🏆 '+(winner==='w'?'Jucătorul 1 (Alb)':'Jucătorul 2 (Negru)')+' a câștigat!';
+  document.getElementById('modalText').innerHTML=reason+'.';
+  document.getElementById('modal').classList.add('show');
+}
+function hideModal(){ document.getElementById('modal').classList.remove('show'); }
+
+function fmt(s){ if(timeLimit===0) return '∞'; const m=Math.floor(s/60),x=s%60; return m+':'+(x<10?'0'+x:x); }
+function renderClocks(){
+  document.getElementById('timeP1').textContent=fmt(timeLeft.w);
+  document.getElementById('timeP2').textContent=fmt(timeLeft.b);
+  const p1=document.getElementById('clepP1'), p2=document.getElementById('clepP2');
+  p1.classList.toggle('active', turn==='w'&&!gameOver);
+  p2.classList.toggle('active', turn==='b'&&!gameOver);
+  if(timeLimit===0){ p1.classList.add('unlim'); p2.classList.add('unlim'); }
+  else { p1.classList.remove('unlim'); p2.classList.remove('unlim');
+    p1.classList.toggle('low',timeLeft.w<30); p2.classList.toggle('low',timeLeft.b<30); }
+}
+function gameLoop(){
+  if(gameOver) return;
+  const now=Date.now();
+  if(firstMoveMade&&timeLimit>0&&now-lastTick>=1000){
+    lastTick=now; timeLeft[turn]=Math.max(0,timeLeft[turn]-1); renderClocks();
+    if(timeLeft[turn]===0){ gameOver=true; const w=(turn==='w')?'Jucătorul 2 (Negru)':'Jucătorul 1 (Alb)';
+      document.getElementById('modalTitle').textContent='⏰ Timp expirat';
+      document.getElementById('modalText').innerHTML=w+' a câștigat — adversarul a rămas fără timp.';
+      document.getElementById('modal').classList.add('show'); }
+  }
+}
+setInterval(gameLoop,250);
+function startTimer(){ if(firstMoveMade||timeLimit===0) return; firstMoveMade=true; lastTick=Date.now(); }
+function onTimeChange(){ timeLimit=parseInt(document.getElementById('timeSelect').value); timeLeft={w:timeLimit,b:timeLimit}; firstMoveMade=false; renderClocks(); }
+
+function flipBoard(){ board.orientation(board.orientation()==='white'?'black':'white'); board.position(pos,false); clearHL(); showLast(); }
+
+function resetGame(){
+  pos=initialPosition(); turn='w'; history=[]; captures={w:[],b:[]};
+  gameOver=false; lastFrom=null; lastTo=null; selectedSq=null;
+  firstMoveMade=false; timeLeft={w:timeLimit,b:timeLimit};
+  clearHL(); board.position(pos,false);
+  setStatus('🟡 Rândul Jucătorului 1 (Alb). Atinge piesa, apoi unde să meargă.','');
+  renderCaptures(); renderClocks();
+}
+function undoMove(){
+  if(gameOver||!history.length) return;
+  const h=history.pop(); delete pos[h.to]; pos[h.from]=h.piece;
+  if(h.captured) pos[h.to]=h.captured;
+  turn=h.prevTurn;
+  if(h.captured){ const lst=(h.captured[0]==='b')?captures.w:captures.b; const i=lst.lastIndexOf(h.captured); if(i!==-1) lst.splice(i,1); }
+  lastFrom=history.length?history[history.length-1].from:null;
+  lastTo=history.length?history[history.length-1].to:null;
+  selectedSq=null; clearHL(); board.position(pos,true);
+  setStatus('↶ Mutare anulată. ▶️ Rândul: '+whoTxt(turn)+'.','');
+  renderCaptures(); renderClocks();
+}
+
+/* INIT (cu resetGame) */
+onTimeChange();
+resetGame();
+setTimeout(()=>board.resize(),100);
+</script>
+</body>
+</html>
