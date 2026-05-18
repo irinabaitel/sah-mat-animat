@@ -183,6 +183,7 @@
       <div class="panel-actions" id="play-row">
         <button class="btn-action" id="btn-play" onclick="startGame()">▶ Joacă!</button>
       </div>
+      <div id="coach-bar" style="display:none;"></div>
     </div>
 
   </main>
@@ -198,6 +199,8 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="coach.js"></script>
+<script>if(window.Coach)Coach.mount('#coach-bar');</script>
 <script>
 /* ─── Sunete ─── */
 var sndMove=new Audio('Sounds/Move.mp3'), sndCapture=new Audio('Sounds/Capture.mp3'), sndMate=new Audio('Sounds/Mate.mp3');
@@ -279,6 +282,7 @@ function onDragStart(source,piece){
   if(gameOver) return false;
   if(viewPly!==fens.length-1) return false;   // revezi o poziție veche — nu poți muta
   if(piece[0]!==chess.turn()) return false;   // doar jucătorul la mutare
+  if(window.Coach) Coach.show(source);
   return true;
 }
 function onDrop(source,target,piece){
@@ -298,7 +302,7 @@ function onDrop(source,target,piece){
   if(!mv){ illegalMove(color); return 'snapback'; }
   afterMove(mv);
 }
-function onSnapEnd(){ if(mode==='play') board.position(chess.fen(),false); }
+function onSnapEnd(){ if(window.Coach) Coach.clear(); if(mode==='play') board.position(chess.fen(),false); }
 
 /* ─── Mutare ilegală: regulă de turneu (FIDE) ───
    piesa se întoarce singură (snapback); ținem scorul.
@@ -357,6 +361,7 @@ function afterMove(mv){
   setClockActive();
   var t=chess.turn();
   setStatus('▶️ Rândul: '+(t==='w'?'Jucătorul 1 (Alb) ♔':'Jucătorul 2 (Negru) ♚'), 'inf');
+  if(window.Coach) Coach.prime();
 }
 
 /* ─── Ceasuri (bază + bonus, ca la lichess) ─── */
@@ -489,6 +494,7 @@ function startGame(){
   document.getElementById('setup-group').style.display='none';
   document.getElementById('play-row').style.display='none';
   document.getElementById('game-btns').style.display='flex';
+  document.getElementById('coach-bar').style.display='';
   document.getElementById('illegalTally').style.display='block'; updateTally();
   document.getElementById('review-bar').style.display='flex'; updateReview();
   var hasClock=baseMs>0;
@@ -498,6 +504,7 @@ function startGame(){
   if(hasClock) startClocks();
   var t=chess.turn();
   setStatus('▶️ Rândul: '+(t==='w'?'Jucătorul 1 (Alb) ♔':'Jucătorul 2 (Negru) ♚')+'. Mutați pe rând, pe aceeași tabletă.','inf');
+  if(window.Coach) Coach.prime();
 }
 function newGame(){
   stopClocks(); gameOver=true; mode='edit';
@@ -505,6 +512,8 @@ function newGame(){
   document.getElementById('setup-group').style.display='';
   document.getElementById('play-row').style.display='';
   document.getElementById('game-btns').style.display='none';
+  document.getElementById('coach-bar').style.display='none';
+  if(window.Coach) Coach.clear();
   document.getElementById('move-list').style.display='none';
   document.getElementById('illegalTally').style.display='none';
   document.getElementById('review-bar').style.display='none';
