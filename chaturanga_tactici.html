@@ -244,39 +244,54 @@ const TACTICS = [
 
   {
     name: '🐘 Promovarea pionului',
-    desc: 'Dacă un padati ajunge la rândul 8 (sau 1 pentru negru), se transformă în mantri! Ai 2 sfetnici!',
+    desc: 'La chaturanga padati NU se face regină — regina nici nu exista! Se transformă în piesa <b>coloanei</b> pe care ajunge, și doar dacă acea piesă ți-a fost deja capturată.',
     examples: [
-      { /* Ex 1: Mecanism — padati simplu ajunge la 8 */
-        title: 'Mecanismul de bază',
+      { /* Ex 1: Mecanism — coloana decide piesa */
+        title: 'Coloana decide',
         steps: [
           { pos: {a1:'wK', h8:'bK', d7:'wP'},
-            desc: 'Padati alb pe <b>d7</b> — un singur pas până la promovare!' },
+            desc: 'Padati alb pe <b>d7</b> — un pas până la capăt. Contează pe ce coloană ajunge: coloana <b>d</b> e coloana sfetnicului.' },
           { pos: {a1:'wK', h8:'bK', d8:'wQ'},
             from: 'd7', to: 'd8',
-            desc: '🌟 Padati a ajuns la <b>d8</b> — se transformă în <b>MANTRI</b>! Acum ai un sfetnic în plus!' },
+            desc: '🌟 Padati ajunge la <b>d8</b>. Coloanele regelui și sfetnicului (d, e) dau <b>MANTRI</b>. Mantri-ul tău nu mai e pe tablă, deci promovarea e permisă.' },
         ],
       },
-      { /* Ex 2: Padati capturează ca să ajungă la rândul 8 */
-        title: 'Promovare prin captură',
+      { /* Ex 2: Captură pe coloana elefantului -> GAJA, nu mantri */
+        title: 'Pe coloana elefantului',
         steps: [
           { pos: {a1:'wK', h8:'bK', d7:'wP', c8:'bR'},
-            desc: 'Padati pe d7 e blocat: ratha negru pe d8? Nu, pe c8. Și pe d8 e gol. Dar dacă padati capturează ratha de pe c8...' },
-          { pos: {a1:'wK', h8:'bK', c8:'wQ'},
+            desc: 'Padati pe <b>d7</b>. Înainte e gol, dar pe <b>c8</b> stă un ratha negru — padati îl poate lua pe diagonală...' },
+          { pos: {a1:'wK', h8:'bK', c8:'wB'},
             from: 'd7', to: 'c8',
-            desc: '🌟 Padati capturează ratha pe <b>c8</b> (mișcare diagonală, deci e captură). Și ajunge la rândul 8 — devine MANTRI! Două câștiguri într-o mutare!' },
+            desc: '🌟 Padati capturează ratha pe <b>c8</b> și ajunge la capăt. Dar <b>c</b> e coloana <b>elefantului</b> → se face <b>GAJA</b>, NU mantri! Coloana decide, nu dorința ta.' },
         ],
       },
-      { /* Ex 3: Doi padati în cursă spre promovare */
+      { /* Ex 3: Doi padati — coloana regelui -> mantri */
         title: 'Doi padati colaborează',
         steps: [
           { pos: {a1:'wK', h8:'bK', d6:'wP', e6:'wP', e7:'bP'},
-            desc: 'Doi padati albi (d6, e6) vs un padati negru pe e7. Cum ajunge unul la rândul 8?' },
+            desc: 'Doi padati albi (d6, e6) și un padati negru pe e7. Cum trece unul de el?' },
           { pos: {a1:'wK', h8:'bK', e7:'wP', e6:'wP'},
             from: 'd6', to: 'e7',
-            desc: 'Padati d6 capturează padati negru pe <b>e7</b> (captură diagonal).' },
+            desc: 'Padati d6 capturează padati negru pe <b>e7</b> (captură pe diagonală).' },
           { pos: {a1:'wK', h8:'bK', e8:'wQ', e6:'wP'},
             from: 'e7', to: 'e8',
-            desc: '🌟 Padati avansează un pas până la <b>e8</b> — promovat! Al doilea padati (e6) îl urmează în viitoare ture.' },
+            desc: '🌟 Padati ajunge la <b>e8</b> — coloana <b>e</b>, coloana regelui → se face <b>MANTRI</b>! Al doilea padati (e6) vine din urmă.' },
+        ],
+      },
+      { /* Ex 4: Regula de așteptare — padati așteaptă pe ultima linie */
+        title: 'Padati care așteaptă',
+        steps: [
+          { pos: {a1:'wK', h8:'bK', g7:'wP', g1:'wN', g3:'bR'},
+            desc: 'Padati alb pe <b>g7</b>, pe coloana calului. Dar ai încă un ashva viu pe <b>g1</b> — ține minte regula!' },
+          { pos: {a1:'wK', h8:'bK', g8:'wP', g1:'wN', g3:'bR'},
+            from: 'g7', to: 'g8',
+            desc: 'Padati ajunge la <b>g8</b> — și NU se transformă! Stă și <b>așteaptă</b> pe ultima linie, fiindcă ashva-ul de pe g1 încă trăiește.' },
+          { pos: {a1:'wK', h8:'bK', g8:'wP', g1:'bR'},
+            from: 'g3', to: 'g1',
+            desc: 'Ratha negru coboară pe coloana g și capturează ashva-ul de pe <b>g1</b>. Ai pierdut un cal...' },
+          { pos: {a1:'wK', h8:'bK', g1:'bR', g8:'wN'},
+            desc: '🌟 ...și chiar atunci padati-ul care aștepta se trezește <b>ASHVA</b> pe g8! Răbdarea a fost răsplătită — exact regula chaturangăi.' },
         ],
       },
     ],

@@ -82,7 +82,7 @@
 .csq img.p-ashva  { width: 82%; height: 82%; }
 .csq img.p-padati { width: 72%; height: 72%; }
 
-/* ── Burdufuri (accordion) ─────────────────────────────── */
+/* ── Sertare (accordion) ─────────────────────────────── */
 .acc-list {
   display: flex;
   flex-direction: column;
@@ -246,8 +246,8 @@ for (let r = 8; r >= 1; r--) {
   }
 }
 
-/* ── Burdufurile ───────────────────────────────────────── */
-const burdufuri = [
+/* ── Sertarele ───────────────────────────────────────── */
+const sertare = [
   {
     num: '1.',
     title: 'Povestea jocului',
@@ -268,9 +268,9 @@ const burdufuri = [
 
 <p>Și așa a apărut chaturanga. Cele patru feluri de luptători au devenit <strong>piesele jocului</strong>, iar tabla a devenit câmpul lor de luptă.</p>
 
-<p>La început, jocul se juca chiar cu <strong>zaruri</strong>! Aruncai zarul și cifra de pe el îți spunea care piesă trebuie mutată. Mai târziu, jucătorii au renunțat la zaruri și au început să aleagă singuri ce piesă mută — așa cum facem și noi azi la șah.</p>
+<p>Se pare că la început unii jucau chiar cu <strong>zaruri</strong>: aruncai zarul și cifra de pe el îți spunea care piesă trebuie mutată. Mai târziu, jucătorii au renunțat la zaruri și au început să aleagă singuri ce piesă mută — așa cum facem și noi azi la șah.</p>
 
-<p>Mai exista și o variantă pentru <strong>patru jucători</strong>, jucată în colțurile tablei. Se numea <strong>chaturaji</strong>, adică <em>„cei patru regi"</em>. Despre ea ne-a povestit un savant persan, Al-Biruni, care a călătorit în India acum aproape o mie de ani.</p>
+<p>Mai exista și o variantă pentru <strong>patru jucători</strong>, jucată în colțurile tablei. Se numea <strong>chaturaji</strong>, adică <em>„cei patru regi"</em>. Despre ea ne-a povestit un savant persan, al-Biruni, care a călătorit în India acum aproape o mie de ani.</p>
 
 <p>Cu timpul, chaturanga a călătorit din India în Persia, de acolo la arabi, apoi tocmai până la noi în Europa. Pe drum și-a schimbat numele și câteva reguli — dar <strong>inima lui a rămas aceeași</strong>.</p>
 
@@ -330,8 +330,9 @@ const burdufuri = [
 <p>Surpriză! La chaturanga, dacă blochezi raja adversarului așa încât <strong>să nu mai poată muta nicio piesă</strong> (chiar dacă nu e atacat), tot tu câștigi! Asta e <em>opusul șahului modern</em>, unde pat-ul e remiză. La chaturanga, dacă l-ai blocat — ai câștigat.</p>
 
 <div class="hl-box" style="margin-top: 14px;">
-🌟 <strong>Promovare:</strong> când un <strong>padati</strong> al tău ajunge până la capătul tablei (rândul 8 pentru alb, rândul 1 pentru negru), se transformă în <strong>mantri</strong>. La chaturanga, sfetnicul e cea mai puternică piesă pe care o poți primi în plus — nu există regină!
+🌟 <strong>Promovare — regula adevărată:</strong> mult timp s-a crezut că padati se face „regină", dar la chaturanga regina nici nu exista, așa că asta e imposibil. Când un padati ajunge la capătul tablei, el nu devine ce vrei tu, ci <strong>piesa coloanei pe care a ajuns</strong>: pe coloana carului (a, h) se face <strong>ratha</strong>, pe coloana calului (b, g) se face <strong>ashva</strong>, pe coloana elefantului (c, f) se face <strong>gaja</strong>, iar pe coloana regelui sau a sfetnicului (d, e) se face <strong>mantri</strong>. Și mai e o regulă surprinzătoare: padati se poate transforma <strong>doar dacă piesa acelei coloane ți-a fost deja capturată</strong>. Dacă încă îți stau pe tablă amândoi caii, padati-ul de pe coloana calului trebuie să aștepte cuminte pe ultima linie până pierzi un cal — abia atunci se „trezește" și se transformă!
 </div>
+<p style="font-size:.86em; opacity:.72; margin-top:8px;"><em>(Regula după H. J. R. Murray, „A History of Chess", Oxford, 1913 — care a îndreptat o greșeală mai veche a lui Forbes — și confirmată de tratatul lui al-Adli, sec. IX, și de Cazaux &amp; Knowlton, „A World of Chess", 2017.)</em></p>
 ` },
   { num: '5.', title: 'Tactici',             bodyHTML: `
 <p>La chaturanga, piesele sunt mai slabe ca la șahul modern — mantri face un pas diagonal, gaja sare doar 2 pătrate. Asta schimbă tacticile! Iată trei trucuri pe care le poți încerca:</p>
@@ -343,14 +344,14 @@ const burdufuri = [
 <p>Pui ratha (carul) <em>în spatele</em> unei piese de-a ta, pe aceeași linie. Când muți piesa din față, ratha „iese la lumină" și atacă direct piesa adversarului — care nici n-a apucat să vadă pericolul. Funcționează splendid cu un gaja sărind în lături.</p>
 
 <p>🐘 <strong>3. Promovarea pionului</strong></p>
-<p>Dacă reușești să împingi un padati până la <strong>rândul 8</strong> (alb) sau <strong>rândul 1</strong> (negru), se transformă în <strong>mantri</strong>. Acum ai DOI sfetnici! Nu mulți reușesc — padati merge încet, doar un pas pe tură.</p>
+<p>Dacă reușești să împingi un padati până la capătul tablei, el se face <strong>piesa coloanei pe care ajunge</strong> — și numai dacă acea piesă ți-a fost deja capturată. De-asta merită să ținti un padati spre o coloană unde ai pierdut deja piesa: pe coloana carului se face ratha (cea mai puternică!), pe a calului ashva, pe a elefantului gaja, iar pe coloanele din mijloc mantri. Nu mulți reușesc — padati merge încet, doar un pas pe tură, și uneori mai trebuie și să aștepte la capăt până i se face loc.</p>
 
 <div class="hl-box" style="margin-top: 14px;">
 🎯 <strong>Sfat strategic:</strong> mantri și gaja sunt slabi — folosește-i pentru apărare, lângă raja. Pune <strong>ratha (carele)</strong> și <strong>ashva (caii)</strong> la atac — ele sunt vedetele chaturangăi.
 </div>
 
 <div class="hl-box ok" style="margin-top: 10px;">
-🏆 <strong>Truc ascuns:</strong> ai trei feluri de a câștiga (vezi burduful „Cine câștigă"). Uneori e mai bine să capturezi piesele cu răbdare — îl lași pe adversar cu „rajă goală" și ai învins, fără să dai mat. Răbdarea câștigă!
+🏆 <strong>Truc ascuns:</strong> ai trei feluri de a câștiga (vezi sertarul „Cine câștigă"). Uneori e mai bine să capturezi piesele cu răbdare — îl lași pe adversar cu „rajă goală" și ai învins, fără să dai mat. Răbdarea câștigă!
 </div>
 
 <p style="text-align:center; margin-top: 14px;">
@@ -359,11 +360,54 @@ const burdufuri = [
   </a>
 </p>
 <p style="font-size:.92em; opacity:.8; text-align:center; margin-top:4px;"><em>(3 exemple pentru fiecare tactică, cu derulare pas cu pas)</em></p>
+` },
+  { num: '6.', title: 'Călătorie în timp: Legenda completă pentru cititori pasionați', bodyHTML: `
+<p style="opacity:.85;"><em>Pentru tine, cel care vrea să știe tot. Pune-ți centura: plecăm cu o mie patru sute de ani în urmă. Numerele mici, ca <sup>[1]</sup>, sunt urme de detectiv — le găsești dezlegate în sertarul „Pentru Detectivi".</em></p>
+
+<p><strong>📜 Capitolul I — O tablă pentru o mamă îndurerată</strong></p>
+<p>Cea mai veche poveste despre cum s-a născut chaturanga ne-a păstrat-o un poet persan, Firdausi, într-o carte uriașă scrisă acum o mie de ani <sup>[2]</sup>. Se spune că în India trăiau doi frați vitregi, doi prinți: <strong>Gav</strong> și <strong>Talhand</strong>. Amândoi voiau tronul, și s-au înfruntat în luptă. În toiul bătăliei, tânărul Talhand a murit — dar fără nicio rană, doborât de sete și de oboseală.</p>
+<p>Regina-mamă n-a vrut să creadă. <em>„Voi i-ați ucis fratele!"</em>, striga ea. Atunci înțelepții curții s-au gândit la ceva nemaivăzut: au luat o tablă cu pătrate, au făcut din lemn doi regi, sfetnicii lor, elefanți, cai, care de luptă și pedestrași — și au <strong>refăcut bătălia, mutare cu mutare</strong>, ca să-i arate mamei, cu ochii ei, cum a căzut fiul ei fără ca nimeni să-l fi lovit. Așa, spune legenda, s-a inventat chaturanga: nu ca să distreze, ci ca să <strong>explice</strong> ceva ce cuvintele nu puteau <sup>[2]</sup><sup>[1]</sup>.</p>
+
+<p><strong>⚔️ Capitolul II — Cele patru brațe</strong></p>
+<p>Numele jocului spune totul. În sanscrită, <em>chatur</em> = patru, <em>anga</em> = brațe. <strong>Chaturanga = „cele patru brațe ale armatei"</strong>: pedestrașii (padati), călăreții pe cai (ashva), elefanții de luptă (gaja) și carele trase de cai (ratha) <sup>[1]</sup>. Deasupra tuturor, regele — <strong>raja</strong> — și sfetnicul lui cel mai apropiat, <strong>mantri</strong>. Toate erau piese reale dintr-o armată indiană adevărată; jocul era o oglindă mică a unui război mare <sup>[4]</sup>.</p>
+
+<p><strong>🎲 Capitolul III — Jocul cu zaruri și „cei patru regi"</strong></p>
+<p>La început nu alegeai singur ce muți: <strong>aruncai un zar</strong>, iar cifra îți spunea ce piesă are voie să se miște. Mai exista și o variantă pentru <strong>patru jucători</strong>, câte unul în fiecare colț, numită <strong>chaturaji</strong> — „cei patru regi". Despre ea ne-a povestit, în jurul anului 1030, un savant care a străbătut India, <strong>al-Biruni</strong>, în cartea lui despre tot ce văzuse acolo <sup>[3]</sup>. Mai târziu, oamenii au lăsat zarurile deoparte și au început să gândească fiecare mutare — așa cum faci tu acum.</p>
+
+<p><strong>🌾 Capitolul IV — Bobul de grâu care a păcălit un rege</strong></p>
+<p>O altă legendă veche — pe care arabii și persanii au repovestit-o mai târziu despre <em>shatranj</em>, dar care vorbește despre <strong>nașterea jocului în India</strong>, pe tabla de 64 de pătrate — a fost strânsă și cercetată de Murray printre zecile de povești despre originea jocului <sup>[1]</sup>. Ea spune că un înțelept i-a arătat regelui jocul, iar regele, încântat, i-a zis: <em>„Cere-mi orice!"</em> Înțeleptul a cerut, smerit, doar grâu: <strong>un bob pe primul pătrat, două pe al doilea, patru pe al treilea</strong>… dublând mereu, până la al 64-lea. Regele a râs — ce cerere măruntă! Dar socotitorii au pălit: nu exista atâta grâu în toată lumea. Pe ultimul pătrat ar fi trebuit peste <strong>nouă trilioane de trilioane de boabe</strong>. Așa a învățat un rege, dintr-un joc, cât de uriaș poate crește un număr care se tot dublează.</p>
+
+<p><strong>🧭 Capitolul V — Drumul lung spre apus</strong></p>
+<p>Chaturanga nu a stat pe loc. A trecut munții în <strong>Persia</strong>, unde i s-a spus <em>chatrang</em>; de la persani a ajuns la <strong>arabi</strong>, devenind <em>shatranj</em>; iar de acolo, prin Spania și Italia, a intrat în toată <strong>Europa</strong> <sup>[1]</sup><sup>[4]</sup>. Pe drum, piesele s-au prefăcut: elefantul (gaja) a devenit nebunul, carul (ratha) a devenit turnul, sfetnicul (mantri) s-a transformat, după multe veacuri, în cea mai puternică piesă de azi — regina <sup>[5]</sup>. Dar inima jocului a rămas aceeași: doi regi, o tablă, și mintea ta.</p>
+
+<p><strong>🔍 Capitolul VI — De unde știm toate astea?</strong></p>
+<p>Nu dintr-o singură carte. Cel mai de încredere ghid e un istoric englez, <strong>H. J. R. Murray</strong>. Lucrul uimitor: el nu era campion de șah, ci un simplu inspector de școli, fiul omului care a făcut marele dicționar al limbii engleze. De dragul acestui joc a <strong>învățat singur araba</strong>, ca să poată citi manuscrisele în original. A scris, în 1913, <em>A History of Chess</em> — o carte atât de temeinică încât, după mai bine de <strong>o sută de ani</strong>, istoricii din toată lumea încă o numesc „biblia istoriei șahului" și se sprijină pe ea <sup>[1]</sup>. El a și descoperit că un cercetător de dinaintea lui, Forbes, greșise unele reguli — exact ca un detectiv care prinde o eroare în dosar. Vrei să vezi „dosarul" complet? Deschide sertarul următor. 👇</p>
+
+<div class="hl-box ok" style="margin-top: 12px;">
+🕵️ <strong>Curios de tot?</strong> Fiecare număr din povestea de mai sus duce la o carte adevărată. Le găsești toate în <strong>„Pentru Detectivi: Surse și Bibliografie"</strong>.
+</div>
+` },
+  { num: '7.', title: 'Pentru Detectivi: Surse și Bibliografie', bodyHTML: `
+<p>Un detectiv adevărat nu crede o poveste doar pentru că sună frumos — caută <strong>dovezi</strong>. Iată cărțile și manuscrisele din care am cules legenda de mai sus. <strong>Numărul</strong> din față se potrivește cu cel din poveste: vezi <sup>[1]</sup> în text, cauți [1] aici.</p>
+
+<p><strong>[1]</strong> &nbsp;Murray, H. J. R. — <em>A History of Chess</em>. Oxford University Press, 1913. <span style="opacity:.72;">Lucrarea de căpătâi a istoriei șahului; traduce direct din manuscrise sanscrite, arabe și persane; corectează erorile lui Forbes.</span></p>
+
+<p><strong>[2]</strong> &nbsp;Firdausi (Ferdowsi), Abolqasem — <em>Šāh-nāma</em> („Cartea Regilor"), cca. anul 1010. <span style="opacity:.72;">Poem epic persan; cuprinde legenda fraților Gav și Talhand și a inventării jocului pentru regina îndurerată.</span></p>
+
+<p><strong>[3]</strong> &nbsp;al-Biruni, Abu Rayhan — <em>Kitab fi tahqiq ma li-l-Hind</em> („Cartea despre India"), cca. anul 1030. <span style="opacity:.72;">Descrie jocul chaturaji pentru patru jucători, cu zaruri, așa cum l-a văzut în India.</span></p>
+
+<p><strong>[4]</strong> &nbsp;Cazaux, Jean-Louis &amp; Knowlton, Rick — <em>A World of Chess: Its Development and Variations through Centuries and Civilizations</em>. McFarland, 2017. <span style="opacity:.72;">Sinteză modernă; analizează piesă cu piesă armata și regulile din textele indiene timpurii.</span></p>
+
+<p><strong>[5]</strong> &nbsp;Li, David H. — <em>The Genealogy of Chess</em>. Premier Publishing, 1998. <span style="opacity:.72;">Urmărește evoluția de la chaturanga spre shatranj și xiangqi și transformarea pieselor.</span></p>
+
+<div class="hl-box" style="margin-top: 12px;">
+📚 <strong>De ce mai multe surse?</strong> Pentru că o singură carte se poate înșela. Când trei-patru cărți, scrise de oameni diferiți, în secole diferite, spun cam același lucru — atunci putem avea încredere. Așa lucrează istoricii: ca niște detectivi care nu se mulțumesc cu un singur martor.
+</div>
 ` }
 ];
 
 const list = document.getElementById('accList');
-burdufuri.forEach(function (b) {
+sertare.forEach(function (b) {
   const item = document.createElement('div');
   item.className = 'acc-item';
 

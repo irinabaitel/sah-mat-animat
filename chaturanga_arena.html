@@ -305,7 +305,7 @@ function initialPosition() {
     a1:'wR', b1:'wN', c1:'wB', d1:'wQ', e1:'wK', f1:'wB', g1:'wN', h1:'wR',
     a2:'wP', b2:'wP', c2:'wP', d2:'wP', e2:'wP', f2:'wP', g2:'wP', h2:'wP',
     a7:'bP', b7:'bP', c7:'bP', d7:'bP', e7:'bP', f7:'bP', g7:'bP', h7:'bP',
-    a8:'bR', b8:'bN', c8:'bB', d8:'bK', e8:'bQ', f8:'bN', g8:'bB', h8:'bR'
+    a8:'bR', b8:'bN', c8:'bB', d8:'bK', e8:'bQ', f8:'bB', g8:'bN', h8:'bR'
   };
 }
 
@@ -384,27 +384,61 @@ function legalMoves(sq, position) {
   return moves;
 }
 
+/* ── PROMOVARE ISTORICĂ (Murray, A History of Chess, 1913) ──
+   Padati NU se face regină (regina nu exista la chaturanga). Se transformă
+   în piesa COLOANEI pe care ajunge — și DOAR dacă piesa acelei coloane i-a
+   fost deja capturată de adversar; altfel așteaptă pe ultima linie. */
+function promoTypeForCol(col) {
+  if (col === 'a' || col === 'h') return 'R'; /* coloana carului     */
+  if (col === 'b' || col === 'g') return 'N'; /* coloana calului     */
+  if (col === 'c' || col === 'f') return 'B'; /* coloana elefantului */
+  return 'Q';                                 /* d,e = raja & mantri */
+}
+/* piesele albe capturate stau în captures.b, cele negre în captures.w */
+function hasLost(color, T) {
+  const lost = (color === 'w') ? captures.b : captures.w;
+  return lost.indexOf(color + T) !== -1;
+}
+/* promovează orice padati care aștepta pe ultima linie și acum are voie */
+function resolveWaiting() {
+  const autos = [];
+  for (const sq in pos) {
+    const pc = pos[sq];
+    if (!pc || pc[1] !== 'P') continue;
+    const lastR = (pc[0] === 'w') ? 8 : 1;
+    if (parseInt(sq[1]) !== lastR) continue;
+    const T = promoTypeForCol(sq[0]);
+    if (hasLost(pc[0], T)) { const np = pc[0] + T; pos[sq] = np; autos.push({ sq, from: pc, to: np }); }
+  }
+  return autos;
+}
+
 /* ── APLICĂ MUTAREA ── */
 function applyMove(from, to) {
   const piece = pos[from];
   if (!piece) return null;
   const captured = pos[to] || null;
   delete pos[from];
-  let placed = piece;
-  if (piece[1] === 'P') {
-    const tr = parseInt(to[1]);
-    if ((piece[0] === 'w' && tr === 8) || (piece[0] === 'b' && tr === 1)) {
-      placed = piece[0] + 'Q';
-    }
-  }
-  pos[to] = placed;
-  history.push({ from, to, piece, placed, captured, prevTurn: turn });
   if (captured) {
     (captured[0] === 'b' ? captures.w : captures.b).push(captured);
   }
+  let placed = piece, waiting = false, promoType = null;
+  if (piece[1] === 'P') {
+    const tr = parseInt(to[1]);
+    if ((piece[0] === 'w' && tr === 8) || (piece[0] === 'b' && tr === 1)) {
+      promoType = promoTypeForCol(to[0]);
+      if (hasLost(piece[0], promoType)) placed = piece[0] + promoType;
+      else waiting = true; /* a ajuns la capăt, dar așteaptă */
+    }
+  }
+  pos[to] = placed;
+  const entry = { from, to, piece, placed, captured, prevTurn: turn };
+  history.push(entry);
+  const autos = resolveWaiting();
+  if (autos.length) entry.autoPromos = autos;
   turn = (turn === 'w') ? 'b' : 'w';
   lastFrom = from; lastTo = to;
-  return { piece, captured, placed };
+  return { piece, captured, placed, waiting, promoType, autoPromos: autos };
 }
 
 /* ── DETECȚIE FINAL ── */
@@ -625,11 +659,15 @@ function notifyMove(res, byYou) {
   let msg = '';
   if (byYou) {
     msg = res.captured ? ('⚔️ Ai capturat ' + NAMES[res.captured[1]] + '!') : 'Bot, e rândul tău…';
-    if (res.placed !== res.piece) msg += ' 🌟 Padati promovat la mantri!';
+    if (res.waiting) msg += ' ⏳ Padati a ajuns la capăt pe coloana ' + NAMES[res.promoType] + ', dar așteaptă: se transformă abia după ce pierzi un ' + NAMES[res.promoType] + '.';
+    else if (res.placed !== res.piece) msg += ' 🌟 Padati promovat la ' + NAMES[res.placed[1]] + '!';
+    if (res.autoPromos) res.autoPromos.forEach(ap => { msg += ' 🌟 Un padati care aștepta s-a trezit ' + NAMES[ap.to[1]] + '!'; });
     setStatus(msg, res.captured ? 'ok' : '');
   } else {
     msg = res.captured ? ('😬 Botul ți-a capturat ' + NAMES[res.captured[1]] + '!') : 'Botul a mutat. E rândul tău!';
-    if (res.placed !== res.piece) msg += ' Și-a promovat padati la mantri!';
+    if (res.waiting) msg += ' ⏳ Padati-ul botului a ajuns la capăt, dar așteaptă să piardă un ' + NAMES[res.promoType] + '.';
+    else if (res.placed !== res.piece) msg += ' Și-a promovat padati la ' + NAMES[res.placed[1]] + '!';
+    if (res.autoPromos) res.autoPromos.forEach(ap => { msg += ' 🌟 Un padati care aștepta s-a trezit ' + NAMES[ap.to[1]] + '!'; });
     setStatus(msg, res.captured ? 'warn' : '');
   }
 }
@@ -649,7 +687,7 @@ function simulateMove(position, from, to) {
   let placed = piece;
   if (piece[1] === 'P') {
     const tr = parseInt(to[1]);
-    if ((piece[0]==='w' && tr===8) || (piece[0]==='b' && tr===1)) placed = piece[0] + 'Q';
+    if ((piece[0]==='w' && tr===8) || (piece[0]==='b' && tr===1)) placed = piece[0] + promoTypeForCol(to[0]);
   }
   np[to] = placed;
   return np;
@@ -758,6 +796,7 @@ function undoMove() {
   for (let i = 0; i < stepsToUndo; i++) {
     if (history.length === 0) break;
     const h = history.pop();
+    if (h.autoPromos) h.autoPromos.forEach(ap => { if (pos[ap.sq] === ap.to) pos[ap.sq] = ap.from; });
     delete pos[h.to];
     pos[h.from] = h.piece;
     if (h.captured) pos[h.to] = h.captured;

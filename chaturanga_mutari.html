@@ -361,7 +361,7 @@ const PIECES = {
     name: 'Padati',
     title: 'Padati — pedestrașul',
     count: 8, pos: 'e4', fen: 'wP',
-    text: '<strong>Padati</strong> înseamnă „pedestraș" — soldatul indian care merge pe jos. Mută <strong>doar un pas înainte</strong> — atenție: <strong>și de la poziția lui de start poate face tot un singur pas</strong>, NU doi ca la șahul modern! Capturează <strong>pe diagonală</strong> înainte. Când ajunge la capăt, se transformă în <strong>mantri</strong>.',
+    text: '<strong>Padati</strong> înseamnă „pedestraș" — soldatul indian care merge pe jos. Mută <strong>doar un pas înainte</strong> — atenție: <strong>și de la poziția lui de start poate face tot un singur pas</strong>, NU doi ca la șahul modern! Capturează <strong>pe diagonală</strong> înainte. Când ajunge la capăt nu se face regină (nu exista!), ci <strong>piesa coloanei pe care ajunge</strong> — car, cal, elefant sau mantri — și doar dacă acea piesă ți-a fost deja capturată.',
     getMoves(sq) {
       const col=sq[0], row=parseInt(sq[1]), moves=[], captures=[];
       if(row<8) moves.push(col+(row+1));
