@@ -4,15 +4,91 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>Cursa roboților și epoca AI — Strămoșii</title>
+<title>Cursa roboților și epoca AI — Evoluția șahului</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="master-template.css">
 <style>
-/* ── O singură coloană (fără hartă) ─── */
-.page-main { grid-template-columns: 1fr; }
-.panel-scroll { max-width: 760px; margin: 0 auto; width: 100%; }
+/* ── Coloana foto (stânga) — format master, ca la „Șahul prin lume" ─── */
+.page-main { grid-template-columns: 56fr 44fr; }
+
+.map-col {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 0; min-width: 0;
+}
+.map-wrap {
+  width: 100%;
+  max-height: calc(100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap));
+  aspect-ratio: 4 / 3;
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.2);
+  background: #2f3358;
+}
+.map-wrap img {
+  width: 100%; height: 100%;
+  object-fit: contain; display: none;
+}
+.map-wrap.has-img img { display: block; }
+.bot-ph {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 24px; gap: 8px;
+  color: #fff; font-family: var(--font-display); font-weight: 700;
+  font-size: var(--fs-md); line-height: 1.4;
+  background: linear-gradient(135deg, #3a3f6b, #2f3358);
+}
+.map-wrap.has-img .bot-ph { display: none; }
+
+.bot-video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: 0; display: none; z-index: 2;
+}
+.map-wrap.has-video .bot-video { display: block; }
+.map-wrap.has-video img,
+.map-wrap.has-video .bot-ph,
+.map-wrap.has-video .img-nav,
+.map-wrap.has-video .img-count,
+.map-wrap.has-video .map-cap { display: none; }
+
+/* navigare poze (galerie) */
+.img-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 42px; height: 42px; border-radius: 50%;
+  border: none; cursor: pointer; z-index: 3;
+  background: rgba(26,58,107,.72); color: #fff;
+  font-size: 1.5em; line-height: 1;
+  display: none; align-items: center; justify-content: center;
+}
+.img-nav:hover { background: rgba(26,58,107,.95); }
+.img-nav--prev { left: 10px; }
+.img-nav--next { right: 10px; }
+.img-count {
+  position: absolute; top: 10px; right: 12px; z-index: 3;
+  background: rgba(26,58,107,.72); color: #fff;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: var(--fs-sm); padding: 3px 11px; border-radius: 20px;
+  display: none;
+}
+.map-wrap.multi .img-nav,
+.map-wrap.multi .img-count { display: flex; }
+.map-wrap.multi .img-count { display: block; }
+
+.map-cap {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 14px 16px 10px;
+  background: linear-gradient(0deg, rgba(26,58,107,0.82), rgba(26,58,107,0));
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  z-index: 2;
+}
+.map-cap small { font-family: var(--font-body); font-weight: 600; opacity: .85; }
 
 /* ── Sertare (accordion) — identic cu paginile Strămoșii ────── */
 .acc-list { display: flex; flex-direction: column; gap: 6px; }
@@ -44,7 +120,7 @@
 }
 .acc-item.open .acc-chevron { transform: rotate(90deg); }
 .acc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
-.acc-item.open .acc-body { max-height: 3200px; }
+.acc-item.open .acc-body { max-height: 3600px; }
 .acc-inner { padding: 4px 16px 14px; }
 .acc-inner p {
   font-size: var(--fs-md); line-height: 1.7;
@@ -53,16 +129,25 @@
 .acc-inner p:last-child { margin-bottom: 0; }
 .acc-inner strong { color: var(--c-navy); }
 .acc-inner em { color: var(--c-text-muted); }
-.acc-inner ul { padding-left: 1.25em; margin: .3em 0 .7em; }
-.acc-inner li { line-height: 1.7; margin-bottom: .3em; }
 .acc-inner sup { color: var(--c-navy); font-weight: 800; font-size: .72em; }
-.acc-inner h4 {
-  font-family: var(--font-display); color: var(--c-navy);
-  font-size: 1.02em; margin: .8em 0 .3em;
+.video-embed {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  margin: 10px 0 6px; border-radius: var(--radius); overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0,0,0,.18);
 }
+.video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.lichess-link {
+  display: inline-block; margin-top: 6px;
+  padding: 10px 20px; border-radius: 50px;
+  background: var(--c-navy); color: #fff; text-decoration: none;
+  font-family: var(--font-display); font-weight: 700; font-size: var(--fs-sm);
+}
+.lichess-link:hover { filter: brightness(1.12); }
 
 @media (max-width: 768px), (max-aspect-ratio: 1/1) {
   .page-main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .map-col { max-height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.46); }
+  .map-wrap { max-height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.46); aspect-ratio: auto; height: 100%; }
 }
 </style>
 </head>
@@ -72,11 +157,23 @@
   <header class="page-header" role="banner">
     <span class="header-title">Cursa roboților și epoca AI</span>
     <div class="header-progress">
-      <span class="lesson-badge">Strămoșii șahului</span>
+      <span class="lesson-badge">Evoluția șahului</span>
     </div>
   </header>
 
   <main class="page-main" role="main">
+
+    <div class="map-col">
+      <div class="map-wrap" id="botWrap">
+        <img id="botImg" alt="">
+        <iframe id="botVideo" class="bot-video" title="Video" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <div class="bot-ph" id="botPh">🤖 Epopeea Roboților</div>
+        <button class="img-nav img-nav--prev" id="imgPrev" aria-label="Poza anterioară" type="button">&#8249;</button>
+        <button class="img-nav img-nav--next" id="imgNext" aria-label="Poza următoare" type="button">&#8250;</button>
+        <div class="img-count" id="imgCount"></div>
+        <div class="map-cap" id="botCap"></div>
+      </div>
+    </div>
 
     <div class="panel-col">
       <div class="panel-scroll">
@@ -95,40 +192,113 @@
 </div>
 
 <script>
-/* ───────────────────────────────────────────────────────────
-   SCHELET — de completat împreună.
-   Fiecare sertar are titlul gata; conținutul îl scriem ulterior,
-   în stilul povestit, cu numere [1] ca urme de detectiv.
-   ─────────────────────────────────────────────────────────── */
 const sertare = [
   { emoji:'🧭', title:'Cum citim pagina',
+    imgs:[ { src:'img/roboti/intro.png', cap:'De la oameni de tinichea la creiere de silicon' } ],
     body:`
-<p>După ce jocul a străbătut lumea și s-a așezat în forma de azi, a apărut un adversar nou: <strong>mașina</strong>. Aici urmărim cursa dintre mintea omului și calculator — de la o păcăleală veche de 250 de ani, până la inteligența artificială care învață singură.</p>
-<div class="hl-box">📝 <strong>Pagină nouă — schelet.</strong> Titlurile sertarelor sunt puse; poveștile le scriem împreună, pe rând.</div>` },
+<p>Șahul a străbătut lumea și s-a așezat în forma de azi. De aici începe altă poveste: cea în care omul își construiește singur un <strong>adversar de metal</strong>. O cursă de aproape 250 de ani — de la o cutie de lemn cu un secret rușinos, până la o inteligență artificială care învață absolut singură.</p>
+<p>Deschide sertarele pe rând. În stânga apare <strong>poza robotului</strong> din sertarul deschis. Unde sunt mai multe poze, folosește săgețile <strong>‹ ›</strong>.</p>` },
 
-  { emoji:'🎭', title:'1. Turcul mecanic — primul „robot" (o păcăleală)',
+  { emoji:'🎩', title:'1. Turcul Mecanic (1770)', phTxt:'Turcul Mecanic',
+    imgs:[ { src:'img/roboti/turcul_mecanic.png', cap:'Turcul Mecanic <small>· 1770</small>' } ],
     body:`
-<p><em>De completat:</em> automatul lui Wolfgang von Kempelen (1770) care „juca" șah — și omul ascuns înăuntru. Cum a păcălit Europa aproape un secol. <sup>[1]</sup></p>` },
+<p>Înainte de calculatoare, oamenii visau deja la un robot care să gândească. În anul <strong>1770</strong>, inventatorul <strong>Wolfgang von Kempelen</strong> a lăsat întreaga Europă cu gura căscată: a construit o cutie mare din lemn de arțar, plină de rotițe, arcuri și mecanisme de ceas, în spatele căreia stătea un manechin îmbrăcat în straie otomane, cu turban și o pipă în mână. I s-a spus <strong>„Turcul Mecanic"</strong>.</p>
+<p><strong>Spectacolul:</strong> robotul dădea din cap, muta piesele cu mâna lui de lemn și, când dădea șah, rostea cu mândrie <em>„Échec!"</em>. A bătut la șah regi, împărați și minți luminate — printre care pe <strong>Napoleon Bonaparte</strong> și <strong>Benjamin Franklin</strong>. Dacă adversarul trișa, Turcul mătura toate piesele de pe tablă cu o singură mișcare furioasă!</p>
+<div class="hl-box">🕵️ <strong>Secretul de detectiv:</strong> totul a fost cea mai mare și mai genială păcăleală din istorie! Înăuntrul cutiei nu era niciun computer (nici nu existau!). Printr-un sistem secret de uși duble și oglinzi, acolo se ascundea un <strong>maestru de șah adevărat</strong>, din carne și oase. Stătea ghemuit la lumina unei lumânări și muta piesele cu <strong>magneți</strong> ascunși sub tablă, în timp ce publicul credea că rotițele de cupru fac toată magia. Păcăleala a ținut <strong>84 de ani</strong>!</div>` },
 
-  { emoji:'🖥️', title:'2. Deep Blue îl învinge pe Kasparov (1997)',
+  { emoji:'🏛️', title:'2. El Ajedrecista (1912)', phTxt:'El Ajedrecista',
+    imgs:[
+      { src:'img/roboti/el_ajedrecista_1.png', cap:'El Ajedrecista — mașina și inventatorul <small>· 1912</small>' },
+      { src:'img/roboti/el_ajedrecista_2.png', cap:'El Ajedrecista — mecanismul dinăuntru <small>· 1912</small>' }
+    ],
     body:`
-<p><em>De completat:</em> primul calculator care a învins un campion mondial în meci — IBM Deep Blue contra Garri Kasparov. Ce a însemnat momentul. <sup>[2]</sup></p>` },
+<p>Sătul de escrocherii, un inventator spaniol genial pe nume <strong>Leonardo Torres y Quevedo</strong> și-a spus: <em>„Eu voi face un robot adevărat, fără oameni ascunși!"</em>. În <strong>1912</strong> a prezentat lumii <strong>El Ajedrecista</strong> („Șahistul"), considerat de istorici <strong>primul joc pe calculator din istoria omenirii</strong>.</p>
+<p><strong>Cum funcționa:</strong> nu avea brațe robotice vizibile. Juca doar un final de partidă: robotul avea un <strong>Rege</strong> și un <strong>Turn</strong>, iar omul doar <strong>Regele</strong>. Sub tablă se aflau rețele complicate de cabluri și electromagneți. Când omul își muta piesa, baza ei metalică închidea un circuit electric: robotul „simțea" mutarea și, prin fire ascunse, își trăgea Turnul pe căsuța corectă.</p>
+<p><strong>Senzorul de trișat:</strong> robotul era extrem de corect. Dacă omul făcea o mutare ilegală (încerca să trișeze), pe tablă se aprindea un <strong>bec mare roșu</strong>, iar robotul îngheța și refuza să mai joace până când piesa nu era pusă la loc. Câștiga absolut de fiecare dată — prima dovadă că o mașinărie poate lua singură decizii logice.</p>` },
 
-  { emoji:'🧠', title:'3. AlphaZero — calculatorul care a învățat singur',
+  { emoji:'💻', title:'3. Deep Blue (1997)', phTxt:'Deep Blue',
+    imgs:[
+      { src:'img/roboti/deep_blue.jpg', cap:'Deep Blue — supercomputerul IBM <small>· 1997</small>' },
+      { src:'img/roboti/deep_blue_2.png', cap:'Kasparov față în față cu Deep Blue <small>· 1997</small>' }
+    ],
     body:`
-<p><em>De completat:</em> de la motoarele care „calculează tot" la AlphaZero, care a învățat șahul de unul singur, doar jucând cu el însuși. <sup>[3]</sup></p>` },
+<p>Sărim în timp în anul <strong>1997</strong>, la New York. Într-o cameră întunecată, cel mai puternic campion mondial din toate timpurile, <strong>Garry Kasparov</strong>, stătea față în față cu un monstru de metal de două tone: <strong>Deep Blue</strong>, un supercomputer construit de compania <strong>IBM</strong>.</p>
+<p><strong>Forța brută:</strong> Deep Blue nu gândea ca un om — era un monstru al matematicii pure. În fiecare secundă, în timp ce Kasparov analiza 2–3 mutări, Deep Blue calcula <strong>200 de milioane de poziții</strong>! Vedea partida cu vreo 20 de mutări înainte, verificând instantaneu variante după variante.</p>
+<div class="hl-box ok">⚡ <strong>Ziua în care Kasparov a cedat:</strong> Deep Blue a câștigat meciul. A fost <strong>prima dată când o mașină a învins un campion mondial</strong> într-un meci oficial. Kasparov a plecat de la masă șocat, spunând că în unele momente a simțit o <em>„inteligență profundă și umană"</em> în mutările computerului — deși în spate erau doar cipuri de silicon și miliarde de calcule reci.</div>` },
 
-  { emoji:'🤖', title:'4. Roboții de azi și epoca AI',
+  { emoji:'🧠', title:'4. AlphaZero și epoca AI (2017)', imgs:[], video:'https://www.youtube.com/embed/wljgxS7tZVE',
     body:`
-<p><em>De completat:</em> brațul-robot care mută piesele, aplicațiile care te antrenează, ce poate și ce nu poate încă inteligența artificială. <sup>[4]</sup></p>` },
-
-  { emoji:'🔍', title:'Pentru Detectivi: Surse',
-    body:`
-<p><em>De completat:</em> cărțile și articolele din care am cules povestea (Standage — <em>The Turk</em>; relatări despre Deep Blue și AlphaZero).</p>` }
+<p>După Deep Blue, computerele au devenit atât de puternice încât niciun om nu le mai putea bate. Dar tot jucau după reguli scrise de programatori umani (<em>„păstrează nebunii", „pionul din centru e valoros"</em>). În <strong>2017</strong>, compania <strong>Google DeepMind</strong> a schimbat jocul pentru totdeauna cu <strong>AlphaZero</strong>.</p>
+<p><strong>Fără profesori:</strong> programatorii nu i-au dat nicio strategie. I-au instalat doar regulile de bază (cum mută calul, cum dă șah) și l-au lăsat singur. AlphaZero a început să joace împotriva… lui AlphaZero.</p>
+<p><strong>Milioane de vieți în 4 ore:</strong> în doar <strong>4 ore</strong> de auto-joc, AlphaZero a adunat mai multă experiență de șah decât toată omenirea în 1400 de ani. Pus să joace cu <strong>Stockfish</strong> (cel mai bun motor tradițional), l-a spulberat cu mutări care i-au lăsat pe marii maeștri cu gura căscată: sacrifica piese fără motiv aparent, ataca cu o agresivitate incredibilă, juca cu o libertate și o frumusețe aproape umane. Nu mai era forță brută — era <strong>Inteligență Artificială</strong>.</p>
+<div class="hl-box">🔄 <strong>Întorsătura secretă:</strong> deși în 2017 AlphaZero părea stăpânul galaxiei, în 2019 a căzut pe locul 4! De ce? Google a oprit experimentul, iar o armată de programatori voluntari din toată lumea a modernizat vechiul Stockfish — au combinat forța brută de calcul cu o rețea neuronală. Noul <strong>Stockfish NNUE</strong> a recucerit coroana, urcând mult peste bariera de <strong>3500 ELO</strong>.</div>
+<p style="margin-top:10px;">🎬 <strong>Vezi în stânga:</strong> evoluția motoarelor de șah până în 2019 — <strong>Stockfish rules și azi</strong>! <span style="opacity:.8;">(AlphaZero și Stockfish sunt <em>programe</em>, nu mașinării — de aceea n-au „poză".)</span></p>
+<p style="margin-top:10px;">🕵️‍♂️ <strong>Dosarul AlphaZero:</strong> vezi magia cu ochii tăi —</p>
+<a class="lichess-link" href="https://lichess.org/study/wxrovYNH/fpMehAaB" target="_blank" rel="noopener">♟️ Cele 10 partide pe Lichess ⟶</a>
+<div class="hl-box ok" style="margin-top:12px;">🤖 <strong>Vestea bună:</strong> Stockfish e gratuit și îl folosim chiar și noi în „Cufărul cu Șah" — îl poți înfrunta tu însuți!</div>
+<a class="lichess-link" href="practica2.html" style="margin-top:8px;">♟️ Joacă tu în arenă (cu Stockfish) ⟶</a>` }
 ];
 
+const wrap  = document.getElementById('botWrap');
+const img   = document.getElementById('botImg');
+const ph    = document.getElementById('botPh');
+const cap   = document.getElementById('botCap');
+const count = document.getElementById('imgCount');
+const prevBtn = document.getElementById('imgPrev');
+const nextBtn = document.getElementById('imgNext');
+const vid   = document.getElementById('botVideo');
+
+let curImgs = [], curIdx = 0, curPh = '', curCap = '', curNote = '', curVideo = '';
+
+function paint() {
+  wrap.classList.remove('has-img', 'has-video');
+  if (curVideo) {
+    vid.src = curVideo;
+    wrap.classList.add('has-video');
+    cap.innerHTML = '';
+    return;
+  }
+  vid.removeAttribute('src');
+  if (!curImgs.length) {
+    img.removeAttribute('src');
+    ph.innerHTML = curNote || (curPh ? ('📷 ' + curPh) : '🤖 Epopeea Roboților');
+    cap.innerHTML = curNote ? '' : (curCap || '');
+    return;
+  }
+  const it = curImgs[curIdx];
+  cap.innerHTML = it.cap || '';
+  count.textContent = (curIdx + 1) + ' / ' + curImgs.length;
+  img.onload  = function () { wrap.classList.add('has-img'); };
+  img.onerror = function () {
+    wrap.classList.remove('has-img');
+    ph.innerHTML = '📷 ' + (curPh || '') + '<br><small style="font-weight:600;opacity:.8;">poză de adăugat</small>';
+  };
+  img.src = it.src;
+}
+
+function showBot(b) {
+  curImgs = b.imgs || [];
+  curIdx  = 0;
+  curPh   = b.phTxt || '';
+  curCap  = b.cap || '';
+  curNote = b.note || '';
+  curVideo = b.video || '';
+  wrap.classList.toggle('multi', curImgs.length > 1);
+  paint();
+}
+
+prevBtn.addEventListener('click', function (e) {
+  e.stopPropagation();
+  if (curImgs.length) { curIdx = (curIdx - 1 + curImgs.length) % curImgs.length; paint(); }
+});
+nextBtn.addEventListener('click', function (e) {
+  e.stopPropagation();
+  if (curImgs.length) { curIdx = (curIdx + 1) % curImgs.length; paint(); }
+});
+
 const list = document.getElementById('accList');
-sertare.forEach(function(b, idx) {
+const items = [];
+sertare.forEach(function (b, idx) {
   const item = document.createElement('div');
   item.className = 'acc-item';
 
@@ -147,9 +317,19 @@ sertare.forEach(function(b, idx) {
 
   item.appendChild(hdr); item.appendChild(body);
   list.appendChild(item);
+  items.push(item);
 
-  hdr.addEventListener('click', function(){ item.classList.toggle('open'); });
-  if (idx === 0) item.classList.add('open');
+  hdr.addEventListener('click', function () {
+    const wasOpen = item.classList.contains('open');
+    items.forEach(function (it) { it.classList.remove('open'); });
+    if (!wasOpen) {
+      item.classList.add('open');
+      showBot(b);
+      item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+
+  if (idx === 0) { item.classList.add('open'); showBot(b); }
 });
 </script>
 </body>
