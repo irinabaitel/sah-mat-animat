@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>Drumul șahului prin lume și istorie — Evoluția șahului</title>
+<title>Evoluția șahului în Europa — Istoria șahului</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -42,6 +42,40 @@
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 .map-cap small { font-family: var(--font-body); font-weight: 600; opacity: .85; }
+
+.map-title {
+  position: absolute; left: 0; right: 0; top: 0;
+  padding: 18px 16px 30px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(26,58,107,0.88), rgba(26,58,107,0));
+  color: #f3e2bb;
+  z-index: 2;
+}
+.map-title .motto {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 900; font-style: italic;
+  font-size: clamp(1.6em, 4.6vw, 2.7em);
+  letter-spacing: 1px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+}
+.map-title small {
+  display: block; margin-top: 3px;
+  font-family: var(--font-body); font-weight: 700;
+  font-size: var(--fs-sm); color: #fff; opacity: .92;
+}
+.intro-block {
+  background: var(--c-surface);
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  font-size: var(--fs-md);
+  line-height: 1.7;
+  color: var(--c-text);
+}
+.intro-block strong { color: var(--c-navy); }
+.intro-block .motto-inline { font-style: italic; font-weight: 800; color: var(--c-navy); }
 
 /* ── Sertare (accordion) — identic cu paginile Strămoșii ────── */
 .acc-list { display: flex; flex-direction: column; gap: 6px; }
@@ -101,7 +135,7 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">Drumul șahului prin lume și istorie</span>
+    <span class="header-title">Evoluția șahului în Europa</span>
     <div class="header-progress">
       <span class="lesson-badge">Evoluția șahului</span>
     </div>
@@ -111,16 +145,20 @@
 
     <div class="map-col">
       <div class="map-wrap">
-        <img src="img/harta_lume_full.png" alt="Harta lumii — drumul și istoria șahului">
-        <div class="map-cap">
-          De la o tablă din India, acum 1500 de ani… până la roboții care joacă azi în toată lumea.
-          <br><small>Deschide sertarele din dreapta și urmărește povestea →</small>
+        <img src="img/harta_lume_full.png" alt="Harta lumii — șahul, o singură familie">
+        <div class="map-title">
+          <span class="motto">Gens una sumus</span>
+          <small>Suntem o singură familie</small>
         </div>
+        <div class="map-cap">Fiecare națiune a dăruit șahului o super-putere — deschide sertarele din dreapta →</div>
       </div>
     </div>
 
     <div class="panel-col">
       <div class="panel-scroll">
+        <div class="intro-block">
+          După o călătorie de sute de ani prin deșerturi și jungle, jocul a trecut munții în <strong>Europa</strong>. Aici, fiecare țară i-a oferit o <strong>super-putere</strong>: Spania i-a dat aripi Reginei, Italia a inventat rocada, iar Anglia a adus ceasul de șah. Deși vorbeau limbi diferite și uneori se războiau, pe tabla de 64 de pătrate toți deveneau egali. De aceea, șahiștii din toată lumea au adoptat un motto în limba latină: <span class="motto-inline">Gens una sumus</span> — „Suntem o singură familie".
+        </div>
         <div id="accList" class="acc-list"></div>
       </div>
     </div>
@@ -129,7 +167,7 @@
 
   <footer class="page-footer" role="navigation">
     <a class="nav-btn nav-btn--back" href="drumul_sahului.html"><span class="icon">⟵</span> <span class="label">Din India în Europa</span></a>
-    <a class="nav-btn nav-btn--contents" href="hub.html"><span class="label">Cuprins</span></a>
+    <a class="nav-btn nav-btn--contents" href="index.html"><span class="label">Acasă</span></a>
     <a class="nav-btn nav-btn--forward" href="roboti_si_ai.html"><span class="label">Roboți și AI</span> <span class="icon">⟶</span></a>
   </footer>
 
@@ -137,71 +175,33 @@
 
 <script>
 const sertare = [
-  { emoji:'🧭', title:'Cum citim pagina',
+  { emoji:'🇮🇹', title:'Italia — „Darul Vitezei"',
     body:`
-<p>Șahul are o poveste lungă de aproape <strong>1500 de ani</strong>. Aici o străbatem dintr-o privire: de la jocul indian de la care a pornit totul, până la <strong>Magnus Carlsen</strong> și la roboții care joacă mai bine decât orice om.</p>
-<p>Deschide sertarele pe rând. Numerele mici, ca <sup>[1]</sup>, sunt urme de detectiv — le găsești dezlegate în ultimul sertar, „Pentru Detectivi".</p>` },
+<p><em>Rocada &amp; mutarea dublă a pionului</em></p>
+<p>Italienii s-au plictisit de ritmul lent al <strong>shatranj</strong>-ului. Ei au fost printre primii care au testat <strong>mutarea pionului cu două pătrățele</strong> la prima ieșire și tot ei au pus bazele ideii de <strong>rocadă</strong>, ca regele să fie pus la adăpost mult mai repede.</p>` },
 
-  { emoji:'🐘', title:'1. De la chaturanga la șah',
+  { emoji:'🇪🇸', title:'Spania — „Darul Reginei Moderne" (1475)',
     body:`
-<p>Acum aproape 1500 de ani, în <strong>India</strong>, s-a născut <strong>chaturanga</strong> — „cele patru brațe ale armatei". A călătorit în <strong>Persia</strong>, unde a devenit <em>chatrang</em>: de la regele persan, numit <strong>șah</strong>, ne-a rămas însuși numele jocului și strigătul <strong>„șah-mat"</strong> <sup>[1]</sup>.</p>
-<p>Apoi a ajuns la <strong>arabi</strong>, cu numele <em>shatranj</em>. La Bagdad, acum vreo 1200 de ani, au apărut primii mari maeștri, primele cărți și primele probleme de șah <sup>[1]</sup>.</p>
-<p>De la arabi, jocul a intrat în Europa pe <strong>două porți</strong>: prin <strong>Spania maură</strong> și prin <strong>Sicilia și sudul Italiei</strong>, care fuseseră și ele sub stăpânire arabă <sup>[2]</sup>.</p>
-<div class="hl-box">🗺️ <strong>Vezi tot drumul pe hartă:</strong> pagina <em>„Drumul șahului în lume"</em> (butonul „Harta antică" de jos) îți arată traseul pas cu pas, cu stegulețe și animație.</div>` },
+<p><em>Nașterea reginei moderne</em></p>
+<p>În <strong>Valencia</strong>, influențați de puterea uriașă a <strong>Reginei Isabella a Castiliei</strong>, șahiștii au transformat vechiul și leneșul <strong>Sfetnic</strong> (care muta doar un pătrat) în <strong>Regina modernă</strong> — cea mai puternică și temută piesă de pe tablă. Tot spaniolul <strong>Lucena</strong> a scris și <strong>prima carte tipărită</strong> despre șahul modern.</p>` },
 
-  { emoji:'👑', title:'2. Cum s-a schimbat în Europa — și ce a dat fiecare țară',
+  { emoji:'🇫🇷', title:'Franța — „Darul Strategiei și al Cafenelelor"',
     body:`
-<p>În Europa, jocul nu a stat pe loc — s-a transformat și a căpătat, țară cu țară, forma de azi.</p>
+<p><em>Secolul al XVIII-lea</em></p>
+<p>La celebra <strong>Café de la Régence</strong> din Paris, oameni ca <strong>Philidor</strong> au demonstrat că șahul nu e doar un joc de atac haotic, ci o adevărată <strong>știință</strong>. El a lăsat celebra vorbă: <em>„Pionii sunt sufletul șahului"</em>.</p>` },
 
-<h4>🇷🇺 Surpriză: Rusia l-a primit foarte devreme</h4>
-<p>Mulți cred că șahul a ajuns în Rusia târziu. De fapt, a sosit <strong>încă din secolele IX–X</strong>, nu prin Europa de Vest, ci direct dinspre lumea arabă și persană, pe <strong>ruta comercială a Volgăi și a Mării Caspice</strong>. Săpăturile arheologice de la <strong>Novgorod</strong> au scos la iveală piese vechi care dovedesc asta <sup>[1]</sup><sup>[3]</sup>. Acolo șahul a prins rădăcini mai puternice decât oriunde în vestul Europei.</p>
-
-<h4>♛ Marea schimbare: „regina nebună" (~1475)</h4>
-<p>Vreme de sute de ani, regina (sfetnicul) se târa <strong>un singur pas pe diagonală</strong>, iar nebunul sărea doar două pătrate. În jurul anului <strong>1475–1500</strong>, în <strong>Spania și Italia</strong>, cineva a avut o idee îndrăzneață: ce-ar fi dacă regina ar putea merge <strong>oricât, în orice direcție</strong>? Dintr-o piesă slabă, regina a devenit <strong>cea mai puternică de pe tablă</strong> <sup>[4]</sup>.</p>
-<p>Jocul nou, mult mai rapid, a fost numit în Italia <em>scacchi alla rabiosa</em> — „șahul turbat". Unii istorici cred că regina a devenit atât de puternică pentru că în acea vreme Europa avea <strong>regine puternice adevărate</strong>, ca Isabela de Castilia <sup>[4]</sup>.</p>
-
-<h4>📜 Celelalte reguli de azi</h4>
-<p>Tot între anii 1200 și 1600 s-au limpezit și restul regulilor: <strong>pasul dublu al pionului</strong> și captura <em>„en passant"</em>, <strong>rocada</strong> (regele și turnul deodată), iar <strong>patul</strong> a devenit <strong>remiză</strong> (înainte, în unele locuri, era victorie!). Când toate s-au așezat, șahul arăta deja ca al nostru <sup>[2]</sup><sup>[5]</sup>.</p>
-
-<h4>🌍 Contribuția fiecărei țări</h4>
-<ul>
-  <li><strong>Spania</strong> — Lucena tipărește una dintre primele cărți de șah păstrate (~1497); preotul <strong>Ruy López</strong> (1561) dă numele „deschiderii spaniole".</li>
-  <li><strong>Italia</strong> — <strong>Greco</strong> (~1620), maestru al jocului strălucitor de atac.</li>
-  <li><strong>Franța</strong> — <strong>Philidor</strong> (1749): „pionii sunt sufletul șahului"; scrie reguli folosite peste tot.</li>
-  <li><strong>Anglia</strong> — primul mare <strong>turneu internațional</strong> (Londra, 1851) și primul <strong>ceas de șah</strong> (~1883).</li>
-  <li><strong>Germania &amp; Austria</strong> — <strong>Steinitz</strong>, primul campion mondial oficial (<strong>1886</strong>), apoi <strong>Lasker</strong>, campion 27 de ani.</li>
-  <li><strong>SUA</strong> — <strong>Morphy</strong> (1858), apoi <strong>Bobby Fischer</strong> (1972, „meciul secolului").</li>
-  <li><strong>Rusia / URSS</strong> — „<strong>școala sovietică</strong>": Botvinnik, Tal, Petrosian, Spasski, Karpov, <strong>Kasparov</strong> — zeci de ani de dominație.</li>
-  <li><strong>FIDE</strong> (1924, Paris) — federația mondială. Deviza: <em>„Gens una sumus"</em> — „Suntem un singur popor".</li>
-</ul>
-
-<h4>🏆 Elita de azi</h4>
-<p><strong>Magnus Carlsen</strong> (Norvegia) are cel mai mare rating din istorie și a fost campion mondial mulți ani. În decembrie 2024, indianul <strong>Gukesh Dommaraju</strong> l-a învins pe <strong>Ding Liren</strong> (China) și a devenit, la <strong>18 ani</strong>, cel mai tânăr campion mondial absolut din istorie <sup>[6]</sup>.</p>
-<p>Lângă ei, vârful lumii de azi: <strong>Fabiano Caruana</strong> (SUA), <strong>Ian Nepomniachtchi</strong> (Rusia), <strong>Hikaru Nakamura</strong> (SUA), <strong>Arjun Erigaisi</strong> (India). Șahul a devenit cu adevărat un joc al întregii lumi. 🌐</p>` },
-
-  { emoji:'🤖', title:'3. Roboții de șah — povești adevărate',
+  { emoji:'🇬🇧', title:'Anglia — „Darul Regulilor și al Timpului"',
     body:`
-<p>Oamenii au visat de sute de ani la o mașină care joacă șah. Iată povestea lor — cu întâmplări adevărate.</p>
+<p><em>Secolul al XIX-lea</em></p>
+<p>Englezii au organizat <strong>primul Turneu Internațional de Șah</strong> (Londra, <strong>1851</strong>) și au ajutat la <strong>standardizarea regulilor</strong> oficiale pe care le folosim și astăzi — dar și la introducerea <strong>ceasurilor de șah</strong>, ca partidele să nu mai dureze la infinit.</p>` },
 
-<h4>🎩 Turcul Mecanic (1770) — cea mai mare păcăleală</h4>
-<p>Inventatorul <strong>Wolfgang von Kempelen</strong> a construit un „robot" îmbrăcat în haine turcești, care juca șah și <strong>învingea aproape pe oricine</strong> — se spune că i-a bătut chiar și pe <strong>Napoleon</strong> și pe <strong>Benjamin Franklin</strong>! A uimit lumea timp de aproape <strong>84 de ani</strong>. Adevărul? Era o <strong>păcăleală</strong>: înăuntru stătea ascuns un <strong>maestru de șah</strong>, care mișca piesele cu pârghii <sup>[7]</sup>. Mașina a ars într-un incendiu în 1854 — fără ca trucul să fi fost prins vreodată „în direct".</p>
-
-<h4>⚙️ El Ajedrecista (1912) — primul robot ADEVĂRAT</h4>
-<p>Inginerul spaniol <strong>Leonardo Torres Quevedo</strong> a construit o mașină care, fără niciun om ascuns, <strong>chiar juca singură</strong> finalul rege + turn contra rege și dădea mat. Primul automat de șah real din lume <sup>[2]</sup>.</p>
-
-<h4>🧠 Deep Blue învinge un campion mondial (1997)</h4>
-<p>Calculatorul <strong>Deep Blue</strong> al firmei IBM l-a înfruntat pe campionul mondial <strong>Garri Kasparov</strong>. În 1996 Kasparov a câștigat; dar în <strong>1997</strong>, după îmbunătățiri, mașina a câștigat meciul <strong>3½–2½</strong> — prima oară când un computer învingea un campion mondial în meci <sup>[8]</sup>. Poveste adevărată: după o mutare ciudată a mașinii, Kasparov a fost convins că o ajută un om — de fapt fusese doar o eroare mică de program.</p>
-
-<h4>✨ AlphaZero (2017) — a învățat singur în 4 ore</h4>
-<p>Programul <strong>AlphaZero</strong> nu a primit nicio carte și nicio teorie. I s-au spus doar regulile, apoi a <strong>jucat cu el însuși</strong> milioane de partide. În aproximativ <strong>4 ore</strong> a ajuns să bată cele mai puternice programe ale momentului <sup>[8]</sup>. Juca frumos, cu sacrificii curajoase — i-au zis „un șah extraterestru".</p>
-
-<h4>🐟 Stockfish și ziua de azi</h4>
-<p><strong>Stockfish</strong> este gratuit și făcut de o <strong>comunitate de voluntari</strong> din toată lumea. Azi cele mai bune motoare au peste <strong>3600 de puncte Elo</strong>, în timp ce cel mai bun om are în jur de 2830 — niciun campion nu mai poate învinge un motor.</p>
-<div class="hl-box ok">🌟 <strong>Și totuși…</strong> mașinile calculează mai bine, dar nu se <em>bucură</em> de joc. Oamenii folosesc azi motoarele ca pe niște antrenori — iar plăcerea, curajul și frumusețea unei partide rămân ale noastre.</div>` },
-
-  { emoji:'🕵️', title:'4. Pentru Detectivi: surse și bibliografie',
+  { emoji:'🇩🇪', title:'Germania — „Darul Teoriei"',
     body:`
-<p>Un detectiv adevărat verifică totul. Iată cărțile și sursele din care e culeasă povestea de mai sus. Numărul din față se potrivește cu cel din text: vezi <sup>[1]</sup>, cauți [1] aici.</p>
+<p>Jucătorii germani au început să <strong>analizeze matematic</strong> deschiderile și finalurile, creând <strong>manuale groase de teorie</strong> care au transformat jocul într-o adevărată <strong>disciplină academică</strong>.</p>` },
+
+  { emoji:'🕵️', title:'Pentru Detectivi: surse și bibliografie',
+    body:`
+<p>Un detectiv adevărat verifică totul. Iată cărțile și sursele din care e culeasă povestea evoluției șahului — de la origini, prin Europa, până la campionii de azi.</p>
 <p><strong>[1]</strong> Murray, H. J. R. — <em>A History of Chess</em>, Oxford University Press, 1913. <em>Lucrarea de căpătâi a istoriei șahului; traduce direct din manuscrise arabe, persane și sanscrite.</em></p>
 <p><strong>[2]</strong> Eales, Richard — <em>Chess: The History of a Game</em>, 1985. <em>Istorie modernă, de la origini la era turneelor.</em></p>
 <p><strong>[3]</strong> Cazaux, Jean-Louis &amp; Knowlton, Rick — <em>A World of Chess</em>, McFarland, 2017. <em>Sinteză cuprinzătoare; tratează și răspândirea spre Rusia și Asia.</em></p>
