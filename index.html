@@ -75,8 +75,6 @@ h1 {
 .card-1::before { background: #1a3a6b; }
 .card-2::before { background: #7d3c98; }
 .card-3::before { background: #27ae60; }
-.card-4::before { background: #e67e22; }
-.card-5::before { background: #c0392b; }
 
 .card-icon {
     font-size: 2.4em;
@@ -115,10 +113,6 @@ h1 {
 .card-2 .card-btn:hover { background: #9b59b6; }
 .card-3 .card-btn { background: #27ae60; color: white; }
 .card-3 .card-btn:hover { background: #2ecc71; }
-.card-4 .card-btn { background: #e67e22; color: white; }
-.card-4 .card-btn:hover { background: #f39c12; }
-.card-5 .card-btn { background: #c0392b; color: white; }
-.card-5 .card-btn:hover { background: #e74c3c; }
 
 /* CURÂND badge */
 .badge-curand {
@@ -132,18 +126,6 @@ h1 {
     letter-spacing: 0.06em;
     text-transform: uppercase;
     margin-top: 6px;
-}
-
-/* CARD 5 — full width on large screens */
-@media (min-width: 800px) {
-    .card-5 {
-        grid-column: 1 / -1;
-        flex-direction: row;
-        align-items: center;
-        gap: 24px;
-    }
-    .card-5 .card-icon { font-size: 3em; }
-    .card-5 .card-content { flex: 1; }
 }
 
 footer {
@@ -164,54 +146,32 @@ footer {
 
 <div class="grid">
 
-    <!-- 1. Să învățăm șah -->
+    <!-- 1. Istoria șahului -->
     <div class="card card-1">
-        <div class="card-icon">👑</div>
-        <div class="card-title">Să învățăm șah</div>
-        <div class="card-desc">
-            De la prima mutare până la strategii avansate. Lecții interactive cu exerciții și un robot cu care să exersezi.
-        </div>
-        <a href="hub.html" class="card-btn">Începe lecțiile ▶</a>
-    </div>
-
-    <!-- 2. Istoria șahului -->
-    <div class="card card-2">
         <div class="card-icon">🏺</div>
         <div class="card-title">Istoria șahului</div>
         <div class="card-desc">
-            De la Chaturanga în India antică, prin Shatranj persan și Xiangqi chinezesc, până la Magnus Carlsen.
+            De la Chaturanga în India antică, prin Shatranj persan și Xiangqi chinezesc, până la campionii și roboții de azi.
         </div>
         <a href="istoria_sahului.html" class="card-btn">Hai să descoperim! ▶</a>
     </div>
 
-    <!-- 3. Reguli -->
+    <!-- 2. Să învățăm șah -->
+    <div class="card card-2">
+        <div class="card-icon">👑</div>
+        <div class="card-title">Să învățăm șah</div>
+        <div class="card-desc">
+            De la prima mutare până la strategii avansate: lecții interactive, regulile jocului, termenii șahiști și un robot cu care să exersezi.
+        </div>
+        <a href="hub.html" class="card-btn">Începe lecțiile ▶</a>
+    </div>
+
+    <!-- 3. Arena de antrenament -->
     <div class="card card-3">
-        <div class="card-icon">📋</div>
-        <div class="card-title">Reguli pentru micii șahiști</div>
-        <div class="card-desc">
-            Regulile oficiale de competiție explicate pe înțelesul tuturor — cum te comporți la tablă, cum cronometrezi, ce e permis.
-        </div>
-        <span class="badge-curand">⏳ În curând</span>
-    </div>
-
-    <!-- 4. Termeni -->
-    <div class="card card-4">
-        <div class="card-icon">📖</div>
-        <div class="card-title">Termeni șahiști</div>
-        <div class="card-desc">
-            Gambitu, furculița, clești, mansub, en passant — toți termenii importanți explicați simplu cu exemple vizuale.
-        </div>
-        <span class="badge-curand">⏳ În curând</span>
-    </div>
-
-    <!-- 5. Arena -->
-    <div class="card card-5">
         <div class="card-icon">🎯</div>
-        <div class="card-content">
-            <div class="card-title">Arena de antrenament</div>
-            <div class="card-desc">
-                Aşează piesele cum vrei pe tablă și joacă împotriva robotului. Alege nivelul — de la începător până la maestru!
-            </div>
+        <div class="card-title">Arena de antrenament</div>
+        <div class="card-desc">
+            Așează piesele cum vrei pe tablă și joacă împotriva robotului. Alege nivelul — de la începător până la maestru!
         </div>
         <a href="practica2.html" class="card-btn">Deschide arena ▶</a>
     </div>
