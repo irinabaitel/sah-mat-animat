@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Drumul șahului prin lume și istorie — Strămoșii</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="master-template.css">
+<style>
+/* ── Coloana hărții (backdrop, nu pătrată) ─── */
+.page-main { grid-template-columns: 56fr 44fr; }
+
+.map-col {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 0; min-width: 0;
+}
+.map-wrap {
+  width: 100%;
+  max-height: calc(100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap));
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.2);
+  background: #cfe3e6;
+}
+.map-wrap img {
+  width: 100%; height: 100%;
+  object-fit: contain; display: block;
+}
+.map-cap {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 14px 16px 10px;
+  background: linear-gradient(0deg, rgba(26,58,107,0.78), rgba(26,58,107,0));
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+.map-cap small { font-family: var(--font-body); font-weight: 600; opacity: .85; }
+
+/* ── Sertare (accordion) — identic cu paginile Strămoșii ────── */
+.acc-list { display: flex; flex-direction: column; gap: 6px; }
+.acc-item {
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--c-surface);
+  transition: border-color .15s;
+  scroll-margin-top: 8px;
+}
+.acc-item:hover, .acc-item.open { border-color: var(--c-navy); }
+.acc-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; cursor: pointer; user-select: none;
+  transition: background .15s;
+}
+.acc-item.open .acc-header, .acc-header:hover { background: rgba(26,58,107,.07); }
+.acc-emoji { font-size: 1.3em; line-height: 1; }
+.acc-title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-weight: 700; color: var(--c-navy);
+  font-size: var(--fs-md);
+}
+.acc-chevron {
+  font-size: .7em; color: var(--c-navy);
+  transition: transform .22s; display: inline-block;
+}
+.acc-item.open .acc-chevron { transform: rotate(90deg); }
+.acc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+.acc-item.open .acc-body { max-height: 3200px; }
+.acc-inner { padding: 4px 16px 14px; }
+.acc-inner p {
+  font-size: var(--fs-md); line-height: 1.7;
+  color: var(--c-text); margin-bottom: .6em;
+}
+.acc-inner p:last-child { margin-bottom: 0; }
+.acc-inner strong { color: var(--c-navy); }
+.acc-inner em { color: var(--c-text-muted); }
+.acc-inner ul { padding-left: 1.25em; margin: .3em 0 .7em; }
+.acc-inner li { line-height: 1.7; margin-bottom: .3em; }
+.acc-inner sup { color: var(--c-navy); font-weight: 800; font-size: .72em; }
+.acc-inner h4 {
+  font-family: var(--font-display); color: var(--c-navy);
+  font-size: 1.02em; margin: .8em 0 .3em;
+}
+
+@media (max-width: 768px), (max-aspect-ratio: 1/1) {
+  .page-main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .map-col { max-height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.46); }
+  .map-wrap { max-height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.46); }
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Drumul șahului prin lume și istorie</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Strămoșii șahului</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="map-col">
+      <div class="map-wrap">
+        <img src="img/harta_lume_full.png" alt="Harta lumii — drumul și istoria șahului">
+        <div class="map-cap">
+          De la o tablă din India, acum 1500 de ani… până la roboții care joacă azi în toată lumea.
+          <br><small>Deschide sertarele din dreapta și urmărește povestea →</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div id="accList" class="acc-list"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer" role="navigation">
+    <a class="nav-btn nav-btn--back" href="istoria_sahului.html"><span class="icon">⟵</span> <span class="label">Meniu</span></a>
+    <a class="nav-btn nav-btn--contents" href="hub.html"><span class="label">Cuprins</span></a>
+    <a class="nav-btn nav-btn--forward" href="drumul_sahului.html"><span class="label">Harta antică</span> <span class="icon">⟶</span></a>
+  </footer>
+
+</div>
+
+<script>
+const sertare = [
+  { emoji:'🧭', title:'Cum citim pagina',
+    body:`
+<p>Șahul are o poveste lungă de aproape <strong>1500 de ani</strong>. Aici o străbatem dintr-o privire: de la jocul indian de la care a pornit totul, până la <strong>Magnus Carlsen</strong> și la roboții care joacă mai bine decât orice om.</p>
+<p>Deschide sertarele pe rând. Numerele mici, ca <sup>[1]</sup>, sunt urme de detectiv — le găsești dezlegate în ultimul sertar, „Pentru Detectivi".</p>` },
+
+  { emoji:'🐘', title:'1. De la chaturanga la șah',
+    body:`
+<p>Acum aproape 1500 de ani, în <strong>India</strong>, s-a născut <strong>chaturanga</strong> — „cele patru brațe ale armatei". A călătorit în <strong>Persia</strong>, unde a devenit <em>chatrang</em>: de la regele persan, numit <strong>șah</strong>, ne-a rămas însuși numele jocului și strigătul <strong>„șah-mat"</strong> <sup>[1]</sup>.</p>
+<p>Apoi a ajuns la <strong>arabi</strong>, cu numele <em>shatranj</em>. La Bagdad, acum vreo 1200 de ani, au apărut primii mari maeștri, primele cărți și primele probleme de șah <sup>[1]</sup>.</p>
+<p>De la arabi, jocul a intrat în Europa pe <strong>două porți</strong>: prin <strong>Spania maură</strong> și prin <strong>Sicilia și sudul Italiei</strong>, care fuseseră și ele sub stăpânire arabă <sup>[2]</sup>.</p>
+<div class="hl-box">🗺️ <strong>Vezi tot drumul pe hartă:</strong> pagina <em>„Drumul șahului în lume"</em> (butonul „Harta antică" de jos) îți arată traseul pas cu pas, cu stegulețe și animație.</div>` },
+
+  { emoji:'👑', title:'2. Cum s-a schimbat în Europa — și ce a dat fiecare țară',
+    body:`
+<p>În Europa, jocul nu a stat pe loc — s-a transformat și a căpătat, țară cu țară, forma de azi.</p>
+
+<h4>🇷🇺 Surpriză: Rusia l-a primit foarte devreme</h4>
+<p>Mulți cred că șahul a ajuns în Rusia târziu. De fapt, a sosit <strong>încă din secolele IX–X</strong>, nu prin Europa de Vest, ci direct dinspre lumea arabă și persană, pe <strong>ruta comercială a Volgăi și a Mării Caspice</strong>. Săpăturile arheologice de la <strong>Novgorod</strong> au scos la iveală piese vechi care dovedesc asta <sup>[1]</sup><sup>[3]</sup>. Acolo șahul a prins rădăcini mai puternice decât oriunde în vestul Europei.</p>
+
+<h4>♛ Marea schimbare: „regina nebună" (~1475)</h4>
+<p>Vreme de sute de ani, regina (sfetnicul) se târa <strong>un singur pas pe diagonală</strong>, iar nebunul sărea doar două pătrate. În jurul anului <strong>1475–1500</strong>, în <strong>Spania și Italia</strong>, cineva a avut o idee îndrăzneață: ce-ar fi dacă regina ar putea merge <strong>oricât, în orice direcție</strong>? Dintr-o piesă slabă, regina a devenit <strong>cea mai puternică de pe tablă</strong> <sup>[4]</sup>.</p>
+<p>Jocul nou, mult mai rapid, a fost numit în Italia <em>scacchi alla rabiosa</em> — „șahul turbat". Unii istorici cred că regina a devenit atât de puternică pentru că în acea vreme Europa avea <strong>regine puternice adevărate</strong>, ca Isabela de Castilia <sup>[4]</sup>.</p>
+
+<h4>📜 Celelalte reguli de azi</h4>
+<p>Tot între anii 1200 și 1600 s-au limpezit și restul regulilor: <strong>pasul dublu al pionului</strong> și captura <em>„en passant"</em>, <strong>rocada</strong> (regele și turnul deodată), iar <strong>patul</strong> a devenit <strong>remiză</strong> (înainte, în unele locuri, era victorie!). Când toate s-au așezat, șahul arăta deja ca al nostru <sup>[2]</sup><sup>[5]</sup>.</p>
+
+<h4>🌍 Contribuția fiecărei țări</h4>
+<ul>
+  <li><strong>Spania</strong> — Lucena tipărește una dintre primele cărți de șah păstrate (~1497); preotul <strong>Ruy López</strong> (1561) dă numele „deschiderii spaniole".</li>
+  <li><strong>Italia</strong> — <strong>Greco</strong> (~1620), maestru al jocului strălucitor de atac.</li>
+  <li><strong>Franța</strong> — <strong>Philidor</strong> (1749): „pionii sunt sufletul șahului"; scrie reguli folosite peste tot.</li>
+  <li><strong>Anglia</strong> — primul mare <strong>turneu internațional</strong> (Londra, 1851) și primul <strong>ceas de șah</strong> (~1883).</li>
+  <li><strong>Germania &amp; Austria</strong> — <strong>Steinitz</strong>, primul campion mondial oficial (<strong>1886</strong>), apoi <strong>Lasker</strong>, campion 27 de ani.</li>
+  <li><strong>SUA</strong> — <strong>Morphy</strong> (1858), apoi <strong>Bobby Fischer</strong> (1972, „meciul secolului").</li>
+  <li><strong>Rusia / URSS</strong> — „<strong>școala sovietică</strong>": Botvinnik, Tal, Petrosian, Spasski, Karpov, <strong>Kasparov</strong> — zeci de ani de dominație.</li>
+  <li><strong>FIDE</strong> (1924, Paris) — federația mondială. Deviza: <em>„Gens una sumus"</em> — „Suntem un singur popor".</li>
+</ul>
+
+<h4>🏆 Elita de azi</h4>
+<p><strong>Magnus Carlsen</strong> (Norvegia) are cel mai mare rating din istorie și a fost campion mondial mulți ani. În decembrie 2024, indianul <strong>Gukesh Dommaraju</strong> l-a învins pe <strong>Ding Liren</strong> (China) și a devenit, la <strong>18 ani</strong>, cel mai tânăr campion mondial absolut din istorie <sup>[6]</sup>.</p>
+<p>Lângă ei, vârful lumii de azi: <strong>Fabiano Caruana</strong> (SUA), <strong>Ian Nepomniachtchi</strong> (Rusia), <strong>Hikaru Nakamura</strong> (SUA), <strong>Arjun Erigaisi</strong> (India). Șahul a devenit cu adevărat un joc al întregii lumi. 🌐</p>` },
+
+  { emoji:'🤖', title:'3. Roboții de șah — povești adevărate',
+    body:`
+<p>Oamenii au visat de sute de ani la o mașină care joacă șah. Iată povestea lor — cu întâmplări adevărate.</p>
+
+<h4>🎩 Turcul Mecanic (1770) — cea mai mare păcăleală</h4>
+<p>Inventatorul <strong>Wolfgang von Kempelen</strong> a construit un „robot" îmbrăcat în haine turcești, care juca șah și <strong>învingea aproape pe oricine</strong> — se spune că i-a bătut chiar și pe <strong>Napoleon</strong> și pe <strong>Benjamin Franklin</strong>! A uimit lumea timp de aproape <strong>84 de ani</strong>. Adevărul? Era o <strong>păcăleală</strong>: înăuntru stătea ascuns un <strong>maestru de șah</strong>, care mișca piesele cu pârghii <sup>[7]</sup>. Mașina a ars într-un incendiu în 1854 — fără ca trucul să fi fost prins vreodată „în direct".</p>
+
+<h4>⚙️ El Ajedrecista (1912) — primul robot ADEVĂRAT</h4>
+<p>Inginerul spaniol <strong>Leonardo Torres Quevedo</strong> a construit o mașină care, fără niciun om ascuns, <strong>chiar juca singură</strong> finalul rege + turn contra rege și dădea mat. Primul automat de șah real din lume <sup>[2]</sup>.</p>
+
+<h4>🧠 Deep Blue învinge un campion mondial (1997)</h4>
+<p>Calculatorul <strong>Deep Blue</strong> al firmei IBM l-a înfruntat pe campionul mondial <strong>Garri Kasparov</strong>. În 1996 Kasparov a câștigat; dar în <strong>1997</strong>, după îmbunătățiri, mașina a câștigat meciul <strong>3½–2½</strong> — prima oară când un computer învingea un campion mondial în meci <sup>[8]</sup>. Poveste adevărată: după o mutare ciudată a mașinii, Kasparov a fost convins că o ajută un om — de fapt fusese doar o eroare mică de program.</p>
+
+<h4>✨ AlphaZero (2017) — a învățat singur în 4 ore</h4>
+<p>Programul <strong>AlphaZero</strong> nu a primit nicio carte și nicio teorie. I s-au spus doar regulile, apoi a <strong>jucat cu el însuși</strong> milioane de partide. În aproximativ <strong>4 ore</strong> a ajuns să bată cele mai puternice programe ale momentului <sup>[8]</sup>. Juca frumos, cu sacrificii curajoase — i-au zis „un șah extraterestru".</p>
+
+<h4>🐟 Stockfish și ziua de azi</h4>
+<p><strong>Stockfish</strong> este gratuit și făcut de o <strong>comunitate de voluntari</strong> din toată lumea. Azi cele mai bune motoare au peste <strong>3600 de puncte Elo</strong>, în timp ce cel mai bun om are în jur de 2830 — niciun campion nu mai poate învinge un motor.</p>
+<div class="hl-box ok">🌟 <strong>Și totuși…</strong> mașinile calculează mai bine, dar nu se <em>bucură</em> de joc. Oamenii folosesc azi motoarele ca pe niște antrenori — iar plăcerea, curajul și frumusețea unei partide rămân ale noastre.</div>` },
+
+  { emoji:'🕵️', title:'4. Pentru Detectivi: surse și bibliografie',
+    body:`
+<p>Un detectiv adevărat verifică totul. Iată cărțile și sursele din care e culeasă povestea de mai sus. Numărul din față se potrivește cu cel din text: vezi <sup>[1]</sup>, cauți [1] aici.</p>
+<p><strong>[1]</strong> Murray, H. J. R. — <em>A History of Chess</em>, Oxford University Press, 1913. <em>Lucrarea de căpătâi a istoriei șahului; traduce direct din manuscrise arabe, persane și sanscrite.</em></p>
+<p><strong>[2]</strong> Eales, Richard — <em>Chess: The History of a Game</em>, 1985. <em>Istorie modernă, de la origini la era turneelor.</em></p>
+<p><strong>[3]</strong> Cazaux, Jean-Louis &amp; Knowlton, Rick — <em>A World of Chess</em>, McFarland, 2017. <em>Sinteză cuprinzătoare; tratează și răspândirea spre Rusia și Asia.</em></p>
+<p><strong>[4]</strong> Yalom, Marilyn — <em>Birth of the Chess Queen</em>, 2004. <em>De ce a devenit regina cea mai puternică piesă, legată de reginele puternice ale Europei.</em></p>
+<p><strong>[5]</strong> Shenk, David — <em>The Immortal Game: A History of Chess</em>, 2006. <em>Povestea jocului și a influenței lui asupra culturii.</em></p>
+<p><strong>[6]</strong> FIDE &amp; relatări de presă (NPR, Britannica, Chess.com), Campionatul Mondial 2024 — <em>Gukesh Dommaraju îl învinge pe Ding Liren, 12 decembrie 2024.</em></p>
+<p><strong>[7]</strong> Standage, Tom — <em>The Turk: The Life and Times of the Famous Eighteenth-Century Chess-Playing Machine</em>, 2002.</p>
+<p><strong>[8]</strong> Articole enciclopedice „Deep Blue", „History of chess engines", „AlphaZero" (Wikipedia) și DeepMind — <em>verificate încrucișat.</em></p>
+<div class="hl-box" style="margin-top:10px;">📚 De ce mai multe surse? Pentru că o singură carte se poate înșela. Când mai mulți autori, în epoci diferite, spun același lucru — putem avea încredere. Așa lucrează istoricii: ca niște detectivi cu mai mulți martori.</div>` }
+];
+
+const list = document.getElementById('accList');
+sertare.forEach(function(b, idx) {
+  const item = document.createElement('div');
+  item.className = 'acc-item';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'acc-header';
+  hdr.innerHTML = '<span class="acc-emoji">' + b.emoji + '</span>' +
+                  '<span class="acc-title">' + b.title + '</span>' +
+                  '<span class="acc-chevron">&#9658;</span>';
+
+  const body = document.createElement('div');
+  body.className = 'acc-body';
+  const inner = document.createElement('div');
+  inner.className = 'acc-inner';
+  inner.innerHTML = b.body;
+  body.appendChild(inner);
+
+  item.appendChild(hdr); item.appendChild(body);
+  list.appendChild(item);
+
+  hdr.addEventListener('click', function(){ item.classList.toggle('open'); });
+  if (idx === 0) item.classList.add('open');
+});
+</script>
+</body>
+</html>

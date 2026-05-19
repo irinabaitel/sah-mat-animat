@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Drumul șahului în lume — Strămoșii</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="master-template.css">
+<style>
+/* ── Coloana hărții (NU pătrată — suprascrie board-wrapper) ─── */
+.page-main { grid-template-columns: 60fr 40fr; }
+
+.map-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  min-width: 0;
+}
+.map-wrap {
+  width: 100%;
+  max-height: calc(100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap));
+  aspect-ratio: 860 / 445;
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.2);
+  background: #cfe3e6;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.map-wrap svg { width: 100%; height: 100%; display: block; }
+
+/* Butonul „Pornește călătoria" — peste hartă, sus */
+.journey-ctrl {
+  position: absolute;
+  top: 10px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 8px;
+  z-index: 10;
+}
+.jbtn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  color: #fff;
+  background: rgba(26,58,107,0.92);
+  border: 2px solid rgba(255,255,255,0.65);
+  border-radius: var(--radius-sm);
+  padding: 7px 16px;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+  transition: background .15s, transform .1s;
+  white-space: nowrap;
+}
+.jbtn:hover  { background: var(--c-navy-2); }
+.jbtn:active { transform: scale(0.96); }
+.jbtn.ghost  { background: rgba(255,255,255,0.85); color: var(--c-navy); }
+
+/* ── Marcaje hartă ──────────────────────────────────────────── */
+.stop { cursor: pointer; }
+.stop .pin-ring {
+  fill: none;
+  stroke-width: 3;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.stop.active .pin-ring,
+.stop:hover .pin-ring { opacity: .9; }
+.stop.active .pin-ring { animation: pinPulse 1.4s ease-out infinite; }
+@keyframes pinPulse {
+  0%   { transform: scale(1);   opacity: .85; }
+  70%  { transform: scale(1.9); opacity: 0;   }
+  100% { transform: scale(1.9); opacity: 0;   }
+}
+.stop .pin-core {
+  stroke: #fff; stroke-width: 2.5;
+  transition: transform .15s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.stop:hover .pin-core,
+.stop.active .pin-core { transform: scale(1.18); }
+.stop .pin-num {
+  font-family: var(--font-display);
+  font-weight: 900;
+  fill: #fff;
+  font-size: 19px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+.stop .pin-label {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  fill: #3a2a14;
+  text-anchor: middle;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: rgba(248,238,214,0.92);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+.region-label {
+  font-family: var(--font-display);
+  font-weight: 800;
+  fill: rgba(120,92,52,0.55);
+  text-anchor: middle;
+  letter-spacing: 2px;
+  pointer-events: none;
+}
+.sea-label {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-weight: 700;
+  fill: rgba(70,120,135,0.65);
+  text-anchor: middle;
+  pointer-events: none;
+}
+.traveler { pointer-events: none; }
+
+/* ── Legenda culorilor ──────────────────────────────────────── */
+.map-legend {
+  position: absolute;
+  left: 12px; bottom: 12px;
+  background: rgba(248,238,214,0.92);
+  border: 2px solid rgba(150,115,70,0.4);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  color: #4a3a1e;
+  line-height: 1.7;
+  z-index: 9;
+  max-width: 46%;
+}
+.map-legend .ll { display: flex; align-items: center; gap: 7px; }
+.map-legend .sw { width: 22px; height: 0; border-top: 4px dotted; border-radius: 2px; flex-shrink: 0; }
+
+/* ── Sertare (accordion) — identic cu paginile Strămoșii ────── */
+.acc-list { display: flex; flex-direction: column; gap: 6px; }
+.acc-item {
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--c-surface);
+  transition: border-color .15s;
+  scroll-margin-top: 8px;
+}
+.acc-item:hover, .acc-item.open { border-color: var(--c-navy); }
+.acc-item.flash { border-color: var(--c-warning); box-shadow: 0 0 0 3px rgba(230,126,34,.25); }
+.acc-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; cursor: pointer; user-select: none;
+  transition: background .15s;
+}
+.acc-item.open .acc-header, .acc-header:hover { background: rgba(26,58,107,.07); }
+.acc-emoji { font-size: 1.3em; line-height: 1; }
+.acc-title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-weight: 700; color: var(--c-navy);
+  font-size: var(--fs-md);
+}
+.acc-chevron {
+  font-size: .7em; color: var(--c-navy);
+  transition: transform .22s; display: inline-block;
+}
+.acc-item.open .acc-chevron { transform: rotate(90deg); }
+.acc-body { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+.acc-item.open .acc-body { max-height: 1400px; }
+.acc-inner { padding: 4px 16px 14px; }
+.acc-inner p {
+  font-size: var(--fs-md); line-height: 1.7;
+  color: var(--c-text); margin-bottom: .6em;
+}
+.acc-inner p:last-child { margin-bottom: 0; }
+.acc-inner strong { color: var(--c-navy); }
+.acc-inner em { color: var(--c-text-muted); }
+.acc-inner ul { padding-left: 1.3em; margin: .3em 0 .7em; }
+.acc-inner li { line-height: 1.7; margin-bottom: .25em; }
+
+@media (max-width: 768px), (max-aspect-ratio: 1/1) {
+  .page-main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .map-col { max-height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.52); }
+  .map-wrap { max-height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.52); }
+  .pin-label { font-size: 22px; }
+  .map-legend { font-size: 10px; padding: 6px 8px; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Drumul șahului în lume</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Strămoșii șahului</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="map-col">
+      <div class="map-wrap">
+
+        <div class="journey-ctrl">
+          <button class="jbtn" id="playBtn">▶ Pornește călătoria</button>
+          <button class="jbtn ghost" id="resetBtn" style="display:none;">↻ Din nou</button>
+        </div>
+
+        <svg viewBox="45 70 860 445" preserveAspectRatio="xMidYMid meet" aria-label="Hartă: drumul șahului din India spre Japonia">
+          <defs>
+            <marker id="arrW" markerWidth="9" markerHeight="9" refX="5" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 L2.5,4 Z" fill="#d8612e"/>
+            </marker>
+            <marker id="arrE" markerWidth="9" markerHeight="9" refX="5" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 L2.5,4 Z" fill="#2f6fb0"/>
+            </marker>
+            <marker id="arrS" markerWidth="9" markerHeight="9" refX="5" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 L2.5,4 Z" fill="#1f8a70"/>
+            </marker>
+          </defs>
+
+          <!-- Harta reală a lumii — offline, în img/harta_lume.png -->
+          <image href="img/harta_lume.png" x="0" y="0" width="1000" height="582"
+                 preserveAspectRatio="xMidYMid meet"/>
+
+          <!-- ── Drumuri (traseu punctat, stil hartă-comoară) ── -->
+          <g fill="none" stroke-linecap="round">
+            <!-- Apus: India → Persia → Bagdad → (Mediterana) → Spania → Europa -->
+            <path id="routeW" stroke="#d8612e" stroke-width="4" stroke-dasharray="1 9"
+              marker-end="url(#arrW)"
+              d="M480,430 C450,408 418,376 388,350
+                 C368,352 348,352 330,352
+                 C268,366 198,374 150,360
+                 C120,351 100,337 90,318
+                 C95,295 110,268 135,250"/>
+            <!-- Răsărit: India → China -->
+            <path id="routeE" stroke="#2f6fb0" stroke-width="4" stroke-dasharray="1 9"
+              marker-end="url(#arrE)"
+              d="M480,430 C540,400 620,350 700,300"/>
+            <!-- Sud-Est: India → Asia de SE -->
+            <path id="routeS" stroke="#1f8a70" stroke-width="4" stroke-dasharray="1 9"
+              marker-end="url(#arrS)"
+              d="M480,430 C530,460 595,475 650,470"/>
+            <!-- A doua poartă spre Europa: prin Sicilia/Italia -->
+            <path id="routeI" stroke="#d8612e" stroke-width="4" stroke-dasharray="1 9"
+              marker-end="url(#arrW)"
+              d="M300,356 C255,362 210,356 184,346 C176,338 171,324 168,314"/>
+          </g>
+
+          <!-- Capătul „Europa" -->
+          <text x="135" y="234" class="pin-label" font-size="15">Europa de azi</text>
+
+          <!-- ── Marcaje ───────────────────────────────────── -->
+          <g id="stops"></g>
+
+          <!-- Călătorul animat -->
+          <g class="traveler" id="traveler" style="display:none;">
+            <circle r="15" fill="#fff" stroke="#d8612e" stroke-width="3"/>
+            <text id="travIcon" text-anchor="middle" dominant-baseline="central" font-size="18">🐘</text>
+          </g>
+
+        </svg>
+
+        <div class="map-legend">
+          <div class="ll"><span class="sw" style="border-color:#d8612e;"></span>Drumul spre Apus → șahul de azi</div>
+          <div class="ll"><span class="sw" style="border-color:#2f6fb0;"></span>Ramura de Răsărit → xiangqi (China)</div>
+          <div class="ll"><span class="sw" style="border-color:#1f8a70;"></span>Rudele din Sud-Est → makruk</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div id="accList" class="acc-list"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer" role="navigation">
+    <a class="nav-btn nav-btn--back" href="istoria_sahului.html"><span class="icon">⟵</span> <span class="label">Meniu</span></a>
+    <a class="nav-btn nav-btn--contents" href="hub.html"><span class="label">Cuprins</span></a>
+    <a class="nav-btn nav-btn--forward" href="chaturanga_pagina1.html"><span class="label">Chaturanga</span> <span class="icon">⟶</span></a>
+  </footer>
+
+</div>
+
+<script>
+/* ── Datele opririlor ─────────────────────────────────────────
+   x,y = poziția pe hartă (viewBox 1000×640). color = culoarea traseului. */
+const stops = [
+  { n:'1', x:480, y:430, color:'#d8612e', emoji:'🐘', label:'India',
+    title:'India — aici s-a născut totul',
+    body:`
+<p>Acum aproape <strong>1500 de ani</strong>, în <strong>nordul Indiei</strong>, cineva isteț s-a gândit să așeze o armată întreagă pe o tablă cu 64 de pătrate. Așa s-a născut <strong>chaturanga</strong> — „cele patru brațe ale armatei": pedestrași, călăreți, elefanți și care de luptă.</p>
+<p>Acesta este <strong>bunicul șahului</strong>. De aici a pornit la drum. A luat-o în <strong>două direcții</strong>: spre <em>apus</em> (drumul portocaliu — el a ajuns șahul nostru de azi) și spre <em>răsărit</em> (drumurile albastru și verde — rudele din China și Asia de Sud-Est).</p>
+<p><em>👉 Apasă pe celelalte stegulețe de pe hartă ca să-l urmărești pas cu pas — sau apasă „▶ Pornește călătoria" și mergi cu elefantul!</em></p>` },
+
+  { n:'2', x:388, y:350, color:'#d8612e', emoji:'☀️', label:'Persia',
+    title:'Persia — jocul capătă numele „șah"',
+    body:`
+<p>Negustorii și călătorii au dus jocul peste munți, în <strong>Persia</strong> (Iranul de azi). Aici i s-a spus <strong>chatrang</strong> și se juca la curtea regilor.</p>
+<p>În persană, regele se numea <strong>șah</strong>. Iar când regele era prins fără scăpare, jucătorul spunea ceva ca <em>„șah mat"</em> — adică <strong>„regele e fără ieșire"</strong>. De aici vine numele jocului nostru: <strong>ȘAH</strong>, și strigătul <strong>„șah-mat!"</strong>.</p>
+<p>Tot din Persia ne-a rămas și o legendă: poetul <strong>Firdausi</strong> a scris, acum o mie de ani, povestea celor doi prinți pentru care s-a inventat jocul.</p>` },
+
+  { n:'3', x:330, y:352, color:'#d8612e', emoji:'🌙', label:'Bagdad',
+    title:'Bagdad și lumea arabă — Shatranj',
+    body:`
+<p>Apoi jocul a ajuns la <strong>arabi</strong>, care i-au spus <strong>shatranj</strong>. La <strong>Bagdad</strong>, acum vreo 1200 de ani, șahul a înflorit cum nu se mai văzuse.</p>
+<p>Aici au apărut <strong>primii mari maeștri</strong>, primele <strong>cărți despre șah</strong> și primele <strong>probleme de șah</strong> (numite <em>mansubat</em>) — mici ghicitori: „albul dă mat în două mutări". Le rezolvăm și azi!</p>
+<p>Tot de la arabi au învățat europenii jocul — și tot manuscrisele arabe i-au ajutat, mult mai târziu, pe istorici să afle toată povestea.</p>` },
+
+  { n:'4', x:90,  y:318, color:'#d8612e', emoji:'♛', label:'Spania',
+    title:'Spania → Europa — se naște șahul modern',
+    body:`
+<p>Din lumea arabă, shatranj a trecut marea și a intrat în <strong>Europa</strong> — mai ales prin <strong>Spania</strong> și prin Italia (Sicilia). De aici s-a răspândit în tot continentul: în castele, în mănăstiri, la curțile regilor.</p>
+<p>Și aici s-a întâmplat <strong>marea schimbare</strong>: acum vreo 500 de ani, în Spania și Italia, oamenii au făcut <strong>nebunul și regina mult mai puternici</strong>. Regina, care înainte se târa un pas pe diagonală, a devenit <strong>cea mai tare piesă de pe tablă</strong>!</p>
+<p>Jocul a devenit mai rapid și mai palpitant — exact <strong>șahul pe care îl jucăm noi azi</strong>. Din Europa, el a plecat apoi în <strong>toată lumea</strong>. 🌍</p>` },
+
+  { n:'4', x:168, y:312, color:'#d8612e', emoji:'⛪', label:'Italia',
+    title:'Italia & Sicilia — a doua poartă spre Europa',
+    body:`
+<p>Spania n-a fost singura ușă. Șahul a intrat în Europa și pe la <strong>Sicilia și sudul Italiei</strong>. De ce tocmai pe acolo? Pentru că, sute de ani, <strong>Sicilia a fost stăpânită de arabi</strong> (din anul 827) — iar arabii jucau shatranj!</p>
+<p>După ce normanzii au cucerit insula, la curtea strălucită a împăratului <strong>Frederic al II-lea</strong>, în Palermo, șahul era deja la el acasă. De aici jocul a urcat prin toată Italia și mai departe în Europa.</p>
+<p>Așa că Europa a primit șahul prin <strong>două porți deodată</strong>: 🟠 <strong>Spania maură</strong> și 🟠 <strong>Sicilia/Italia arabă</strong>. Mai târziu, tot în Spania și Italia se va naște <em>șahul modern</em>, cu regina cea puternică.</p>` },
+
+  { n:'5', x:700, y:300, color:'#2f6fb0', emoji:'🐉', label:'China',
+    title:'China — vărul de Răsărit: Xiangqi',
+    body:`
+<p>Pe drumul albastru, spre <strong>răsărit</strong>, jocul a ajuns în <strong>China</strong> și a devenit <strong>xiangqi</strong> — „jocul elefanților", șahul chinezesc.</p>
+<p>Nu e copiat din șahul european: e o <strong>rudă veche</strong> a chaturangăi, crescută singură în Asia de Răsărit, cu reguli proprii. Are un <strong>râu</strong> la mijlocul tablei și două <strong>palate</strong> din care regele (numit „general") nu are voie să iasă. Piesele stau pe <strong>colțuri de linii</strong>, nu în pătrate.</p>
+<p>E ca un văr îndepărtat: seamănă la față cu șahul, dar are obiceiurile lui.</p>` },
+
+  { n:'6', x:650, y:470, color:'#1f8a70', emoji:'🐚', label:'Asia de SE',
+    title:'Asia de Sud-Est — Makruk & Sittuyin',
+    body:`
+<p>Pe drumul verde, spre <strong>sud-est</strong>, chaturanga a dat naștere altor rude: <strong>makruk</strong> în Thailanda și <strong>sittuyin</strong> în Myanmar (Birmania).</p>
+<p>Aceste jocuri sunt ca niște <strong>frați mai conservatori</strong>: au păstrat reguli foarte vechi, apropiate de shatranj. Cine joacă makruk azi vede, de fapt, cam <strong>cum arăta șahul acum o mie de ani</strong>, înainte ca regina să devină atât de puternică în Europa.</p>
+<p>Așa, harta ne arată un lucru frumos: dintr-un singur joc indian s-au născut <strong>multe jocuri</strong>, ca ramurile aceluiași copac. 🌳</p>` },
+
+  { n:'?', x:null, y:null, color:'#1a3a6b', emoji:'🕵️', label:'',
+    title:'Pentru Detectivi: de unde știm toate astea?',
+    body:`
+<p>Un detectiv nu crede o poveste doar pentru că sună frumos — caută <strong>dovezi</strong>. Drumul de pe hartă nu e inventat: el a fost reconstruit din manuscrise vechi.</p>
+<p>Ghidul cel mai de încredere e istoricul englez <strong>H. J. R. Murray</strong>. Ca să poată citi manuscrisele arabe și persane în original, el a <strong>învățat singur araba</strong>! A scris, în <strong>1913</strong>, cartea <em>A History of Chess</em> — atât de temeinică încât, după peste o sută de ani, istoricii încă o numesc „biblia istoriei șahului".</p>
+<ul>
+  <li><strong>Murray, H. J. R.</strong> — <em>A History of Chess</em>, Oxford, 1913.</li>
+  <li><strong>Firdausi</strong> — <em>Šāh-nāma</em> („Cartea Regilor"), cca. 1010 — legenda nașterii jocului.</li>
+  <li><strong>al-Biruni</strong> — <em>Cartea despre India</em>, cca. 1030 — jocul văzut cu ochii lui în India.</li>
+  <li><strong>Cazaux &amp; Knowlton</strong> — <em>A World of Chess</em>, McFarland, 2017 — sinteză modernă.</li>
+</ul>
+<div class="hl-box" style="margin-top:10px;">📚 Când mai multe cărți, scrise de oameni diferiți în secole diferite, spun același lucru — atunci putem avea încredere. Așa lucrează istoricii: ca niște detectivi cu mai mulți martori.</div>` }
+];
+
+/* ── Construiește marcajele pe hartă ─────────────────────────── */
+const SVGNS = 'http://www.w3.org/2000/svg';
+const gStops = document.getElementById('stops');
+stops.forEach(function(s, i) {
+  if (s.x == null) return; // „Detectivi" nu are steguleț pe hartă
+  const g = document.createElementNS(SVGNS, 'g');
+  g.setAttribute('class', 'stop');
+  g.setAttribute('data-i', i);
+
+  const ring = document.createElementNS(SVGNS, 'circle');
+  ring.setAttribute('class', 'pin-ring');
+  ring.setAttribute('cx', s.x); ring.setAttribute('cy', s.y);
+  ring.setAttribute('r', 17); ring.setAttribute('stroke', s.color);
+
+  const core = document.createElementNS(SVGNS, 'circle');
+  core.setAttribute('class', 'pin-core');
+  core.setAttribute('cx', s.x); core.setAttribute('cy', s.y);
+  core.setAttribute('r', 16); core.setAttribute('fill', s.color);
+
+  const num = document.createElementNS(SVGNS, 'text');
+  num.setAttribute('class', 'pin-num');
+  num.setAttribute('x', s.x); num.setAttribute('y', s.y + 1);
+  num.textContent = s.n;
+
+  const lbl = document.createElementNS(SVGNS, 'text');
+  lbl.setAttribute('class', 'pin-label');
+  lbl.setAttribute('x', s.x);
+  lbl.setAttribute('y', s.y - 26);
+  lbl.textContent = s.label;
+
+  const hit = document.createElementNS(SVGNS, 'circle');
+  hit.setAttribute('cx', s.x); hit.setAttribute('cy', s.y);
+  hit.setAttribute('r', 30); hit.setAttribute('fill', 'transparent');
+
+  g.appendChild(ring); g.appendChild(core);
+  g.appendChild(num);  g.appendChild(lbl); g.appendChild(hit);
+  g.addEventListener('click', function(){ selectStop(i, true); });
+  gStops.appendChild(g);
+});
+
+/* ── Sertarele din panou ─────────────────────────────────────── */
+const list = document.getElementById('accList');
+
+// Sertar de intro (cum se folosește harta)
+const introHTML = `
+<p>Șahul nu s-a născut în Europa. A pornit din <strong>India</strong> și a călătorit prin lume mii de kilometri, schimbându-și numele și câteva reguli pe drum — dar păstrându-și inima.</p>
+<p>Urmărește drumul pe hartă: 🟠 spre <strong>apus</strong> (a devenit șahul de azi), 🔵 și 🟢 spre <strong>răsărit</strong> (rudele din China și Asia de Sud-Est).</p>
+<p><em>Apasă pe stegulețele de pe hartă sau deschide sertarele de mai jos. Vrei să-l vezi mișcându-se? Apasă „▶ Pornește călătoria".</em></p>`;
+addAcc(-1, '🧭', 'Cum citim harta', introHTML);
+
+stops.forEach(function(s, i){ addAcc(i, s.emoji, s.title, s.body); });
+
+function addAcc(i, emoji, title, html) {
+  const item = document.createElement('div');
+  item.className = 'acc-item';
+  if (i >= 0) item.setAttribute('data-i', i);
+
+  const hdr = document.createElement('div');
+  hdr.className = 'acc-header';
+  hdr.innerHTML = '<span class="acc-emoji">' + emoji + '</span>' +
+                  '<span class="acc-title">' + title + '</span>' +
+                  '<span class="acc-chevron">&#9658;</span>';
+
+  const body = document.createElement('div');
+  body.className = 'acc-body';
+  const inner = document.createElement('div');
+  inner.className = 'acc-inner';
+  inner.innerHTML = html;
+  body.appendChild(inner);
+
+  item.appendChild(hdr); item.appendChild(body);
+  list.appendChild(item);
+
+  hdr.addEventListener('click', function(){
+    const wasOpen = item.classList.contains('open');
+    if (!wasOpen && i >= 0) selectStop(i, false);
+    else item.classList.toggle('open');
+  });
+  if (i === -1) item.classList.add('open');
+}
+
+/* ── Selectarea unei opriri (din hartă sau din sertar) ───────── */
+function selectStop(i, fromMap) {
+  document.querySelectorAll('.stop').forEach(function(g){
+    g.classList.toggle('active', +g.getAttribute('data-i') === i);
+  });
+  document.querySelectorAll('.acc-item').forEach(function(it){
+    const di = it.getAttribute('data-i');
+    const on = (di !== null && +di === i);
+    it.classList.toggle('open', on);
+    if (on) {
+      it.scrollIntoView({ behavior:'smooth', block:'start' });
+      it.classList.add('flash');
+      setTimeout(function(){ it.classList.remove('flash'); }, 900);
+    }
+  });
+}
+
+/* ── Animația „Pornește călătoria" ───────────────────────────── */
+const trav = document.getElementById('traveler');
+const travIcon = document.getElementById('travIcon');
+const playBtn = document.getElementById('playBtn');
+const resetBtn = document.getElementById('resetBtn');
+let animId = null;
+
+const routes = [
+  { id:'routeW', icon:'🐘', stopAt:[ {t:0.00,i:0},{t:0.24,i:1},{t:0.35,i:2},{t:0.83,i:3} ], endMsg:0 },
+  { id:'routeI', icon:'⛪', stopAt:[ {t:1.00,i:4} ] },
+  { id:'routeE', icon:'🐉', stopAt:[ {t:1.00,i:5} ] },
+  { id:'routeS', icon:'🐚', stopAt:[ {t:1.00,i:6} ] }
+];
+
+function travelRoute(route) {
+  return new Promise(function(resolve){
+    const path = document.getElementById(route.id);
+    const len = path.getTotalLength();
+    const dur = route.id === 'routeW' ? 5200 : 2600;
+    travIcon.textContent = route.icon;
+    trav.style.display = '';
+    let fired = {};
+    const t0 = performance.now();
+    function step(now) {
+      let p = Math.min(1, (now - t0) / dur);
+      const pt = path.getPointAtLength(len * p);
+      trav.setAttribute('transform', 'translate(' + pt.x + ',' + pt.y + ')');
+      route.stopAt.forEach(function(m){
+        if (p >= m.t && !fired[m.i]) { fired[m.i] = true; selectStop(m.i, false); }
+      });
+      if (p < 1) { animId = requestAnimationFrame(step); }
+      else { resolve(); }
+    }
+    animId = requestAnimationFrame(step);
+  });
+}
+
+async function playJourney() {
+  playBtn.style.display = 'none';
+  resetBtn.style.display = '';
+  for (let r = 0; r < routes.length; r++) {
+    await travelRoute(routes[r]);
+    await new Promise(function(res){ setTimeout(res, 800); });
+  }
+  trav.style.display = 'none';
+}
+
+playBtn.addEventListener('click', playJourney);
+resetBtn.addEventListener('click', function(){
+  if (animId) cancelAnimationFrame(animId);
+  trav.style.display = 'none';
+  resetBtn.style.display = 'none';
+  playBtn.style.display = '';
+  document.querySelectorAll('.stop').forEach(function(g){ g.classList.remove('active'); });
+});
+</script>
+</body>
+</html>
