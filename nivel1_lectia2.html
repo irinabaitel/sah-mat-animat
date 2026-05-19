@@ -587,11 +587,11 @@ function answerQuiz(code,btn) {
     quizCorrect++;
     btn.style.background='rgba(40,180,80,0.35)'; btn.style.borderColor='rgba(40,180,80,0.7)';
     fb.className='quiz-box ok';
-    fb.textContent='✅ Corect! Este '+PIECES[code].name+'ul.';
+    fb.textContent='✅ Corect! Este '+PIECES[code].name+'.';
   } else {
     btn.style.background='rgba(200,50,50,0.25)'; btn.style.borderColor='rgba(200,50,50,0.6)';
     fb.className='quiz-box err';
-    fb.textContent='❌ Nu exact... Era '+PIECES[q.code].name+'ul! '+q.hint;
+    fb.textContent='❌ Nu exact... Era '+PIECES[q.code].name+'! '+q.hint;
     document.querySelectorAll('.quiz-btn').forEach(b => {
       if(b.textContent.startsWith(PIECES[q.code].symbol)) {
         b.style.background='rgba(40,180,80,0.3)'; b.style.borderColor='rgba(40,180,80,0.7)';
