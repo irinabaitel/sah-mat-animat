@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Cursa roboților și epoca AI — Strămoșii</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="master-template.css">
+<style>
+/* ── O singură coloană (fără hartă) ─── */
+.page-main { grid-template-columns: 1fr; }
+.panel-scroll { max-width: 760px; margin: 0 auto; width: 100%; }
+
+/* ── Sertare (accordion) — identic cu paginile Strămoșii ────── */
+.acc-list { display: flex; flex-direction: column; gap: 6px; }
+.acc-item {
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--c-surface);
+  transition: border-color .15s;
+  scroll-margin-top: 8px;
+}
+.acc-item:hover, .acc-item.open { border-color: var(--c-navy); }
+.acc-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; cursor: pointer; user-select: none;
+  transition: background .15s;
+}
+.acc-item.open .acc-header, .acc-header:hover { background: rgba(26,58,107,.07); }
+.acc-emoji { font-size: 1.3em; line-height: 1; }
+.acc-title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-weight: 700; color: var(--c-navy);
+  font-size: var(--fs-md);
+}
+.acc-chevron {
+  font-size: .7em; color: var(--c-navy);
+  transition: transform .22s; display: inline-block;
+}
+.acc-item.open .acc-chevron { transform: rotate(90deg); }
+.acc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+.acc-item.open .acc-body { max-height: 3200px; }
+.acc-inner { padding: 4px 16px 14px; }
+.acc-inner p {
+  font-size: var(--fs-md); line-height: 1.7;
+  color: var(--c-text); margin-bottom: .6em;
+}
+.acc-inner p:last-child { margin-bottom: 0; }
+.acc-inner strong { color: var(--c-navy); }
+.acc-inner em { color: var(--c-text-muted); }
+.acc-inner ul { padding-left: 1.25em; margin: .3em 0 .7em; }
+.acc-inner li { line-height: 1.7; margin-bottom: .3em; }
+.acc-inner sup { color: var(--c-navy); font-weight: 800; font-size: .72em; }
+.acc-inner h4 {
+  font-family: var(--font-display); color: var(--c-navy);
+  font-size: 1.02em; margin: .8em 0 .3em;
+}
+
+@media (max-width: 768px), (max-aspect-ratio: 1/1) {
+  .page-main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Cursa roboților și epoca AI</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Strămoșii șahului</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div id="accList" class="acc-list"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer" role="navigation">
+    <a class="nav-btn nav-btn--back" href="sahul_prin_lume.html"><span class="icon">⟵</span> <span class="label">Evoluția în Europa</span></a>
+    <a class="nav-btn nav-btn--contents" href="hub.html"><span class="label">Cuprins</span></a>
+    <a class="nav-btn nav-btn--forward" href="istoria_sahului.html"><span class="label">Meniu</span> <span class="icon">⟶</span></a>
+  </footer>
+
+</div>
+
+<script>
+/* ───────────────────────────────────────────────────────────
+   SCHELET — de completat împreună.
+   Fiecare sertar are titlul gata; conținutul îl scriem ulterior,
+   în stilul povestit, cu numere [1] ca urme de detectiv.
+   ─────────────────────────────────────────────────────────── */
+const sertare = [
+  { emoji:'🧭', title:'Cum citim pagina',
+    body:`
+<p>După ce jocul a străbătut lumea și s-a așezat în forma de azi, a apărut un adversar nou: <strong>mașina</strong>. Aici urmărim cursa dintre mintea omului și calculator — de la o păcăleală veche de 250 de ani, până la inteligența artificială care învață singură.</p>
+<div class="hl-box">📝 <strong>Pagină nouă — schelet.</strong> Titlurile sertarelor sunt puse; poveștile le scriem împreună, pe rând.</div>` },
+
+  { emoji:'🎭', title:'1. Turcul mecanic — primul „robot" (o păcăleală)',
+    body:`
+<p><em>De completat:</em> automatul lui Wolfgang von Kempelen (1770) care „juca" șah — și omul ascuns înăuntru. Cum a păcălit Europa aproape un secol. <sup>[1]</sup></p>` },
+
+  { emoji:'🖥️', title:'2. Deep Blue îl învinge pe Kasparov (1997)',
+    body:`
+<p><em>De completat:</em> primul calculator care a învins un campion mondial în meci — IBM Deep Blue contra Garri Kasparov. Ce a însemnat momentul. <sup>[2]</sup></p>` },
+
+  { emoji:'🧠', title:'3. AlphaZero — calculatorul care a învățat singur',
+    body:`
+<p><em>De completat:</em> de la motoarele care „calculează tot" la AlphaZero, care a învățat șahul de unul singur, doar jucând cu el însuși. <sup>[3]</sup></p>` },
+
+  { emoji:'🤖', title:'4. Roboții de azi și epoca AI',
+    body:`
+<p><em>De completat:</em> brațul-robot care mută piesele, aplicațiile care te antrenează, ce poate și ce nu poate încă inteligența artificială. <sup>[4]</sup></p>` },
+
+  { emoji:'🔍', title:'Pentru Detectivi: Surse',
+    body:`
+<p><em>De completat:</em> cărțile și articolele din care am cules povestea (Standage — <em>The Turk</em>; relatări despre Deep Blue și AlphaZero).</p>` }
+];
+
+const list = document.getElementById('accList');
+sertare.forEach(function(b, idx) {
+  const item = document.createElement('div');
+  item.className = 'acc-item';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'acc-header';
+  hdr.innerHTML = '<span class="acc-emoji">' + b.emoji + '</span>' +
+                  '<span class="acc-title">' + b.title + '</span>' +
+                  '<span class="acc-chevron">&#9658;</span>';
+
+  const body = document.createElement('div');
+  body.className = 'acc-body';
+  const inner = document.createElement('div');
+  inner.className = 'acc-inner';
+  inner.innerHTML = b.body;
+  body.appendChild(inner);
+
+  item.appendChild(hdr); item.appendChild(body);
+  list.appendChild(item);
+
+  hdr.addEventListener('click', function(){ item.classList.toggle('open'); });
+  if (idx === 0) item.classList.add('open');
+});
+</script>
+</body>
+</html>
