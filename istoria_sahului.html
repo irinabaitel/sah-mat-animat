@@ -57,6 +57,7 @@ h1 {
     transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
     overflow: hidden;
+    min-height: 290px;
 }
 .card:hover {
     transform: translateY(-4px);
@@ -100,8 +101,15 @@ h1 {
     color: rgba(26,26,46,0.7);
     line-height: 1.65;
     flex: 1;
+    min-height: 0;
+    max-height: 105px;
+    overflow-y: auto;
+    padding-right: 4px;
     margin-top: 4px;
 }
+.card-desc::-webkit-scrollbar { width: 4px; }
+.card-desc::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
+.card-desc::-webkit-scrollbar-thumb { background: rgba(26,26,46,0.2); border-radius: 4px; }
 
 .card-btn {
     display: inline-block;
@@ -216,7 +224,40 @@ footer {
         <a href="xiangqi_pagina1.html" class="card-btn">Află mai mult ▶</a>
     </div>
 
-    <!-- 4. Din India până în Europa — harta -->
+    <!-- 4. Shogi (Japonia) -->
+    <div class="card card-shogi">
+        <div class="card-icon">⛩️</div>
+        <div class="card-title">Shogi — șahul generalilor</div>
+        <div class="card-sub">Japonia · sec. IX–X</div>
+        <div class="card-desc">
+            Singura variantă din lume în care piesele pe care le capturezi <strong>devin ale tale</strong> — le ții în mână și le parașutezi înapoi pe tablă să lupte pentru tine! Nu există aproape niciodată remiză.
+        </div>
+        <a href="shogi_pagina1.html" class="card-btn">Află mai mult ▶</a>
+    </div>
+
+    <!-- 5. Makruk (Thailanda) -->
+    <div class="card card-makruk">
+        <div class="card-icon">🇹🇭</div>
+        <div class="card-title">Makruk — șahul thailandez</div>
+        <div class="card-sub">Thailanda · vechiul „șah de jungle"</div>
+        <div class="card-desc">
+            Considerat de campioni ca Vladimir Kramnik drept una dintre cele mai strategice variante vechi de șah. Seamănă cu un final pur de șah modern — fără deschideri memorate, doar gândire pură.
+        </div>
+        <span class="badge-curand">⏳ În curând</span>
+    </div>
+
+    <!-- 6. Sittuyin (Myanmar) -->
+    <div class="card card-sittuyin">
+        <div class="card-icon">🇲🇲</div>
+        <div class="card-title">Sittuyin — șahul birmanez</div>
+        <div class="card-sub">Myanmar · elefanți și războinici sculptați</div>
+        <div class="card-desc">
+            Piesele sunt elefanți și războinici reali, iar la început îți <strong>așezi singur armata într-o poziție secretă</strong> în spatele liniilor proprii — abia după ce ești gata începe lupta!
+        </div>
+        <span class="badge-curand">⏳ În curând</span>
+    </div>
+
+    <!-- 7. Din India până în Europa — harta -->
     <div class="card card-harta">
         <div class="card-icon">🗺️</div>
         <div class="card-title">Din India până în Europa</div>
@@ -282,38 +323,6 @@ footer {
         <span class="badge-curand">⏳ În curând</span>
     </div>
 
-    <!-- 10. Shogi (Japonia) -->
-    <div class="card card-shogi">
-        <div class="card-icon">⛩️</div>
-        <div class="card-title">Shogi — șahul generalilor</div>
-        <div class="card-sub">Japonia · sec. IX–X</div>
-        <div class="card-desc">
-            Singura variantă din lume în care piesele pe care le capturezi <strong>devin ale tale</strong> — le ții în mână și le parașutezi înapoi pe tablă să lupte pentru tine! Nu există aproape niciodată remiză.
-        </div>
-        <a href="shogi_pagina1.html" class="card-btn">Află mai mult ▶</a>
-    </div>
-
-    <!-- 11. Makruk (Thailanda) -->
-    <div class="card card-makruk">
-        <div class="card-icon">🇹🇭</div>
-        <div class="card-title">Makruk — șahul thailandez</div>
-        <div class="card-sub">Thailanda · vechiul „șah de jungle"</div>
-        <div class="card-desc">
-            Considerat de campioni ca Vladimir Kramnik drept una dintre cele mai strategice variante vechi de șah. Seamănă cu un final pur de șah modern — fără deschideri memorate, doar gândire pură.
-        </div>
-        <span class="badge-curand">⏳ În curând</span>
-    </div>
-
-    <!-- 12. Sittuyin (Myanmar) -->
-    <div class="card card-sittuyin">
-        <div class="card-icon">🇲🇲</div>
-        <div class="card-title">Sittuyin — șahul birmanez</div>
-        <div class="card-sub">Myanmar · elefanți și războinici sculptați</div>
-        <div class="card-desc">
-            Piesele sunt elefanți și războinici reali, iar la început îți <strong>așezi singur armata într-o poziție secretă</strong> în spatele liniilor proprii — abia după ce ești gata începe lupta!
-        </div>
-        <span class="badge-curand">⏳ În curând</span>
-    </div>
 
 </div>
 
