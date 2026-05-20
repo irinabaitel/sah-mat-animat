@@ -58,6 +58,7 @@ h1 {
     margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-auto-rows: 1fr;
     gap: 20px;
 }
 
@@ -70,6 +71,7 @@ h1 {
     box-shadow: 0 4px 24px rgba(0,0,0,0.08);
     display: flex;
     flex-direction: column;
+    min-height: 380px;
     transition: transform 0.2s, box-shadow 0.2s;
 }
 .level-card:hover {
@@ -120,6 +122,10 @@ h1 {
 .topics {
     list-style: none;
     flex: 1;
+    min-height: 0;
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 4px;
     margin-bottom: 14px;
 }
 .topics li {
@@ -147,10 +153,9 @@ h1 {
 .l6 .topics li::before { color: #1a5276; }
 .l7 .topics li::before { color: #4a235a; }
 
-.topics.long { max-height: 220px; overflow-y: auto; padding-right: 4px; }
-.topics.long::-webkit-scrollbar { width: 4px; }
-.topics.long::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
-.topics.long::-webkit-scrollbar-thumb { background: rgba(26,26,46,0.2); border-radius: 4px; }
+.topics::-webkit-scrollbar { width: 4px; }
+.topics::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
+.topics::-webkit-scrollbar-thumb { background: rgba(26,26,46,0.2); border-radius: 4px; }
 
 .topic-link {
     color: #1a3a6b;
@@ -293,7 +298,7 @@ h1 {
                 <li><a href="nivel1_lectia14.html" class="topic-link">Cooperarea dintre piese</a></li>
             </ul>
             <div class="card-footer">
-                <span class="topic-count">11 lecții · 11 disponibile</span>
+                <span class="topic-count">În lucru</span>
             </div>
         </div>
     </div>
@@ -311,7 +316,7 @@ h1 {
                 <li>Opoziția și finaluri Rege + Pion</li>
             </ul>
             <div class="card-footer">
-                <span class="topic-count">5 lecții</span>
+                <span class="topic-count">În lucru</span>
                 <span class="badge-curand">⏳ În curând</span>
             </div>
         </div>
@@ -337,7 +342,7 @@ h1 {
                 <li><a href="pagina47.html" class="topic-link">Damă vs Turn</a></li>
             </ul>
             <div class="card-footer">
-                <span class="topic-count">12 finaluri</span>
+                <span class="topic-count">În lucru</span>
                 <a href="pagina10.html" class="card-btn">Deschide ▶</a>
             </div>
         </div>
@@ -365,7 +370,7 @@ h1 {
                 <li>Îndepărtarea apărătorului</li>
             </ul>
             <div class="card-footer">
-                <span class="topic-count">15 tactici · 2 disponibile</span>
+                <span class="topic-count">În lucru</span>
                 <a href="pagina49.html" class="card-btn">Deschide ▶</a>
             </div>
         </div>
@@ -407,7 +412,7 @@ h1 {
                 <li>Matul lui Vuković</li>
             </ul>
             <div class="card-footer">
-                <span class="topic-count">28 modele</span>
+                <span class="topic-count">În lucru</span>
                 <span class="badge-curand">⏳ În curând</span>
             </div>
         </div>
@@ -429,7 +434,7 @@ h1 {
                 <li class="soon">Jocul Complet (cu rege, promovare, mat)</li>
             </ul>
             <div class="card-footer">
-                <span class="topic-count">6 jocuri disponibile</span>
+                <span class="topic-count">În lucru</span>
                 <a href="joc_pioni.html" class="card-btn">Joacă ▶</a>
             </div>
         </div>
@@ -447,7 +452,7 @@ h1 {
                 <li>Alte capcane clasice</li>
             </ul>
             <div class="card-footer">
-                <span class="topic-count">4+ lecții</span>
+                <span class="topic-count">În lucru</span>
                 <span class="badge-curand">⏳ În curând</span>
             </div>
         </div>
@@ -465,7 +470,7 @@ h1 {
                 <li>Reguli de turneu, pe înțelesul copiilor</li>
             </ul>
             <div class="card-footer">
-                <span class="topic-count">Ghid practic</span>
+                <span class="topic-count">În lucru</span>
                 <span class="badge-curand">⏳ În curând</span>
             </div>
         </div>
@@ -483,7 +488,7 @@ h1 {
                 <li>Explicați simplu, cu exemple vizuale</li>
             </ul>
             <div class="card-footer">
-                <span class="topic-count">Dicționar vizual</span>
+                <span class="topic-count">În lucru</span>
                 <span class="badge-curand">⏳ În curând</span>
             </div>
         </div>
