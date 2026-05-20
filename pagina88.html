@@ -156,12 +156,12 @@ const chapters = [
     san: ['Re5', 'Kc8', 'Re8#'],
     ann: {
       0: 'Albul are <strong>turn + rege</strong> contra <strong>rege singur</strong>. Cum forțăm matul? Prin zugzwang!',
-      1: '<strong>Te5</strong> — turnul controlează acum rândul 5 și coloana e. Negrul nu poate sta pe coloana e și nu poate veni lângă regele alb... <strong>rămâne doar Rc8</strong>, fix în cel mai prost colț!',
-      2: 'Forțat — Rc8.',
+      1: '<strong>Te5</strong> — este o mutare care îl obligă pe negru să ocupe cel mai prost câmp din această poziție: <strong>Rc8</strong>.',
+      2: 'Forțat — Rc8, fix în colțul cel mai rău.',
       3: '<strong>Mat!</strong> Te8# — regele e prins în colț, fără nicio scăpare.'
     },
     arrows: {
-      0: [{from:'h5', to:'e5', color:'G'}, {from:'c6', to:'d8', color:'Y'}],
+      0: [{from:'h5', to:'e5', color:'G'}],
       1: [{from:'d8', to:'c8', color:'R'}],
       2: [{from:'e5', to:'e8', color:'G'}],
       3: []
@@ -174,14 +174,14 @@ const chapters = [
     san: ['Rf1', 'Qh3', 'gxh3', 'g4', 'Qxg2#'],
     ann: {
       0: 'Rândul negrului. Piesele albului par bine puse, dar sunt deja foarte „crispate". Cum prindem zugzwang-ul?',
-      1: '<strong>Tf1!</strong> — turnul leagă calul alb de rege. Calul nu mai poate muta. Turnul alb de pe g2 e legat de damă, regele blocat... <strong>albul are doar Dh3</strong>!',
-      2: 'Cine ar vrea să-și piardă regina doar pentru că trebuie s-o miște? Dar e forțat.',
-      3: '<strong>gxh3</strong> — pionul mănâncă regina! Albul rămâne aproape fără speranță.',
-      4: '<strong>g4</strong> — singura mutare „liberă": turnul și calul rămân legate de rege.',
-      5: '<strong>Mat!</strong> Dxg2# — regina ia turnul și e apărată de pionul de pe h3.'
+      1: '<strong>Tf1!</strong> — leagă calul de rege, <strong>singura mutare posibilă pentru alb rămâne Dh3</strong>.',
+      2: '<strong>Dh3</strong> — cine ar vrea să-și piardă regina doar pentru că trebuie s-o miște? Dar e forțat.',
+      3: '<strong>gxh3</strong> — pionul mănâncă regina!',
+      4: '<strong>g4</strong> — singura mutare posibilă, turnul și calul sunt legați de rege.',
+      5: '<strong>Mat!</strong> Dxg2# — regina ia turnul, e apărată de pionul de pe h3.'
     },
     arrows: {
-      0: [{from:'f8',to:'g1',color:'Y'}],
+      0: [],
       1: [{from:'f8', to:'f1', color:'G'}, {from:'f1', to:'g1', color:'R'}],
       2: [{from:'h2', to:'h3', color:'R'}],
       3: [{from:'g4', to:'h3', color:'G'}],
@@ -197,19 +197,19 @@ const chapters = [
     ann: {
       0: 'Final clasic de pioni. Regii „dansează" — albul îl forțează pe negru să-și abandoneze pionii, pe rând.',
       1: '<strong>Rd4</strong> — regele alb pornește înainte.',
-      2: 'Negrul își menține apărarea pionului d5 pentru moment.',
-      3: '<strong>Re5</strong> — zugzwang! Regele negru e obligat să se îndepărteze de pionul d5.',
-      4: 'Negrul e forțat să cedeze pionul.',
+      2: 'Rc6 — negrul își menține apărarea pionului d5 pentru moment.',
+      3: '<strong>Re5</strong> — obligă regele negru să se îndepărteze de pionul din d5.',
+      4: 'Rb7 — forțat să cedeze pionul.',
       5: '<strong>Rxd5</strong> — primul pion cade!',
-      6: 'Negrul încearcă să-și apere pionul rămas (b5).',
-      7: '<strong>Rd6</strong> — zugzwang din nou! Orice mutare îndepărtează regele de pionul b5 (câmpurile a5 și c5 sunt controlate de pionul b4).',
-      8: 'Negrul nu are scăpare.',
+      6: 'Rb6 — încearcă să-și apere pionul rămas (b5).',
+      7: '<strong>Rd6</strong> — orice mutare ar alege regele negru, tot va trebui să se îndepărteze de pionul său (a5 și c5 sunt controlate de pionul din b).',
+      8: 'Rb7 — n-are scăpare.',
       9: '<strong>Rc5</strong> — albul se apropie de pionul b5.',
-      10: 'Negrul fuge înapoi pe a6.',
+      10: 'Ra6 — fuge înapoi.',
       11: '<strong>Rc6</strong> — încă o strângere de cerc.',
-      12: 'Negrul: Ra7 — împins în colț.',
+      12: 'Ra7 — împins în colț.',
       13: '<strong>Rxb5</strong> — al doilea pion cade! Albul a câștigat pas cu pas, prin zugzwang.',
-      14: 'Negrul rămâne cu rege singur — albul are 2 pioni și câștigă ușor.'
+      14: 'Rb7 — negrul rămâne cu rege singur; albul are 2 pioni și câștigă ușor.'
     },
     arrows: {
       0: [{from:'e3', to:'d4', color:'G'}],
@@ -237,11 +237,11 @@ const chapters = [
     ann: {
       0: 'Doi nebuni și regele alb contra rege, cal și nebun negru. Cum forțăm matul?',
       1: '<strong>Nd7</strong> — nebunul de pe g4 se mută calm, fără zgomot.',
-      2: 'Regele negru se retrage spre colț: Ra8.',
+      2: 'Ra8 — regele negru se retrage spre colț.',
       3: '<strong>Nc6+</strong> — șah pe diagonala lungă!',
-      4: 'Singurul câmp legal — Rb8.',
-      5: '<strong>Nb7!</strong> — mutarea de așteptare. Calul e legat de rege (de nebunul de pe e5), regele negru nu mai poate muta. <strong>Singura mutare e cu nebunul de pe d8</strong> — care apăra calul!',
-      6: 'Nd8 → Ne7. Calul rămâne fără apărare.',
+      4: 'Rb8 — singurul câmp legal.',
+      5: '<strong>Nb7</strong> — <strong>singura mutare posibilă pentru negru este din nebunul care apăra calul</strong>!',
+      6: 'Ne7 — calul rămâne fără apărare.',
       7: '<strong>Mat!</strong> Nxc7# — celălalt nebun ia calul cu șah, apărat de regele alb. Rege fără scăpare.'
     },
     arrows: {
@@ -524,10 +524,10 @@ const deflTypes = [
     title: 'Exemple de Zugzwang',
     desc: 'Patru tablouri clasice. La fiecare, albul (sau negrul) face o mutare de așteptare care îl obligă pe adversar să-și strice singur poziția — pentru că nu poate spune „pas".',
     examples: [
-      { ch: 0, label: 'Mat în 2 (turn)' },
-      { ch: 1, label: 'Sacrificiu de damă' },
-      { ch: 2, label: 'Dansul regilor' },
-      { ch: 3, label: 'Capcana nebunilor' }
+      { ch: 0, label: 'Ex. 1' },
+      { ch: 1, label: 'Ex. 2' },
+      { ch: 2, label: 'Ex. 3' },
+      { ch: 3, label: 'Ex. 4' }
     ]
   }
 ];
