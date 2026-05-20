@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Shogi — Evoluția șahului</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="master-template.css">
+<style>
+/* ── Coloana foto (samurai) ─── */
+.page-main { grid-template-columns: 50fr 50fr; }
+.map-col {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 0; min-width: 0;
+}
+.map-wrap {
+  width: 100%;
+  max-height: calc(100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap));
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.25);
+  background: #1c1410;
+}
+.map-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.map-title {
+  position: absolute; left: 0; right: 0; top: 0;
+  padding: 18px 16px 30px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(20,10,5,0.85), rgba(20,10,5,0));
+  color: #f3e2bb;
+  z-index: 2;
+}
+.map-title .motto {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.5em, 4.2vw, 2.4em);
+  letter-spacing: 1px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+}
+.map-title small {
+  display: block; margin-top: 3px;
+  font-family: var(--font-body); font-weight: 700;
+  font-size: var(--fs-sm); color: #fff; opacity: .92;
+}
+.map-cap {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 14px 16px 10px;
+  background: linear-gradient(0deg, rgba(20,10,5,0.85), rgba(20,10,5,0));
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+
+/* ── Sertare (accordion) — ca la chaturanga ────── */
+.acc-list { display: flex; flex-direction: column; gap: 6px; }
+.acc-item {
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--c-surface);
+  transition: border-color .15s;
+  scroll-margin-top: 8px;
+}
+.acc-item:hover, .acc-item.open { border-color: var(--c-navy); }
+.acc-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; cursor: pointer; user-select: none;
+  transition: background .15s;
+}
+.acc-item.open .acc-header, .acc-header:hover { background: rgba(26,58,107,.07); }
+.acc-num {
+  font-family: var(--font-display); font-weight: 900;
+  color: #991b1b; font-size: var(--fs-md); min-width: 26px;
+}
+.acc-title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-weight: 700; color: var(--c-navy);
+  font-size: var(--fs-md);
+}
+.acc-chevron {
+  font-size: .7em; color: var(--c-navy);
+  transition: transform .22s; display: inline-block;
+}
+.acc-item.open .acc-chevron { transform: rotate(90deg); }
+.acc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+.acc-item.open .acc-body { max-height: 4200px; }
+.acc-inner { padding: 4px 16px 14px; }
+.acc-inner p {
+  font-size: var(--fs-md); line-height: 1.7;
+  color: var(--c-text); margin-bottom: .6em;
+}
+.acc-inner p:last-child { margin-bottom: 0; }
+.acc-inner strong { color: var(--c-navy); }
+.acc-inner em { color: var(--c-text-muted); }
+.acc-inner h4 {
+  font-family: var(--font-display); color: #991b1b;
+  font-size: 1.02em; margin: .9em 0 .3em;
+}
+
+/* Lista pieselor cu kanji + descriere */
+.piece-list {
+  list-style: none; padding: 0; margin: .4em 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.piece-list li {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #f5e6c8, #fff8e7);
+  border-left: 4px solid #991b1b;
+  border-radius: 10px;
+}
+.piece-list .pkanji {
+  flex: 0 0 auto;
+  width: 46px; height: 50px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Baloo 2', serif;
+  font-size: 1.6em; font-weight: 900;
+  color: #1c1410;
+  background: #f3d28a;
+  border: 2px solid #8b6b2a;
+  border-radius: 6px 6px 12px 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,.15);
+  clip-path: polygon(50% 0%, 100% 18%, 100% 100%, 0% 100%, 0% 18%);
+}
+.piece-list .pinfo { flex: 1; min-width: 0; }
+.piece-list .pname {
+  font-family: var(--font-display);
+  font-weight: 800; color: var(--c-navy);
+  display: block; margin-bottom: 2px;
+}
+.piece-list .pname em { color: #7a4a2e; font-style: italic; font-size: .92em; }
+.piece-list .pdesc {
+  font-size: .94em; line-height: 1.5;
+  color: var(--c-text);
+}
+
+/* Buton mare pentru arena Lishogi */
+.play-btn {
+  display: block; width: 100%;
+  margin-top: 14px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #991b1b, #c0392b);
+  color: #fff8e7;
+  text-align: center;
+  border: none; border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 1.05em;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(153,27,27,.35);
+  transition: transform .12s, box-shadow .12s;
+}
+.play-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(153,27,27,.45); }
+.play-btn small {
+  display: block; margin-top: 4px;
+  font-family: var(--font-body); font-weight: 600;
+  font-size: .82em; opacity: .92;
+}
+
+/* ── Overlay tabla Lishogi pe tot ecranul ─────── */
+.lishogi-modal {
+  position: fixed; inset: 0;
+  background: rgba(20,10,5,0.92);
+  z-index: 2000;
+  display: none;
+  flex-direction: column;
+  padding: 8px;
+}
+.lishogi-modal.open { display: flex; }
+.lishogi-modal__header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #1c1410, #3a2616);
+  color: #f3e2bb;
+  border-radius: 10px 10px 0 0;
+}
+.lishogi-modal__title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1em;
+  line-height: 1.25;
+}
+.lishogi-modal__close {
+  background: rgba(255,255,255,0.18);
+  border: 1.5px solid rgba(255,255,255,0.5);
+  color: #fff;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  font-size: 1.1em; font-weight: 800;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.lishogi-modal__close:hover { background: rgba(255,255,255,0.32); }
+.lishogi-modal__frame {
+  flex: 1;
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+}
+.lishogi-modal__frame iframe {
+  width: 100%; height: 100%; border: 0;
+}
+
+@media (max-width: 768px), (max-aspect-ratio: 1/1) {
+  .page-main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .map-col { max-height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.40); }
+  .map-wrap { max-height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.40); }
+  .lishogi-modal__title { font-size: .9em; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Shogi — Șahul generalilor</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Evoluția șahului</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="map-col">
+      <div class="map-wrap">
+        <img src="img/shogi/samurai.png" alt="Samurai în armură jucând Shogi într-o cameră tradițională japoneză">
+        <div class="map-title">
+          <span class="motto">将棋</span>
+          <small>Shōgi · „Jocul Generalilor"</small>
+        </div>
+        <div class="map-cap">
+          Japonia, secolele IX–X — vărul samurailor al șahului nostru.
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div id="accList" class="acc-list"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer" role="navigation">
+    <a class="nav-btn nav-btn--back" href="istoria_sahului.html"><span class="icon">⟵</span> <span class="label">Meniu</span></a>
+    <a class="nav-btn nav-btn--contents" href="index.html"><span class="label">Acasă</span></a>
+    <a class="nav-btn nav-btn--forward" href="istoria_sahului.html"><span class="label">Meniu</span> <span class="icon">⟶</span></a>
+  </footer>
+
+</div>
+
+<!-- Overlay cu tabla Lishogi -->
+<div class="lishogi-modal" id="lishogiModal" role="dialog" aria-modal="true">
+  <div class="lishogi-modal__header">
+    <span class="lishogi-modal__title">🏯 Joacă Shogi · powered by lishogi.org</span>
+    <button class="lishogi-modal__close" id="lishogiClose" type="button" aria-label="Închide">✕</button>
+  </div>
+  <div class="lishogi-modal__frame">
+    <iframe id="lishogiFrame" src="" title="Lishogi · tabla Shogi" allow="fullscreen"></iframe>
+  </div>
+</div>
+
+<script>
+const sertare = [
+
+  { num:'1.', emoji:'🏺', title:'Povestea',
+    body:`
+<p>În călătoria noastră prin Asia ajungem în <strong>Japonia</strong>. Aici, acum aproximativ <strong>1000 de ani</strong>, generalii și samuraii au transformat șahul venit din China într-un joc complet unic, numit <strong>Shogi</strong> (将棋) — care înseamnă literalmente <em>„Jocul Generalilor"</em>.</p>
+<p>Pregătește-te: în Shogi regulile sunt mult mai <strong>dinamice</strong> decât la șah, iar bătăliile durează până la <strong>ultima piesă</strong>!</p>` },
+
+  { num:'2.', emoji:'🎴', title:'Tabla și piesele — fără culori, doar formă!',
+    body:`
+<p>Prima surpriză pentru un detectiv de șah: tabla de Shogi e puțin mai mare (<strong>9 × 9</strong> pătrate) și <strong>toate piesele au aceeași culoare</strong> — culoarea naturală a lemnului!</p>
+<p>Piesele au formă de <strong>vârf de săgeată</strong> și pe ele sunt scrise caractere japoneze (<em>kanji</em>).</p>
+<div class="hl-box">🕵️ <strong>Cum știi care e a ta și care e a adversarului?</strong> Foarte simplu: piesele tale au <strong>vârful îndreptat spre tabăra adversă</strong>, iar ale lui — spre tine!</div>` },
+
+  { num:'3.', emoji:'⚔️', title:'Cele 8 piese și cum mută',
+    body:`
+<p>Iată armata. Sub fiecare e <strong>kanji-ul</strong> exact pe care îl vezi pe tabla reală (și pe Lishogi):</p>
+<ul class="piece-list">
+  <li>
+    <div class="pkanji">王</div>
+    <div class="pinfo">
+      <span class="pname">Ōshō — Regele <em>(Ō)</em></span>
+      <span class="pdesc">Ca regele nostru: <strong>1 pas în orice direcție</strong>. Dacă moare, ai pierdut!</span>
+    </div>
+  </li>
+  <li>
+    <div class="pkanji">飛</div>
+    <div class="pinfo">
+      <span class="pname">Hisha — Turnul <em>(Hi)</em></span>
+      <span class="pdesc">Ca turnul nostru: linie dreaptă <strong>oricâte pătrate</strong>. Cea mai puternică piesă a tablei.</span>
+    </div>
+  </li>
+  <li>
+    <div class="pkanji">角</div>
+    <div class="pinfo">
+      <span class="pname">Kaku — Nebunul <em>(Ka)</em></span>
+      <span class="pdesc">Ca nebunul nostru: pe diagonală <strong>oricâte pătrate</strong>.</span>
+    </div>
+  </li>
+  <li>
+    <div class="pkanji">金</div>
+    <div class="pinfo">
+      <span class="pname">Kin — Generalul de Aur <em>(Ki)</em></span>
+      <span class="pdesc">Mută <strong>1 pas în 6 direcții</strong> — orice direcție, MAI PUȚIN diagonalele în spate. Garda de corp a regelui!</span>
+    </div>
+  </li>
+  <li>
+    <div class="pkanji">銀</div>
+    <div class="pinfo">
+      <span class="pname">Gin — Generalul de Argint <em>(Gi)</em></span>
+      <span class="pdesc">Mută <strong>1 pas înainte sau 1 pas pe oricare din cele 4 diagonale</strong> (5 câmpuri totale).</span>
+    </div>
+  </li>
+  <li>
+    <div class="pkanji">桂</div>
+    <div class="pinfo">
+      <span class="pname">Keima — Calul <em>(Ke)</em></span>
+      <span class="pdesc">Mută în „L", dar <strong>doar înainte</strong> (2 câmpuri posibile). Nu poate merge în lateral sau înapoi ca la șahul nostru!</span>
+    </div>
+  </li>
+  <li>
+    <div class="pkanji">香</div>
+    <div class="pinfo">
+      <span class="pname">Kyōsha — Lăncierul <em>(Kyō)</em></span>
+      <span class="pdesc">Mută <strong>doar înainte în linie dreaptă</strong>, oricâte pătrate vrea. Un turn care nu știe să meargă în spate sau în lateral.</span>
+    </div>
+  </li>
+  <li>
+    <div class="pkanji">歩</div>
+    <div class="pinfo">
+      <span class="pname">Fuhyō — Pionul <em>(Fu)</em></span>
+      <span class="pdesc">Mută <strong>1 pas înainte și capturează tot înainte</strong> (NU pe diagonală, ca la șah!).</span>
+    </div>
+  </li>
+</ul>
+<p style="opacity:.8;font-size:.92em;"><em>Fiecare jucător are: 1 rege, 1 turn, 1 nebun, 2 aururi, 2 argint, 2 cai, 2 lăncieri, 9 pioni — total 20 de piese.</em></p>` },
+
+  { num:'4.', emoji:'🌪️', title:'Regula magică: parașutarea pieselor!',
+    body:`
+<p>Aici e <strong>marea diferență</strong> față de orice șah din lume!</p>
+<p>La șahul clasic, când capturezi o piesă, o pui pe masă și gata. La Shogi, <strong>piesa capturată devine PRIZONIERA ta de război</strong>. O ții lângă tablă, într-o zonă numită <em>komadai</em>.</p>
+<p>În loc să muți o piesă de pe tablă, când îți vine rândul, poți alege să <strong>„parașutezi" o piesă capturată</strong> pe orice pătrat gol — dar întoarsă cu <strong>vârful spre adversar</strong>! Piesa s-a transformat instant într-un <strong>Ninja</strong> care luptă acum pentru armata ta!</p>
+<div class="hl-box ok">🎯 <strong>De ce e genial?</strong> În Shogi <strong>nu prea există remiză</strong> și nicio armată nu rămâne fără piese — pentru că piesele „mor și învie" la fiecare schimb! Jocul e plin de răsturnări de situație până în ultima secundă.</div>` },
+
+  { num:'5.', emoji:'🎖️', title:'Promovarea — toată lumea capătă super-puteri!',
+    body:`
+<p>La șahul clasic, doar pionul promovează. La Shogi, <strong>aproape TOATE piesele promovează</strong>!</p>
+<p>Tabla are o zonă specială numită <strong>„Tabăra Adversă"</strong> — ultimele <strong>3 linii</strong> de sus. Când o piesă de-a ta pășește în această zonă (sau pleacă din ea), o întorci pur și simplu <strong>invers</strong>. Pe spatele piesei e scris un alt caracter cu <strong>cerneală roșie</strong> — și piesa ta a promovat!</p>
+
+<h4>📋 Cine ce devine după promovare:</h4>
+<ul>
+  <li><strong>飛 Hisha (Turn) → Dragon</strong> 🐲 Turn + 1 pas pe diagonală. Cea mai temută piesă!</li>
+  <li><strong>角 Kaku (Nebun) → Cal-Dragon</strong> 🐎 Nebun + 1 pas drept în orice direcție.</li>
+  <li><strong>銀 Gin (Argint) → General de Aur</strong> 🥇 Capătă toate puterile aurului.</li>
+  <li><strong>桂 Keima (Cal) → General de Aur</strong> 🥇</li>
+  <li><strong>香 Kyōsha (Lăncier) → General de Aur</strong> 🥇</li>
+  <li><strong>歩 Fuhyō (Pion) → General de Aur</strong> 🥇 (numit „Tokin")</li>
+  <li><strong>王 Ōshō (Rege)</strong> și <strong>金 Kin (Aurul)</strong> — <strong>NU promovează</strong>. Aurul e deja la nivel maxim!</li>
+</ul>
+<p>👉 Foarte multe piese ajung „de aur" — de-aia jocul are atâta dinamism!</p>` },
+
+  { num:'6.', emoji:'🚫', title:'Cele 3 reguli interzise',
+    body:`
+<p>Pentru că parașutarea pieselor e o super-putere, samuraii au inventat <strong>3 restricții stricte</strong> ca jocul să rămână corect:</p>
+
+<h4>1. Nifu (二歩) — „Dublul Pion"</h4>
+<p>NU ai voie să parașutezi un pion pe o coloană unde ai <strong>deja un alt pion nepromovat</strong>. Un singur pion-pe-coloană la un moment dat!</p>
+
+<h4>2. Fără piese fără mutări</h4>
+<p>NU ai voie să parașutezi:</p>
+<ul>
+  <li>un <strong>pion</strong> sau un <strong>lăncier</strong> pe ultima linie (n-ar mai avea mutare înainte!)</li>
+  <li>un <strong>cal</strong> pe ultimele două linii</li>
+</ul>
+<p>Piesele în Shogi <strong>nu au voie să stea degeaba</strong>.</p>
+
+<h4>3. Uchifuzume (打ち歩詰め) — „Mat cu pionul din mână"</h4>
+<p>Poți da <strong>șah</strong> cu un pion parașutat din mână. DAR <strong>NU ai voie să dai ȘAH MAT direct printr-o parașutare de pion</strong>. Matul trebuie dat cu piesele <strong>de pe tablă</strong> sau cu altă piesă parașutată — nu cu pionul!</p>
+
+<div class="hl-box">🎌 <strong>Spiritul samurai:</strong> aceste reguli au la bază <strong>codul onoarei</strong> — un samurai învinge cu sabia (piesele de pe tablă), nu prin trucuri ieftine (pion parașutat în spate).</div>` },
+
+  { num:'7.', emoji:'🤖', title:'Joacă tu Shogi acum!',
+    body:`
+<p>Cel mai bun mod să înveți Shogi e să-l <strong>joci</strong>. Te ducem direct pe <strong>Lishogi.org</strong> — platforma gratuită și open-source pentru Shogi (sora japoneză a Lichess-ului pentru șah).</p>
+<p>Apasă butonul de jos. Se va deschide pe tot ecranul tabla Lishogi unde poți:</p>
+<ul>
+  <li>📚 Învăța pas cu pas (tutorial interactiv)</li>
+  <li>🤖 Juca cu robotul lor (10 niveluri de dificultate)</li>
+  <li>🧩 Rezolva puzzle-uri</li>
+  <li>👥 Provoca un prieten</li>
+</ul>
+<p style="opacity:.85;font-size:.93em;"><em>Pe Lishogi piesele apar cu kanji-urile reale — exact cele pe care le-ai învățat aici. Caută 王 (regele), 飛 (turnul), 歩 (pionul) etc.</em></p>
+<a class="play-btn" id="openLishogi" href="#">
+  🏯 Joacă Shogi acum!
+  <small>Se deschide tabla Lishogi pe tot ecranul</small>
+</a>` }
+];
+
+const list = document.getElementById('accList');
+sertare.forEach(function(b, idx) {
+  const item = document.createElement('div');
+  item.className = 'acc-item';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'acc-header';
+  hdr.innerHTML = '<span class="acc-num">' + b.num + '</span>' +
+                  '<span class="acc-title">' + b.emoji + ' ' + b.title + '</span>' +
+                  '<span class="acc-chevron">&#9658;</span>';
+
+  const body = document.createElement('div');
+  body.className = 'acc-body';
+  const inner = document.createElement('div');
+  inner.className = 'acc-inner';
+  inner.innerHTML = b.body;
+  body.appendChild(inner);
+
+  item.appendChild(hdr); item.appendChild(body);
+  list.appendChild(item);
+
+  hdr.addEventListener('click', function(){ item.classList.toggle('open'); });
+  if (idx === 0) item.classList.add('open');
+});
+
+/* ── Lishogi modal cu iframe ───────────────────── */
+const modal     = document.getElementById('lishogiModal');
+const modalIfr  = document.getElementById('lishogiFrame');
+const modalClose= document.getElementById('lishogiClose');
+
+function openLishogi(e) {
+  if (e) e.preventDefault();
+  modalIfr.src = 'https://lishogi.org/learn';
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLishogi() {
+  modal.classList.remove('open');
+  modalIfr.src = ''; // oprește jocul/sunetul când închidem
+  document.body.style.overflow = '';
+}
+// delegare ca să prindem butonul indiferent în ce sertar e
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('#openLishogi');
+  if (btn) openLishogi(e);
+});
+modalClose.addEventListener('click', closeLishogi);
+modal.addEventListener('click', function(e){
+  if (e.target === modal) closeLishogi();
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && modal.classList.contains('open')) closeLishogi();
+});
+</script>
+</body>
+</html>
