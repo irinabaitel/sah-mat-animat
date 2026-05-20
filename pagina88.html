@@ -120,6 +120,8 @@
             <div class="moves-log" id="movesLog"></div>
           </div>
 
+          <a href="pagina88a.html" class="btn-primary" style="display:flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 20px;border-radius:50px;background:var(--c-navy);color:white;text-decoration:none;font-family:var(--font-display);font-size:0.97rem;font-weight:700;border:none;cursor:pointer;width:100%;box-sizing:border-box;transition:opacity .18s;" onmouseover="this.style.opacity='.86'" onmouseout="this.style.opacity='1'">&#8594; Arenă Zugzwang (40 puzzle-uri)</a>
+
         </div>
       </div>
     </div>
@@ -569,6 +571,7 @@ function buildAccordion() {
 }
 
 function openAcc(item) {
+  if (item.classList.contains('open')) return;   // deja deschis — nu remontăm
   document.querySelectorAll('#accList .acc-item.open').forEach(function (o) {
     if (o !== item) closeAcc(o, true);
   });
@@ -597,6 +600,9 @@ function loadExAcc(btn, chIdx) {
 
 buildAccordion();
 loadChapter(0);
+// Deschide automat singurul sertar — userul vede direct butoanele Ex.
+const firstAcc = document.querySelector('#accList .acc-item');
+if (firstAcc) openAcc(firstAcc);
 </script>
 
 <script src="board-utils.js"></script>
