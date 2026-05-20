@@ -178,6 +178,33 @@
   font-family: var(--font-body); font-weight: 600;
   font-size: .82em; opacity: .92;
 }
+.play-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+.play-grid .play-btn {
+  margin-top: 0;
+  font-size: .96em;
+  padding: 14px 12px;
+  background: linear-gradient(135deg, #991b1b, #c0392b);
+}
+.play-grid .play-btn.editor {
+  background: linear-gradient(135deg, #355ea8, #4b3fa7);
+}
+@media (max-width: 540px) {
+  .play-grid { grid-template-columns: 1fr; }
+}
+.play-extra {
+  display: block; margin-top: 12px;
+  text-align: center;
+  color: var(--c-navy);
+  font-family: var(--font-display); font-weight: 700;
+  font-size: .9em; opacity: .8;
+  text-decoration: none;
+}
+.play-extra:hover { opacity: 1; text-decoration: underline; }
 
 /* ── Overlay tabla Lishogi pe tot ecranul ─────── */
 .lishogi-modal {
@@ -449,11 +476,26 @@ const sertare = [
   <li>🧩 Rezolva puzzle-uri</li>
   <li>👥 Provoca un prieten</li>
 </ul>
-<p style="opacity:.85;font-size:.93em;"><em>Pe Lishogi piesele apar cu kanji-urile reale — exact cele pe care le-ai învățat aici. Caută 王 (regele), 飛 (turnul), 歩 (pionul) etc.</em></p>
-<a class="play-btn" id="openLishogi" href="#">
-  🏯 Joacă Shogi acum!
-  <small>Se deschide tabla Lishogi pe tot ecranul</small>
-</a>` }
+<p style="opacity:.85;font-size:.93em;"><em>Pe Lishogi poți alege setul de piese din Setări → Tablă: alege „International" ca să vezi pictogramele de pe pagina noastră.</em></p>
+<div class="play-grid">
+  <a class="play-btn" href="#" data-mode="learn">
+    🎓 Învață
+    <small>pas cu pas</small>
+  </a>
+  <a class="play-btn" href="#" data-mode="ai">
+    🤖 Joacă cu robotul
+    <small>10 niveluri</small>
+  </a>
+  <a class="play-btn" href="#" data-mode="puzzles">
+    🧩 Rezolvă probleme
+    <small>de gândire</small>
+  </a>
+  <a class="play-btn editor" href="#" data-mode="editor">
+    🎯 Editor
+    <small>(pentru profesor)</small>
+  </a>
+</div>
+<a class="play-extra" href="https://lishogi.org" target="_blank" rel="noopener">🔗 Deschide Lishogi într-un tab nou (poți să te loghezi pe contul tău)</a>` }
 ];
 
 const list = document.getElementById('accList');
@@ -486,9 +528,15 @@ const modal     = document.getElementById('lishogiModal');
 const modalIfr  = document.getElementById('lishogiFrame');
 const modalClose= document.getElementById('lishogiClose');
 
-function openLishogi(e) {
-  if (e) e.preventDefault();
-  modalIfr.src = 'https://lishogi.org/learn';
+const lishogiUrls = {
+  learn:   'https://lishogi.org/learn',
+  ai:      'https://lishogi.org/setup/ai',
+  puzzles: 'https://lishogi.org/training',
+  editor:  'https://lishogi.org/editor'
+};
+
+function openLishogi(url) {
+  modalIfr.src = url;
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -497,10 +545,13 @@ function closeLishogi() {
   modalIfr.src = ''; // oprește jocul/sunetul când închidem
   document.body.style.overflow = '';
 }
-// delegare ca să prindem butonul indiferent în ce sertar e
+// delegare pentru butoanele cu data-mode
 document.addEventListener('click', function(e){
-  const btn = e.target.closest('#openLishogi');
-  if (btn) openLishogi(e);
+  const btn = e.target.closest('.play-btn[data-mode]');
+  if (!btn) return;
+  e.preventDefault();
+  const mode = btn.dataset.mode || 'learn';
+  openLishogi(lishogiUrls[mode] || lishogiUrls.learn);
 });
 modalClose.addEventListener('click', closeLishogi);
 modal.addEventListener('click', function(e){
