@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Răspândirea șahului în lume — Evoluția șahului</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="master-template.css">
+<style>
+/* ── Coloana hărții (Drumul Mătăsii ca hero) ───────────── */
+.page-main { grid-template-columns: 56fr 44fr; }
+
+.map-col {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 0; min-width: 0;
+}
+.map-wrap {
+  width: 100%;
+  max-height: calc(100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap));
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.2);
+  background: #eb9e2a;
+}
+.map-wrap img {
+  width: 100%; height: 100%;
+  object-fit: contain; display: block;
+}
+.map-cap {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 14px 16px 10px;
+  background: linear-gradient(0deg, rgba(26,58,107,0.82), rgba(26,58,107,0));
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+.map-cap small { font-family: var(--font-body); font-weight: 600; opacity: .88; }
+
+/* ── Sertare (accordion) ─────────────────────────────── */
+.acc-list { display: flex; flex-direction: column; gap: 6px; }
+.acc-item {
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--c-surface);
+  transition: border-color .15s;
+  scroll-margin-top: 8px;
+}
+.acc-item:hover, .acc-item.open { border-color: var(--c-navy); }
+.acc-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; cursor: pointer; user-select: none;
+  transition: background .15s;
+}
+.acc-item.open .acc-header, .acc-header:hover { background: rgba(26,58,107,.07); }
+.acc-emoji { font-size: 1.3em; line-height: 1; }
+.acc-title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-weight: 700; color: var(--c-navy);
+  font-size: var(--fs-md);
+}
+.acc-chevron {
+  font-size: .7em; color: var(--c-navy);
+  transition: transform .22s; display: inline-block;
+}
+.acc-item.open .acc-chevron { transform: rotate(90deg); }
+.acc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+.acc-item.open .acc-body { max-height: 4200px; }
+.acc-inner { padding: 4px 16px 14px; }
+.acc-inner p {
+  font-size: var(--fs-md); line-height: 1.7;
+  color: var(--c-text); margin-bottom: .6em;
+}
+.acc-inner p:last-child { margin-bottom: 0; }
+.acc-inner strong { color: var(--c-navy); }
+.acc-inner em { color: var(--c-text-muted); }
+.acc-inner ul { padding-left: 1.25em; margin: .3em 0 .7em; }
+.acc-inner li { line-height: 1.7; margin-bottom: .3em; }
+.acc-inner h4 {
+  font-family: var(--font-display); color: var(--c-navy);
+  font-size: 1.02em; margin: .9em 0 .3em;
+}
+.acc-inner sup { color: var(--c-navy); font-weight: 800; font-size: .72em; }
+
+@media (max-width: 768px), (max-aspect-ratio: 1/1) {
+  .page-main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .map-col { max-height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.46); }
+  .map-wrap { max-height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.46); }
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Răspândirea șahului în lume</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Evoluția șahului</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="map-col">
+      <div class="map-wrap">
+        <img src="img/drumul_matasii.jpeg" alt="Drumul Mătăsii — ruta pe care a călătorit șahul">
+        <div class="map-cap">
+          Drumul Mătăsii — autostrada milenară pe care a călătorit șahul.
+          <br><small>Din China prin India, Africa și până în Europa — fiecare continent are povestea lui →</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div id="accList" class="acc-list"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="page-footer" role="navigation">
+    <a class="nav-btn nav-btn--back" href="roboti_si_ai.html"><span class="icon">⟵</span> <span class="label">Roboți și AI</span></a>
+    <a class="nav-btn nav-btn--contents" href="index.html"><span class="label">Acasă</span></a>
+    <a class="nav-btn nav-btn--forward" href="istoria_sahului.html"><span class="label">Meniu</span> <span class="icon">⟶</span></a>
+  </footer>
+
+</div>
+
+<script>
+const sertare = [
+
+  { emoji:'🧭', title:'Cum citim pagina',
+    body:`
+<p>Șahul s-a născut într-un singur loc — <strong>India, acum aproape 1500 de ani</strong>. De acolo a plecat să cucerească <strong>toată planeta</strong>. A traversat deșerturile pe cămile, oceanele pe corăbii, munții pe Drumul Mătăsii.</p>
+<p>Astăzi se joacă pe <strong>toate cele 6 continente</strong> — inclusiv în stații antarctice și pe Stația Spațială Internațională! Deschide sertarele pe rând și urmărește călătoria. Fiecare continent are <strong>povestea veche</strong> (cum a ajuns) și <strong>povestea de azi</strong> (cine domină acum).</p>` },
+
+  { emoji:'🌏', title:'Asia — pepiniera mondială',
+    body:`
+<p>Asia e <strong>continentul-mamă</strong>: tot ce s-a întâmplat în lume cu șahul a pornit de aici. Iar tot Asia a creat cele mai exotice variante — și azi tot Asia domină șahul mondial. Cercul se închide!</p>
+
+<h4>🗺️ Drumul spre vest (~600 d.Hr.)</h4>
+<p>Un rege indian a trimis ca dar diplomatic <em>chaturanga</em> la curtea persană a regelui <strong>Anushirvan cel Drept</strong>. Persanii au adoptat-o instant — au numit-o <em>shatranj</em> și au inventat strigătul nostru de azi: <strong>„șah mat!"</strong> (regele e încolțit). Când arabii au cucerit Persia în sec. VII, au luat <em>shatranj</em>-ul mai departe la Bagdad și apoi în toată lumea cunoscută.</p>
+<p style="opacity:.85;font-size:.95em;"><em>👉 Detalii pe paginile Chaturanga și Shatranj.</em></p>
+
+<h4>🎋 Drumul spre est: Xiangqi (sec. VII–X)</h4>
+<p>Pe Drumul Mătăsii, comercianții au dus jocul spre China, în dinastia Tang. Chinezii au reproiectat totul: <strong>linii în loc de pătrățele</strong>, <strong>râul prin mijloc</strong>, <strong>palatele generalilor</strong> și o piesă unică în lume — <strong>Tunul</strong>, care capturează sărind peste o altă piesă.</p>
+<p style="opacity:.85;font-size:.95em;"><em>👉 Detalii pe pagina Xiangqi.</em></p>
+
+<h4>🏯 Japonia: Shogi, șahul generalilor</h4>
+<p>În perioada Heian (sec. IX–X), șahul a sărit din China în Japonia, unde s-a transformat în <strong>shogi</strong>. Are o regulă unică în întreaga familie: <strong>piesele pe care le capturezi devin ale tale</strong>! Le ții în mână și le poți „parașuta" înapoi pe tablă să lupte pentru tine. De aceea, în shogi nu există aproape niciodată remiză — lupta merge până la capăt.</p>
+
+<h4>🐘 Sud-estul Asiei: Makruk și Sittuyin</h4>
+<p>Din India, șahul a coborât și spre sud, în junglele Thailandei și Birmaniei (Myanmar):</p>
+<ul>
+  <li><strong>Makruk</strong> (Thailanda) — considerat de campioni ca <strong>Vladimir Kramnik</strong> drept una dintre cele mai strategice variante vechi de șah. Seamănă cu un final pur de șah modern.</li>
+  <li><strong>Sittuyin</strong> (Myanmar) — piesele sunt elefanți și războinici sculptați, iar jucătorii își <strong>așază armata într-o poziție secretă</strong> în spatele liniilor proprii înainte de a începe mutările!</li>
+</ul>
+
+<h4>🇮🇳 India: lupta dintre vechi și nou</h4>
+<p>Când britanicii au colonizat India în sec. XVII–XIX, au adus <strong>șahul clasic european</strong>. Surpriză: în sate, oamenii încă jucau variante locale de chaturanga, direct pe pământ! Indienii au <strong>refuzat</strong> la început regulile noi — pentru ei pat-ul însemna pierdere pentru cel care blochează (vechea regulă cavalerească).</p>
+<p><strong>Mir Sultan Khan</strong> (1903–1966) a schimbat totul. Geniu rural, a învățat șahul indian în satul lui, a venit în Anglia în <strong>1929</strong> cu un colonel britanic și i-a <strong>zdrobit</strong> pe cei mai mari maeștri ai Imperiului — câștigând <strong>Campionatul Britanic de 3 ori</strong>! A demonstrat că mintea indiană se descurcă perfect și cu regulile moderne.</p>
+<p>Cercul s-a închis spectaculos cu <strong>Viswanathan Anand</strong> (campion mondial <strong>2000–2013</strong>) și apoi cu <strong>Gukesh Dommaraju</strong> — campion mondial <strong>2024</strong> la doar <strong>18 ani</strong>, cel mai tânăr campion absolut din istorie! Plus Arjun Erigaisi, Pragganandhaa și alți tineri minune.</p>
+
+<h4>🎋 China: „Marele Plan al Dragonului"</h4>
+<p>În China, șahul clasic (numit <em>guójì qí</em> 国际棋, „șahul internațional") a intrat foarte târziu — abia în <strong>1956</strong>, când guvernul l-a recunoscut oficial. Avea un rival uriaș: xiangqi-ul, jucat de sute de milioane pe străzi.</p>
+<p>Soluția? În anii 1980, China a creat un program de stat — supranumit <em>„Marele Plan al Dragonului"</em>: au luat <strong>copii talentați la xiangqi</strong> și i-au antrenat intensiv în șahul clasic. Logica și tactica xiangqi-ului s-au potrivit mănușă! Planul a funcționat: China a dat <strong>campioane mondiale la feminin</strong> (Xie Jun, Hou Yifan, Ju Wenjun) și azi pe <strong>Ding Liren</strong> — campion mondial la masculin în <strong>2023</strong>.</p>
+
+<h4>🕌 Iran (Persia): de la interzis la elită</h4>
+<p>În Iran, șahul clasic a fost adoptat la începutul secolului XX. Dar în <strong>1979</strong>, după Revoluția Islamică, a fost <strong>interzis complet</strong> (considerat „joc de noroc"). Interdicția a fost ridicată în <strong>1988</strong> chiar de ayatollahul Khomeini. Astăzi Iranul are o școală puternică — <strong>Alireza Firouzja</strong> (cândva mare speranță iraniană, azi cetățean francez și jucător de top mondial), Parham Maghsoodloo.</p>
+
+<h4>🌏 Alte forțe asiatice</h4>
+<p><strong>Filipine</strong> — Eugene Torre (primul GM asiatic, 1974); <strong>Vietnam</strong> — Le Quang Liem; <strong>Kazahstan, Uzbekistan</strong> — generații întregi care urcă în topul mondial.</p>
+
+<div class="hl-box ok">🪃 <strong>Efectul de bumerang:</strong> șahul a făcut turul lumii ca un bumerang! A plecat din India și China acum 1500 de ani sub formă de <em>chaturanga</em> și <em>xiangqi</em>, a zburat în Europa unde a primit hainele moderne, iar în secolul XX s-a întors în Asia ca sport mondial. Cercul istoric s-a închis — copiii indieni și chinezi de azi sunt campioni mondiali cu regulile moderne, dar folosesc aceeași sclipire de geniu pe care o aveau și strămoșii lor.</div>` },
+
+  { emoji:'🌍', title:'Africa — pe spatele cămilelor',
+    body:`
+<p>Africa a fost <strong>prima oprire majoră a șahului</strong> după ce a părăsit Persia. Aici n-a ajuns de la început forma modernă, ci strămoșul ei — <em>shatranj</em>, purtat pe cămile și pe corăbiile comercianților arabi.</p>
+
+<h4>🐪 Calea nordului: Egiptul și Magrebul (sec. VII–VIII)</h4>
+<p>După ce arabii au cucerit <strong>Egiptul în 640 d.Hr.</strong>, Alexandria și Cairo au devenit rapid centre uriașe de șah, cu primii mari maeștri ai vremii (numiți <em>aliyat</em>) care jucau pe mize uriașe în fața califilor. Jocul a urcat apoi de-a lungul întregii coaste de nord — Tunisia, Algeria, Maroc — în doar câteva decenii.</p>
+<p>📌 <strong>Fapt fascinant:</strong> din Maroc, această armată a șahului a sărit strâmtoarea Gibraltar în <strong>711 d.Hr.</strong>, odată cu cucerirea Spaniei de către Tariq ibn Ziyad. Practic, șahul a intrat în Europa <strong>venind din Africa de Nord</strong>!</p>
+
+<h4>⛵ Calea sudului: Coasta Swahili (sec. X–XII)</h4>
+<p>Comercianții arabi și persani navigau pe rutele Oceanului Indian, făcând comerț cu aur, fildeș și mirodenii. Ei au dus tablele de șah în marile orașe-port ale culturii <strong>Swahili</strong> (Kenya, Tanzania, Mozambic de azi). Regii și negustorii africani au adoptat jocul ca simbol al statutului și inteligenței.</p>
+
+<div class="hl-box">🕵️ <strong>Secret pentru detectivi:</strong> mulți copii cred că „egiptenii aveau șah în piramide". Răspuns: <strong>nu!</strong> În mormântul lui Tutankhamon s-au găsit table de joc, dar erau <strong>două jocuri diferite</strong>: <strong>Senet</strong> (3×10 pătrățele, joc tipic egiptean cu bețișoare-zaruri) și <strong>Royal Game of Ur</strong> (cele de 20 de pătrățele, joc mesopotamian). Niciunul nu e șah! Adevăratul șah a ajuns în Egipt abia 2000 de ani mai târziu.</div>
+
+<h4>🏆 Azi: Africa în creștere rapidă</h4>
+<p>Când s-a înființat <strong>FIDE în 1924</strong>, țările africane au început să-și formeze propriile federații. Astăzi Africa e una dintre zonele cu cea mai rapidă creștere:</p>
+<ul>
+  <li><strong>Egipt</strong> — <strong>Bassem Amin</strong> (Mare Maestru, n. 1988) — cel mai puternic jucător din istoria continentului african</li>
+  <li><strong>Africa de Sud</strong> — <strong>Kenny Solomon</strong> (2014), primul Mare Maestru de culoare născut în Africa</li>
+  <li><strong>Nigeria</strong> — <strong>Tunde Onakoya</strong> (proiectul „Chess in Slums Africa") — în 2024 a stabilit recordul mondial pentru cea mai lungă partidă de șah jucată non-stop (60+ ore), strângând donații pentru educație</li>
+  <li><strong>FIDE „Chess in Schools"</strong> — răspândește jocul în mii de școli africane, de la Maroc la Madagascar</li>
+</ul>` },
+
+  { emoji:'🌎', title:'Americile — Atahualpa, Franklin și Morphy',
+    body:`
+<p>Șahul a ajuns în America în <strong>două valuri</strong>: mai întâi în <strong>America de Sud</strong> (cu conchistadorii spanioli), apoi în <strong>America de Nord</strong> (cu coloniștii englezi și olandezi). Spre deosebire de Asia și Africa, peste Atlantic a călătorit direct <strong>șahul modern</strong> — cel cu regulile noi din Europa.</p>
+
+<h4>⛵ Primul val: America de Sud (1532)</h4>
+<p>În 1532, conchistadorul <strong>Francisco Pizarro</strong> l-a capturat pe ultimul împărat inca, <strong>Atahualpa</strong>. <em>Se spune</em> că, în timp ce era prizonier, Atahualpa i-a privit pe paznicii spanioli jucând zi de zi și a învățat regulile <strong>doar uitându-se</strong> — apoi a început să le sufle mutările și să-i bată pe mulți! E o legendă frumoasă, neconfirmată sigur de istorici, dar e prima atestare a șahului pe continentul american.</p>
+
+<h4>📜 Al doilea val: America de Nord (sec. XVII)</h4>
+<p>Spre mijlocul anilor 1600, pelerinii și coloniștii englezi, francezi și olandezi au adus jocul în Lumea Nouă. La început era <strong>obiect de mare lux</strong> — seturi aduse cu greu pe vapoare, doar nobilii și guvernatorii bogați și le permiteau.</p>
+
+<h4>🧠 Pasiunea „Părinților Fondatori" (sec. XVIII)</h4>
+<p>Pe măsură ce coloniile americane luptau pentru independență, șahul a devenit jocul preferat al elitei politice:</p>
+<ul>
+  <li><strong>Benjamin Franklin (1786)</strong> a scris primul eseu despre șah tipărit în America — <em>„The Morals of Chess"</em>. Credea că șahul învață <strong>prevederea, atenția și păstrarea cumpătului</strong>.</li>
+  <li><strong>George Washington</strong> și <strong>Thomas Jefferson</strong>, primii doi președinți, erau jucători înrăiți. Jefferson avea seturi superbe aduse din Franța și juca acasă la Monticello.</li>
+</ul>
+
+<h4>🚂 Explozia Paul Morphy (1857)</h4>
+<p>Primele cluburi de șah au apărut în New York la începutul secolului XIX. Adevărata nebunie națională a izbucnit în <strong>1857</strong>, datorită unui tânăr genial din New Orleans: <strong>Paul Morphy</strong>, la doar 20 de ani. A câștigat primul Congres American de Șah, apoi a plecat în Europa și i-a <strong>zdrobit pe toți maeștrii lumii</strong> cu un stil fulgerător plin de sacrificii. A devenit primul erou național sportiv al Americii.</p>
+
+<h4>🏆 Azi: vârf de top mondial</h4>
+<ul>
+  <li><strong>Cuba</strong> — <strong>José Raúl Capablanca</strong> (campion mondial 1921–1927), considerat unul dintre cele mai mari talente naturale din istorie</li>
+  <li><strong>SUA</strong> — <strong>Bobby Fischer</strong> (1972, „meciul secolului" contra Spasski, în plin Război Rece); azi <strong>Fabiano Caruana</strong> (al doilea ELO din istorie), <strong>Hikaru Nakamura</strong>, <strong>Wesley So</strong> — toți în top 10 mondial</li>
+  <li><strong>America Latină</strong> — Argentina, Brazilia, Peru — au generat marii maeștri și organizează turnee importante</li>
+</ul>` },
+
+  { emoji:'🇦🇺', title:'Australia — First Fleet și telegraful',
+    body:`
+<p>Pe continentul australian, șahul a debarcat <strong>direct în formă modernă</strong>, odată cu primele corăbii britanice — la pachet cu coloniștii din 1788. S-a dezvoltat apoi cu o energie surprinzătoare.</p>
+
+<h4>⛵ First Fleet (ianuarie 1788)</h4>
+<p>Șahul a ajuns oficial în Australia în <strong>ianuarie 1788</strong>, odată cu sosirea „First Fleet" condusă de guvernatorul Arthur Phillip — flota care a înființat prima colonie britanică la Port Jackson (Sydney de azi). Printre ofițerii și medicii de pe corăbii erau oameni educați din Marea Britanie, care aduseseră cărți și seturi de șah din fildeș și lemn ca să-și omoare timpul pe lungile luni de izolare.</p>
+
+<h4>📜 Cluburi și ziare (sec. XIX)</h4>
+<p>Când coloniile au crescut, șahul a explodat în rândul populației. <strong>Melbourne Chess Club</strong> s-a înființat în <strong>1866</strong> (sub numele inițial „Melbourne Chess Association") — unul dintre cele mai vechi cluburi din emisfera sudică. Rivalitatea istorică Sydney–Melbourne s-a mutat și pe tabla de șah: jucătorii organizau meciuri prin corespondență, o partidă durând luni de zile.</p>
+
+<h4>🏆 Primul Campionat Național (1885)</h4>
+<p>În <strong>1885</strong>, la Melbourne, s-a organizat primul Campionat Oficial al Australiei. Câștigătorul a fost <strong>Frederick Karl Esling</strong>. La ediția următoare (Adelaide, <strong>1887</strong>), englezul emigrat <strong>Henry Charlick</strong> (1845–1916) a câștigat — el a devenit celebru și pentru o deschidere agresivă popularizată în anii 1890: <em>1.d4 e5 2.dxe5 d6</em>, cunoscută azi sub numele <strong>Gambitul Blackburne–Hartlaub</strong> (cândva numită și „Gambitul Charlick").</p>
+
+<h4>📡 Pionieri ai tehnologiei</h4>
+<p>Australia a fost mereu izolată geografic de restul lumii, așa că australienii au fost printre primii care au folosit tehnologia pentru a juca șah la distanță:</p>
+<ul>
+  <li><strong>Telegraful</strong> (sec. XIX) — meciuri inter-coloniale prin cablu telegrafic</li>
+  <li><strong>Radio</strong> (sec. XX) — partide transmise „pe unde scurte" cu Europa</li>
+  <li><strong>Internet</strong> (sec. XX–XXI) — printre primii adoptatori ai serverelor de șah online</li>
+</ul>
+
+<h4>🏆 Azi: scena modernă</h4>
+<p>Australia are azi câțiva Mari Maeștri activi: <strong>Ian Rogers</strong> (multiplu campion național), <strong>Anton Smirnov</strong> (cel mai tânăr GM australian), <strong>Zhao Zong-Yuan</strong>. Olimpiada de Șah aduce echipa australiană la fiecare 2 ani — o călătorie de zeci de mii de kilometri, dar cu un singur scop: <em>Gens una sumus</em>.</p>
+<div class="hl-box ok"><em>Gens una sumus</em> — deviza FIDE „suntem o singură familie" — a fost dintotdeauna foarte reală pentru australieni: distanțele uriașe i-au transformat în pionieri ai conexiunilor șahiste globale.</div>` },
+
+  { emoji:'🇪🇺', title:'Europa — leagănul șahului modern',
+    body:`
+<p>Europa nu e nici locul de naștere al șahului, nici cel al ultimei dominații — dar e <strong>locul unde s-a născut FORMA modernă a jocului</strong>. În <strong>1475</strong>, în Spania și Italia, șahul medieval a primit super-puterile pe care le folosim azi:</p>
+<ul>
+  <li><strong>Regina</strong> — din cea mai slabă piesă (un pătrățel diagonal) a devenit cea mai puternică (oricâte pătrățele în orice direcție)</li>
+  <li><strong>Nebunul</strong> — a renunțat la „săritura de 2" și a primit raza lungă pe diagonală</li>
+  <li><strong>Pionul</strong> — a primit pasul dublu la prima mutare (plus „en passant" ca să nu se „strecoare")</li>
+  <li><strong>Rocada</strong> — pentru a pune regele rapid la adăpost</li>
+</ul>
+
+<h4>🏆 Europa modernă: turnee, școli, campioni</h4>
+<p>Tot Europa a dus jocul mai departe:</p>
+<ul>
+  <li><strong>Londra 1851</strong> — primul turneu internațional, organizat de englezi</li>
+  <li><strong>Codul Oficial FIDE 1929</strong> — unificarea regulilor la nivel mondial</li>
+  <li><strong>Școala sovietică</strong> (1948–1990): șahul ca politică de stat în URSS — Botvinnik, Tal, Petrosian, Spasski, Karpov, <strong>Kasparov</strong> — peste 40 de ani de dominație</li>
+  <li><strong>Norvegia</strong> — <strong>Magnus Carlsen</strong> (campion mondial 2013–2023), cel mai mare ELO din istorie</li>
+  <li><strong>Polonia, Olanda, Franța, Germania</strong> — turnee de elită (Wijk aan Zee, Bilbao, Bonn), generații întregi de mari maeștri</li>
+</ul>
+<div class="hl-box">📖 <strong>Vezi în detaliu:</strong> drumul prin care a intrat șahul în Europa e pe pagina <em>„Din India până în Europa"</em>, iar reformele europene complete sunt pe <em>„Evoluția șahului în Europa"</em>.</div>` },
+
+  { emoji:'🌐', title:'Curiozități și restul lumii',
+    body:`
+<p>Astăzi șahul se joacă <strong>pe toate continentele și mai mult</strong>. Iată câteva colțuri spectaculoase:</p>
+
+<h4>🏅 Olimpiada de Șah FIDE</h4>
+<p>La fiecare 2 ani, peste <strong>180 de țări</strong> trimit echipe la Olimpiada Mondială — de la Mongolia la Vanuatu, din Islanda în Insulele Solomon. E una dintre cele mai mari competiții sportive din lume ca număr de țări participante.</p>
+
+<h4>🐧 Antarctica</h4>
+<p>În stațiile de cercetare polare, șahul e una dintre cele mai populare distracții pentru oamenii care petrec ierni lungi în întuneric absolut. McMurdo Station (SUA) și alte baze organizează turnee interne pe parcursul lunilor reci.</p>
+
+<h4>🚀 Spațiul cosmic</h4>
+<p>În <strong>2008</strong>, astronautul <strong>Gregory Chamitoff</strong> de pe Stația Spațială Internațională a jucat o partidă completă <strong>contra Pământului</strong> (echipa de control de la NASA). O premieră istorică — verdictul: Pământul a învins!</p>
+
+<h4>💻 Online: explozia digitală</h4>
+<p>Cu apariția internetului, șahul a devenit <strong>cel mai jucat joc al planetei</strong>. Doar pe <strong>Chess.com</strong> și <strong>Lichess</strong> sunt împreună <strong>peste 100 de milioane</strong> de jucători activi. Lichess e complet gratuit, fără reclame — făcut de o comunitate de voluntari (la fel ca Stockfish, motorul nostru de antrenament!).</p>
+
+<h4>🌐 De pretutindeni</h4>
+<p>Șahul se joacă pe submarine, pe stații Antarctice, în baze militare deșertice, pe nave de croazieră, pe trenuri intercontinentale. E poate cel mai universal joc din istoria omenirii — fără nevoie de limbă comună, doar tabla și piesele.</p>
+
+<div class="hl-box ok">🎯 <strong>Gens una sumus</strong> — „suntem o singură familie" — deviza FIDE — nu e doar un slogan. E literal: șahul unește <strong>peste 600 de milioane de oameni</strong> pe toate continentele.</div>` },
+
+  { emoji:'🕵️', title:'Pentru Detectivi: surse',
+    body:`
+<p>Un detectiv adevărat verifică totul. Iată sursele pentru povestea răspândirii șahului în lume:</p>
+<ul>
+  <li><strong>Murray, H. J. R.</strong> — <em>A History of Chess</em>, Oxford University Press, 1913. Sursa fundamentală pentru istoria veche și răspândirea timpurie (Persia, arabi, Asia, Europa).</li>
+  <li><strong>Cazaux, Jean-Louis &amp; Knowlton, Rick</strong> — <em>A World of Chess</em>, McFarland, 2017. Sinteză modernă cuprinzătoare; tratează toate variantele asiatice și răspândirea pe continente.</li>
+  <li><strong>Eales, Richard</strong> — <em>Chess: The History of a Game</em>, 1985. Bună pentru evoluția modernă și era competițiilor.</li>
+  <li><strong>Wikipedia</strong> — articolele „Chess in Australia", „Chess in Africa", „History of chess in Russia", „Melbourne Chess Club", „Henry Charlick", „FIDE", „Chess Olympiad". Verificate încrucișat cu sursele de mai sus.</li>
+  <li><strong>FIDE</strong> — federația mondială (Paris, 1924); listele cu federațiile naționale și marii maeștri.</li>
+  <li><strong>Presa internațională</strong> pentru evenimente recente: Campionatul Mondial 2024 Gukesh–Ding (NPR, Britannica, Chess.com), recordul Tunde Onakoya 2024 (BBC, Guinness World Records).</li>
+</ul>
+<div class="hl-box">📚 De ce mai multe surse? Pentru că o singură carte se poate înșela. Când mai mulți autori, în epoci diferite, spun același lucru — putem avea încredere. Așa lucrează istoricii: ca niște detectivi cu mai mulți martori.</div>` }
+];
+
+const list = document.getElementById('accList');
+sertare.forEach(function(b, idx) {
+  const item = document.createElement('div');
+  item.className = 'acc-item';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'acc-header';
+  hdr.innerHTML = '<span class="acc-emoji">' + b.emoji + '</span>' +
+                  '<span class="acc-title">' + b.title + '</span>' +
+                  '<span class="acc-chevron">&#9658;</span>';
+
+  const body = document.createElement('div');
+  body.className = 'acc-body';
+  const inner = document.createElement('div');
+  inner.className = 'acc-inner';
+  inner.innerHTML = b.body;
+  body.appendChild(inner);
+
+  item.appendChild(hdr); item.appendChild(body);
+  list.appendChild(item);
+
+  hdr.addEventListener('click', function(){ item.classList.toggle('open'); });
+  if (idx === 0) item.classList.add('open');
+});
+</script>
+</body>
+</html>
