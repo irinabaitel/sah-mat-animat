@@ -121,18 +121,28 @@
   border-left: 4px solid #991b1b;
   border-radius: 10px;
 }
-.piece-list .pkanji {
+.piece-list .pimg {
   flex: 0 0 auto;
-  width: 46px; height: 50px;
+  width: 56px; height: 56px;
+  display: block;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.18));
+}
+.promo-pair {
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Baloo 2', serif;
-  font-size: 1.6em; font-weight: 900;
-  color: #1c1410;
-  background: #f3d28a;
-  border: 2px solid #8b6b2a;
-  border-radius: 6px 6px 12px 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,.15);
-  clip-path: polygon(50% 0%, 100% 18%, 100% 100%, 0% 100%, 0% 18%);
+  gap: 8px; padding: 8px;
+  background: linear-gradient(135deg, #fff8e7, #f5e6c8);
+  border-radius: 10px;
+  margin: 6px 0;
+}
+.promo-pair img { width: 50px; height: 50px; }
+.promo-pair .arrow {
+  font-size: 1.6em; color: #991b1b; font-weight: 900;
+  margin: 0 4px;
+}
+.promo-pair .label {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: .9em; color: var(--c-navy);
+  min-width: 80px; text-align: center;
 }
 .piece-list .pinfo { flex: 1; min-width: 0; }
 .piece-list .pname {
@@ -290,61 +300,61 @@ const sertare = [
 
   { num:'3.', emoji:'⚔️', title:'Cele 8 piese și cum mută',
     body:`
-<p>Iată armata. Sub fiecare e <strong>kanji-ul</strong> exact pe care îl vezi pe tabla reală (și pe Lishogi):</p>
+<p>Iată armata. Folosim aici <strong>setul „International"</strong> de pe Lishogi — cu pictograme în loc de kanji, mai prietenos pentru copii. (Pe Lishogi poți schimba setul în „Setări" dacă vrei să vezi kanji-urile reale.)</p>
 <ul class="piece-list">
   <li>
-    <div class="pkanji">王</div>
+    <img class="pimg" src="img/shogi/king.svg" alt="Rege (Ōshō)">
     <div class="pinfo">
-      <span class="pname">Ōshō — Regele <em>(Ō)</em></span>
+      <span class="pname">Ōshō — Regele <em>(王)</em></span>
       <span class="pdesc">Ca regele nostru: <strong>1 pas în orice direcție</strong>. Dacă moare, ai pierdut!</span>
     </div>
   </li>
   <li>
-    <div class="pkanji">飛</div>
+    <img class="pimg" src="img/shogi/rook.svg" alt="Turn (Hisha)">
     <div class="pinfo">
-      <span class="pname">Hisha — Turnul <em>(Hi)</em></span>
+      <span class="pname">Hisha — Turnul <em>(飛)</em></span>
       <span class="pdesc">Ca turnul nostru: linie dreaptă <strong>oricâte pătrate</strong>. Cea mai puternică piesă a tablei.</span>
     </div>
   </li>
   <li>
-    <div class="pkanji">角</div>
+    <img class="pimg" src="img/shogi/bishop.svg" alt="Nebun (Kaku)">
     <div class="pinfo">
-      <span class="pname">Kaku — Nebunul <em>(Ka)</em></span>
+      <span class="pname">Kaku — Nebunul <em>(角)</em></span>
       <span class="pdesc">Ca nebunul nostru: pe diagonală <strong>oricâte pătrate</strong>.</span>
     </div>
   </li>
   <li>
-    <div class="pkanji">金</div>
+    <img class="pimg" src="img/shogi/gold.svg" alt="General de Aur (Kin)">
     <div class="pinfo">
-      <span class="pname">Kin — Generalul de Aur <em>(Ki)</em></span>
+      <span class="pname">Kin — Generalul de Aur <em>(金)</em></span>
       <span class="pdesc">Mută <strong>1 pas în 6 direcții</strong> — orice direcție, MAI PUȚIN diagonalele în spate. Garda de corp a regelui!</span>
     </div>
   </li>
   <li>
-    <div class="pkanji">銀</div>
+    <img class="pimg" src="img/shogi/silver.svg" alt="General de Argint (Gin)">
     <div class="pinfo">
-      <span class="pname">Gin — Generalul de Argint <em>(Gi)</em></span>
+      <span class="pname">Gin — Generalul de Argint <em>(銀)</em></span>
       <span class="pdesc">Mută <strong>1 pas înainte sau 1 pas pe oricare din cele 4 diagonale</strong> (5 câmpuri totale).</span>
     </div>
   </li>
   <li>
-    <div class="pkanji">桂</div>
+    <img class="pimg" src="img/shogi/knight.svg" alt="Cal (Keima)">
     <div class="pinfo">
-      <span class="pname">Keima — Calul <em>(Ke)</em></span>
+      <span class="pname">Keima — Calul <em>(桂)</em></span>
       <span class="pdesc">Mută în „L", dar <strong>doar înainte</strong> (2 câmpuri posibile). Nu poate merge în lateral sau înapoi ca la șahul nostru!</span>
     </div>
   </li>
   <li>
-    <div class="pkanji">香</div>
+    <img class="pimg" src="img/shogi/lance.svg" alt="Lăncier (Kyōsha)">
     <div class="pinfo">
-      <span class="pname">Kyōsha — Lăncierul <em>(Kyō)</em></span>
+      <span class="pname">Kyōsha — Lăncierul <em>(香)</em></span>
       <span class="pdesc">Mută <strong>doar înainte în linie dreaptă</strong>, oricâte pătrate vrea. Un turn care nu știe să meargă în spate sau în lateral.</span>
     </div>
   </li>
   <li>
-    <div class="pkanji">歩</div>
+    <img class="pimg" src="img/shogi/pawn.svg" alt="Pion (Fuhyō)">
     <div class="pinfo">
-      <span class="pname">Fuhyō — Pionul <em>(Fu)</em></span>
+      <span class="pname">Fuhyō — Pionul <em>(歩)</em></span>
       <span class="pdesc">Mută <strong>1 pas înainte și capturează tot înainte</strong> (NU pe diagonală, ca la șah!).</span>
     </div>
   </li>
@@ -364,15 +374,49 @@ const sertare = [
 <p>Tabla are o zonă specială numită <strong>„Tabăra Adversă"</strong> — ultimele <strong>3 linii</strong> de sus. Când o piesă de-a ta pășește în această zonă (sau pleacă din ea), o întorci pur și simplu <strong>invers</strong>. Pe spatele piesei e scris un alt caracter cu <strong>cerneală roșie</strong> — și piesa ta a promovat!</p>
 
 <h4>📋 Cine ce devine după promovare:</h4>
-<ul>
-  <li><strong>飛 Hisha (Turn) → Dragon</strong> 🐲 Turn + 1 pas pe diagonală. Cea mai temută piesă!</li>
-  <li><strong>角 Kaku (Nebun) → Cal-Dragon</strong> 🐎 Nebun + 1 pas drept în orice direcție.</li>
-  <li><strong>銀 Gin (Argint) → General de Aur</strong> 🥇 Capătă toate puterile aurului.</li>
-  <li><strong>桂 Keima (Cal) → General de Aur</strong> 🥇</li>
-  <li><strong>香 Kyōsha (Lăncier) → General de Aur</strong> 🥇</li>
-  <li><strong>歩 Fuhyō (Pion) → General de Aur</strong> 🥇 (numit „Tokin")</li>
-  <li><strong>王 Ōshō (Rege)</strong> și <strong>金 Kin (Aurul)</strong> — <strong>NU promovează</strong>. Aurul e deja la nivel maxim!</li>
-</ul>
+<div class="promo-pair">
+  <img src="img/shogi/rook.svg" alt="Turn">
+  <span class="label">Turn</span>
+  <span class="arrow">⟶</span>
+  <img src="img/shogi/dragon.svg" alt="Dragon">
+  <span class="label">Dragon 🐲<br><small>+ 1 pas pe diagonală</small></span>
+</div>
+<div class="promo-pair">
+  <img src="img/shogi/bishop.svg" alt="Nebun">
+  <span class="label">Nebun</span>
+  <span class="arrow">⟶</span>
+  <img src="img/shogi/horse.svg" alt="Cal-Dragon">
+  <span class="label">Cal-Dragon 🐎<br><small>+ 1 pas drept</small></span>
+</div>
+<div class="promo-pair">
+  <img src="img/shogi/silver.svg" alt="Argint">
+  <span class="label">Argint</span>
+  <span class="arrow">⟶</span>
+  <img src="img/shogi/promotedsilver.svg" alt="Aur">
+  <span class="label">Aur 🥇</span>
+</div>
+<div class="promo-pair">
+  <img src="img/shogi/knight.svg" alt="Cal">
+  <span class="label">Cal</span>
+  <span class="arrow">⟶</span>
+  <img src="img/shogi/promotedknight.svg" alt="Aur">
+  <span class="label">Aur 🥇</span>
+</div>
+<div class="promo-pair">
+  <img src="img/shogi/lance.svg" alt="Lăncier">
+  <span class="label">Lăncier</span>
+  <span class="arrow">⟶</span>
+  <img src="img/shogi/promotedlance.svg" alt="Aur">
+  <span class="label">Aur 🥇</span>
+</div>
+<div class="promo-pair">
+  <img src="img/shogi/pawn.svg" alt="Pion">
+  <span class="label">Pion</span>
+  <span class="arrow">⟶</span>
+  <img src="img/shogi/tokin.svg" alt="Tokin">
+  <span class="label">Tokin 🥇<br><small>(pion de aur)</small></span>
+</div>
+<p style="margin-top:10px;"><strong>NU promovează:</strong> <img src="img/shogi/king.svg" alt="Rege" style="width:24px;height:24px;vertical-align:middle;"> Regele și <img src="img/shogi/gold.svg" alt="Aur" style="width:24px;height:24px;vertical-align:middle;"> Aurul — aurul e deja la nivel maxim!</p>
 <p>👉 Foarte multe piese ajung „de aur" — de-aia jocul are atâta dinamism!</p>` },
 
   { num:'6.', emoji:'🚫', title:'Cele 3 reguli interzise',
