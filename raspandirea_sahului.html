@@ -9,6 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="master-template.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
 /* ── Coloana hărții (Drumul Mătăsii ca hero) ───────────── */
 .page-main { grid-template-columns: 56fr 44fr; }
@@ -19,17 +21,62 @@
 }
 .map-wrap {
   width: 100%;
+  height: calc(100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap));
   max-height: calc(100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap));
+  min-height: 480px;
   position: relative;
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: 0 6px 30px rgba(0,0,0,0.2);
-  background: #eb9e2a;
+  background: #cfe3e6;
 }
-.map-wrap img {
-  width: 100%; height: 100%;
-  object-fit: contain; display: block;
+#worldMap { width: 100%; height: 100%; }
+
+/* Leaflet popup în stilul Laboratorului */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  background: var(--c-surface);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
+.leaflet-popup-content {
+  font-family: var(--font-body);
+  color: var(--c-text);
+  margin: 12px 14px;
+  font-size: 0.92em; line-height: 1.55;
+}
+.leaflet-popup-content b {
+  font-family: var(--font-display);
+  color: var(--c-navy);
+  font-size: 1.05em;
+}
+.leaflet-popup-content em {
+  color: var(--c-text-muted);
+  font-style: italic;
+}
+.leaflet-popup-tip { background: var(--c-surface); }
+
+/* Legenda colorilor — fix peste hartă, sus-stânga */
+.map-legend {
+  position: absolute;
+  top: 12px; left: 12px;
+  background: rgba(255,248,231,0.92);
+  border: 2px solid rgba(150,115,70,0.4);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.78em;
+  color: #4a3a1e;
+  line-height: 1.6;
+  z-index: 500;
+  max-width: 220px;
+}
+.map-legend .ll { display: flex; align-items: center; gap: 8px; }
+.map-legend .sw {
+  display: inline-block; width: 26px; height: 0;
+  border-top: 3px dashed; border-radius: 2px; flex-shrink: 0;
+}
+.map-legend .sw.solid { border-top-style: solid; }
 .map-cap {
   position: absolute; left: 0; right: 0; bottom: 0;
   padding: 14px 16px 10px;
@@ -111,10 +158,14 @@
 
     <div class="map-col">
       <div class="map-wrap">
-        <img src="img/drumul_matasii.jpeg" alt="Drumul Mătăsii — ruta pe care a călătorit șahul">
+        <div id="worldMap"></div>
+        <div class="map-legend">
+          <div class="ll"><span class="sw" style="border-color:#d97706;"></span> Rute vechi (sec. VI–XV)</div>
+          <div class="ll"><span class="sw solid" style="border-color:#16a085;"></span> Spre est (Drumul Mătăsii)</div>
+          <div class="ll"><span class="sw solid" style="border-color:#355ea8;"></span> Rute moderne (post-1475)</div>
+        </div>
         <div class="map-cap">
-          Drumul Mătăsii — autostrada milenară pe care a călătorit șahul.
-          <br><small>Din China prin India, Africa și până în Europa — fiecare continent are povestea lui →</small>
+          Apasă pe punctele roșii → vezi povestea fiecărei opriri.
         </div>
       </div>
     </div>
@@ -335,6 +386,63 @@ sertare.forEach(function(b, idx) {
 
   hdr.addEventListener('click', function(){ item.classList.toggle('open'); });
   if (idx === 0) item.classList.add('open');
+});
+
+/* ── Harta interactivă Leaflet ────────────────────── */
+const wm = L.map('worldMap', {
+  center: [28, 30],
+  zoom: 2,
+  minZoom: 2,
+  maxZoom: 6,
+  scrollWheelZoom: false,
+  worldCopyJump: false
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 6
+}).addTo(wm);
+
+// 9 opriri esențiale — toate cele 5 continente
+const stops = [
+  { c:[22, 78], emoji:'🐘', name:'India — Origine', when:'~600 d.Hr.', text:'Aici s-a născut <b>chaturanga</b>, strămoșul șahului. <b>Astăzi</b> India e iar pe primul loc: Anand (campion 2000-2013) și Gukesh (campion 2024 la 18 ani — cel mai tânăr din istorie!).' },
+  { c:[33.3, 44.4], emoji:'🌙', name:'Bagdad (Persia)', when:'sec. VII-X', text:'Persanii primesc jocul, îl rebotează <b>shatranj</b>. Aici se naște strigătul „șah mat!". Bagdadul devine capitala șahului în era arabă.' },
+  { c:[30.0, 31.2], emoji:'🐪', name:'Cairo (Egipt)', when:'~640', text:'Arabii cuceresc Egiptul, jocul devine pasiune. De aici traversează tot Magrebul până în Maroc — gata să sară în Spania (711).' },
+  { c:[37.9, -4.8], emoji:'🇪🇸', name:'Cordoba (Spania)', when:'711', text:'Maurii aduc shatranj-ul în Europa prin Spania. Aici, în <b>1475</b>, regina capătă super-puterea modernă = <b>șahul modern</b>!' },
+  { c:[63.4, 10.4], emoji:'🪓', name:'Trondheim (Norvegia)', when:'sec. X-XII', text:'Vikingii cumpără șah prin rutele comerciale din Bizanț și Bagdad și-l aduc în Scandinavia. Faimoasele <b>piese de pe Insula Lewis</b> (sec. XII) sunt sculptate aici.' },
+  { c:[34.3, 108.9], emoji:'🐉', name:'Xi\'an (China)', when:'sec. VII-XI', text:'Pe Drumul Mătăsii jocul ajunge în China. Se naște <b>xiangqi</b> — cu râu, palate și tunul, piesă unică în lume! <b>Azi:</b> Ding Liren, campion mondial 2023.' },
+  { c:[35.0, 135.8], emoji:'⛩️', name:'Kyoto (Japonia)', when:'sec. IX-X', text:'Devine <b>shogi</b> — singura variantă în care piesele capturate <b>devin ale tale</b> și pot fi parașutate înapoi pe tablă!' },
+  { c:[39.9, -75.2], emoji:'🇺🇸', name:'Philadelphia (SUA)', when:'sec. XVII-XIX', text:'Coloniștii englezi aduc șahul modern. <b>Benjamin Franklin</b> scrie „The Morals of Chess" (1786). <b>Paul Morphy</b> (1857) — primul mare campion american.' },
+  { c:[-33.9, 151.2], emoji:'🇦🇺', name:'Sydney (Australia)', when:'ianuarie 1788', text:'„First Fleet" — flota britanică ce întemeiază Australia — aduce și șahul. Primul campionat australian: <b>1885</b>.' }
+];
+
+stops.forEach(s => {
+  L.circleMarker(s.c, {
+    radius: 8, color:'#fff', weight: 2,
+    fillColor:'#991b1b', fillOpacity: 0.95
+  }).addTo(wm)
+    .bindPopup('<b>' + s.emoji + ' ' + s.name + '</b><br><em>' + s.when + '</em><br>' + s.text, {maxWidth: 280});
+});
+
+// 6 rute — vechi (orange dashed) / est (green) / moderne (blue)
+const routes = [
+  // Rute vechi spre vest (sec. VII-X)
+  { pts:[[22,78],[33.3,44.4]],                    color:'#d97706', dash:'8,6' },  // India → Persia
+  { pts:[[33.3,44.4],[30.0,31.2],[37.9,-4.8]],    color:'#d97706', dash:'8,6' },  // Persia → Egipt → Spania
+  { pts:[[33.3,44.4],[41.0,28.9],[63.4,10.4]],    color:'#d97706', dash:'8,6' },  // Persia → Constantinopol → Norvegia
+  // Spre est (Drumul Mătăsii)
+  { pts:[[22,78],[34.3,108.9],[35.0,135.8]],      color:'#16a085' },               // India → China → Japonia
+  // Rute moderne (post-1475)
+  { pts:[[37.9,-4.8],[39.9,-75.2]],               color:'#355ea8' },               // Spania → Americile
+  { pts:[[37.9,-4.8],[-33.9,151.2]],              color:'#355ea8' }                // Europa → Australia
+];
+
+routes.forEach(r => {
+  L.polyline(r.pts, {
+    color: r.color, weight: 3, opacity: 0.78,
+    dashArray: r.dash || null
+  }).addTo(wm);
 });
 </script>
 </body>
