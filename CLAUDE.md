@@ -45,6 +45,40 @@ function resetAllProgress() {
 - Există și `playAgainBtn` în puzzleView (pentru când toate puzzle-urile sunt rezolvate)
 - Model de referință: `pagina52.html`
 
+## Starea proiectului (mai 2026)
+
+**Proiect: Laboratorul de Șah** — platformă educațională de șah pentru copii.
+Brandul vechi "Cufărul cu Șah" = abandonat. Storylinea Tusk + Kibo = **ABANDONATĂ de mult timp** — nu o mai folosi, nu o mai menționezi.
+
+### Structura — 6 niveluri progresive + bonus
+
+| Nivel | Titlu | Stare |
+|-------|-------|-------|
+| I | Bazele jocului | 11 lecții disponibile |
+| II | Planuri și principii | în curând |
+| III | Finaluri esențiale | 12 finaluri |
+| IV | Tactici și combinații | 15 tehnici; Zugzwang: pagina88.html + arenă pagina88a.html (40 puzzle-uri) |
+| V | Modele de mat | 28 modele; Damiano: pagina87.html |
+| VI | Capcane și miniaturi | în curând |
+| Bonus | 6 minijocuri interactive | |
+
+Istoria Șahului = secțiune separată (Chaturanga, Shatranj, Xiangqi, Shogi, Răspândire, Europa, AI).
+
+### Fișiere cheie
+- `hub.html` — hub central cu cele 6 niveluri
+- `index.html` — pagina principală
+- `master-template.css` — CSS global (nu redefini clasele din el local)
+- `board-utils.js` — obligatoriu în orice pagină cu tablă interactivă
+- `pagina50.html` — **model de referință pentru arene** (Atac Dublu): turn badge, ctrl-row cu butoane mici, navigare ◄ ►, progress bar, feedback-bar
+- `pagina52.html` — model de referință pentru butoanele de reset progres
+
+### Pattern arene Lichess
+Puzzle-urile de arenă vin **întotdeauna din Lichess API** — fișiere JSON pre-generate în `data/`.
+Format UCI: `moves[0]` = mutarea de setup (jucată automat), userul joacă din `moves[1]` încolo.
+`completed` = obiect indexat numeric (`completed[idx] = true`), salvat în `localStorage`.
+
+---
+
 ## Efect mat pe pătrat rege
 Folosește clasa **`.highlight-check`** (sec. 6 din `master-template.css`) — radial gradient roșu, stil Lichess.
 **Nu inventa efecte noi.** Pattern JS standard (copiază din `pagina5.html`):
