@@ -74,6 +74,14 @@
     }
     .ex-btn:hover, .ex-btn.active { background: var(--c-navy); color: white; }
     #navControls { display: flex; flex-direction: column; gap: 10px; padding: 4px 0 6px; }
+    .btn-arena {
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 14px; padding: 11px 20px; border-radius: 50px;
+      background: var(--c-navy); color: white; text-decoration: none;
+      font-family: var(--font-display); font-size: 0.97rem; font-weight: 700;
+      border: none; cursor: pointer; width: 100%; box-sizing: border-box; transition: opacity .18s;
+    }
+    .btn-arena:hover { opacity: 0.86; }
   </style>
 </head>
 <body>
@@ -120,7 +128,15 @@
             <div class="moves-log" id="movesLog"></div>
           </div>
 
-          <a href="pagina88a.html" class="btn-primary" style="display:flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 20px;border-radius:50px;background:var(--c-navy);color:white;text-decoration:none;font-family:var(--font-display);font-size:0.97rem;font-weight:700;border:none;cursor:pointer;width:100%;box-sizing:border-box;transition:opacity .18s;" onmouseover="this.style.opacity='.86'" onmouseout="this.style.opacity='1'">&#8594; Arenă Zugzwang (40 puzzle-uri)</a>
+          <button class="btn-arena" id="arenaBtn" onclick="window.location='pagina88a.html'">🎯 Arenă Zugzwang (40 puzzle-uri) →</button>
+          <button class="btn-arena" id="continueBtn" onclick="continueArena()"
+                  style="display:none; margin-top:8px; background:var(--c-success);">
+            ▶ Continuă de la #—
+          </button>
+          <button class="btn-arena" id="resetAllBtn" onclick="resetAllProgress()"
+                  style="display:none; margin-top:8px; background:rgba(192,57,43,0.82);">
+            ↺ Joacă din nou (resetează tot)
+          </button>
 
         </div>
       </div>
@@ -603,6 +619,43 @@ loadChapter(0);
 // Deschide automat singurul sertar — userul vede direct butoanele Ex.
 const firstAcc = document.querySelector('#accList .acc-item');
 if (firstAcc) openAcc(firstAcc);
+
+/* ── Butoane arenă ── */
+const ARENA_SAVE_KEY = 'zugzwang_arena_progress';
+
+function updateArenaBtn() {
+  try {
+    const d    = JSON.parse(localStorage.getItem(ARENA_SAVE_KEY) || 'null');
+    const done = d ? Object.keys(d.completed || {}).filter(k => !isNaN(Number(k))).length : 0;
+    const ab   = document.getElementById('arenaBtn');
+    const cb   = document.getElementById('continueBtn');
+    const rb   = document.getElementById('resetAllBtn');
+    if (!ab) return;
+    if (done > 0) {
+      ab.textContent = '🎯 Arenă Zugzwang (' + done + '/40 rezolvate)';
+      if (cb) {
+        const keys = Object.keys(d.completed || {}).map(Number).filter(n => !isNaN(n));
+        const max  = keys.length ? Math.max(...keys) : -1;
+        cb.textContent = '▶ Continuă de la #' + (Math.min(max + 1, 39) + 1);
+        cb.style.display = 'flex';
+      }
+      if (rb) rb.style.display = 'flex';
+    } else {
+      ab.textContent = '🎯 Arenă Zugzwang (40 puzzle-uri) →';
+      if (cb) cb.style.display = 'none';
+      if (rb) rb.style.display = 'none';
+    }
+  } catch(e) {}
+}
+
+function continueArena() { window.location = 'pagina88a.html'; }
+
+function resetAllProgress() {
+  try { localStorage.removeItem(ARENA_SAVE_KEY); } catch(e) {}
+  updateArenaBtn();
+}
+
+updateArenaBtn();
 </script>
 
 <script src="board-utils.js"></script>
