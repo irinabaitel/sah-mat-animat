@@ -45,6 +45,22 @@ function resetAllProgress() {
 - Există și `playAgainBtn` în puzzleView (pentru când toate puzzle-urile sunt rezolvate)
 - Model de referință: `pagina52.html`
 
+## Auto-scroll la lista de mutări (lecții cu exemple)
+În paginile de lecție cu `.moves-log` + butoane ◄ ► (de derulare prin exemple), **nu folosi `active.scrollIntoView()`** — scrolează și panoul mare, iar butoanele „fug de sub mouse" când userul apasă pentru mutarea următoare (mai ales pe paginile cu poveste lungă).
+
+Pattern corect — scrolează **doar** containerul `.moves-log`:
+```js
+const active = document.querySelector('.mlog-token.active');
+if (active) {
+  const log = document.getElementById('movesLog');
+  const a = active.getBoundingClientRect();
+  const l = log.getBoundingClientRect();
+  if (a.top < l.top)            log.scrollTop += a.top - l.top;
+  else if (a.bottom > l.bottom) log.scrollTop += a.bottom - l.bottom;
+}
+```
+Aplicat în `pagina89.html`. Dacă apare aceeași problemă pe alte lecții (pagina88, 50, 52 etc.), copiază blocul.
+
 ## Starea proiectului (mai 2026)
 
 **Proiect: Laboratorul de Șah** — platformă educațională de șah pentru copii.
@@ -57,7 +73,7 @@ Brandul vechi "Cufărul cu Șah" = abandonat. Storylinea Tusk + Kibo = **ABANDON
 | I | Bazele jocului | 11 lecții disponibile |
 | II | Planuri și principii | în curând |
 | III | Finaluri esențiale | 12 finaluri |
-| IV | Tactici și combinații | 15 tehnici; Zugzwang: pagina88.html + arenă pagina88a.html (40 puzzle-uri) |
+| IV | Tactici și combinații | 15 tehnici; Zugzwang: pagina88.html + arenă pagina88a.html; Calul Troian (Darul Grecesc): pagina89.html + arenă pagina89a.html; Subpromovarea: pagina90.html + arenă pagina90a.html (40 puzzle-uri fiecare) |
 | V | Modele de mat | 28 modele; Damiano: pagina87.html |
 | VI | Capcane și miniaturi | în curând |
 | Bonus | 6 minijocuri interactive | |
