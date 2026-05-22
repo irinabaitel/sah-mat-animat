@@ -59,9 +59,11 @@
 .setup-card { background:rgba(255,255,255,0.5); border:1px solid rgba(26,58,107,0.18); border-radius:10px; padding:8px 10px; margin-bottom:8px; }
 .setup-label { font-family:var(--font-display); font-size:var(--fs-sm); font-weight:700; color:var(--c-navy); margin-bottom:5px; }
 #piece-strip { display:flex; flex-wrap:wrap; gap:3px; align-items:center; }
-.strip-piece { height:34px; width:34px; object-fit:contain; cursor:pointer; border-radius:5px; border:2px solid transparent; }
+.strip-piece { height:34px; width:34px; object-fit:contain; cursor:grab; border-radius:5px; border:2px solid transparent; touch-action:none; -webkit-user-drag:none; user-select:none; }
+.strip-piece:active { cursor:grabbing; }
 .strip-piece:hover { background:rgba(26,58,107,0.1); }
 .strip-piece.active { border-color:var(--c-navy); background:rgba(26,58,107,0.18); }
+.palette-ghost { position:fixed; pointer-events:none; z-index:9999; opacity:0.85; transform:translate(-50%,-50%); width:56px; height:56px; }
 .strip-clear { font-size:1em; cursor:pointer; padding:2px 7px; color:var(--c-error); border:2px solid rgba(192,57,43,0.3); border-radius:5px; font-weight:700; }
 .tf { padding:5px 10px; border-radius:7px; border:2px solid rgba(26,58,107,0.25); background:rgba(255,255,255,0.5); color:var(--c-navy); font-family:var(--font-body); font-weight:700; font-size:var(--fs-sm); cursor:pointer; }
 .tf.on { background:var(--c-navy); color:#fff; border-color:var(--c-navy); }
@@ -131,18 +133,18 @@
           <div class="setup-card">
             <div class="setup-label">Așază piese pe tablă (pentru a juca dintr-o anumită poziție):</div>
             <div id="piece-strip">
-              <img class="strip-piece" data-code="wK" src="https://lichess1.org/assets/piece/caliente/wK.svg" title="Rege alb" onclick="selectPiece('wK')">
-              <img class="strip-piece" data-code="wQ" src="https://lichess1.org/assets/piece/caliente/wQ.svg" title="Damă albă" onclick="selectPiece('wQ')">
-              <img class="strip-piece" data-code="wR" src="https://lichess1.org/assets/piece/caliente/wR.svg" title="Turn alb" onclick="selectPiece('wR')">
-              <img class="strip-piece" data-code="wB" src="https://lichess1.org/assets/piece/caliente/wB.svg" title="Nebun alb" onclick="selectPiece('wB')">
-              <img class="strip-piece" data-code="wN" src="https://lichess1.org/assets/piece/caliente/wN.svg" title="Cal alb" onclick="selectPiece('wN')">
-              <img class="strip-piece" data-code="wP" src="https://lichess1.org/assets/piece/caliente/wP.svg" title="Pion alb" onclick="selectPiece('wP')">
-              <img class="strip-piece" data-code="bK" src="https://lichess1.org/assets/piece/caliente/bK.svg" title="Rege negru" onclick="selectPiece('bK')">
-              <img class="strip-piece" data-code="bQ" src="https://lichess1.org/assets/piece/caliente/bQ.svg" title="Damă neagră" onclick="selectPiece('bQ')">
-              <img class="strip-piece" data-code="bR" src="https://lichess1.org/assets/piece/caliente/bR.svg" title="Turn negru" onclick="selectPiece('bR')">
-              <img class="strip-piece" data-code="bB" src="https://lichess1.org/assets/piece/caliente/bB.svg" title="Nebun negru" onclick="selectPiece('bB')">
-              <img class="strip-piece" data-code="bN" src="https://lichess1.org/assets/piece/caliente/bN.svg" title="Cal negru" onclick="selectPiece('bN')">
-              <img class="strip-piece" data-code="bP" src="https://lichess1.org/assets/piece/caliente/bP.svg" title="Pion negru" onclick="selectPiece('bP')">
+              <img draggable="false" class="strip-piece" data-code="wK" src="https://lichess1.org/assets/piece/caliente/wK.svg" title="Rege alb" onclick="selectPiece('wK')">
+              <img draggable="false" class="strip-piece" data-code="wQ" src="https://lichess1.org/assets/piece/caliente/wQ.svg" title="Damă albă" onclick="selectPiece('wQ')">
+              <img draggable="false" class="strip-piece" data-code="wR" src="https://lichess1.org/assets/piece/caliente/wR.svg" title="Turn alb" onclick="selectPiece('wR')">
+              <img draggable="false" class="strip-piece" data-code="wB" src="https://lichess1.org/assets/piece/caliente/wB.svg" title="Nebun alb" onclick="selectPiece('wB')">
+              <img draggable="false" class="strip-piece" data-code="wN" src="https://lichess1.org/assets/piece/caliente/wN.svg" title="Cal alb" onclick="selectPiece('wN')">
+              <img draggable="false" class="strip-piece" data-code="wP" src="https://lichess1.org/assets/piece/caliente/wP.svg" title="Pion alb" onclick="selectPiece('wP')">
+              <img draggable="false" class="strip-piece" data-code="bK" src="https://lichess1.org/assets/piece/caliente/bK.svg" title="Rege negru" onclick="selectPiece('bK')">
+              <img draggable="false" class="strip-piece" data-code="bQ" src="https://lichess1.org/assets/piece/caliente/bQ.svg" title="Damă neagră" onclick="selectPiece('bQ')">
+              <img draggable="false" class="strip-piece" data-code="bR" src="https://lichess1.org/assets/piece/caliente/bR.svg" title="Turn negru" onclick="selectPiece('bR')">
+              <img draggable="false" class="strip-piece" data-code="bB" src="https://lichess1.org/assets/piece/caliente/bB.svg" title="Nebun negru" onclick="selectPiece('bB')">
+              <img draggable="false" class="strip-piece" data-code="bN" src="https://lichess1.org/assets/piece/caliente/bN.svg" title="Cal negru" onclick="selectPiece('bN')">
+              <img draggable="false" class="strip-piece" data-code="bP" src="https://lichess1.org/assets/piece/caliente/bP.svg" title="Pion negru" onclick="selectPiece('bP')">
               <span class="strip-clear" title="Nu mai pune piese" onclick="selectPiece(null)">✕</span>
             </div>
             <div style="font-size:.78rem;color:var(--c-text-muted);margin-top:4px;">Alegi o piesă, apoi atingi o căsuță (din nou pe aceeași căsuță = o ștergi). Poți și trage piesele direct; tras în afara tablei = ștergere.</div>
@@ -200,6 +202,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script src="coach.js"></script>
+<script src="palette-drag.js"></script>
 <script>if(window.Coach)Coach.mount('#coach-bar');</script>
 <script>
 /* ─── Sunete ─── */
@@ -268,17 +271,46 @@ function buildCastling(pos){
   if(pos['e8']==='bK'&&pos['a8']==='bR') r+='q';
   return r||'-';
 }
-document.getElementById('board').addEventListener('click', function(e){
-  if(mode!=='edit'||!selectedPiece) return;
-  var sq=e.target.closest('[data-square]'); if(!sq) return;
-  sq=sq.getAttribute('data-square');
+function placePieceOnSquare(sq){
   var pos=board.position();
   if(pos[sq]===selectedPiece) delete pos[sq]; else pos[sq]=selectedPiece;
   board.position(pos,false);
+}
+document.getElementById('board').addEventListener('click', function(e){
+  if(mode!=='edit'||!selectedPiece) return;
+  var sq=e.target.closest('[data-square]'); if(!sq) return;
+  placePieceOnSquare(sq.getAttribute('data-square'));
+});
+/* Tap pe touchscreen — board-utils.js previne click-ul cu preventDefault */
+(function(){
+  var tx=0,ty=0,tSq=null;
+  var boardEl=document.getElementById('board');
+  boardEl.addEventListener('touchstart',function(e){
+    if(mode!=='edit'||!selectedPiece||e.touches.length!==1){ tSq=null; return; }
+    var t=e.touches[0]; tx=t.clientX; ty=t.clientY;
+    var el=e.target.closest&&e.target.closest('[data-square]');
+    tSq=el?el.getAttribute('data-square'):null;
+  },{passive:true});
+  boardEl.addEventListener('touchend',function(e){
+    if(mode!=='edit'||!selectedPiece||!tSq){ tSq=null; return; }
+    var t=e.changedTouches[0];
+    if(Math.abs(t.clientX-tx)>10||Math.abs(t.clientY-ty)>10){ tSq=null; return; }
+    var endEl=document.elementFromPoint(t.clientX,t.clientY);
+    var endSqEl=endEl&&endEl.closest?endEl.closest('[data-square]'):null;
+    var endSq=endSqEl?endSqEl.getAttribute('data-square'):null;
+    if(endSq&&endSq===tSq) placePieceOnSquare(endSq);
+    tSq=null;
+  },{passive:true});
+})();
+PaletteDrag.init({
+  dataAttr:'code',
+  canDrag:function(){return mode==='edit';},
+  onStart:function(p){selectPiece(p);},
+  onDrop:function(sq,p){var pos=board.position(); pos[sq]=p; board.position(pos,false);}
 });
 
 function onDragStart(source,piece){
-  if(mode==='edit') return true;              // editare liberă a poziției
+  if(mode==='edit') return !selectedPiece;    // editare liberă, dar blocăm drag piesă existentă dacă userul a selectat din palet
   if(gameOver) return false;
   if(viewPly!==fens.length-1) return false;   // revezi o poziție veche — nu poți muta
   if(piece[0]!==chess.turn()) return false;   // doar jucătorul la mutare

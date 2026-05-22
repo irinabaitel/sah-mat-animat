@@ -30,12 +30,15 @@
 }
 .strip-piece {
   flex: 1; width: 100%; min-height: 0;
-  object-fit: contain; cursor: pointer;
+  object-fit: contain; cursor: grab;
   border-radius: 4px; border: 2px solid transparent;
   transition: all 0.15s;
+  touch-action: none; -webkit-user-drag: none; user-select: none;
 }
+.strip-piece:active { cursor: grabbing; }
 .strip-piece:hover  { background: rgba(26,58,107,0.1); border-color: rgba(26,58,107,0.3); }
 .strip-piece.pal-active { border-color: var(--c-navy); background: rgba(26,58,107,0.18); }
+.palette-ghost { position: fixed; pointer-events: none; z-index: 9999; opacity: 0.85; transform: translate(-50%, -50%); width: 56px; height: 56px; }
 .pal-cursor .board-wrapper { cursor: cell; }
 
 /* ── Panel cards ── */
@@ -168,18 +171,18 @@ button#btn-stop:hover { background: rgba(192,57,43,0.22); }
       <div class="board-area" id="boardArea">
         <!-- Piece palette strip -->
         <div id="piece-strip">
-          <img class="strip-piece" data-piece="wK" src="https://lichess1.org/assets/piece/caliente/wK.svg" title="Rege alb"       onclick="selectPiece('wK')">
-          <img class="strip-piece" data-piece="wQ" src="https://lichess1.org/assets/piece/caliente/wQ.svg" title="Dam&#259; alb&#259;"  onclick="selectPiece('wQ')">
-          <img class="strip-piece" data-piece="wR" src="https://lichess1.org/assets/piece/caliente/wR.svg" title="Turn alb"       onclick="selectPiece('wR')">
-          <img class="strip-piece" data-piece="wB" src="https://lichess1.org/assets/piece/caliente/wB.svg" title="Nebun alb"      onclick="selectPiece('wB')">
-          <img class="strip-piece" data-piece="wN" src="https://lichess1.org/assets/piece/caliente/wN.svg" title="Cal alb"        onclick="selectPiece('wN')">
-          <img class="strip-piece" data-piece="wP" src="https://lichess1.org/assets/piece/caliente/wP.svg" title="Pion alb"       onclick="selectPiece('wP')">
-          <img class="strip-piece" data-piece="bK" src="https://lichess1.org/assets/piece/caliente/bK.svg" title="Rege negru"     onclick="selectPiece('bK')">
-          <img class="strip-piece" data-piece="bQ" src="https://lichess1.org/assets/piece/caliente/bQ.svg" title="Dam&#259; neagr&#259;" onclick="selectPiece('bQ')">
-          <img class="strip-piece" data-piece="bR" src="https://lichess1.org/assets/piece/caliente/bR.svg" title="Turn negru"     onclick="selectPiece('bR')">
-          <img class="strip-piece" data-piece="bB" src="https://lichess1.org/assets/piece/caliente/bB.svg" title="Nebun negru"    onclick="selectPiece('bB')">
-          <img class="strip-piece" data-piece="bN" src="https://lichess1.org/assets/piece/caliente/bN.svg" title="Cal negru"      onclick="selectPiece('bN')">
-          <img class="strip-piece" data-piece="bP" src="https://lichess1.org/assets/piece/caliente/bP.svg" title="Pion negru"     onclick="selectPiece('bP')">
+          <img draggable="false" class="strip-piece" data-piece="wK" src="https://lichess1.org/assets/piece/caliente/wK.svg" title="Rege alb"       onclick="selectPiece('wK')">
+          <img draggable="false" class="strip-piece" data-piece="wQ" src="https://lichess1.org/assets/piece/caliente/wQ.svg" title="Dam&#259; alb&#259;"  onclick="selectPiece('wQ')">
+          <img draggable="false" class="strip-piece" data-piece="wR" src="https://lichess1.org/assets/piece/caliente/wR.svg" title="Turn alb"       onclick="selectPiece('wR')">
+          <img draggable="false" class="strip-piece" data-piece="wB" src="https://lichess1.org/assets/piece/caliente/wB.svg" title="Nebun alb"      onclick="selectPiece('wB')">
+          <img draggable="false" class="strip-piece" data-piece="wN" src="https://lichess1.org/assets/piece/caliente/wN.svg" title="Cal alb"        onclick="selectPiece('wN')">
+          <img draggable="false" class="strip-piece" data-piece="wP" src="https://lichess1.org/assets/piece/caliente/wP.svg" title="Pion alb"       onclick="selectPiece('wP')">
+          <img draggable="false" class="strip-piece" data-piece="bK" src="https://lichess1.org/assets/piece/caliente/bK.svg" title="Rege negru"     onclick="selectPiece('bK')">
+          <img draggable="false" class="strip-piece" data-piece="bQ" src="https://lichess1.org/assets/piece/caliente/bQ.svg" title="Dam&#259; neagr&#259;" onclick="selectPiece('bQ')">
+          <img draggable="false" class="strip-piece" data-piece="bR" src="https://lichess1.org/assets/piece/caliente/bR.svg" title="Turn negru"     onclick="selectPiece('bR')">
+          <img draggable="false" class="strip-piece" data-piece="bB" src="https://lichess1.org/assets/piece/caliente/bB.svg" title="Nebun negru"    onclick="selectPiece('bB')">
+          <img draggable="false" class="strip-piece" data-piece="bN" src="https://lichess1.org/assets/piece/caliente/bN.svg" title="Cal negru"      onclick="selectPiece('bN')">
+          <img draggable="false" class="strip-piece" data-piece="bP" src="https://lichess1.org/assets/piece/caliente/bP.svg" title="Pion negru"     onclick="selectPiece('bP')">
         </div>
         <!-- Board -->
         <div class="board-wrapper" id="boardWrapper">
@@ -280,6 +283,7 @@ button#btn-stop:hover { background: rgba(192,57,43,0.22); }
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="palette-drag.js"></script>
 <script>
 const LEVELS = [
     { label:'Pui de g&#259;in&#259;', skill:0,  movetime:10   },
@@ -425,20 +429,53 @@ board = Chessboard('board', {
 });
 window.addEventListener('resize', function() { board.resize && board.resize(); });
 
-/* Click to place selected piece */
-document.getElementById('board').addEventListener('click', function(e) {
-    if (mode !== 'edit' || !selectedPiece) return;
-    const squareEl = e.target.closest('[data-square]');
-    if (!squareEl) return;
-    const sq = squareEl.getAttribute('data-square');
+/* Plasare piesă selectată — click pe desktop, drag-and-drop din palet (palette-drag.js) pentru ambele.
+   Pe touchscreen click-ul nativ e blocat de board-utils.js (touch bridge), deci folosim
+   touchend pentru tap și PaletteDrag pentru drag direct din panou. */
+function placePieceOnSquare(sq) {
     const pos = board.position();
     if (pos[sq] === selectedPiece) delete pos[sq];
     else pos[sq] = selectedPiece;
     board.position(pos, false);
+}
+document.getElementById('board').addEventListener('click', function(e) {
+    if (mode !== 'edit' || !selectedPiece) return;
+    const squareEl = e.target.closest('[data-square]');
+    if (!squareEl) return;
+    placePieceOnSquare(squareEl.getAttribute('data-square'));
+});
+(function() {
+    let tx = 0, ty = 0, tSq = null;
+    const boardEl = document.getElementById('board');
+    boardEl.addEventListener('touchstart', function(e) {
+        if (mode !== 'edit' || !selectedPiece || e.touches.length !== 1) { tSq = null; return; }
+        const t = e.touches[0]; tx = t.clientX; ty = t.clientY;
+        const el = e.target.closest && e.target.closest('[data-square]');
+        tSq = el ? el.getAttribute('data-square') : null;
+    }, { passive: true });
+    boardEl.addEventListener('touchend', function(e) {
+        if (mode !== 'edit' || !selectedPiece || !tSq) { tSq = null; return; }
+        const t = e.changedTouches[0];
+        if (Math.abs(t.clientX - tx) > 10 || Math.abs(t.clientY - ty) > 10) { tSq = null; return; }
+        const endEl  = document.elementFromPoint(t.clientX, t.clientY);
+        const endSqEl = endEl && endEl.closest ? endEl.closest('[data-square]') : null;
+        const endSq = endSqEl ? endSqEl.getAttribute('data-square') : null;
+        if (endSq && endSq === tSq) placePieceOnSquare(endSq);
+        tSq = null;
+    }, { passive: true });
+})();
+PaletteDrag.init({
+    dataAttr: 'piece',
+    canDrag : function() { return mode === 'edit'; },
+    onStart : function(p) { selectPiece(p); },
+    onDrop  : function(sq, p) { const pos = board.position(); pos[sq] = p; board.position(pos, false); }
 });
 
 function onDragStart(source, piece) {
-    if (mode === 'edit') return true;
+    if (mode === 'edit') {
+        /* dacă utilizatorul a selectat o piesă din palet, blochează drag-ul piesei existente */
+        return !selectedPiece;
+    }
     if (gameOver) return false;
     if (chess.turn() !== humanSide) return false;
     if (humanSide === 'w' && piece[0] === 'b') return false;
