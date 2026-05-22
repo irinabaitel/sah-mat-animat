@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Arenă Subpromovarea — Nivelul IV</title>
+  <title>Arenă Desperado — Nivelul IV</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -151,9 +151,9 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">Arenă Subpromovarea</span>
+    <span class="header-title">Arenă Desperado</span>
     <div class="header-progress">
-      <span class="lesson-badge">Nivelul IV · 40 puzzle-uri</span>
+      <span class="lesson-badge">Nivelul IV · 22 puzzle-uri</span>
     </div>
   </header>
 
@@ -166,7 +166,7 @@
     <div class="panel-col">
       <div class="panel-scroll">
 
-        <div class="panel-heading">Subpromovarea</div>
+        <div class="panel-heading">Desperado</div>
         <span class="turn-badge white" id="turnBadge">⬜ Albul mută</span>
         <span class="level-badge" id="levelBadge">UȘOR</span>
 
@@ -196,20 +196,20 @@
                 onclick="resetAll()">🎉 Totul rezolvat! Joacă din nou →</button>
 
       </div>
-      <button class="arena-back-btn" onclick="window.location='pagina90.html'">← Subpromovarea</button>
+      <button class="arena-back-btn" onclick="window.location='pagina91.html'">← Desperado</button>
       <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
     </div>
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare arenă">
-    <a href="pagina90.html" class="nav-btn nav-btn--back">
-      <span class="icon">←</span><span class="label">Lecție Subpromovarea</span>
+    <a href="pagina91.html" class="nav-btn nav-btn--back">
+      <span class="icon">←</span><span class="label">Lecție Desperado</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon">⌗</span><span class="label">Cuprins</span>
     </a>
-    <a href="pagina91.html" class="nav-btn nav-btn--forward">
-      <span class="icon">→</span><span class="label">Desperado</span>
+    <a href="pagina92.html" class="nav-btn nav-btn--forward">
+      <span class="icon">→</span><span class="label">Șahul etern</span>
     </a>
   </footer>
 
@@ -219,7 +219,7 @@
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script>
-const SAVE_KEY = 'underpromotion_arena_progress';
+const SAVE_KEY = 'desperado_arena_progress';
 const LEVEL_LABELS  = ['UȘOR', 'MEDIU', 'GREU'];
 const LEVEL_CLASSES = ['', 'med', 'hard'];
 
@@ -388,7 +388,7 @@ function tryMove(from, to) {
     shakeBoard();
     setMsg('err', '❌ Mutare greșită — mai încearcă!');
     setTimeout(() => setMsg('idle',
-      '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Promovează — dar fii atent ce piesă alegi!'), 1400);
+      '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Găsește lovitura de desperado!'), 1400);
     return 'snapback';
   }
 
@@ -413,9 +413,9 @@ function tryMove(from, to) {
       if (chosen !== expProm) {
         shakeBoard();
         board.position(chess.fen(), false);
-        setMsg('err', '❌ Piesă greșită! Aceea nu e subpromovarea potrivită — încearcă altă piesă.');
+        setMsg('err', '❌ Piesă greșită! Aceea nu e desperado corect — încearcă altă piesă.');
         setTimeout(() => setMsg('idle',
-          '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Promovează — dar fii atent ce piesă alegi!'), 1600);
+          '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Găsește lovitura de desperado!'), 1600);
         return;
       }
       finishUserMove(from, to, chosen);
@@ -448,7 +448,7 @@ function onSolved() {
   solved = true; solving = false;
   completed[curIdx] = true;
   saveState(); updateProgress(); celebrate();
-  setMsg('ok', '✅ Excelent! Subpromovare corectă!');
+  setMsg('ok', '✅ Excelent! Lovitură de desperado!');
   document.getElementById('nextBtn').disabled = (curIdx >= PUZZLES.length - 1);
   document.getElementById('btnHint').disabled = true;
   document.getElementById('btnSol').disabled  = true;
@@ -498,12 +498,7 @@ function loadPuzzle(idx) {
 
   const p = PUZZLES[idx];
   chess = new Chess(p.fen);
-
-  const setup = p.moves[0];
-  const setupProm = setup.length > 4 ? setup.slice(4) : 'q';
-  chess.move({ from: setup.slice(0,2), to: setup.slice(2,4), promotion: setupProm });
-  recordMove(setup.slice(0,2), setup.slice(2,4), setupProm);
-  curMoveIdx = 1;
+  curMoveIdx = 0;
 
   solverColor = chess.turn();
   board.orientation(solverColor === 'w' ? 'white' : 'black');
@@ -521,13 +516,12 @@ function loadPuzzle(idx) {
     document.getElementById('btnSol').disabled  = true;
   } else {
     solving = true;
-    setMsg('idle', '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Promovează — dar fii atent ce piesă alegi!');
+    setMsg('idle', '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Găsește lovitura de desperado!');
     document.getElementById('nextBtn').disabled = true;
     document.getElementById('btnHint').disabled = false;
     document.getElementById('btnSol').disabled  = false;
   }
   clearHL();
-  setLastMoveHL(setup.slice(0,2), setup.slice(2,4));
 }
 
 function updatePuzzleUI() {
@@ -626,7 +620,7 @@ board = Chessboard('board', {
   onDragStart, onDrop, onSnapEnd
 });
 
-fetch('data/underpromotion_top40.json')
+fetch('data/desperado_top22.json')
   .then(r => r.json())
   .then(data => {
     PUZZLES = data;
@@ -635,7 +629,7 @@ fetch('data/underpromotion_top40.json')
     loadPuzzle(curIdx);
   })
   .catch(e => {
-    setMsg('err', '⚠ Nu am putut încărca puzzle-urile. Verifică data/underpromotion_top40.json');
+    setMsg('err', '⚠ Nu am putut încărca puzzle-urile. Verifică data/desperado_top22.json');
     console.error(e);
   });
 
