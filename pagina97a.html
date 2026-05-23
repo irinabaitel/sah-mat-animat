@@ -110,7 +110,7 @@
   <header class="page-header" role="banner">
     <span class="header-title">Arenă Atac dublu în colaborare</span>
     <div class="header-progress">
-      <span class="lesson-badge">Nivelul IV · 20 puzzle-uri</span>
+      <span class="lesson-badge">Nivelul IV · 11 puzzle-uri</span>
     </div>
   </header>
 
@@ -163,10 +163,10 @@
       <span class="icon">←</span><span class="label">Lecție Atac dublu în colaborare</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
-      <span class="icon">⌗</span><span class="label">Cuprins</span>
+      <span class="icon">&#8862;</span><span class="label">Cuprins</span>
     </a>
-    <a href="index.html" class="nav-btn nav-btn--forward">
-      <span class="icon">→</span><span class="label">Acasă</span>
+    <a href="pagina98.html" class="nav-btn nav-btn--forward">
+      <span class="icon">→</span><span class="label">Îndepărtarea apărătorului</span>
     </a>
   </footer>
 
@@ -359,12 +359,7 @@ function loadPuzzle(idx) {
 
   const p = PUZZLES[idx];
   chess = new Chess(p.fen);
-
-  const setup = p.moves[0];
-  chess.move({ from: setup.slice(0,2), to: setup.slice(2,4),
-               promotion: setup.length > 4 ? setup.slice(4) : 'q' });
-  recordMove(setup.slice(0,2), setup.slice(2,4));
-  curMoveIdx = 1;
+  curMoveIdx = 0;
 
   solverColor = chess.turn();
   board.orientation(solverColor === 'w' ? 'white' : 'black');
@@ -388,7 +383,6 @@ function loadPuzzle(idx) {
     document.getElementById('btnSol').disabled  = false;
   }
   clearHL();
-  setLastMoveHL(setup.slice(0,2), setup.slice(2,4));
 }
 
 function updatePuzzleUI() {
@@ -486,7 +480,7 @@ board = Chessboard('board', {
   onDragStart, onDrop, onSnapEnd
 });
 
-fetch('data/combinat_top20.json')
+fetch('data/combinat_top11.json')
   .then(r => r.json())
   .then(data => {
     PUZZLES = data;
@@ -495,7 +489,7 @@ fetch('data/combinat_top20.json')
     loadPuzzle(curIdx);
   })
   .catch(e => {
-    setMsg('err', '⚠ Nu am putut încărca puzzle-urile. Verifică data/combinat_top20.json');
+    setMsg('err', '⚠ Nu am putut încărca puzzle-urile. Verifică data/combinat_top11.json');
     console.error(e);
   });
 

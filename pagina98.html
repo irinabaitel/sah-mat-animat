@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Atac dublu în colaborare — Nivelul IV</title>
+  <title>Îndepărtarea apărătorului — Nivelul IV</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -149,7 +149,7 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">Atac dublu în colaborare</span>
+    <span class="header-title">Îndepărtarea apărătorului</span>
     <div class="header-progress">
       <span class="lesson-badge">Nivelul IV</span>
     </div>
@@ -168,8 +168,8 @@
         <div class="info-content">
 
           <div class="card">
-            <p>La <strong>atacul dublu în colaborare</strong>, o piesă atacă deodată două ținte: o piesă pe care o lovește direct și <em>încă una</em> care era deja atacată — dar apărată — de o altă piesă din echipa ta. Mutarea ta <strong>întărește atacul</strong> propriei echipe asupra acelei piese apărate.</p>
-            <p>Adversarul nu poate salva ambele: dacă apără piesa atacată direct, pierde piesa pe care o ține apărată (atacul nostru devine 2 vs 1 apărător). De aceea e tactica cea mai subtilă — trebuie să observi <em>colaborarea</em> între piesele tale.</p>
+            <p><strong>Îndepărtarea apărătorului</strong> e una dintre cele mai puternice tactici: capturăm sau alungăm piesa adversă care apăra o țintă importantă — de obicei <em>cu un sacrificiu</em>. După ce apărătorul a plecat, ținta rămâne neapărată și o putem captura sau o folosim pentru un atac decisiv.</p>
+            <p>Apărătorul poate fi al unei piese (calul care apăra dama) sau al unui câmp (pionul care apăra pătratul cheie pentru mat). În oricare caz, <strong>sacrificăm material pentru a câștiga mult mai mult</strong>: o piesă mai mare, o poziție câștigătoare, sau chiar mat.</p>
           </div>
 
           <div id="accList" class="acc-list"></div>
@@ -190,7 +190,7 @@
 
           </div>
 
-          <button class="btn-arena" id="arenaBtn" onclick="window.location='pagina97a.html'">🎯 Arenă Atac dublu în colaborare (11 puzzle-uri) →</button>
+          <button class="btn-arena" id="arenaBtn" onclick="window.location='pagina98a.html'">🎯 Arenă Îndepărtarea apărătorului (20 puzzle-uri) →</button>
           <button class="btn-arena" id="continueBtn" onclick="continueArena()"
                   style="margin-top:8px; background:var(--c-success);">
             ▶ Începe de la puzzle-ul #1
@@ -207,14 +207,14 @@
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
-    <a href="pagina96a.html" class="nav-btn nav-btn--back">
-      <span class="icon">&#8592;</span><span class="label">Arenă Piesă+câmp</span>
+    <a href="pagina97a.html" class="nav-btn nav-btn--back">
+      <span class="icon">&#8592;</span><span class="label">Arenă Colaborare</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon">&#8862;</span><span class="label">Cuprins</span>
     </a>
-    <a href="pagina97a.html" class="nav-btn nav-btn--forward">
-      <span class="icon">&#8594;</span><span class="label">Arenă Atac dublu în colaborare</span>
+    <a href="pagina98a.html" class="nav-btn nav-btn--forward">
+      <span class="icon">&#8594;</span><span class="label">Arenă Îndepărtarea apărătorului</span>
     </a>
   </footer>
 
@@ -231,20 +231,58 @@ function toRo(san) {
 
 /* ── Chapter data ── */
 const chapters = [
-  /* 0 — Combinat: dama atacă turn + întărește atacul turnului propriu asupra nebunului */
+  /* 0 — Sacrificiu de damă pentru a deschide coloana g spre rege */
   {
-    fen: '5rk1/6pp/p2br3/3p1p1q/R2P1Pb1/2P1B1P1/1P1N3P/4RQK1 b - - 0 1',
-    san: ['Qe8', 'Raa1', 'Rxe3'],
+    fen: '4rrk1/R5bp/3qp1p1/3p3n/2pB1P2/6PP/1P3PB1/3QR1K1 w - - 2 24',
+    san: ['Qxh5', 'gxh5', 'Rxg7+', 'Kh8', 'Rd7+', 'Kg8', 'Rxd6'],
     ann: {
-      1: 'Dama de pe h5 sare la e8: atacă simultan turnul alb de pe a4 ȘI întărește atacul turnului negru e6 asupra nebunului albul de pe e3. Două amenințări dintr-o mutare!',
-      3: 'Turnul câștigă nebunul'
+      1: 'Dama albă se sacrifică, capturând calul h5 — calul era apărătorul cheie pentru g7 și diagonala spre rege.',
+      2: 'Negrul recapturează cu pionul g6: g-coloana e acum deschisă.',
+      3: 'Tg7+! Turnul intră peste rege.',
+      4: 'Regele singura mutare — Rh8.',
+      5: 'Td7+ — atac descoperit, turnul atacă dama.',
+      6: 'Regele înapoi Rg8.',
+      7: 'Txd6 — câștigă dama! Sacrificiul de dama a deschis drumul pentru un câștig material mare.'
     },
     arrows: {
-      1: [
-        { from: 'e8', to: 'a4', color: 'G' },
-        { from: 'e8', to: 'e3', color: 'G' },
-        { from: 'e6', to: 'e3', color: 'G' }
-      ]
+      1: [{from:'d1', to:'h5', color:'G'}],
+      3: [{from:'a7', to:'g7', color:'G'}]
+    }
+  },
+  /* 1 — Sacrificiu de turn pentru mat în 2 */
+  {
+    fen: '1b3rk1/1p5p/8/1N1p4/P1nBn1q1/4P1P1/R4PKN/7Q b - - 1 30',
+    san: ['Rxf2+', 'Rxf2', 'Qxg3+', 'Kf1', 'Qxf2#'],
+    ann: {
+      0: 'Negrul mută. Pionul de pe g3 e apărat de turn (a2 prin f2). Cum facem să cadă pionul g3?',
+      1: 'Txf2+! Sacrificiu de turn — îndepărtăm apărătorul (pionul f2) și forțăm turn alb să captureze.',
+      2: 'Turnul alb captează — acum f2 e ocupat de turn, nu de pion.',
+      3: 'Dxg3+! Dama ia pionul g3 cu șah. Rege e prins.',
+      4: 'Rf1 — singura mutare.',
+      5: 'Dxf2#! Mat! Sacrificiul de turn a deschis drumul damei.'
+    },
+    arrows: {
+      1: [{from:'f8', to:'f2', color:'G'}],
+      3: [{from:'g4', to:'g3', color:'G'}]
+    }
+  },
+  /* 2 — Sacrificiu de damă în lanț pentru mat în 5 */
+  {
+    fen: '1q3r1k/r4ppp/5n2/8/3Q1N2/p6R/PPP5/1K5R w - - 0 1',
+    san: ['Qxf6', 'Qxb2+', 'Qxb2', 'Kg8', 'Rxh7', 'f6', 'Qb3+', 'Raf7', 'Rh8#'],
+    ann: {
+      1: 'Dxf6! Albul capturează calul f6 (apărătorul coloanei h și a pătratelor cheie).',
+      2: 'Negrul contraatacă cu dame Dxb2+, dar...',
+      3: 'Dxb2 — schimb de dame, albul rămâne cu avantaj net.',
+      4: 'Regele Rg8.',
+      5: 'Txh7! Turnul ia pion și se pregătește pentru mat.',
+      6: 'f6 — negrul încearcă să apere.',
+      7: 'Db3+ — șah!',
+      8: 'Taf7 — singura apărare.',
+      9: 'Th8#! Mat. Calul îndepărtat la mutarea 1 a făcut posibil tot atacul.'
+    },
+    arrows: {
+      1: [{from:'d4', to:'f6', color:'G'}]
     }
   }
 ];
@@ -631,10 +669,12 @@ document.addEventListener('keydown', function (e) {
 const atacTypes = [
   {
     num: '1.',
-    title: 'Exemplu',
-    desc: 'O poziție în care o singură mutare combină mai multe atacuri — atacă direct o piesă și întărește atacul altei piese din echipa proprie.',
+    title: 'Exemple',
+    desc: 'Trei poziții în care un sacrificiu de piesă îndepărtează apărătorul unei ținte cheie, deschizând drumul spre un câștig material sau spre mat.',
     examples: [
-      { ch: 0, label: 'Ex. 1' }
+      { ch: 0, label: 'Ex. 1' },
+      { ch: 1, label: 'Ex. 2' },
+      { ch: 2, label: 'Ex. 3' }
     ]
   }
 ];
@@ -718,8 +758,8 @@ var firstAcc = document.querySelector('#accList .acc-item');
 if (firstAcc) openAcc(firstAcc);
 
 /* ── Butoane arenă ── */
-const ARENA_SAVE_KEY = 'combinat_arena_progress';
-const PUZZLE_COUNT   = 11;
+const ARENA_SAVE_KEY = 'indepartare_arena_progress';
+const PUZZLE_COUNT   = 20;
 function updateArenaBtn() {
   try {
     const d = JSON.parse(localStorage.getItem(ARENA_SAVE_KEY) || 'null');
@@ -729,7 +769,7 @@ function updateArenaBtn() {
     const rb = document.getElementById('resetAllBtn');
     if (!ab) return;
     if (done > 0) {
-      ab.textContent = '🎯 Arenă Atac dublu în colaborare (' + done + '/' + PUZZLE_COUNT + ' rezolvate)';
+      ab.textContent = '🎯 Arenă Îndepărtarea apărătorului (' + done + '/' + PUZZLE_COUNT + ' rezolvate)';
       if (cb) {
         const keys = Object.keys(d.completed || {}).map(Number).filter(n => !isNaN(n));
         const max  = keys.length ? Math.max(...keys) : -1;
@@ -738,7 +778,7 @@ function updateArenaBtn() {
       }
       if (rb) rb.style.display = 'flex';
     } else {
-      ab.textContent = '🎯 Arenă Atac dublu în colaborare (' + PUZZLE_COUNT + ' puzzle-uri) →';
+      ab.textContent = '🎯 Arenă Îndepărtarea apărătorului (' + PUZZLE_COUNT + ' puzzle-uri) →';
       if (cb) {
         cb.textContent = '▶ Începe de la puzzle-ul #1';
         cb.style.display = 'flex';
@@ -747,7 +787,7 @@ function updateArenaBtn() {
     }
   } catch(e) {}
 }
-function continueArena() { window.location = 'pagina97a.html'; }
+function continueArena() { window.location = 'pagina98a.html'; }
 function resetAllProgress() {
   try { localStorage.removeItem(ARENA_SAVE_KEY); } catch(e) {}
   updateArenaBtn();

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Arenă Desperado — Nivelul IV</title>
+  <title>Arenă Îndepărtarea apărătorului — Nivelul IV</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -102,58 +102,15 @@
     }
     .progress-outer:hover::after { opacity: 1; }
     .progress-outer .progress-wrap { margin-bottom: 0; }
-
-    #promoBackdrop {
-      position: fixed; inset: 0; z-index: 49;
-      background: rgba(20,28,40,0.55);
-    }
-    #promoPicker {
-      position: absolute; z-index: 50;
-      display: flex; flex-direction: column;
-      pointer-events: none;
-    }
-    #promoPicker .promo-cell {
-      width: 100%; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      background: radial-gradient(circle at center,
-                  #ffffff 0 48%,
-                  rgba(255,255,255,0.85) 48% 52%,
-                  rgba(255,255,255,0) 52% 100%);
-      transition: transform 0.12s;
-      pointer-events: auto;
-    }
-    #promoPicker .promo-cell:hover {
-      transform: scale(1.05);
-      background: radial-gradient(circle at center,
-                  #fff7c6 0 48%,
-                  rgba(255,247,198,0.85) 48% 52%,
-                  rgba(255,255,255,0) 52% 100%);
-    }
-    #promoPicker .promo-cell img { width: 96%; height: 96%; display: block; pointer-events: none; }
-    #promoPicker .promo-cancel {
-      width: 100%; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      background: radial-gradient(circle at center,
-                  #f0f0f0 0 48%,
-                  rgba(240,240,240,0.85) 48% 52%,
-                  rgba(255,255,255,0) 52% 100%);
-      font-family: var(--font-display); font-weight: 900;
-      color: #555; transition: transform 0.12s, color 0.12s;
-      pointer-events: auto;
-    }
-    #promoPicker .promo-cancel:hover {
-      transform: scale(1.05);
-      color: #c0392b;
-    }
   </style>
 </head>
 <body>
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">Arenă Desperado</span>
+    <span class="header-title">Arenă Îndepărtarea apărătorului</span>
     <div class="header-progress">
-      <span class="lesson-badge">Nivelul IV · 22 puzzle-uri</span>
+      <span class="lesson-badge">Nivelul IV · 20 puzzle-uri</span>
     </div>
   </header>
 
@@ -166,7 +123,7 @@
     <div class="panel-col">
       <div class="panel-scroll">
 
-        <div class="panel-heading">Desperado</div>
+        <div class="panel-heading">Îndepărtarea apărătorului</div>
         <span class="turn-badge white" id="turnBadge">⬜ Albul mută</span>
         <span class="level-badge" id="levelBadge">UȘOR</span>
 
@@ -196,20 +153,20 @@
                 onclick="resetAll()">🎉 Totul rezolvat! Joacă din nou →</button>
 
       </div>
-      <button class="arena-back-btn" onclick="window.location='pagina91.html'">← Desperado</button>
+      <button class="arena-back-btn" onclick="window.location='pagina98.html'">← Îndepărtarea apărătorului</button>
       <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
     </div>
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare arenă">
-    <a href="pagina91.html" class="nav-btn nav-btn--back">
-      <span class="icon">←</span><span class="label">Lecție Desperado</span>
+    <a href="pagina98.html" class="nav-btn nav-btn--back">
+      <span class="icon">←</span><span class="label">Lecție Îndepărtarea apărătorului</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon">&#8862;</span><span class="label">Cuprins</span>
     </a>
-    <a href="pagina92.html" class="nav-btn nav-btn--forward">
-      <span class="icon">→</span><span class="label">Șahul etern</span>
+    <a href="index.html" class="nav-btn nav-btn--forward">
+      <span class="icon">→</span><span class="label">Acasă</span>
     </a>
   </footer>
 
@@ -219,7 +176,7 @@
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script>
-const SAVE_KEY = 'desperado_arena_progress';
+const SAVE_KEY = 'indepartare_arena_progress';
 const LEVEL_LABELS  = ['UȘOR', 'MEDIU', 'GREU'];
 const LEVEL_CLASSES = ['', 'med', 'hard'];
 
@@ -236,7 +193,6 @@ let moveHistory = [];
 let viewIdx     = 0;
 let autoPlayTimer = null;
 let selSq = null;
-let pendingPromo = false;
 
 /* ── Utils ── */
 function debounce(fn, d) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; }
@@ -287,7 +243,7 @@ function onDrop(source, target) {
   clearHL(); selSq = null;
   return tryMove(source, target);
 }
-function onSnapEnd() { if (chess && !pendingPromo) board.position(chess.fen()); }
+function onSnapEnd() { if (chess) board.position(chess.fen()); }
 
 /* ── Click-to-move ── */
 $(document).on('click', '.square-55d63', function () {
@@ -308,69 +264,21 @@ $(document).on('click', '.square-55d63', function () {
   }
 });
 
-/* ── Promotion picker ── */
-function removePromoPicker() {
-  const p = document.getElementById('promoPicker');
-  const b = document.getElementById('promoBackdrop');
-  if (p) p.remove();
-  if (b) b.remove();
-}
-
-function showPromoPicker(from, to, color, onPick) {
-  removePromoPicker();
-  const bw = document.getElementById('boardWrapper');
-  const sqEl = bw.querySelector('[data-square="' + to + '"]');
-  if (!sqEl) { onPick(null); return; }
-  const bwRect = bw.getBoundingClientRect();
-  const sqRect = sqEl.getBoundingClientRect();
-  const sz = sqEl.offsetWidth;
-  const colCode = (color === 'w' ? 'w' : 'b');
-  const pieces = ['q','r','b','n'];
-  const overlay = document.createElement('div');
-  overlay.id = 'promoPicker';
-  overlay.style.width = sz + 'px';
-  overlay.style.left = (sqRect.left - bwRect.left) + 'px';
-  overlay.style.top  = (sqRect.top  - bwRect.top)  + 'px';
-  pieces.forEach(function (p) {
-    const cell = document.createElement('div');
-    cell.className = 'promo-cell';
-    cell.style.height = sz + 'px';
-    cell.innerHTML = '<img src="https://lichess1.org/assets/piece/caliente/' +
-                     colCode + p.toUpperCase() + '.svg" alt="">';
-    cell.addEventListener('click', function (e) {
-      e.stopPropagation();
-      removePromoPicker();
-      onPick(p);
-    });
-    overlay.appendChild(cell);
-  });
-  const cancel = document.createElement('div');
-  cancel.className = 'promo-cancel';
-  cancel.style.height = Math.round(sz * 0.55) + 'px';
-  cancel.style.fontSize = Math.round(sz * 0.35) + 'px';
-  cancel.textContent = '✕';
-  cancel.addEventListener('click', function (e) {
-    e.stopPropagation();
-    removePromoPicker();
-    onPick(null);
-  });
-  overlay.appendChild(cancel);
-  const backdrop = document.createElement('div');
-  backdrop.id = 'promoBackdrop';
-  backdrop.addEventListener('click', function () {
-    removePromoPicker();
-    onPick(null);
-  });
-  document.body.appendChild(backdrop);
-  bw.appendChild(overlay);
-}
-
 /* ── Move logic ── */
-function finishUserMove(from, to, promotion) {
-  const move = chess.move({ from, to, promotion: promotion || 'q' });
-  if (!move) { board.position(chess.fen(), false); return; }
+function tryMove(from, to) {
+  if (!solving || solved) return 'snapback';
+  const expected = PUZZLES[curIdx].moves[curMoveIdx];
+  if (from !== expected.slice(0,2) || to !== expected.slice(2,4)) {
+    shakeBoard();
+    setMsg('err', '❌ Mutare greșită — mai încearcă!');
+    setTimeout(() => setMsg('idle',
+      '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Îndepărtează apărătorul!'), 1400);
+    return 'snapback';
+  }
+  const move = chess.move({ from, to, promotion: expected.length > 4 ? expected.slice(4) : 'q' });
+  if (!move) return 'snapback';
   board.position(chess.fen(), true);
-  recordMove(from, to, promotion);
+  recordMove(from, to);
   setLastMoveHL(from, to);
   curMoveIdx++;
   if (curMoveIdx >= PUZZLES[curIdx].moves.length) {
@@ -379,64 +287,19 @@ function finishUserMove(from, to, promotion) {
     setMsg('idle', '✓ Bună mutare! Răspunde adversarul…');
     setTimeout(opponentReply, 500);
   }
-}
-
-function tryMove(from, to) {
-  if (!solving || solved) return 'snapback';
-  const expected = PUZZLES[curIdx].moves[curMoveIdx];
-  if (from !== expected.slice(0,2) || to !== expected.slice(2,4)) {
-    shakeBoard();
-    setMsg('err', '❌ Mutare greșită — mai încearcă!');
-    setTimeout(() => setMsg('idle',
-      '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Găsește lovitura de desperado!'), 1400);
-    return 'snapback';
-  }
-
-  const piece   = chess.get(from);
-  const isProm  = piece && piece.type === 'p' && (to[1] === '8' || to[1] === '1');
-  const expProm = expected.length > 4 ? expected.slice(4) : null;
-
-  if (isProm) {
-    pendingPromo = true;
-    const visual = board.position();
-    if (visual[from]) {
-      visual[to] = visual[from];
-      delete visual[from];
-      board.position(visual, false);
-    }
-    showPromoPicker(from, to, piece.color, function (chosen) {
-      pendingPromo = false;
-      if (chosen === null) {
-        board.position(chess.fen(), false);
-        return;
-      }
-      if (chosen !== expProm) {
-        shakeBoard();
-        board.position(chess.fen(), false);
-        setMsg('err', '❌ Piesă greșită! Aceea nu e desperado corect — încearcă altă piesă.');
-        setTimeout(() => setMsg('idle',
-          '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Găsește lovitura de desperado!'), 1600);
-        return;
-      }
-      finishUserMove(from, to, chosen);
-    });
-    return undefined;
-  }
-
-  finishUserMove(from, to, 'q');
   return undefined;
 }
 
 function opponentReply() {
   if (curMoveIdx >= PUZZLES[curIdx].moves.length) return;
   const mv = PUZZLES[curIdx].moves[curMoveIdx];
-  const prom = mv.length > 4 ? mv.slice(4) : 'q';
   const moveObj = chess.move({
-    from: mv.slice(0,2), to: mv.slice(2,4), promotion: prom
+    from: mv.slice(0,2), to: mv.slice(2,4),
+    promotion: mv.length > 4 ? mv.slice(4) : 'q'
   });
   if (moveObj) {
     board.position(chess.fen(), true);
-    recordMove(mv.slice(0,2), mv.slice(2,4), prom);
+    recordMove(mv.slice(0,2), mv.slice(2,4));
     setLastMoveHL(mv.slice(0,2), mv.slice(2,4));
     curMoveIdx++;
     if (curMoveIdx >= PUZZLES[curIdx].moves.length) onSolved();
@@ -448,7 +311,7 @@ function onSolved() {
   solved = true; solving = false;
   completed[curIdx] = true;
   saveState(); updateProgress(); celebrate();
-  setMsg('ok', '✅ Excelent! Lovitură de desperado!');
+  setMsg('ok', '✅ Apărător eliminat!');
   document.getElementById('nextBtn').disabled = (curIdx >= PUZZLES.length - 1);
   document.getElementById('btnHint').disabled = true;
   document.getElementById('btnSol').disabled  = true;
@@ -458,8 +321,8 @@ function onSolved() {
 }
 
 /* ── Move history (step ◄ ►) ── */
-function recordMove(from, to, prom) {
-  moveHistory.push({ from, to, prom: prom || 'q' });
+function recordMove(from, to) {
+  moveHistory.push({ from, to, prom: 'q' });
   viewIdx = moveHistory.length;
   updateNavBtns();
 }
@@ -489,8 +352,6 @@ function updateNavBtns() {
 function loadPuzzle(idx) {
   if (idx < 0 || idx >= PUZZLES.length) return;
   if (autoPlayTimer) { clearTimeout(autoPlayTimer); autoPlayTimer = null; }
-  removePromoPicker();
-  pendingPromo = false;
   curIdx = idx; curMoveIdx = 0; solved = false; selSq = null;
   moveHistory = []; viewIdx = 0;
   document.getElementById('playAgainBtn').style.display = 'none';
@@ -498,7 +359,12 @@ function loadPuzzle(idx) {
 
   const p = PUZZLES[idx];
   chess = new Chess(p.fen);
-  curMoveIdx = 0;
+
+  const setup = p.moves[0];
+  chess.move({ from: setup.slice(0,2), to: setup.slice(2,4),
+               promotion: setup.length > 4 ? setup.slice(4) : 'q' });
+  recordMove(setup.slice(0,2), setup.slice(2,4));
+  curMoveIdx = 1;
 
   solverColor = chess.turn();
   board.orientation(solverColor === 'w' ? 'white' : 'black');
@@ -516,12 +382,13 @@ function loadPuzzle(idx) {
     document.getElementById('btnSol').disabled  = true;
   } else {
     solving = true;
-    setMsg('idle', '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Găsește lovitura de desperado!');
+    setMsg('idle', '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Îndepărtează apărătorul!');
     document.getElementById('nextBtn').disabled = true;
     document.getElementById('btnHint').disabled = false;
     document.getElementById('btnSol').disabled  = false;
   }
   clearHL();
+  setLastMoveHL(setup.slice(0,2), setup.slice(2,4));
 }
 
 function updatePuzzleUI() {
@@ -577,7 +444,6 @@ function showHint() {
 
 function showSolution() {
   if (autoPlayTimer) { clearTimeout(autoPlayTimer); autoPlayTimer = null; }
-  removePromoPicker();
   solving = false;
   const p = PUZZLES[curIdx];
   chess = new Chess(p.fen);
@@ -620,7 +486,7 @@ board = Chessboard('board', {
   onDragStart, onDrop, onSnapEnd
 });
 
-fetch('data/desperado_top22.json')
+fetch('data/indepartare_top20.json')
   .then(r => r.json())
   .then(data => {
     PUZZLES = data;
@@ -629,11 +495,11 @@ fetch('data/desperado_top22.json')
     loadPuzzle(curIdx);
   })
   .catch(e => {
-    setMsg('err', '⚠ Nu am putut încărca puzzle-urile. Verifică data/desperado_top22.json');
+    setMsg('err', '⚠ Nu am putut încărca puzzle-urile. Verifică data/indepartare_top20.json');
     console.error(e);
   });
 
-window.addEventListener('resize', debounce(() => { removePromoPicker(); board.resize(); }, 150));
+window.addEventListener('resize', debounce(() => board.resize(), 150));
 </script>
 <script src="board-utils.js"></script>
 </body>
