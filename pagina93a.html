@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Arenă Șah Etern — Nivelul IV</title>
+  <title>Arenă Contra-șah — Nivelul IV</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -108,9 +108,9 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">Arenă Șah Etern</span>
+    <span class="header-title">Arenă Contra-șah</span>
     <div class="header-progress">
-      <span class="lesson-badge">Nivelul IV · 30 puzzle-uri</span>
+      <span class="lesson-badge">Nivelul IV · 20 puzzle-uri</span>
     </div>
   </header>
 
@@ -123,7 +123,7 @@
     <div class="panel-col">
       <div class="panel-scroll">
 
-        <div class="panel-heading">Șah Etern</div>
+        <div class="panel-heading">Contra-șah</div>
         <span class="turn-badge white" id="turnBadge">⬜ Albul mută</span>
         <span class="level-badge" id="levelBadge">UȘOR</span>
 
@@ -153,20 +153,20 @@
                 onclick="resetAll()">🎉 Totul rezolvat! Joacă din nou →</button>
 
       </div>
-      <button class="arena-back-btn" onclick="window.location='pagina92.html'">← Șah Etern</button>
+      <button class="arena-back-btn" onclick="window.location='pagina93.html'">← Contra-șah</button>
       <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
     </div>
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare arenă">
-    <a href="pagina92.html" class="nav-btn nav-btn--back">
-      <span class="icon">←</span><span class="label">Lecție Șah Etern</span>
+    <a href="pagina93.html" class="nav-btn nav-btn--back">
+      <span class="icon">←</span><span class="label">Lecție Contra-șah</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon">⌗</span><span class="label">Cuprins</span>
     </a>
-    <a href="pagina93.html" class="nav-btn nav-btn--forward">
-      <span class="icon">→</span><span class="label">Contra-șah</span>
+    <a href="index.html" class="nav-btn nav-btn--forward">
+      <span class="icon">→</span><span class="label">Acasă</span>
     </a>
   </footer>
 
@@ -176,7 +176,7 @@
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script>
-const SAVE_KEY = 'sah_etern_arena_progress';
+const SAVE_KEY = 'contra_sah_arena_progress';
 const LEVEL_LABELS  = ['UȘOR', 'MEDIU', 'GREU'];
 const LEVEL_CLASSES = ['', 'med', 'hard'];
 
@@ -231,7 +231,7 @@ function setMsg(type, text) {
 }
 
 function idleMsg() {
-  return '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Găsește remiza prin șah etern!';
+  return '<b>' + (solverColor === 'w' ? 'Albul' : 'Negrul') + ' la mutare.</b> Găsește contra-șahul!';
 }
 
 /* ── Board callbacks ── */
@@ -306,7 +306,7 @@ function opponentReply() {
     setLastMoveHL(mv.slice(0,2), mv.slice(2,4));
     curMoveIdx++;
     if (curMoveIdx >= PUZZLES[curIdx].moves.length) onSolved();
-    else setMsg('idle', 'E rândul tău. Continuă șahul etern!');
+    else setMsg('idle', 'E rândul tău. Continuă atacul!');
   }
 }
 
@@ -314,7 +314,7 @@ function onSolved() {
   solved = true; solving = false;
   completed[curIdx] = true;
   saveState(); updateProgress(); celebrate();
-  setMsg('ok', '✅ Bravo! Șah etern — remiza e salvată! ½-½');
+  setMsg('ok', '✅ Bravo! Contra-șah!');
   document.getElementById('nextBtn').disabled = (curIdx >= PUZZLES.length - 1);
   document.getElementById('btnHint').disabled = true;
   document.getElementById('btnSol').disabled  = true;
@@ -482,7 +482,7 @@ board = Chessboard('board', {
   onDragStart, onDrop, onSnapEnd
 });
 
-fetch('data/sah_etern_top30.json')
+fetch('data/contra_sah_top20.json')
   .then(r => r.json())
   .then(data => {
     PUZZLES = data;
@@ -491,7 +491,7 @@ fetch('data/sah_etern_top30.json')
     loadPuzzle(curIdx);
   })
   .catch(e => {
-    setMsg('err', '⚠ Nu am putut încărca puzzle-urile. Verifică data/sah_etern_top30.json');
+    setMsg('err', '⚠ Nu am putut încărca puzzle-urile. Verifică data/contra_sah_top20.json');
     console.error(e);
   });
 
