@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Matul de la Operă — Nivelul V</title>
+  <title>Matul lui Anderssen — Nivelul V</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -149,7 +149,7 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">Matul de la Operă</span>
+    <span class="header-title">Matul lui Anderssen</span>
     <div class="header-progress">
       <span class="lesson-badge">Nivelul V</span>
     </div>
@@ -168,8 +168,8 @@
         <div class="info-content">
 
           <div class="card">
-            <p>Acest mat a fost denumit după partida câștigată de <strong>Paul Morphy</strong> în 1858, la Opera din Paris, împotriva Ducelui Karl de Brunswick și a Contelui Isouard — partidă rămasă în istorie sub numele de <em>„Partida de la Operă"</em>.</p>
-            <p>Matul funcționează prin atacarea regelui pe ultima linie cu un <strong>turn</strong>, beneficiind de protecția unui <strong>nebun</strong> pe diagonală. Pentru a-i restricționa mișcarea regelui advers, se folosește un pion sau o altă piesă proprie a acestuia (cu excepția calului, pentru că un cal pe acel pătrățel ar putea captura turnul).</p>
+            <p>Matul lui Anderssen este <strong>înrudit cu Matul de la Operă</strong>. Amândouă folosesc aceeași intersecție fatală dintre o linie dreaptă și o diagonală — diferența: în locul nebunului care apără turnul (sau dama) care dă mat, se folosește <strong>altă piesă care atacă pe diagonală</strong>, cel mai des un <em>pion</em>.</p>
+            <p><strong>Karl Ernst Adolf Anderssen</strong> (1818–1879) a fost un maestru de șah german, considerat cel mai bun jucător din lume în anii 1850 și 1860. Într-o epocă în care titlul oficial de „Campion Mondial" nu fusese încă inventat, Anderssen era <em>regele incontestabil</em> al competițiilor.</p>
           </div>
 
           <div id="accList" class="acc-list"></div>
@@ -190,7 +190,7 @@
 
           </div>
 
-          <button class="btn-arena" id="arenaBtn" onclick="window.location='pagina100a.html'">🎯 Arenă Matul de la Operă (20 puzzle-uri) →</button>
+          <button class="btn-arena" id="arenaBtn" onclick="window.location='pagina101a.html'">🎯 Arenă Matul lui Anderssen (15 puzzle-uri) →</button>
           <button class="btn-arena" id="continueBtn" onclick="continueArena()"
                   style="margin-top:8px; background:var(--c-success);">
             ▶ Începe de la puzzle-ul #1
@@ -207,14 +207,14 @@
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
-    <a href="pagina99a.html" class="nav-btn nav-btn--back">
-      <span class="icon">&#8592;</span><span class="label">Arenă Lolli</span>
+    <a href="pagina100a.html" class="nav-btn nav-btn--back">
+      <span class="icon">&#8592;</span><span class="label">Arenă Operă</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon">&#8862;</span><span class="label">Cuprins</span>
     </a>
-    <a href="pagina100a.html" class="nav-btn nav-btn--forward">
-      <span class="icon">&#8594;</span><span class="label">Arenă Matul de la Operă</span>
+    <a href="pagina101a.html" class="nav-btn nav-btn--forward">
+      <span class="icon">&#8594;</span><span class="label">Arenă Matul lui Anderssen</span>
     </a>
   </footer>
 
@@ -231,50 +231,56 @@ function toRo(san) {
 
 /* ── Chapter data ── */
 const chapters = [
-  /* 0 — Schema clasică: turn pe d8, nebun apără diagonal */
+  /* 0 — Schema clasică: turn pe h8, pion g7 apără diagonal */
   {
-    fen: '4k3/5p2/8/6B1/8/8/8/3R2K1 w - - 0 1',
-    san: ['Rd8#'],
+    fen: '6k1/6P1/5K1R/8/8/8/8/8 w - - 0 1',
+    san: ['Rh8#'],
     ann: {
-      0: 'Schema clasică a Matului de la Operă: turn pe d1, nebun pe g5 controlează diagonala c1-h6, iar regele negru pe e8 e blocat de pionul propriu f7.',
-      1: '<strong>Td8#</strong> — turnul vine pe d8. Regele nu poate fugi la d7 (e atacat de turn) sau la e7 (e atacat de nebunul g5 pe diagonală). Pionul f7 îi blochează scăparea în jos.'
+      0: 'Schema clasică Anderssen: turn pe h6, pion alb pe g7 controlează diagonala f8-h8, iar regele negru pe g8 e blocat de pionul propriu. Diferența față de Operă: piesa-suport e pion, nu nebun.',
+      1: '<strong>Th8#</strong> — turnul vine pe h8. Regele nu poate fugi la h7 (e atacat de turn) sau la f8 (e atacat de pionul g7). E blocat!'
     },
     arrows: {
-      0: [{from:'d1', to:'d8', color:'B'}, {from:'g5', to:'e7', color:'G'}],
-      1: [{from:'d1', to:'d8', color:'G'}, {from:'g5', to:'e7', color:'B'}]
+      0: [{from:'h6', to:'h8', color:'B'}, {from:'g7', to:'f8', color:'G'}],
+      1: [{from:'h6', to:'h8', color:'G'}, {from:'g7', to:'f8', color:'B'}]
     }
   },
-  /* 1 — Sacrificiu de damă pentru a elibera calea turnului */
+  /* 1 — Pregătire prin Qh4 + sacrificii, terminând cu Qh1# */
   {
-    fen: 'rn1r2k1/ppp2ppp/3q1n2/4b1B1/4P1b1/1BP1Q3/PP3PPP/RN2K1NR b KQ - 0 1',
-    san: ['Qd1+', 'Bxd1', 'Rxd1#'],
+    fen: '1k2r3/pP3pp1/8/3P1B1p/5q2/N1P2b2/PP3Pp1/R5K1 b - - 0 1',
+    san: ['Qh4', 'Bh3', 'Qxh3', 'b3', 'Qh1#'],
     ann: {
-      0: 'Negrul mută. Coloana d e aproape complet deschisă. Cum aducem turnul de pe d8 la d1 cu mat?',
-      1: '<strong>1...Dd1+!</strong> Sacrificiu de damă! Dama coboară pe d1 cu șah — îl forțează pe alb să captureze cu nebunul (singura mutare legală).',
-      2: '2. Nxd1 — albul recapture cu nebunul (singura piesă care apără d1).',
-      3: '<strong>2...Txd1#</strong>! Turnul vine pe d1 cu mat — nebunul de pe g4 controlează diagonala d1-h5, regele alb nu poate fugi. Pattern Operă perfect!'
+      0: 'Negrul mută. Pionul propriu de pe g2 e cheia — odată ce piesele apărătoare sunt eliminate, dama poate veni pe h1 sprijinită de pion.',
+      1: '<strong>1...Dh4</strong> — dama se mută pe h4, pregătind atacul pe coloana h.',
+      2: '2. Nh3 — albul aduce nebunul în apărare.',
+      3: '<strong>2...Dxh3!</strong> Dama capturează nebunul — eliminăm apărătorul.',
+      4: '3. b3 — albul nu poate apăra h1.',
+      5: '<strong>3...Dh1#</strong>! Mat Anderssen — dama pe h1 sprijinită de pionul propriu g2. Regele alb nu are scăpare.'
     },
     arrows: {
-      1: [{from:'d6', to:'d1', color:'G'}],
-      3: [{from:'d8', to:'d1', color:'G'}, {from:'g4', to:'e2', color:'B'}]
+      1: [{from:'f4', to:'h4', color:'G'}],
+      3: [{from:'h4', to:'h3', color:'G'}],
+      5: [{from:'h3', to:'h1', color:'G'}, {from:'g2', to:'h1', color:'B'}]
     }
   },
-  /* 2 — Sacrificiu de damă + șah dublu cu nebun */
+  /* 2 — Sacrificiu de cal + sacrificiu de damă pentru Rh8# */
   {
-    fen: 'rn3rk1/p5pp/2p5/3Ppb2/2q5/1Q6/PPPB2PP/R3K1NR b KQ - 0 1',
-    san: ['Qf1+', 'Kxf1', 'Bd3+', 'Ke1', 'Rf1#'],
+    fen: '2r1nrk1/p4p1p/1p2p1pQ/nPqbRN2/8/P2B4/1BP2PPP/3R2K1 w - - 0 1',
+    san: ['Ne7+', 'Qxe7', 'Qxh7+', 'Kxh7', 'Rh5+', 'Kg8', 'Rh8#'],
     ann: {
-      0: 'Negrul mută. Vrem să aducem regele alb pe coloana f, unde turnul de pe f8 poate da mat.',
-      1: '<strong>1...Df1+!</strong> Sacrificiu de damă pentru a atrage regele alb pe f1.',
-      2: '2. Rxf1 — singura mutare, regele captează.',
-      3: '<strong>2...Nd3+!</strong> Șah dublu cu nebunul! Regele e obligat să plece (nu poate captura nebunul fără să cadă sub atacul turnului f8).',
-      4: '3. Re1 — singura cale.',
-      5: '<strong>3...Tf1#</strong>! Turnul dă mat pe f1, apărat de nebunul de pe d3. Mat clasic de la Operă!'
+      0: 'Albul mută. Coloana h e aproape deschisă — vrem să ducem turnul la h8 cu mat.',
+      1: '<strong>1. Ce7+!</strong> Sacrificiu de cal — atacă dama și forțează o captură care îndepărtează dama de pe c5.',
+      2: '1...Dxe7 — dama trebuie să captureze.',
+      3: '<strong>2. Dxh7+!</strong> Sacrificiu de damă — atrage regele pe h7.',
+      4: '2...Rxh7 — singura mutare.',
+      5: '3. Th5+ — turnul vine cu șah pe coloana h.',
+      6: '3...Rg8 — regele se întoarce.',
+      7: '<strong>4. Th8#</strong>! Mat Anderssen — turnul pe h8 sprijinit de pionul propriu g6 (al adversarului blochează f8). Două sacrificii pentru un singur mat!'
     },
     arrows: {
-      1: [{from:'c4', to:'f1', color:'G'}],
-      3: [{from:'f5', to:'d3', color:'G'}],
-      5: [{from:'f8', to:'f1', color:'G'}, {from:'d3', to:'f1', color:'B'}]
+      1: [{from:'f5', to:'e7', color:'G'}],
+      3: [{from:'h6', to:'h7', color:'G'}],
+      5: [{from:'e5', to:'h5', color:'G'}],
+      7: [{from:'h5', to:'h8', color:'G'}, {from:'g7', to:'h8', color:'B'}]
     }
   }
 ];
@@ -662,7 +668,7 @@ const atacTypes = [
   {
     num: '1.',
     title: 'Exemple',
-    desc: 'Trei poziții cu pattern-ul Matului de la Operă — de la schema clasică (mat în 1) la sacrificii de damă pentru a elibera coloana sau a atrage regele.',
+    desc: 'Trei poziții cu pattern-ul Matului lui Anderssen — turn sau damă dă mat pe ultima linie, sprijinit de un pion propriu pe diagonala vecină.',
     examples: [
       { ch: 0, label: 'Ex. 1' },
       { ch: 1, label: 'Ex. 2' },
@@ -750,8 +756,8 @@ var firstAcc = document.querySelector('#accList .acc-item');
 if (firstAcc) openAcc(firstAcc);
 
 /* ── Butoane arenă ── */
-const ARENA_SAVE_KEY = 'opera_arena_progress';
-const PUZZLE_COUNT   = 20;
+const ARENA_SAVE_KEY = 'anderssen_arena_progress';
+const PUZZLE_COUNT   = 15;
 function updateArenaBtn() {
   try {
     const d = JSON.parse(localStorage.getItem(ARENA_SAVE_KEY) || 'null');
@@ -761,7 +767,7 @@ function updateArenaBtn() {
     const rb = document.getElementById('resetAllBtn');
     if (!ab) return;
     if (done > 0) {
-      ab.textContent = '🎯 Arenă Matul de la Operă (' + done + '/' + PUZZLE_COUNT + ' rezolvate)';
+      ab.textContent = '🎯 Arenă Matul lui Anderssen (' + done + '/' + PUZZLE_COUNT + ' rezolvate)';
       if (cb) {
         const keys = Object.keys(d.completed || {}).map(Number).filter(n => !isNaN(n));
         const max  = keys.length ? Math.max(...keys) : -1;
@@ -770,7 +776,7 @@ function updateArenaBtn() {
       }
       if (rb) rb.style.display = 'flex';
     } else {
-      ab.textContent = '🎯 Arenă Matul de la Operă (' + PUZZLE_COUNT + ' puzzle-uri) →';
+      ab.textContent = '🎯 Arenă Matul lui Anderssen (' + PUZZLE_COUNT + ' puzzle-uri) →';
       if (cb) {
         cb.textContent = '▶ Începe de la puzzle-ul #1';
         cb.style.display = 'flex';
@@ -779,7 +785,7 @@ function updateArenaBtn() {
     }
   } catch(e) {}
 }
-function continueArena() { window.location = 'pagina100a.html'; }
+function continueArena() { window.location = 'pagina101a.html'; }
 function resetAllProgress() {
   try { localStorage.removeItem(ARENA_SAVE_KEY); } catch(e) {}
   updateArenaBtn();
