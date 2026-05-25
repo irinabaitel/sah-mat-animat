@@ -110,7 +110,7 @@
   <header class="page-header" role="banner">
     <span class="header-title">Arenă Matul lui Lolli</span>
     <div class="header-progress">
-      <span class="lesson-badge">Nivelul V · 20 puzzle-uri</span>
+      <span class="lesson-badge">Nivelul V · 30 puzzle-uri</span>
     </div>
   </header>
 
@@ -486,7 +486,7 @@ board = Chessboard('board', {
   onDragStart, onDrop, onSnapEnd
 });
 
-fetch('data/lolli_top20.json')
+fetch('data/lolli_top30.json')
   .then(r => r.json())
   .then(data => {
     PUZZLES = data;
@@ -495,7 +495,7 @@ fetch('data/lolli_top20.json')
     loadPuzzle(curIdx);
   })
   .catch(e => {
-    setMsg('err', '⚠ Nu am putut încărca puzzle-urile. Verifică data/lolli_top20.json');
+    setMsg('err', '⚠ Nu am putut încărca puzzle-urile. Verifică data/lolli_top30.json');
     console.error(e);
   });
 
