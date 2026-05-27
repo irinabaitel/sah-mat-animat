@@ -194,6 +194,12 @@
     <!-- ══ COLOANA PANOU ══ -->
     <div class="panel-col">
 
+      <!-- Bară navigare rapidă în joc (mereu vizibilă în panou) -->
+      <div id="quick-nav" style="display:none; gap:6px; flex-shrink:0;">
+        <button class="btn-action" onclick="handleAbandon()" style="flex:1; background:rgba(192,57,43,0.10); border-color:rgba(192,57,43,0.4); color:#8b1a00;">← Înapoi la arenă</button>
+        <a class="btn-action" href="hub.html" style="flex:1; text-decoration:none; text-align:center;">🏠 Cuprins</a>
+      </div>
+
       <!-- Ceas negru (sus) — ascuns implicit -->
       <div class="arena-clock" id="clock-black">
         <div class="clock-time" id="clock-black-val">00:00</div>
@@ -657,6 +663,7 @@ function showGameUI() {
     document.getElementById('settings-group').style.display = 'none';
     document.getElementById('move-list').style.display    = 'block';
     document.getElementById('coach-bar').style.display    = '';
+    document.getElementById('quick-nav').style.display    = 'flex';
 }
 function showEditUI() {
     document.getElementById('edit-btns').style.display    = '';
@@ -666,6 +673,7 @@ function showEditUI() {
     document.getElementById('settingsPanel').style.display= '';
     document.getElementById('settings-group').style.display = '';
     document.getElementById('move-list').style.display    = 'none';
+    document.getElementById('quick-nav').style.display    = 'none';
     document.getElementById('clock-black').classList.remove('visible','active');
     document.getElementById('clock-white').classList.remove('visible','active');
     document.getElementById('coach-bar').style.display = 'none';
@@ -859,6 +867,14 @@ function confetti() {
         }, d); })(i * 35);
     }
 }
+
+/* ─── Escape = renunță la joc (revine la setup) ─── */
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && mode === 'play') {
+        e.preventDefault();
+        handleAbandon();
+    }
+});
 </script>
 <script src="board-utils.js"></script>
 </body>
