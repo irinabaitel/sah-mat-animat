@@ -51,6 +51,9 @@
     .progress-outer::after { content:attr(data-tip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:rgba(26,26,46,0.88); color:#fff; font-family:var(--font-display); font-size:0.78rem; font-weight:700; padding:4px 10px; border-radius:6px; white-space:nowrap; pointer-events:none; z-index:100; opacity:0; transition:opacity .15s; }
     .progress-outer:hover::after { opacity:1; }
     .progress-outer .progress-wrap { margin-bottom:0; }
+    .move-list-box { margin-top:10px; padding:7px 10px; background:rgba(26,58,107,0.06); border-radius:8px; font-size:0.82rem; color:var(--c-navy); min-height:24px; max-height:80px; overflow-y:auto; line-height:1.85; }
+    .move-list-box .ml-n { color:#999; }
+    .move-list-box .ml-m { font-weight:700; }
   </style>
 </head>
 <body>
@@ -99,6 +102,7 @@
             <button class="btn-sm btn-hint" onclick="showHint()">&#128161; Indiciu</button>
             <button class="btn-sm btn-sol"  onclick="showSolution()">&#9658;&#9658; Soluție</button>
           </div>
+          <div id="moveListBox" class="move-list-box"></div>
           <button class="btn-arena" id="playAgainBtn" style="display:none;margin-top:12px;background:rgba(39,174,96,0.82);" onclick="resetAllProgress()">&#127881; Totul rezolvat! Joacă din nou &rarr;</button>
         </div>
 
@@ -284,7 +288,8 @@ function showSolution(){
 }
 function autoPlaySol(){ if(viewIdx>=moveHistory.length)return; viewIdx++;replayToPos(viewIdx);updateNavBtns(); if(viewIdx<moveHistory.length)autoPlayTimer=setTimeout(autoPlaySol,800); }
 
-function recordMove(f,t){ moveHistory.push({from:f,to:t,prom:'q'}); viewIdx=moveHistory.length; updateNavBtns(); }
+function updateMoveList(){const box=document.getElementById('moveListBox');if(!box)return;const hist=chess.history();if(!hist.length){box.innerHTML='';return;}const parts=PUZZLES[curIdx].fen.split(' ');let c=parts[1],n=parseInt(parts[5]),html='',i=0;if(c==='b'){html+=`<span class="ml-n">${n}.</span> … <span class="ml-m">${hist[0]}</span>  `;i=1;n++;}while(i<hist.length){const w=hist[i]||'',b=i+1<hist.length?hist[i+1]:'';html+=`<span class="ml-n">${n}.</span> <span class="ml-m">${w}</span>${b?' <span class="ml-m">'+b+'</span>':''}  `;i+=2;n++;}box.innerHTML=html;box.scrollTop=box.scrollHeight;}
+function recordMove(f,t){ moveHistory.push({from:f,to:t,prom:'q'}); viewIdx=moveHistory.length; updateNavBtns(); updateMoveList(); }
 function replayToPos(idx){ const pz=PUZZLES[curIdx],temp=new Chess(pz.fen); for(let i=0;i<idx;i++){const m=moveHistory[i];temp.move({from:m.from,to:m.to,promotion:m.prom});} board.position(temp.fen(),false); clearHL(); if(idx>0&&moveHistory[idx-1]){const lm=moveHistory[idx-1];applyHL(lm.from,'last-move-from');applyHL(lm.to,'last-move-to');} if(temp.in_check()){const t=temp.turn();temp.board().forEach((row,ri)=>row.forEach((pc,ci)=>{if(pc&&pc.type==='k'&&pc.color===t)applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');}));} }
 function stepBack(){ if(viewIdx<=0)return; viewIdx--;replayToPos(viewIdx);updateNavBtns(); }
 function stepForward(){ if(viewIdx>=moveHistory.length)return; viewIdx++;replayToPos(viewIdx);updateNavBtns(); }

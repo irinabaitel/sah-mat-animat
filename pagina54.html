@@ -114,6 +114,9 @@
     }
     .progress-outer:hover::after { opacity: 1; }
     .progress-outer .progress-wrap { margin-bottom: 0; }
+    .move-list-box { margin-top:10px; padding:7px 10px; background:rgba(26,58,107,0.06); border-radius:8px; font-size:0.82rem; color:var(--c-navy); min-height:24px; max-height:80px; overflow-y:auto; line-height:1.85; }
+    .move-list-box .ml-n { color:#999; }
+    .move-list-box .ml-m { font-weight:700; }
   </style>
 </head>
 <body>
@@ -190,6 +193,7 @@
             <button class="btn-sm btn-hint" onclick="showHint()">&#128161; Indiciu</button>
             <button class="btn-sm btn-sol"  onclick="showSolution()">&#9658;&#9658; Soluție</button>
           </div>
+          <div id="moveListBox" class="move-list-box"></div>
           <button class="btn-arena" id="playAgainBtn"
                   style="display:none; margin-top:12px; background:rgba(39,174,96,0.82);"
                   onclick="resetAllProgress()">🎉 Totul rezolvat! Joacă din nou →</button>
@@ -627,10 +631,26 @@ function autoPlaySol() {
 }
 
 /* ── MOVE HISTORY ── */
+function updateMoveList() {
+  const box = document.getElementById('moveListBox');
+  if (!box) return;
+  const hist = chess.history();
+  if (!hist.length) { box.innerHTML = ''; return; }
+  const parts = PUZZLES[curIdx].fen.split(' ');
+  let c = parts[1], n = parseInt(parts[5]), html = '', i = 0;
+  if (c === 'b') { html += `<span class="ml-n">${n}.</span> … <span class="ml-m">${hist[0]}</span>  `; i=1; n++; }
+  while (i < hist.length) {
+    const w=hist[i]||'', b=i+1<hist.length?hist[i+1]:'';
+    html += `<span class="ml-n">${n}.</span> <span class="ml-m">${w}</span>${b?' <span class="ml-m">'+b+'</span>':''}  `;
+    i+=2; n++;
+  }
+  box.innerHTML = html; box.scrollTop = box.scrollHeight;
+}
 function recordMove(from, to) {
   moveHistory.push({ from, to, prom: 'q' });
   viewIdx = moveHistory.length;
   updateNavBtns();
+  updateMoveList();
 }
 function replayToPos(idx) {
   const base = puzzleStartFen || PUZZLES[curIdx].fen;
