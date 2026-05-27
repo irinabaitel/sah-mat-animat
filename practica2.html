@@ -3,7 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Practică Liberă — Laboratorul de Șah</title>
+<title>Arena de antrenament — Laboratorul de Șah</title>
+<meta name="description" content="Așează piesele cum vrei pe tablă și joacă șah împotriva robotului. Alege nivelul de dificultate, de la începător până la maestru. Antrenament liber pentru copii și adulți.">
+<meta name="author" content="Irina Băițel">
+<link rel="canonical" href="https://laboratoruldesah.ro/practica2.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://laboratoruldesah.ro/practica2.html">
+<meta property="og:title" content="Arena de antrenament — Joacă șah împotriva robotului">
+<meta property="og:description" content="Așează piesele și joacă șah împotriva robotului — antrenament liber cu nivele de dificultate.">
+<meta property="og:image" content="https://laboratoruldesah.ro/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ro_RO">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Arena de antrenament — Laboratorul de Șah">
+<meta name="twitter:description" content="Joacă șah împotriva robotului, alegi nivelul.">
+<meta name="twitter:image" content="https://laboratoruldesah.ro/img/og-image.jpg">
+
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
 <link rel="stylesheet" href="master-template.css">
@@ -28,7 +46,9 @@
   background: var(--c-surface); border: 2px solid var(--c-border); border-radius: var(--radius-sm);
   padding: 5px 8px; margin-bottom: 8px;
 }
-.strip-piece { height: 32px; width: 32px; object-fit: contain; flex-shrink: 0; cursor: pointer; border-radius: 5px; border: 2px solid transparent; transition: all 0.15s; }
+.strip-piece { height: 32px; width: 32px; object-fit: contain; flex-shrink: 0; cursor: grab; border-radius: 5px; border: 2px solid transparent; transition: all 0.15s; touch-action: none; -webkit-user-drag: none; user-select: none; }
+.strip-piece:active { cursor: grabbing; }
+.palette-ghost { position: fixed; pointer-events: none; z-index: 9999; opacity: 0.85; transform: translate(-50%, -50%); width: 56px; height: 56px; }
 .strip-piece:hover  { background: rgba(26,58,107,0.1); border-color: rgba(26,58,107,0.3); }
 .strip-piece.active { border-color: var(--c-navy); background: rgba(26,58,107,0.18); }
 .strip-sep   { width: 1px; height: 70%; background: rgba(26,58,107,0.2); flex-shrink: 0; margin: 0 2px; }
@@ -174,6 +194,12 @@
     <!-- ══ COLOANA PANOU ══ -->
     <div class="panel-col">
 
+      <!-- Bară navigare rapidă în joc (mereu vizibilă în panou) -->
+      <div id="quick-nav" style="display:none; gap:6px; flex-shrink:0;">
+        <button class="btn-action" onclick="handleAbandon()" style="flex:1; background:rgba(192,57,43,0.10); border-color:rgba(192,57,43,0.4); color:#8b1a00;">← Înapoi la arenă</button>
+        <a class="btn-action" href="hub.html" style="flex:1; text-decoration:none; text-align:center;">🏠 Cuprins</a>
+      </div>
+
       <!-- Ceas negru (sus) — ascuns implicit -->
       <div class="arena-clock" id="clock-black">
         <div class="clock-time" id="clock-black-val">00:00</div>
@@ -202,19 +228,19 @@
         </div>
 
         <div id="piece-strip">
-          <img class="strip-piece" data-code="wK" src="https://lichess1.org/assets/piece/caliente/wK.svg" title="Rege alb" onclick="selectPiece('wK')">
-          <img class="strip-piece" data-code="wQ" src="https://lichess1.org/assets/piece/caliente/wQ.svg" title="Damă albă" onclick="selectPiece('wQ')">
-          <img class="strip-piece" data-code="wR" src="https://lichess1.org/assets/piece/caliente/wR.svg" title="Turn alb" onclick="selectPiece('wR')">
-          <img class="strip-piece" data-code="wB" src="https://lichess1.org/assets/piece/caliente/wB.svg" title="Nebun alb" onclick="selectPiece('wB')">
-          <img class="strip-piece" data-code="wN" src="https://lichess1.org/assets/piece/caliente/wN.svg" title="Cal alb" onclick="selectPiece('wN')">
-          <img class="strip-piece" data-code="wP" src="https://lichess1.org/assets/piece/caliente/wP.svg" title="Pion alb" onclick="selectPiece('wP')">
+          <img class="strip-piece" draggable="false" data-code="wK" src="https://lichess1.org/assets/piece/caliente/wK.svg" title="Rege alb" onclick="selectPiece('wK')">
+          <img class="strip-piece" draggable="false" data-code="wQ" src="https://lichess1.org/assets/piece/caliente/wQ.svg" title="Damă albă" onclick="selectPiece('wQ')">
+          <img class="strip-piece" draggable="false" data-code="wR" src="https://lichess1.org/assets/piece/caliente/wR.svg" title="Turn alb" onclick="selectPiece('wR')">
+          <img class="strip-piece" draggable="false" data-code="wB" src="https://lichess1.org/assets/piece/caliente/wB.svg" title="Nebun alb" onclick="selectPiece('wB')">
+          <img class="strip-piece" draggable="false" data-code="wN" src="https://lichess1.org/assets/piece/caliente/wN.svg" title="Cal alb" onclick="selectPiece('wN')">
+          <img class="strip-piece" draggable="false" data-code="wP" src="https://lichess1.org/assets/piece/caliente/wP.svg" title="Pion alb" onclick="selectPiece('wP')">
           <span class="strip-sep"></span>
-          <img class="strip-piece" data-code="bK" src="https://lichess1.org/assets/piece/caliente/bK.svg" title="Rege negru" onclick="selectPiece('bK')">
-          <img class="strip-piece" data-code="bQ" src="https://lichess1.org/assets/piece/caliente/bQ.svg" title="Damă neagră" onclick="selectPiece('bQ')">
-          <img class="strip-piece" data-code="bR" src="https://lichess1.org/assets/piece/caliente/bR.svg" title="Turn negru" onclick="selectPiece('bR')">
-          <img class="strip-piece" data-code="bB" src="https://lichess1.org/assets/piece/caliente/bB.svg" title="Nebun negru" onclick="selectPiece('bB')">
-          <img class="strip-piece" data-code="bN" src="https://lichess1.org/assets/piece/caliente/bN.svg" title="Cal negru" onclick="selectPiece('bN')">
-          <img class="strip-piece" data-code="bP" src="https://lichess1.org/assets/piece/caliente/bP.svg" title="Pion negru" onclick="selectPiece('bP')">
+          <img class="strip-piece" draggable="false" data-code="bK" src="https://lichess1.org/assets/piece/caliente/bK.svg" title="Rege negru" onclick="selectPiece('bK')">
+          <img class="strip-piece" draggable="false" data-code="bQ" src="https://lichess1.org/assets/piece/caliente/bQ.svg" title="Damă neagră" onclick="selectPiece('bQ')">
+          <img class="strip-piece" draggable="false" data-code="bR" src="https://lichess1.org/assets/piece/caliente/bR.svg" title="Turn negru" onclick="selectPiece('bR')">
+          <img class="strip-piece" draggable="false" data-code="bB" src="https://lichess1.org/assets/piece/caliente/bB.svg" title="Nebun negru" onclick="selectPiece('bB')">
+          <img class="strip-piece" draggable="false" data-code="bN" src="https://lichess1.org/assets/piece/caliente/bN.svg" title="Cal negru" onclick="selectPiece('bN')">
+          <img class="strip-piece" draggable="false" data-code="bP" src="https://lichess1.org/assets/piece/caliente/bP.svg" title="Pion negru" onclick="selectPiece('bP')">
           <span class="strip-sep"></span>
           <span class="strip-clear" title="Dezactivează selecția" onclick="selectPiece(null)">✕</span>
         </div>
@@ -302,7 +328,7 @@
       <span class="icon">←</span><span class="label">Înapoi</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
-      <span class="icon">⊞</span><span class="label">Cuprins</span>
+      <span class="icon">&#8862;</span><span class="label">Cuprins</span>
     </a>
     <span class="nav-btn" aria-disabled="true" style="opacity:0.25;pointer-events:none;">
       <span class="icon">→</span><span class="label">Înainte</span>
@@ -315,6 +341,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script src="coach.js"></script>
+<script src="palette-drag.js"></script>
 <script>
 /* ─── Sunete ─── */
 var sndMove    = new Audio('Sounds/Move.mp3');
@@ -515,18 +542,55 @@ board = Chessboard('board', {
 });
 window.addEventListener('resize', function() { board && board.resize && board.resize(); });
 
+function placePieceOnSquare(sq) {
+    var pos = board.position();
+    if (pos[sq] === selectedPiece) delete pos[sq]; else pos[sq] = selectedPiece;
+    board.position(pos, false);
+}
 document.getElementById('board').addEventListener('click', function(e) {
     if (mode !== 'edit' || !selectedPiece) return;
     var sq = e.target.closest('[data-square]');
     if (!sq) return;
-    sq = sq.getAttribute('data-square');
-    var pos = board.position();
-    if (pos[sq] === selectedPiece) delete pos[sq]; else pos[sq] = selectedPiece;
-    board.position(pos, false);
+    placePieceOnSquare(sq.getAttribute('data-square'));
+});
+/* Tap pe touchscreen — board-utils.js previne click-ul cu preventDefault pe touchstart,
+   așa că folosim touchend (tap = touch fără mișcare semnificativă). */
+(function() {
+    var tx = 0, ty = 0, tSq = null;
+    var boardEl = document.getElementById('board');
+    boardEl.addEventListener('touchstart', function(e) {
+        if (mode !== 'edit' || !selectedPiece || e.touches.length !== 1) { tSq = null; return; }
+        var t = e.touches[0];
+        tx = t.clientX; ty = t.clientY;
+        var el = e.target.closest && e.target.closest('[data-square]');
+        tSq = el ? el.getAttribute('data-square') : null;
+    }, { passive: true });
+    boardEl.addEventListener('touchend', function(e) {
+        if (mode !== 'edit' || !selectedPiece || !tSq) { tSq = null; return; }
+        var t = e.changedTouches[0];
+        if (Math.abs(t.clientX - tx) > 10 || Math.abs(t.clientY - ty) > 10) { tSq = null; return; }
+        var endEl = document.elementFromPoint(t.clientX, t.clientY);
+        var endSqEl = endEl && endEl.closest ? endEl.closest('[data-square]') : null;
+        var endSq = endSqEl ? endSqEl.getAttribute('data-square') : null;
+        if (endSq && endSq === tSq) placePieceOnSquare(endSq);
+        tSq = null;
+    }, { passive: true });
+})();
+
+/* Drag-and-drop din paletă spre tablă (vezi palette-drag.js) */
+PaletteDrag.init({
+    dataAttr: 'code',
+    canDrag : function() { return mode === 'edit'; },
+    onStart : function(p) { selectPiece(p); },
+    onDrop  : function(sq, p) { var pos = board.position(); pos[sq] = p; board.position(pos, false); }
 });
 
 function onDragStart(source, piece) {
-    if (mode === 'edit') return true;
+    if (mode === 'edit') {
+        /* Dacă utilizatorul a selectat o piesă din palet, blochează drag-ul
+           piesei existente — vrea să plaseze prin tap, nu să rearanjeze. */
+        return !selectedPiece;
+    }
     if (gameOver || chess.turn() !== humanSide) return false;
     if (humanSide==='w' && piece[0]==='b') return false;
     if (humanSide==='b' && piece[0]==='w') return false;
@@ -599,6 +663,7 @@ function showGameUI() {
     document.getElementById('settings-group').style.display = 'none';
     document.getElementById('move-list').style.display    = 'block';
     document.getElementById('coach-bar').style.display    = '';
+    document.getElementById('quick-nav').style.display    = 'flex';
 }
 function showEditUI() {
     document.getElementById('edit-btns').style.display    = '';
@@ -608,6 +673,7 @@ function showEditUI() {
     document.getElementById('settingsPanel').style.display= '';
     document.getElementById('settings-group').style.display = '';
     document.getElementById('move-list').style.display    = 'none';
+    document.getElementById('quick-nav').style.display    = 'none';
     document.getElementById('clock-black').classList.remove('visible','active');
     document.getElementById('clock-white').classList.remove('visible','active');
     document.getElementById('coach-bar').style.display = 'none';
@@ -801,6 +867,14 @@ function confetti() {
         }, d); })(i * 35);
     }
 }
+
+/* ─── Escape = renunță la joc (revine la setup) ─── */
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && mode === 'play') {
+        e.preventDefault();
+        handleAbandon();
+    }
+});
 </script>
 <script src="board-utils.js"></script>
 </body>
