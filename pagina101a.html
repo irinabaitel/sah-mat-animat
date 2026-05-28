@@ -359,7 +359,13 @@ function loadPuzzle(idx) {
 
   const p = PUZZLES[idx];
   chess = new Chess(p.fen);
-  curMoveIdx = 0;
+
+  const setup = p.moves[0];
+  chess.move({ from: setup.slice(0,2), to: setup.slice(2,4),
+               promotion: setup.length > 4 ? setup.slice(4) : 'q' });
+  recordMove(setup.slice(0,2), setup.slice(2,4));
+  setLastMoveHL(setup.slice(0,2), setup.slice(2,4));
+  curMoveIdx = 1;
 
   solverColor = chess.turn();
   board.orientation(solverColor === 'w' ? 'white' : 'black');
