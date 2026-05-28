@@ -795,7 +795,7 @@ function sfPlay() {
     if (sfReady) ask(); else setTimeout(ask, 400);
 }
 
-/* ─── Mutări: câte una pe rând ─── */
+/* ─── Mutări: alb + negru pe același rând (1. e4  e5) ─── */
 function recordMove(move) {
     var ml  = document.getElementById('move-list');
     var fen = chess.fen();
@@ -804,17 +804,21 @@ function recordMove(move) {
     var n   = Math.ceil(h / 2);
     var isWhite = (h % 2 === 1);
 
-    var row = document.createElement('div');
-    row.className = 'ml-row';
-    if (isWhite) {
-        row.innerHTML = '<span class="mn">' + n + '.</span>' +
-            '<span class="mw"><a href="' + url + '" target="_blank" rel="noopener">' + move.san + '</a></span>';
-    } else {
-        row.innerHTML = '<span class="mn">' + n + '…</span>' +
-            '<span class="mb"><a href="' + url + '" target="_blank" rel="noopener">' + move.san + '</a></span>';
-    }
     if (ml.querySelector('em')) ml.innerHTML = '';
-    ml.appendChild(row);
+
+    if (isWhite) {
+        var row = document.createElement('div');
+        row.className = 'ml-row';
+        row.innerHTML = '<span class="mn">' + n + '.</span>' +
+            '<span class="mw"><a href="' + url + '" target="_blank" rel="noopener">' + move.san + '</a></span>' +
+            '<span class="mb" id="ml-black-' + n + '"></span>';
+        ml.appendChild(row);
+    } else {
+        var cell = document.getElementById('ml-black-' + n);
+        if (cell) {
+            cell.innerHTML = '&nbsp;&nbsp;<a href="' + url + '" target="_blank" rel="noopener">' + move.san + '</a>';
+        }
+    }
     ml.scrollTop = ml.scrollHeight;
 }
 
