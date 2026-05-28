@@ -282,6 +282,36 @@ const chapters = [
       5: [{from:'e5', to:'h5', color:'G'}],
       7: [{from:'h5', to:'h8', color:'G'}, {from:'g7', to:'h8', color:'B'}]
     }
+  },
+  /* 3 — Puzzle Chessable (hard): combinație lungă cu sacrificii multiple */
+  {
+    fen: '3r3k/p4rpp/1b3P2/n1pqpP2/1p6/3B1NR1/P2Q1P1P/6RK w - - 3 27',
+    san: ['fxg7+', 'Kg8', 'Qh6', 'Qd6', 'Qxh7+', 'Kxh7', 'f6+', 'Kg8', 'Bh7+', 'Kxh7', 'Rh3+', 'Kg8', 'Rh8#'],
+    ann: {
+      0: 'Puzzle din cursul Chessable — nivel dificil. Albul mută. Turele domină coloana g, pionul f6 e pregătit. Urmează o combinație de sacrificii care duce la mat Anderssen.',
+      1: '<strong>1. fxg7+!</strong> Pionul capturează pe g7 cu șah — se instalează pe g7 controlând f8 și h8.',
+      2: '1...Rg8 — singurul loc, h7 e blocat de propriul pion.',
+      3: '<strong>2. Dh6!</strong> Dama ia poziție pe h6, amenințând sacrificii decisive pe h7.',
+      4: '2...Dd6 — negrul încearcă să apere.',
+      5: '<strong>3. Dxh7+!</strong> Sacrificiu de damă — atrage regele pe h7.',
+      6: '3...Rxh7 — regele trebuie să captureze.',
+      7: '<strong>4. f6+!</strong> Pionul avansează cu șah — regele e alungat.',
+      8: '4...Rg8 — regele fuge spre g8.',
+      9: '<strong>5. Nh7+!</strong> Nebunul vine pe h7 cu șah.',
+      10: '5...Rxh7 — regele capturează nebunul.',
+      11: '<strong>6. Th3+!</strong> Turnul se transferă pe coloana h.',
+      12: '6...Rg8 — regele se retrage.',
+      13: '<strong>7. Th8#</strong> Mat Anderssen! Turnul pe h8, sprijinit de pionul g7. Cinci sacrificii pentru un singur mat!'
+    },
+    arrows: {
+      1: [{from:'f6', to:'g7', color:'G'}],
+      3: [{from:'d2', to:'h6', color:'G'}],
+      5: [{from:'h6', to:'h7', color:'G'}],
+      7: [{from:'f5', to:'f6', color:'G'}],
+      9: [{from:'d3', to:'h7', color:'G'}],
+      11: [{from:'g3', to:'h3', color:'G'}],
+      13: [{from:'h3', to:'h8', color:'G'}, {from:'g7', to:'h8', color:'B'}]
+    }
   }
 ];
 
@@ -668,11 +698,12 @@ const atacTypes = [
   {
     num: '1.',
     title: 'Exemple',
-    desc: 'Trei poziții cu pattern-ul Matului lui Anderssen — turn sau damă dă mat pe ultima linie, sprijinit de un pion propriu pe diagonala vecină.',
+    desc: 'Patru poziții cu pattern-ul Matului lui Anderssen — turn sau damă dă mat pe ultima linie, sprijinit de un pion propriu pe diagonala vecină.',
     examples: [
       { ch: 0, label: 'Ex. 1' },
       { ch: 1, label: 'Ex. 2' },
-      { ch: 2, label: 'Ex. 3' }
+      { ch: 2, label: 'Ex. 3' },
+      { ch: 3, label: 'Ex. 4' }
     ]
   }
 ];
