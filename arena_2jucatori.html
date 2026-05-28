@@ -431,14 +431,18 @@ function flag(color){
 function recordMove(mv){
   var ml=document.getElementById('move-list');
   var h=chess.history().length, n=Math.ceil(h/2), isWhite=(h%2===1);
-  var ply=fens.length-1;            // poziția DE DUPĂ această mutare
+  var ply=fens.length-1;
   var link='<a href="#" data-ply="'+ply+'" onclick="goToPly('+ply+');return false;">'+mv.san+'</a>';
-  var row=document.createElement('div'); row.className='ml-row';
-  row.innerHTML = isWhite
-    ? '<span class="mn">'+n+'.</span><span class="mw">'+link+'</span>'
-    : '<span class="mn">'+n+'…</span><span class="mb">'+link+'</span>';
   if(ml.querySelector('em')) ml.innerHTML='';
-  ml.appendChild(row); ml.scrollTop=ml.scrollHeight;
+  if(isWhite){
+    var row=document.createElement('div'); row.className='ml-row';
+    row.innerHTML='<span class="mn">'+n+'.</span><span class="mw">'+link+'</span><span class="mb" id="ml-black-'+n+'"></span>';
+    ml.appendChild(row);
+  } else {
+    var cell=document.getElementById('ml-black-'+n);
+    if(cell) cell.innerHTML='&nbsp;&nbsp;'+link;
+  }
+  ml.scrollTop=ml.scrollHeight;
 }
 
 /* ─── Rederulare partidă (revezi pozițiile) ─── */
