@@ -45,14 +45,6 @@
 .vc-pts  { font-family:var(--font-display); font-size:1.35em; font-weight:900; color:var(--c-navy); line-height:1.1; }
 .vc-lbl  { font-size:0.7em; color:rgba(26,26,46,0.5); }
 
-/* ── Army board — piese exact culoarea semnului = ── */
-/* Țintă: rgba(180,30,30) ≈ HSL(5°,74%,41%)
-   brightness(0)→negru · invert(50%)→gri 128 · sepia→brun cald
-   saturate(10)→portocaliu viu · hue-rotate(332deg)→H≈5° · brightness(0.72)→L≈41% */
-.army-mode #board img {
-  filter: brightness(0) invert(42%) sepia(1) saturate(10) hue-rotate(334deg)
-          drop-shadow(0 0 2px #000) drop-shadow(0 0 2px #000);
-}
 
 /* ── Exercise ── */
 .ex-desc { background:rgba(26,58,107,0.09); border:2px solid rgba(26,58,107,0.18);
@@ -455,7 +447,6 @@ function clearHL() {
 ══════════════════════════════════════════ */
 function renderForSec(idx) {
     clearArrows(); clearHL();
-    document.getElementById('bw').classList.toggle('army-mode', idx === 0);
     switch (idx) {
         case 0: /* puterea armatei */
             mainBoard.position(ARMY_FEN, false);
