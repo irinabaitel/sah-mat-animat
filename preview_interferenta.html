@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Preview — Puzzle-uri Interferență</title>
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <style>
+    html, body { height: auto !important; overflow: auto !important; }
+    body { padding: 20px; }
+    h1 { color: var(--c-navy); font-family: var(--ff-title); margin-bottom: 6px; }
+    .section-title {
+      font-family: var(--ff-title); font-size: 1.1em; color: #888;
+      margin: 24px 0 10px; border-bottom: 2px solid var(--c-border); padding-bottom: 6px;
+    }
+    .tag {
+      display:inline-block; padding:2px 8px; border-radius:10px; font-size:0.72em;
+      font-weight:700; margin-left:6px; vertical-align:middle;
+    }
+    .tag-atragere  { background:#ffe0e0; color:#c0392b; }
+    .tag-pura      { background:#e0f0ff; color:#1a3a6b; }
+    .puzzle-row { display:flex; flex-wrap:wrap; gap:24px; margin-bottom:32px; align-items:flex-start; }
+    .puzzle-card {
+      background:var(--c-surface); border:2px solid var(--c-border);
+      border-radius:var(--radius); padding:16px; width:320px;
+    }
+    .puzzle-card h3 { color:var(--c-navy); margin:0 0 8px; font-family:var(--ff-title); font-size:1.05em; }
+    .board-wrap { width:280px; margin:0 auto 12px; }
+    .meta { font-size:0.82em; color:#555; margin-bottom:8px; }
+    .ctrl-row { display:flex; gap:8px; margin-bottom:8px; }
+    .ctrl-btn {
+      flex:1; background:#f0f4fa; border:2px solid var(--c-border);
+      border-radius:8px; padding:6px; cursor:pointer; font-size:1.1em; transition:background .2s;
+    }
+    .ctrl-btn:hover { background:#dce6f5; }
+    .annotation {
+      font-size:0.85em; color:#333; min-height:52px; padding:6px 8px;
+      background:#f8f9fa; border-left:3px solid var(--c-navy); border-radius:4px; line-height:1.55;
+    }
+    .lichess-link { font-size:0.8em; color:var(--c-navy); }
+    .turn-badge {
+      display:inline-block; padding:2px 8px; border-radius:10px;
+      font-size:0.72em; font-weight:700; margin-left:4px;
+    }
+    .turn-black { background:#222; color:#fff; }
+    .turn-white { background:#eee; color:#222; border:1px solid #999; }
+  </style>
+</head>
+<body>
+  <h1>Preview — Puzzle-uri Interferență</h1>
+  <p style="color:#555;font-size:.88em;margin-bottom:4px;">
+    <span class="tag tag-atragere">atragere</span> regele forțat pe câmp prost, blochează accidental propria piesă &nbsp;|&nbsp;
+    <span class="tag tag-pura">interferență pură</span> piesă sacrificată pe câmp protejat, ÎNTRE apărător și piesa apărată
+  </p>
+
+  <div class="section-title">Primele 2 originale (atragere) — cu comentariile tale</div>
+  <div class="puzzle-row" id="group-a"></div>
+
+  <div class="section-title">3 exemple noi — interferență pură cu sacrificiu pe diagonală / coloană</div>
+  <div class="puzzle-row" id="group-b"></div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <script>
+  const PUZZLES = [
+
+    /* ── Grupul A ── */
+    {
+      id:'60cHo', rating:525, group:'a', tag:'atragere',
+      fen:'5r1k/7p/p2N4/2p1p1r1/p2p4/5P1P/1PP2KP1/R7 b - - 1 31',
+      moves:['f8g8','d6f7','h8g7','f7g5'],
+      url:'https://lichess.org/teHrmzMp/black#62', turn:'black',
+      ann:[
+        'Poziția inițială — negrul mută',
+        '1...Tg8: formează baterie pe coloana g (ambele ture)',
+        '2.Cf7+: atac dublu rege + tura din g5 — regele e forțat să rupă legătura',
+        '2...Rg7: regele ÎNTRERUPE legătura dintre ture (atragere)',
+        '3.Cxg5: calul capturează în siguranță'
+      ]
+    },
+
+    {
+      id:'H82W7', rating:535, group:'a', tag:'atragere',
+      fen:'rn1qkb1r/1p1b1p2/p1p1p1Q1/4P1p1/2PP4/3B4/PP3PPP/R1B1K2R b KQkq - 0 12',
+      moves:['f7g6','d3g6','e8e7','c1g5'],
+      url:'https://lichess.org/8L2CNki5/black#24', turn:'black',
+      ann:[
+        'Poziția inițială — negrul mută',
+        '1...fxg6: pionul capturează dama! (câmpul g6 rămâne neapărat)',
+        '2.Nxg6+: nebunul capturează cu șah, forțând regele pe diagonala d8–h4',
+        '2...Re7: regele se interpune pe diagonala d8–h4, lăsând g5 neapărat (atragere)',
+        '3.Nxg5#: mat!'
+      ]
+    },
+
+    /* ── Grupul B: interferență pură ── */
+
+    {
+      id:'rdavW', rating:1240, group:'b', tag:'pura',
+      fen:'5rk1/3b1pp1/p3p2p/1p1pB1q1/3Pn3/PBr2P2/2P1Q1PP/1R3RK1 b - - 0 19',
+      moves:['e4d2','f3f4','g5e7','e2d2'],
+      url:'https://lichess.org/MMX5pzT3/black#38', turn:'black',
+      ann:[
+        'Greșeala negrului: Cd2 — calul forțează ambele ture albe (b1 și f1). Dama din g5 apără calul prin diagonala h6–c1.',
+        '1...Cd2 (negrul): calul atacă turnurile. Dama e pe diagonala h6–c1 cu calul (g5–f4–e3–d2).',
+        '2.f4! (albul): INTERFERENȚĂ — pionul se interpune pe f4 (diagonala h6–c1, între damă și cal). f4 e apărat de nebunul alb din e5!',
+        '2...De7 (negrul): dama nu poate lua (Dxf4? → Nxf4, pierde dama!). Se retrage forțat.',
+        '3.Dxd2 (albul): dama recapturează calul acum neapărat!'
+      ]
+    },
+
+    {
+      id:'807ML', rating:1389, group:'b', tag:'pura',
+      fen:'3rr1k1/3b1ppp/2qP1b2/1p2p3/1n6/1P2BN2/3N1PPP/2RQR1K1 b - - 0 26',
+      moves:['c6d6','e3c5','d6b8','c5b4'],
+      url:'https://lichess.org/puzzle/807ML', turn:'black',
+      ann:[
+        'Greșeala negrului: Dxd6 — dama capturează pionul, dar ajunge pe diagonala b4–d6 cu calul negru din b4.',
+        '1...Dxd6 (negrul): dama pe d6, calul pe b4 — conectate prin diagonala b4–c5–d6.',
+        '2.Nc5! (albul): INTERFERENȚĂ — nebunul se interpune pe c5 (între cal b4 și damă d6). c5 e apărat de tura albă din c1!',
+        '2...Db8 (negrul): dama nu poate lua (Dxc5? → Txc5, pierde dama!). Se retrage forțat.',
+        '3.Nxb4 (albul): nebunul capturează calul acum neapărat!'
+      ]
+    },
+
+    {
+      id:'pnDXd', rating:1376, group:'b', tag:'pura',
+      fen:'r4rk1/1ppbqppp/1b1p2n1/pP1Pp3/P1P1P3/2NB1N1P/2Q2PP1/R1B2K2 b - - 0 17',
+      moves:['g6h4','c1g5','f7f6','g5h4'],
+      url:'https://lichess.org/puzzle/pnDXd', turn:'black',
+      ann:[
+        'Greșeala negrului: Ch4 — calul atacă nebunul alb din g2. Dar calul e apărat de dama neagră din e7 (diagonala d8–h4).',
+        '1...Ch4 (negrul): calul pe h4, dama pe e7 — conectate prin diagonala e7–f6–g5–h4.',
+        '2.Ng5! (albul): INTERFERENȚĂ — nebunul se interpune pe g5 (diagonala e7–h4, între damă și cal). g5 e apărat de calul alb din f3!',
+        '2...f6 (negrul): pion atacă nebunul din g5 — dar albul e mai rapid!',
+        '3.Nxh4 (albul): nebunul capturează calul înainte ca pionul să poată lua. Cal câștigat!'
+      ]
+    }
+
+  ];
+
+  /* ── Engine ── */
+  const STATE = {};
+
+  function uciMove(chess, uci) {
+    const from=uci.slice(0,2), to=uci.slice(2,4), promo=uci[4];
+    const m = chess.moves({verbose:true}).find(m=>m.from===from&&m.to===to&&(!promo||m.promotion===promo));
+    if (m) chess.move(m);
+  }
+
+  function buildCard(p) {
+    const container = document.getElementById('group-'+p.group);
+    const div = document.createElement('div');
+    div.className = 'puzzle-card';
+    const tagHtml = p.tag==='atragere'
+      ? '<span class="tag tag-atragere">atragere</span>'
+      : '<span class="tag tag-pura">interferență pură</span>';
+    const turnBadge = `<span class="turn-badge turn-${p.turn}">${p.turn==='black'?'⬛ negru':'⬜ alb'}</span>`;
+    div.innerHTML = `
+      <h3>${p.id} (${p.rating}) ${turnBadge} ${tagHtml}</h3>
+      <div class="meta">Teme: ${p.id==='807ML'||p.id==='pnDXd'?'advantage interference middlegame short':p.id==='rdavW'?'advantage interference middlegame short':'—'}</div>
+      <div class="board-wrap" id="board-${p.id}"></div>
+      <div class="ctrl-row">
+        <button class="ctrl-btn" onclick="resetP('${p.id}')">⏮</button>
+        <button class="ctrl-btn" onclick="prevP('${p.id}')">◀</button>
+        <button class="ctrl-btn" onclick="nextP('${p.id}')">▶</button>
+      </div>
+      <div class="annotation" id="ann-${p.id}">${p.ann[0]}</div>
+      <br><a class="lichess-link" href="${p.url}" target="_blank">🔗 Lichess</a>
+    `;
+    container.appendChild(div);
+  }
+
+  function initP(p) {
+    const chess = new Chess(p.fen);
+    const board = Chessboard('board-'+p.id, {
+      position: p.fen,
+      pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+      showNotation: true, draggable: false,
+      orientation: p.turn==='black'?'black':'white'
+    });
+    STATE[p.id] = { chess, board, idx:0 };
+  }
+
+  function nextP(id) {
+    const s=STATE[id], p=PUZZLES.find(x=>x.id===id);
+    if (s.idx>=p.moves.length) return;
+    uciMove(s.chess, p.moves[s.idx]);
+    s.board.position(s.chess.fen(), false);
+    s.idx++;
+    document.getElementById('ann-'+id).textContent = p.ann[s.idx]||'';
+  }
+  function prevP(id) {
+    const s=STATE[id], p=PUZZLES.find(x=>x.id===id);
+    if (s.idx<=0) return;
+    s.idx--; s.chess.undo();
+    s.board.position(s.chess.fen(), false);
+    document.getElementById('ann-'+id).textContent = p.ann[s.idx]||'';
+  }
+  function resetP(id) {
+    const s=STATE[id], p=PUZZLES.find(x=>x.id===id);
+    s.chess.load(p.fen); s.idx=0;
+    s.board.position(p.fen, false);
+    document.getElementById('ann-'+id).textContent = p.ann[0];
+  }
+
+  PUZZLES.forEach(p => buildCard(p));
+  PUZZLES.forEach(p => initP(p));
+  </script>
+  <script src="board-utils.js"></script>
+</body>
+</html>

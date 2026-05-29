@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    user-scalable=no: previne zoom accidental pe touch la interacțiunea cu tabla.
+    Utilizatorul poate totuși pinca pe zonele text dacă nu adaugi touch-action:none acolo.
+  -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Puzzle — Șah Mat Animat</title>
+
+  <!-- Fonturi identice cu paginile existente -->
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <!-- chessboard.js CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+
+  <!-- Master Template CSS -->
+  <link rel="stylesheet" href="master-template.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════
+     STRUCTURA PAGE WRAPPER
+     Toate cele 3 secțiuni (header, main, footer) trebuie să fie
+     copii direcți ai .page-wrapper pentru ca layout-ul 100vh să funcționeze.
+     ════════════════════════════════════════════════════════════ -->
+<div class="page-wrapper">
+
+  <!-- ── HEADER ──────────────────────────────────────────────
+       Titlul lecției (stânga) + Inimile rămase (dreapta).
+       Pe mobil titlul se trunchiază automat (text-overflow:ellipsis).
+       ────────────────────────────────────────────────────── -->
+  <header class="page-header" role="banner">
+    <span class="header-title" id="pageTitle">Puzzle 3 — Nebunul Sacrificat</span>
+
+    <!-- Inimile: adaugă/scoate clasa .lost din JS -->
+    <div class="header-progress" id="hearts" aria-label="Viețile rămase">
+      <span class="heart" id="h1" role="img" aria-label="viață">❤️</span>
+      <span class="heart" id="h2" role="img" aria-label="viață">❤️</span>
+      <span class="heart" id="h3" role="img" aria-label="viață">❤️</span>
+    </div>
+  </header>
+
+  <!-- ── MAIN GRID 55/45 ─────────────────────────────────────
+       Coloana stângă (55%): tabla de șah
+       Coloana dreaptă (45%): instrucțiuni + acțiuni
+       Pe portret/mobil: grid → 1 coloană, tabla sus, panoul jos.
+       ────────────────────────────────────────────────────── -->
+  <main class="page-main" role="main">
+
+    <!-- ── COLOANA STÂNGĂ: TABLA ─────────────────────────── -->
+    <div class="board-col">
+      <!--
+        .board-wrapper: conține touch-action:none și -webkit-touch-callout:none.
+        Rezolvă: jump la drag touch, long-press save image, selecție text involuntară.
+      -->
+      <div class="board-wrapper" id="boardWrapper">
+        <!-- chessboard.js va injecta tabla în acest div -->
+        <div id="board"></div>
+      </div>
+    </div>
+
+    <!-- ── COLOANA DREAPTĂ: PANOU ────────────────────────── -->
+    <div class="panel-col">
+
+      <!-- Zona de text cu scroll intern.
+           Oricât de lung ar fi textul, pagina NU se lungește. -->
+      <div class="panel-scroll" role="region" aria-label="Instrucțiuni puzzle">
+        <h1>Nebunul Sacrificat</h1>
+
+        <p>
+          <strong>Albul mută și dă șah mat în 2 mutări.</strong>
+          Găsește sacrificiul corect al nebunului care deschide
+          o linie decisivă pentru regină.
+        </p>
+
+        <p>
+          Sugestie: caută o mutare care forțează regele negru
+          să iasă din adăpostul piesei sale. O piesă sacrificată
+          azi poate câștiga o bătălie mâine.
+        </p>
+
+        <h2>Ce urmărești?</h2>
+        <ul>
+          <li>Identifică slăbiciunea din jurul regelui negru.</li>
+          <li>Gândește-te ce piesă blochează calea reginei.</li>
+          <li>Dacă elimini acea piesă, ce se întâmplă?</li>
+        </ul>
+      </div>
+
+      <!--
+        Feedback Bar: gestionat exclusiv din JS (showFeedback / clearFeedback).
+        Clasele .success / .error / .warning controlează culoarea.
+        aria-live="polite" anunță mesajul screen reader-elor fără a întrerupe.
+      -->
+      <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
+
+      <!-- Acțiuni fixe — nu participă la scroll -->
+      <div class="panel-actions">
+        <button class="btn-action btn-hint" id="btnHint" onclick="showHint()">
+          💡 Indiciu
+        </button>
+        <button class="btn-action btn-solution" id="btnSolution" onclick="showSolution()" style="display:none">
+          👁 Soluție
+        </button>
+        <button class="btn-action btn-reset" id="btnReset" onclick="resetPuzzle()">
+          🔄 Resetează
+        </button>
+      </div>
+
+    </div><!-- /.panel-col -->
+  </main>
+
+  <!-- ── FOOTER NAVIGARE ─────────────────────────────────────
+       Cele 3 butoane sunt MEREU prezente.
+       Dacă un buton nu are sens pe această pagină:
+         → adaugă aria-disabled="true" (vizibil dar ne-apăsabil)
+       NU folosi display:none — ar strica alinierea celorlalte.
+       ────────────────────────────────────────────────────── -->
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+
+    <a href="pagina2.html" class="nav-btn nav-btn--back" id="btnBack">
+      <span class="icon" aria-hidden="true">←</span>
+      <span class="label">Înapoi</span>
+    </a>
+
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon" aria-hidden="true">⊞</span>
+      <span class="label">Cuprins</span>
+    </a>
+
+    <!--
+      Înainte: disabled până când puzzle-ul e rezolvat.
+      JS va scoate aria-disabled="true" la finalizare.
+    -->
+    <a href="pagina4.html" class="nav-btn nav-btn--forward"
+       id="btnForward" aria-disabled="true">
+      <span class="icon" aria-hidden="true">→</span>
+      <span class="label">Înainte</span>
+    </a>
+
+  </footer>
+
+</div><!-- /.page-wrapper -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     SCRIPTURI
+     Ordinea contează: jQuery → chessboard.js → chess.js → logica ta
+     ════════════════════════════════════════════════════════════ -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+
+<script>
+/* ── CONFIG PUZZLE ──────────────────────────────────────────
+   Modifică aceste constante pentru fiecare puzzle în parte.
+   ────────────────────────────────────────────────────────── */
+const PUZZLE_FEN      = 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4';
+const PUZZLE_SOLUTION = ['Bxf7+', 'Ke7', 'Nd5#'];   // soluția corectă, în ordine
+const MAX_HEARTS      = 3;
+
+
+/* ── STATE ──────────────────────────────────────────────── */
+let game           = new Chess(PUZZLE_FEN);
+let board          = null;
+let selectedSquare = null;    // stare Click-to-Move
+let heartsLeft     = MAX_HEARTS;
+let moveIndex      = 0;       // câte mutări corecte am dat până acum
+let puzzleSolved   = false;
+
+
+/* ── INIȚIALIZARE TABLĂ ─────────────────────────────────── */
+board = Chessboard('board', {
+  position:          PUZZLE_FEN,
+  /* Piese caliente de pe lichess CDN (setul aprobat în proiect) */
+  pieceTheme:        'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+  draggable:         true,
+  onDragStart:       onDragStart,
+  onDrop:            onDrop,
+  onSnapEnd:         onSnapEnd,
+  onSquareClick:     onSquareClick,
+  onMouseoverSquare: onMouseoverSquare,
+  onMouseoutSquare:  onMouseoutSquare,
+});
+
+
+/* ── RESIZE: recalculează pozițiile pieselor la resize fereastră
+   debounce 120ms — evită apeluri în rafală la resize continuu     */
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), delay); };
+}
+
+window.addEventListener('resize', debounce(() => {
+  board.resize();
+}, 120));
+
+
+/* ── DRAG & DROP handlers ───────────────────────────────── */
+function onDragStart(source, piece) {
+  if (puzzleSolved || game.game_over()) return false;
+  // Albul mută primul (ajustează 'w'/'b' în funcție de puzzle)
+  if (piece.search(/^b/) !== -1) return false;
+  clearHighlights();
+  selectedSquare = null;
+}
+
+function onDrop(source, target) {
+  clearHighlights();
+  if (source === target) return 'snapback';
+
+  const move = game.move({ from: source, to: target, promotion: 'q' });
+  if (move === null) return 'snapback';
+
+  handlePlayerMove(move);
+}
+
+function onSnapEnd() {
+  board.position(game.fen());
+}
+
+
+/* ── CLICK-TO-MOVE handlers ─────────────────────────────── */
+function onSquareClick(square) {
+  if (puzzleSolved || game.game_over()) return;
+
+  const piece = game.get(square);
+
+  if (selectedSquare === null) {
+    // Primul click: selectează o piesă albă
+    if (piece && piece.color === 'w') {
+      selectedSquare = square;
+      highlightSquare(square, 'selected');
+      highlightLegalMoves(square);
+    }
+  } else {
+    // Al doilea click: încearcă mutarea
+    const move = game.move({ from: selectedSquare, to: square, promotion: 'q' });
+    clearHighlights();
+    selectedSquare = null;
+
+    if (move === null) {
+      // Re-selectează dacă ai dat click pe altă piesă albă
+      if (piece && piece.color === 'w') {
+        selectedSquare = square;
+        highlightSquare(square, 'selected');
+        highlightLegalMoves(square);
+      }
+    } else {
+      board.position(game.fen());
+      handlePlayerMove(move);
+    }
+  }
+}
+
+function onMouseoverSquare(square) {
+  if (selectedSquare) return;    // nu interfera cu o piesă deja selectată
+  const piece = game.get(square);
+  if (piece && piece.color === 'w') {
+    highlightLegalMoves(square, 'hover');
+  }
+}
+
+function onMouseoutSquare() {
+  if (!selectedSquare) clearHighlights('hover');
+}
+
+
+/* ── HIGHLIGHT helpers ──────────────────────────────────────
+   Din memory: adaugă clasă CSS pe .square-XX existente.
+   NU crea div-uri absolute cu poziție calculată manual.
+   ────────────────────────────────────────────────────────── */
+function sq(square) {
+  return document.querySelectorAll(`.square-${square}`);
+}
+
+function highlightSquare(square, type) {
+  sq(square).forEach(el => el.classList.add(`highlight-${type}`));
+}
+
+function highlightLegalMoves(square, type = 'legal') {
+  game.moves({ square, verbose: true }).forEach(m => highlightSquare(m.to, type));
+}
+
+function clearHighlights(type = null) {
+  const types = type
+    ? [`highlight-${type}`]
+    : ['highlight-selected', 'highlight-legal', 'highlight-hover',
+       'highlight-last', 'highlight-check'];
+
+  types.forEach(cls =>
+    document.querySelectorAll(`.${cls}`).forEach(el => el.classList.remove(cls))
+  );
+}
+
+
+/* ── LOGICĂ PUZZLE ──────────────────────────────────────── */
+function handlePlayerMove(move) {
+  /* Verifică dacă mutarea corespunde soluției la pasul curent */
+  const expectedSAN = PUZZLE_SOLUTION[moveIndex];
+
+  if (move.san === expectedSAN) {
+    moveIndex++;
+    highlightSquare(move.from, 'last');
+    highlightSquare(move.to,   'last');
+
+    if (moveIndex >= PUZZLE_SOLUTION.length) {
+      onPuzzleSolved();
+    } else {
+      showFeedback('success', '✅ Corect! Continuă...');
+      /* Aici poți adăuga răspunsul calculatorului (mutarea neagră) */
+    }
+  } else {
+    onWrongMove(move);
+  }
+}
+
+function onPuzzleSolved() {
+  puzzleSolved = true;
+  showFeedback('success', '🏆 Excelent! Puzzle rezolvat!');
+  /* Deblochează butonul Înainte */
+  const btnFwd = document.getElementById('btnForward');
+  btnFwd.removeAttribute('aria-disabled');
+}
+
+function onWrongMove(move) {
+  heartsLeft--;
+  loseHeart(MAX_HEARTS - heartsLeft);
+
+  if (heartsLeft <= 0) {
+    showFeedback('error', '💔 Ai pierdut toate viețile. Apasă Resetează.');
+    document.getElementById('btnSolution').style.display = 'flex';
+  } else {
+    showFeedback('error', `❌ Mutare greșită. Mai ai ${heartsLeft} ${heartsLeft === 1 ? 'viață' : 'vieți'}.`);
+    /* Revino la poziția anterioară */
+    game.undo();
+    board.position(game.fen());
+  }
+}
+
+function loseHeart(n) {
+  const heartEl = document.getElementById(`h${n}`);
+  if (heartEl) heartEl.classList.add('lost');
+}
+
+
+/* ── FEEDBACK BAR ───────────────────────────────────────── */
+function showFeedback(type, message) {
+  const bar = document.getElementById('feedbackBar');
+  bar.className = `feedback-bar ${type}`;
+  bar.textContent = message;
+}
+
+function clearFeedback() {
+  const bar = document.getElementById('feedbackBar');
+  bar.className = 'feedback-bar';
+  bar.textContent = '';
+}
+
+
+/* ── HINT & RESET & SOLUTION ────────────────────────────── */
+function showHint() {
+  const hints = [
+    '💡 Există o mutare pe f7 care atacă regele...',
+    '💡 Regele negru e forțat să se mute. Unde va fugi?',
+    '💡 Calul de pe f3 poate termina jocul într-o mutare.'
+  ];
+  showFeedback('warning', hints[Math.min(moveIndex, hints.length - 1)]);
+}
+
+function showSolution() {
+  game.load(PUZZLE_FEN);
+  board.position(PUZZLE_FEN);
+  clearHighlights();
+  clearFeedback();
+  /* Animează soluția pas cu pas */
+  let step = 0;
+  const interval = setInterval(() => {
+    if (step >= PUZZLE_SOLUTION.length) { clearInterval(interval); return; }
+    const move = game.move(PUZZLE_SOLUTION[step]);
+    if (move) {
+      board.position(game.fen(), false);
+      highlightSquare(move.from, 'last');
+      highlightSquare(move.to,   'last');
+    }
+    step++;
+  }, 900);
+  showFeedback('warning', '👁 Soluția: ' + PUZZLE_SOLUTION.join(' → '));
+}
+
+function resetPuzzle() {
+  game.load(PUZZLE_FEN);
+  board.position(PUZZLE_FEN);
+  clearHighlights();
+  clearFeedback();
+  selectedSquare = null;
+  moveIndex      = 0;
+  heartsLeft     = MAX_HEARTS;
+  puzzleSolved   = false;
+
+  /* Resetează inimile */
+  document.querySelectorAll('.heart').forEach(h => h.classList.remove('lost'));
+  /* Re-blochează butonul Înainte */
+  document.getElementById('btnForward').setAttribute('aria-disabled', 'true');
+  /* Ascunde butonul Soluție */
+  document.getElementById('btnSolution').style.display = 'none';
+}
+</script>
+
+</body>
+</html>

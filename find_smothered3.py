@@ -1,0 +1,156 @@
+"""
+Puzzle-uri mat sufocat calitate Lichess:
+- Filtrate dupa NbPlays (popularitate) — similare cu selectia Lichess
+- Rating 600–2000, minim 100 runde jucate
+- Per camp de mat: cel mai jucat 1-mutare + cel mai jucat multi-mutare
+- Selectie 35: toate multi + completare cu single distribuite
+"""
+import csv, chess, json
+from collections import defaultdict
+
+def validate_puzzle(fen, moves_str):
+    try:
+        board = chess.Board(fen)
+        moves = moves_str.strip().split()
+        if not moves:
+            return None
+        try:
+            board.push(chess.Move.from_uci(moves[0]))
+        except Exception:
+            return None
+        sol = moves[1:]
+        if not sol:
+            return None
+        tmp = board.copy()
+        for uci in sol:
+            try:
+                mv = chess.Move.from_uci(uci)
+            except Exception:
+                return None
+            if not tmp.is_legal(mv):
+                return None
+            tmp.push(mv)
+        if not tmp.is_checkmate():
+            return None
+        last_move = tmp.peek()
+        piece = tmp.piece_at(last_move.to_square)
+        if not piece or piece.piece_type != chess.KNIGHT:
+            return None
+        # verifica FEN generat e valid
+        generated_fen = board.fen()
+        chess.Board(generated_fen)  # arunca exceptie daca invalid
+        mate_sq = chess.square_name(last_move.to_square)
+        turn = 'w' if board.turn == chess.WHITE else 'b'
+        return {
+            'fen': generated_fen, 'sol': sol, 'turn': turn,
+            'mate_sq': mate_sq, 'sol_len': len(sol)
+        }
+    except Exception:
+        return None
+
+# Per camp de mat: pastram cel mai JUCAT 1-mutare si cel mai JUCAT multi-mutare
+by_square = defaultdict(lambda: {'single': None, 'multi': None})
+
+MIN_RATING, MAX_RATING = 600, 2000
+MIN_PLAYS = 100
+
+print("Scanam CSV (mat sufocat - selectie dupa popularitate)...")
+with open('lichess_db_puzzle.csv', encoding='utf-8') as f:
+    reader = csv.DictReader(f)
+    for i, row in enumerate(reader):
+        if i % 300_000 == 0:
+            total = sum(
+                (1 if v['single'] else 0) + (1 if v['multi'] else 0)
+                for v in by_square.values()
+            )
+            print(f"  {i:,} randuri... {total} puzzle-uri in {len(by_square)} campuri")
+
+        themes = row.get('Themes', '').lower()
+        if 'smotheredmate' not in themes:
+            continue
+        try:
+            rating = int(row['Rating'])
+            nb_plays = int(row['NbPlays'])
+        except Exception:
+            continue
+        if rating < MIN_RATING or rating > MAX_RATING:
+            continue
+        if nb_plays < MIN_PLAYS:
+            continue
+
+        result = validate_puzzle(row['FEN'], row['Moves'])
+        if not result:
+            continue
+
+        sq = result['mate_sq']
+        sl = result['sol_len']
+        entry = {
+            'id': row['PuzzleId'],
+            'fen': result['fen'],
+            'sol': result['sol'],
+            'turn': result['turn'],
+            'rating': rating,
+            'nb_plays': nb_plays,
+            'sol_len': sl,
+            'mate_sq': sq
+        }
+
+        bucket = by_square[sq]
+        # pastram cel mai JUCAT (popularitate maxima = calitate Lichess)
+        if sl == 1:
+            if bucket['single'] is None or nb_plays > bucket['single']['nb_plays']:
+                bucket['single'] = entry
+        else:
+            if bucket['multi'] is None or nb_plays > bucket['multi']['nb_plays']:
+                bucket['multi'] = entry
+
+print(f"\nCampuri de mat gasite: {len(by_square)}")
+for sq, bk in sorted(by_square.items()):
+    s = bk['single']
+    m = bk['multi']
+    print(f"  {sq}: single={'r='+str(s['rating'])+' n='+str(s['nb_plays'])+' len='+str(s['sol_len']) if s else 'N/A'}"
+          f"  multi={'r='+str(m['rating'])+' n='+str(m['nb_plays'])+' len='+str(m['sol_len']) if m else 'N/A'}")
+
+# Construim lista finala
+all_puzzles = []
+for sq, bk in by_square.items():
+    if bk['single']:
+        all_puzzles.append(bk['single'])
+    if bk['multi']:
+        all_puzzles.append(bk['multi'])
+
+all_puzzles.sort(key=lambda x: x['rating'])
+print(f"\nTotal disponibil: {len(all_puzzles)}")
+print(f"  1-mutare: {sum(1 for p in all_puzzles if p['sol_len']==1)}")
+print(f"  3+ mutari: {sum(1 for p in all_puzzles if p['sol_len']>=3)}")
+
+# Selectie 35: toate multi-mutare + completam cu single distribuite uniform
+def pick(lst, n):
+    if len(lst) <= n:
+        return lst
+    step = len(lst) / n
+    return [lst[int(i * step)] for i in range(n)]
+
+TARGET = 35
+multi  = [p for p in all_puzzles if p['sol_len'] >= 3]
+single = [p for p in all_puzzles if p['sol_len'] == 1]
+
+need_single = max(0, TARGET - len(multi))
+selected = multi + pick(single, need_single)
+selected.sort(key=lambda x: x['rating'])
+
+print(f"\nSelectate: {len(selected)}")
+for p in selected:
+    print(f"  {p['id']} r={p['rating']} plays={p['nb_plays']} turn={p['turn']} len={p['sol_len']} sq={p['mate_sq']}")
+
+print(f"\n  1-mutare: {sum(1 for p in selected if p['sol_len']==1)}")
+print(f"  3+ mutari: {sum(1 for p in selected if p['sol_len']>=3)}")
+
+for p in selected:
+    p.pop('sol_len', None)
+    p.pop('mate_sq', None)
+    p.pop('nb_plays', None)
+
+with open('smothered_puzzles3.json', 'w') as f:
+    json.dump(selected, f, indent=2)
+print("\nSalvat in smothered_puzzles3.json")
