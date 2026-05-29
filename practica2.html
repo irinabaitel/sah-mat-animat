@@ -587,9 +587,7 @@ PaletteDrag.init({
 
 function onDragStart(source, piece) {
     if (mode === 'edit') {
-        /* Dacă utilizatorul a selectat o piesă din palet, blochează drag-ul
-           piesei existente — vrea să plaseze prin tap, nu să rearanjeze. */
-        return !selectedPiece;
+        return true; // permite mereu rearanjarea pieselor de pe tablă
     }
     if (gameOver || chess.turn() !== humanSide) return false;
     if (humanSide==='w' && piece[0]==='b') return false;
