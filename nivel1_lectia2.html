@@ -15,57 +15,30 @@
     padding: 3px 14px; border-radius: var(--radius-sm); white-space: nowrap;
   }
 
-  /* ── SLIDE NAV ── */
-  .slide-nav {
-    display: flex; align-items: center; gap: 8px;
-    flex-shrink: 0; padding: 4px 0;
+  /* ── ACCORDION ───────────────────────────────── */
+  .acc-item {
+    border-radius: 14px;
+    border: 1.5px solid rgba(26,58,107,0.16);
+    margin-bottom: 10px; overflow: hidden;
+    background: rgba(255,255,255,0.55);
   }
-  .slide-nav-btn {
-    width: 38px; height: 38px; border-radius: 50%;
-    border: 2px solid rgba(26,58,107,0.3);
-    background: rgba(255,255,255,0.6);
-    font-family: var(--font-display); font-size: 1rem;
-    color: var(--c-navy); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: background .15s;
+  .acc-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 16px; cursor: pointer;
+    background: rgba(26,58,107,0.06);
+    font-family: var(--font-display); font-size: 1.02rem; font-weight: 700;
+    color: var(--c-navy); user-select: none;
+    transition: background .15s; gap: 10px;
   }
-  .slide-nav-btn:hover:not(:disabled) { background: rgba(26,58,107,0.15); }
-  .slide-nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .acc-head:hover { background: rgba(26,58,107,0.11); }
+  .acc-head.open  { background: rgba(26,58,107,0.11); }
+  .acc-icon { font-size: 0.72rem; flex-shrink: 0; transition: transform .25s; }
+  .acc-head.open .acc-icon { transform: rotate(90deg); }
+  .acc-body { max-height: 0; overflow: hidden; transition: max-height .38s ease; }
+  .acc-body.open { max-height: 2400px; }
+  .acc-inner { padding: 14px 16px 18px; }
 
-  .slide-dots {
-    display: flex; gap: 7px; align-items: center;
-    flex-wrap: wrap; justify-content: center; flex: 1;
-  }
-  .slide-dot {
-    width: 9px; height: 9px; border-radius: 50%;
-    background: rgba(26,58,107,0.15);
-    cursor: pointer; transition: all .2s;
-  }
-  .slide-dot.done  { background: rgba(26,58,107,0.38); }
-  .slide-dot.active {
-    background: var(--c-navy); transform: scale(1.3);
-    box-shadow: 0 0 0 2px rgba(26,58,107,0.2);
-  }
-
-  /* ── PANEL TEXT ── */
-  .slide-badge {
-    display: inline-block;
-    background: rgba(26,58,107,0.09);
-    border: 1.5px solid rgba(26,58,107,0.2);
-    border-radius: 20px; padding: 4px 18px;
-    font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
-    color: var(--c-navy); margin-bottom: 8px;
-  }
-  .slide-title {
-    font-family: var(--font-display);
-    font-size: 1.15rem; color: var(--c-navy);
-    margin-bottom: 10px; line-height: 1.3;
-  }
-  .slide-text { font-size: 1.05rem; line-height: 1.75; color: #2a2a3e; }
-  .slide-text p { margin-bottom: 8px; }
-  .slide-text p:last-child { margin-bottom: 0; }
-
-  /* ── ARMY GRID ── */
+  /* ── ARMY GRID ─────────────────────────────── */
   .army-grid {
     display: grid; grid-template-columns: repeat(3, 1fr);
     gap: 8px; margin-top: 12px;
@@ -80,17 +53,15 @@
   .piece-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
   .piece-card.selected { border-color: var(--c-navy); background: rgba(26,58,107,0.12); }
   .piece-symbol { font-size: 1.8em; display: block; line-height: 1.2; }
-  .piece-name { font-family: var(--font-display); font-size: 0.85em; color: var(--c-navy); margin: 3px 0 1px; }
+  .piece-name  { font-family: var(--font-display); font-size: 0.85em; color: var(--c-navy); margin: 3px 0 1px; }
   .piece-count { font-size: 0.7em; color: rgba(26,26,46,0.5); }
   .piece-card .piece-value {
     position: absolute; top: 5px; right: 8px;
     font-family: var(--font-display); font-size: 0.7em; color: rgba(26,26,46,0.35);
   }
 
-  /* ── PIECE TABS ── */
-  .piece-tabs {
-    display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px;
-  }
+  /* ── PIECE TABS ────────────────────────────── */
+  .piece-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
   .ptab {
     padding: 5px 11px; border-radius: 50px;
     border: 2px solid rgba(26,58,107,0.3);
@@ -98,10 +69,10 @@
     font-family: var(--font-display); font-size: 0.82em; font-weight: 700;
     color: var(--c-navy); cursor: pointer; transition: all 0.2s; white-space: nowrap;
   }
-  .ptab:hover { background: rgba(26,58,107,0.12); }
+  .ptab:hover  { background: rgba(26,58,107,0.12); }
   .ptab.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
 
-  /* ── PIECE DESC ── */
+  /* ── PIECE DESC ────────────────────────────── */
   .piece-desc-box {
     background: rgba(26,58,107,0.08);
     border: 2px solid rgba(26,58,107,0.18);
@@ -114,7 +85,7 @@
     color: var(--c-navy); margin-bottom: 6px;
   }
 
-  /* ── LEGEND ── */
+  /* ── LEGEND ────────────────────────────────── */
   .legend { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
   .leg-item { display: flex; align-items: center; gap: 8px; font-size: 0.85em; color: #2a2a3e; }
   .leg-dot { width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0; }
@@ -122,13 +93,13 @@
   .dot-capture { background: rgba(230,60,50,0.65);  border: 2px solid rgba(230,60,50,1); }
   .dot-piece   { background: rgba(26,120,255,0.5);  border: 2px solid rgba(26,120,255,0.8); }
 
-  /* ── BOARD HIGHLIGHTS ── */
+  /* ── BOARD HIGHLIGHTS ──────────────────────── */
   .sq-move    { background-image: linear-gradient(rgba(80,200,100,0.45), rgba(80,200,100,0.45)) !important; }
   .sq-piece   { background-image: linear-gradient(rgba(26,120,255,0.35), rgba(26,120,255,0.35)) !important; }
-  .sq-capture { background-image: linear-gradient(rgba(230,60,50,0.45), rgba(230,60,50,0.45))   !important; }
-  .sq-ask     { background-image: linear-gradient(rgba(255,200,0,0.60), rgba(255,200,0,0.60))   !important; }
+  .sq-capture { background-image: linear-gradient(rgba(230,60,50,0.45),  rgba(230,60,50,0.45))  !important; }
+  .sq-ask     { background-image: linear-gradient(rgba(255,200,0,0.60),  rgba(255,200,0,0.60))  !important; }
 
-  /* ── QUIZ BOX ── */
+  /* ── QUIZ ──────────────────────────────────── */
   .quiz-box {
     background: rgba(26,58,107,0.09);
     border: 2px solid rgba(26,58,107,0.2);
@@ -139,7 +110,6 @@
   .quiz-box.ok   { background: rgba(40,180,80,0.18);  border-color: rgba(40,180,80,0.5); }
   .quiz-box.err  { background: rgba(200,50,50,0.15);  border-color: rgba(200,50,50,0.4); }
   .quiz-box.done { background: rgba(245,200,66,0.2);  border-color: rgba(245,200,66,0.6); }
-
   .quiz-btn {
     padding: 7px 12px; border-radius: 10px;
     border: 2px solid rgba(26,58,107,0.3);
@@ -151,14 +121,13 @@
   .quiz-btn:hover:not(:disabled) { background: rgba(26,58,107,0.12); }
   .quiz-btn:disabled { cursor: default; }
 
-  /* ── PRACTICE BUTTONS ── */
+  /* ── PRACTICE BUTTONS ──────────────────────── */
   .practice-btn {
     display: block; width: 100%; padding: 14px; border-radius: 14px;
     border: none; text-align: center; cursor: pointer;
     font-family: var(--font-display); font-size: 0.92em; font-weight: 700;
     margin-bottom: 8px; transition: all 0.2s;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.18); color: white;
-    text-decoration: none;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.18); color: white; text-decoration: none;
   }
   .practice-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
   .practice-btn small {
@@ -169,22 +138,17 @@
   .pb-green  { background: #1a6b4a; }
   .pb-purple { background: #7d3c98; }
 
-  /* ── SETUP HIGHLIGHTS ── */
+  /* ── SETUP STEPS ───────────────────────────── */
   .sq-new  { background-image: linear-gradient(rgba(245,200,50,0.55),rgba(245,200,50,0.55)) !important; }
   .sq-fq   { background-image: linear-gradient(rgba(60,120,220,0.35),rgba(60,120,220,0.35)) !important; }
   .sq-fk   { background-image: linear-gradient(rgba(220,60,60,0.35),rgba(220,60,60,0.35))  !important; }
   .sq-hw   { background-image: linear-gradient(rgba(60,180,100,0.32),rgba(60,180,100,0.32))!important; }
   .sq-hb   { background-image: linear-gradient(rgba(80,80,170,0.32),rgba(80,80,170,0.32))  !important; }
-  .sq-ww   { background-image: linear-gradient(rgba(255,195,20,0.48),rgba(255,195,20,0.48))!important; }
-  .sq-wb   { background-image: linear-gradient(rgba(30,30,30,0.40),rgba(30,30,30,0.40))    !important; }
-
-  /* ── SETUP STEP NAV ── */
   .setup-step-box {
     background: rgba(26,58,107,0.08);
     border: 2px solid rgba(26,58,107,0.18);
     border-radius: 14px; padding: 12px 14px;
-    font-size: 0.92em; line-height: 1.65; color: #1a1a2e;
-    margin-bottom: 10px;
+    font-size: 0.92em; line-height: 1.65; color: #1a1a2e; margin-bottom: 10px;
   }
   .setup-step-title {
     font-family: var(--font-display); font-size: 1em;
@@ -206,17 +170,18 @@
     background: rgba(40,180,80,0.15); border: 2px solid rgba(40,180,80,0.4);
     border-radius: 12px; padding: 10px 14px;
     font-family: var(--font-display); font-size: 0.9em;
-    color: #1a5c35; text-align: center; line-height: 1.5;
-    display: none;
+    color: #1a5c35; text-align: center; line-height: 1.5; display: none;
   }
 
   .h-box {
     background: rgba(26,58,107,0.08);
     border-left: 4px solid var(--c-navy);
     border-radius: 0 12px 12px 0;
-    padding: 10px 14px; font-size: 0.95rem; line-height: 1.7;
-    margin: 8px 0;
+    padding: 10px 14px; font-size: 0.95rem; line-height: 1.7; margin: 8px 0;
   }
+  .slide-text { font-size: 1.05rem; line-height: 1.75; color: #2a2a3e; }
+  .slide-text p { margin-bottom: 8px; }
+  .slide-text p:last-child { margin-bottom: 0; }
 </style>
 </head>
 <body>
@@ -231,162 +196,185 @@
 
   <main class="page-main" role="main">
 
-    <!-- Coloana tablă -->
     <div class="board-col">
       <div class="board-wrapper">
         <div id="board"></div>
       </div>
     </div>
 
-    <!-- Coloana panel -->
     <div class="panel-col">
       <div class="panel-scroll" id="panelScroll" role="region" aria-label="Conținut lecție">
 
-        <span class="slide-badge" id="slideBadge">Armata</span>
-        <div class="slide-title" id="slideTitle"></div>
-
-        <!-- SLIDE 0: Armata -->
-        <div id="slide0">
-          <div class="slide-text">
-            <p>Fiecare jucător comandă o armată de <strong>16 piese</strong>. Împreună sunt <strong>32 de piese</strong> pe tablă la startul partidei.</p>
-            <p>Fiecare soldat are talentul lui special — unii merg drept, alții pe diagonală, calul sare peste toți, iar Regina le face pe toate!</p>
-            <p>Apasă pe o piesă ca să o explorezi pe tablă:</p>
+        <!-- ── BURDUF 0 — Armata ──────────────────── -->
+        <div class="acc-item">
+          <div class="acc-head open" id="acc0" onclick="goTo(0)">
+            <span>⚔️ Armata de Șah</span>
+            <span class="acc-icon">▶</span>
           </div>
-          <div class="army-grid">
-            <div class="piece-card" onclick="exploreFromCard('P')" id="pcard-P">
-              <span class="piece-value">8×</span>
-              <span class="piece-symbol">♟</span>
-              <div class="piece-name">Pion</div>
-              <div class="piece-count">8 piese</div>
-            </div>
-            <div class="piece-card" onclick="exploreFromCard('R')" id="pcard-R">
-              <span class="piece-value">2×</span>
-              <span class="piece-symbol">♜</span>
-              <div class="piece-name">Turn</div>
-              <div class="piece-count">2 piese</div>
-            </div>
-            <div class="piece-card" onclick="exploreFromCard('N')" id="pcard-N">
-              <span class="piece-value">2×</span>
-              <span class="piece-symbol">♞</span>
-              <div class="piece-name">Cal</div>
-              <div class="piece-count">2 piese</div>
-            </div>
-            <div class="piece-card" onclick="exploreFromCard('B')" id="pcard-B">
-              <span class="piece-value">2×</span>
-              <span class="piece-symbol">♝</span>
-              <div class="piece-name">Nebun</div>
-              <div class="piece-count">2 piese</div>
-            </div>
-            <div class="piece-card" onclick="exploreFromCard('Q')" id="pcard-Q">
-              <span class="piece-value">1×</span>
-              <span class="piece-symbol">♛</span>
-              <div class="piece-name">Regină</div>
-              <div class="piece-count">1 piesă</div>
-            </div>
-            <div class="piece-card" onclick="exploreFromCard('K')" id="pcard-K">
-              <span class="piece-value">1×</span>
-              <span class="piece-symbol">♚</span>
-              <div class="piece-name">Rege</div>
-              <div class="piece-count">1 piesă</div>
+          <div class="acc-body open" id="body0">
+            <div class="acc-inner">
+              <div class="slide-text">
+                <p>Fiecare jucător comandă o armată de <strong>16 piese</strong>. Împreună sunt <strong>32 de piese</strong> pe tablă la startul partidei.</p>
+                <p>Fiecare soldat are talentul lui special — unii merg drept, alții pe diagonală, calul sare peste toți, iar Regina le face pe toate!</p>
+                <p>Apasă pe o piesă ca să o explorezi pe tablă:</p>
+              </div>
+              <div class="army-grid">
+                <div class="piece-card" onclick="exploreFromCard('P')" id="pcard-P">
+                  <span class="piece-value">8×</span>
+                  <span class="piece-symbol">♟</span>
+                  <div class="piece-name">Pion</div>
+                  <div class="piece-count">8 piese</div>
+                </div>
+                <div class="piece-card" onclick="exploreFromCard('R')" id="pcard-R">
+                  <span class="piece-value">2×</span>
+                  <span class="piece-symbol">♜</span>
+                  <div class="piece-name">Turn</div>
+                  <div class="piece-count">2 piese</div>
+                </div>
+                <div class="piece-card" onclick="exploreFromCard('N')" id="pcard-N">
+                  <span class="piece-value">2×</span>
+                  <span class="piece-symbol">♞</span>
+                  <div class="piece-name">Cal</div>
+                  <div class="piece-count">2 piese</div>
+                </div>
+                <div class="piece-card" onclick="exploreFromCard('B')" id="pcard-B">
+                  <span class="piece-value">2×</span>
+                  <span class="piece-symbol">♝</span>
+                  <div class="piece-name">Nebun</div>
+                  <div class="piece-count">2 piese</div>
+                </div>
+                <div class="piece-card" onclick="exploreFromCard('Q')" id="pcard-Q">
+                  <span class="piece-value">1×</span>
+                  <span class="piece-symbol">♛</span>
+                  <div class="piece-name">Regină</div>
+                  <div class="piece-count">1 piesă</div>
+                </div>
+                <div class="piece-card" onclick="exploreFromCard('K')" id="pcard-K">
+                  <span class="piece-value">1×</span>
+                  <span class="piece-symbol">♚</span>
+                  <div class="piece-name">Rege</div>
+                  <div class="piece-count">1 piesă</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- SLIDE 1: Explorator mutări -->
-        <div id="slide1" style="display:none">
-          <div class="piece-tabs">
-            <button class="ptab" onclick="selectPiece('P')" id="ptab-P">♟ Pion</button>
-            <button class="ptab" onclick="selectPiece('R')" id="ptab-R">♜ Turn</button>
-            <button class="ptab" onclick="selectPiece('N')" id="ptab-N">♞ Cal</button>
-            <button class="ptab" onclick="selectPiece('B')" id="ptab-B">♝ Nebun</button>
-            <button class="ptab" onclick="selectPiece('Q')" id="ptab-Q">♛ Regină</button>
-            <button class="ptab" onclick="selectPiece('K')" id="ptab-K">♚ Rege</button>
+        <!-- ── BURDUF 1 — Cum mișcă fiecare piesă ── -->
+        <div class="acc-item">
+          <div class="acc-head" id="acc1" onclick="goTo(1)">
+            <span>🔍 Cum mișcă fiecare piesă?</span>
+            <span class="acc-icon">▶</span>
           </div>
-          <div class="piece-desc-box">
-            <div class="pd-name" id="pd-name">Pionul</div>
-            <div id="pd-text">Selectează o piesă!</div>
-          </div>
-          <div class="legend">
-            <div class="leg-item"><div class="leg-dot dot-move"></div> <span id="legend-move-text">Poate merge aici</span></div>
-            <div class="leg-item" id="legend-capture-row"><div class="leg-dot dot-capture"></div> Poate captura aici</div>
-            <div class="leg-item"><div class="leg-dot dot-piece"></div> Piesa selectată</div>
-          </div>
-        </div>
-
-        <!-- SLIDE 2: Quiz -->
-        <div id="slide2" style="display:none">
-          <div class="slide-text">
-            <p>Ești gata? Pe tablă vei vedea mutările posibile ale unei piese — dar fără să știi care e. Ghicești?</p>
-          </div>
-          <div id="quiz-question" style="font-family:var(--font-display);font-size:1em;color:var(--c-navy);margin-bottom:8px;"></div>
-          <div id="quiz-buttons" style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px;"></div>
-          <div class="quiz-box" id="quiz-feedback">Alege răspunsul corect!</div>
-        </div>
-
-        <!-- SLIDE 3: Aşezarea pieselor -->
-        <div id="slide3" style="display:none">
-          <div class="slide-text" style="margin-bottom:10px;">
-            <p>Acum că știi cum se mișcă fiecare piesă, hai să le aşezăm pe tablă exact cum se face la startul oricărei partide!</p>
-          </div>
-          <div class="setup-step-box">
-            <div class="setup-step-title" id="setup-title">Tabla goală</div>
-            <div id="setup-text">Avem tabla pregătită. Vom plasa piesele pe rând!</div>
-          </div>
-          <div class="setup-btns">
-            <button class="setup-btn setup-btn-prev" id="setup-prev-btn" onclick="prevSetup()" disabled>◀ Înapoi</button>
-            <button class="setup-btn setup-btn-next" id="setup-next-btn" onclick="nextSetup()">♖ Pune Turnurile ▶</button>
-          </div>
-          <div class="setup-done-box" id="setup-done-box">
-            🎉 Ai parcurs toată aşezarea!<br>Acum știi cum arată tabla la startul oricărei partide.
+          <div class="acc-body" id="body1">
+            <div class="acc-inner">
+              <div class="piece-tabs">
+                <button class="ptab" onclick="selectPiece('P')" id="ptab-P">♟ Pion</button>
+                <button class="ptab" onclick="selectPiece('R')" id="ptab-R">♜ Turn</button>
+                <button class="ptab" onclick="selectPiece('N')" id="ptab-N">♞ Cal</button>
+                <button class="ptab" onclick="selectPiece('B')" id="ptab-B">♝ Nebun</button>
+                <button class="ptab" onclick="selectPiece('Q')" id="ptab-Q">♛ Regină</button>
+                <button class="ptab" onclick="selectPiece('K')" id="ptab-K">♚ Rege</button>
+              </div>
+              <div class="piece-desc-box">
+                <div class="pd-name" id="pd-name">Pionul</div>
+                <div id="pd-text">Selectează o piesă!</div>
+              </div>
+              <div class="legend">
+                <div class="leg-item"><div class="leg-dot dot-move"></div> <span id="legend-move-text">Poate merge aici</span></div>
+                <div class="leg-item" id="legend-capture-row"><div class="leg-dot dot-capture"></div> Poate captura aici</div>
+                <div class="leg-item"><div class="leg-dot dot-piece"></div> Piesa selectată</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- SLIDE 4: Jocuri practice -->
-        <div id="slide4" style="display:none">
-
-          <div class="slide-text" style="margin-bottom:12px;">
-            <p>Pune piesele la treabă! Alege un joc și antrenează-te pe tablă reală — vs. calculator:</p>
+        <!-- ── BURDUF 2 — Mini-test ──────────────── -->
+        <div class="acc-item">
+          <div class="acc-head" id="acc2" onclick="goTo(2)">
+            <span>🧠 Mini-test: Identifică piesa!</span>
+            <span class="acc-icon">▶</span>
           </div>
+          <div class="acc-body" id="body2">
+            <div class="acc-inner">
+              <div class="slide-text" style="margin-bottom:10px;">
+                <p>Ești gata? Pe tablă vei vedea mutările posibile ale unei piese — dar fără să știi care e. Ghicești?</p>
+              </div>
+              <div id="quiz-question" style="font-family:var(--font-display);font-size:1em;color:var(--c-navy);margin-bottom:8px;"></div>
+              <div id="quiz-buttons" style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px;"></div>
+              <div class="quiz-box" id="quiz-feedback">Alege răspunsul corect!</div>
+            </div>
+          </div>
+        </div>
 
-          <a href="nivel1_joc_cai.html" class="practice-btn pb-blue">
-            ♞ Jocul Cailor
-            <small>Caii mănâncă pioni — vs. 🤖</small>
-          </a>
-          <a href="nivel1_joc_cursa.html" class="practice-btn pb-green">
-            ♖ Cursa Perimeterului
-            <small>Turn + Nebun în cursă — vs. 🤖</small>
-          </a>
-          <a href="nivel1_joc_acasa.html" class="practice-btn pb-purple">
-            🏠 Întoarcerea Acasă
-            <small>Aranjează armata la start — vs. 🤖</small>
-          </a>
+        <!-- ── BURDUF 3 — Aşezarea pieselor ─────── -->
+        <div class="acc-item">
+          <div class="acc-head" id="acc3" onclick="goTo(3)">
+            <span>🏰 Cum aşezăm piesele?</span>
+            <span class="acc-icon">▶</span>
+          </div>
+          <div class="acc-body" id="body3">
+            <div class="acc-inner">
+              <div class="slide-text" style="margin-bottom:10px;">
+                <p>Acum că știi cum se mișcă fiecare piesă, hai să le aşezăm pe tablă exact cum se face la startul oricărei partide!</p>
+              </div>
+              <div class="setup-step-box">
+                <div class="setup-step-title" id="setup-title">Tabla goală</div>
+                <div id="setup-text">Avem tabla pregătită. Vom plasa piesele pe rând!</div>
+              </div>
+              <div class="setup-btns">
+                <button class="setup-btn setup-btn-prev" id="setup-prev-btn" onclick="prevSetup()" disabled>&#9664; Înapoi</button>
+                <button class="setup-btn setup-btn-next" id="setup-next-btn" onclick="nextSetup()">♖ Pune Turnurile ▶</button>
+              </div>
+              <div class="setup-done-box" id="setup-done-box">
+                🎉 Ai parcurs toată aşezarea!<br>Acum știi cum arată tabla la startul oricărei partide.
+              </div>
+            </div>
+          </div>
+        </div>
 
+        <!-- ── BURDUF 4 — Exersează ──────────────── -->
+        <div class="acc-item">
+          <div class="acc-head" id="acc4" onclick="goTo(4)">
+            <span>🎮 Exersează!</span>
+            <span class="acc-icon">▶</span>
+          </div>
+          <div class="acc-body" id="body4">
+            <div class="acc-inner">
+              <div class="slide-text" style="margin-bottom:12px;">
+                <p>Pune piesele la treabă! Alege un joc și antrenează-te pe tablă reală — vs. calculator:</p>
+              </div>
+              <a href="nivel1_joc_cai.html" class="practice-btn pb-blue">
+                ♞ Jocul Cailor
+                <small>Caii mănâncă pioni — vs. 🤖</small>
+              </a>
+              <a href="nivel1_joc_cursa.html" class="practice-btn pb-green">
+                ♖ Cursa Perimeterului
+                <small>Turn + Nebun în cursă — vs. 🤖</small>
+              </a>
+              <a href="nivel1_joc_acasa.html" class="practice-btn pb-purple">
+                🏠 Întoarcerea Acasă
+                <small>Aranjează armata la start — vs. 🤖</small>
+              </a>
+            </div>
+          </div>
         </div>
 
       </div><!-- /.panel-scroll -->
-
       <div class="feedback-bar" id="feedbackBar"></div>
-
-      <div class="slide-nav">
-        <button class="slide-nav-btn" id="prevBtn" onclick="prevSlide()" disabled>◀</button>
-        <div class="slide-dots" id="slideDots"></div>
-        <button class="slide-nav-btn" id="nextBtn" onclick="nextSlide()">▶</button>
-      </div>
     </div><!-- /.panel-col -->
+
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
     <a href="nivel1_lectia1.html" class="nav-btn nav-btn--back">
-      <span class="icon">&#8592;</span>
-      <span class="label">Lecția 1</span>
+      <span class="icon">&#8592;</span><span class="label">Lecția 1</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
-      <span class="icon">&#8862;</span>
-      <span class="label">Cuprins</span>
+      <span class="icon">&#8862;</span><span class="label">Cuprins</span>
     </a>
     <a href="nivel1_lectia3.html" class="nav-btn nav-btn--forward">
-      <span class="icon">&#8594;</span>
-      <span class="label">Lecția 3</span>
+      <span class="icon">&#8594;</span><span class="label">Lecția 3</span>
     </a>
   </footer>
 
@@ -403,7 +391,7 @@ const board = Chessboard('board', {
 });
 $(window).resize(() => board.resize());
 
-/* ── PIECE DATA ── */
+/* ── PIECE DATA ─────────────────────────────────────────── */
 const PIECES = {
   P: {
     name:'Pionul', symbol:'♟', fen:'wP', pos:'e4',
@@ -481,24 +469,23 @@ const PIECES = {
   }
 };
 
-/* ── BOARD HIGHLIGHTS ── */
+/* ── BOARD HIGHLIGHTS ───────────────────────────────────── */
 const ALL_HL = 'sq-move sq-piece sq-capture sq-ask';
 function clearHL() {
   'abcdefgh'.split('').forEach(c => { for(let r=1;r<=8;r++) $(`.square-${c}${r}`).removeClass(ALL_HL); });
 }
 
-/* Timere globale — anulate la orice schimbare de slide */
 let slideTimer = null;
 let movesTimer  = null;
 
 function showMoves(code) {
-  if(current !== 1) return;             /* guard: current e setat ÎNAINTE în goTo */
+  if(current !== 1) return;
   const p = PIECES[code];
   const pos = {}; pos[p.pos] = p.fen;
-  board.position(pos, false);           /* piesa pe tablă */
+  board.position(pos, false);
   if(movesTimer) clearTimeout(movesTimer);
   movesTimer = setTimeout(() => {
-    if(current !== 1) return;           /* double-check */
+    if(current !== 1) return;
     clearHL();
     const {moves,captures} = p.getMoves(p.pos);
     moves.forEach(sq => $(`.square-${sq}`).addClass('sq-move'));
@@ -507,33 +494,30 @@ function showMoves(code) {
   }, 50);
 }
 
-/* ── PIECE SELECTOR (slide 1) ── */
+/* ── PIECE SELECTOR ─────────────────────────────────────── */
 function selectPiece(code) {
   if(current !== 1) return;
   document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
   const tab = document.getElementById('ptab-'+code);
   if(tab) tab.classList.add('active');
   const p = PIECES[code];
-  /* afișăm piesa ca imagine în panel în loc de pe tablă */
   document.getElementById('pd-name').innerHTML =
     `<img src="https://lichess1.org/assets/piece/caliente/${p.fen}.svg" ` +
     `style="width:32px;height:32px;vertical-align:middle;margin-right:6px;" alt="">${p.name}`;
   document.getElementById('pd-text').innerHTML = p.text;
   document.getElementById('legend-capture-row').style.display = (code==='P') ? '' : 'none';
   document.getElementById('legend-move-text').textContent = (code==='P')
-    ? 'Poate merge aici'
-    : 'Poate merge / captura aici';
+    ? 'Poate merge aici' : 'Poate merge / captura aici';
   showMoves(code);
 }
 
-/* ── ARMY CARD CLICK → go to slide 1 with that piece ── */
 function exploreFromCard(code) {
   goTo(1);
-  if(slideTimer) { clearTimeout(slideTimer); slideTimer=null; } /* cancel auto-Pion timer */
+  if(slideTimer) { clearTimeout(slideTimer); slideTimer=null; }
   selectPiece(code);
 }
 
-/* ── QUIZ ── */
+/* ── QUIZ ───────────────────────────────────────────────── */
 const QUIZ_Q = [
   { code:'R', pos:'d4', hint:'Controlează o cruce uriașă pe tablă.' },
   { code:'N', pos:'d4', hint:'Sare ca un acrobat în forma literei L!' },
@@ -542,14 +526,12 @@ const QUIZ_Q = [
   { code:'K', pos:'d5', hint:'Un singur pas în orice direcție.' },
   { code:'P', pos:'d4', hint:'Doar înainte! Capturează în diagonală.' },
 ];
-
 let quizIdx=0, quizAnswered=false, quizCorrect=0;
 
 function showQuizQ(i) {
   if(i>=QUIZ_Q.length) { quizDone(); return; }
   quizIdx=i; quizAnswered=false;
   const q=QUIZ_Q[i], p=PIECES[q.code];
-
   board.position('empty', false);
   setTimeout(() => {
     clearHL();
@@ -558,10 +540,8 @@ function showQuizQ(i) {
     captures.forEach(sq => $(`.square-${sq}`).addClass('sq-capture'));
     $(`.square-${q.pos}`).addClass('sq-ask');
   }, 80);
-
   document.getElementById('quiz-question').textContent =
     `Întrebarea ${i+1}/${QUIZ_Q.length}: Care piesă face aceste mutări?`;
-
   const container = document.getElementById('quiz-buttons');
   container.innerHTML='';
   const names = ['P','R','N','B','Q','K'].sort(()=>Math.random()-0.5);
@@ -572,7 +552,6 @@ function showQuizQ(i) {
     btn.onclick=()=>answerQuiz(code,btn);
     container.appendChild(btn);
   });
-
   const fb=document.getElementById('quiz-feedback');
   fb.className='quiz-box'; fb.textContent=q.hint;
 }
@@ -582,12 +561,10 @@ function answerQuiz(code,btn) {
   quizAnswered=true;
   const q=QUIZ_Q[quizIdx], fb=document.getElementById('quiz-feedback');
   document.querySelectorAll('.quiz-btn').forEach(b=>b.disabled=true);
-
   if(code===q.code) {
     quizCorrect++;
     btn.style.background='rgba(40,180,80,0.35)'; btn.style.borderColor='rgba(40,180,80,0.7)';
-    fb.className='quiz-box ok';
-    fb.textContent='✅ Corect! Este '+PIECES[code].name+'.';
+    fb.className='quiz-box ok'; fb.textContent='✅ Corect! Este '+PIECES[code].name+'.';
   } else {
     btn.style.background='rgba(200,50,50,0.25)'; btn.style.borderColor='rgba(200,50,50,0.6)';
     fb.className='quiz-box err';
@@ -614,34 +591,32 @@ function quizDone() {
     '<button class="quiz-btn" onclick="restartQuiz()" style="text-align:center;">🔄 Reia testul</button>';
 }
 
-function restartQuiz() {
-  quizCorrect=0;
-  showQuizQ(0);
-}
+function restartQuiz() { quizCorrect=0; showQuizQ(0); }
 
-/* ── SETUP BOARD ── */
+/* ── SETUP ──────────────────────────────────────────────── */
 const COLS = ['a','b','c','d','e','f','g','h'];
 const POS_R = {a1:'wR',h1:'wR',a8:'bR',h8:'bR'};
 const POS_N = {...POS_R,b1:'wN',g1:'wN',b8:'bN',g8:'bN'};
 const POS_B = {...POS_N,c1:'wB',f1:'wB',c8:'bB',f8:'bB'};
 const POS_Q = {...POS_B,d1:'wQ',d8:'bQ'};
 const POS_K = {...POS_Q,e1:'wK',e8:'bK'};
-const POS_P = {...POS_K,a2:'wP',b2:'wP',c2:'wP',d2:'wP',e2:'wP',f2:'wP',g2:'wP',h2:'wP',
+const POS_P = {...POS_K,
+  a2:'wP',b2:'wP',c2:'wP',d2:'wP',e2:'wP',f2:'wP',g2:'wP',h2:'wP',
   a7:'bP',b7:'bP',c7:'bP',d7:'bP',e7:'bP',f7:'bP',g7:'bP',h7:'bP'};
 
 const SETUP_STEPS = [
-  {pos:{}, title:'Tabla goală!', text:'Avem tabla pregătită. Vom plasa piesele pe rând — chiar ca la începutul unei partide adevărate!', newSq:[], hl:null, btn:'♖ Pune Turnurile ▶'},
-  {pos:POS_R, title:'♖ Turnurile — în colțuri!', text:'Turnurile stau în cele patru <strong>colțuri ale tablei</strong>.<br><br>🟡 Alb: <strong>a1</strong> și <strong>h1</strong><br>⬛ Negru: <strong>a8</strong> și <strong>h8</strong>', newSq:['a1','h1','a8','h8'], hl:null, btn:'♘ Pune Caii ▶'},
-  {pos:POS_N, title:'♘ Caii — lângă turnuri!', text:'Caii stau <strong>lângă turnuri</strong>, câte unul de fiecare parte.<br><br>🟡 Alb: <strong>b1</strong> și <strong>g1</strong><br>⬛ Negru: <strong>b8</strong> și <strong>g8</strong>', newSq:['b1','g1','b8','g8'], hl:null, btn:'♗ Pune Nebunii ▶'},
-  {pos:POS_B, title:'♗ Nebunii — unul pe alb, unul pe negru!', text:'🟡 Alb: <strong>c1</strong> și <strong>f1</strong><br>⬛ Negru: <strong>c8</strong> și <strong>f8</strong><br><br>Unul pe câmp alb, celălalt pe câmp negru — <strong>vor rămâne pe aceeași culoare toată partida!</strong>', newSq:['c1','f1','c8','f8'], hl:null, btn:'♛ Pune Reginele ▶'},
-  {pos:POS_Q, title:'♛ Regina — pe câmpul de culoarea ei!', text:'<strong>„Regina stă pe un câmp de culoarea ei!"</strong><br><br>🟡 Regina albă → câmp alb → <strong>d1</strong><br>⬛ Regina neagră → câmp negru → <strong>d8</strong>', newSq:['d1','d8'], hl:null, btn:'♚ Pune Regii ▶'},
-  {pos:POS_K, title:'♚ Regele — pe ultimul câmp liber!', text:'Regele ia câmpul rămas liber: <strong>e1</strong> (alb) și <strong>e8</strong> (negru).<br><br>Linia 1 completă: <strong>♖ ♘ ♗ ♛ ♚ ♗ ♘ ♖</strong>', newSq:['e1','e8'], hl:null, btn:'♟ Pune Pionii ▶'},
-  {pos:POS_P, title:'♟ Pionii — soldații din față!', text:'🟡 Alb: <strong>linia 2</strong> (a2–h2)<br>⬛ Negru: <strong>linia 7</strong> (a7–h7)<br><br>🎉 <strong>Armata e completă!</strong> 32 de piese pe tablă!', newSq:['a2','b2','c2','d2','e2','f2','g2','h2','a7','b7','c7','d7','e7','f7','g7','h7'], hl:null, btn:'⚔️ Flancurile ▶'},
-  {pos:POS_P, title:'⚔️ Flancul Damei și Flancul Regelui', text:'🔵 <strong>Flancul Damei</strong> — coloanele <strong>a, b, c, d</strong><br>🔴 <strong>Flancul Regelui</strong> — coloanele <strong>e, f, g, h</strong>', newSq:[], hl:'flanks', btn:'🏠 Jumătățile ▶'},
-  {pos:POS_P, title:'🏠 Jumătatea Albului și a Negrului', text:'🟩 <strong>Jumătatea Albului</strong> — liniile 1–4<br>🟦 <strong>Jumătatea Negrului</strong> — liniile 5–8<br><br>Dacă piesele tale trec de linia 4 — ești pe teritoriul adversarului!', newSq:[], hl:'halves', btn:null},
+  {pos:{},    title:'Tabla goală!',                          text:'Avem tabla pregătită. Vom plasa piesele pe rând — chiar ca la începutul unei partide adevărate!', newSq:[], hl:null, btn:'♖ Pune Turnurile ▶'},
+  {pos:POS_R, title:'♖ Turnurile — în colțuri!',             text:'Turnurile stau în cele patru <strong>colțuri ale tablei</strong>.<br><br>🟡 Alb: <strong>a1</strong> și <strong>h1</strong><br>⬛ Negru: <strong>a8</strong> și <strong>h8</strong>', newSq:['a1','h1','a8','h8'], hl:null, btn:'♘ Pune Caii ▶'},
+  {pos:POS_N, title:'♘ Caii — lângă turnuri!',               text:'Caii stau <strong>lângă turnuri</strong>, câte unul de fiecare parte.<br><br>🟡 Alb: <strong>b1</strong> și <strong>g1</strong><br>⬛ Negru: <strong>b8</strong> și <strong>g8</strong>', newSq:['b1','g1','b8','g8'], hl:null, btn:'♗ Pune Nebunii ▶'},
+  {pos:POS_B, title:'♗ Nebunii — unul pe alb, unul pe negru!',text:'🟡 Alb: <strong>c1</strong> și <strong>f1</strong><br>⬛ Negru: <strong>c8</strong> și <strong>f8</strong><br><br>Unul pe câmp alb, celălalt pe câmp negru — <strong>vor rămâne pe aceeași culoare toată partida!</strong>', newSq:['c1','f1','c8','f8'], hl:null, btn:'♛ Pune Reginele ▶'},
+  {pos:POS_Q, title:'♛ Regina — pe câmpul de culoarea ei!',  text:'<strong>„Regina stă pe un câmp de culoarea ei!"</strong><br><br>🟡 Regina albă → câmp alb → <strong>d1</strong><br>⬛ Regina neagră → câmp negru → <strong>d8</strong>', newSq:['d1','d8'], hl:null, btn:'♚ Pune Regii ▶'},
+  {pos:POS_K, title:'♚ Regele — pe ultimul câmp liber!',     text:'Regele ia câmpul rămas liber: <strong>e1</strong> (alb) și <strong>e8</strong> (negru).<br><br>Linia 1 completă: <strong>♖ ♘ ♗ ♛ ♚ ♗ ♘ ♖</strong>', newSq:['e1','e8'], hl:null, btn:'♟ Pune Pionii ▶'},
+  {pos:POS_P, title:'♟ Pionii — soldații din față!',         text:'🟡 Alb: <strong>linia 2</strong> (a2–h2)<br>⬛ Negru: <strong>linia 7</strong> (a7–h7)<br><br>🎉 <strong>Armata e completă!</strong> 32 de piese pe tablă!', newSq:['a2','b2','c2','d2','e2','f2','g2','h2','a7','b7','c7','d7','e7','f7','g7','h7'], hl:null, btn:'⚔️ Flancurile ▶'},
+  {pos:POS_P, title:'⚔️ Flancul Damei și Flancul Regelui',   text:'🔵 <strong>Flancul Damei</strong> — coloanele <strong>a, b, c, d</strong><br>🔴 <strong>Flancul Regelui</strong> — coloanele <strong>e, f, g, h</strong>', newSq:[], hl:'flanks', btn:'🏠 Jumătățile ▶'},
+  {pos:POS_P, title:'🏠 Jumătatea Albului și a Negrului',    text:'🟩 <strong>Jumătatea Albului</strong> — liniile 1–4<br>🟦 <strong>Jumătatea Negrului</strong> — liniile 5–8<br><br>Dacă piesele tale trec de linia 4 — ești pe teritoriul adversarului!', newSq:[], hl:'halves', btn:null},
 ];
 
-const SU_ALL = 'sq-new sq-fq sq-fk sq-hw sq-hb sq-ww sq-wb';
+const SU_ALL = 'sq-new sq-fq sq-fk sq-hw sq-hb';
 let setupIdx = 0;
 
 function clearSetupHL() {
@@ -674,11 +649,10 @@ function renderSetup(idx) {
   const nextBtn = document.getElementById('setup-next-btn');
   const doneBox = document.getElementById('setup-done-box');
   if(step.btn) {
-    nextBtn.textContent = step.btn; nextBtn.style.display='block'; nextBtn.disabled=false;
+    nextBtn.textContent=step.btn; nextBtn.style.display='block'; nextBtn.disabled=false;
     doneBox.style.display='none';
   } else {
-    nextBtn.style.display='none';
-    doneBox.style.display='block';
+    nextBtn.style.display='none'; doneBox.style.display='block';
   }
   setTimeout(() => applySetupHL(step), 60);
 }
@@ -686,64 +660,36 @@ function renderSetup(idx) {
 function nextSetup() { if(setupIdx<SETUP_STEPS.length-1) { setupIdx++; renderSetup(setupIdx); } }
 function prevSetup() { if(setupIdx>0) { setupIdx--; renderSetup(setupIdx); } }
 
-/* ── SLIDE ENGINE ── */
-const SLIDE_COUNT = 5;
-const SLIDE_TITLES = [
-  '⚔️ Armata de Șah',
-  'Cum mișcă fiecare piesă?',
-  '🧠 Mini-test: Identifică piesa!',
-  '🏰 Cum aşezăm piesele?',
-  '🎮 Exersează!'
-];
-const SLIDE_BADGES = ['Armata', 'Explorează', 'Quiz', 'Aşezare', 'Practică'];
-
+/* ── ACCORDION ENGINE ───────────────────────────────────── */
+const ACC_COUNT = 5;
 let current = 0;
 
-function renderDots() {
-  const c=document.getElementById('slideDots');
-  c.innerHTML='';
-  for(let i=0;i<SLIDE_COUNT;i++) {
-    const d=document.createElement('div');
-    d.className='slide-dot'+(i<current?' done':'')+(i===current?' active':'');
-    d.onclick=()=>goTo(i);
-    c.appendChild(d);
-  }
-}
-
 function goTo(idx) {
-  /* Anulează orice timeout pendent */
   if(slideTimer) { clearTimeout(slideTimer); slideTimer=null; }
   if(movesTimer) { clearTimeout(movesTimer); movesTimer=null; }
 
-  /* Setăm current ÎNAINTE de orice altceva — garda din showMoves vede noul slide */
   current = idx;
 
-  /* Curăță tabla: board.position + forțat DOM (uneori chessboard.js rămâne cu piesele) */
   clearHL(); clearSetupHL();
   board.position('empty', false);
-  $('#board .piece-417db').remove(); /* force-remove orice piesă blocată în DOM */
+  $('#board .piece-417db').remove();
 
-  for(let i=0;i<SLIDE_COUNT;i++) {
-    document.getElementById('slide'+i).style.display = (i===idx)?'block':'none';
+  for(var i=0; i<ACC_COUNT; i++) {
+    var isOpen = i === idx;
+    document.getElementById('acc'+i).classList.toggle('open', isOpen);
+    document.getElementById('body'+i).classList.toggle('open', isOpen);
   }
-  document.getElementById('slideBadge').textContent = SLIDE_BADGES[idx];
-  document.getElementById('slideTitle').textContent = SLIDE_TITLES[idx];
-  document.getElementById('prevBtn').disabled = idx===0;
-  document.getElementById('nextBtn').disabled = idx===SLIDE_COUNT-1;
-  document.getElementById('panelScroll').scrollTop=0;
-  renderDots();
 
-  /* Init per slide */
+  document.getElementById('panelScroll').scrollTop = 0;
+
   if(idx===1) { slideTimer = setTimeout(() => selectPiece('P'), 50); }
   if(idx===2) { quizCorrect=0; quizIdx=0; slideTimer = setTimeout(() => showQuizQ(0), 50); }
   if(idx===3) { setupIdx=0; slideTimer = setTimeout(() => renderSetup(0), 50); }
 }
 
-function prevSlide() { if(current>0) goTo(current-1); }
-function nextSlide() { if(current<SLIDE_COUNT-1) goTo(current+1); }
-
-/* ── INIT ── */
+/* ── INIT ───────────────────────────────────────────────── */
 goTo(0);
 </script>
+<script src="board-utils.js"></script>
 </body>
 </html>
