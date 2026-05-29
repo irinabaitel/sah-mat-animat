@@ -149,12 +149,13 @@
     border: 2px solid rgba(26,58,107,0.18);
     border-radius: 14px; padding: 12px 14px;
     font-size: 0.92em; line-height: 1.65; color: #1a1a2e; margin-bottom: 10px;
+    min-height: 130px;
   }
   .setup-step-title {
     font-family: var(--font-display); font-size: 1em;
     color: var(--c-navy); font-weight: 700; margin-bottom: 6px;
   }
-  .setup-btns { display: flex; gap: 8px; margin-top: 10px; }
+  .setup-btns { display: flex; gap: 8px; margin-bottom: 10px; }
   .setup-btn {
     flex: 1; padding: 9px; border-radius: 12px; border: none;
     font-family: var(--font-display); font-size: 0.88em; font-weight: 700;
@@ -318,13 +319,13 @@
               <div class="slide-text" style="margin-bottom:10px;">
                 <p>Acum că știi cum se mișcă fiecare piesă, hai să le aşezăm pe tablă exact cum se face la startul oricărei partide!</p>
               </div>
-              <div class="setup-step-box">
-                <div class="setup-step-title" id="setup-title">Tabla goală</div>
-                <div id="setup-text">Avem tabla pregătită. Vom plasa piesele pe rând!</div>
-              </div>
               <div class="setup-btns">
                 <button class="setup-btn setup-btn-prev" id="setup-prev-btn" onclick="prevSetup()" disabled>&#9664; Înapoi</button>
                 <button class="setup-btn setup-btn-next" id="setup-next-btn" onclick="nextSetup()">♖ Pune Turnurile ▶</button>
+              </div>
+              <div class="setup-step-box">
+                <div class="setup-step-title" id="setup-title">Tabla goală</div>
+                <div id="setup-text">Avem tabla pregătită. Vom plasa piesele pe rând!</div>
               </div>
               <div class="setup-done-box" id="setup-done-box">
                 🎉 Ai parcurs toată aşezarea!<br>Acum știi cum arată tabla la startul oricărei partide.
@@ -649,10 +650,11 @@ function renderSetup(idx) {
   const nextBtn = document.getElementById('setup-next-btn');
   const doneBox = document.getElementById('setup-done-box');
   if(step.btn) {
-    nextBtn.textContent=step.btn; nextBtn.style.display='block'; nextBtn.disabled=false;
+    nextBtn.textContent=step.btn; nextBtn.disabled=false;
     doneBox.style.display='none';
   } else {
-    nextBtn.style.display='none'; doneBox.style.display='block';
+    nextBtn.textContent='✓ Complet!'; nextBtn.disabled=true;
+    doneBox.style.display='block';
   }
   setTimeout(() => applySetupHL(step), 60);
 }
