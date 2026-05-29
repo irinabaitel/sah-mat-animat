@@ -17,172 +17,107 @@
   <link rel="stylesheet" href="master-template.css">
   <style>
 
-    /* ── SLIDE NAV ──────────────────────────────────────── */
-    .slide-nav {
-      display: flex; align-items: center; gap: 8px;
-      flex-shrink: 0; padding: 4px 0;
-    }
-    .slide-nav-btn {
-      width: 38px; height: 38px; border-radius: 50%;
-      border: 2px solid rgba(26,58,107,0.3);
-      background: rgba(255,255,255,0.6);
-      font-family: var(--font-display); font-size: 1rem;
-      color: var(--c-navy); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; transition: background .15s;
-    }
-    .slide-nav-btn:hover:not(:disabled) { background: rgba(26,58,107,0.15); }
-    .slide-nav-btn:disabled { opacity: 0.3; cursor: default; }
+    /* ── MAIN ACCORDIONS ── */
+    .acc-item { border-radius:14px; border:1.5px solid rgba(26,58,107,0.16); margin-bottom:10px; overflow:hidden; background:rgba(255,255,255,0.55); }
+    .acc-head { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; cursor:pointer; background:rgba(26,58,107,0.06); font-family:var(--font-display); font-size:1.05rem; font-weight:700; color:var(--c-navy); user-select:none; transition:background .15s; gap:10px; }
+    .acc-head:hover  { background:rgba(26,58,107,0.11); }
+    .acc-head.open   { background:rgba(26,58,107,0.11); }
+    .acc-icon { font-size:0.72rem; flex-shrink:0; transition:transform .25s; }
+    .acc-head.open .acc-icon { transform:rotate(90deg); }
+    .acc-body { max-height:0; overflow:hidden; transition:max-height .38s ease; }
+    .acc-body.open { max-height:5000px; }
+    .acc-inner { padding:14px 16px 18px; display:flex; flex-direction:column; gap:10px; }
 
-    /* ── DOTS ───────────────────────────────────────────── */
-    .slide-dots {
-      display: flex; gap: 7px; align-items: center;
-      flex-wrap: wrap; justify-content: center; flex: 1;
-    }
-    .slide-dot {
-      width: 9px; height: 9px; border-radius: 50%;
-      background: rgba(26,58,107,0.15);
-      cursor: pointer; transition: all .2s;
-    }
-    .slide-dot.done  { background: rgba(26,58,107,0.38); }
-    .slide-dot.active {
-      background: var(--c-navy); transform: scale(1.3);
-      box-shadow: 0 0 0 2px rgba(26,58,107,0.2);
-    }
+    /* ── DEF SUB-ACCORDIONS ── */
+    .def-acc-item { border-radius:10px; border:1.5px solid rgba(26,58,107,0.18); margin-bottom:8px; overflow:hidden; background:rgba(255,255,255,0.70); }
+    .def-acc-head { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; cursor:pointer; background:rgba(26,58,107,0.05); font-family:var(--font-display); font-size:1rem; font-weight:700; color:var(--c-navy); user-select:none; transition:background .15s; gap:10px; }
+    .def-acc-head:hover { background:rgba(26,58,107,0.10); }
+    .def-acc-head.open { background:rgba(26,58,107,0.10); }
+    .def-acc-icon { font-size:0.7rem; flex-shrink:0; transition:transform .25s; }
+    .def-acc-head.open .def-acc-icon { transform:rotate(90deg); }
+    .def-acc-body { max-height:0; overflow:hidden; transition:max-height .42s ease; }
+    .def-acc-body.open { max-height:2500px; }
+    .def-acc-inner { padding:12px 16px 16px; display:flex; flex-direction:column; gap:10px; }
 
-    /* ── PANEL TEXT & TITLES ───────────────────────────── */
-    .slide-badge {
-      display: inline-block;
-      background: rgba(26,58,107,0.09);
-      border: 1.5px solid rgba(26,58,107,0.2);
-      border-radius: 20px; padding: 4px 18px;
-      font-family: var(--font-display); font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--c-navy); margin-bottom: 8px;
-    }
-    /* Exercise badge — warm amber to signal section change */
-    .slide-badge.ex {
-      background: rgba(200,110,0,0.13);
-      border-color: rgba(200,110,0,0.35);
-      color: #7a3e00;
-    }
-    .slide-title {
-      font-family: var(--font-display);
-      font-size: 1.15rem; color: var(--c-navy);
-      margin-bottom: 10px; line-height: 1.3;
-    }
-    /* Exercise slide title — bigger & bolder transition signal */
-    .slide-title.ex {
-      font-size: 1.4rem;
-      border-bottom: 3px solid rgba(200,110,0,0.35);
-      padding-bottom: 8px; margin-bottom: 12px;
-    }
+    /* ── EXAMPLE STEP NAV ── */
+    .ex-step-nav { display:flex; align-items:center; gap:8px; }
+    .ex-step-btn { width:34px; height:34px; border-radius:50%; border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.6); font-size:1rem; color:var(--c-navy); cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .15s; }
+    .ex-step-btn:hover:not(:disabled) { background:rgba(26,58,107,0.15); }
+    .ex-step-btn:disabled { opacity:0.3; cursor:default; }
+    .ex-step-lbl { font-family:var(--font-display); font-size:0.85rem; color:rgba(26,26,46,.5); flex:1; text-align:center; }
 
-    /* Base text size matches pagina3 */
-    .panel-scroll p,
-    .panel-scroll li,
-    .slide-text { font-size: 1.05rem; line-height: 1.75; color: #2a2a3e; }
+    /* ── OVERVIEW CARDS ── */
+    .overview-card { display:flex; align-items:flex-start; gap:12px; padding:10px 14px; margin-bottom:4px; background:rgba(255,255,255,0.55); border:1.5px solid rgba(26,58,107,0.15); border-radius:12px; }
+    .ov-icon  { font-size:1.5em; flex-shrink:0; }
+    .ov-title { font-family:var(--font-display); font-size:1rem; color:var(--c-navy); font-weight:700; line-height:1.2; }
+    .ov-desc  { font-size:0.97rem; color:#2a2a3e; margin-top:3px; line-height:1.55; }
 
-    .slide-text p { margin-bottom: 8px; }
-    .slide-text p:last-child { margin-bottom: 0; }
+    /* ── HIGHLIGHT BOXES ── */
+    .h-box { background:rgba(26,58,107,0.08); border-left:4px solid var(--c-navy); border-radius:0 12px 12px 0; padding:12px 16px; font-size:1.02rem; line-height:1.7; }
+    .h-box.warn { background:rgba(200,80,0,0.09); border-left-color:#c05000; }
+    .h-box.warn strong { color:#8b3000; }
+    .h-box.ok   { background:rgba(40,160,80,0.1); border-left-color:#28a050; color:#1a4a2a; }
+    .h-box.gold { background:rgba(180,130,0,0.09); border-left-color:#b08000; }
+    .h-box.gold strong { color:#705000; }
 
-    /* ── DEFENSE TYPE HEADER ────────────────────────────── */
-    .def-type-hdr {
-      display: flex; align-items: flex-start; gap: 12px;
-      background: rgba(26,58,107,0.06);
-      border-left: 4px solid var(--c-navy);
-      border-radius: 0 12px 12px 0;
-      padding: 10px 14px; margin-bottom: 14px;
-    }
-    .def-type-icon { font-size: 1.8em; flex-shrink: 0; }
-    .def-type-name {
-      font-family: var(--font-display); font-size: 1.15rem;
-      color: var(--c-navy); font-weight: 700; line-height: 1.2;
-    }
-    .def-type-desc { font-size: 0.97rem; color: #2a2a3e; margin-top: 3px; line-height: 1.55; }
+    /* ── ACTION BUTTONS ── */
+    .slide-actions { display:flex; flex-direction:column; gap:8px; }
+    .act-row { display:flex; gap:8px; flex-wrap:wrap; }
+    .act-btn { padding:9px 20px; border-radius:50px; border:2px solid rgba(26,58,107,0.4); background:rgba(255,255,255,0.7); font-family:var(--font-display); font-size:0.9rem; color:var(--c-navy); cursor:pointer; transition:all .18s; white-space:nowrap; }
+    .act-btn:hover:not(:disabled) { background:var(--c-navy); color:white; }
+    .act-btn:disabled { opacity:0.4; cursor:default; }
+    .act-btn.red  { border-color:rgba(200,50,30,0.5); color:#8b1a00; }
+    .act-btn.red:hover:not(:disabled)   { background:rgba(200,50,30,0.12); color:#8b1a00; }
+    .act-btn.blue { border-color:rgba(40,80,200,0.5); color:#1a3a8b; }
+    .act-btn.blue:hover:not(:disabled)  { background:rgba(40,80,200,0.10); color:#1a3a8b; }
+    .act-btn.green { border-color:rgba(40,160,80,0.5); color:#1a6035; }
+    .act-btn.green:hover:not(:disabled) { background:rgba(40,160,80,0.10); color:#1a6035; }
 
-    /* ── OVERVIEW CARDS ─────────────────────────────────── */
-    .overview-card {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 10px 14px; margin-bottom: 8px;
-      background: rgba(255,255,255,0.55);
-      border: 1.5px solid rgba(26,58,107,0.15);
-      border-radius: 12px;
-    }
-    .ov-icon { font-size: 1.5em; flex-shrink: 0; }
-    .ov-title {
-      font-family: var(--font-display); font-size: 1rem;
-      color: var(--c-navy); font-weight: 700; line-height: 1.2;
-    }
-    .ov-desc { font-size: 0.97rem; color: #2a2a3e; margin-top: 3px; line-height: 1.55; }
+    /* ── SECTION BUTTONS ── */
+    .sec-next-btn { padding:10px 28px; border-radius:50px; border:none; background:var(--c-navy); color:white; font-family:var(--font-display); font-size:var(--fs-sm); font-weight:700; cursor:pointer; transition:all .2s; box-shadow:0 3px 10px rgba(26,58,107,0.30); }
+    .sec-next-btn:hover { background:var(--c-navy-2); transform:translateY(-2px); }
+    .sec-btn-row { display:flex; gap:8px; justify-content:space-between; align-items:center; margin-top:4px; }
+    .sec-back-btn { padding:9px 20px; border-radius:50px; border:none; background:rgba(26,58,107,0.15); color:var(--c-navy); font-family:var(--font-display); font-size:var(--fs-sm); font-weight:700; cursor:pointer; transition:all .2s; }
+    .sec-back-btn:hover { background:rgba(26,58,107,0.28); }
 
-    /* ── HIGHLIGHT BOX ──────────────────────────────────── */
-    .h-box {
-      background: rgba(26,58,107,0.08);
-      border-left: 4px solid var(--c-navy);
-      border-radius: 0 12px 12px 0;
-      padding: 12px 16px; font-size: 1.02rem; line-height: 1.7;
-      margin-top: 12px;
-    }
-    .h-box.warn { background: rgba(200,80,0,0.09); border-left-color: #c05000; }
-    .h-box.warn strong { color: #8b3000; }
-    .h-box.ok   { background: rgba(40,160,80,0.1);  border-left-color: #28a050; color: #1a4a2a; }
-    .h-box.gold { background: rgba(180,130,0,0.09); border-left-color: #b08000; }
-    .h-box.gold strong { color: #705000; }
+    /* ── EXERCISE SECTION ── */
+    .slide-badge { display:inline-block; background:rgba(26,58,107,0.09); border:1.5px solid rgba(26,58,107,0.2); border-radius:20px; padding:4px 18px; font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--c-navy); margin-bottom:6px; }
+    .slide-badge.ex { background:rgba(200,110,0,0.13); border-color:rgba(200,110,0,0.35); color:#7a3e00; }
+    .ex-prog-wrap { display:flex; align-items:center; gap:8px; }
+    .ex-prog-bar  { flex:1; height:8px; background:rgba(26,58,107,0.12); border-radius:4px; overflow:hidden; }
+    .ex-prog-fill { height:100%; background:var(--c-navy); border-radius:4px; transition:width .4s ease; }
+    .ex-prog-lbl  { font-family:var(--font-display); font-size:var(--fs-xs); color:rgba(26,26,46,.45); white-space:nowrap; }
+    .ex-nav-row { display:flex; gap:8px; }
+    .ex-prev-btn { padding:9px 20px; border-radius:50px; border:none; background:rgba(26,58,107,0.40); color:white; font-family:var(--font-display); font-size:0.95rem; font-weight:700; cursor:pointer; transition:background .2s; }
+    .ex-prev-btn:hover { background:rgba(26,58,107,0.60); }
+    .ex-next-btn { padding:9px 24px; border-radius:50px; border:none; background:var(--c-navy); color:white; font-family:var(--font-display); font-size:0.95rem; font-weight:700; cursor:pointer; transition:all .2s; box-shadow:0 3px 10px rgba(26,58,107,0.35); }
+    .ex-next-btn:hover { background:var(--c-navy-2); transform:translateY(-2px); }
+    .drag-hint { font-size:0.82rem; color:rgba(26,26,46,0.5); text-align:center; }
 
-    /* ── ACTION BUTTONS ─────────────────────────────────── */
-    .slide-actions { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
-    .act-row { display: flex; gap: 8px; flex-wrap: wrap; }
-    .act-btn {
-      padding: 9px 20px; border-radius: 50px;
-      border: 2px solid rgba(26,58,107,0.4);
-      background: rgba(255,255,255,0.7);
-      font-family: var(--font-display); font-size: 0.9rem;
-      color: var(--c-navy); cursor: pointer; transition: all .18s;
-      white-space: nowrap;
-    }
-    .act-btn:hover:not(:disabled) { background: var(--c-navy); color: white; }
-    .act-btn:disabled { opacity: 0.4; cursor: default; }
-    .act-btn.red  { border-color: rgba(200,50,30,0.5); color: #8b1a00; }
-    .act-btn.red:hover:not(:disabled)  { background: rgba(200,50,30,0.12); color: #8b1a00; }
-    .act-btn.blue { border-color: rgba(40,80,200,0.5); color: #1a3a8b; }
-    .act-btn.blue:hover:not(:disabled) { background: rgba(40,80,200,0.10); color: #1a3a8b; }
-    .act-btn.green { border-color: rgba(40,160,80,0.5); color: #1a6035; }
-    .act-btn.green:hover:not(:disabled){ background: rgba(40,160,80,0.10); color: #1a6035; }
+    /* ── BASE TEXT ── */
+    .panel-scroll p, .panel-scroll li { font-size:1.05rem; line-height:1.75; color:#2a2a3e; }
 
-    /* ── COUNTER (header) ───────────────────────────────── */
-    .slide-counter {
-      font-family: var(--font-display); font-size: 0.82rem;
-      color: var(--c-navy); white-space: nowrap;
-    }
+    /* ── TOUCH ── */
+    #boardWrapper { touch-action:none; -webkit-touch-callout:none; }
 
-    /* ── ARROW ANIMATION ────────────────────────────────── */
+    /* ── ARROW ANIMATION ── */
     @keyframes drawArrow {
-      from { stroke-dashoffset: var(--arrow-len, 300); }
-      to   { stroke-dashoffset: 0; }
+      from { stroke-dashoffset:var(--arrow-len,300); }
+      to   { stroke-dashoffset:0; }
     }
-
-    /* ── TOUCH ──────────────────────────────────────────── */
-    #boardWrapper { touch-action: none; -webkit-touch-callout: none; }
-
-    /* drag hint */
-    .drag-hint { font-size: 0.82rem; color: rgba(26,26,46,0.5); text-align: center; margin-top: 4px; }
   </style>
-<link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
-<link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+  <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
+  <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
 </head>
 <body>
 <div class="page-wrapper">
 
-  <!-- ── HEADER ─────────────────────────────────── -->
+  <!-- ── HEADER ── -->
   <header class="page-header" role="banner">
     <span class="header-title">Lecția 5 — Atacul, Captura și Apărarea</span>
-    <div class="header-progress">
-      <span class="slide-counter" id="counterText">1 / 20</span>
-    </div>
   </header>
 
-  <!-- ── MAIN ───────────────────────────────────── -->
+  <!-- ── MAIN ── -->
   <main class="page-main" role="main">
 
     <!-- Board column -->
@@ -194,38 +129,148 @@
 
     <!-- Panel column -->
     <div class="panel-col">
+      <div class="panel-scroll" id="panel-scroll">
 
-      <div class="panel-scroll" role="region" aria-label="Conținut lecție" id="panelScroll">
-        <span class="slide-badge" id="slideBadge">Atacul</span>
-        <div class="slide-title" id="slideTitle"></div>
-        <div class="slide-text"  id="slideText"></div>
-        <div class="slide-actions" id="slideActions"></div>
-      </div>
+        <!-- ══════════ ACCORDION WRAPPER ══════════ -->
+        <div id="acc-wrapper">
+
+          <!-- ── ACC 0: ATAC ȘI CAPTURĂ ── -->
+          <div class="acc-item">
+            <div class="acc-head" id="mAcc0" onclick="toggleAcc(0)">
+              <span>⚔️ Atacul și Captura</span>
+              <span class="acc-icon">▶</span>
+            </div>
+            <div class="acc-body" id="body0">
+              <div class="acc-inner">
+                <div id="atac-text"></div>
+                <div id="atac-actions" class="slide-actions"></div>
+                <div class="sec-btn-row" style="margin-top:4px;">
+                  <span></span>
+                  <button class="sec-next-btn" onclick="startEx()">Exerciții →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── ACC 1: APĂRAREA ── -->
+          <div class="acc-item">
+            <div class="acc-head" id="mAcc1" onclick="toggleAcc(1)">
+              <span>🛡️ Apărarea</span>
+              <span class="acc-icon">▶</span>
+            </div>
+            <div class="acc-body" id="body1">
+              <div class="acc-inner">
+
+                <p>Când o piesă a ta este atacată, ai <strong>4 opțiuni</strong> — uneori una singură funcționează, alteori poți alege:</p>
+
+                <!-- Sub-acc 0: Fugi -->
+                <div class="def-acc-item">
+                  <div class="def-acc-head" id="dAcc0" onclick="toggleDefAcc(0)">
+                    <span>🏃 Fugi!</span>
+                    <span class="def-acc-icon">▶</span>
+                  </div>
+                  <div class="def-acc-body" id="defBody0">
+                    <div class="def-acc-inner">
+                      <p style="font-size:0.97rem;color:#2a2a3e;line-height:1.6;">Mută piesa atacată într-un loc sigur — adversarul nu mai poate captura dacă piesa nu mai e acolo.</p>
+                      <div id="defText0"></div>
+                      <div id="defAct0"></div>
+                      <div class="ex-step-nav" id="defNav0"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Sub-acc 1: Adaugă un apărător -->
+                <div class="def-acc-item">
+                  <div class="def-acc-head" id="dAcc1" onclick="toggleDefAcc(1)">
+                    <span>🛡️ Adaugă un apărător</span>
+                    <span class="def-acc-icon">▶</span>
+                  </div>
+                  <div class="def-acc-body" id="defBody1">
+                    <div class="def-acc-inner">
+                      <p style="font-size:0.97rem;color:#2a2a3e;line-height:1.6;">Mută o altă piesă a ta să apere piesa atacată. Dacă adversarul o capturează, recapturezi — schimbul poate fi în favoarea ta.</p>
+                      <div id="defText1"></div>
+                      <div id="defAct1"></div>
+                      <div class="ex-step-nav" id="defNav1"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Sub-acc 2: Blochează -->
+                <div class="def-acc-item">
+                  <div class="def-acc-head" id="dAcc2" onclick="toggleDefAcc(2)">
+                    <span>🚫 Blochează</span>
+                    <span class="def-acc-icon">▶</span>
+                  </div>
+                  <div class="def-acc-body" id="defBody2">
+                    <div class="def-acc-inner">
+                      <p style="font-size:0.97rem;color:#2a2a3e;line-height:1.6;">Interpune o piesă a ta între atacator și piesa atacată. Funcționează împotriva turnurilor, nebunilor și reginei — piese care atacă pe linii lungi.</p>
+                      <div id="defText2"></div>
+                      <div id="defAct2"></div>
+                      <div class="ex-step-nav" id="defNav2"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Sub-acc 3: Contraatacă -->
+                <div class="def-acc-item">
+                  <div class="def-acc-head" id="dAcc3" onclick="toggleDefAcc(3)">
+                    <span>⚡ Contraatacă!</span>
+                    <span class="def-acc-icon">▶</span>
+                  </div>
+                  <div class="def-acc-body" id="defBody3">
+                    <div class="def-acc-inner">
+                      <p style="font-size:0.97rem;color:#2a2a3e;line-height:1.6;">Atacă ceva mai valoros al adversarului — câștigul tău e mai mare decât pierderea. Adversarul e forțat să-și salveze propria piesă.</p>
+                      <div id="defText3"></div>
+                      <div id="defAct3"></div>
+                      <div class="ex-step-nav" id="defNav3"></div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /acc-wrapper -->
+
+        <!-- ══════════ EXERCIȚII ══════════ -->
+        <div id="sec-ex" style="display:none;">
+          <span class="slide-badge ex">🏋️ Exerciții — Capturează!</span>
+          <div class="ex-prog-wrap" style="margin-top:8px;">
+            <div class="ex-prog-bar"><div class="ex-prog-fill" id="ex-prog-fill" style="width:0%"></div></div>
+            <div class="ex-prog-lbl" id="ex-prog-lbl">1/6</div>
+          </div>
+          <div id="ex-desc" style="margin-top:8px;font-size:1.02rem;line-height:1.75;color:#2a2a3e;"></div>
+          <p class="drag-hint">Trage piesa cu mouse-ul sau atinge și glisează pe mobil.</p>
+          <div class="ex-nav-row">
+            <button class="ex-prev-btn" id="ex-prev-btn" onclick="exPrev()" style="display:none">&#8592; Anterior</button>
+            <button class="ex-next-btn" id="ex-next-btn" onclick="exNext()" style="display:none">Următor &#8594;</button>
+          </div>
+          <div class="sec-btn-row" style="margin-top:12px;">
+            <button class="sec-back-btn" onclick="goBackToAcc()">&#8592; Înapoi la lecție</button>
+          </div>
+        </div>
+
+      </div><!-- /panel-scroll -->
 
       <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
 
-      <div class="slide-nav">
-        <button class="slide-nav-btn" id="prevBtn" onclick="prevSlide()">◀</button>
-        <div class="slide-dots" id="slideDots"></div>
-        <button class="slide-nav-btn" id="nextBtn" onclick="nextSlide()">▶</button>
-      </div>
-
-    </div>
+    </div><!-- /panel-col -->
   </main>
 
-  <!-- ── FOOTER ─────────────────────────────────── -->
+  <!-- ── FOOTER ── -->
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
     <a href="nivel1_lectia4.html" class="nav-btn nav-btn--back">
-      <span class="icon" aria-hidden="true">←</span>
-      <span class="label">Înapoi</span>
+      <span class="icon" aria-hidden="true">&#8592;</span>
+      <span class="label">Valoarea Pieselor</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon" aria-hidden="true">&#8862;</span>
       <span class="label">Cuprins</span>
     </a>
     <a href="nivel1_lectia6.html" class="nav-btn nav-btn--forward">
-      <span class="icon" aria-hidden="true">→</span>
       <span class="label">Atacul asupra regelui</span>
+      <span class="icon" aria-hidden="true">&#8594;</span>
     </a>
   </footer>
 
@@ -234,278 +279,113 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script>
-/* ═══════════════════════════════════════════════════════════════
-   SLIDES DATA  — 20 slides
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   DATE — păstrate identic din versiunea originală
+═══════════════════════════════════════════════════ */
 const SLIDES = [
-
-  /* ─── 0: DEMO — Atacul și Captura ────────────────────────── */
-  {
-    type: 'demo',
-    section: '⚔️ Atacul și Captura',
-    title: 'Cine pe cine atacă?',
-    pos: { c3:'wR', f4:'wN', c6:'bB', h6:'bB' },
-    arrows: [
-      { from:'c3', to:'c6', color:'rgba(200,40,30,0.88)' },
-      { from:'h6', to:'f4', color:'rgba(40,80,200,0.88)' }
-    ]
-  },
-
-  /* ─── 1: OVERVIEW — Cele 4 metode de apărare ─────────────── */
-  {
-    type: 'info',
-    section: '🛡️ Apărarea',
-    title: 'Cum reacționezi când ești atacat?',
-    pos: { e3:'wR', e8:'bR', g1:'wK', g8:'bK' },
-    arrows: [{ from:'e8', to:'e3', color:'rgba(40,80,200,0.88)' }]
-  },
-
-  /* ─── 2-4: FUGI ───────────────────────────────────────────── */
-  {
-    type: 'defense',
-    section: '🏃 Fugi!',
-    typeIcon: '🏃', typeName: 'Fugi!',
-    typeDesc: 'Mută piesa atacată într-un loc sigur — adversarul nu mai poate captura dacă piesa nu mai e acolo.',
-    title: 'Exemplul 1',
-    atkPos: { e3:'wR', e8:'bR', g1:'wK', g8:'bK' },
-    atkArrows: [{ from:'e8', to:'e3', color:'rgba(40,80,200,0.88)' }],
-    atkText: 'Turnul negru (e8) atacă Turnul alb (e3) pe coloana e. Ce faci?',
-    defPos: { a3:'wR', e8:'bR', g1:'wK', g8:'bK' },
-    defArrows: [{ from:'e3', to:'a3', color:'rgba(40,180,80,0.88)' }],
-    defText: 'Turnul alb fuge lateral pe <strong>a3</strong> — ieșit de pe coloana atacată! Acum adversarul nu mai are nicio piesă de capturat.'
-  },
-  {
-    type: 'defense',
-    section: '🏃 Fugi!',
-    typeIcon: '🏃', typeName: 'Fugi!',
-    typeDesc: 'Mută piesa atacată într-un loc sigur — adversarul nu mai poate captura dacă piesa nu mai e acolo.',
-    title: 'Exemplul 2',
-    atkPos: { d4:'wB', d8:'bR', g1:'wK', g8:'bK' },
-    atkArrows: [{ from:'d8', to:'d4', color:'rgba(40,80,200,0.88)' }],
-    atkText: 'Turnul negru (d8) atacă Nebunul alb (d4) pe coloana d.',
-    defPos: { b6:'wB', d8:'bR', g1:'wK', g8:'bK' },
-    defArrows: [{ from:'d4', to:'b6', color:'rgba(40,180,80,0.88)' }],
-    defText: 'Nebunul fuge pe diagonală la <strong>b6</strong> — ieșit de pe coloana d și în siguranță!'
-  },
-  {
-    type: 'defense',
-    section: '🏃 Fugi!',
-    typeIcon: '🏃', typeName: 'Fugi!',
-    typeDesc: 'Mută piesa atacată într-un loc sigur — adversarul nu mai poate captura dacă piesa nu mai e acolo.',
-    title: 'Exemplul 3 — Fugi și Contraatacă în același timp!',
-    atkPos: { c5:'wQ', c1:'bR', h2:'wK', g8:'bK' },
-    atkArrows: [{ from:'c1', to:'c5', color:'rgba(40,80,200,0.88)' }],
-    atkText: 'Turnul negru (c1) atacă Regina albă (c5) pe coloana c. Simpla fugă e bună — dar există o fugă și mai bună!',
-    defPos: { g5:'wQ', c1:'bR', h2:'wK', g8:'bK' },
-    defArrows: [
-      { from:'c5', to:'g5', color:'rgba(40,180,80,0.88)' },
-      { from:'g5', to:'g8', color:'rgba(200,40,30,0.88)'  },
-      { from:'g5', to:'c1', color:'rgba(200,120,0,0.88)'  }
-    ],
-    defText: '<strong>Dg5!</strong> Regina fuge ȘI atacă simultan: dă șah Regelui negru pe g8 (coloana g) și amenință Turnul negru pe c1 (diagonala g5-c1). Negrul trebuie să scape din șah — Turnul se pierde!'
-  },
-
-  /* ─── 5-7: APARA ──────────────────────────────────────────── */
-  {
-    type: 'defense',
-    section: '🛡️ Adaugă un apărător',
-    typeIcon: '🛡️', typeName: 'Adaugă un apărător',
-    typeDesc: 'Mută o altă piesă a ta să apere piesa atacată. Dacă adversarul o capturează, recapturezi — schimbul poate fi în favoarea ta.',
-    title: 'Exemplul 1',
-    atkPos: { d5:'wN', d8:'bQ', a1:'wR', g1:'wK', g8:'bK' },
-    atkArrows: [{ from:'d8', to:'d5', color:'rgba(40,80,200,0.88)' }],
-    atkText: 'Regina neagră (d8) atacă Calul alb (d5) pe coloana d.',
-    defPos: { d5:'wN', d8:'bQ', d1:'wR', g1:'wK', g8:'bK' },
-    defArrows: [{ from:'a1', to:'d1', color:'rgba(40,180,80,0.88)' }],
-    defText: 'Turnul alb se mută pe d1, apărând Calul. Acum dacă Dxd5, atunci <strong>Txd5!</strong> Negrul ar pierde Regina valoroasă dacă capturează Calul apărat.'
-  },
-  {
-    type: 'defense',
-    section: '🛡️ Adaugă un apărător',
-    typeIcon: '🛡️', typeName: 'Adaugă un apărător',
-    typeDesc: 'Mută o altă piesă a ta să apere piesa atacată. Dacă adversarul o capturează, recapturezi — schimbul poate fi în favoarea ta.',
-    title: 'Exemplul 2',
-    atkPos: { e5:'wP', e8:'bQ', a3:'wR', g1:'wK', g8:'bK' },
-    atkArrows: [{ from:'e8', to:'e5', color:'rgba(40,80,200,0.88)' }],
-    atkText: 'Regina neagră (e8) atacă Pionul alb (e5) pe coloana e.',
-    defPos: { e5:'wP', e8:'bQ', e3:'wR', g1:'wK', g8:'bK' },
-    defArrows: [{ from:'a3', to:'e3', color:'rgba(40,180,80,0.88)' }],
-    defText: 'Turnul alb se mută pe e3 — dacă Dxe5, atunci <strong>Txe5!</strong> Pionul este apărat, schimbul ar fi în avantajul alb (Turn câștigat în locul Pionului pierdut).'
-  },
-  {
-    type: 'defense',
-    section: '🛡️ Adaugă un apărător',
-    typeIcon: '🛡️', typeName: 'Adaugă un apărător',
-    typeDesc: 'Mută o altă piesă a ta să apere piesa atacată. Dacă adversarul o capturează, recapturezi — schimbul poate fi în favoarea ta.',
-    title: 'Exemplul 3',
-    atkPos: { g4:'wR', c8:'bQ', a1:'wR', h1:'wK', f8:'bK' },
-    atkArrows: [{ from:'c8', to:'g4', color:'rgba(40,80,200,0.88)' }],
-    atkText: 'Regina neagră (c8) atacă Turnul alb (g4) pe diagonală (c8-g4). Turnul este în pericol!',
-    defPos: { g4:'wR', c8:'bQ', g1:'wR', h1:'wK', f8:'bK' },
-    defArrows: [{ from:'a1', to:'g1', color:'rgba(40,180,80,0.88)' }],
-    defText: 'Al doilea Turn alb se mută pe g1, apărând Turnul de pe g4. Dacă Dxg4, atunci <strong>Txg4!</strong> Regina (9 puncte) e prea valoroasă pentru a captura un Turn apărat (5 puncte) — Negrul pierde material!'
-  },
-
-  /* ─── 8-10: BLOCHEAZA ─────────────────────────────────────── */
-  {
-    type: 'defense',
-    section: '🚫 Blochează',
-    typeIcon: '🚫', typeName: 'Blochează',
-    typeDesc: 'Interpune o piesă a ta între atacator și piesa atacată. Funcționează împotriva turnurilor, nebunilor și reginei — piese care atacă pe linii lungi.',
-    title: 'Exemplul 1',
-    atkPos: { e8:'bQ', h2:'wR', e1:'wK', g8:'bK' },
-    atkArrows: [{ from:'e8', to:'e1', color:'rgba(40,80,200,0.88)' }],
-    atkText: 'Regina neagră (e8) amenință Regele alb (e1) pe coloana e — acesta este șah! Regele trebuie să scape.',
-    defPos: { e8:'bQ', e2:'wR', e1:'wK', g8:'bK' },
-    defArrows: [{ from:'h2', to:'e2', color:'rgba(40,180,80,0.88)' }],
-    defText: 'Turnul alb se interpune pe e2 — blochează linia Reginei și este apărat de Rege! Dacă Dxe2, atunci <strong>Rexe2</strong>, iar Regele iese din pericol câștigând material.'
-  },
-  {
-    type: 'defense',
-    section: '🚫 Blochează',
-    typeIcon: '🚫', typeName: 'Blochează',
-    typeDesc: 'Interpune o piesă a ta între atacator și piesa atacată. Funcționează împotriva turnurilor, nebunilor și reginei — piese care atacă pe linii lungi.',
-    title: 'Exemplul 2',
-    atkPos: { g7:'bB', c2:'wP', a1:'wQ', h1:'wK', g8:'bK' },
-    atkArrows: [{ from:'g7', to:'a1', color:'rgba(40,80,200,0.88)' }],
-    atkText: 'Nebunul negru (g7) atacă Regina albă (a1) pe diagonala lungă g7-f6-e5-d4-c3-b2-a1. Diagonala este complet liberă!',
-    defPos: { g7:'bB', c3:'wP', a1:'wQ', h1:'wK', g8:'bK' },
-    defArrows: [{ from:'c2', to:'c3', color:'rgba(40,180,80,0.88)' }],
-    defText: 'Pionul alb înaintează pe c3 — blochează diagonala Nebunului! Dacă Nxc3, Albul pierde un Pion (1 pt) și salvează Regina (9 pt). Un sacrificiu mic pentru un câștig mare.'
-  },
-  {
-    type: 'defense',
-    section: '🚫 Blochează',
-    typeIcon: '🚫', typeName: 'Blochează',
-    typeDesc: 'Interpune o piesă a ta între atacator și piesa atacată. Funcționează împotriva turnurilor, nebunilor și reginei — piese care atacă pe linii lungi.',
-    title: 'Exemplul 3',
-    atkPos: { a1:'bR', c5:'wR', d1:'wK', g8:'bK' },
-    atkArrows: [{ from:'a1', to:'d1', color:'rgba(40,80,200,0.88)' }],
-    atkText: 'Turnul negru (a1) atacă Regele alb (d1) pe rândul 1 — șah! Regele trebuie să scape.',
-    defPos: { a1:'bR', c1:'wR', d1:'wK', g8:'bK' },
-    defArrows: [{ from:'c5', to:'c1', color:'rgba(40,180,80,0.88)' }],
-    defText: 'Turnul alb coboară pe c1 — se interpune pe rândul 1 și este apărat de Rege! Dacă Txc1, atunci <strong>Rexc1</strong>, Regele scapă din șah și câștigă material.'
-  },
-
-  /* ─── 11-13: CONTRAATACA ──────────────────────────────────── */
-  {
-    type: 'defense',
-    section: '⚡ Contraatacă!',
-    typeIcon: '⚡', typeName: 'Contraatacă!',
-    typeDesc: 'Atacă ceva mai valoros al adversarului — câștigul tău e mai mare decât pierderea. Adversarul e forțat să-și salveze propria piesă.',
-    title: 'Exemplul 1',
-    atkPos: { e4:'bN', d2:'wP', b4:'wN', b5:'wP', e7:'bQ', h8:'bK', h1:'wK' },
-    atkArrows: [{ from:'e4', to:'d2', color:'rgba(40,80,200,0.88)' }],
-    atkText: 'Calul negru (e4) amenință Pionul alb (d2). Dacă nu faci nimic, Pionul este capturat.',
-    defPos: { e4:'bN', d2:'wP', c6:'wN', b5:'wP', e7:'bQ', h8:'bK', h1:'wK' },
-    defArrows: [{ from:'b4', to:'c6', color:'rgba(200,120,0,0.88)' }],
-    defText: 'Calul alb sare pe c6 și atacă Regina neagră (e7)! Negrul e nevoit să-și salveze regina în loc să captureze Pionul. Pionul alb este salvat indirect, iar Albul câștigă tempo.'
-  },
-  {
-    type: 'defense',
-    section: '⚡ Contraatacă!',
-    typeIcon: '⚡', typeName: 'Contraatacă!',
-    typeDesc: 'Atacă ceva mai valoros al adversarului — câștigul tău e mai mare decât pierderea. Adversarul e forțat să-și salveze propria piesă.',
-    title: 'Exemplul 2',
-    atkPos: { a7:'wR', h8:'bK', h5:'bB', f3:'wN', a1:'bQ', h1:'wK' },
-    atkArrows: [{ from:'h5', to:'f3', color:'rgba(40,80,200,0.88)' }],
-    atkText: 'Nebunul negru (h5) amenință Calul alb (f3). Dacă Albul apără Calul, pierde tempo. Dar există ceva mai bun!',
-    defPos: { a1:'wR', h8:'bK', h5:'bB', f3:'wN', h1:'wK' },
-    defArrows: [{ from:'a7', to:'a1', color:'rgba(200,120,0,0.88)' }],
-    defText: 'Turnul capturează Regina neagră (a1)! Pierdem Calul (3 pt) — dar câștigăm Regina (9 pt). <strong>Net: +6 puncte!</strong> Ignorăm amenințarea mică și câștigăm câștigul mare.'
-  },
-  {
-    type: 'defense',
-    section: '⚡ Contraatacă!',
-    typeIcon: '⚡', typeName: 'Contraatacă!',
-    typeDesc: 'Atacă ceva mai valoros al adversarului — câștigul tău e mai mare decât pierderea. Adversarul e forțat să-și salveze propria piesă.',
-    title: 'Exemplul 3',
-    atkPos: { f6:'wQ', c5:'bR', c3:'wB', f2:'bR', h8:'bK', h1:'wK' },
-    atkArrows: [{ from:'c5', to:'c3', color:'rgba(40,80,200,0.88)' }],
-    atkText: 'Turnul negru (c5) atacă Nebunul alb (c3). Pierderea Nebunului ar fi un dezavantaj, dar Albul are un contraatac zdrobitor!',
-    defPos: { f2:'wQ', c5:'bR', c3:'wB', h8:'bK', h1:'wK' },
-    defArrows: [{ from:'f6', to:'f2', color:'rgba(200,120,0,0.88)' }],
-    defText: 'Regina albă capturează Turnul negru (f2)! Câștigăm un Turn (5 pt) cu prețul Nebunului (3 pt). <strong>Net: +2 puncte!</strong> Nebunul se pierde, dar câștigăm mai mult.'
-  },
-
-  /* ─── 14-19: EXERCIȚII ────────────────────────────────────── */
-  {
-    type: 'exercise', isFirst: true,
-    section: '🏋️ Exerciții — Capturează!',
-    title: 'Exercițiu',
-    fen: '4k3/8/2b5/8/8/2R5/8/4K3 w - - 0 1',
-    arrows: [{ from:'c3', to:'c6', color:'rgba(200,40,30,0.88)' }],
-    from: 'c3', to: 'c6',
-    label: 'Turnul alb de pe <strong>c3</strong> atacă Nebunul negru de pe <strong>c6</strong>. Sunt pe aceeași coloană — Turnul poate glisa direct spre el!',
-    prompt: '🎯 Trage Turnul alb pe c6 și capturează Nebunul!',
-    resultPos: { c6:'wR', e8:'bK', e1:'wK' },
-    fb: '✅ Excelent! Turnul a capturat Nebunul — Alb câștigă 3 puncte!'
-  },
-  {
-    type: 'exercise',
-    section: '🏋️ Exerciții — Capturează!',
-    title: 'Exercițiu',
-    fen: '4k3/8/7b/8/5N2/8/8/4K3 b - - 0 1',
-    arrows: [{ from:'h6', to:'f4', color:'rgba(40,80,200,0.88)' }],
-    from: 'h6', to: 'f4',
-    label: 'Nebunul negru de pe <strong>h6</strong> atacă Calul alb de pe <strong>f4</strong>. Sunt pe aceeași diagonală — diagonala h6-f4!',
-    prompt: '🎯 Trage Nebunul negru pe f4 și capturează Calul!',
-    resultPos: { f4:'bB', e8:'bK', e1:'wK' },
-    fb: '✅ Bravo! Nebunul a capturat Calul — Negru câștigă 3 puncte!'
-  },
-  {
-    type: 'exercise',
-    section: '🏋️ Exerciții — Capturează!',
-    title: 'Exercițiu',
-    fen: '4k3/8/4n3/3P4/8/8/8/4K3 w - - 0 1',
-    arrows: [{ from:'d5', to:'e6', color:'rgba(200,40,30,0.88)' }],
-    from: 'd5', to: 'e6',
-    label: 'Pionul alb de pe <strong>d5</strong> atacă Calul negru de pe <strong>e6</strong>. Pionii capturează în diagonală, spre față — nu drept înainte!',
-    prompt: '🎯 Trage Pionul alb pe e6 și capturează Calul!',
-    resultPos: { e6:'wP', e8:'bK', e1:'wK' },
-    fb: '✅ Perfect! Pionul a capturat Calul — Alb câștigă 3 puncte cu o piesă de 1 punct, super schimb!'
-  },
-  {
-    type: 'exercise',
-    section: '🏋️ Exerciții — Capturează!',
-    title: 'Exercițiu',
-    fen: '4k2r/8/8/8/3Q4/8/8/4K3 w - - 0 1',
-    arrows: [{ from:'d4', to:'h8', color:'rgba(200,40,30,0.88)' }],
-    from: 'd4', to: 'h8',
-    label: 'Regina albă de pe <strong>d4</strong> atacă Turnul negru de pe <strong>h8</strong> pe diagonală (d4-e5-f6-g7-h8). Diagonala este liberă!',
-    prompt: '🎯 Trage Regina albă pe h8 și capturează Turnul!',
-    resultPos: { h8:'wQ', e8:'bK', e1:'wK' },
-    fb: '✅ Minunat! Regina a capturat Turnul — avantaj de 5 puncte!'
-  },
-  {
-    type: 'exercise',
-    section: '🏋️ Exerciții — Capturează!',
-    title: 'Exercițiu',
-    fen: '4k3/8/8/4n3/8/3B4/8/4K3 b - - 0 1',
-    arrows: [{ from:'e5', to:'d3', color:'rgba(40,80,200,0.88)' }],
-    from: 'e5', to: 'd3',
-    label: 'Calul negru de pe <strong>e5</strong> atacă Nebunul alb de pe <strong>d3</strong>. Calul sare în L: 2 pași într-o direcție + 1 pas lateral!',
-    prompt: '🎯 Trage Calul negru pe d3 și capturează Nebunul!',
-    resultPos: { d3:'bN', e8:'bK', e1:'wK' },
-    fb: '✅ Excelent! Calul a capturat Nebunul — schimb egal (3 puncte pentru 3 puncte).'
-  },
-  {
-    type: 'exercise',
-    section: '🏋️ Exerciții — Capturează!',
-    title: 'Exercițiu',
-    fen: '4k3/6r1/8/8/8/8/1B6/4K3 w - - 0 1',
-    arrows: [{ from:'b2', to:'g7', color:'rgba(200,40,30,0.88)' }],
-    from: 'b2', to: 'g7',
-    label: 'Nebunul alb de pe <strong>b2</strong> atacă Turnul negru de pe <strong>g7</strong> pe diagonala lungă (b2-c3-d4-e5-f6-g7). Calea este complet liberă!',
-    prompt: '🎯 Trage Nebunul alb pe g7 și capturează Turnul!',
-    resultPos: { g7:'wB', e8:'bK', e1:'wK' },
-    fb: '✅ Superb! Nebunul a capturat Turnul — câștig net de 2 puncte!'
-  }
+  { type:'demo', pos:{c3:'wR',f4:'wN',c6:'bB',h6:'bB'}, arrows:[{from:'c3',to:'c6',color:'rgba(200,40,30,0.88)'},{from:'h6',to:'f4',color:'rgba(40,80,200,0.88)'}] },
+  { type:'info', pos:{e3:'wR',e8:'bR',g1:'wK',g8:'bK'}, arrows:[{from:'e8',to:'e3',color:'rgba(40,80,200,0.88)'}] },
+  /* Fugi 0 */
+  { type:'defense', typeIcon:'🏃', typeName:'Fugi!', typeDesc:'Mută piesa atacată într-un loc sigur.',
+    atkPos:{e3:'wR',e8:'bR',g1:'wK',g8:'bK'}, atkArrows:[{from:'e8',to:'e3',color:'rgba(40,80,200,0.88)'}],
+    atkText:'Turnul negru (e8) atacă Turnul alb (e3) pe coloana e. Ce faci?',
+    defPos:{a3:'wR',e8:'bR',g1:'wK',g8:'bK'}, defArrows:[{from:'e3',to:'a3',color:'rgba(40,180,80,0.88)'}],
+    defText:'Turnul alb fuge lateral pe <strong>a3</strong> — ieșit de pe coloana atacată! Acum adversarul nu mai are nicio piesă de capturat.' },
+  /* Fugi 1 */
+  { type:'defense', typeIcon:'🏃', typeName:'Fugi!', typeDesc:'Mută piesa atacată într-un loc sigur.',
+    atkPos:{d4:'wB',d8:'bR',g1:'wK',g8:'bK'}, atkArrows:[{from:'d8',to:'d4',color:'rgba(40,80,200,0.88)'}],
+    atkText:'Turnul negru (d8) atacă Nebunul alb (d4) pe coloana d.',
+    defPos:{b6:'wB',d8:'bR',g1:'wK',g8:'bK'}, defArrows:[{from:'d4',to:'b6',color:'rgba(40,180,80,0.88)'}],
+    defText:'Nebunul fuge pe diagonală la <strong>b6</strong> — ieșit de pe coloana d și în siguranță!' },
+  /* Fugi 2 */
+  { type:'defense', typeIcon:'🏃', typeName:'Fugi!', typeDesc:'Mută piesa atacată într-un loc sigur.',
+    atkPos:{c5:'wQ',c1:'bR',h2:'wK',g8:'bK'}, atkArrows:[{from:'c1',to:'c5',color:'rgba(40,80,200,0.88)'}],
+    atkText:'Turnul negru (c1) atacă Regina albă (c5) pe coloana c. Simpla fugă e bună — dar există o fugă și mai bună!',
+    defPos:{g5:'wQ',c1:'bR',h2:'wK',g8:'bK'}, defArrows:[{from:'c5',to:'g5',color:'rgba(40,180,80,0.88)'},{from:'g5',to:'g8',color:'rgba(200,40,30,0.88)'},{from:'g5',to:'c1',color:'rgba(200,120,0,0.88)'}],
+    defText:'<strong>Dg5!</strong> Regina fuge ȘI atacă simultan: dă șah Regelui negru pe g8 și amenință Turnul negru pe c1. Negrul trebuie să scape din șah — Turnul se pierde!' },
+  /* Apără 0 */
+  { type:'defense', typeIcon:'🛡️', typeName:'Adaugă un apărător', typeDesc:'Mută o altă piesă să apere piesa atacată.',
+    atkPos:{d5:'wN',d8:'bQ',a1:'wR',g1:'wK',g8:'bK'}, atkArrows:[{from:'d8',to:'d5',color:'rgba(40,80,200,0.88)'}],
+    atkText:'Regina neagră (d8) atacă Calul alb (d5) pe coloana d.',
+    defPos:{d5:'wN',d8:'bQ',d1:'wR',g1:'wK',g8:'bK'}, defArrows:[{from:'a1',to:'d1',color:'rgba(40,180,80,0.88)'}],
+    defText:'Turnul alb se mută pe d1, apărând Calul. Acum dacă Dxd5, atunci <strong>Txd5!</strong> Negrul ar pierde Regina valoroasă dacă capturează Calul apărat.' },
+  /* Apără 1 */
+  { type:'defense', typeIcon:'🛡️', typeName:'Adaugă un apărător', typeDesc:'Mută o altă piesă să apere piesa atacată.',
+    atkPos:{e5:'wP',e8:'bQ',a3:'wR',g1:'wK',g8:'bK'}, atkArrows:[{from:'e8',to:'e5',color:'rgba(40,80,200,0.88)'}],
+    atkText:'Regina neagră (e8) atacă Pionul alb (e5) pe coloana e.',
+    defPos:{e5:'wP',e8:'bQ',e3:'wR',g1:'wK',g8:'bK'}, defArrows:[{from:'a3',to:'e3',color:'rgba(40,180,80,0.88)'}],
+    defText:'Turnul alb se mută pe e3 — dacă Dxe5, atunci <strong>Txe5!</strong> Pionul este apărat, schimbul ar fi în avantajul alb.' },
+  /* Apără 2 */
+  { type:'defense', typeIcon:'🛡️', typeName:'Adaugă un apărător', typeDesc:'Mută o altă piesă să apere piesa atacată.',
+    atkPos:{g4:'wR',c8:'bQ',a1:'wR',h1:'wK',f8:'bK'}, atkArrows:[{from:'c8',to:'g4',color:'rgba(40,80,200,0.88)'}],
+    atkText:'Regina neagră (c8) atacă Turnul alb (g4) pe diagonală. Turnul este în pericol!',
+    defPos:{g4:'wR',c8:'bQ',g1:'wR',h1:'wK',f8:'bK'}, defArrows:[{from:'a1',to:'g1',color:'rgba(40,180,80,0.88)'}],
+    defText:'Al doilea Turn alb se mută pe g1, apărând Turnul de pe g4. Dacă Dxg4, atunci <strong>Txg4!</strong> Regina e prea valoroasă pentru a captura un Turn apărat.' },
+  /* Blochează 0 */
+  { type:'defense', typeIcon:'🚫', typeName:'Blochează', typeDesc:'Interpune o piesă între atacator și piesa atacată.',
+    atkPos:{e8:'bQ',h2:'wR',e1:'wK',g8:'bK'}, atkArrows:[{from:'e8',to:'e1',color:'rgba(40,80,200,0.88)'}],
+    atkText:'Regina neagră (e8) amenință Regele alb (e1) pe coloana e — acesta este șah! Regele trebuie să scape.',
+    defPos:{e8:'bQ',e2:'wR',e1:'wK',g8:'bK'}, defArrows:[{from:'h2',to:'e2',color:'rgba(40,180,80,0.88)'}],
+    defText:'Turnul alb se interpune pe e2 — blochează linia Reginei și este apărat de Rege! Dacă Dxe2, atunci <strong>Rexe2</strong>, Regele scapă câștigând material.' },
+  /* Blochează 1 */
+  { type:'defense', typeIcon:'🚫', typeName:'Blochează', typeDesc:'Interpune o piesă între atacator și piesa atacată.',
+    atkPos:{g7:'bB',c2:'wP',a1:'wQ',h1:'wK',g8:'bK'}, atkArrows:[{from:'g7',to:'a1',color:'rgba(40,80,200,0.88)'}],
+    atkText:'Nebunul negru (g7) atacă Regina albă (a1) pe diagonala lungă. Diagonala este complet liberă!',
+    defPos:{g7:'bB',c3:'wP',a1:'wQ',h1:'wK',g8:'bK'}, defArrows:[{from:'c2',to:'c3',color:'rgba(40,180,80,0.88)'}],
+    defText:'Pionul alb înaintează pe c3 — blochează diagonala Nebunului! Dacă Nxc3, Albul pierde un Pion (1 pt) și salvează Regina (9 pt). Un sacrificiu mic pentru un câștig mare.' },
+  /* Blochează 2 */
+  { type:'defense', typeIcon:'🚫', typeName:'Blochează', typeDesc:'Interpune o piesă între atacator și piesa atacată.',
+    atkPos:{a1:'bR',c5:'wR',d1:'wK',g8:'bK'}, atkArrows:[{from:'a1',to:'d1',color:'rgba(40,80,200,0.88)'}],
+    atkText:'Turnul negru (a1) atacă Regele alb (d1) pe rândul 1 — șah! Regele trebuie să scape.',
+    defPos:{a1:'bR',c1:'wR',d1:'wK',g8:'bK'}, defArrows:[{from:'c5',to:'c1',color:'rgba(40,180,80,0.88)'}],
+    defText:'Turnul alb coboară pe c1 — se interpune pe rândul 1 și este apărat de Rege! Dacă Txc1, atunci <strong>Rexc1</strong>, Regele scapă din șah și câștigă material.' },
+  /* Contraatacă 0 */
+  { type:'defense', typeIcon:'⚡', typeName:'Contraatacă!', typeDesc:'Atacă ceva mai valoros al adversarului.',
+    atkPos:{e4:'bN',d2:'wP',b4:'wN',b5:'wP',e7:'bQ',h8:'bK',h1:'wK'}, atkArrows:[{from:'e4',to:'d2',color:'rgba(40,80,200,0.88)'}],
+    atkText:'Calul negru (e4) amenință Pionul alb (d2). Dacă nu faci nimic, Pionul este capturat.',
+    defPos:{e4:'bN',d2:'wP',c6:'wN',b5:'wP',e7:'bQ',h8:'bK',h1:'wK'}, defArrows:[{from:'b4',to:'c6',color:'rgba(200,120,0,0.88)'}],
+    defText:'Calul alb sare pe c6 și atacă Regina neagră (e7)! Negrul e nevoit să-și salveze regina în loc să captureze Pionul. Pionul alb este salvat indirect, iar Albul câștigă tempo.' },
+  /* Contraatacă 1 */
+  { type:'defense', typeIcon:'⚡', typeName:'Contraatacă!', typeDesc:'Atacă ceva mai valoros al adversarului.',
+    atkPos:{a7:'wR',h8:'bK',h5:'bB',f3:'wN',a1:'bQ',h1:'wK'}, atkArrows:[{from:'h5',to:'f3',color:'rgba(40,80,200,0.88)'}],
+    atkText:'Nebunul negru (h5) amenință Calul alb (f3). Dacă Albul apără Calul, pierde tempo. Dar există ceva mai bun!',
+    defPos:{a1:'wR',h8:'bK',h5:'bB',f3:'wN',h1:'wK'}, defArrows:[{from:'a7',to:'a1',color:'rgba(200,120,0,0.88)'}],
+    defText:'Turnul capturează Regina neagră (a1)! Pierdem Calul (3 pt) — dar câștigăm Regina (9 pt). <strong>Net: +6 puncte!</strong> Ignorăm amenințarea mică și câștigăm câștigul mare.' },
+  /* Contraatacă 2 */
+  { type:'defense', typeIcon:'⚡', typeName:'Contraatacă!', typeDesc:'Atacă ceva mai valoros al adversarului.',
+    atkPos:{f6:'wQ',c5:'bR',c3:'wB',f2:'bR',h8:'bK',h1:'wK'}, atkArrows:[{from:'c5',to:'c3',color:'rgba(40,80,200,0.88)'}],
+    atkText:'Turnul negru (c5) atacă Nebunul alb (c3). Pierderea Nebunului ar fi un dezavantaj, dar Albul are un contraatac zdrobitor!',
+    defPos:{f2:'wQ',c5:'bR',c3:'wB',h8:'bK',h1:'wK'}, defArrows:[{from:'f6',to:'f2',color:'rgba(200,120,0,0.88)'}],
+    defText:'Regina albă capturează Turnul negru (f2)! Câștigăm un Turn (5 pt) cu prețul Nebunului (3 pt). <strong>Net: +2 puncte!</strong> Nebunul se pierde, dar câștigăm mai mult.' },
+  /* Exerciții */
+  { type:'exercise', fen:'4k3/8/2b5/8/8/2R5/8/4K3 w - - 0 1', arrows:[{from:'c3',to:'c6',color:'rgba(200,40,30,0.88)'}], from:'c3', to:'c6', isFirst:true,
+    label:'Turnul alb de pe <strong>c3</strong> atacă Nebunul negru de pe <strong>c6</strong>. Sunt pe aceeași coloană.',
+    prompt:'🎯 Trage Turnul alb pe c6 și capturează Nebunul!', resultPos:{c6:'wR',e8:'bK',e1:'wK'}, fb:'✅ Excelent! Turnul a capturat Nebunul — Alb câștigă 3 puncte!' },
+  { type:'exercise', fen:'4k3/8/7b/8/5N2/8/8/4K3 b - - 0 1', arrows:[{from:'h6',to:'f4',color:'rgba(40,80,200,0.88)'}], from:'h6', to:'f4',
+    label:'Nebunul negru de pe <strong>h6</strong> atacă Calul alb de pe <strong>f4</strong>. Sunt pe aceeași diagonală!',
+    prompt:'🎯 Trage Nebunul negru pe f4 și capturează Calul!', resultPos:{f4:'bB',e8:'bK',e1:'wK'}, fb:'✅ Bravo! Nebunul a capturat Calul — Negru câștigă 3 puncte!' },
+  { type:'exercise', fen:'4k3/8/4n3/3P4/8/8/8/4K3 w - - 0 1', arrows:[{from:'d5',to:'e6',color:'rgba(200,40,30,0.88)'}], from:'d5', to:'e6',
+    label:'Pionul alb de pe <strong>d5</strong> atacă Calul negru de pe <strong>e6</strong>. Pionii capturează în diagonală, spre față!',
+    prompt:'🎯 Trage Pionul alb pe e6 și capturează Calul!', resultPos:{e6:'wP',e8:'bK',e1:'wK'}, fb:'✅ Perfect! Pionul a capturat Calul — super schimb!' },
+  { type:'exercise', fen:'4k2r/8/8/8/3Q4/8/8/4K3 w - - 0 1', arrows:[{from:'d4',to:'h8',color:'rgba(200,40,30,0.88)'}], from:'d4', to:'h8',
+    label:'Regina albă de pe <strong>d4</strong> atacă Turnul negru de pe <strong>h8</strong> pe diagonală. Calea este complet liberă!',
+    prompt:'🎯 Trage Regina albă pe h8 și capturează Turnul!', resultPos:{h8:'wQ',e8:'bK',e1:'wK'}, fb:'✅ Minunat! Regina a capturat Turnul — avantaj de 5 puncte!' },
+  { type:'exercise', fen:'4k3/8/8/4n3/8/3B4/8/4K3 b - - 0 1', arrows:[{from:'e5',to:'d3',color:'rgba(40,80,200,0.88)'}], from:'e5', to:'d3',
+    label:'Calul negru de pe <strong>e5</strong> atacă Nebunul alb de pe <strong>d3</strong>. Calul sare în L: 2 pași + 1 pas lateral!',
+    prompt:'🎯 Trage Calul negru pe d3 și capturează Nebunul!', resultPos:{d3:'bN',e8:'bK',e1:'wK'}, fb:'✅ Excelent! Calul a capturat Nebunul — schimb egal.' },
+  { type:'exercise', fen:'4k3/6r1/8/8/8/8/1B6/4K3 w - - 0 1', arrows:[{from:'b2',to:'g7',color:'rgba(200,40,30,0.88)'}], from:'b2', to:'g7',
+    label:'Nebunul alb de pe <strong>b2</strong> atacă Turnul negru de pe <strong>g7</strong> pe diagonala lungă. Calea este complet liberă!',
+    prompt:'🎯 Trage Nebunul alb pe g7 și capturează Turnul!', resultPos:{g7:'wB',e8:'bK',e1:'wK'}, fb:'✅ Superb! Nebunul a capturat Turnul — câștig net de 2 puncte!' }
 ];
 
-/* ═══════════════════════════════════════════════════════════════
-   PREBUILT HTML (for info/demo panels — evită repetarea în loadSlide)
-   ═══════════════════════════════════════════════════════════════ */
+const DEF_GROUPS = [
+  [SLIDES[2],  SLIDES[3],  SLIDES[4]],
+  [SLIDES[5],  SLIDES[6],  SLIDES[7]],
+  [SLIDES[8],  SLIDES[9],  SLIDES[10]],
+  [SLIDES[11], SLIDES[12], SLIDES[13]]
+];
+const EX_SLIDES = SLIDES.slice(14);
+
 const DEMO_TEXT = `
 <p><strong>Atacul (sau amenințarea)</strong> este o situație în care o piesă se află în calea de atac a unei piese adverse — adică adversarul ar putea, la mutarea lui, să o captureze.</p>
 <p><strong>Captura</strong> este manevra prin care piesa atacatoare se deplasează și elimină piesa adversă de pe tablă.</p>
@@ -515,108 +395,69 @@ const DEMO_TEXT = `
 </div>
 <p style="margin-top:12px;"><strong style="color:#8b1a00">🔴 Turnul alb (c3)</strong> atacă Nebunul negru (c6) — aceeași coloană.<br>
 <strong style="color:#1a3a8b">🔵 Nebunul negru (h6)</strong> atacă Calul alb (f4) — aceeași diagonală.<br>
-Apasă un buton să vezi ce se întâmplă.</p>
-`;
+Apasă un buton să vezi ce se întâmplă.</p>`;
 
-const OVERVIEW_HTML = `
-<p>Când o piesă a ta este atacată, ai <strong>4 opțiuni</strong> — uneori una singură funcționează, alteori poți alege:</p>
-<div class="overview-card">
-  <span class="ov-icon">🏃</span>
-  <div>
-    <div class="ov-title">Fugi!</div>
-    <div class="ov-desc">Mută piesa atacată într-un loc sigur. Dacă nu mai e acolo, nu mai poate fi capturată.</div>
-  </div>
-</div>
-<div class="overview-card">
-  <span class="ov-icon">🛡️</span>
-  <div>
-    <div class="ov-title">Adaugă un apărător</div>
-    <div class="ov-desc">Mută o altă piesă să apere piesa atacată. Dacă adversarul o capturează, tu recapturezi.</div>
-  </div>
-</div>
-<div class="overview-card">
-  <span class="ov-icon">🚫</span>
-  <div>
-    <div class="ov-title">Blochează</div>
-    <div class="ov-desc">Interpune o piesă între atacator și piesa atacată. Funcționează contra turnurilor, nebunilor și reginei.</div>
-  </div>
-</div>
-<div class="overview-card">
-  <span class="ov-icon">⚡</span>
-  <div>
-    <div class="ov-title">Contraatacă!</div>
-    <div class="ov-desc">Atacă ceva mai valoros al adversarului — câștigul tău e mai mare decât pierderea. Adversarul e forțat să reacționeze.</div>
-  </div>
-</div>
-`;
+const GOLD_RULE = `<div class="h-box gold" style="margin-top:4px;"><strong>💡 Regula de aur a capturilor:</strong><br>
+  Înainte de orice captură, întreabă-te: <em>„Dacă capturez, poate adversarul să recaptureze? Și dacă da, cine câștigă din schimb?"</em></div>`;
 
-const GOLD_RULE = `
-<div class="h-box gold" style="margin-top:14px;">
-  <strong>💡 Regula de aur a capturilor:</strong><br>
-  Înainte de orice captură, întreabă-te: <em>„Dacă capturez, poate adversarul să recaptureze? Și dacă da, cine câștigă din schimb?"</em>
-</div>
-`;
+const EX_INTRO = `<p>Săgeata îți arată direcția atacului. <strong>Trage piesa atacatoare pe câmpul unde se află piesa adversă</strong> și captur-o!</p>
+<p>Atenție: nu toate mișcările sunt valide — dacă tragi în locul greșit, piesa se întoarce.</p>`;
 
-const EX_INTRO = `
-<p>Săgeata îți arată direcția atacului. <strong>Trage piesa atacatoare pe câmpul unde se află piesa adversă</strong> și captur-o!</p>
-<p>Atenție: nu toate mișcările sunt valide — dacă tragi în locul greșit, piesa se întoarce.</p>
-`;
-
-/* ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    STATE
-   ═══════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 const PIECE_THEME = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
-let board        = null;
-let currentSlide = 0;
-let defShown     = false;
-let exAnswered   = false;
-
 const DEMO_INIT_POS = { c3:'wR', f4:'wN', c6:'bB', h6:'bB' };
 const DEMO_INIT_ARR = [
   { from:'c3', to:'c6', color:'rgba(200,40,30,0.88)' },
-  { from:'h6', to:'f4', color:'rgba(40,80,200,0.88)' }
+  { from:'h6', to:'f4', color:'rgba(40,80,200,0.88)'  }
 ];
 
-/* ═══════════════════════════════════════════════════════════════
+var board       = null;
+var accOpen     = -1;
+var defAccOpen  = -1;
+var defSteps    = [0, 0, 0, 0];
+var defShownAr  = [false, false, false, false];
+var exIdx       = 0;
+var exAnswered  = false;
+var inExMode    = false;
+
+/* ═══════════════════════════════════════════════════
    BOARD INIT
-   ═══════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 board = Chessboard('board', {
   position:    'empty',
   pieceTheme:  PIECE_THEME,
   draggable:   true,
   onDragStart: onDragStart,
-  onDrop:      onDrop,
+  onDrop:      onDrop
 });
 
 function debounce(fn, d) {
-  let t;
-  return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); };
+  var t;
+  return function() { var a = arguments; clearTimeout(t); t = setTimeout(function(){ fn.apply(null,a); }, d); };
 }
-window.addEventListener('resize', debounce(() => {
-  board.resize();
-  redrawCurrentArrows();
-}, 150));
+window.addEventListener('resize', debounce(function() { board.resize(); }, 150));
 
-/* ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    DRAG HANDLERS
-   ═══════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 function onDragStart(src, piece) {
-  const s = SLIDES[currentSlide];
-  if (s.type !== 'exercise' || exAnswered) return false;
+  if (!inExMode || exAnswered) return false;
   return true;
 }
-
 function onDrop(src, tgt) {
-  const s = SLIDES[currentSlide];
-  if (s.type !== 'exercise' || exAnswered) return 'snapback';
+  if (!inExMode || exAnswered) return 'snapback';
   if (src === tgt) return 'snapback';
-
+  var s = EX_SLIDES[exIdx];
   if (src === s.from && tgt === s.to) {
     exAnswered = true;
-    setTimeout(() => {
+    setTimeout(function() {
       board.position(s.resultPos);
       clearArrows();
       showFeedback(s.fb, 'success');
+      if (exIdx < EX_SLIDES.length - 1)
+        document.getElementById('ex-next-btn').style.display = '';
     }, 300);
   } else {
     showFeedback('❌ Nu e captura corectă — urmărește săgeata și mută piesa atacatoare!', 'error');
@@ -625,299 +466,267 @@ function onDrop(src, tgt) {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   LOAD SLIDE
-   ═══════════════════════════════════════════════════════════════ */
-function loadSlide(idx) {
-  currentSlide = idx;
-  defShown     = false;
-  exAnswered   = false;
-
-  const s   = SLIDES[idx];
-  const isEx = s.type === 'exercise';
-
-  document.getElementById('counterText').textContent = `${idx + 1} / ${SLIDES.length}`;
-
-  /* badge & title */
-  const badge = document.getElementById('slideBadge');
-  badge.textContent = s.section;
-  badge.className   = 'slide-badge' + (isEx ? ' ex' : '');
-
-  const titleEl = document.getElementById('slideTitle');
-  titleEl.textContent = s.title;
-  titleEl.className   = 'slide-title' + (isEx ? ' ex' : '');
-
-  /* nav */
-  document.getElementById('prevBtn').disabled = (idx === 0);
-  document.getElementById('nextBtn').disabled = (idx === SLIDES.length - 1);
-
-  updateDots(idx);
-  clearFeedback();
-  document.getElementById('panelScroll').scrollTop = 0;
-
-  if      (s.type === 'demo')     loadDemo(s);
-  else if (s.type === 'info')     loadInfo(s);
-  else if (s.type === 'defense')  loadDefense(s);
-  else if (s.type === 'exercise') loadExercise(s);
+/* ═══════════════════════════════════════════════════
+   MAIN ACCORDIONS
+═══════════════════════════════════════════════════ */
+function toggleAcc(idx) {
+  var wasOpen = (accOpen === idx);
+  [0,1].forEach(function(i) {
+    document.getElementById('body'+i).classList.remove('open');
+    document.getElementById('mAcc'+i).classList.remove('open');
+  });
+  if (!wasOpen) {
+    accOpen = idx;
+    document.getElementById('body'+idx).classList.add('open');
+    document.getElementById('mAcc'+idx).classList.add('open');
+    setTimeout(function() {
+      board.resize();
+      if (idx === 0) renderAtacBoard();
+      else           renderAparareBoard();
+    }, 30);
+  } else {
+    accOpen = -1;
+    board.position('start', false);
+    clearArrows();
+  }
 }
 
-/* ── DEMO ──────────────────────────────────────────────────── */
-function loadDemo(s) {
-  board.position(s.pos);
-  setTimeout(() => drawArrows(s.arrows), 280);
-  document.getElementById('slideText').innerHTML = DEMO_TEXT;
-  document.getElementById('slideActions').innerHTML = `
-    <div class="act-row">
-      <button class="act-btn red"  id="demoAlbBtn"  onclick="demoCapture('alb')">♖ Alb: Txc6</button>
-      <button class="act-btn blue" id="demoNegrBtn" onclick="demoCapture('negru')">♝ Negru: Nxf4</button>
-    </div>
-    <button class="act-btn" id="demoResetBtn" onclick="demoReset()" style="display:none;align-self:flex-start">↺ Resetează</button>
-  `;
+function renderAtacBoard() {
+  board.position(DEMO_INIT_POS, false);
+  clearArrows();
+  setTimeout(function(){ drawArrows(DEMO_INIT_ARR); }, 280);
+  document.getElementById('atac-text').innerHTML = DEMO_TEXT;
+  document.getElementById('atac-actions').innerHTML =
+    '<div class="act-row">'
+    + '<button class="act-btn red"  id="demoAlbBtn"  onclick="demoCapture(\'alb\')">♖ Alb: Txc6</button>'
+    + '<button class="act-btn blue" id="demoNegrBtn" onclick="demoCapture(\'negru\')">♝ Negru: Nxf4</button>'
+    + '</div>'
+    + '<button class="act-btn" id="demoResetBtn" onclick="demoReset()" style="display:none;align-self:flex-start">↺ Resetează</button>';
 }
 
 function demoCapture(side) {
-  const alb  = document.getElementById('demoAlbBtn');
-  const negr = document.getElementById('demoNegrBtn');
-  const rst  = document.getElementById('demoResetBtn');
-  alb.disabled = negr.disabled = true;
-  rst.style.display = 'inline-flex';
-
+  document.getElementById('demoAlbBtn').disabled = true;
+  document.getElementById('demoNegrBtn').disabled = true;
+  document.getElementById('demoResetBtn').style.display = 'inline-flex';
+  clearArrows();
   if (side === 'alb') {
     board.position({ c6:'wR', f4:'wN', h6:'bB' });
-    document.getElementById('slideText').innerHTML =
+    document.getElementById('atac-text').innerHTML =
       '<p><strong>Alb mută: Txc6</strong></p>'
-    + '<p>Turnul s-a deplasat de pe c3 pe c6 și a eliminat Nebunul negru de pe tablă.</p>'
-    + '<p><strong>Rezultat:</strong> Alb câștigă un Nebun (3 puncte)! Nebunul negru de pe h6 încă îl amenință pe Calul alb de pe f4 — negrul poate captura și el la mutarea sa.</p>';
-    setTimeout(() => drawArrows([{ from:'c3', to:'c6', color:'rgba(200,40,30,0.88)' }]), 280);
+      + '<p>Turnul s-a deplasat de pe c3 pe c6 și a eliminat Nebunul negru de pe tablă.</p>'
+      + '<p><strong>Rezultat:</strong> Alb câștigă un Nebun (3 puncte)! Nebunul negru de pe h6 încă îl amenință pe Calul alb de pe f4.</p>';
+    setTimeout(function(){ drawArrows([{from:'c3',to:'c6',color:'rgba(200,40,30,0.88)'}]); }, 280);
   } else {
     board.position({ c3:'wR', f4:'bB', c6:'bB' });
-    document.getElementById('slideText').innerHTML =
+    document.getElementById('atac-text').innerHTML =
       '<p><strong>Negru mută: Nxf4</strong></p>'
-    + '<p>Nebunul s-a deplasat de pe h6 pe f4 și a eliminat Calul alb de pe tablă.</p>'
-    + '<p><strong>Rezultat:</strong> Negru câștigă un Cal (3 puncte)! Turnul alb de pe c3 încă atacă Nebunul de pe c6 — albul poate captura și el la mutarea sa.</p>';
-    setTimeout(() => drawArrows([{ from:'h6', to:'f4', color:'rgba(40,80,200,0.88)' }]), 280);
+      + '<p>Nebunul s-a deplasat de pe h6 pe f4 și a eliminat Calul alb de pe tablă.</p>'
+      + '<p><strong>Rezultat:</strong> Negru câștigă un Cal (3 puncte)! Turnul alb de pe c3 încă atacă Nebunul de pe c6.</p>';
+    setTimeout(function(){ drawArrows([{from:'h6',to:'f4',color:'rgba(40,80,200,0.88)'}]); }, 280);
+  }
+}
+function demoReset() { renderAtacBoard(); }
+
+function renderAparareBoard() {
+  if (defAccOpen >= 0) {
+    renderDefExample(defAccOpen);
+  } else {
+    board.position(SLIDES[1].pos, false);
+    clearArrows();
+    setTimeout(function(){ drawArrows(SLIDES[1].arrows); }, 280);
   }
 }
 
-function demoReset() {
-  board.position(DEMO_INIT_POS);
-  document.getElementById('slideText').innerHTML = DEMO_TEXT;
-  setTimeout(() => drawArrows(DEMO_INIT_ARR), 280);
-  document.getElementById('demoAlbBtn').disabled  = false;
-  document.getElementById('demoNegrBtn').disabled = false;
-  document.getElementById('demoResetBtn').style.display = 'none';
-}
-
-/* ── INFO (overview) ───────────────────────────────────────── */
-function loadInfo(s) {
-  board.position(s.pos);
-  setTimeout(() => drawArrows(s.arrows), 280);
-  document.getElementById('slideText').innerHTML = OVERVIEW_HTML;
-  document.getElementById('slideActions').innerHTML = '';
-}
-
-/* ── DEFENSE ───────────────────────────────────────────────── */
-function loadDefense(s) {
-  board.position(s.atkPos);
-  setTimeout(() => drawArrows(s.atkArrows), 280);
-
-  /* Is this the last contraataca slide? Append gold rule */
-  const isLast = (currentSlide === 13);
-
-  document.getElementById('slideText').innerHTML =
-    `<div class="def-type-hdr">
-       <span class="def-type-icon">${s.typeIcon}</span>
-       <div>
-         <div class="def-type-name">${s.typeName}</div>
-         <div class="def-type-desc">${s.typeDesc}</div>
-       </div>
-     </div>
-     <p>${s.atkText}</p>
-     ${isLast ? GOLD_RULE : ''}`;
-
-  document.getElementById('slideActions').innerHTML =
-    `<button class="act-btn green" id="showDefBtn" onclick="showDefense()">Arată apărarea →</button>`;
-}
-
-function showDefense() {
-  const s = SLIDES[currentSlide];
-  if (s.type !== 'defense' || defShown) return;
-  defShown = true;
-  board.position(s.defPos);
-  clearArrows();
-  setTimeout(() => drawArrows(s.defArrows), 280);
-
-  const isLast = (currentSlide === 13);
-  document.getElementById('slideText').innerHTML =
-    `<div class="def-type-hdr">
-       <span class="def-type-icon">${s.typeIcon}</span>
-       <div>
-         <div class="def-type-name">${s.typeName}</div>
-         <div class="def-type-desc">${s.typeDesc}</div>
-       </div>
-     </div>
-     <p>${s.defText}</p>
-     ${isLast ? GOLD_RULE : ''}`;
-
-  document.getElementById('showDefBtn').style.display = 'none';
-}
-
-/* ── EXERCISE ──────────────────────────────────────────────── */
-function loadExercise(s) {
-  board.position(s.fen);
-  setTimeout(() => drawArrows(s.arrows), 280);
-
-  const intro = s.isFirst ? EX_INTRO : '';
-  document.getElementById('slideText').innerHTML =
-    intro
-  + `<p>${s.label}</p>`
-  + `<p style="margin-top:10px;font-family:var(--font-display);color:var(--c-navy);font-size:1.05rem">${s.prompt}</p>`;
-
-  document.getElementById('slideActions').innerHTML =
-    `<p class="drag-hint">Trage piesa cu mouse-ul sau atinge și glisează pe mobil.</p>`;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   NAVIGATION
-   ═══════════════════════════════════════════════════════════════ */
-function prevSlide() { if (currentSlide > 0) loadSlide(currentSlide - 1); }
-function nextSlide() { if (currentSlide < SLIDES.length - 1) loadSlide(currentSlide + 1); }
-
-/* Section groupings for dots */
-const SECTIONS = (() => {
-  const secs = [];
-  SLIDES.forEach((s, i) => {
-    const last = secs[secs.length - 1];
-    if (!last || last.section !== s.section)
-      secs.push({ section: s.section, start: i, count: 1 });
-    else
-      last.count++;
+/* ═══════════════════════════════════════════════════
+   DEF SUB-ACCORDIONS
+═══════════════════════════════════════════════════ */
+function toggleDefAcc(idx) {
+  var wasOpen = (defAccOpen === idx);
+  [0,1,2,3].forEach(function(i) {
+    document.getElementById('defBody'+i).classList.remove('open');
+    document.getElementById('dAcc'+i).classList.remove('open');
   });
-  return secs;
-})();
-
-function updateDots(idx) {
-  const sec = SECTIONS.find(s => idx >= s.start && idx < s.start + s.count);
-  if (!sec) return;
-  let html = '';
-  for (let i = 0; i < sec.count; i++) {
-    const si  = sec.start + i;
-    const cls = si < idx ? 'done' : si === idx ? 'active' : '';
-    html += `<div class="slide-dot ${cls}" onclick="loadSlide(${si})" title="Diapozitiv ${si+1}"></div>`;
+  if (!wasOpen) {
+    defAccOpen = idx;
+    defSteps[idx]   = 0;
+    defShownAr[idx] = false;
+    document.getElementById('defBody'+idx).classList.add('open');
+    document.getElementById('dAcc'+idx).classList.add('open');
+    setTimeout(function() {
+      board.resize();
+      renderDefExample(idx);
+    }, 30);
+  } else {
+    defAccOpen = -1;
+    board.position(SLIDES[1].pos, false);
+    clearArrows();
+    setTimeout(function(){ drawArrows(SLIDES[1].arrows); }, 280);
   }
-  document.getElementById('slideDots').innerHTML = html;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   ARROWS  (SVG animated — stil pagina3)
-   ═══════════════════════════════════════════════════════════════ */
+function renderDefExample(defIdx) {
+  var step  = defSteps[defIdx];
+  var s     = DEF_GROUPS[defIdx][step];
+  var shown = defShownAr[defIdx];
+  var isLast = (defIdx === 3 && step === 2 && shown);
+
+  board.position(shown ? s.defPos : s.atkPos, false);
+  clearArrows();
+  setTimeout(function(){ drawArrows(shown ? s.defArrows : s.atkArrows); }, 280);
+
+  document.getElementById('defText'+defIdx).innerHTML =
+    '<p>' + (shown ? s.defText : s.atkText) + '</p>' + (isLast ? GOLD_RULE : '');
+
+  document.getElementById('defAct'+defIdx).innerHTML = shown
+    ? ''
+    : '<button class="act-btn green" onclick="showDef('+defIdx+')">Arată apărarea →</button>';
+
+  var prevDis = (step === 0) ? 'disabled' : '';
+  var nextDis = (step === 2) ? 'disabled' : '';
+  document.getElementById('defNav'+defIdx).innerHTML =
+    '<button class="ex-step-btn" '+prevDis+' onclick="defStep('+defIdx+',-1)">&#9664;</button>'
+    + '<span class="ex-step-lbl">Exemplul '+(step+1)+'/3</span>'
+    + '<button class="ex-step-btn" '+nextDis+' onclick="defStep('+defIdx+',1)">&#9654;</button>';
+}
+
+function showDef(defIdx) {
+  defShownAr[defIdx] = true;
+  renderDefExample(defIdx);
+}
+function defStep(defIdx, dir) {
+  defSteps[defIdx]   = Math.max(0, Math.min(2, defSteps[defIdx] + dir));
+  defShownAr[defIdx] = false;
+  renderDefExample(defIdx);
+}
+
+/* ═══════════════════════════════════════════════════
+   EXERCIȚII
+═══════════════════════════════════════════════════ */
+function startEx() {
+  inExMode = true;
+  document.getElementById('acc-wrapper').style.display = 'none';
+  document.getElementById('sec-ex').style.display = '';
+  exIdx = 0;
+  exAnswered = false;
+  loadEx(0);
+  setTimeout(function(){ board.resize(); }, 30);
+  document.getElementById('panel-scroll').scrollTop = 0;
+}
+
+function goBackToAcc() {
+  inExMode = false;
+  document.getElementById('sec-ex').style.display = 'none';
+  document.getElementById('acc-wrapper').style.display = '';
+  clearFeedback();
+  setTimeout(function() {
+    board.resize();
+    if (accOpen === 0)      renderAtacBoard();
+    else if (accOpen === 1) renderAparareBoard();
+    else { board.position('start', false); clearArrows(); }
+  }, 30);
+  document.getElementById('panel-scroll').scrollTop = 0;
+}
+
+function loadEx(idx) {
+  exIdx      = idx;
+  exAnswered = false;
+  var s = EX_SLIDES[idx];
+  board.position(s.fen);
+  clearArrows();
+  setTimeout(function(){ drawArrows(s.arrows); }, 280);
+  var intro = s.isFirst ? EX_INTRO : '';
+  document.getElementById('ex-desc').innerHTML =
+    intro
+    + '<p>' + s.label + '</p>'
+    + '<p style="margin-top:10px;font-family:var(--font-display);color:var(--c-navy);font-size:1.05rem">' + s.prompt + '</p>';
+  document.getElementById('ex-prog-fill').style.width = (idx / EX_SLIDES.length * 100) + '%';
+  document.getElementById('ex-prog-lbl').textContent  = (idx+1) + '/' + EX_SLIDES.length;
+  clearFeedback();
+  document.getElementById('ex-prev-btn').style.display = idx > 0 ? '' : 'none';
+  document.getElementById('ex-next-btn').style.display = 'none';
+  document.getElementById('panel-scroll').scrollTop = 0;
+}
+
+function exPrev() { if (exIdx > 0) { exAnswered = false; loadEx(exIdx-1); } }
+function exNext() { if (exIdx < EX_SLIDES.length-1) loadEx(exIdx+1); }
+
+/* ═══════════════════════════════════════════════════
+   ARROWS
+═══════════════════════════════════════════════════ */
 function clearArrows() {
-  const el = document.getElementById('board');
-  if (el) { const s = el.querySelector('.ls5-svg'); if (s) s.remove(); }
+  var el = document.getElementById('board');
+  if (el) { var s = el.querySelector('.ls5-svg'); if (s) s.remove(); }
 }
 
 function drawArrows(arrows) {
   if (!arrows || !arrows.length) return;
-  const boardEl = document.getElementById('board');
+  var boardEl = document.getElementById('board');
   if (!boardEl) return;
   clearArrows();
-
-  const size = boardEl.offsetWidth;
-  const sq   = size / 8;
-
+  var size = boardEl.offsetWidth, sq = size / 8;
   function ctr(name) {
-    const col = 'abcdefgh'.indexOf(name[0]);
-    const row = parseInt(name[1]) - 1;
-    return { x: col * sq + sq / 2, y: (7 - row) * sq + sq / 2 };
+    var col = 'abcdefgh'.indexOf(name[0]);
+    var row = parseInt(name[1]) - 1;
+    return { x: col*sq + sq/2, y: (7-row)*sq + sq/2 };
   }
-
-  const NS  = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(NS, 'svg');
+  var NS  = 'http://www.w3.org/2000/svg';
+  var svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('class', 'ls5-svg');
-  svg.style.cssText =
-    'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:20;';
-
-  const defs = document.createElementNS(NS, 'defs');
+  svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:20;';
+  var defs = document.createElementNS(NS, 'defs');
   svg.appendChild(defs);
-
-  const lw = 4;   /* fix ca în pagina3 — stroke-width="4" */
-
-  arrows.forEach((arr, i) => {
-    const color    = arr.color || 'rgba(200,30,30,0.85)';
-    const markerId = `m${i}`;
-
-    /* vârf cu crestătură — același path ca pagina3 */
-    const marker = document.createElementNS(NS, 'marker');
-    marker.setAttribute('id', markerId);
-    marker.setAttribute('markerWidth',  '10');
-    marker.setAttribute('markerHeight', '7');
-    marker.setAttribute('refX', '8');
-    marker.setAttribute('refY', '3.5');
-    marker.setAttribute('orient', 'auto');
-    const mp = document.createElementNS(NS, 'path');
-    mp.setAttribute('d', 'M0,0 L9,3.5 L0,7 L2.5,3.5 Z');
-    mp.setAttribute('fill', color);
-    marker.appendChild(mp);
-    defs.appendChild(marker);
-
-    /* line */
-    const f  = ctr(arr.from), t = ctr(arr.to);
-    const dx = t.x - f.x, dy = t.y - f.y;
-    const len = Math.sqrt(dx * dx + dy * dy);
+  arrows.forEach(function(arr, i) {
+    var color = arr.color || 'rgba(200,30,30,0.85)';
+    var mid   = 'm'+i;
+    var marker = document.createElementNS(NS, 'marker');
+    marker.setAttribute('id', mid);
+    marker.setAttribute('markerWidth','10'); marker.setAttribute('markerHeight','7');
+    marker.setAttribute('refX','8'); marker.setAttribute('refY','3.5'); marker.setAttribute('orient','auto');
+    var mp = document.createElementNS(NS, 'path');
+    mp.setAttribute('d','M0,0 L9,3.5 L0,7 L2.5,3.5 Z'); mp.setAttribute('fill', color);
+    marker.appendChild(mp); defs.appendChild(marker);
+    var f = ctr(arr.from), t = ctr(arr.to);
+    var dx = t.x-f.x, dy = t.y-f.y, len = Math.sqrt(dx*dx+dy*dy);
     if (len < 1) return;
-    const ux = dx / len, uy = dy / len;
-
-    const x1 = f.x + ux * sq * 0.30;
-    const y1 = f.y + uy * sq * 0.30;
-    const x2 = t.x - ux * sq * 0.38;
-    const y2 = t.y - uy * sq * 0.38;
-    const dashLen = Math.sqrt((x2-x1)**2 + (y2-y1)**2) + 30;
-
-    const line = document.createElementNS(NS, 'line');
-    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-    line.setAttribute('stroke', color);
-    line.setAttribute('stroke-width', lw);
-    line.setAttribute('stroke-linecap', 'round');
-    line.setAttribute('stroke-linejoin', 'round');
-    line.setAttribute('marker-end', `url(#${markerId})`);
-    line.setAttribute('stroke-dasharray', dashLen);
-    line.setAttribute('stroke-dashoffset', dashLen);
+    var ux = dx/len, uy = dy/len;
+    var x1 = f.x+ux*sq*0.30, y1 = f.y+uy*sq*0.30;
+    var x2 = t.x-ux*sq*0.38, y2 = t.y-uy*sq*0.38;
+    var dl = Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)) + 30;
+    var line = document.createElementNS(NS, 'line');
+    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+    line.setAttribute('stroke',color); line.setAttribute('stroke-width','4');
+    line.setAttribute('stroke-linecap','round');
+    line.setAttribute('marker-end','url(#'+mid+')');
+    line.setAttribute('stroke-dasharray',dl); line.setAttribute('stroke-dashoffset',dl);
     line.style.animation = 'drawArrow 0.45s ease-out forwards';
     svg.appendChild(line);
   });
-
   boardEl.style.position = 'relative';
   boardEl.appendChild(svg);
 }
 
-function redrawCurrentArrows() {
-  const s = SLIDES[currentSlide];
-  if (!s) return;
-  if      (s.type === 'demo')     drawArrows(DEMO_INIT_ARR);
-  else if (s.type === 'info')     drawArrows(s.arrows);
-  else if (s.type === 'defense')  drawArrows(defShown ? s.defArrows : s.atkArrows);
-  else if (s.type === 'exercise' && !exAnswered) drawArrows(s.arrows);
-}
-
-/* ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    FEEDBACK
-   ═══════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 function showFeedback(msg, type) {
-  const bar = document.getElementById('feedbackBar');
+  var bar = document.getElementById('feedbackBar');
   bar.className   = 'feedback-bar ' + type;
   bar.textContent = msg;
 }
 function clearFeedback() {
-  const bar = document.getElementById('feedbackBar');
+  var bar = document.getElementById('feedbackBar');
   bar.className   = 'feedback-bar';
   bar.textContent = '';
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    INIT
-   ═══════════════════════════════════════════════════════════════ */
-$(document).ready(function () { loadSlide(0); });
+═══════════════════════════════════════════════════ */
+$(document).ready(function() {
+  board.position('start', false);
+});
 </script>
+<script src="board-utils.js"></script>
 </body>
 </html>
