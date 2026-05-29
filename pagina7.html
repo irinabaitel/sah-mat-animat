@@ -2,7 +2,6 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CMTZ9GGPMP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -16,10 +15,36 @@
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
 <link rel="stylesheet" href="master-template.css">
 <style>
-.card { background: var(--c-surface); border: 2px solid var(--c-border); border-radius: var(--radius); padding: 14px 16px; }
-.lesson-content { display: flex; flex-direction: column; gap: 12px; }
+/* ── Sertare ── */
+.acc-wrapper { display: flex; flex-direction: column; gap: 10px; }
+.acc-item {
+  background: var(--c-surface);
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.acc-head {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px; cursor: pointer;
+  font-family: var(--font-display); font-weight: 700;
+  color: var(--c-navy); font-size: var(--fs-md);
+  border: none; background: none; text-align: left; gap: 8px;
+}
+.acc-head:hover { background: rgba(26,58,107,0.06); }
+.acc-item.open .acc-head { background: rgba(26,58,107,0.06); }
+.acc-icon { font-size: 1.25rem; transition: transform 0.22s; flex-shrink: 0; }
+.acc-item.open .acc-icon { transform: rotate(45deg); }
+.acc-body { max-height: 0; overflow: hidden; transition: max-height 0.32s ease; }
+.acc-body.open { max-height: 2400px; }
+.acc-inner { padding: 4px 16px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
 
-.ex-dots { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin: 4px 0; }
+/* ── Dots exemple ── */
+.ex-group-label {
+  font-family: var(--font-display); font-size: var(--fs-xs); font-weight: 700;
+  color: var(--c-navy); opacity: 0.6; text-transform: uppercase; letter-spacing: .04em;
+  margin-top: 4px;
+}
+.ex-dots { display: flex; gap: 6px; flex-wrap: wrap; }
 .ex-dot {
   background: rgba(255,255,255,0.55); border: 2px solid rgba(26,58,107,0.25);
   border-radius: 20px; padding: 4px 11px; min-width: 34px;
@@ -28,19 +53,67 @@
 }
 .ex-dot:hover  { background: rgba(255,255,255,0.85); }
 .ex-dot.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
+.ex-label { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--c-navy); font-weight: 700; min-height: 1.2em; }
+.ex-ann   { font-size: var(--fs-md); line-height: 1.7; color: var(--c-text); min-height: 2em; }
 
-.ex-label {
-  font-family: var(--font-display); font-size: var(--fs-sm);
-  color: var(--c-navy); font-weight: 700; text-align: center; min-height: 1.2em;
+/* ── Arena în sertar ── */
+.turn-badge {
+  display: inline-block; padding: 3px 14px; border-radius: 50px;
+  font-family: var(--font-display); font-size: 0.82rem; font-weight: 700;
 }
-.ex-ann { font-size: var(--fs-md); line-height: 1.7; color: var(--c-text); min-height: 2em; }
-
-/* highlight mutare sugestie */
-.sq-hl-from { background: rgba(90,190,90,0.38) !important; }
-.sq-hl-to   { background: rgba(50,170,50,0.55) !important; }
-
-/* footer rows */
-.footer-row { width: 100%; display: flex; align-items: center; justify-content: space-between; }
+.turn-badge.white { background: #f0f0f0; color: var(--c-navy); border: 1.5px solid #ccc; }
+.turn-badge.black { background: #222; color: #fff; border: 1.5px solid #000; }
+.level-badge {
+  display: inline-block; margin-left: 6px; padding: 2px 10px; border-radius: 50px;
+  font-family: var(--font-display); font-size: 0.75rem; font-weight: 700;
+  background: rgba(39,174,96,0.18); color: #1a6b3a;
+}
+.level-badge.med  { background: rgba(230,126,34,0.18); color: #8a3a00; }
+.level-badge.hard { background: rgba(192,57,43,0.18);  color: #7a1800; }
+.ctrl-row { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 6px; }
+.btn-sm {
+  padding: 7px 15px; border-radius: 50px;
+  font-family: var(--font-display); font-size: 0.86rem; font-weight: 700;
+  cursor: pointer; transition: background .15s, opacity .15s;
+  border: 1.5px solid transparent;
+}
+.btn-sm:disabled { opacity: 0.28; cursor: default; }
+.btn-prev  { border-color: rgba(26,58,107,0.35); background: rgba(255,255,255,0.55); color: var(--c-navy); }
+.btn-prev:hover:not(:disabled)  { background: rgba(26,58,107,0.10); }
+.btn-reset { border-color: rgba(192,57,43,0.40); background: rgba(255,255,255,0.55); color: #8b1a00; }
+.btn-reset:hover:not(:disabled) { background: rgba(192,57,43,0.10); }
+.btn-cont  { border-color: var(--c-success); background: var(--c-success); color: white; }
+.btn-cont:hover:not(:disabled)  { opacity: 0.86; }
+.btn-next  { border-color: var(--c-navy); background: var(--c-navy); color: white; }
+.btn-next:hover:not(:disabled)  { opacity: 0.86; }
+.btn-hint { border-color: rgba(39,174,96,0.45); background: rgba(39,174,96,0.08); color: #1a6b3a; }
+.btn-hint:hover:not(:disabled)  { background: rgba(39,174,96,0.18); }
+.btn-sol  { border-color: rgba(142,68,173,0.45); background: rgba(142,68,173,0.08); color: #6c3483; }
+.btn-sol:hover:not(:disabled)   { background: rgba(142,68,173,0.18); }
+.btn-tri  { padding: 7px 11px; min-width: 34px; }
+.hint-square { background: rgba(80,200,80,0.65) !important; }
+.last-move-from { background: rgba(80,180,80,0.35) !important; }
+.last-move-to   { background: rgba(80,180,80,0.55) !important; }
+.square-selected { background: rgba(255,200,0,0.55) !important; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+.board-shake { animation: shake 0.35s ease-out; }
+.btn-arena {
+  display: flex; align-items: center; justify-content: center;
+  padding: 11px 20px; border-radius: 50px;
+  background: var(--c-navy); color: white; text-decoration: none;
+  font-family: var(--font-display); font-size: 0.97rem; font-weight: 700;
+  border: none; cursor: pointer; width: 100%; transition: opacity .18s; margin-top: 8px;
+}
+.btn-arena:hover { opacity: 0.86; }
+.progress-outer { position: relative; }
+.progress-outer::after {
+  content: attr(data-tip); position: absolute; bottom: calc(100% + 6px); left: 50%;
+  transform: translateX(-50%); background: rgba(26,26,46,0.88); color: #fff;
+  font-family: var(--font-display); font-size: 0.78rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 6px; white-space: nowrap; pointer-events: none; z-index: 100;
+  opacity: 0; transition: opacity 0.15s;
+}
+.progress-outer:hover::after { opacity: 1; }
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -57,11 +130,9 @@
 
   <main class="page-main" role="main">
 
-    <!-- Tablă stânga -->
     <div class="board-col">
       <div class="board-wrapper" id="boardWrapper">
         <div id="board"></div>
-        <!-- Dialog promovare -->
         <div class="promo-overlay" id="promoOverlay">
           <div class="promo-title">Alege piesa:</div>
           <div class="promo-btns" id="promoBtns"></div>
@@ -69,66 +140,115 @@
       </div>
     </div>
 
-    <!-- Panel dreapta -->
     <div class="panel-col">
-      <div class="panel-scroll" id="panelScroll">
+      <div class="panel-scroll">
 
-        <!-- ══ ECRANUL 1 ══ -->
-        <div id="screen1" class="lesson-content">
+        <h1 style="margin-bottom:12px;">Patul</h1>
 
-          <h1>Patul</h1>
+        <div class="acc-wrapper">
 
-          <div class="card">
-            <h2>Ce este patul?</h2>
-            <p>O partidă de șah se poate termina cu <strong>„PAT"</strong> atunci când un jucător este la mutare și nu este în șah, dar nici nu poate muta o altă piesă sau regele.</p>
-            <p>Piesele nu pot fi mutate pentru că fie sunt blocate (de exemplu pioni blocați de alte piese care stau în fața lor), sau, dacă aceste piese s-ar muta, ar lăsa regele în șah.</p>
-            <p>De asemenea, se consideră că regele nu poate muta dacă este blocat de piesele proprii sau de piese ale adversarului care sunt apărate, sau dacă acolo unde are câmpuri libere, ar intra în șah.</p>
-            <p>Cu alte cuvinte, când jucătorul care este la mutare nu este în șah și nu poate muta nicio piesă, se spune că este <strong>pat</strong>, iar acest lucru este echivalent cu o <strong>remiză</strong>, adică fiecare jucător câștigă o jumătate de punct.</p>
+          <!-- ══ SERTAR 1: Ce este patul ══ -->
+          <div class="acc-item" id="acc0">
+            <button class="acc-head" onclick="toggleAcc(0)">
+              <span>Ce este patul?</span>
+              <span class="acc-icon">+</span>
+            </button>
+            <div class="acc-body" id="accBody0">
+              <div class="acc-inner">
+                <p>O partidă de șah se poate termina cu <strong>„PAT"</strong> atunci când un jucător este la mutare și nu este în șah, dar nici nu poate muta nicio piesă.</p>
+                <p>Piesele nu pot fi mutate fie pentru că sunt blocate (de exemplu pioni blocați de alte piese), sau, dacă s-ar muta, ar lăsa regele în șah.</p>
+                <p>Regele nu poate muta dacă este blocat de piesele proprii, de piese adverse apărate, sau dacă acolo unde are câmpuri libere ar intra în șah.</p>
+                <p>Cu alte cuvinte, când jucătorul la mutare <strong>nu este în șah</strong> și <strong>nu poate muta nicio piesă</strong>, partida se termină <strong>remiză</strong> — fiecare jucător câștigă o jumătate de punct.</p>
+              </div>
+            </div>
           </div>
 
-          <div class="card">
-            <h2>Când evităm patul, când îl căutăm?</h2>
-            <p>Atunci când jucăm șah și suntem în avantaj, trebuie să fim atenți să nu facem o mutare prin care adversarul nostru să facă pat. Nu ne dorim ca în loc de punctul victoriei să obținem doar o jumătate de punct.</p>
-            <div class="hl-box warn">⚠️ <strong>Atenție când ești în avantaj!</strong> Verifică mereu dacă adversarul poate scăpa prin pat înainte de a muta.</div>
-            <div class="hl-box ok" style="margin-top:8px;">✅ <strong>Folosește patul în apărare!</strong> Atunci când ești în dezavantaj, cu piese mai puține, un scor egal e mai bun decât o înfrângere — caută activ posibilitatea de pat.</div>
+          <!-- ══ SERTAR 2: Când evităm, când căutăm ══ -->
+          <div class="acc-item" id="acc1">
+            <button class="acc-head" onclick="toggleAcc(1)">
+              <span>Când îl evităm, când îl căutăm?</span>
+              <span class="acc-icon">+</span>
+            </button>
+            <div class="acc-body" id="accBody1">
+              <div class="acc-inner">
+                <p>Atunci când ești în avantaj, trebuie să fii atent să nu faci o mutare prin care adversarul să facă pat. Nu vrei ca în loc de punctul victoriei să obții doar o jumătate de punct.</p>
+                <div class="hl-box warn">⚠️ <strong>Atenție când ești în avantaj!</strong> Verifică mereu dacă adversarul poate scăpa prin pat înainte de a muta.</div>
+                <div class="hl-box ok">✅ <strong>Folosește patul în apărare!</strong> Când ești în dezavantaj, un scor egal e mai bun decât o înfrângere — caută activ posibilitatea de pat.</div>
+              </div>
+            </div>
           </div>
 
-          <p>În poziția alăturată, <strong>albul este la mutare</strong>. Urmărește cele 5 exemple în care negrul forțează patul:</p>
+          <!-- ══ SERTAR 3: Greșeli frecvente ══ -->
+          <div class="acc-item" id="acc2">
+            <button class="acc-head" onclick="toggleAcc(2)">
+              <span>Greșeli frecvente</span>
+              <span class="acc-icon">+</span>
+            </button>
+            <div class="acc-body" id="accBody2">
+              <div class="acc-inner">
 
-          <div class="hl-box warn">
-            <strong>Acestea sunt situații care apar foarte des în finalurile jucătorilor începători care nu sunt atenți.</strong>
+                <div class="hl-box warn">
+                  <strong>Situații care apar foarte des în finalurile jucătorilor începători care nu sunt atenți.</strong>
+                </div>
+
+                <div class="ex-group-label">Greșelile negrului</div>
+                <div class="ex-dots" id="dotsA"></div>
+
+                <div class="ex-group-label" style="margin-top:8px;">Greșelile albului</div>
+                <div class="ex-dots" id="dotsB"></div>
+
+                <div class="ex-label" id="exLabel"></div>
+                <div class="ex-ann"   id="exAnn"></div>
+                <div class="task-msg" id="exResult" style="display:none;"></div>
+                <button class="btn-sm btn-reset" id="exResetBtn" style="display:none;" onclick="resetEx()">↺ Reia poziția</button>
+
+              </div>
+            </div>
           </div>
 
-          <p>Selectează un exemplu și încearcă mutarea pe tablă:</p>
+          <!-- ══ SERTAR 4: 25 puzzle-uri ══ -->
+          <div class="acc-item" id="acc3">
+            <button class="acc-head" onclick="toggleAcc(3)">
+              <span>Puzzle-uri defensive — forțează patul!</span>
+              <span class="acc-icon">+</span>
+            </button>
+            <div class="acc-body" id="accBody3">
+              <div class="acc-inner">
 
-          <div class="ex-dots" id="dots1"></div>
-          <div class="ex-label" id="exLabel1"></div>
-          <div class="ex-ann"   id="exAnn1"></div>
-          <div class="task-msg" id="result1" style="display:none;"></div>
-          <button class="btn-action" id="reset1" style="display:none;" onclick="resetExample()">↺ Reia poziția</button>
+                <span class="turn-badge white" id="turnBadge">&#9634; Albul mută</span>
+                <span class="level-badge" id="levelBadge">UȘOR</span>
 
-        </div>
+                <div class="progress-outer" id="progressOuter">
+                  <div class="progress-wrap">
+                    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+                  </div>
+                </div>
 
-        <!-- ══ ECRANUL 2 ══ -->
-        <div id="screen2" class="lesson-content" style="display:none;">
+                <div class="task-msg idle" id="arenaMsg">Se încarcă&hellip;</div>
 
-          <h1>Greșelile albului</h1>
+                <div class="ctrl-row">
+                  <button class="btn-sm btn-prev"  id="prevBtn"  onclick="prevPuzzle()" disabled>&#8592; Precedentul</button>
+                  <button class="btn-sm btn-reset"               onclick="resetPuzzle()">&#8634; Resetează</button>
+                  <button class="btn-sm btn-cont"                onclick="continuePuzzle()">Continuă</button>
+                  <button class="btn-sm btn-next"  id="nextBtn"  onclick="nextPuzzle()" disabled>Următorul &#8594;</button>
+                </div>
+                <div class="ctrl-row">
+                  <button class="btn-sm btn-tri btn-prev" id="stepBackBtn" onclick="stepBack()"    disabled>&#9668;</button>
+                  <button class="btn-sm btn-tri btn-prev" id="stepFwdBtn"  onclick="stepForward()" disabled>&#9658;</button>
+                  <button class="btn-sm btn-hint" id="btnHint" onclick="showHint()">&#128161; Indiciu</button>
+                  <button class="btn-sm btn-sol"  id="btnSol"  onclick="showSolution()">&#9654;&#9654; Soluție</button>
+                </div>
 
-          <p><strong>Albul poate greși într-un singur fel</strong> — făcând o mutare care îl lasă pe negru fără mutări, în timp ce regele negru nu este în șah.</p>
+                <button class="btn-arena" id="playAgainBtn" style="display:none;"
+                        onclick="resetAll()">&#127881; Toate rezolvate! Joacă din nou &#8594;</button>
+                <button class="btn-arena" id="resetAllBtn" style="display:none; background:rgba(192,57,43,0.82);"
+                        onclick="resetAll()">&#8635; Joacă din nou (resetează tot)</button>
 
-          <div class="hl-box warn">
-            <strong>Atenție!</strong> Verifică mereu dacă adversarul rămâne fără mutări după ce tu muți.
+              </div>
+            </div>
           </div>
 
-          <p>Încearcă mutarea greșită pe tablă și observă rezultatul:</p>
-
-          <div class="ex-dots" id="dots2"></div>
-          <div class="ex-label" id="exLabel2"></div>
-          <div class="ex-ann"   id="exAnn2"></div>
-          <div class="task-msg" id="result2" style="display:none;"></div>
-          <button class="btn-action" id="reset2" style="display:none;" onclick="resetExample()">↺ Reia poziția</button>
-
-        </div>
+        </div><!-- /.acc-wrapper -->
 
       </div><!-- /.panel-scroll -->
     </div><!-- /.panel-col -->
@@ -136,311 +256,146 @@
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
-    <div class="footer-row" id="footer1">
-      <a href="aparare_mat.html" class="nav-btn nav-btn--back">
-        <span class="icon">←</span><span class="label">Înapoi</span>
-      </a>
-      <a href="hub.html" class="nav-btn nav-btn--contents">
-        <span class="icon">&#8862;</span><span class="label">Cuprins</span>
-      </a>
-      <button class="nav-btn nav-btn--forward" onclick="goScreen2()">
-        <span class="icon">→</span><span class="label">Înainte</span>
-      </button>
-    </div>
-    <div class="footer-row" id="footer2" style="display:none;">
-      <button class="nav-btn nav-btn--back" onclick="goScreen1()">
-        <span class="icon">←</span><span class="label">Înapoi</span>
-      </button>
-      <a href="hub.html" class="nav-btn nav-btn--contents">
-        <span class="icon">&#8862;</span><span class="label">Cuprins</span>
-      </a>
-      <a href="nivel1_lectia12.html" class="nav-btn nav-btn--forward">
-        <span class="icon">→</span><span class="label">Câștig, egal și pierdere</span>
-      </a>
-    </div>
+    <a href="aparare_mat.html" class="nav-btn nav-btn--back">
+      <span class="icon">←</span><span class="label">Înapoi</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon">&#8862;</span><span class="label">Cuprins</span>
+    </a>
+    <a href="nivel1_lectia12.html" class="nav-btn nav-btn--forward">
+      <span class="icon">→</span><span class="label">Câștig, egal și pierdere</span>
+    </a>
   </footer>
 
-</div><!-- /.page-wrapper -->
+</div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script src="board-utils.js"></script>
 <script>
-var PT = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+var PT        = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+var INIT_FEN  = '8/8/3p4/3P1b2/5P2/2k5/1r6/K3Nr2 w - - 0 1';
 
-/* ── Date ecran 1 ─────────────────────────────────────────── */
-var S1 = [
-  {
-    fen:    '8/8/3p4/3P1b2/5P2/2k5/1r6/K3Nr2 w - - 0 1',
-    label:  'Poziția de start — albul este la mutare',
-    ann:    'Albul este la mutare. Selectează un exemplu de mai jos pentru a vedea cum poate apărea patul.',
-    from: null, to: null, isStatic: true
-  },
-  {
-    fen:    '1K6/4k3/1b6/3b4/8/8/8/8 b - - 0 1',
-    label:  'Exemplul 1 — mută regele negru',
-    ann:    'Negrul mută. Încearcă să muți regele pe d7 și urmărește ce se întâmplă cu regele alb.',
-    from: 'e7', to: 'd7', isStatic: false
-  },
-  {
-    fen:    '7K/8/6kb/7n/8/8/8/8 b - - 0 1',
-    label:  'Exemplul 2 — mută calul negru',
-    ann:    'Negrul mută. Încearcă să muți calul pe f6 și observă că regele alb pe h8 rămâne fără mutări.',
-    from: 'h5', to: 'f6', isStatic: false
-  },
-  {
-    fen:    '8/8/8/8/5q2/7K/8/5k2 b - - 0 1',
-    label:  'Exemplul 3 — mută regele negru',
-    ann:    'Negrul mută. Încearcă să muți regele pe f2 și urmărește blocada completă a regelui alb pe h3.',
-    from: 'f1', to: 'f2', isStatic: false
-  },
-  {
-    fen:    '8/4k3/8/8/1q6/8/8/K7 b - - 0 1',
-    label:  'Exemplul 4 — mută dama neagră',
-    ann:    'Negrul mută. Încearcă să muți dama pe b3 și observă că regele alb pe a1 nu mai are nicio mutare.',
-    from: 'b4', to: 'b3', isStatic: false
-  },
-  {
-    fen:    '8/8/8/8/8/1r6/2k5/K7 b - - 0 1',
-    label:  'Exemplul 5 — mută turnul negru',
-    ann:    'Negrul mută. Încearcă să muți turnul pe b2 și urmărește cum regele alb pe a1 rămâne complet blocat.',
-    from: 'b3', to: 'b2', isStatic: false
-  }
+/* ── Date secțiunea 3A: Negrul forțează patul ── */
+var EX_A = [
+  { fen:'1K6/4k3/1b6/3b4/8/8/8/8 b - - 0 1',
+    label:'Exemplul 1 — regele negru mută',
+    ann:'Regele negru mută pe d7 — regele alb pe b8 rămâne fără mutări (c8 și a8 sunt atacate de nebuni).',
+    from:'e7', to:'d7' },
+  { fen:'7K/8/6kb/7n/8/8/8/8 b - - 0 1',
+    label:'Exemplul 2 — calul negru mută',
+    ann:'Calul negru mută pe f6 — regele alb pe h8 rămâne fără mutări.',
+    from:'h5', to:'f6' },
+  { fen:'8/8/8/8/5q2/7K/8/5k2 b - - 0 1',
+    label:'Exemplul 3 — regele negru mută',
+    ann:'Regele negru mută pe f2 — regele alb pe h3 este complet blocat.',
+    from:'f1', to:'f2' },
+  { fen:'8/4k3/8/8/1q6/8/8/K7 b - - 0 1',
+    label:'Exemplul 4 — dama neagră mută',
+    ann:'Dama neagră mută pe b3 — regele alb pe a1 nu mai are nicio mutare.',
+    from:'b4', to:'b3' },
+  { fen:'8/8/8/8/8/1r6/2k5/K7 b - - 0 1',
+    label:'Exemplul 5 — turnul negru mută',
+    ann:'Turnul negru mută pe b2 — regele alb pe a1 rămâne complet blocat.',
+    from:'b3', to:'b2' }
 ];
 
-/* ── Date ecran 2 ─────────────────────────────────────────── */
-var S2 = [
-  {
-    fen:    '7k/8/5pK1/5Q2/8/8/8/8 w - - 0 1',
-    label:  'Greșeala 1 — Regele alb prea aproape',
-    ann:    'Rf7',
-    from: 'g6', to: 'f7', isStatic: false
-  },
-  {
-    fen:    '7k/5K1n/8/8/8/8/8/6R1 w - - 0 1',
-    label:  'Greșeala 2 — Turnul leagă calul',
-    ann:    'Th1',
-    from: 'g1', to: 'h1', isStatic: false
-  },
-  {
-    fen:    '8/5PPk/5B2/5K2/8/8/8/8 w - - 2 2',
-    label:  'Greșeala 3 — Subpromotare',
-    ann:    'g8=C',
-    from: 'g7', to: 'g8', isStatic: false
-  },
-  {
-    fen:    '1Q3K2/6Bk/6r1/8/8/8/8/8 w - - 2 2',
-    label:  'Greșeala 4 — Dama se retrage greșit',
-    ann:    'Db1',
-    from: 'b8', to: 'b1', isStatic: false
-  },
-  {
-    fen:    '1Q5B/8/3npn2/3pkp2/3rpr2/8/1Q2K2Q/8 w - - 0 1',
-    label:  'Greșeala 5 — Regele completează blocada',
-    ann:    'Re3',
-    from: 'e2', to: 'e3', isStatic: false
-  },
-  {
-    fen:    '1N6/8/8/8/8/8/pp1PPP2/kb2K2R w K - 0 1',
-    label:  'Greșeala 6 — Rocada face pat',
-    ann:    '0-0',
-    from: 'e1', to: 'g1', isStatic: false
-  },
-  {
-    fen:    'bk6/8/1KP5/8/8/8/8/Q7 w - - 0 1',
-    label:  'Greșeala 7 — Mutarea pionului duce la pat',
-    ann:    'Dxa8+ apoi c7',
-    from: 'a1', to: 'a8', isStatic: false, autoResponse: ['Kxa8']
-  },
-  {
-    fen:    '7k/1Q3K2/7q/8/8/8/8/2B5 w - - 0 1',
-    label:  'Greșeala 8 — Nebunul se mută greșit',
-    ann:    'Nxh6 și Ng7',
-    from: 'c1', to: 'h6', isStatic: false, autoResponse: ['Kh7']
-  },
-  {
-    fen:    '8/5K1k/6qp/5P1P/8/8/8/8 w - - 0 1',
-    label:  'Greșeala 9 — Pionul capturează spre pat',
-    ann:    'fxg6+ și Rf8',
-    from: 'f5', to: 'g6', isStatic: false, autoResponse: ['Kh8']
-  },
-  {
-    fen:    '1k6/7R/8/2R5/8/8/8/7K w - - 0 1',
-    label:  'Greșeala 10 — Turnuri greșit coordonate',
-    ann:    'Tcc7 și Tb7',
-    from: 'c5', to: 'c7', isStatic: false, autoResponse: ['Ka8']
-  }
+/* ── Date secțiunea 3B: Greșelile albului ── */
+var EX_B = [
+  { fen:'7k/8/5pK1/5Q2/8/8/8/8 w - - 0 1',
+    label:'Greșeala 1 — Regele alb prea aproape',
+    ann:'Rf7 — regele alb mută prea aproape și îl lasă pe negru fără mutări. Corect: Df8#.',
+    from:'g6', to:'f7' },
+  { fen:'7k/5K1n/8/8/8/8/8/6R1 w - - 0 1',
+    label:'Greșeala 2 — Turnul leagă calul',
+    ann:'Th1 — turnul mută și leagă calul negru, lăsând regele negru fără mutări.',
+    from:'g1', to:'h1' },
+  { fen:'8/5PPk/5B2/5K2/8/8/8/8 w - - 2 2',
+    label:'Greșeala 3 — Subpromovare la cal',
+    ann:'g8=C — promovarea la cal dă pat! Trebuia g8=D sau g8=T.',
+    from:'g7', to:'g8' },
+  { fen:'1Q3K2/6Bk/6r1/8/8/8/8/8 w - - 2 2',
+    label:'Greșeala 4 — Dama se retrage greșit',
+    ann:'Db1 — dama se retrage prea departe, lăsând regele negru fără mutări.',
+    from:'b8', to:'b1' },
+  { fen:'1Q5B/8/3npn2/3pkp2/3rpr2/8/1Q2K2Q/8 w - - 0 1',
+    label:'Greșeala 5 — Regele completează blocada',
+    ann:'Re3 — regele alb completează blocada din jurul regelui negru, dând pat.',
+    from:'e2', to:'e3' },
+  { fen:'1N6/8/8/8/8/8/pp1PPP2/kb2K2R w K - 0 1',
+    label:'Greșeala 6 — Rocada face pat',
+    ann:'0-0 — rocada mută turnul pe f1, completând blocada regelui negru pe a1.',
+    from:'e1', to:'g1' },
+  { fen:'bk6/8/1KP5/8/8/8/8/Q7 w - - 0 1',
+    label:'Greșeala 7 — Mutarea pionului duce la pat',
+    ann:'Dxa8+ Rxxa8 c7 — după capturarea damei și mutarea pionului, regele negru rămâne fără mutări.',
+    from:'a1', to:'a8', autoResponse:['Kxa8'] },
+  { fen:'7k/1Q3K2/7q/8/8/8/8/2B5 w - - 0 1',
+    label:'Greșeala 8 — Nebunul se mută greșit',
+    ann:'Nxh6 Rh7 Ng7 — secvența lasă regele negru fără mutări.',
+    from:'c1', to:'h6', autoResponse:['Kh7'] },
+  { fen:'8/5K1k/6qp/5P1P/8/8/8/8 w - - 0 1',
+    label:'Greșeala 9 — Pionul capturează spre pat',
+    ann:'fxg6+ Rh8 Rf8 — secvența duce la pat.',
+    from:'f5', to:'g6', autoResponse:['Kh8'] },
+  { fen:'1k6/7R/8/2R5/8/8/8/7K w - - 0 1',
+    label:'Greșeala 10 — Turnuri greșit coordonate',
+    ann:'Tcc7 Ra8 Tb7 — turnul mută greșit, forțând patul în colț.',
+    from:'c5', to:'c7', autoResponse:['Ka8'] }
 ];
 
-/* ── Stare globală ────────────────────────────────────────── */
-var board       = null;
-var chess       = null;
-var curData     = null;
-var pendingSrc  = null;
-var pendingTgt  = null;
-var autoIdx     = 0;
-var s1Cur       = 0;
-var s2Cur       = 0;
+/* ── Stare globală ── */
+var board        = null;
+var chess        = null;
+var curExData    = null;
+var autoIdx      = 0;
+var pendingSrc   = null;
+var pendingTgt   = null;
+var accOpen      = -1;
 
-/* ── Highlights ───────────────────────────────────────────── */
-function clearSuggHL() {
-  document.querySelectorAll('#board .sq-hl-from, #board .sq-hl-to').forEach(function(el) {
-    el.classList.remove('sq-hl-from', 'sq-hl-to');
-  });
+/* ─── Arena (sertar 4) ─── */
+var PUZZLES      = [];
+var curIdx       = 0;
+var curMoveIdx   = 0;
+var completed    = {};
+var solving      = false;
+var solved       = false;
+var solverColor  = 'w';
+var moveHistory  = [];
+var viewIdx      = 0;
+var autoPlayTimer = null;
+var selSq        = null;
+var SAVE_KEY     = 'stalemate_arena_progress';
+var arenaActive  = false;
+
+function debounce(fn,d){var t;return function(){clearTimeout(t);t=setTimeout(fn,d);};}
+
+/* ── Helpers HL ── */
+function clearHL(){
+  document.querySelectorAll('.square-selected,.highlight-check,.last-move-from,.last-move-to')
+    .forEach(function(el){el.classList.remove('square-selected','highlight-check','last-move-from','last-move-to');});
 }
-function applySuggHL(from, to) {
-  clearSuggHL();
-  if (!from) return;
-  var f = document.querySelector('#board .square-' + from);
-  var t = document.querySelector('#board .square-' + to);
-  if (f) f.classList.add('sq-hl-from');
-  if (t) t.classList.add('sq-hl-to');
-}
-function clearMoveHL() {
-  document.querySelectorAll(
-    '#board .highlight-selected, #board .highlight-legal, #board .highlight-capture'
-  ).forEach(function(el) {
-    el.classList.remove('highlight-selected', 'highlight-legal', 'highlight-capture');
-  });
+function applyHL(sq,cls){var el=document.querySelector('.square-'+sq);if(el)el.classList.add(cls);}
+function setLastMoveHL(from,to){
+  document.querySelectorAll('.last-move-from,.last-move-to')
+    .forEach(function(el){el.classList.remove('last-move-from','last-move-to');});
+  applyHL(from,'last-move-from'); applyHL(to,'last-move-to');
 }
 
-/* ── Result + reset ───────────────────────────────────────── */
-function curScreen() {
-  return document.getElementById('screen1').style.display !== 'none' ? 1 : 2;
-}
-function showResult(msg, cls) {
-  var el = document.getElementById('result' + curScreen());
-  el.textContent = msg;
-  el.className = 'task-msg ' + cls;
-  el.style.display = '';
-  document.getElementById('reset' + curScreen()).style.display = '';
-}
-function hideResults() {
-  [1, 2].forEach(function(n) {
-    document.getElementById('result' + n).style.display = 'none';
-    document.getElementById('reset'  + n).style.display = 'none';
-  });
-}
-function checkResult() {
-  if (chess.in_stalemate()) {
-    showResult('🤝 PAT! Partida se termină remiză.', 'ok');
-  } else if (chess.in_checkmate()) {
-    showResult('♟ ȘAH MAT!', 'ok');
-  } else if (chess.game_over()) {
-    showResult('Partida s-a terminat.', 'idle');
-  }
-}
-function playAutoResponse() {
-  if (chess.game_over()) return;
-  if (!curData.autoResponse) return;
-  if (autoIdx >= curData.autoResponse.length) return;
-  if (chess.turn() !== 'b') return;
-  var san = curData.autoResponse[autoIdx++];
+/* ── Săgeată roșie ── */
+function applyRedArrow(from, to) {
+  if (!from || !to) return;
   setTimeout(function() {
-    chess.move(san);
-    board.position(chess.fen(), true);
-    checkResult();
-  }, 450);
-}
-function afterMove() {
-  checkResult();
-  if (!chess.game_over()) playAutoResponse();
-}
-function resetExample() {
-  autoIdx = 0;
-  loadPos(curData);
+    if (window._annSet) window._annSet([{from: from, to: to, ci: 1}]);
+  }, 80);
 }
 
-/* ── Promovare ────────────────────────────────────────────── */
-function buildPromoDialog(color) {
-  var pieces = ['q', 'r', 'b', 'n'];
-  var labels = { q: 'Damă', r: 'Turn', b: 'Nebun', n: 'Cal' };
-  var btns = document.getElementById('promoBtns');
-  btns.innerHTML = '';
-  pieces.forEach(function(p) {
-    var btn = document.createElement('button');
-    btn.className = 'promo-btn';
-    btn.title = labels[p];
-    var img = document.createElement('img');
-    img.src = 'https://lichess1.org/assets/piece/caliente/' + (color === 'w' ? 'w' : 'b') + p.toUpperCase() + '.svg';
-    img.alt = labels[p];
-    btn.appendChild(img);
-    btn.onclick = function() { doPromo(p); };
-    btns.appendChild(btn);
-  });
-}
-function showPromo(src, tgt) {
-  pendingSrc = src;
-  pendingTgt = tgt;
-  buildPromoDialog(chess.turn());
-  document.getElementById('promoOverlay').style.display = 'flex';
-}
-function doPromo(piece) {
-  document.getElementById('promoOverlay').style.display = 'none';
-  var move = chess.move({ from: pendingSrc, to: pendingTgt, promotion: piece });
-  if (!move) return;
-  board.position(chess.fen());
-  clearSuggHL();
-  afterMove();
-}
-
-/* ── Board handlers ───────────────────────────────────────── */
-function onDragStart(source, piece) {
-  if (curData && curData.isStatic) return false;
-  if (chess.game_over()) return false;
-  if (chess.turn() === 'w' && piece.search(/^b/) !== -1) return false;
-  if (chess.turn() === 'b' && piece.search(/^w/) !== -1) return false;
-  return true;
-}
-function onDrop(source, target) {
-  clearMoveHL();
-  clearSuggHL();
-  if (source === target) return 'snapback';
-  var moves = chess.moves({ square: source, verbose: true });
-  var isPromo = moves.some(function(m) { return m.to === target && m.flags.indexOf('p') !== -1; });
-  if (isPromo) {
-    showPromo(source, target);
-    return 'snapback';
-  }
-  var move = chess.move({ from: source, to: target });
-  if (!move) return 'snapback';
-  afterMove();
-}
-function onSnapEnd() {
-  board.position(chess.fen());
-}
-function onMouseoverSquare(square) {
-  if (curData && curData.isStatic) return;
-  if (chess.game_over()) return;
-  var moves = chess.moves({ square: square, verbose: true });
-  if (!moves.length) return;
-  var sel = document.querySelector('#board .square-' + square);
-  if (sel) sel.classList.add('highlight-selected');
-  moves.forEach(function(m) {
-    var el = document.querySelector('#board .square-' + m.to);
-    if (!el) return;
-    if (m.captured) el.classList.add('highlight-capture');
-    else el.classList.add('highlight-legal');
-  });
-}
-function onMouseoutSquare() {
-  clearMoveHL();
-}
-
-/* ── Load position ────────────────────────────────────────── */
-function loadPos(data) {
-  curData = data;
-  chess   = new Chess(data.fen);
-  autoIdx = 0;
-  hideResults();
-  clearSuggHL();
-  clearMoveHL();
-  document.getElementById('promoOverlay').style.display = 'none';
-
+/* ── Board init/load ── */
+function initBoard(fen) {
   if (!board) {
     board = Chessboard('board', {
-      position:          data.fen,
+      position:          fen,
       pieceTheme:        PT,
       showNotation:      true,
       draggable:         true,
@@ -450,95 +405,421 @@ function loadPos(data) {
       onMouseoverSquare: onMouseoverSquare,
       onMouseoutSquare:  onMouseoutSquare
     });
-    window.addEventListener('resize', function() { board.resize(); });
+    window.addEventListener('resize', debounce(function(){board.resize();},150));
   } else {
-    board.position(data.fen, false);
+    board.position(fen, false);
   }
-
-  setTimeout(function() { applySuggHL(data.from, data.to); }, 80);
 }
 
-/* ── Dots ecran 1 ─────────────────────────────────────────── */
-function buildDots1() {
-  var row = document.getElementById('dots1');
-  S1.forEach(function(ex, i) {
-    if (i === 0) return;
-    var btn = document.createElement('button');
-    btn.className = 'ex-dot';
-    btn.textContent = i;
-    btn.title = ex.label;
-    btn.onclick = function() { goS1(i); };
-    row.appendChild(btn);
-  });
-}
-function goS1(i) {
-  s1Cur = i;
-  document.querySelectorAll('#dots1 .ex-dot').forEach(function(d, j) {
-    d.classList.toggle('active', j + 1 === i);
-  });
-  document.getElementById('exLabel1').textContent = S1[i].label;
-  document.getElementById('exAnn1').textContent   = S1[i].ann;
-  loadPos(S1[i]);
+/* ── Acordeoane ── */
+function toggleAcc(idx) {
+  var wasOpen = (accOpen === idx);
+  // Inchide toate
+  for (var i = 0; i < 4; i++) {
+    document.getElementById('acc'+i).classList.remove('open');
+    document.getElementById('accBody'+i).classList.remove('open');
+  }
+  arenaActive = false;
+  if (!wasOpen) {
+    accOpen = idx;
+    document.getElementById('acc'+idx).classList.add('open');
+    document.getElementById('accBody'+idx).classList.add('open');
+    setTimeout(function() {
+      board.resize();
+      if (idx === 0) showAccStatic('8/8/1r6/2k5/K7/8/8/8 b - - 0 1');
+      else if (idx === 1) showAccStatic('8/4k3/8/8/1q6/8/8/K7 b - - 0 1');
+      else if (idx === 2) loadEx(EX_A[0], 'A', 0);
+      else if (idx === 3) startArena();
+    }, 30);
+  } else {
+    accOpen = -1;
+    if (window._annClear) window._annClear();
+    board.position(INIT_FEN, false);
+  }
 }
 
-/* ── Dots ecran 2 ─────────────────────────────────────────── */
-function buildDots2() {
-  var row = document.getElementById('dots2');
-  S2.forEach(function(ex, i) {
+function showAccStatic(fen) {
+  chess = new Chess(fen);
+  initBoard(fen);
+  if (window._annClear) window._annClear();
+}
+
+/* ── Secțiunea 3: Greșeli frecvente ── */
+var curGroup = 'A';
+var curExIdx = 0;
+
+function buildDots() {
+  var rowA = document.getElementById('dotsA');
+  var rowB = document.getElementById('dotsB');
+  EX_A.forEach(function(ex, i) {
     var btn = document.createElement('button');
     btn.className = 'ex-dot' + (i === 0 ? ' active' : '');
     btn.textContent = i + 1;
     btn.title = ex.label;
-    btn.onclick = function() { goS2(i); };
-    row.appendChild(btn);
+    btn.id = 'dotA' + i;
+    btn.onclick = (function(ii) { return function() { loadEx(EX_A[ii], 'A', ii); }; })(i);
+    rowA.appendChild(btn);
+  });
+  EX_B.forEach(function(ex, i) {
+    var btn = document.createElement('button');
+    btn.className = 'ex-dot';
+    btn.textContent = i + 1;
+    btn.title = ex.label;
+    btn.id = 'dotB' + i;
+    btn.onclick = (function(ii) { return function() { loadEx(EX_B[ii], 'B', ii); }; })(i);
+    rowB.appendChild(btn);
   });
 }
-function goS2(i) {
-  s2Cur = i;
-  document.querySelectorAll('#dots2 .ex-dot').forEach(function(d, j) {
-    d.classList.toggle('active', j === i);
+
+function loadEx(data, group, idx) {
+  curExData = data;
+  curGroup  = group;
+  curExIdx  = idx;
+  autoIdx   = 0;
+
+  // Actualizează dots
+  ['A','B'].forEach(function(g) {
+    var arr = g === 'A' ? EX_A : EX_B;
+    arr.forEach(function(_, i) {
+      var btn = document.getElementById('dot'+g+i);
+      if (btn) btn.classList.toggle('active', g === group && i === idx);
+    });
   });
-  document.getElementById('exLabel2').textContent = S2[i].label;
-  document.getElementById('exAnn2').textContent   = S2[i].ann;
-  loadPos(S2[i]);
+
+  document.getElementById('exLabel').textContent = data.label;
+  document.getElementById('exAnn').textContent   = data.ann;
+  document.getElementById('exResult').style.display  = 'none';
+  document.getElementById('exResetBtn').style.display = 'none';
+
+  chess = new Chess(data.fen);
+  initBoard(data.fen);
+  applyRedArrow(data.from, data.to);
 }
 
-/* ── Navigare ecrane ──────────────────────────────────────── */
-function goScreen2() {
-  document.getElementById('screen1').style.display = 'none';
-  document.getElementById('screen2').style.display = '';
-  document.getElementById('footer1').style.display = 'none';
-  document.getElementById('footer2').style.display = 'flex';
-  document.getElementById('panelScroll').scrollTop = 0;
-  goS2(0);
-}
-function goScreen1() {
-  document.getElementById('screen2').style.display = 'none';
-  document.getElementById('screen1').style.display = '';
-  document.getElementById('footer2').style.display = 'none';
-  document.getElementById('footer1').style.display = 'flex';
-  document.getElementById('panelScroll').scrollTop = 0;
-  loadPos(S1[s1Cur]);
-  document.getElementById('exLabel1').textContent = s1Cur > 0 ? S1[s1Cur].label : '';
-  document.getElementById('exAnn1').textContent   = s1Cur > 0 ? S1[s1Cur].ann   : '';
+function resetEx() {
+  loadEx(curExData, curGroup, curExIdx);
 }
 
-/* ── Navigare tastatură ───────────────────────────────────── */
-document.addEventListener('keydown', function(e) {
-  var scr = curScreen();
-  if (scr === 1) {
-    if (e.key === 'ArrowRight') goS1(Math.min(s1Cur + 1, S1.length - 1));
-    if (e.key === 'ArrowLeft')  goS1(Math.max(s1Cur - 1, 1));
+/* ── Promovare ── */
+function buildPromoDialog(color) {
+  var pieces = ['q','r','b','n'];
+  var labels = {q:'Damă',r:'Turn',b:'Nebun',n:'Cal'};
+  var btns = document.getElementById('promoBtns');
+  btns.innerHTML = '';
+  pieces.forEach(function(p) {
+    var btn = document.createElement('button');
+    btn.className = 'promo-btn';
+    var img = document.createElement('img');
+    img.src = 'https://lichess1.org/assets/piece/caliente/' + (color==='w'?'w':'b') + p.toUpperCase() + '.svg';
+    btn.appendChild(img);
+    btn.onclick = function(){ doPromo(p); };
+    btns.appendChild(btn);
+  });
+}
+function showPromo(src,tgt){ pendingSrc=src; pendingTgt=tgt; buildPromoDialog(chess.turn()); document.getElementById('promoOverlay').style.display='flex'; }
+function doPromo(piece){
+  document.getElementById('promoOverlay').style.display='none';
+  var move = chess.move({from:pendingSrc,to:pendingTgt,promotion:piece});
+  if(!move) return;
+  board.position(chess.fen());
+  if(window._annClear) window._annClear();
+  afterExMove();
+}
+
+/* ── Board handlers (shared) ── */
+function onDragStart(source, piece) {
+  if (chess.game_over()) return false;
+  if (arenaActive) {
+    if (!solving || solved) return false;
+    if (viewIdx < moveHistory.length) return false;
+    if (solverColor==='w' && piece.startsWith('b')) return false;
+    if (solverColor==='b' && piece.startsWith('w')) return false;
+    return true;
+  }
+  // mode exemplu
+  if (!curExData || !accOpen || accOpen !== 2) return false;
+  if (chess.turn()==='w' && piece.search(/^b/)!==-1) return false;
+  if (chess.turn()==='b' && piece.search(/^w/)!==-1) return false;
+  return true;
+}
+function onDrop(source, target) {
+  clearHL(); selSq = null;
+  if (source===target) return 'snapback';
+  if (arenaActive) return tryArenaMove(source, target);
+  return tryExMove(source, target);
+}
+function onSnapEnd(){ if(chess) board.position(chess.fen()); }
+function onMouseoverSquare(square) {
+  if (chess.game_over()) return;
+  var moves = chess.moves({square:square,verbose:true});
+  if (!moves.length) return;
+  var sel = document.querySelector('#board .square-'+square);
+  if (sel) sel.classList.add('highlight-selected');
+  moves.forEach(function(m){
+    var el = document.querySelector('#board .square-'+m.to);
+    if(!el) return;
+    if(m.captured) el.classList.add('highlight-capture');
+    else           el.classList.add('highlight-legal');
+  });
+}
+function onMouseoutSquare(){
+  document.querySelectorAll('#board .highlight-selected,.highlight-legal,.highlight-capture')
+    .forEach(function(el){el.classList.remove('highlight-selected','highlight-legal','highlight-capture');});
+}
+
+/* ── Mutare în ecranul de exemple ── */
+function tryExMove(source, target) {
+  var moves = chess.moves({square:source,verbose:true});
+  var isPromo = moves.some(function(m){return m.to===target&&m.flags.indexOf('p')!==-1;});
+  if (isPromo) { showPromo(source,target); return 'snapback'; }
+  var move = chess.move({from:source,to:target});
+  if (!move) return 'snapback';
+  if (window._annClear) window._annClear();
+  afterExMove();
+}
+function afterExMove() {
+  if (chess.in_stalemate()) {
+    showExResult('🤝 PAT! Partida se termină remiză.','ok');
+  } else if (chess.in_checkmate()) {
+    showExResult('♟ ȘAH MAT!','ok');
+  } else if (!chess.game_over() && curExData && curExData.autoResponse) {
+    if (autoIdx < curExData.autoResponse.length && chess.turn()==='b') {
+      var san = curExData.autoResponse[autoIdx++];
+      setTimeout(function(){
+        chess.move(san);
+        board.position(chess.fen(),true);
+        afterExMove();
+      },450);
+    }
+  }
+}
+function showExResult(msg,cls){
+  var el=document.getElementById('exResult');
+  el.textContent=msg; el.className='task-msg '+cls; el.style.display='';
+  document.getElementById('exResetBtn').style.display='';
+}
+
+/* ══════════════════════════════════════
+   ARENA (sertar 4)
+══════════════════════════════════════ */
+function startArena() {
+  arenaActive = true;
+  if (!PUZZLES.length) return;
+  loadState();
+  updateProgress();
+  loadPuzzle(curIdx);
+}
+
+function shakeBoard(){
+  var bw=document.getElementById('boardWrapper');
+  bw.classList.remove('board-shake'); void bw.offsetWidth; bw.classList.add('board-shake');
+  bw.addEventListener('animationend',function(){bw.classList.remove('board-shake');},{once:true});
+}
+function celebrate(){if(typeof confetti!=='undefined')confetti({particleCount:80,spread:60,origin:{y:0.60}});}
+function setArenaMsg(type,text){var el=document.getElementById('arenaMsg');el.className='task-msg'+(type?' '+type:'');el.innerHTML=text;}
+
+$(document).on('click','.square-55d63',function(){
+  if(!arenaActive||!solving||solved) return;
+  if(viewIdx<moveHistory.length) return;
+  var sq=$(this).data('square');
+  var piece=chess.get(sq);
+  var moverColor=chess.turn();
+  if(selSq){
+    var prevSq=selSq; clearHL(); selSq=null;
+    if(sq===prevSq) return;
+    if(piece&&piece.color===moverColor){selSq=sq;applyHL(sq,'square-selected');}
+    else tryArenaMove(prevSq,sq);
   } else {
-    if (e.key === 'ArrowRight') goS2(Math.min(s2Cur + 1, S2.length - 1));
-    if (e.key === 'ArrowLeft')  goS2(Math.max(s2Cur - 1, 0));
+    if(!piece||piece.color!==moverColor) return;
+    selSq=sq; applyHL(sq,'square-selected');
   }
 });
 
-/* ── Init ─────────────────────────────────────────────────── */
-buildDots1();
-buildDots2();
-loadPos(S1[0]);
+function tryArenaMove(from,to){
+  if(!solving||solved) return 'snapback';
+  var expected=PUZZLES[curIdx].moves[curMoveIdx];
+  if(from!==expected.slice(0,2)||to!==expected.slice(2,4)){
+    shakeBoard();
+    setArenaMsg('err','❌ Mutare greșită — mai încearcă!');
+    setTimeout(function(){setArenaMsg('idle','<b>'+(solverColor==='w'?'Albul':'Negrul')+' la mutare.</b> Forțează patul!');},1400);
+    return 'snapback';
+  }
+  var move=chess.move({from:from,to:to,promotion:expected.length>4?expected.slice(4):'q'});
+  if(!move) return 'snapback';
+  board.position(chess.fen(),true);
+  recordMove(from,to); setLastMoveHL(from,to); curMoveIdx++;
+  if(curMoveIdx>=PUZZLES[curIdx].moves.length) onArenaSolved();
+  else{setArenaMsg('idle','✓ Bună mutare! Răspunde adversarul…');setTimeout(arenaOpponentReply,500);}
+  return undefined;
+}
+function arenaOpponentReply(){
+  if(curMoveIdx>=PUZZLES[curIdx].moves.length) return;
+  var mv=PUZZLES[curIdx].moves[curMoveIdx];
+  var moveObj=chess.move({from:mv.slice(0,2),to:mv.slice(2,4),promotion:mv.length>4?mv.slice(4):'q'});
+  if(moveObj){
+    board.position(chess.fen(),true);
+    recordMove(mv.slice(0,2),mv.slice(2,4)); setLastMoveHL(mv.slice(0,2),mv.slice(2,4)); curMoveIdx++;
+    if(curMoveIdx>=PUZZLES[curIdx].moves.length) onArenaSolved();
+    else setArenaMsg('idle','E rândul tău. Forțează patul!');
+  }
+}
+function onArenaSolved(){
+  solved=true; solving=false;
+  completed[curIdx]=true;
+  saveState(); updateProgress(); celebrate();
+  setArenaMsg('ok','✅ Pat forțat! Remiză obținută!');
+  document.getElementById('nextBtn').disabled=(curIdx>=PUZZLES.length-1);
+  document.getElementById('btnHint').disabled=true;
+  document.getElementById('btnSol').disabled=true;
+  var done=Object.keys(completed).length;
+  var rb=document.getElementById('resetAllBtn');
+  if(done>0&&rb) rb.style.display='flex';
+  if(done>=PUZZLES.length) document.getElementById('playAgainBtn').style.display='flex';
+}
+function recordMove(from,to){
+  moveHistory.push({from:from,to:to,prom:'q'});
+  viewIdx=moveHistory.length; updateNavBtns();
+}
+function replayToPos(idx){
+  var temp=new Chess(PUZZLES[curIdx].fen);
+  for(var i=0;i<idx;i++){var m=moveHistory[i];temp.move({from:m.from,to:m.to,promotion:m.prom});}
+  board.position(temp.fen(),false); clearHL();
+  if(idx>0&&moveHistory[idx-1]){applyHL(moveHistory[idx-1].from,'last-move-from');applyHL(moveHistory[idx-1].to,'last-move-to');}
+}
+function stepBack(){if(viewIdx>0){viewIdx--;replayToPos(viewIdx);updateNavBtns();}}
+function stepForward(){if(viewIdx<moveHistory.length){viewIdx++;replayToPos(viewIdx);updateNavBtns();}}
+function updateNavBtns(){
+  document.getElementById('stepBackBtn').disabled=(viewIdx<=0);
+  document.getElementById('stepFwdBtn').disabled=(viewIdx>=moveHistory.length);
+}
+
+function loadPuzzle(idx){
+  if(idx<0||idx>=PUZZLES.length) return;
+  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
+  curIdx=idx; curMoveIdx=0; solved=false; selSq=null;
+  moveHistory=[]; viewIdx=0;
+  document.getElementById('playAgainBtn').style.display='none';
+  if(window._annClear) window._annClear();
+
+  var p=PUZZLES[idx];
+  chess=new Chess(p.fen);
+  curMoveIdx=0;
+  solverColor=chess.turn();
+  board.orientation(solverColor==='w'?'white':'black');
+  board.position(chess.fen(),false);
+  updateArenaUI(); updateProgress(); saveState();
+
+  if(completed[idx]){
+    solving=false; solved=true;
+    setArenaMsg('ok','✅ Deja rezolvat — poți încerca din nou!');
+    document.getElementById('nextBtn').disabled=(curIdx>=PUZZLES.length-1);
+    document.getElementById('btnHint').disabled=true;
+    document.getElementById('btnSol').disabled=true;
+  } else {
+    solving=true;
+    setArenaMsg('idle','<b>'+(solverColor==='w'?'Albul':'Negrul')+' la mutare.</b> Forțează patul!');
+    document.getElementById('nextBtn').disabled=true;
+    document.getElementById('btnHint').disabled=false;
+    document.getElementById('btnSol').disabled=false;
+  }
+  clearHL();
+}
+function updateArenaUI(){
+  var p=PUZZLES[curIdx];
+  var badge=document.getElementById('turnBadge');
+  if(solverColor==='w'){badge.textContent='□ Albul mută';badge.className='turn-badge white';}
+  else{badge.textContent='■ Negrul mută';badge.className='turn-badge black';}
+  var lvl=Math.max(0,Math.min((p.level||1)-1,2));
+  var labels=['UȘOR','MEDIU','GREU'];
+  var classes=['','med','hard'];
+  var lb=document.getElementById('levelBadge');
+  lb.textContent=labels[lvl]; lb.className='level-badge'+(classes[lvl]?' '+classes[lvl]:'');
+  document.getElementById('prevBtn').disabled=(curIdx===0);
+}
+function updateProgress(){
+  var done=Object.keys(completed).length;
+  var total=PUZZLES.length||25;
+  document.getElementById('progressFill').style.width=(done/total*100)+'%';
+  document.getElementById('progressOuter').setAttribute('data-tip',done+' / '+total+' rezolvate');
+}
+function saveState(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({idx:curIdx,completed:completed}));}catch(e){}}
+function loadState(){
+  try{
+    var d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
+    if(!d) return;
+    var raw=d.completed||{};
+    completed={};
+    for(var k in raw){var n=Number(k);if(!isNaN(n))completed[n]=true;}
+    curIdx=typeof d.idx==='number'?Math.min(d.idx,PUZZLES.length-1):0;
+  }catch(e){}
+}
+function prevPuzzle(){if(curIdx>0)loadPuzzle(curIdx-1);}
+function nextPuzzle(){if(curIdx<PUZZLES.length-1)loadPuzzle(curIdx+1);}
+function resetPuzzle(){loadPuzzle(curIdx);}
+function continuePuzzle(){
+  var keys=Object.keys(completed).map(Number);
+  var max=keys.length?Math.max.apply(null,keys):-1;
+  loadPuzzle(Math.min(max+1,PUZZLES.length-1));
+}
+function showHint(){
+  if(!solving||solved||viewIdx<moveHistory.length) return;
+  var src=PUZZLES[curIdx].moves[curMoveIdx].slice(0,2);
+  clearHL(); applyHL(src,'hint-square');
+  setArenaMsg('idle','💡 Indiciu: mută piesa de pe <b>'+src+'</b>.');
+}
+function showSolution(){
+  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
+  solving=false;
+  var p=PUZZLES[curIdx];
+  chess=new Chess(p.fen); moveHistory=[]; viewIdx=0;
+  board.position(p.fen,false); clearHL(); updateNavBtns();
+  document.getElementById('btnHint').disabled=true;
+  document.getElementById('btnSol').disabled=true;
+  setArenaMsg('idle','🔑 Arată soluția…');
+  var playNext=function(){
+    if(viewIdx>=p.moves.length){setArenaMsg('idle','🔑 Soluție completă. Apasă Resetează ca să o încerci tu.');return;}
+    var mv=p.moves[viewIdx];
+    var m={from:mv.slice(0,2),to:mv.slice(2,4),prom:mv.length>4?mv.slice(4):'q'};
+    chess.move({from:m.from,to:m.to,promotion:m.prom});
+    board.position(chess.fen(),true);
+    moveHistory.push(m); viewIdx++; setLastMoveHL(m.from,m.to); updateNavBtns();
+    autoPlayTimer=setTimeout(playNext,700);
+  };
+  playNext();
+}
+function resetAll(){
+  try{localStorage.removeItem(SAVE_KEY);}catch(e){}
+  completed={}; updateProgress(); loadPuzzle(0);
+  document.getElementById('playAgainBtn').style.display='none';
+  document.getElementById('resetAllBtn').style.display='none';
+}
+
+/* ── Init ── */
+buildDots();
+chess = new Chess(INIT_FEN);
+board = Chessboard('board', {
+  position:          INIT_FEN,
+  pieceTheme:        PT,
+  showNotation:      true,
+  draggable:         true,
+  onDragStart:       onDragStart,
+  onDrop:            onDrop,
+  onSnapEnd:         onSnapEnd,
+  onMouseoverSquare: onMouseoverSquare,
+  onMouseoutSquare:  onMouseoutSquare
+});
+window.addEventListener('resize', debounce(function(){board.resize();},150));
+
+fetch('data/stalemate_top25.json')
+  .then(function(r){return r.json();})
+  .then(function(data){
+    PUZZLES = data;
+    updateProgress();
+    setArenaMsg('idle','Deschide sertarul pentru a începe!');
+  })
+  .catch(function(){
+    setArenaMsg('err','⚠ Puzzle-urile nu s-au putut încărca.');
+  });
 
 </script>
 </body>
