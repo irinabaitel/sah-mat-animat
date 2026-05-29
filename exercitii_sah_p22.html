@@ -73,6 +73,17 @@
     .btn-trans:hover { opacity:0.88; }
 
     #boardWrapper { touch-action:none; -webkit-touch-callout:none; }
+
+    /* ── ACORDEOANE ── */
+    .acc-item { border-radius:14px; border:1.5px solid rgba(26,58,107,0.16); margin-bottom:10px; overflow:hidden; background:rgba(255,255,255,0.55); }
+    .acc-head { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; cursor:pointer; background:rgba(26,58,107,0.06); font-family:var(--font-display); font-size:1.05rem; font-weight:700; color:var(--c-navy); user-select:none; transition:background .15s; gap:10px; }
+    .acc-head:hover { background:rgba(26,58,107,0.11); }
+    .acc-head.open  { background:rgba(26,58,107,0.11); }
+    .acc-icon { font-size:0.72rem; flex-shrink:0; transition:transform .25s; }
+    .acc-head.open .acc-icon { transform:rotate(90deg); }
+    .acc-body { max-height:0; overflow:hidden; transition:max-height .35s ease; }
+    .acc-body.open { max-height:600px; }
+    .acc-inner { padding:12px 14px 16px; display:flex; flex-direction:column; gap:8px; }
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -93,21 +104,50 @@
     </div>
 
     <div class="panel-col">
-      <div class="panel-scroll">
+      <div class="panel-scroll" id="panel-scroll">
 
-        <div class="panel-heading" id="setTitle">Șah — Atac</div>
-        <span class="turn-badge white" id="turnBadge">⬜ Albul mută</span>
-
-        <div class="progress-wrap">
-          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        <!-- Acordeon 0: Atac -->
+        <div class="acc-item">
+          <div class="acc-head" id="accHead0" onclick="toggleAcc(0)">
+            <span>⚔️ Șah — Atac</span>
+            <span class="acc-icon">▶</span>
+          </div>
+          <div class="acc-body" id="accBody0">
+            <div class="acc-inner">
+              <span class="turn-badge white" id="turnBadge-0">⬜ Albul mută</span>
+              <div class="progress-wrap">
+                <div class="progress-fill" id="progressFill-0" style="width:0%"></div>
+              </div>
+              <div class="task-msg idle" id="taskMsg-0">Atacă regele!</div>
+              <div class="ctrl-row">
+                <button class="btn-sm btn-prev"  id="prevBtn-0"  onclick="prevPuzzle()"  disabled>← Precedentul</button>
+                <button class="btn-sm btn-reset"                 onclick="resetPuzzle()">↺ Resetează</button>
+                <button class="btn-sm btn-next"  id="nextBtn-0"  onclick="nextPuzzle()"  disabled>Următorul →</button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="task-msg idle" id="taskMsg">Atacă regele!</div>
-
-        <div class="ctrl-row">
-          <button class="btn-sm btn-prev"  id="prevBtn" onclick="prevPuzzle()" disabled>← Precedentul</button>
-          <button class="btn-sm btn-reset" onclick="resetPuzzle()">↺ Resetează</button>
-          <button class="btn-sm btn-next"  id="nextBtn" onclick="nextPuzzle()" disabled>Următorul →</button>
+        <!-- Acordeon 1: Apărare -->
+        <div class="acc-item">
+          <div class="acc-head" id="accHead1" onclick="toggleAcc(1)">
+            <span>🛡️ Șah — Apărare</span>
+            <span class="acc-icon">▶</span>
+          </div>
+          <div class="acc-body" id="accBody1">
+            <div class="acc-inner">
+              <span class="turn-badge white" id="turnBadge-1">⬜ Albul mută</span>
+              <div class="progress-wrap">
+                <div class="progress-fill" id="progressFill-1" style="width:0%"></div>
+              </div>
+              <div class="task-msg idle" id="taskMsg-1">Regele tău este atacat. Cum îl aperi?</div>
+              <div class="ctrl-row">
+                <button class="btn-sm btn-prev"  id="prevBtn-1"  onclick="prevPuzzle()"  disabled>← Precedentul</button>
+                <button class="btn-sm btn-reset"                 onclick="resetPuzzle()">↺ Resetează</button>
+                <button class="btn-sm btn-next"  id="nextBtn-1"  onclick="nextPuzzle()"  disabled>Următorul →</button>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -195,12 +235,14 @@ const PUZZLES = [
 ];
 
 /* ── STATE ────────────────────────────────────────── */
-let curIdx    = 0;
-let chess     = null;
-let board     = null;
-let selSq     = null;
-let solved    = false;
-let completed = {};   /* { puzzleIdx: true } — puzzle-uri rezolvate */
+let curIdx      = 0;
+let chess       = null;
+let board       = null;
+let selSq       = null;
+let solved      = false;
+let completed   = {};
+let accOpen     = -1;
+let setLastIdx  = [-1, -1];  /* ultimul puzzle jucat per set */
 
 /* ── UTILS ────────────────────────────────────────── */
 function setOf(i)    { return PUZZLES[i].set; }
@@ -214,6 +256,25 @@ function nextSetHasPuzzles() {
   return setCount(setOf(curIdx) + 1) > 0;
 }
 
+/* ── ACORDEOANE ───────────────────────────────────── */
+function toggleAcc(setIdx) {
+  const wasOpen = (accOpen === setIdx);
+  [0,1].forEach(i => {
+    document.getElementById('accBody' + i).classList.remove('open');
+    document.getElementById('accHead' + i).classList.remove('open');
+  });
+  if (!wasOpen) {
+    accOpen = setIdx;
+    document.getElementById('accBody' + setIdx).classList.add('open');
+    document.getElementById('accHead' + setIdx).classList.add('open');
+    const resumeIdx = setLastIdx[setIdx] >= 0 ? setLastIdx[setIdx] : setStart(setIdx);
+    setTimeout(() => { board.resize(); loadPuzzle(resumeIdx); }, 30);
+  } else {
+    accOpen = -1;
+    board.position('start', false);
+  }
+}
+
 /* ── BARĂ PROGRES ─────────────────────────────────── */
 function updateProgress() {
   const s     = setOf(curIdx);
@@ -223,7 +284,7 @@ function updateProgress() {
   for (let i = start; i < start + count; i++) {
     if (completed[i]) solvedCount++;
   }
-  document.getElementById('progressFill').style.width =
+  document.getElementById('progressFill-' + s).style.width =
     (solvedCount / count * 100) + '%';
 }
 
@@ -274,7 +335,7 @@ function hlKing() {
 
 /* ── FEEDBACK ─────────────────────────────────────── */
 function setMsg(type, text) {
-  const el = document.getElementById('taskMsg');
+  const el = document.getElementById('taskMsg-' + setOf(curIdx));
   el.className = 'task-msg ' + type;
   el.innerHTML = text;
 }
@@ -282,23 +343,21 @@ function idleMsg() { setMsg('idle', SETS[setOf(curIdx)].instruction); }
 
 /* ── UI ───────────────────────────────────────────── */
 function updateUI() {
-  const p = PUZZLES[curIdx];
-  const s = SETS[p.set];
+  const p  = PUZZLES[curIdx];
+  const si = p.set;
 
-  document.getElementById('pageTitle').textContent = s.title;
-  document.getElementById('setTitle').textContent  = s.title;
-
-  const badge = document.getElementById('turnBadge');
+  const badge = document.getElementById('turnBadge-' + si);
   if (p.turn === 'w') { badge.textContent = '⬜ Albul mută'; badge.className = 'turn-badge white'; }
   else                { badge.textContent = '⬛ Negrul mută'; badge.className = 'turn-badge black'; }
 
-  document.getElementById('prevBtn').disabled = (curIdx === 0);
-  document.getElementById('nextBtn').disabled = true;
+  document.getElementById('prevBtn-' + si).disabled = (curIdx === setStart(si));
+  document.getElementById('nextBtn-' + si).disabled = true;
 }
 
 /* ── LOAD ─────────────────────────────────────────── */
 function loadPuzzle(idx) {
   curIdx = idx; solved = false; selSq = null;
+  setLastIdx[setOf(idx)] = idx;
   chess = new Chess(PUZZLES[idx].fen);
   board.position(PUZZLES[idx].fen, false);
   clearHL();
@@ -320,7 +379,7 @@ function tryMove(from, to) {
     updateProgress();
     celebrate(false);
     setMsg('ok', SETS[setOf(curIdx)].successMsg);
-    document.getElementById('nextBtn').disabled = false;
+    document.getElementById('nextBtn-' + setOf(curIdx)).disabled = false;
     return true;
   } else {
     playWrong();
@@ -394,8 +453,8 @@ function showTransition() {
 function dismissTransition() {
   document.getElementById('transOverlay').classList.remove('show');
   const nextSet = setOf(curIdx) + 1;
-  if (nextSetHasPuzzles()) { loadPuzzle(setStart(nextSet)); }
-  else                     { loadPuzzle(0); }
+  if (nextSetHasPuzzles()) { toggleAcc(nextSet); }
+  else                     { toggleAcc(0); }
 }
 
 /* ── INIT ─────────────────────────────────────────── */
@@ -406,7 +465,7 @@ board = Chessboard('board', {
 });
 function debounce(fn, d) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; }
 window.addEventListener('resize', debounce(() => board.resize(), 150));
-$(document).ready(() => loadPuzzle(0));
+$(document).ready(() => { board.position('start', false); });
 </script>
 </body>
 </html>
