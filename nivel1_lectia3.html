@@ -157,6 +157,17 @@
 /* Arrow — standard lectia5 */
 @keyframes drawArrow { from { stroke-dashoffset: var(--arrow-len,300); } to { stroke-dashoffset:0; } }
 .sah-arr-svg { position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:20; }
+
+/* ── Accordion ── */
+.acc-item { border-radius:14px; border:1.5px solid rgba(26,58,107,0.16); margin-bottom:10px; overflow:hidden; background:rgba(255,255,255,0.55); }
+.acc-head { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; cursor:pointer; background:rgba(26,58,107,0.06); font-family:var(--font-display); font-size:1.02rem; font-weight:700; color:var(--c-navy); user-select:none; transition:background .15s; gap:10px; }
+.acc-head:hover { background:rgba(26,58,107,0.11); }
+.acc-head.open  { background:rgba(26,58,107,0.11); }
+.acc-icon { font-size:0.72rem; flex-shrink:0; transition:transform .25s; transform:rotate(0deg); }
+.acc-head.open .acc-icon { transform:rotate(90deg); }
+.acc-body { max-height:0; overflow:hidden; transition:max-height .38s ease; }
+.acc-body.open { max-height:2400px; }
+.acc-inner { padding:14px 16px 18px; display:flex; flex-direction:column; gap:10px; }
 </style>
 </head>
 <body>
@@ -186,107 +197,108 @@
     <div class="panel-col">
       <div class="panel-scroll" id="panel-scroll">
 
-        <!-- ── HUB SECTION ── -->
-        <div class="sec active" id="sec-hub">
+        <!-- ── ACORDEON ── -->
+        <div id="acc-wrapper">
           <h1 style="font-family:var(--font-display);font-size:1.3rem;color:var(--c-navy);margin-bottom:6px;">Mutările cu reguli proprii</h1>
-          <p style="font-size:1rem;line-height:1.7;">Mutările speciale par că încalcă regulile pe care le-am învățat până acum. Cu toate acestea, ele sunt permise de regulament — toți jucătorii de șah trebuie să le cunoască!</p>
-          <div class="topic-cards">
-            <div class="topic-card" onclick="openSection('castle')">
-              <div class="tc-icon">♚♜</div>
-              <div class="tc-name">Rocada</div>
-              <div class="tc-desc">Regele la adăpost + Turnul intră în joc</div>
-            </div>
-            <div class="topic-card" onclick="openSection('promo')">
-              <div class="tc-icon">♟→♛</div>
-              <div class="tc-name">Promovarea</div>
-              <div class="tc-desc">Pionul eroic ajunge la capăt și devine Regină!</div>
-            </div>
-            <div class="topic-card" onclick="openSection('ep')">
-              <div class="tc-icon">↗</div>
-              <div class="tc-name">En passant</div>
-              <div class="tc-desc">Captura în trecere — acum ori niciodată!</div>
-            </div>
-          </div>
-        </div>
+          <p style="font-size:1rem;line-height:1.7;margin-bottom:10px;">Mutările speciale par că încalcă regulile pe care le-am învățat până acum. Cu toate acestea, ele sunt permise de regulament — toți jucătorii de șah trebuie să le cunoască!</p>
 
-        <!-- ── ROCADA SECTION ── -->
-        <div class="sec" id="sec-castle">
-          <button class="back-btn" onclick="goBack()">← Înapoi la teme</button>
-          <div style="font-family:var(--font-display);font-size:1.15rem;color:var(--c-navy);font-weight:700;">♚ Rocada</div>
-          <p style="font-size:1rem;line-height:1.7;">Rocada este o <strong>mutare de rege</strong> — singura mutare în care ai voie să miști două piese. Regele se deplasează două pătrate, iar turnul se așază de partea cealaltă.</p>
-          <p style="font-size:0.9rem;line-height:1.6;color:rgba(26,26,46,.65);">Apasă pe buton de 3 ori pentru a vedea rocada pas cu pas:</p>
-          <div class="mode-toggle">
-            <button class="mode-btn active" id="r-btn-small" onclick="rSetMode('small')">Mică (0-0)</button>
-            <button class="mode-btn"        id="r-btn-big"   onclick="rSetMode('big')">Mare (0-0-0)</button>
+          <!-- Acc 0: Rocada -->
+          <div class="acc-item">
+            <div class="acc-head" id="acc0" onclick="toggleAcc(0)">
+              <span>♚♜ Rocada</span>
+              <span class="acc-icon">▶</span>
+            </div>
+            <div class="acc-body" id="body0">
+              <div class="acc-inner">
+                <p style="font-size:1rem;line-height:1.7;">Rocada este o <strong>mutare de rege</strong> — singura mutare în care ai voie să miști două piese. Regele se deplasează două pătrate, iar turnul se așază de partea cealaltă.</p>
+                <p style="font-size:0.9rem;line-height:1.6;color:rgba(26,26,46,.65);">Apasă pe buton de 3 ori pentru a vedea rocada pas cu pas:</p>
+                <div class="mode-toggle">
+                  <button class="mode-btn active" id="r-btn-small" onclick="rSetMode('small')">Mică (0-0)</button>
+                  <button class="mode-btn"        id="r-btn-big"   onclick="rSetMode('big')">Mare (0-0-0)</button>
+                </div>
+                <span class="demo-badge" id="r-badge"></span>
+                <div class="demo-title" id="r-title"></div>
+                <div class="demo-text"  id="r-text"></div>
+                <div class="step-btns">
+                  <button class="step-btn" id="r-prev" onclick="rPrev()">◀ Înapoi</button>
+                  <button class="step-btn" id="r-next" onclick="rNext()">Înainte ▶</button>
+                </div>
+                <hr class="sec-divider">
+                <div class="cond-title">6 Condiții pentru Rocadă:</div>
+                <ul class="cond-list" id="cond-list-castle">
+                  <li>Regele nu s-a mișcat niciodată în această partidă</li>
+                  <li>Turnul ales nu s-a mișcat niciodată în această partidă</li>
+                  <li>Nicio piesă nu se află între Rege și Turn</li>
+                  <li class="warn">Regele nu este în șah în momentul în care se face rocada</li>
+                  <li class="warn">Regele nu trece printr-un câmp atacat de adversar</li>
+                  <li class="warn">Regele nu ajunge pe un câmp atacat (nu intră în șah)</li>
+                </ul>
+                <div class="hl-box" style="margin-top:6px;">
+                  <strong>🏆 Regulă de turneu:</strong> Trebuie să miști mai întâi <strong>regele</strong>, apoi, cu <strong>aceeași mână</strong>, turnul. Dacă atingi turnul primul, ești obligat să-l muți — și nu mai poți face rocada! Dacă faci rocada cu <strong>două mâini</strong>, se consideră <strong>mutare ilegală</strong>.
+                </div>
+                <button class="step-btn" style="margin-top:6px;" onclick="startExTab('castle')">🧩 Exerciții Rocadă →</button>
+              </div>
+            </div>
           </div>
-          <span class="demo-badge" id="r-badge"></span>
-          <div class="demo-title" id="r-title"></div>
-          <div class="demo-text"  id="r-text"></div>
-          <div class="step-btns">
-            <button class="step-btn" id="r-prev" onclick="rPrev()">◀ Înapoi</button>
-            <button class="step-btn" id="r-next" onclick="rNext()">Înainte ▶</button>
-          </div>
-          <hr class="sec-divider">
-          <div class="cond-title">6 Condiții pentru Rocadă:</div>
-          <ul class="cond-list" id="cond-list-castle">
-            <li>Regele nu s-a mișcat niciodată în această partidă</li>
-            <li>Turnul ales nu s-a mișcat niciodată în această partidă</li>
-            <li>Nicio piesă nu se află între Rege și Turn</li>
-            <li class="warn">Regele nu este în șah în momentul în care se face rocada</li>
-            <li class="warn">Regele nu trece printr-un câmp atacat de adversar</li>
-            <li class="warn">Regele nu ajunge pe un câmp atacat (nu intră în șah)</li>
-          </ul>
-          <div class="hl-box" style="margin-top:6px;">
-            <strong>🏆 Regulă de turneu:</strong> Trebuie să miști mai întâi <strong>regele</strong>, apoi, cu <strong>aceeași mână</strong>, turnul. Dacă atingi turnul primul, ești obligat să-l muți — și nu mai poți face rocada! Dacă faci rocada cu <strong>două mâini</strong>, se consideră <strong>mutare ilegală</strong>.
-          </div>
-          <button class="step-btn" style="margin-top:6px;" onclick="startExTab('castle')">🧩 Exerciții Rocadă →</button>
-        </div>
 
-        <!-- ── PROMOVARE SECTION ── -->
-        <div class="sec" id="sec-promo">
-          <button class="back-btn" onclick="goBack()">← Înapoi la teme</button>
-          <div style="font-family:var(--font-display);font-size:1.15rem;color:var(--c-navy);font-weight:700;">♟ Promovarea</div>
-          <p style="font-size:1rem;line-height:1.7;">Când un pion ajunge la <strong>ultima linie a adversarului</strong> (linia 8 pentru alb, linia 1 pentru negru), se <strong>transformă imediat</strong> în altă piesă. Aproape mereu: Regina!</p>
-          <span class="demo-badge" id="p-badge"></span>
-          <div class="demo-title" id="p-title"></div>
-          <div class="demo-text"  id="p-text"></div>
-          <div class="step-btns">
-            <button class="step-btn" id="p-prev" onclick="pPrev()">◀ Înapoi</button>
-            <button class="step-btn" id="p-next" onclick="pNext()">Înainte ▶</button>
+          <!-- Acc 1: Promovarea -->
+          <div class="acc-item">
+            <div class="acc-head" id="acc1" onclick="toggleAcc(1)">
+              <span>♟→♛ Promovarea</span>
+              <span class="acc-icon">▶</span>
+            </div>
+            <div class="acc-body" id="body1">
+              <div class="acc-inner">
+                <p style="font-size:1rem;line-height:1.7;">Când un pion ajunge la <strong>ultima linie a adversarului</strong> (linia 8 pentru alb, linia 1 pentru negru), se <strong>transformă imediat</strong> în altă piesă. Aproape mereu: Regina!</p>
+                <span class="demo-badge" id="p-badge"></span>
+                <div class="demo-title" id="p-title"></div>
+                <div class="demo-text"  id="p-text"></div>
+                <div class="step-btns">
+                  <button class="step-btn" id="p-prev" onclick="pPrev()">◀ Înapoi</button>
+                  <button class="step-btn" id="p-next" onclick="pNext()">Înainte ▶</button>
+                </div>
+                <div class="hl-box ok" style="margin-top:6px;">
+                  <strong>🤔 De ce nu mereu Regina?</strong><br>
+                  Uneori promovând în Regină faci <em>pat</em> (egalitate)! În acele situații rare se alege Turn sau Cal. Dar 99% din timp: Regina!
+                </div>
+                <div class="hl-box" style="margin-top:6px;">
+                  <strong>🏆 Reguli de turneu:</strong>
+                  <ul class="cond-list" style="margin-top:6px;">
+                    <li>Dacă pionul ajunge pe ultima linie și jucătorul <strong>apasă pe ceas fără să-l schimbe</strong> cu o altă piesă → mutare ilegală; adversarul primește <strong>1 minut extra</strong>, iar pionul trebuie înlocuit.</li>
+                    <li>Dacă nu are o regină la dispoziție, jucătorul care promovează trebuie să <strong>oprească ceasul</strong> și să îi solicite <strong>arbitrului</strong> o regină.</li>
+                    <li>Un turn așezat <strong>invers pe tablă</strong> va fi considerat turn și jucătorul îl va folosi ca atare.</li>
+                  </ul>
+                </div>
+                <button class="step-btn" style="margin-top:6px;" onclick="startExTab('promo')">🧩 Exerciții Promovare →</button>
+              </div>
+            </div>
           </div>
-          <div class="hl-box ok" style="margin-top:6px;">
-            <strong>🤔 De ce nu mereu Regina?</strong><br>
-            Uneori promovând în Regină faci <em>pat</em> (egalitate)! În acele situații rare se alege Turn sau Cal. Dar 99% din timp: Regina!
-          </div>
-          <div class="hl-box" style="margin-top:6px;">
-            <strong>🏆 Reguli de turneu:</strong>
-            <ul class="cond-list" style="margin-top:6px;">
-              <li>Dacă pionul ajunge pe ultima linie și jucătorul <strong>apasă pe ceas fără să-l schimbe</strong> cu o altă piesă → mutare ilegală; adversarul primește <strong>1 minut extra</strong>, iar pionul trebuie înlocuit.</li>
-              <li>Dacă nu are o regină la dispoziție, jucătorul care promovează trebuie să <strong>oprească ceasul</strong> și să îi solicite <strong>arbitrului</strong> o regină.</li>
-              <li>Un turn așezat <strong>invers pe tablă</strong> va fi considerat turn și jucătorul îl va folosi ca atare.</li>
-            </ul>
-          </div>
-          <button class="step-btn" style="margin-top:6px;" onclick="startExTab('promo')">🧩 Exerciții Promovare →</button>
-        </div>
 
-        <!-- ── EN PASSANT SECTION ── -->
-        <div class="sec" id="sec-ep">
-          <button class="back-btn" onclick="goBack()">← Înapoi la teme</button>
-          <div style="font-family:var(--font-display);font-size:1.15rem;color:var(--c-navy);font-weight:700;">↗ En passant</div>
-          <p style="font-size:1rem;line-height:1.7;">Cea mai surprinzătoare mutare! Dacă un pion adversar avansează <strong>2 pătrate de pe linia de start</strong> și ajunge lângă pionul tău, poți să-l capturezi <em>ca și cum ar fi avansat doar 1 pătrat</em>.</p>
-          <span class="demo-badge" id="ep-badge"></span>
-          <div class="demo-title" id="ep-title"></div>
-          <div class="demo-text"  id="ep-text"></div>
-          <div class="step-btns">
-            <button class="step-btn" id="ep-prev" onclick="epPrev()">◀ Înapoi</button>
-            <button class="step-btn" id="ep-next" onclick="epNext()">Înainte ▶</button>
+          <!-- Acc 2: En passant -->
+          <div class="acc-item">
+            <div class="acc-head" id="acc2" onclick="toggleAcc(2)">
+              <span>↗ En passant</span>
+              <span class="acc-icon">▶</span>
+            </div>
+            <div class="acc-body" id="body2">
+              <div class="acc-inner">
+                <p style="font-size:1rem;line-height:1.7;">Cea mai surprinzătoare mutare! Dacă un pion adversar avansează <strong>2 pătrate de pe linia de start</strong> și ajunge lângă pionul tău, poți să-l capturezi <em>ca și cum ar fi avansat doar 1 pătrat</em>.</p>
+                <span class="demo-badge" id="ep-badge"></span>
+                <div class="demo-title" id="ep-title"></div>
+                <div class="demo-text"  id="ep-text"></div>
+                <div class="step-btns">
+                  <button class="step-btn" id="ep-prev" onclick="epPrev()">◀ Înapoi</button>
+                  <button class="step-btn" id="ep-next" onclick="epNext()">Înainte ▶</button>
+                </div>
+                <div class="hl-box warn" style="margin-top:4px;">
+                  <strong>⚠️ ACUM ORI NICIODATĂ!</strong><br>
+                  Dacă nu capturezi <strong>imediat</strong>, la mutarea aceea, pierzi dreptul pentru totdeauna. Fii atent!
+                </div>
+                <button class="step-btn" style="margin-top:4px;" onclick="startExTab('ep')">🧩 Exerciții En Passant →</button>
+              </div>
+            </div>
           </div>
-          <div class="hl-box warn" style="margin-top:4px;">
-            <strong>⚠️ ACUM ORI NICIODATĂ!</strong><br>
-            Dacă nu capturezi <strong>imediat</strong>, la mutarea aceea, pierzi dreptul pentru totdeauna. Fii atent!
-          </div>
-          <button class="step-btn" style="margin-top:4px;" onclick="startExTab('ep')">🧩 Exerciții En Passant →</button>
-        </div>
+        </div><!-- /#acc-wrapper -->
 
         <!-- ── EXERCISES SECTION ── -->
         <div class="sec" id="sec-ex">
@@ -403,56 +415,55 @@ function renderStep(board, steps, idx, ids) {
 /* ══════════════════════════════════════════
    NAVIGATION
 ══════════════════════════════════════════ */
-var currentSection = 'hub';
-var prevSection    = 'hub';
+var prevSection = 'castle';
+var accOpen     = -1;
 
-function showSec(id) {
-    document.querySelectorAll('.sec').forEach(function(el){ el.classList.remove('active'); });
-    document.getElementById('sec-'+id).classList.add('active');
-    document.getElementById('panel-scroll').scrollTop = 0;
-}
-
-function openSection(tab) {
-    prevSection = 'hub';
-    currentSection = tab;
-    showSec(tab);
-    setTimeout(function(){
-        mainBoard.resize();
-        if (tab === 'castle') { rStep=0; rRender(); }
-        if (tab === 'promo')  { pStep=0; pRender(); }
-        if (tab === 'ep')     { epStep=0; epRender(); }
-    }, 30);
-}
-
-function goBack() {
-    currentSection = 'hub';
-    showSec('hub');
-    mainBoard.position({
-        e1:'wK',a1:'wR',h1:'wR',d1:'wQ',c1:'wB',f1:'wB',b1:'wN',g1:'wN',
-        a2:'wP',b2:'wP',c2:'wP',d2:'wP',e2:'wP',f2:'wP',g2:'wP',h2:'wP',
-        e8:'bK',a8:'bR',h8:'bR',d8:'bQ',c8:'bB',f8:'bB',b8:'bN',g8:'bN',
-        a7:'bP',b7:'bP',c7:'bP',d7:'bP',e7:'bP',f7:'bP',g7:'bP',h7:'bP'
-    }, false);
-    clearHL();
+function toggleAcc(idx) {
+    var wasOpen = (accOpen === idx);
+    [0,1,2].forEach(function(i){
+        document.getElementById('body'+i).classList.remove('open');
+        document.getElementById('acc'+i).classList.remove('open');
+    });
+    if (!wasOpen) {
+        accOpen = idx;
+        document.getElementById('body'+idx).classList.add('open');
+        document.getElementById('acc'+idx).classList.add('open');
+        setTimeout(function(){
+            mainBoard.resize();
+            if (idx===0){ rStep=0; rRender(); }
+            if (idx===1){ pStep=0; pRender(); }
+            if (idx===2){ epStep=0; epRender(); }
+        }, 30);
+    } else {
+        accOpen = -1;
+        mainBoard.position('start', false);
+        clearHL();
+    }
 }
 
 function startExTab(tab) {
     prevSection = tab;
-    currentSection = 'ex';
-    showSec('ex');
+    document.getElementById('acc-wrapper').style.display = 'none';
+    document.getElementById('sec-ex').classList.add('active');
     setTimeout(function(){ mainBoard.resize(); }, 30);
     setExTab(tab);
 }
 
 function goBackFromEx() {
-    currentSection = prevSection;
-    showSec(prevSection);
+    document.getElementById('sec-ex').classList.remove('active');
+    document.getElementById('acc-wrapper').style.display = '';
+    var tabToIdx = {castle:0, promo:1, ep:2};
+    var idx = tabToIdx[prevSection] || 0;
     setTimeout(function(){
-        mainBoard.resize();
-        if (prevSection === 'castle') { rStep=0; rRender(); }
-        if (prevSection === 'promo')  { pStep=0; pRender(); }
-        if (prevSection === 'ep')     { epStep=0; epRender(); }
+        if (accOpen !== idx) toggleAcc(idx);
+        else {
+            mainBoard.resize();
+            if (idx===0){ rStep=0; rRender(); }
+            if (idx===1){ pStep=0; pRender(); }
+            if (idx===2){ epStep=0; epRender(); }
+        }
     }, 30);
+    document.getElementById('panel-scroll').scrollTop = 0;
 }
 
 /* ══════════════════════════════════════════
