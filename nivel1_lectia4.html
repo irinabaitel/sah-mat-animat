@@ -79,9 +79,13 @@
 /* ── Section continue button ── */
 .sec-next-btn { padding:10px 28px; border-radius:50px; border:none; background:var(--c-navy);
                 color:white; font-family:var(--font-display); font-size:var(--fs-sm); font-weight:700;
-                cursor:pointer; transition:all .2s; box-shadow:0 3px 10px rgba(26,58,107,0.30);
-                align-self:flex-end; margin-top:4px; }
+                cursor:pointer; transition:all .2s; box-shadow:0 3px 10px rgba(26,58,107,0.30); }
 .sec-next-btn:hover { background:var(--c-navy-2); transform:translateY(-2px); }
+.sec-btn-row { display:flex; gap:8px; justify-content:space-between; align-items:center; margin-top:4px; }
+.sec-back-btn { padding:9px 20px; border-radius:50px; border:none; background:rgba(26,58,107,0.15);
+                color:var(--c-navy); font-family:var(--font-display); font-size:var(--fs-sm); font-weight:700;
+                cursor:pointer; transition:all .2s; }
+.sec-back-btn:hover { background:rgba(26,58,107,0.28); }
 
 /* ── Super-teams grid ── */
 .teams-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:8px 0; }
@@ -184,6 +188,10 @@
             <button class="ex-prev-btn" id="ex-prev-btn" onclick="exPrev()" style="display:none">&#8592; Anterior</button>
             <button class="ex-next-btn" id="ex-next-btn" onclick="exNext()" style="display:none">Următor &#8594;</button>
           </div>
+          <div class="sec-btn-row" style="margin-top:12px;">
+            <button class="sec-back-btn" onclick="showSec(0)">&#8592; Puterea Armatei</button>
+            <button class="sec-next-btn" onclick="showSec(2)">Valoarea se schimbă &#8594;</button>
+          </div>
         </div>
 
         <!-- ── SEC 3: VALOAREA SE SCHIMBĂ ── -->
@@ -207,7 +215,10 @@
             <strong>💡 Regula activității:</strong> Când te hotărăști să schimbi piese, uită-te cât de active sunt. Cu cât ai o piesă mai activă, cu atât mai mult vrei s-o <em>păstrezi</em>. Cu cât adversarul are una mai activă, cu atât vrei s-o <em>elimini</em>.
           </div>
 
-          <button class="sec-next-btn" onclick="showSec(3)">Schimburi &#8594;</button>
+          <div class="sec-btn-row">
+            <button class="sec-back-btn" onclick="showSec(1)">&#8592; Exerciții</button>
+            <button class="sec-next-btn" onclick="showSec(3)">Schimburi &#8594;</button>
+          </div>
         </div>
 
         <!-- ── SEC 4: SCHIMBURI ȘI STRATEGII ── -->
@@ -233,7 +244,10 @@
             <strong>⚠️ Atenție la pioni!</strong> Nu fi neglijent — în finaluri valorează greutatea lor în aur! Și nu schimba absolut totul dacă rămâi doar cu un Cal sau Nebun singur: ei nu pot da mat, partida va fi remiză.
           </div>
 
-          <button class="sec-next-btn" onclick="showSec(4)">Super-Echipe &#8594;</button>
+          <div class="sec-btn-row">
+            <button class="sec-back-btn" onclick="showSec(2)">&#8592; Valoarea se schimbă</button>
+            <button class="sec-next-btn" onclick="showSec(4)">Super-Echipe &#8594;</button>
+          </div>
         </div>
 
         <!-- ── SEC 5: SUPER-ECHIPELE ── -->
@@ -281,6 +295,9 @@
 
           <div class="hl-box ok">
             <strong>💡 Sfat pentru micii campioni:</strong> Când mutați, întrebați-vă: <em>„Piesa mea are un prieten în apropiere care să o ajute?"</em> Șahul este un sport de echipă!
+          </div>
+          <div class="sec-btn-row">
+            <button class="sec-back-btn" onclick="showSec(3)">&#8592; Schimburi</button>
           </div>
         </div>
 
