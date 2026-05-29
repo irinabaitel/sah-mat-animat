@@ -520,12 +520,27 @@ function exploreFromCard(code) {
 
 /* ── QUIZ ───────────────────────────────────────────────── */
 const QUIZ_Q = [
-  { code:'R', pos:'d4', hint:'Controlează o cruce uriașă pe tablă.' },
+  /* Runda 1 — în centrul tablei */
+  { section:'⚔️ Runda 1 — în centrul tablei', code:'R', pos:'d4', hint:'Controlează o cruce uriașă pe tablă.' },
   { code:'N', pos:'d4', hint:'Sare ca un acrobat în forma literei L!' },
   { code:'B', pos:'d4', hint:'Aleargă pe diagonale, nu schimbă culoarea.' },
   { code:'Q', pos:'d4', hint:'Controlează toată tabla — cel mai puternic atac!' },
   { code:'K', pos:'d5', hint:'Un singur pas în orice direcție.' },
   { code:'P', pos:'d4', hint:'Doar înainte! Capturează în diagonală.' },
+  /* Runda 2 — pe marginea tablei */
+  { section:'📐 Runda 2 — pe marginea tablei', code:'R', pos:'a4', hint:'Turnul pe margine controlează tot rândul și toată coloana.' },
+  { code:'N', pos:'h5', hint:'Pe margine, calul pierde jumătate din câmpuri!' },
+  { code:'B', pos:'e8', hint:'Nebunul pe margine controlează mai puține diagonale.' },
+  { code:'Q', pos:'a6', hint:'Regina pe margine e tot temută — dar pierde câteva câmpuri.' },
+  { code:'K', pos:'d1', hint:'Pe margine, regele are mai puțin spațiu de mișcare.' },
+  { code:'P', pos:'a5', hint:'Pionul pe coloana a nu mai poate captura spre stânga!' },
+  /* Runda 3 — în colțul tablei */
+  { section:'📌 Runda 3 — în colțul tablei', code:'N', pos:'a1', hint:'În colț, calul are doar 2 câmpuri disponibile!' },
+  { code:'K', pos:'h8', hint:'Regele în colț — doar 3 căi de fugă.' },
+  { code:'R', pos:'h1', hint:'Turnul în colț controlează același număr de câmpuri ca în centru!' },
+  { code:'B', pos:'a8', hint:'Nebunul în colț e blocat pe o singură diagonală.' },
+  { code:'Q', pos:'h1', hint:'Regina chiar și în colț controlează multe câmpuri.' },
+  { code:'P', pos:'h4', hint:'Pionul pe coloana h nu mai poate captura spre dreapta!' },
 ];
 let quizIdx=0, quizAnswered=false, quizCorrect=0;
 
@@ -541,7 +556,10 @@ function showQuizQ(i) {
     captures.forEach(sq => $(`.square-${sq}`).addClass('sq-capture'));
     $(`.square-${q.pos}`).addClass('sq-ask');
   }, 80);
-  document.getElementById('quiz-question').textContent =
+  const qEl = document.getElementById('quiz-question');
+  qEl.innerHTML = (q.section
+    ? `<div style="font-size:0.82em;color:rgba(26,26,46,0.55);margin-bottom:4px;">${q.section}</div>`
+    : '') +
     `Întrebarea ${i+1}/${QUIZ_Q.length}: Care piesă face aceste mutări?`;
   const container = document.getElementById('quiz-buttons');
   container.innerHTML='';
@@ -584,9 +602,11 @@ function quizDone() {
     `🏆 <strong>Bravo!</strong> ${quizCorrect}/${QUIZ_Q.length} corecte!`;
   const fb=document.getElementById('quiz-feedback');
   fb.className='quiz-box done';
-  fb.innerHTML = quizCorrect>=5
-    ? '⭐⭐⭐ Excelent! Cunoști toți soldații din armată!'
-    : '💡 Mai exersează cu butoanele de mai sus, apoi revino!';
+  fb.innerHTML = quizCorrect>=15
+    ? '⭐⭐⭐ Excelent! Cunoști toți soldații în orice colț al tablei!'
+    : quizCorrect>=10
+      ? '⭐⭐ Bine! Mai exersează runda a treia.'
+      : '💡 Mai exersează cu butoanele de mai sus, apoi revino!';
   board.position('empty',false); clearHL();
   document.getElementById('quiz-buttons').innerHTML =
     '<button class="quiz-btn" onclick="restartQuiz()" style="text-align:center;">🔄 Reia testul</button>';
