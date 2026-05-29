@@ -149,6 +149,7 @@
   function clearAll() { annArrows = []; annSquares = {}; render(); }
   window._annClear  = clearAll;
   window._annRender = render;
+  window._annSet    = function(arrows) { annArrows = arrows || []; annSquares = {}; render(); };
 
   /* ── Helpers bridge ── */
   function colorIdx(e) {
