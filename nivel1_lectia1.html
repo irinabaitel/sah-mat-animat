@@ -9,128 +9,127 @@
 <link rel="stylesheet" href="master-template.css">
 <style>
 
-  /* ── LESSON BADGE ─────────────────────────────── */
-  .lesson-badge {
-    background: var(--c-navy); color: white;
-    font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-bold);
-    padding: 3px 14px; border-radius: var(--radius-sm); white-space: nowrap;
-  }
+/* ── LESSON BADGE ───────────────────────────────── */
+.lesson-badge {
+  background: var(--c-navy); color: white;
+  font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-bold);
+  padding: 3px 14px; border-radius: var(--radius-sm); white-space: nowrap;
+}
 
-  /* ── SLIDE NAV ────────────────────────────────── */
-  .slide-nav {
-    display: flex; align-items: center; gap: 8px;
-    flex-shrink: 0; padding: 4px 0;
-  }
-  .slide-nav-btn {
-    width: 38px; height: 38px; border-radius: 50%;
-    border: 2px solid rgba(26,58,107,0.3);
-    background: rgba(255,255,255,0.6);
-    font-family: var(--font-display); font-size: 1rem;
-    color: var(--c-navy); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: background .15s;
-  }
-  .slide-nav-btn:hover:not(:disabled) { background: rgba(26,58,107,0.15); }
-  .slide-nav-btn:disabled { opacity: 0.3; cursor: default; }
+/* ── PANEL TEXT ─────────────────────────────────── */
+.slide-text { font-size: 1.05rem; line-height: 1.75; color: #2a2a3e; }
+.slide-text p { margin-bottom: 8px; }
+.slide-text p:last-child { margin-bottom: 0; }
+.slide-text h3 {
+  font-family: var(--font-display); font-size: 1.05rem;
+  color: var(--c-navy); margin: 14px 0 6px;
+}
+.slide-text ul { list-style: none; padding-left: 4px; margin: 8px 0 10px; }
+.slide-text ul li {
+  padding-left: 18px; position: relative;
+  margin-bottom: 5px; font-size: 1.02rem; line-height: 1.65;
+}
+.slide-text ul li::before {
+  content: "○"; position: absolute; left: 0;
+  color: var(--c-navy); font-size: .85rem;
+}
 
-  /* ── DOTS ─────────────────────────────────────── */
-  .slide-dots {
-    display: flex; gap: 7px; align-items: center;
-    flex-wrap: wrap; justify-content: center; flex: 1;
-  }
-  .slide-dot {
-    width: 9px; height: 9px; border-radius: 50%;
-    background: rgba(26,58,107,0.15);
-    cursor: pointer; transition: all .2s;
-  }
-  .slide-dot.done  { background: rgba(26,58,107,0.38); }
-  .slide-dot.active {
-    background: var(--c-navy); transform: scale(1.3);
-    box-shadow: 0 0 0 2px rgba(26,58,107,0.2);
-  }
+/* ── HIGHLIGHT BOX ──────────────────────────────── */
+.h-box {
+  background: rgba(26,58,107,0.08);
+  border-left: 4px solid var(--c-navy);
+  border-radius: 0 12px 12px 0;
+  padding: 12px 16px; font-size: 1.02rem; line-height: 1.7;
+  margin: 10px 0;
+}
+.h-box.gold { background: rgba(180,130,0,0.09); border-left-color: #b08000; }
+.h-box.gold strong { color: #705000; }
 
-  /* ── PANEL TEXT ───────────────────────────────── */
-  .slide-badge {
-    display: inline-block;
-    background: rgba(26,58,107,0.09);
-    border: 1.5px solid rgba(26,58,107,0.2);
-    border-radius: 20px; padding: 4px 18px;
-    font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
-    color: var(--c-navy); margin-bottom: 8px;
-  }
-  .slide-title {
-    font-family: var(--font-display);
-    font-size: 1.15rem; color: var(--c-navy);
-    margin-bottom: 10px; line-height: 1.3;
-  }
-  .slide-text { font-size: 1.05rem; line-height: 1.75; color: #2a2a3e; }
-  .slide-text p { margin-bottom: 8px; }
-  .slide-text p:last-child { margin-bottom: 0; }
-  .slide-text h3 {
-    font-family: var(--font-display); font-size: 1.05rem;
-    color: var(--c-navy); margin: 14px 0 6px;
-  }
-  .slide-text ul {
-    list-style: none; padding-left: 4px; margin: 8px 0 10px;
-  }
-  .slide-text ul li {
-    padding-left: 18px; position: relative;
-    margin-bottom: 5px; font-size: 1.02rem; line-height: 1.65;
-  }
-  .slide-text ul li::before {
-    content: "○"; position: absolute; left: 0;
-    color: var(--c-navy); font-size: .85rem;
-  }
+/* ── ACCORDION ──────────────────────────────────── */
+.acc-item {
+  border-radius: 14px;
+  border: 1.5px solid rgba(26,58,107,0.16);
+  margin-bottom: 10px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.55);
+}
+.acc-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 16px; cursor: pointer;
+  background: rgba(26,58,107,0.06);
+  font-family: var(--font-display); font-size: 1.02rem; font-weight: 700;
+  color: var(--c-navy); user-select: none;
+  transition: background .15s; gap: 10px;
+}
+.acc-head:hover  { background: rgba(26,58,107,0.11); }
+.acc-head.open   { background: rgba(26,58,107,0.11); }
+.acc-icon {
+  font-size: 0.72rem; flex-shrink: 0;
+  transition: transform .25s; transform: rotate(0deg);
+}
+.acc-head.open .acc-icon { transform: rotate(90deg); }
+.acc-body { max-height: 0; overflow: hidden; transition: max-height .38s ease; }
+.acc-body.open  { max-height: 1800px; }
+.acc-inner { padding: 14px 16px 18px; }
 
-  /* ── HIGHLIGHT BOX ────────────────────────────── */
-  .h-box {
-    background: rgba(26,58,107,0.08);
-    border-left: 4px solid var(--c-navy);
-    border-radius: 0 12px 12px 0;
-    padding: 12px 16px; font-size: 1.02rem; line-height: 1.7;
-    margin: 10px 0;
-  }
-  .h-box.gold {
-    background: rgba(180,130,0,0.09); border-left-color: #b08000;
-  }
-  .h-box.gold strong { color: #705000; }
+/* ── EXPLOREAZĂ ─────────────────────────────────── */
+.exp-cats {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;
+}
+.exp-cat {
+  padding: 7px 13px; border-radius: 10px; border: 2px solid;
+  font-family: 'Nunito', sans-serif; font-size: 0.86em; font-weight: 700;
+  cursor: pointer; transition: all 0.18s;
+}
+.exp-cat.col    { border-color: rgba(80,160,255,0.6);  background: rgba(80,160,255,0.12); color: #1a3a6b; }
+.exp-cat.col.on,    .exp-cat.col:hover    { background: rgba(80,160,255,0.38); }
+.exp-cat.row    { border-color: rgba(80,200,100,0.6);  background: rgba(80,200,100,0.12); color: #1a5c35; }
+.exp-cat.row.on,    .exp-cat.row:hover    { background: rgba(80,200,100,0.38); }
+.exp-cat.diagup { border-color: rgba(180,80,220,0.6);  background: rgba(180,80,220,0.09); color: #5a1a7a; }
+.exp-cat.diagup.on, .exp-cat.diagup:hover { background: rgba(180,80,220,0.34); }
+.exp-cat.diagdn { border-color: rgba(20,160,180,0.6);  background: rgba(20,160,180,0.09); color: #0a4a5a; }
+.exp-cat.diagdn.on, .exp-cat.diagdn:hover { background: rgba(20,160,180,0.34); }
+.exp-cat.sq     { border-color: rgba(255,80,50,0.55);  background: rgba(255,80,50,0.09);  color: #7a1a00; }
+.exp-cat.sq.on,     .exp-cat.sq:hover     { background: rgba(255,80,50,0.34); }
 
-  /* ── TOGGLE BUTTONS ───────────────────────────── */
-  .toggle-group {
-    display: flex; flex-direction: column; gap: 6px;
-    margin-top: 12px;
-  }
-  .tog-btn {
-    padding: 8px 14px; border-radius: 10px; border: 2px solid;
-    font-family: 'Nunito', sans-serif; font-size: 0.88em; font-weight: 700;
-    cursor: pointer; transition: all 0.2s; text-align: left;
-  }
-  .tog-col     { border-color: rgba(80,160,255,0.6); background: rgba(80,160,255,0.15); color: #1a3a6b; }
-  .tog-col:hover, .tog-col.on { background: rgba(80,160,255,0.4); }
-  .tog-row     { border-color: rgba(80,200,100,0.6); background: rgba(80,200,100,0.15); color: #1a5c35; }
-  .tog-row:hover, .tog-row.on { background: rgba(80,200,100,0.4); }
-  .tog-cross   { border-color: rgba(255,80,50,0.6);  background: rgba(255,80,50,0.15);  color: #7a1a1a; }
-  .tog-cross:hover, .tog-cross.on { background: rgba(255,80,50,0.4); }
-  .tog-diag    { border-color: rgba(180,80,220,0.6); background: rgba(180,80,220,0.12); color: #5a1a7a; }
-  .tog-diag:hover, .tog-diag.on { background: rgba(180,80,220,0.35); }
-  .tog-center  { border-color: rgba(220,130,5,0.7);  background: rgba(255,155,10,0.18); color: #6b4200; }
-  .tog-center:hover, .tog-center.on { background: rgba(255,155,10,0.45); }
-  .tog-excenter{ border-color: rgba(200,160,10,0.55);background: rgba(255,185,15,0.12); color: #5a4800; }
-  .tog-excenter:hover, .tog-excenter.on { background: rgba(255,185,15,0.38); }
+.exp-nav {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.exp-nav-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 2px solid rgba(26,58,107,0.30);
+  background: rgba(255,255,255,0.65);
+  font-size: 0.95rem; color: var(--c-navy); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background .15s;
+}
+.exp-nav-btn:hover:not(:disabled) { background: rgba(26,58,107,0.14); }
+.exp-nav-btn:disabled { opacity: 0.22; cursor: default; }
+.exp-label {
+  flex: 1; text-align: center;
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 700;
+  color: var(--c-navy);
+}
+.exp-counter {
+  font-family: 'Nunito', sans-serif; font-size: 0.8rem;
+  color: rgba(26,26,46,0.45); text-align: center; margin-bottom: 6px;
+}
+.exp-desc {
+  font-size: 0.92rem; color: rgba(26,26,46,0.62);
+  text-align: center; line-height: 1.55; min-height: 2.4em;
+}
 
-  /* ── BOARD HIGHLIGHTS ─────────────────────────── */
-  .sq-row     { background-image: linear-gradient(rgba(80,200,100,0.40), rgba(80,200,100,0.40)) !important; }
-  .sq-col     { background-image: linear-gradient(rgba(80,160,255,0.40), rgba(80,160,255,0.40)) !important; }
-  .sq-diag    { background-image: linear-gradient(rgba(180,80,220,0.40), rgba(180,80,220,0.40)) !important; }
-  .sq-excenter{ background-image: linear-gradient(rgba(255,185,15,0.38), rgba(255,185,15,0.38)) !important; }
-  .sq-center  { background-image: linear-gradient(rgba(255,155,10,0.52), rgba(255,155,10,0.52)) !important; }
-  .sq-cross   { background-image: linear-gradient(rgba(255,80,50,0.55), rgba(255,80,50,0.55)) !important; }
+/* ── BOARD HIGHLIGHTS ───────────────────────────── */
+.sq-row    { background-image: linear-gradient(rgba(80,200,100,0.42), rgba(80,200,100,0.42)) !important; }
+.sq-col    { background-image: linear-gradient(rgba(80,160,255,0.42), rgba(80,160,255,0.42)) !important; }
+.sq-diag   { background-image: linear-gradient(rgba(180,80,220,0.42), rgba(180,80,220,0.42)) !important; }
+.sq-diagdn { background-image: linear-gradient(rgba(20,160,180,0.48), rgba(20,160,180,0.48)) !important; }
+.sq-sq     { background-image: linear-gradient(rgba(255,80,50,0.58),  rgba(255,80,50,0.58))  !important; }
 </style>
 </head>
 <body>
 <div class="page-wrapper">
 
-  <!-- ── HEADER ──────────────────────────────────── -->
   <header class="page-header" role="banner">
     <span class="header-title">Tabla de Șah</span>
     <div class="header-progress">
@@ -138,58 +137,107 @@
     </div>
   </header>
 
-  <!-- ── MAIN ────────────────────────────────────── -->
   <main class="page-main" role="main">
 
-    <!-- Coloana tablă -->
     <div class="board-col">
       <div class="board-wrapper">
         <div id="board"></div>
       </div>
     </div>
 
-    <!-- Coloana panel -->
     <div class="panel-col">
+      <div class="panel-scroll" id="panelScroll">
 
-      <div class="panel-scroll" id="panelScroll" role="region" aria-label="Conținut lecție">
-        <span class="slide-badge" id="slideBadge">Tabla de Șah</span>
-        <div class="slide-title" id="slideTitle"></div>
-        <div class="slide-text"  id="slideText"></div>
-        <!-- Toggle buttons — vizibile doar pe slide-ul 2 -->
-        <div id="toggleSection" style="display:none">
-          <div class="toggle-group">
-            <button class="tog-btn tog-col"      id="btn-col"      onclick="toggleHL('col')">🚫 Coloana e</button>
-            <button class="tog-btn tog-row"      id="btn-row"      onclick="toggleHL('row')">🚫 Linia 4</button>
-            <button class="tog-btn tog-diag"     id="btn-diag"     onclick="toggleHL('diag')">🚫 Diagonalele b1–h7 și h1–a8</button>
-            <button class="tog-btn tog-center"   id="btn-center"   onclick="toggleHL('center')">🚫 Centrul mic</button>
-            <button class="tog-btn tog-excenter" id="btn-excenter" onclick="toggleHL('excenter')">🚫 Centrul extins</button>
-            <button class="tog-btn tog-cross"    id="btn-cross"    onclick="toggleHL('cross')">🚫 Pătrățelul e4</button>
+        <!-- ── BURDUF 1 — Tabla de Șah ────────────── -->
+        <div class="acc-item">
+          <div class="acc-head open" id="acc0" onclick="toggleAcc(0)">
+            <span>♟ Tabla de Șah</span>
+            <span class="acc-icon">▶</span>
+          </div>
+          <div class="acc-body open" id="body0">
+            <div class="acc-inner slide-text">
+              <p>Șahul este o aventură extraordinară care a început acum multă vreme, în jurul anului <strong>600 d.Hr.</strong> (adică acum mai bine de 1400 de ani!). Primul strămoș al șahului se numea <strong>Chaturanga</strong> și a apărut în îndepărtata Indie.</p>
+              <p>Imaginați-vă că sunteți <strong>comandantul unei armate curajoase</strong>. De partea cealaltă a mesei, un alt prieten conduce o armată rivală. Scopul vostru? Să folosiți tactici inteligente pentru a-l <strong>încolți pe Regele adversarului</strong>.</p>
+              <p>Dar, înainte de a trimite soldații la antrenament, trebuie să cunoaștem perfect <strong>terenul de luptă!</strong></p>
+              <h3>Câmpul de Bătălie</h3>
+              <p>Lumea noastră de joc este un <strong>pătrat mare, împărțit în 64 de pătrățele mici</strong>, albe și negre, așezate alternativ.</p>
+              <div class="h-box">
+                <strong>🚩 Regula de Aur — Cum așezăm tabla?</strong><br>
+                Înainte de a spune „Start Joc!", verificăm dacă tabla este pusă corect.<br><br>
+                <strong>Regula colțului:</strong> Fiecare jucător trebuie să aibă în <strong>colțul din dreapta</strong> lui un <strong>pătrățel alb</strong>. Dacă în dreapta ta e unul negru — întoarce tabla!
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="slide-nav">
-        <button class="slide-nav-btn" id="prevBtn" onclick="prevSlide()" disabled>◀</button>
-        <div class="slide-dots" id="slideDots"></div>
-        <button class="slide-nav-btn" id="nextBtn" onclick="nextSlide()">▶</button>
-      </div>
+        <!-- ── BURDUF 2 — Linii, Coloane, Diagonale ─ -->
+        <div class="acc-item">
+          <div class="acc-head" id="acc1" onclick="toggleAcc(1)">
+            <span>🗺 Linii, Coloane și Diagonale</span>
+            <span class="acc-icon">▶</span>
+          </div>
+          <div class="acc-body" id="body1">
+            <div class="acc-inner slide-text">
+              <p>Pentru ca generalii să poată da ordine clare, fiecare pătrățel are un <strong>nume unic</strong> — exact ca o adresă poștală.</p>
+              <ul>
+                <li><strong>Coloanele</strong> — drumuri drepte spre adversar, notate cu litere: <strong>a, b, c, d, e, f, g, h</strong></li>
+                <li><strong>Liniile</strong> — rânduri de la stânga la dreapta, notate cu cifre: <strong>1, 2, 3 … 8</strong></li>
+                <li><strong>Diagonalele</strong> — poteci pieziș formate din câmpuri de aceeași culoare. Pe tablă sunt <strong>26 de diagonale</strong>.</li>
+              </ul>
+              <div class="h-box">
+                <strong>📍 Adresa unui pătrățel</strong><br>
+                <strong>litera coloanei</strong> + <strong>cifra liniei</strong>: coloana <strong>e</strong> + linia <strong>4</strong> = pătrățelul <strong style="color:#c0392b">e4</strong>!
+              </div>
+              <h3>Cel mai important loc: Centrul tablei</h3>
+              <p>Nu toate pătrățelele sunt la fel de valoroase. Centrul tablei este ca un <strong>deal înalt</strong> — cine îl controlează vede tot câmpul de bătălie.</p>
+              <div class="h-box gold">
+                <strong>💡 De ce contează centrul?</strong><br>
+                Un cal în centru atacă <strong>8 câmpuri</strong>, pe când un cal în colț atacă doar <strong>2</strong>!
+              </div>
+            </div>
+          </div>
+        </div>
 
+        <!-- ── BURDUF 3 — Explorează ─────────────── -->
+        <div class="acc-item">
+          <div class="acc-head" id="acc2" onclick="toggleAcc(2)">
+            <span>🔍 Explorează tabla</span>
+            <span class="acc-icon">▶</span>
+          </div>
+          <div class="acc-body" id="body2">
+            <div class="acc-inner">
+              <div class="exp-cats">
+                <button class="exp-cat col"    onclick="setExpCat('col')">📊 Coloană</button>
+                <button class="exp-cat row"    onclick="setExpCat('row')">📏 Linie</button>
+                <button class="exp-cat diagup" onclick="setExpCat('diagup')">&#8725; Diag /</button>
+                <button class="exp-cat diagdn" onclick="setExpCat('diagdn')">&#8726; Diag \</button>
+                <button class="exp-cat sq"     onclick="setExpCat('sq')">&#9633; Pătrățel</button>
+              </div>
+              <div class="exp-nav">
+                <button class="exp-nav-btn" id="expPrev" onclick="expNav(-1)" disabled>&#9664;</button>
+                <span class="exp-label" id="expLabel">Alege o categorie ↑</span>
+                <button class="exp-nav-btn" id="expNext" onclick="expNav(1)"  disabled>&#9654;</button>
+              </div>
+              <div class="exp-counter" id="expCounter"></div>
+              <div class="exp-desc"    id="expDesc"></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.panel-scroll -->
     </div><!-- /.panel-col -->
+
   </main>
 
-  <!-- ── FOOTER ──────────────────────────────────── -->
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
     <a href="hub.html" class="nav-btn nav-btn--back">
-      <span class="icon">&#8592;</span>
-      <span class="label">Cuprins</span>
+      <span class="icon">&#8592;</span><span class="label">Cuprins</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
-      <span class="icon">&#8862;</span>
-      <span class="label">Cuprins</span>
+      <span class="icon">&#8862;</span><span class="label">Cuprins</span>
     </a>
     <a href="nivel1_lectia2.html" class="nav-btn nav-btn--forward">
-      <span class="icon">&#8594;</span>
-      <span class="label">Lecția 2</span>
+      <span class="icon">&#8594;</span><span class="label">Lecția 2</span>
     </a>
   </footer>
 
@@ -201,124 +249,98 @@
 
 /* ── TABLA ──────────────────────────────────────── */
 const board = Chessboard('board', {
-  position: 'empty',
+  position:    'empty',
   showNotation: true,
-  pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+  pieceTheme:  'https://lichess1.org/assets/piece/caliente/{piece}.svg',
 });
 $(window).resize(() => board.resize());
 
-/* ── SLIDE DATA ─────────────────────────────────── */
-const SLIDES = [
-  {
-    badge: 'Tabla de Șah',
-    title: 'O aventură veche de 1400 de ani',
-    html: `
-      <p>Șahul este o aventură extraordinară care a început acum multă vreme, în jurul anului <strong>600 d.Hr.</strong> (adică acum mai bine de 1400 de ani!). Primul strămoș al șahului se numea <strong>Chaturanga</strong> și a apărut în îndepărtata Indie.</p>
-      <p>Imaginați-vă că sunteți <strong>comandantul unei armate curajoase</strong>. De partea cealaltă a mesei, un alt prieten conduce o armată rivală. Scopul vostru? Să folosiți tactici inteligente pentru a-l <strong>încolți pe Regele adversarului</strong>.</p>
-      <p>Dar, înainte de a trimite soldații la antrenament, trebuie să cunoaștem perfect <strong>terenul de luptă!</strong></p>
-      <h3>Câmpul de Bătălie</h3>
-      <p>Lumea noastră de joc este un <strong>pătrat mare, împărțit în 64 de pătrățele mici</strong>, albe și negre, așezate alternativ.</p>
-      <div class="h-box">
-        <strong>🚩 Regula de Aur — Cum așezăm tabla?</strong><br>
-        Înainte de a spune „Start Joc!", verificăm dacă tabla este pusă corect.<br><br>
-        <strong>Regula colțului:</strong> Fiecare jucător trebuie să aibă în <strong>colțul din dreapta</strong> lui un <strong>pătrățel alb</strong>. Dacă în dreapta ta e unul negru — întoarce tabla!
-      </div>
-    `,
-    toggles: false,
-  },
-  {
-    badge: 'Cum citim harta?',
-    title: 'Linii, Coloane și Diagonale',
-    html: `
-      <p>Pentru ca generalii să poată da ordine clare, fiecare pătrățel are un <strong>nume unic</strong> — exact ca o adresă poștală.</p>
-      <ul>
-        <li><strong>Coloanele</strong> — drumuri drepte spre adversar, notate cu litere: <strong>a, b, c, d, e, f, g, h</strong></li>
-        <li><strong>Liniile</strong> — rânduri de la stânga la dreapta, notate cu cifre: <strong>1, 2, 3... 8</strong></li>
-        <li><strong>Diagonalele</strong> — poteci pieziș formate din câmpuri de aceeași culoare. Pe tablă sunt <strong>26 de diagonale</strong>.</li>
-      </ul>
-      <div class="h-box">
-        <strong>📍 Adresa unui pătrățel</strong><br>
-        <strong>litera coloanei</strong> + <strong>cifra liniei</strong>: coloana <strong>e</strong> + linia <strong>4</strong> = pătrățelul <strong style="color:#c0392b">e4</strong>!
-      </div>
-      <h3>Cel mai important loc: Centrul tablei</h3>
-      <p>Nu toate pătrățelele sunt la fel de valoroase. Centrul tablei este ca un <strong>deal înalt</strong> — cine îl controlează vede tot câmpul de bătălie.</p>
-      <div class="h-box gold">
-        <strong>💡 De ce contează centrul?</strong><br>
-        Un cal în centru atacă <strong>8 câmpuri</strong>, pe când un cal în colț atacă doar <strong>2</strong>!
-      </div>
-      <p style="margin-top:10px; font-size:0.95rem; color:rgba(26,26,46,0.65);">Apasă butoanele de mai jos ca să explorezi tabla!</p>
-    `,
-    toggles: true,
-  },
-];
+/* ── ACCORDION ──────────────────────────────────── */
+function toggleAcc(idx) {
+  for (var i = 0; i < 3; i++) {
+    var isOpen = i === idx;
+    document.getElementById('acc'  + i).classList.toggle('open', isOpen);
+    document.getElementById('body' + i).classList.toggle('open', isOpen);
+  }
+  if (idx !== 2) clearExpHL();
+}
 
-/* ── SLIDE ENGINE ───────────────────────────────── */
-let current = 0;
+/* ── DATE EXPLOREAZĂ ────────────────────────────── */
+var EXP = {
+  col: [
+    { label: 'Coloana a', desc: '8 câmpuri de la a1 la a8 — marginea stângă a tablei',    sqs: ['a1','a2','a3','a4','a5','a6','a7','a8'], cls: 'sq-col' },
+    { label: 'Coloana e', desc: 'Coloana centrală — una dintre cele mai importante coloane', sqs: ['e1','e2','e3','e4','e5','e6','e7','e8'], cls: 'sq-col' },
+    { label: 'Coloana h', desc: '8 câmpuri de la h1 la h8 — marginea dreaptă a tablei',    sqs: ['h1','h2','h3','h4','h5','h6','h7','h8'], cls: 'sq-col' },
+  ],
+  row: [
+    { label: 'Linia 1', desc: 'Rândul de start al pieselor albe — rege, damă, turnuri…',    sqs: ['a1','b1','c1','d1','e1','f1','g1','h1'], cls: 'sq-row' },
+    { label: 'Linia 4', desc: 'Linia centrală — câmp de atac și de control al tablei',       sqs: ['a4','b4','c4','d4','e4','f4','g4','h4'], cls: 'sq-row' },
+    { label: 'Linia 8', desc: 'Rândul de start al pieselor negre — capătul drumului pentru pioni!', sqs: ['a8','b8','c8','d8','e8','f8','g8','h8'], cls: 'sq-row' },
+  ],
+  diagup: [
+    { label: 'Diagonala a1–h8', desc: 'Cea mai lungă diagonală / — 8 câmpuri albe, de la colț la colț', sqs: ['a1','b2','c3','d4','e5','f6','g7','h8'], cls: 'sq-diag' },
+    { label: 'Diagonala a3–f8', desc: 'Diagonală / de 6 câmpuri negre, pornind din a3',                  sqs: ['a3','b4','c5','d6','e7','f8'],         cls: 'sq-diag' },
+    { label: 'Diagonala c1–h6', desc: 'Diagonală / de 6 câmpuri albe, pornind din c1',                   sqs: ['c1','d2','e3','f4','g5','h6'],         cls: 'sq-diag' },
+  ],
+  diagdn: [
+    { label: 'Diagonala a8–h1', desc: 'Cea mai lungă diagonală \\ — 8 câmpuri negre, de la colț la colț', sqs: ['a8','b7','c6','d5','e4','f3','g2','h1'], cls: 'sq-diagdn' },
+    { label: 'Diagonala a6–f1', desc: 'Diagonală \\ de 6 câmpuri albe, pornind din a6',                    sqs: ['a6','b5','c4','d3','e2','f1'],          cls: 'sq-diagdn' },
+    { label: 'Diagonala c8–h3', desc: 'Diagonală \\ de 6 câmpuri negre, pornind din c8',                   sqs: ['c8','d7','e6','f5','g4','h3'],          cls: 'sq-diagdn' },
+  ],
+  sq: [
+    { label: 'e4',  desc: 'Cel mai celebru pătrățel — centrul mic al tablei',                         sqs: ['e4'], cls: 'sq-sq' },
+    { label: 'd5',  desc: 'Partenerul lui e4 — tot în centrul mic, câmp cheie pentru cal și nebun',   sqs: ['d5'], cls: 'sq-sq' },
+    { label: 'a1',  desc: 'Colțul din stânga-jos — trebuie să fie alb când ai piesele în față',        sqs: ['a1'], cls: 'sq-sq' },
+    { label: 'h8',  desc: 'Colțul opus lui a1 — câmpul negru din dreapta-sus',                        sqs: ['h8'], cls: 'sq-sq' },
+    { label: 'f3',  desc: 'Câmpul clasic al calului alb — de aici atacă spre centrul tablei',          sqs: ['f3'], cls: 'sq-sq' },
+  ],
+};
 
-function renderDots() {
-  const c = document.getElementById('slideDots');
-  c.innerHTML = '';
-  SLIDES.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'slide-dot' + (i < current ? ' done' : '') + (i === current ? ' active' : '');
-    d.onclick = () => goTo(i);
-    c.appendChild(d);
+var ALL_HL = ['sq-col','sq-row','sq-diag','sq-diagdn','sq-sq'];
+var FILES  = ['a','b','c','d','e','f','g','h'];
+var RANKS  = ['1','2','3','4','5','6','7','8'];
+var expCat = null;
+var expIdx = 0;
+
+function clearExpHL() {
+  FILES.forEach(function(f) {
+    RANKS.forEach(function(r) {
+      var el = document.querySelector('.square-' + f + r);
+      if (el) ALL_HL.forEach(function(c) { el.classList.remove(c); });
+    });
   });
 }
 
-function goTo(idx) {
-  current = idx;
-  const s = SLIDES[idx];
-  document.getElementById('slideBadge').textContent = s.badge;
-  document.getElementById('slideTitle').textContent = s.title;
-  document.getElementById('slideText').innerHTML = s.html;
-  document.getElementById('toggleSection').style.display = s.toggles ? 'block' : 'none';
-  document.getElementById('prevBtn').disabled = idx === 0;
-  document.getElementById('nextBtn').disabled = idx === SLIDES.length - 1;
-  document.getElementById('panelScroll').scrollTop = 0;
-  renderDots();
-  if (!s.toggles) { clearAllHL(); }
+function setExpCat(cat) {
+  expCat = cat; expIdx = 0;
+  document.querySelectorAll('.exp-cat').forEach(function(b) { b.classList.remove('on'); });
+  document.querySelector('.exp-cat.' + cat).classList.add('on');
+  renderExp();
 }
 
-function prevSlide() { if (current > 0) goTo(current - 1); }
-function nextSlide() { if (current < SLIDES.length - 1) goTo(current + 1); }
-
-/* ── HIGHLIGHTS ─────────────────────────────────── */
-const COLS = ['a','b','c','d','e','f','g','h'];
-const ROWS = ['1','2','3','4','5','6','7','8'];
-const DIAG_E4     = ['a8','b7','c6','d5','e4','f3','g2','h1','h7','g6','f5','d3','c2','b1'];
-const CENTER_SQ   = ['d4','e4','d5','e5'];
-const EXCENTER_SQ = ['c3','c4','c5','c6','d3','d6','e3','e6','f3','f4','f5','f6'];
-const ALL_HL = 'sq-col sq-row sq-diag sq-excenter sq-center sq-cross';
-const hlState = { col:false, row:false, diag:false, excenter:false, center:false, cross:false };
-
-function applyHL() {
-  const b = $('#board');
-  COLS.forEach(c => ROWS.forEach(r => b.find(`.square-${c}${r}`).removeClass(ALL_HL)));
-  if (hlState.row)      COLS.forEach(c => b.find(`.square-${c}4`).addClass('sq-row'));
-  if (hlState.col)      ROWS.forEach(r => b.find(`.square-e${r}`).addClass('sq-col'));
-  if (hlState.diag)     DIAG_E4.forEach(sq => b.find(`.square-${sq}`).addClass('sq-diag'));
-  if (hlState.excenter) EXCENTER_SQ.forEach(sq => b.find(`.square-${sq}`).addClass('sq-excenter'));
-  if (hlState.center)   CENTER_SQ.forEach(sq => b.find(`.square-${sq}`).addClass('sq-center'));
-  if (hlState.cross)    b.find('.square-e4').addClass('sq-cross');
+function expNav(dir) {
+  if (!expCat) return;
+  expIdx = Math.max(0, Math.min(EXP[expCat].length - 1, expIdx + dir));
+  renderExp();
 }
 
-function clearAllHL() {
-  Object.keys(hlState).forEach(k => hlState[k] = false);
-  const b = $('#board');
-  COLS.forEach(c => ROWS.forEach(r => b.find(`.square-${c}${r}`).removeClass(ALL_HL)));
+function renderExp() {
+  if (!expCat) return;
+  var items = EXP[expCat];
+  var item  = items[expIdx];
+  clearExpHL();
+  item.sqs.forEach(function(sq) {
+    var el = document.querySelector('.square-' + sq);
+    if (el) el.classList.add(item.cls);
+  });
+  document.getElementById('expLabel').textContent   = item.label;
+  document.getElementById('expCounter').textContent = (expIdx + 1) + ' / ' + items.length;
+  document.getElementById('expDesc').textContent    = item.desc;
+  document.getElementById('expPrev').disabled = expIdx === 0;
+  document.getElementById('expNext').disabled = expIdx === items.length - 1;
 }
 
-function toggleHL(type) {
-  hlState[type] = !hlState[type];
-  const btn = document.getElementById('btn-' + type);
-  btn.classList.toggle('on', hlState[type]);
-  btn.textContent = (hlState[type] ? '👁 ' : '🚫 ') + btn.textContent.slice(2);
-  applyHL();
-}
-
-/* ── INIT ───────────────────────────────────────── */
-goTo(0);
 </script>
+<script src="board-utils.js"></script>
 </body>
 </html>
