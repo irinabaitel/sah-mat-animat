@@ -590,7 +590,7 @@ function byEra(era) { return P.filter(function(p) { return p.era === era; }); }
 
 function photoHTML(p) {
   if (!p.img) return '<div class="no-photo">♛</div>';
-  return '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+  return '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
        + '<div class="no-photo" style="display:none">♛</div>';
 }
 
@@ -697,7 +697,7 @@ function renderChampions() {
   var items = champions.map(function(p) {
     var cy = CHAMP_YEARS[p.name] || '';
     var photoEl = p.img
-      ? '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+      ? '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
         + '<div class="champ-item-no-photo" style="display:none">♛</div>'
       : '<div class="champ-item-no-photo">♛</div>';
     return '<div class="champ-item">'
