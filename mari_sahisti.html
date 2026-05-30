@@ -10,82 +10,30 @@
   gtag('js', new Date());
   gtag('config', 'G-CMTZ9GGPMP');
 </script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Mari Șahiști ai Lumii | Laboratorul de Șah</title>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="master-template.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg:       #F5A96E;
-      --navy:     #1a3a6b;
-      --navy-mid: #2a5aab;
-      --card:     #ffffff;
-      --card2:    #f0f4ff;
-      --border:   rgba(26,46,98,0.18);
-      --text:     #1a2e62;
-      --muted:    #5a6e98;
-      --gold:     #c8860a;
-      --font:     'Baloo 2', sans-serif;
-      --radius:   14px;
+    /* ── Layout principal full-width ── */
+    .ms-main {
+      flex: 1; overflow-y: auto;
+      padding: var(--gap) calc(var(--gap) + 4px);
     }
+    .ms-content { max-width: 900px; margin: 0 auto; }
 
-    body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* ── PAGE TITLE ── */
-    .page-title {
-      text-align: center;
-      padding: 22px 20px 10px;
-      font-size: clamp(1.3rem, 3vw, 1.9rem);
-      font-weight: 800;
-      color: var(--navy);
-      letter-spacing: 0.3px;
-    }
-
-    /* ── CHAMPIONS BAND ── */
-    .champ-band {
-      background: rgba(255,255,255,0.35);
-      border-top: 1px solid rgba(26,46,98,0.15);
-      border-bottom: 1px solid rgba(26,46,98,0.15);
-      padding: 10px 16px;
-    }
-    .champ-label {
-      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 1.5px; color: var(--navy); margin-bottom: 8px;
-      text-align: center;
-    }
-    .champ-scroll {
-      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;
-      scrollbar-width: thin; scrollbar-color: var(--navy) transparent;
-    }
-    .champ-pill {
-      flex-shrink: 0; background: var(--navy); color: #fff;
-      border-radius: 20px; padding: 4px 11px; text-align: center;
-    }
-    .champ-pill-name { font-size: 0.7rem; font-weight: 700; display: block; white-space: nowrap; }
-    .champ-pill-year { font-size: 0.6rem; opacity: 0.75; white-space: nowrap; }
-
-    /* ── MAIN ── */
-    .main { max-width: 1100px; margin: 0 auto; padding: 18px 16px 80px; }
-
-    /* ── ERA ACCORDION ── */
-    .era-block { margin-bottom: 12px; border-radius: var(--radius); overflow: hidden; }
+    /* ── Acordeon epocă ── */
+    .era-block { margin-bottom: 10px; border-radius: var(--radius); overflow: hidden; }
 
     .era-btn {
       width: 100%; display: flex; align-items: center; gap: 12px;
-      padding: 14px 18px;
-      background: var(--navy); color: #fff;
+      padding: 14px 18px; background: var(--c-navy); color: #fff;
       border: none; cursor: pointer; text-align: left;
-      font-family: var(--font); transition: background 0.2s;
+      font-family: var(--font-display); transition: background 0.2s;
       border-radius: var(--radius);
     }
     .era-btn[aria-expanded="true"] { border-radius: var(--radius) var(--radius) 0 0; }
-    .era-btn:hover { background: var(--navy-mid); }
-
+    .era-btn:hover { background: #2a5aab; }
     .era-code {
       width: 36px; height: 36px; border-radius: 8px;
       background: rgba(255,255,255,0.15);
@@ -102,193 +50,172 @@
     .era-arrow { font-size: 0.7rem; opacity: 0.8; transition: transform 0.3s; flex-shrink: 0; }
     .era-btn[aria-expanded="true"] .era-arrow { transform: rotate(180deg); }
 
-    /* ── ERA PANEL ── */
+    /* ── Panou epocă ── */
     .era-panel {
-      display: none;
-      background: rgba(255,255,255,0.18);
+      display: none; background: var(--c-surface);
       border-radius: 0 0 var(--radius) var(--radius);
-      padding: 16px;
-      border: 1px solid rgba(26,46,98,0.15);
-      border-top: none;
+      padding: 16px; border: 2px solid var(--c-border); border-top: none;
     }
     .era-panel.open { display: block; }
-
     .era-why {
-      font-size: 0.82rem; color: var(--navy); font-style: italic;
-      background: rgba(255,255,255,0.5); border-radius: 8px;
+      font-size: 0.84rem; color: var(--c-navy); font-style: italic;
+      background: rgba(255,255,255,0.6); border-radius: 8px;
       padding: 9px 13px; margin-bottom: 14px;
-      border-left: 3px solid var(--navy);
+      border-left: 3px solid var(--c-navy);
     }
 
-    /* ── PLAYER LAYOUT ── */
+    /* ── Layout jucător (paginat) ── */
     .player-wrap {
-      display: grid;
-      grid-template-columns: 220px 1fr;
-      gap: 16px;
-      align-items: start;
+      display: grid; grid-template-columns: 200px 1fr;
+      gap: 16px; align-items: start;
     }
-
-    /* LEFT: photo panel */
     .photo-panel {
-      background: var(--card);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      padding: 16px;
-      text-align: center;
-      position: sticky;
-      top: 16px;
+      background: var(--c-surface-2); border-radius: var(--radius);
+      border: 2px solid var(--c-border);
+      padding: 14px; text-align: center;
+      position: sticky; top: 16px;
     }
     .photo-frame {
       width: 100%; aspect-ratio: 3/4;
       border-radius: 10px; overflow: hidden;
-      background: var(--card2);
-      border: 1px solid var(--border);
+      background: rgba(26,58,107,0.06);
+      border: 1px solid var(--c-border);
       display: flex; align-items: center; justify-content: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .no-photo { font-size: 3.5rem; opacity: 0.2; }
-    .photo-name {
-      font-size: 0.95rem; font-weight: 800; color: var(--navy);
-      line-height: 1.3; margin-bottom: 6px;
-    }
+    .no-photo { font-size: 3rem; opacity: 0.18; }
+    .photo-name { font-size: 0.9rem; font-weight: 800; color: var(--c-navy); line-height: 1.3; margin-bottom: 5px; }
     .photo-crown {
-      display: inline-block; font-size: 0.68rem; font-weight: 700;
-      background: #fff3cd; color: var(--gold);
+      display: inline-block; font-size: 0.66rem; font-weight: 700;
+      background: #fff3cd; color: #c8860a;
       border: 1px solid rgba(200,134,10,0.4);
       border-radius: 12px; padding: 1px 8px; margin-bottom: 4px;
     }
-    .photo-num {
-      font-size: 0.68rem; color: var(--muted);
-    }
+    .photo-num { font-size: 0.66rem; color: rgba(26,58,107,0.5); }
 
-    /* RIGHT: info panel */
-    .info-panel {
-      display: flex; flex-direction: column; gap: 8px;
-    }
-
-    /* info rows */
+    .info-panel { display: flex; flex-direction: column; gap: 8px; }
     .info-row {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 11px 14px;
+      background: var(--c-surface-2); border: 1px solid var(--c-border);
+      border-radius: 10px; padding: 10px 13px;
     }
     .info-row-label {
-      font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
-      letter-spacing: 1px; color: var(--muted); margin-bottom: 3px;
+      font-size: 0.63rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 1px; color: rgba(26,58,107,0.5); margin-bottom: 2px;
     }
-    .info-row-val {
-      font-size: 0.88rem; font-weight: 600; color: var(--navy); line-height: 1.4;
-    }
-
-    /* fame & anecdote boxes */
+    .info-row-val { font-size: 0.86rem; font-weight: 600; color: var(--c-navy); line-height: 1.4; }
     .info-text {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 13px 15px;
+      background: var(--c-surface-2); border: 1px solid var(--c-border);
+      border-radius: 10px; padding: 12px 14px;
     }
     .info-text-label {
-      font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
-      letter-spacing: 1px; color: var(--muted); margin-bottom: 6px;
+      font-size: 0.63rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 1px; color: rgba(26,58,107,0.5); margin-bottom: 5px;
     }
-    .info-text-body {
-      font-size: 0.88rem; color: var(--text); line-height: 1.7;
-    }
+    .info-text-body { font-size: 0.86rem; color: var(--c-text); line-height: 1.7; }
     .anecdote-box {
-      background: var(--card2);
-      border: 1px solid rgba(26,46,98,0.2);
-      border-left: 3px solid var(--navy);
-      border-radius: 10px;
-      padding: 13px 15px;
+      background: rgba(26,58,107,0.05);
+      border: 1px solid var(--c-border); border-left: 3px solid var(--c-navy);
+      border-radius: 10px; padding: 12px 14px;
     }
-    .anecdote-body {
-      font-size: 0.86rem; color: var(--text);
-      font-style: italic; line-height: 1.75;
-    }
+    .anecdote-body { font-size: 0.84rem; color: var(--c-text); font-style: italic; line-height: 1.75; }
     .anecdote-body::before { content: '💬  '; font-style: normal; }
 
-    /* ── NAVIGATION ── */
-    .nav-row {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      margin-top: 14px; gap: 10px;
+    /* ── Navigare jucători (← →) ── */
+    .player-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 12px; gap: 8px;
     }
-    .nav-btn {
-      background: var(--navy); color: #fff;
-      border: none; border-radius: 24px;
-      padding: 9px 22px;
-      font-family: var(--font); font-size: 0.88rem; font-weight: 700;
-      cursor: pointer; transition: background 0.18s;
-      min-width: 110px;
+    .pnav-btn {
+      background: var(--c-navy); color: #fff; border: none;
+      border-radius: 20px; padding: 8px 18px;
+      font-family: var(--font-display); font-size: 0.86rem; font-weight: 700;
+      cursor: pointer; transition: background 0.18s; min-width: 100px;
     }
-    .nav-btn:hover:not(:disabled) { background: var(--navy-mid); }
-    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-    .nav-center { text-align: center; flex: 1; }
-    .nav-counter { font-size: 0.8rem; color: var(--navy); font-weight: 600; }
-    .nav-dots { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; margin-top: 5px; }
+    .pnav-btn:hover:not(:disabled) { background: #2a5aab; }
+    .pnav-btn:disabled { opacity: 0.28; cursor: not-allowed; }
+    .pnav-center { text-align: center; flex: 1; }
+    .pnav-counter { font-size: 0.78rem; color: var(--c-navy); font-weight: 700; }
+    .pnav-dots { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
     .dot {
       width: 7px; height: 7px; border-radius: 50%;
-      background: rgba(26,46,98,0.25); cursor: pointer;
+      background: rgba(26,58,107,0.22); cursor: pointer;
       border: none; transition: all 0.2s; padding: 0;
     }
-    .dot.active { width: 18px; border-radius: 4px; background: var(--navy); }
+    .dot.active { width: 18px; border-radius: 4px; background: var(--c-navy); }
 
-    /* ── BOTTOM NAV ── */
-    .bottom-nav {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      padding: 12px 24px;
-      display: flex; justify-content: space-between; align-items: center;
-      background: rgba(245,169,110,0.92);
-      backdrop-filter: blur(6px);
-      border-top: 1px solid rgba(26,46,98,0.15);
+    /* ── Lista campioni mondiali ── */
+    .champ-list { display: flex; flex-direction: column; gap: 12px; }
+    .champ-item {
+      display: grid; grid-template-columns: 110px 1fr;
+      gap: 14px; align-items: start;
+      background: var(--c-surface-2); border: 2px solid var(--c-border);
+      border-radius: var(--radius); padding: 14px;
     }
-    .bnav-btn {
-      background: var(--navy); color: #fff;
-      border: none; border-radius: 24px;
-      padding: 10px 22px;
-      font-family: var(--font); font-size: 0.88rem; font-weight: 700;
-      cursor: pointer; text-decoration: none;
-      display: inline-block;
+    .champ-item-photo {
+      border-radius: 8px; overflow: hidden;
+      aspect-ratio: 3/4; background: rgba(26,58,107,0.06);
+      border: 1px solid var(--c-border);
+      display: flex; align-items: center; justify-content: center;
     }
-    .bnav-btn:hover { background: var(--navy-mid); }
-    .bnav-home {
-      background: var(--navy);
-      color: #fff; border: none; border-radius: 24px;
-      padding: 10px 28px;
-      font-family: var(--font); font-size: 0.88rem; font-weight: 700;
-      cursor: pointer; text-decoration: none;
+    .champ-item-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .champ-item-no-photo { font-size: 2rem; opacity: 0.18; }
+    .champ-item-info { display: flex; flex-direction: column; gap: 6px; }
+    .champ-item-name {
+      font-family: var(--font-display); font-size: 1rem; font-weight: 900;
+      color: var(--c-navy); line-height: 1.2;
+    }
+    .champ-item-crown {
+      display: inline-block; font-size: 0.62rem; font-weight: 700;
+      background: #fff3cd; color: #c8860a;
+      border: 1px solid rgba(200,134,10,0.4);
+      border-radius: 10px; padding: 1px 7px; margin-left: 6px;
+      vertical-align: middle;
+    }
+    .champ-item-years {
+      font-size: 0.78rem; font-weight: 700; color: #c8860a;
+    }
+    .champ-item-country { font-size: 0.78rem; color: rgba(26,58,107,0.6); }
+    .champ-item-fame {
+      font-size: 0.82rem; color: var(--c-text); line-height: 1.65;
+      border-top: 1px solid var(--c-border); padding-top: 6px; margin-top: 2px;
     }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 640px) {
+    @media (max-width: 620px) {
       .player-wrap { grid-template-columns: 1fr; }
       .photo-panel { position: static; }
+      .champ-item { grid-template-columns: 80px 1fr; }
     }
   </style>
-<link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
-<link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+  <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
+  <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
 </head>
 <body>
+<div class="page-wrapper">
 
-<div style="max-width:1100px;margin:0 auto;padding:16px 16px 0;">
-  <a href="istoria_sahului.html" style="display:inline-block;padding:8px 16px;background:rgba(255,255,255,0.5);border:2px solid rgba(255,255,255,0.8);border-radius:50px;color:#1a3a6b;text-decoration:none;font-family:'Baloo 2',cursive;font-weight:700;font-size:0.9em;">⟵ Istoria Șahului</a>
-</div>
+  <header class="page-header" role="banner">
+    <span class="header-title">Mari Șahiști ai Lumii</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Istoria Șahului</span>
+    </div>
+  </header>
 
-<h1 class="page-title">Mari Șahiști ai Lumii</h1>
+  <main class="ms-main">
+    <div class="ms-content" id="app"></div>
+  </main>
 
-<!-- Champions timeline -->
-<div class="champ-band">
-  <div class="champ-label">♔ Campionii Mondiali — Linia Succesiunii</div>
-  <div class="champ-scroll" id="tl"></div>
-</div>
+  <footer class="page-footer" role="navigation">
+    <a href="istoria_sahului.html" class="nav-btn nav-btn--back">
+      <span class="icon">←</span><span class="label">Istoria Șahului</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon">&#8862;</span><span class="label">Cuprins</span>
+    </a>
+    <a href="index.html" class="nav-btn nav-btn--forward">
+      <span class="icon">→</span><span class="label">Acasă</span>
+    </a>
+  </footer>
 
-<div class="main" id="app"></div>
-
-<div style="max-width:1100px;margin:24px auto 40px;padding:0 16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-  <a href="istoria_sahului.html" style="padding:10px 24px;background:#1a3a6b;color:#fff;border-radius:24px;text-decoration:none;font-family:'Baloo 2',cursive;font-weight:700;font-size:0.9em;">⟵ Istoria Șahului</a>
-  <a href="index.html" style="padding:10px 24px;background:#1a3a6b;color:#fff;border-radius:24px;text-decoration:none;font-family:'Baloo 2',cursive;font-weight:700;font-size:0.9em;">Acasă</a>
 </div>
 
 <script>
@@ -356,7 +283,7 @@ const P = [
 
   {id:8,era:"vechi",champ:false,name:"Paul Morphy",years:"1837 – 1884",country:"SUA (New Orleans, Louisiana)",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Paul_Morphy_-_1857.jpg/220px-Paul_Morphy_-_1857.jpg",
-   prof:"Avocat (a absolvit dreptul, dar nu a profesat niciodata)",
+   prof:"Avocat (a absolvit dreptul, dar nu a profesat niciodată)",
    fame:"Paul Morphy a fost un fenomen: la 20 de ani a bătut toți cei mai buni jucători din lume și la 22 ani s-a retras definitiv din șah. Mulți îl consideră cel mai mare jucător natural din istoria șahului.",
    anec:"La Paris în 1858, Morphy a jucat simultan la orb împotriva a 8 jucători puternici — câștigând 6 și remizând 2. A anunțat fiecare mutare verbal, fără să vadă tablele. Sala era încremenită."},
 
@@ -617,18 +544,53 @@ const P = [
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Magnus_Carlsen_2023.jpg/440px-Magnus_Carlsen_2023.jpg",
    prof:"Șahist profesionist; model; cofondator Play Magnus",
    fame:"Carlsen a câștigat titlul mondial în 2013 și l-a apărat de 5 ori. A atins ratingul Elo de 2882 — cel mai înalt din istoria șahului. Considerat cel mai complet jucător din toate timpurile: excepțional în clasic, rapid și blitz.",
-   anec:"În 2022, Carlsen a refuzat să-și apere titlul, renunțând la coroana clasică după 10 ani de dominație. Tot în 2022 l-a acuzat implicit pe Hans Niemann de trișat — scandal uriaș cu investigații și procese. Carlsen rămâne nr. 1 mondial și joacă, dar pe propriile reguli."}
+   anec:"În 2022, Carlsen a refuzat să-și apere titlul, renunțând la coroana clasică după 10 ani de dominație. Tot în 2022 l-a acuzat implicit pe Hans Niemann de trișat — scandal uriaș cu investigații și procese. Carlsen rămâne nr. 1 mondial și joacă, dar pe propriile reguli."},
+
+  {id:54,era:"modern",champ:true,name:"Ding Liren",years:"1992 – prezent",country:"China",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Ding_Liren_2023.jpg/440px-Ding_Liren_2023.jpg",
+   prof:"Șahist profesionist",
+   fame:"Ding Liren a devenit Campion Mondial în 2023, primul din China care a câștigat titlul clasic. A câștigat meciul contra lui Nepomniachtchi la tie-break, după ce cele 14 partide clasice s-au terminat la egalitate.",
+   anec:"Ding Liren a venit la meciul mondial cu serioase probleme de sănătate mintală și o perioadă lungă fără competiții. A câștigat totuși titlul — o victorie care a emoționat întreaga lume a șahului."},
+
+  {id:55,era:"modern",champ:true,name:"Gukesh Dommaraju",years:"2006 – prezent",country:"India",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Gukesh_D_2024.jpg/440px-Gukesh_D_2024.jpg",
+   prof:"Șahist profesionist",
+   fame:"Gukesh D. a devenit cel mai tânăr Campion Mondial din istoria șahului în 2024, la 18 ani, bătând-ul pe Ding Liren. A câștigat Turneul Candidaților din 2024 — cel mai tânăr candidat la titlu din toate timpurile.",
+   anec:"Gukesh a câștigat partida decisivă după o eroare incredibilă a lui Ding Liren — care a sacrificat o piesă fără să calculeze corect. Tânărul indian a rămas nemișcat, a văzut greșeala și a câștigat titlul mondial."}
 ];
 
+// ── Mapare campioni mondiali (pentru sertarul 4) ──
+const CHAMP_YEARS = {};
+CHAMPIONS.forEach(function(c) { CHAMP_YEARS[c.n] = c.y; });
+// mapare manuală pentru unele variante de nume
+CHAMP_YEARS['Wilhelm Steinitz']    = '1886–1894';
+CHAMP_YEARS['Emanuel Lasker']      = '1894–1921';
+CHAMP_YEARS['José Raúl Capablanca']= '1921–1927';
+CHAMP_YEARS['Alexander Alekhine']  = '1927–35, 37–46';
+CHAMP_YEARS['Max Euwe']            = '1935–1937';
+CHAMP_YEARS['Mikhail Botvinnik']   = '1948–63*';
+CHAMP_YEARS['Vasily Smyslov']      = '1957–1958';
+CHAMP_YEARS['Mikhail Tal']         = '1960–1961';
+CHAMP_YEARS['Tigran Petrosian']    = '1963–1969';
+CHAMP_YEARS['Boris Spassky']       = '1969–1972';
+CHAMP_YEARS['Bobby Fischer']       = '1972–1975';
+CHAMP_YEARS['Anatoly Karpov']      = '1975–1985';
+CHAMP_YEARS['Garry Kasparov']      = '1985–2000';
+CHAMP_YEARS['Vladimir Kramnik']    = '2000–2007';
+CHAMP_YEARS['Viswanathan Anand']   = '2007–2013';
+CHAMP_YEARS['Magnus Carlsen']      = '2013–2023';
+CHAMP_YEARS['Ding Liren']          = '2023–2024';
+CHAMP_YEARS['Gukesh Dommaraju']    = '2024–prezent';
+
 // ── STATE ────────────────────────────────────────────────────────────
-const state = { vechi:0, clasic:0, modern:0 };
+var state = { vechi:0, clasic:0, modern:0 };
 
 // ── HELPERS ──────────────────────────────────────────────────────────
-function byEra(era) { return P.filter(p => p.era === era); }
+function byEra(era) { return P.filter(function(p) { return p.era === era; }); }
 
 function photoHTML(p) {
   if (!p.img) return '<div class="no-photo">♛</div>';
-  return '<img src="' + p.img + '" alt="' + p.name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+  return '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
        + '<div class="no-photo" style="display:none">♛</div>';
 }
 
@@ -645,7 +607,7 @@ function updateCard(era) {
   var crown = document.getElementById('crown-' + era);
   crown.style.display = p.champ ? 'inline-block' : 'none';
 
-  document.getElementById('pnum-' + era).textContent = '#' + p.id + ' din 53';
+  document.getElementById('pnum-' + era).textContent = '#' + p.id + ' din ' + P.length;
   document.getElementById('years-' + era).textContent = p.years;
   document.getElementById('country-' + era).textContent = p.country;
   document.getElementById('prof-' + era).textContent = p.prof;
@@ -674,26 +636,15 @@ function goTo(era, idx) {
 }
 
 // ── ACCORDION ────────────────────────────────────────────────────────
-function toggleEra(era) {
-  var panel = document.getElementById('panel-' + era);
-  var btn   = document.getElementById('btn-' + era);
+function toggleEra(id) {
+  var panel = document.getElementById('panel-' + id);
+  var btn   = document.getElementById('btn-' + id);
   var open  = panel.classList.contains('open');
   panel.classList.toggle('open', !open);
   btn.setAttribute('aria-expanded', String(!open));
 }
 
-// ── RENDER ───────────────────────────────────────────────────────────
-function renderTimeline() {
-  var html = '';
-  CHAMPIONS.forEach(function(c) {
-    html += '<div class="champ-pill">'
-          + '<span class="champ-pill-name">♔ ' + c.n + '</span>'
-          + '<span class="champ-pill-year">' + c.y + '</span>'
-          + '</div>';
-  });
-  document.getElementById('tl').innerHTML = html;
-}
-
+// ── RENDER EPOCE (paginat) ────────────────────────────────────────────
 function dotsHTML(era) {
   var players = byEra(era);
   var html = '';
@@ -716,37 +667,67 @@ function renderEra(era) {
     + '<div class="era-panel" id="panel-' + era + '">'
     + '<p class="era-why">' + m.why + '</p>'
     + '<div class="player-wrap">'
-    // LEFT
     + '<div class="photo-panel">'
     + '<div class="photo-frame" id="photo-' + era + '"></div>'
     + '<div class="photo-name" id="name-' + era + '"></div>'
     + '<div id="crown-' + era + '" class="photo-crown">♔ Campion Mondial</div>'
     + '<div class="photo-num" id="pnum-' + era + '"></div>'
     + '</div>'
-    // RIGHT
     + '<div class="info-panel">'
     + '<div class="info-row"><div class="info-row-label">📅 Perioadă de viață</div><div class="info-row-val" id="years-' + era + '"></div></div>'
     + '<div class="info-row"><div class="info-row-label">🌍 Origine</div><div class="info-row-val" id="country-' + era + '"></div></div>'
     + '<div class="info-row"><div class="info-row-label">💼 Meseria</div><div class="info-row-val" id="prof-' + era + '"></div></div>'
     + '<div class="info-text"><div class="info-text-label">♟ Ce l-a făcut faimos</div><div class="info-text-body" id="fame-' + era + '"></div></div>'
     + '<div class="anecdote-box"><div class="info-text-label">💬 O poveste adevărată</div><div class="anecdote-body" id="anec-' + era + '"></div></div>'
-    + '<div class="nav-row">'
-    + '<button class="nav-btn" id="prev-' + era + '" onclick="navigate(\'' + era + '\',-1)">← Anterior</button>'
-    + '<div class="nav-center"><div class="nav-counter" id="counter-' + era + '"></div>'
-    + '<div class="nav-dots" id="dots-' + era + '">' + dotsHTML(era) + '</div></div>'
-    + '<button class="nav-btn" id="next-' + era + '" onclick="navigate(\'' + era + '\',1)">Următor →</button>'
+    + '<div class="player-nav">'
+    + '<button class="pnav-btn" id="prev-' + era + '" onclick="navigate(\'' + era + '\',-1)">← Anterior</button>'
+    + '<div class="pnav-center"><div class="pnav-counter" id="counter-' + era + '"></div>'
+    + '<div class="pnav-dots" id="dots-' + era + '">' + dotsHTML(era) + '</div></div>'
+    + '<button class="pnav-btn" id="next-' + era + '" onclick="navigate(\'' + era + '\',1)">Următor →</button>'
     + '</div>'
-    + '</div>'  // info-panel
-    + '</div>'  // player-wrap
-    + '</div>'  // era-panel
-    + '</div>'; // era-block
+    + '</div>'
+    + '</div>'
+    + '</div>'
+    + '</div>';
+}
+
+// ── RENDER CAMPIONI MONDIALI (lista verticală) ─────────────────────────
+function renderChampions() {
+  var champions = P.filter(function(p) { return p.champ; });
+  var items = champions.map(function(p) {
+    var cy = CHAMP_YEARS[p.name] || '';
+    var photoEl = p.img
+      ? '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+        + '<div class="champ-item-no-photo" style="display:none">♛</div>'
+      : '<div class="champ-item-no-photo">♛</div>';
+    return '<div class="champ-item">'
+      + '<div class="champ-item-photo">' + photoEl + '</div>'
+      + '<div class="champ-item-info">'
+      + '<div class="champ-item-name">' + p.name + '<span class="champ-item-crown">♔ Campion Mondial</span></div>'
+      + (cy ? '<div class="champ-item-years">♔ ' + cy + '</div>' : '')
+      + '<div class="champ-item-country">🌍 ' + p.country + '</div>'
+      + '<div class="champ-item-fame">' + p.fame + '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+
+  return '<div class="era-block">'
+    + '<button class="era-btn" id="btn-campioni" aria-expanded="false" onclick="toggleEra(\'campioni\')">'
+    + '<span class="era-code">👑</span>'
+    + '<span class="era-titles"><span class="era-name">Campionii Mondiali</span><span class="era-range">Toți campionii — în ordine cronologică</span></span>'
+    + '<span class="era-count">' + champions.length + ' campioni</span>'
+    + '<span class="era-arrow">▼</span>'
+    + '</button>'
+    + '<div class="era-panel" id="panel-campioni">'
+    + '<p class="era-why">Toți campionii mondiali oficiali de șah, de la Wilhelm Steinitz (1886) până în prezent. Fiecare a lăsat o urmă distinctă în istoria jocului.</p>'
+    + '<div class="champ-list">' + items + '</div>'
+    + '</div>'
+    + '</div>';
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────
 document.getElementById('app').innerHTML =
-  renderEra('vechi') + renderEra('clasic') + renderEra('modern');
-
-renderTimeline();
+  renderEra('vechi') + renderEra('clasic') + renderEra('modern') + renderChampions();
 
 ['vechi','clasic','modern'].forEach(function(era) { updateCard(era); });
 </script>
