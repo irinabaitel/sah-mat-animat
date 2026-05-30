@@ -13,14 +13,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Mari Șahiști ai Lumii | Laboratorul de Șah</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
   <style>
-    /* ── Layout principal full-width ── */
-    .ms-main {
-      flex: 1; overflow-y: auto;
-      padding: var(--gap) calc(var(--gap) + 4px);
-    }
-    .ms-content { max-width: 900px; margin: 0 auto; }
+    /* tablă ușor mai mică decât standard */
+    .board-col .board-wrapper { max-width: 340px; }
 
     /* ── Acordeon epocă ── */
     .era-block { margin-bottom: 10px; border-radius: var(--radius); overflow: hidden; }
@@ -200,8 +197,15 @@
     </div>
   </header>
 
-  <main class="ms-main">
-    <div class="ms-content" id="app"></div>
+  <main class="page-main" role="main">
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-scroll" id="app"></div>
+    </div>
   </main>
 
   <footer class="page-footer" role="navigation">
@@ -218,6 +222,19 @@
 
 </div>
 
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
+<script>
+$(document).ready(function() {
+  var board = Chessboard('board', {
+    position: 'start',
+    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+    draggable: true
+  });
+  window.addEventListener('resize', function() { board.resize(); });
+});
+</script>
 <script>
 // ── DATE ──────────────────────────────────────────────────────────────
 const CHAMPIONS = [
@@ -588,9 +605,15 @@ var state = { vechi:0, clasic:0, modern:0 };
 // ── HELPERS ──────────────────────────────────────────────────────────
 function byEra(era) { return P.filter(function(p) { return p.era === era; }); }
 
+function proxyImg(url) {
+  if (!url) return null;
+  return 'https://images.weserv.nl/?url=' + url.replace('https://', '').replace('http://', '');
+}
+
 function photoHTML(p) {
-  if (!p.img) return '<div class="no-photo">♛</div>';
-  return '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+  var src = proxyImg(p.img);
+  if (!src) return '<div class="no-photo">♛</div>';
+  return '<img src="' + src + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
        + '<div class="no-photo" style="display:none">♛</div>';
 }
 
@@ -697,7 +720,7 @@ function renderChampions() {
   var items = champions.map(function(p) {
     var cy = CHAMP_YEARS[p.name] || '';
     var photoEl = p.img
-      ? '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+      ? '<img src="' + proxyImg(p.img) + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
         + '<div class="champ-item-no-photo" style="display:none">♛</div>'
       : '<div class="champ-item-no-photo">♛</div>';
     return '<div class="champ-item">'
