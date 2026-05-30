@@ -118,7 +118,7 @@
                 <div class="ex-label" id="exLabel1"></div>
                 <div class="ex-ann"   id="exAnn1"></div>
                 <div class="hl-box" style="margin-top:4px;">
-                  <strong>Regula:</strong> Dacă sunt mai mulți atacatori decât apărători, de obicei e bine să capturezi. Dacă numerele sunt egale, armata care se apără este în siguranță.
+                  Dacă sunt mai mulți atacatori decât apărători, de obicei e bine să capturezi (exact ca la piesele atârnate — neapărate). Dacă numărul de atacatori este egal cu numărul de apărători, armata care se apără este în siguranță.
                 </div>
               </div>
             </div>
@@ -135,11 +135,11 @@
                 <div class="ex-dots" id="dots2"></div>
                 <div class="ex-label" id="exLabel2"></div>
                 <div class="ex-ann"   id="exAnn2"></div>
-                <div class="hl-box warn" style="margin-top:4px;">
-                  <strong>Atenție la ordinea mutărilor!</strong> Chiar dacă atacatorii și apărătorii sunt egali, piesa mai valoroasă intră ultima în schimb.
+                <div class="hl-box" style="margin-top:4px;">
+                  Atunci când numărăm atacatorii și apărătorii trebuie să fim atenți cine are piese mai valoroase. De aceea trebuie să vedem ce am schimba pe ce: normal că am schimba un cal și un pion pentru o regină (două piese pentru una!), sau doi pioni pentru un nebun, dar sigur nu am dori să schimbăm un cal și un nebun pentru un turn. Dar o regină și un pion pentru două turnuri? 10 la 10 — uneori regina și pionul sunt mai buni, alteori două turnuri sunt mai bune. Valoarea pieselor ne ajută să ne gândim dacă un schimb este bun sau nu, dar totul depinde de poziția celorlalte piese de pe tablă.
                 </div>
-                <div class="hl-box">
-                  <strong>Regula valorilor:</strong> Calculează ce schimbi pe ce. Un cal și un pion pentru o regină? Ai câștigat. Un cal și un nebun pentru un turn? Ai pierdut.
+                <div class="hl-box warn">
+                  <strong>Regula:</strong> Trebuie să calculezi valoarea pieselor pentru a decide dacă un schimb este bun pentru tine sau pentru adversar.
                 </div>
               </div>
             </div>
@@ -154,7 +154,7 @@
             <div class="acc-body" id="accBody2">
               <div class="acc-inner">
 
-                <p style="margin:0 0 4px 0; font-size:var(--fs-sm); color:var(--c-text);">Dacă ai destui atacatori, declanșezi atacul. Dacă nu, mai aduci unul. Atenție la ordinea intrării pieselor în schimburi!</p>
+                <p style="margin:0 0 4px 0; font-size:var(--fs-sm); color:var(--c-text);">Dacă armata ta are destui atacatori, declanșezi atacul, dacă nu, mai aduci un atacator. Atenție la ordinea intrării pieselor în schimburi! Dacă piesele tale sunt atacate, ai grijă să le aperi bine.</p>
 
                 <span class="turn-badge white" id="turnBadge">&#9634; Albul mută</span>
                 <span class="level-badge" id="levelBadge">UȘOR</span>
@@ -220,12 +220,12 @@ var INIT_FEN = 'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1B4N1/PPP2PPP/R1BQ1RK1 w kq - 0 1'
 var EX1 = [
   { fen:    'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1B4N1/PPP2PPP/R1BQ1RK1 w kq - 0 1',
     label:  '2 atacatori, 1 apărător — periculos!',
-    ann:    'Calul alb din d4 este atacat de două piese negre (nebunul din c5 și dama din f6), dar apărat de o singură piesă albă (nebunul din b3). Sunt mai mulți atacatori decât apărători — nu e bine pentru armata albă!',
+    ann:    'Câte piese negre ar putea captura acest cal? Două. Câte piese albe îl apără? Una. Deci cu doi atacatori negri și un singur apărător alb, sigur nu e bine pentru armata albă.',
     arrows: [{from:'c5',to:'d4',ci:1},{from:'f6',to:'d4',ci:1},{from:'d1',to:'d4',ci:0}]
   },
   { fen:    'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1BP3N1/PP3PPP/R1BQ1RK1 w kq - 0 1',
     label:  '2 atacatori, 2 apărători — în siguranță',
-    ann:    'Albul aduce pionul la c3, adăugând un al doilea apărător pentru calul din d4. Acum sunt doi atacatori și doi apărători — armata care se apără este în siguranță.',
+    ann:    'Presupunând că Negrul nu a fost atent și a făcut rocada în loc să captureze cu nebunul, Albul ar putea să plece cu calul undeva în siguranță, dar dacă își dorește să aibă un cal în centrul tablei, trebuie să mai aducă un apărător — pionul din c2 la c3. În acest moment sunt doi atacatori și doi apărători ai calului din d4. Dacă numărul de atacatori este egal cu numărul de apărători, armata care se apără este în siguranță.',
     arrows: [{from:'c5',to:'d4',ci:1},{from:'f6',to:'d4',ci:1},{from:'d1',to:'d4',ci:0},{from:'c3',to:'d4',ci:0}]
   }
 ];
@@ -233,7 +233,7 @@ var EX1 = [
 var EX2 = [
   { fen:    '3r2r1/3q2bk/1p2bn1n/pPp1p1pp/P1PpPp2/3P1P1P/1R2BNPN/2BQKR2 w - - 0 1',
     label:  '6 atacatori negri, 5 apărători albi — negrul trebuie să mai aducă unul',
-    ann:    'Negrul vrea să mute g4 (g5→g4), dar trebuie să numere. Atacatori negri: pion g5, pion h5, caii h6 și f6, nebunul e6, dama d7 — 6 în total. Apărători albi: caii h2 și f2, pionul h3, nebunul e2, regina d1 — 5 în total. Sunt mai mulți atacatori, dar negrul mai are nevoie de un al 6-lea apărător pentru a putea declanșa schimbul cu siguranță.',
+    ann:    'Negrul ar dori să mute g5, dar înainte de asta ar trebui să numere cu atenție atacatorii și apărătorii acestui câmp: sunt 6 atacatori, nebunul și regina devin atacatori după ce fxg4. Apărători ar fi 5 (pionul din h5, caii, nebunul și regina). Sunt mai puțini apărători, deci negrul mai are nevoie de încă unul pentru a putea muta în siguranță la g4.',
     arrows: [
       {from:'g5',to:'g4',ci:1},{from:'h5',to:'g4',ci:1},
       {from:'h6',to:'g4',ci:1},{from:'f6',to:'g4',ci:1},
@@ -245,7 +245,7 @@ var EX2 = [
   },
   { fen:    '3r1br1/3q3k/1p2bn1n/pPp1p1pp/P1PpPp2/3P1P1P/1R2BNPN/2BQKR2 w - - 0 1',
     label:  'Nebunul pe f8 — turnul din g8 devine al 6-lea apărător',
-    ann:    'Negrul mută nebunul de pe g7 pe f8, eliberând coloana g. Acum turnul din g8 poate intra în schimb pe g4. Negrul are 6 apărători și 6 atacatori — poate declanșa schimbul!',
+    ann:    'Negrul obține al 6-lea apărător mutând nebunul din g7 pe f8 și eliberând calea turnului. În acest moment albul nu mai poate opri g4.',
     arrows: [
       {from:'g5',to:'g4',ci:1},{from:'h5',to:'g4',ci:1},
       {from:'h6',to:'g4',ci:1},{from:'f6',to:'g4',ci:1},
