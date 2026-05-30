@@ -236,34 +236,33 @@ function redKingOverlay() {
 
 const chapter = {
   startFen: '8/8/8/8/4k3/8/8/3QK3 w - - 0 1',
-  sanMoves: ['Qd6','Kf5','Qe7','Kg4','Qe5','Kf3','Qd4','Kg3','Qe4','Kh2','Qg4','Kh1','Kf2','Kh2','Qg2#'],
+  sanMoves: ['Qd6','Kf5','Qe7','Kg4','Qf6','Kg3','Qf5','Kh4','Qg6','Kh3','Kf2','Kh4','Kf3','Kh3','Qh6#'],
   annotations: [
     'Regina și Regele alb se pregătesc. Tehnica <strong>cuștii care se strânge</strong>: așezăm regina la o <em>săritură de cal</em> distanță față de regele advers — se formează o cușcă invizibilă!',
-    'Regina se poziționează ca un cal față de rege. Cușca s-a format — urmărește conturul portocaliu! Regina taie <strong>coloana d</strong> (sus-jos) și <strong>rândul 6</strong> (stânga-dreapta), regele rămânând prins în coloanele e–h, rândurile 1–5.',
+    'Regina se poziționează ca un cal față de rege. Cușca s-a format — urmărește conturul portocaliu! Regina taie <strong>coloana d</strong> și <strong>rândul 6</strong>, regele rămânând prins în coloanele e–h, rândurile 1–5.',
     'Un rege care se respectă încearcă să stea cât mai mult în centru. Dacă s-ar duce direct la margine, i-ar ușura munca adversarului.',
-    'Regina urmărește ca o umbră, micșorând cușca — din nou la o <em>săritură de cal</em> distanță. Observă cum zona portocalie s-a micșorat!',
+    'Regina urmărește ca o umbră — din nou la o <em>săritură de cal</em> distanță! Cușca s-a mai strâns: prins în coloanele f–h, rândurile 1–6.',
     'Regele fuge... dar cușca continuă să se strângă.',
-    'Regina strânge cușca! Observă cum zona portocalie se micșorează la fiecare mutare a reginei.',
-    'Regele nu vrea să ajungă la margine, dar nu mai are de ales...',
-    'Regina strânge din nou cușca! Spațiul disponibil se micșorează dramatic.',
-    'Regele încearcă să scape spre centru — dar cușca e acum foarte mică!',
-    'Același tipar: <em>săritura de cal</em>. Cușca este acum uriaș de mică!',
-    'Regele este forțat să ajungă la marginea tablei.',
-    'Regina îl blochează pe margine. Cușca: doar <strong>3 pătrate</strong> mai rămân!',
-    '<strong>⚠️ Atenție la PAT!</strong> Regele negru are o singură mutare posibilă: h1. Dacă regina ar mai micșora cușca acum, ar rămâne fără mutări — <strong>PAT = remiză!</strong>',
-    'Momentul cheie: <strong>Regele alb intră în acțiune!</strong> Fără el, orice mutare a reginei ar da PAT. Cu regele pe f2, putem da mat!',
-    'Regele negru revine la h2. Acum regina poate livra lovitura finală!',
-    'Regina, apărată de regele alb de pe f2, dă mat pe g2. Regele negru nu are nicio scăpare. Șah mat!'
+    'Cușca se strânge! Regina taie <strong>coloana f</strong> și <strong>rândul 6</strong> — regele prins în coloanele g–h, rândurile 1–5.',
+    'Regele se retrage spre colțul h. Spațiul se micșorează dramatic.',
+    'Regina strânge din nou — <em>săritură de cal</em>! Regele prins în coloanele g–h, rândurile 1–4.',
+    'Regele este forțat spre marginea tablei. Nu mai are unde fugi!',
+    'Ultima strângere a cuștii: acum regele este blocat exclusiv pe <strong>coloana h</strong>!',
+    'Regele ajunge la h3. <strong>⚠️ Atenție la PAT!</strong> Dacă regina ar mai muta acum, regele ar rămâne fără mutări — <strong>PAT = remiză!</strong>',
+    'Momentul cheie: <strong>Regele alb intră în acțiune!</strong> Fără el, orice mutare a reginei ar da PAT. Cu regele pe f2, putem coordona mat-ul!',
+    'Regele negru încearcă să fugă la h4 — dar nu mai are scăpare.',
+    '<strong>Regele alb avansează</strong> la f3, completând menghina în jurul regelui negru.',
+    'Regele negru revine la h3. Acum regina poate livra lovitura finală!',
+    'Regina, apărată de regele alb de pe f3, dă mat pe h6. Regele negru nu are nicio scăpare. <strong>Șah mat!</strong>'
   ]
 };
 
 const cages = {
-  1:  ['e','h',1,5],
-  3:  ['f','h',1,6],
-  5:  ['f','h',1,4],
-  7:  ['e','h',1,3],
-  9:  ['f','h',1,3],
-  11: ['h','h',1,3]
+  1: ['e','h',1,5],
+  3: ['f','h',1,6],
+  5: ['g','h',1,5],
+  7: ['g','h',1,4],
+  9: ['h','h',1,5]
 };
 
 const knightLinks = {
@@ -271,14 +270,12 @@ const knightLinks = {
   2:  { q:[3,6], k:[5,5], pk:[4,4] },
   3:  { q:[4,7], k:[5,5], pq:[3,6] },
   4:  { q:[4,7], k:[6,4], pk:[5,5] },
-  5:  { q:[4,5], k:[6,4], pq:[4,7] },
-  6:  { q:[4,5], k:[5,3], pk:[6,4] },
-  7:  { q:[3,4], k:[5,3], pq:[4,5] },
-  8:  { q:[3,4], k:[6,3], pk:[5,3] },
-  9:  { q:[4,4], k:[6,3], pq:[3,4] },
-  10: { q:[4,4], k:[7,2], pk:[6,3] },
-  11: { q:[6,4], k:[7,2], pq:[4,4] },
-  12: { q:[6,4], k:[7,1], pk:[7,2] }
+  5:  { q:[5,6], k:[6,4], pq:[4,7] },
+  6:  { q:[5,6], k:[6,3], pk:[6,4] },
+  7:  { q:[5,5], k:[6,3], pq:[5,6] },
+  8:  { q:[5,5], k:[7,4], pk:[6,3] },
+  9:  { q:[6,6], k:[7,4], pq:[5,5] },
+  10: { q:[6,6], k:[7,3], pk:[7,4] }
 };
 
 let cageTimer = null;
