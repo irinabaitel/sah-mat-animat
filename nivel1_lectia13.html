@@ -114,7 +114,11 @@
             </button>
             <div class="acc-body" id="accBody0">
               <div class="acc-inner">
-                <div class="ex-dots" id="dots1"></div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <button class="btn-sm btn-tri btn-prev" id="nav1Prev" onclick="goExRel(-1)" disabled>&#9668;</button>
+                  <div class="ex-dots" id="dots1"></div>
+                  <button class="btn-sm btn-tri btn-prev" id="nav1Next" onclick="goExRel(1)">&#9658;</button>
+                </div>
                 <div class="ex-label" id="exLabel1"></div>
                 <div class="ex-ann"   id="exAnn1"></div>
                 <div class="hl-box" style="margin-top:4px;">
@@ -132,7 +136,11 @@
             </button>
             <div class="acc-body" id="accBody1">
               <div class="acc-inner">
-                <div class="ex-dots" id="dots2"></div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <button class="btn-sm btn-tri btn-prev" id="nav2Prev" onclick="goExRel(-1)" disabled>&#9668;</button>
+                  <div class="ex-dots" id="dots2"></div>
+                  <button class="btn-sm btn-tri btn-prev" id="nav2Next" onclick="goExRel(1)">&#9658;</button>
+                </div>
                 <div class="ex-label" id="exLabel2"></div>
                 <div class="ex-ann"   id="exAnn2"></div>
                 <div class="hl-box" style="margin-top:4px;">
@@ -317,8 +325,15 @@ function toggleAcc(idx) {
   }
 }
 
+function goExRel(delta) {
+  if (!curExSet) return;
+  goEx(Math.max(0, Math.min(curExSet.arr.length - 1, curExIdx + delta)));
+}
+
 function loadExSet(exArr, dotsId, labelId, annId, startIdx) {
-  curExSet = {arr:exArr, dotsId:dotsId, labelId:labelId, annId:annId};
+  var prevId = dotsId === 'dots1' ? 'nav1Prev' : 'nav2Prev';
+  var nextId = dotsId === 'dots1' ? 'nav1Next' : 'nav2Next';
+  curExSet = {arr:exArr, dotsId:dotsId, labelId:labelId, annId:annId, prevId:prevId, nextId:nextId};
   var row = document.getElementById(dotsId);
   row.innerHTML = '';
   exArr.forEach(function(ex, i) {
@@ -341,6 +356,8 @@ function goEx(idx) {
   });
   document.getElementById(curExSet.labelId).textContent = ex.label;
   document.getElementById(curExSet.annId).textContent   = ex.ann;
+  if (curExSet.prevId) document.getElementById(curExSet.prevId).disabled = (idx <= 0);
+  if (curExSet.nextId) document.getElementById(curExSet.nextId).disabled = (idx >= curExSet.arr.length - 1);
   chess = new Chess(ex.fen);
   board.position(ex.fen, false);
   if (ex.arrows && window._annSet) {
