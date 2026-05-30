@@ -100,11 +100,10 @@ html, body {
 .page-header {
   flex-shrink:  0;
   height:       var(--header-h);
-  display:      flex;
+  display:      grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items:  center;
-  justify-content: space-between;
   padding:      0 var(--gap);
-  gap:          var(--gap);
   background:   rgba(245, 169, 110, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -113,21 +112,23 @@ html, body {
 }
 
 .header-title {
+  grid-column:  2;
   font-family:  var(--font-display);
-  font-size:    var(--fs-h2);
+  font-size:    clamp(1.25rem, 3vw, 1.55rem);
   font-weight:  var(--fw-bold);
   color:        var(--c-navy);
   white-space:  nowrap;
   overflow:     hidden;
   text-overflow:ellipsis;
-  flex:         1;
+  text-align:   center;
 }
 
 .header-progress {
-  display:     flex;
-  align-items: center;
-  gap:         4px;
-  flex-shrink: 0;
+  grid-column:  3;
+  justify-self: end;
+  display:      flex;
+  align-items:  center;
+  gap:          4px;
 }
 
 .lesson-badge {
