@@ -51,6 +51,8 @@
   border: none; cursor: pointer; transition: background 0.15s;
 }
 .mini-badge:hover { background: rgba(26,58,107,0.18); }
+.mini-badge.active { background: var(--c-navy); color: white; }
+.mini-badge.active:hover { background: #2a5aab; }
 .mini-badge.mat { background: #c0392b; color: white; }
 .mini-badge.mat:hover { background: #a93226; }
 </style>
@@ -186,14 +188,14 @@ function updateAll() {
   // Badge și butoane card 1 (exemplul A)
   const bA = document.getElementById('badgeA');
   bA.textContent = labA[idxA];
-  bA.className = 'mini-badge' + (idxA === posA.length - 1 ? ' mat' : '');
+  bA.className = 'mini-badge' + (idxA === posA.length - 1 ? ' mat' : ' active');
   document.getElementById('bAprev').disabled = idxA === 0;
   document.getElementById('bAnext').disabled = idxA === posA.length - 1;
 
   // Badge și butoane card 2 (exemplul B)
   const bB = document.getElementById('badgeB');
   bB.textContent = labB[idxB];
-  bB.className = 'mini-badge' + (idxB === posB.length - 1 ? ' mat' : '');
+  bB.className = 'mini-badge' + (idxB === posB.length - 1 ? ' mat' : ' active');
   document.getElementById('bBprev').disabled = idxB === 0;
   document.getElementById('bBnext').disabled = idxB === posB.length - 1;
 
