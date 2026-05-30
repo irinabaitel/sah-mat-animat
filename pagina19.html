@@ -349,6 +349,7 @@ function getMoveLabel(s) {
 function goToStep(s) {
   document.querySelectorAll('#board .highlight-check').forEach(el => el.classList.remove('highlight-check'));
   currentStep = s;
+  liveChess = new Chess(positions[s]);
   board.position(positions[s], false);
   if (s > 0) {
     const mv = game.sanMoves[s - 1];
@@ -396,10 +397,20 @@ function updateUI() {
 
 positions = computePositions();
 
+let liveChess = new Chess(positions[0]);
+
 const board = Chessboard('board', {
   position: positions[0],
   pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
-  draggable: true
+  draggable: true,
+  onDrop: function(source, target) {
+    const move = liveChess.move({ from: source, to: target, promotion: 'q' });
+    if (!move) return 'snapback';
+    if (move.flags.includes('c') || move.flags.includes('e')) playSound(sndCapture);
+    else playSound(sndMove);
+    if (liveChess.in_checkmate()) { setTimeout(() => { playSound(sndMate); }, 200); }
+  },
+  onSnapbackEnd: function() { board.position(liveChess.fen(), false); }
 });
 window.addEventListener('resize', () => board.resize());
 

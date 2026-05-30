@@ -218,11 +218,12 @@
     });
 
     /* ════ ADNOTĂRI MOUSE (click-dreapta) ════
-       Capture phase: interceptăm ÎNAINTE ca chessboard.js să apuce piesa */
-    boardEl.addEventListener('mousedown', function (e) {
+       Capture phase la nivel document: rulăm ÎNAINTE de orice listener chessboard.js */
+    document.addEventListener('mousedown', function (e) {
       if (e.button !== 2) return;
+      if (!boardEl.contains(e.target)) return;
       e.preventDefault();
-      e.stopPropagation();   /* împiedicăm chessboard.js să înceapă drag-ul */
+      e.stopImmediatePropagation();   /* oprim chessboard.js să apuce piesa */
       rmbFrom  = getSqFromPoint(e.clientX, e.clientY);
       rmbCi    = colorIdx(e);
       rmbMoved = false;
