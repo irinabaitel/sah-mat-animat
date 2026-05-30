@@ -442,38 +442,77 @@ function sqC(fi, rank) {
 
 function drawFence(svg, ns, squares) {
   const sqSize = document.getElementById('boardWrapper').offsetWidth / 8;
-  function sc(name) {
+  function tl(name) {
     const fi = name.charCodeAt(0) - 97, rk = parseInt(name[1]);
-    return { x: (fi + 0.5) * sqSize, y: (8.5 - rk) * sqSize };
+    return { x: fi * sqSize, y: (8 - rk) * sqSize };
   }
-  const pts = squares.map(sc);
+  const pts = squares.map(tl);
   const horiz = pts.every(p => Math.abs(p.y - pts[0].y) < 1);
-  const bux = horiz ? 0 : 1, buy = horiz ? 1 : 0;
-  const rux = horiz ? 1 : 0, ruy = horiz ? 0 : 1;
-  const barHalf = sqSize * 0.28, railPad = sqSize * 0.45;
+  if (!horiz) pts.sort((a, b) => a.y - b.y);
 
-  pts.forEach(p => {
-    const bar = document.createElementNS(ns, 'line');
-    bar.setAttribute('x1', p.x - barHalf * bux); bar.setAttribute('y1', p.y - barHalf * buy);
-    bar.setAttribute('x2', p.x + barHalf * bux); bar.setAttribute('y2', p.y + barHalf * buy);
-    bar.setAttribute('stroke', '#ff2200'); bar.setAttribute('stroke-width', '4');
-    bar.setAttribute('stroke-linecap', 'round'); bar.setAttribute('opacity', '0.92');
-    bar.setAttribute('filter', 'drop-shadow(0 0 3px rgba(255,50,0,0.8))');
-    svg.appendChild(bar);
-  });
+  const thick = sqSize * 0.36;
+  let wx, wy, ww, wh;
+  if (horiz) {
+    ww = pts.length * sqSize; wh = thick;
+    wx = pts[0].x; wy = pts[0].y + (sqSize - wh) * 0.5;
+  } else {
+    ww = thick; wh = pts.length * sqSize;
+    wx = pts[0].x + (sqSize - ww) * 0.5; wy = pts[0].y;
+  }
 
-  const first = pts[0], last = pts[pts.length - 1];
-  [-1, 1].forEach(sign => {
-    const rail = document.createElementNS(ns, 'line');
-    rail.setAttribute('x1', first.x + sign * barHalf * bux - railPad * rux);
-    rail.setAttribute('y1', first.y + sign * barHalf * buy - railPad * ruy);
-    rail.setAttribute('x2', last.x  + sign * barHalf * bux + railPad * rux);
-    rail.setAttribute('y2', last.y  + sign * barHalf * buy + railPad * ruy);
-    rail.setAttribute('stroke', '#cc2200'); rail.setAttribute('stroke-width', '2');
-    rail.setAttribute('stroke-linecap', 'round'); rail.setAttribute('opacity', '0.85');
-    rail.setAttribute('filter', 'drop-shadow(0 0 2px rgba(200,30,0,0.6))');
-    svg.appendChild(rail);
-  });
+  // mortar background
+  const mortar = document.createElementNS(ns, 'rect');
+  mortar.setAttribute('x', wx); mortar.setAttribute('y', wy);
+  mortar.setAttribute('width', ww); mortar.setAttribute('height', wh);
+  mortar.setAttribute('fill', '#b8916a'); mortar.setAttribute('rx', '3');
+  mortar.setAttribute('opacity', '0.97');
+  svg.appendChild(mortar);
+
+  // cărămizi
+  function addBrick(bx, by, bw, bh) {
+    const cx = Math.max(bx + 2, wx), cw = Math.min(bx + bw - 2, wx + ww) - cx;
+    const cy = Math.max(by + 2, wy), ch = Math.min(by + bh - 2, wy + wh) - cy;
+    if (cw < 3 || ch < 3) return;
+    const b = document.createElementNS(ns, 'rect');
+    b.setAttribute('x', cx); b.setAttribute('y', cy);
+    b.setAttribute('width', cw); b.setAttribute('height', ch);
+    b.setAttribute('fill', '#8b2a12'); b.setAttribute('rx', '2');
+    // highlight top edge
+    const hl = document.createElementNS(ns, 'line');
+    hl.setAttribute('x1', cx + 2); hl.setAttribute('y1', cy + 1);
+    hl.setAttribute('x2', cx + cw - 2); hl.setAttribute('y2', cy + 1);
+    hl.setAttribute('stroke', 'rgba(255,200,150,0.25)'); hl.setAttribute('stroke-width', '1');
+    svg.appendChild(b); svg.appendChild(hl);
+  }
+
+  if (horiz) {
+    const nRows = 2, bH = wh / nRows;
+    const bW = Math.max(sqSize * 0.9, ww / Math.round(ww / (bH * 2.3)));
+    for (let r = 0; r < nRows; r++) {
+      const off = (r % 2) * bW * 0.5;
+      for (let c = -1; wx + c * bW + off < wx + ww + bW; c++)
+        addBrick(wx + c * bW + off, wy + r * bH, bW, bH);
+    }
+  } else {
+    const nCols = 1, bW = ww;
+    const bH = bW * 2.1;
+    const nRows = Math.ceil(wh / bH) + 1;
+    for (let r = 0; r < nRows; r++) {
+      const off = (r % 2) * bW * 0.5;
+      for (let c = -1; c < 2; c++)
+        addBrick(wx + c * bW + off, wy + r * bH, bW, bH);
+    }
+  }
+
+  // contur cu umbră
+  const outline = document.createElementNS(ns, 'rect');
+  outline.setAttribute('x', wx); outline.setAttribute('y', wy);
+  outline.setAttribute('width', ww); outline.setAttribute('height', wh);
+  outline.setAttribute('fill', 'none');
+  outline.setAttribute('stroke', '#4a1200'); outline.setAttribute('stroke-width', '2');
+  outline.setAttribute('rx', '3');
+  outline.setAttribute('filter', 'drop-shadow(0 0 5px rgba(80,15,0,0.75))');
+  svg.appendChild(outline);
 }
 
 function showKnightLink(step) {
