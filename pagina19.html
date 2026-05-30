@@ -399,18 +399,20 @@ positions = computePositions();
 
 let liveChess = new Chess(positions[0]);
 
+function onDropValidate(source, target) {
+  if (source === target) return 'snapback';
+  var move = liveChess.move({ from: source, to: target, promotion: 'q' });
+  if (move === null) return 'snapback';
+  if (move.flags.indexOf('c') >= 0 || move.flags.indexOf('e') >= 0) playSound(sndCapture);
+  else playSound(sndMove);
+  if (liveChess.in_checkmate()) setTimeout(function() { playSound(sndMate); }, 200);
+}
+
 const board = Chessboard('board', {
   position: positions[0],
   pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
   draggable: true,
-  onDrop: function(source, target) {
-    const move = liveChess.move({ from: source, to: target, promotion: 'q' });
-    if (!move) return 'snapback';
-    if (move.flags.includes('c') || move.flags.includes('e')) playSound(sndCapture);
-    else playSound(sndMove);
-    if (liveChess.in_checkmate()) { setTimeout(() => { playSound(sndMate); }, 200); }
-  },
-  onSnapbackEnd: function() { board.position(liveChess.fen(), false); }
+  onDrop: onDropValidate
 });
 window.addEventListener('resize', () => board.resize());
 
