@@ -116,30 +116,6 @@
   animation: kl-flash 2.2s ease forwards;
 }
 
-@keyframes hb-slow {
-  0%,100% { transform: translate(-50%,-50%) scale(1); }
-  15%     { transform: translate(-50%,-50%) scale(1.4); }
-  30%     { transform: translate(-50%,-50%) scale(1); }
-  45%     { transform: translate(-50%,-50%) scale(1.3); }
-  60%     { transform: translate(-50%,-50%) scale(1); }
-}
-@keyframes hb-fast {
-  0%,100% { transform: translate(-50%,-50%) scale(1); }
-  10%     { transform: translate(-50%,-50%) scale(1.55); }
-  20%     { transform: translate(-50%,-50%) scale(1); }
-  30%     { transform: translate(-50%,-50%) scale(1.55); }
-  40%     { transform: translate(-50%,-50%) scale(1); }
-  50%     { transform: translate(-50%,-50%) scale(1.55); }
-  60%     { transform: translate(-50%,-50%) scale(1); }
-}
-.heart-badge {
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  font-size: 2em; pointer-events: none; z-index: 15; line-height: 1;
-}
-.heart-badge.hb-slow  { animation: hb-slow 1.4s ease-in-out infinite; }
-.heart-badge.hb-fast  { animation: hb-fast 0.55s ease-in-out infinite; }
-.heart-badge.hb-small { font-size: 1.1em; opacity: 0.52; }
 
 @keyframes confetti-fall {
   0%   { opacity: 1;   transform: translate(0, 0) rotate(0deg); }
@@ -265,15 +241,15 @@ const chapter = {
   whiteKingSteps: new Set([5, 9]),
   annotations: [
     'Regina și Regele alb sunt pregătiți. Aceasta este poziția de start — Regele negru e în centrul tablei. În metoda <strong>Echipei de Șoc</strong>, Regele alb va intra activ în luptă!',
-    'Regina trasează <strong>primul perete</strong>! Ea controlează coloana d și rândul 6, limitând spațiul regelui negru. Observă cușca portocalie!',
-    'Regele negru încearcă să rămână activ... dar cușca îl așteaptă.',
+    'Regina <strong>închide regele</strong>! Ea controlează coloana d și rândul 6, limitând spațiul regelui negru. Observă cușca portocalie!',
+    'Regele negru încearcă să scape, dar se lovește de alt zid.',
     'Regina <strong>strânge și mai mult</strong>! Acum coloana d și rândul 5 sunt controlate. Spațiul regelui negru s-a micșorat!',
     'Regele negru fuge spre dreapta — dar nu știe ce îl așteaptă...',
-    '<span class="king-badge">&#9814; Regele Intră în Luptă!</span><br>La Rf2, Regele alb abandonează siguranța și devine parte din asediu. Doi împotriva unuia — acum viteza crește dramatic!',
-    'Regele negru fuge spre colț, dar cușca se strânge...',
+    '<span class="king-badge">&#9814; Regele Intră în Luptă!</span><br>Regele alb intră în luptă alături de regina sa!',
+    'Regele negru fuge spre margine, dar cușca se strânge...',
     'Regina strânge cușca și mai mult, acum <strong>cu ajutorul regelui alb</strong> care blochează câmpurile din stânga! Observă cum zona portocalie s-a micșorat!',
     'Regele negru este forțat la marginea tablei — nu mai are scăpare!',
-    '<span class="king-badge">&#9814; Regele Avansează!</span><br>Regele alb ajunge la f3, complet activ în asediu. Acum regina poate livra lovitura finală!',
+    '<span class="king-badge">&#9814; Regele Avansează!</span><br>Regele alb conduce asediul. Acum regina poate livra lovitura finală!',
     '🧠 <strong>Regele negru este prins la margine!</strong> Există <em>trei</em> variante de mat — le poți găsi pe toate? <strong>Dh5#</strong>, <strong>Dh8#</strong> sau <strong>Dg3#</strong>!',
     'Regina dă mat pe h5, apărată de regele alb de pe f3. Regele negru nu are nicio scăpare. <strong>Șah mat!</strong> Aceasta este puterea Echipei de Șoc — doi prieteni care termină treaba împreună în 6 mutări!'
   ]
@@ -307,24 +283,6 @@ const fenceData = {
 
 let cageTimer = null;
 let klTimer   = null;
-let heartEl   = null;
-
-function removeHeart() {
-  if (heartEl) { heartEl.remove(); heartEl = null; }
-}
-
-function showHeart(squareSel, fast, small) {
-  removeHeart();
-  const sq = document.querySelector('#board ' + squareSel);
-  if (!sq) return;
-  heartEl = document.createElement('div');
-  let cls = 'heart-badge ';
-  if (small) cls += 'hb-small ';
-  cls += (fast ? 'hb-fast' : 'hb-slow');
-  heartEl.className = cls;
-  heartEl.textContent = '❤️';
-  sq.appendChild(heartEl);
-}
 
 function playCageClank() {
   if (soundMuted || soundVolume === 0) return;
@@ -670,13 +628,10 @@ function goToStep(s) {
   document.querySelectorAll('#board .highlight-check').forEach(el => el.classList.remove('highlight-check'));
   currentStep = s;
   board.position(positions[s], false);
-  removeHeart();
   updateUI();
   showCage(s);
   showKnightLink(s);
-  if (s === 10) showHeart('.square-h3', false, true);
   if (s === positions.length - 1) {
-    showHeart('.square-h3', true, true);
     spawnPageConfetti(5000);
     setTimeout(redKingOverlay, 200);
   }
