@@ -20,7 +20,8 @@
     .rule-card{display:flex;gap:14px;align-items:flex-start;padding:14px 16px!important;}
     .rule-nr{flex:0 0 32px;height:32px;background:var(--c-navy);color:white;font-family:var(--font-display);font-size:1em;font-weight:900;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(26,58,107,.35);flex-shrink:0;margin-top:1px;}
     .rule-text{font-size:var(--fs-md);line-height:1.75;color:var(--c-text);}
-    .comment-box{background:rgba(255,255,255,.55);border-radius:10px;padding:12px 16px;font-size:var(--fs-md);line-height:1.65;color:var(--c-text);border-left:4px solid var(--c-navy);min-height:56px;max-height:calc(1.65em * 2 + 24px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(26,58,107,.3) transparent;}
+    .comment-box{background:rgba(255,255,255,.55);border-radius:10px;padding:12px 16px;font-size:var(--fs-md);line-height:1.65;color:var(--c-text);border-left:4px solid var(--c-navy);min-height:56px;max-height:80px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(26,58,107,.3) transparent;}
+    .comment-box::-webkit-scrollbar{width:4px;}.comment-box::-webkit-scrollbar-thumb{background:rgba(26,58,107,.35);border-radius:4px;}
     .comment-box.no-comment{border-left-color:rgba(26,58,107,.2);color:rgba(42,42,62,.5);}
     .comment-box.is-mate{border-left-color:var(--c-success);background:var(--c-success-bg);font-weight:700;}
     .board-controls{display:flex;justify-content:center;align-items:center;gap:8px;flex-shrink:0;margin-top:4px;}
@@ -83,7 +84,8 @@
           <div class="rule-text">Pentru a duce Regele Advers în col&#539;ul bun pentru mat (col&#539;ul de culoarea Nebunului), Calul va face o manevr&#259; în form&#259; de W.</div>
         </div>
 
-        <div class="card rule-card" style="margin-top:18px;">
+        <div style="height:16px;flex-shrink:0;"></div>
+        <div class="card rule-card">
           <div class="rule-nr">4</div>
           <div class="rule-text">Livrarea matului.</div>
         </div>
