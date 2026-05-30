@@ -48,8 +48,11 @@
   padding: 3px 14px; font-family: 'Baloo 2', cursive;
   font-weight: 700; color: var(--c-navy); font-size: 0.85em;
   min-width: 64px; text-align: center;
+  border: none; cursor: pointer; transition: background 0.15s;
 }
+.mini-badge:hover { background: rgba(26,58,107,0.18); }
 .mini-badge.mat { background: #c0392b; color: white; }
+.mini-badge.mat:hover { background: #a93226; }
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -88,7 +91,7 @@
             unde-s mulți, puterea crește!</p>
             <div class="card-nav">
               <button class="mini-btn" id="bAprev" onclick="stepA(-1)">&#9664;</button>
-              <div class="mini-badge" id="badgeA">Start</div>
+              <button class="mini-badge" id="badgeA" onclick="jumpA(0)">Start</button>
               <button class="mini-btn" id="bAnext" onclick="stepA(1)">&#9654;</button>
             </div>
           </div>
@@ -102,7 +105,7 @@
             singure.</p>
             <div class="card-nav">
               <button class="mini-btn" id="bBprev" onclick="stepB(-1)">&#9664;</button>
-              <div class="mini-badge" id="badgeB">Start</div>
+              <button class="mini-badge" id="badgeB" onclick="jumpB(0)">Start</button>
               <button class="mini-btn" id="bBnext" onclick="stepB(1)">&#9654;</button>
             </div>
           </div>
@@ -114,8 +117,8 @@
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
-    <a href="pagina14.html" class="nav-btn nav-btn--back">
-      <span class="icon">←</span><span class="label">Înapoi</span>
+    <a href="pagina35.html" class="nav-btn nav-btn--back">
+      <span class="icon">←</span><span class="label">Arenă 2 Turnuri</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon">&#8862;</span><span class="label">Cuprins</span>
@@ -209,6 +212,8 @@ function stepB(d) {
   idxB = Math.max(0, Math.min(posB.length - 1, idxB + d));
   updateAll();
 }
+function jumpA(idx) { activeEx = 'A'; idxA = idx; updateAll(); }
+function jumpB(idx) { activeEx = 'B'; idxB = idx; updateAll(); }
 
 updateAll();
 </script>
