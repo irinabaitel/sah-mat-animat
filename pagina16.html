@@ -200,12 +200,12 @@ function updateAll() {
 }
 
 function stepA(d) {
-  activeEx = 'A';
+  if (activeEx !== 'A') { activeEx = 'A'; idxA = 0; updateAll(); return; }
   idxA = Math.max(0, Math.min(posA.length - 1, idxA + d));
   updateAll();
 }
 function stepB(d) {
-  activeEx = 'B';
+  if (activeEx !== 'B') { activeEx = 'B'; idxB = 0; updateAll(); return; }
   idxB = Math.max(0, Math.min(posB.length - 1, idxB + d));
   updateAll();
 }
