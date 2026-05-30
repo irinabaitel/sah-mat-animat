@@ -55,7 +55,16 @@
     return null;
   }
   function getSqFromPoint(x, y) {
-    return getSq(document.elementFromPoint(x, y));
+    var el = document.elementFromPoint(x, y);
+    var sq = getSq(el);
+    if (sq) return sq;
+    /* piesa blochează — o ascundem temporar și re-testăm */
+    if (el && el.style) {
+      el.style.pointerEvents = 'none';
+      sq = getSq(document.elementFromPoint(x, y));
+      el.style.pointerEvents = '';
+    }
+    return sq;
   }
 
   /* ── Render SVG ── */
@@ -208,21 +217,23 @@
       document.body.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
     });
 
-    /* ════ ADNOTĂRI MOUSE (click-dreapta) ════ */
+    /* ════ ADNOTĂRI MOUSE (click-dreapta) ════
+       Capture phase: interceptăm ÎNAINTE ca chessboard.js să apuce piesa */
     boardEl.addEventListener('mousedown', function (e) {
       if (e.button !== 2) return;
       e.preventDefault();
-      rmbFrom  = getSq(e.target);
+      e.stopPropagation();   /* împiedicăm chessboard.js să înceapă drag-ul */
+      rmbFrom  = getSqFromPoint(e.clientX, e.clientY);
       rmbCi    = colorIdx(e);
       rmbMoved = false;
-    });
+    }, true);
     boardEl.addEventListener('mousemove', function () {
       if (rmbFrom) rmbMoved = true;
     });
     boardEl.addEventListener('mouseup', function (e) {
       if (e.button !== 2) return;
       e.preventDefault();
-      var to = getSq(e.target);
+      var to = getSqFromPoint(e.clientX, e.clientY);
       if (!rmbFrom || !to) { rmbFrom = null; return; }
       if (!rmbMoved || rmbFrom === to) {
         if (annSquares[to] === rmbCi) delete annSquares[to];
