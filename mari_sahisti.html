@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMTZ9GGPMP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMTZ9GGPMP');
+</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mari Șahiști ai Lumii | Laboratorul de Șah</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #F5A96E;
+      --navy:     #1a3a6b;
+      --navy-mid: #2a5aab;
+      --card:     #ffffff;
+      --card2:    #f0f4ff;
+      --border:   rgba(26,46,98,0.18);
+      --text:     #1a2e62;
+      --muted:    #5a6e98;
+      --gold:     #c8860a;
+      --font:     'Baloo 2', sans-serif;
+      --radius:   14px;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── PAGE TITLE ── */
+    .page-title {
+      text-align: center;
+      padding: 22px 20px 10px;
+      font-size: clamp(1.3rem, 3vw, 1.9rem);
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+    }
+
+    /* ── CHAMPIONS BAND ── */
+    .champ-band {
+      background: rgba(255,255,255,0.35);
+      border-top: 1px solid rgba(26,46,98,0.15);
+      border-bottom: 1px solid rgba(26,46,98,0.15);
+      padding: 10px 16px;
+    }
+    .champ-label {
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--navy); margin-bottom: 8px;
+      text-align: center;
+    }
+    .champ-scroll {
+      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;
+      scrollbar-width: thin; scrollbar-color: var(--navy) transparent;
+    }
+    .champ-pill {
+      flex-shrink: 0; background: var(--navy); color: #fff;
+      border-radius: 20px; padding: 4px 11px; text-align: center;
+    }
+    .champ-pill-name { font-size: 0.7rem; font-weight: 700; display: block; white-space: nowrap; }
+    .champ-pill-year { font-size: 0.6rem; opacity: 0.75; white-space: nowrap; }
+
+    /* ── MAIN ── */
+    .main { max-width: 1100px; margin: 0 auto; padding: 18px 16px 80px; }
+
+    /* ── ERA ACCORDION ── */
+    .era-block { margin-bottom: 12px; border-radius: var(--radius); overflow: hidden; }
+
+    .era-btn {
+      width: 100%; display: flex; align-items: center; gap: 12px;
+      padding: 14px 18px;
+      background: var(--navy); color: #fff;
+      border: none; cursor: pointer; text-align: left;
+      font-family: var(--font); transition: background 0.2s;
+      border-radius: var(--radius);
+    }
+    .era-btn[aria-expanded="true"] { border-radius: var(--radius) var(--radius) 0 0; }
+    .era-btn:hover { background: var(--navy-mid); }
+
+    .era-code {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .era-titles { flex: 1; }
+    .era-name { font-size: 1rem; font-weight: 700; display: block; line-height: 1.2; }
+    .era-range { font-size: 0.72rem; opacity: 0.75; display: block; margin-top: 1px; }
+    .era-count {
+      font-size: 0.7rem; background: rgba(255,255,255,0.18);
+      padding: 2px 9px; border-radius: 12px; flex-shrink: 0;
+    }
+    .era-arrow { font-size: 0.7rem; opacity: 0.8; transition: transform 0.3s; flex-shrink: 0; }
+    .era-btn[aria-expanded="true"] .era-arrow { transform: rotate(180deg); }
+
+    /* ── ERA PANEL ── */
+    .era-panel {
+      display: none;
+      background: rgba(255,255,255,0.18);
+      border-radius: 0 0 var(--radius) var(--radius);
+      padding: 16px;
+      border: 1px solid rgba(26,46,98,0.15);
+      border-top: none;
+    }
+    .era-panel.open { display: block; }
+
+    .era-why {
+      font-size: 0.82rem; color: var(--navy); font-style: italic;
+      background: rgba(255,255,255,0.5); border-radius: 8px;
+      padding: 9px 13px; margin-bottom: 14px;
+      border-left: 3px solid var(--navy);
+    }
+
+    /* ── PLAYER LAYOUT ── */
+    .player-wrap {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    /* LEFT: photo panel */
+    .photo-panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 16px;
+      text-align: center;
+      position: sticky;
+      top: 16px;
+    }
+    .photo-frame {
+      width: 100%; aspect-ratio: 3/4;
+      border-radius: 10px; overflow: hidden;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px;
+    }
+    .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .no-photo { font-size: 3.5rem; opacity: 0.2; }
+    .photo-name {
+      font-size: 0.95rem; font-weight: 800; color: var(--navy);
+      line-height: 1.3; margin-bottom: 6px;
+    }
+    .photo-crown {
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      background: #fff3cd; color: var(--gold);
+      border: 1px solid rgba(200,134,10,0.4);
+      border-radius: 12px; padding: 1px 8px; margin-bottom: 4px;
+    }
+    .photo-num {
+      font-size: 0.68rem; color: var(--muted);
+    }
+
+    /* RIGHT: info panel */
+    .info-panel {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+
+    /* info rows */
+    .info-row {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+    }
+    .info-row-label {
+      font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--muted); margin-bottom: 3px;
+    }
+    .info-row-val {
+      font-size: 0.88rem; font-weight: 600; color: var(--navy); line-height: 1.4;
+    }
+
+    /* fame & anecdote boxes */
+    .info-text {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 15px;
+    }
+    .info-text-label {
+      font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--muted); margin-bottom: 6px;
+    }
+    .info-text-body {
+      font-size: 0.88rem; color: var(--text); line-height: 1.7;
+    }
+    .anecdote-box {
+      background: var(--card2);
+      border: 1px solid rgba(26,46,98,0.2);
+      border-left: 3px solid var(--navy);
+      border-radius: 10px;
+      padding: 13px 15px;
+    }
+    .anecdote-body {
+      font-size: 0.86rem; color: var(--text);
+      font-style: italic; line-height: 1.75;
+    }
+    .anecdote-body::before { content: '💬  '; font-style: normal; }
+
+    /* ── NAVIGATION ── */
+    .nav-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-top: 14px; gap: 10px;
+    }
+    .nav-btn {
+      background: var(--navy); color: #fff;
+      border: none; border-radius: 24px;
+      padding: 9px 22px;
+      font-family: var(--font); font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; transition: background 0.18s;
+      min-width: 110px;
+    }
+    .nav-btn:hover:not(:disabled) { background: var(--navy-mid); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .nav-center { text-align: center; flex: 1; }
+    .nav-counter { font-size: 0.8rem; color: var(--navy); font-weight: 600; }
+    .nav-dots { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; margin-top: 5px; }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(26,46,98,0.25); cursor: pointer;
+      border: none; transition: all 0.2s; padding: 0;
+    }
+    .dot.active { width: 18px; border-radius: 4px; background: var(--navy); }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      padding: 12px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(245,169,110,0.92);
+      backdrop-filter: blur(6px);
+      border-top: 1px solid rgba(26,46,98,0.15);
+    }
+    .bnav-btn {
+      background: var(--navy); color: #fff;
+      border: none; border-radius: 24px;
+      padding: 10px 22px;
+      font-family: var(--font); font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; text-decoration: none;
+      display: inline-block;
+    }
+    .bnav-btn:hover { background: var(--navy-mid); }
+    .bnav-home {
+      background: var(--navy);
+      color: #fff; border: none; border-radius: 24px;
+      padding: 10px 28px;
+      font-family: var(--font); font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; text-decoration: none;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .player-wrap { grid-template-columns: 1fr; }
+      .photo-panel { position: static; }
+    }
+  </style>
+<link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
+<link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+</head>
+<body>
+
+<div style="max-width:1100px;margin:0 auto;padding:16px 16px 0;">
+  <a href="istoria_sahului.html" style="display:inline-block;padding:8px 16px;background:rgba(255,255,255,0.5);border:2px solid rgba(255,255,255,0.8);border-radius:50px;color:#1a3a6b;text-decoration:none;font-family:'Baloo 2',cursive;font-weight:700;font-size:0.9em;">⟵ Istoria Șahului</a>
+</div>
+
+<h1 class="page-title">Mari Șahiști ai Lumii</h1>
+
+<!-- Champions timeline -->
+<div class="champ-band">
+  <div class="champ-label">♔ Campionii Mondiali — Linia Succesiunii</div>
+  <div class="champ-scroll" id="tl"></div>
+</div>
+
+<div class="main" id="app"></div>
+
+<div style="max-width:1100px;margin:24px auto 40px;padding:0 16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+  <a href="istoria_sahului.html" style="padding:10px 24px;background:#1a3a6b;color:#fff;border-radius:24px;text-decoration:none;font-family:'Baloo 2',cursive;font-weight:700;font-size:0.9em;">⟵ Istoria Șahului</a>
+  <a href="index.html" style="padding:10px 24px;background:#1a3a6b;color:#fff;border-radius:24px;text-decoration:none;font-family:'Baloo 2',cursive;font-weight:700;font-size:0.9em;">Acasă</a>
+</div>
+
+<script>
+// ── DATE ──────────────────────────────────────────────────────────────
+const CHAMPIONS = [
+  {n:"Wilhelm Steinitz",y:"1886–1894"},{n:"Emanuel Lasker",y:"1894–1921"},
+  {n:"J.R. Capablanca",y:"1921–1927"},{n:"A. Alekhine",y:"1927–35, 37–46"},
+  {n:"Max Euwe",y:"1935–1937"},{n:"Mikhail Botvinnik",y:"1948–63*"},
+  {n:"Vasily Smyslov",y:"1957–1958"},{n:"Mikhail Tal",y:"1960–1961"},
+  {n:"Tigran Petrosian",y:"1963–1969"},{n:"Boris Spassky",y:"1969–1972"},
+  {n:"Bobby Fischer",y:"1972–1975"},{n:"Anatoly Karpov",y:"1975–1985"},
+  {n:"Garry Kasparov",y:"1985–2000"},{n:"Vladimir Kramnik",y:"2000–2007"},
+  {n:"Vishy Anand",y:"2007–2013"},{n:"Magnus Carlsen",y:"2013–2023"},
+  {n:"Ding Liren",y:"2023–2024"},{n:"Gukesh D.",y:"2024–prezent"}
+];
+
+const ERAS = [
+  { id:"vechi",  icon:"🏺", name:"Înainte de Campionatul Mondial", range:"De la al-Suli până în 1886",
+    why:"Nu exista un campion oficial al lumii. Cel mai bun jucător se decidea prin reputație și meciuri private. Această eră se încheie în 1886, când Steinitz și Zukertort joacă primul meci oficial pentru titlul mondial." },
+  { id:"clasic", icon:"♔", name:"Era Campionatelor Mondiale", range:"1886 – 1997",
+    why:"Epoca marilor campioni și a teoriei clasice. Se încheie în 1997, când Deep Blue (IBM) bate pentru prima dată campionul mondial în vigoare — Garry Kasparov — într-un meci complet. Șahul nu mai putea fi la fel după asta." },
+  { id:"modern", icon:"⚡", name:"Era Computerelor", range:"1997 – prezent",
+    why:"Calculatoarele depășesc definitiv omul la șah și transformă total pregătirea, teoria deschiderilor și antrenamentul. Jucătorii moderni cresc cu motoare de analiză — o revoluție fără precedent în istoria jocului." }
+];
+
+const P = [
+  // ── ÎNAINTE DE CAMPIONATUL MONDIAL ──
+  {id:1,era:"vechi",champ:false,name:"Abu Bakr al-Suli",years:"~880 – 946",country:"Califatul Abbasid (Bagdad)",img:null,
+   prof:"Poet și secretar la curtea califilor abbasizi",
+   fame:"Al-Suli a fost cel mai puternic jucător de șah din lumea arabă medievală. A scris cărți despre șah — Kitab al-Shatranj — care au influențat teoria jocului timp de secole întregi. La curtea califilor din Bagdad, expresia 'joacă mai bine decât al-Suli' era cel mai mare compliment pe care îl putea primi un jucător.",
+   anec:"Al-Suli l-a bătut în mod repetat pe califul al-Muktafi la șah — act remarcabil de curaj la curtea abbasidă, unde nimeni nu îndrăznea să-l înfrângă pe calif. Dar acesta, în loc să se supere, i-a acordat privilegiul rar de a juca cu oricine la curte!"},
+
+  {id:2,era:"vechi",champ:false,name:"Ruy López de Segura",years:"~1530 – ~1580",country:"Spania (Zafra, Extremadura)",img:null,
+   prof:"Preot catolic",
+   fame:"Preotul Ruy López a fost cel mai important teoretician al șahului din secolul al XVI-lea. A scris în 1561 prima carte serioasă de teorie a șahului tipărită în Spania. Deschiderea Ruy López (Gambitul Spaniol) este și azi una dintre cele mai jucate deschideri din competițiile mondiale.",
+   anec:"În cartea din 1561, Ruy López sfătuia jucătorii să plaseze tabla astfel încât soarele să fie în ochii adversarului! Dacă asta nu era posibil, recomanda să se stea cu spatele la lumină. Psihologia în șah are o istorie veche de 500 de ani!"},
+
+  {id:3,era:"vechi",champ:false,name:"Gioachino Greco",years:"1600 – 1634",country:"Italia (Celico, Calabria)",img:null,
+   prof:"Unul dintre primii jucători care a trăit din șah",
+   fame:"Greco — Il Calabrese — a fost primul mare aventurier al șahului: a călătorit prin toată Europa câștigând bani din meciuri și lecții. Manuscrisele sale cu partide și combinații spectaculoase au influențat generații de jucători.",
+   anec:"Greco și-a vândut analizele nobililor europeni la prețuri mari — în Anglia, Franța și Spania. S-a comportat practic ca un antreprenor al șahului cu 400 de ani înainte ca asta să devină normal. A murit bogat la numai 34 de ani, în Caraibe."},
+
+  {id:4,era:"vechi",champ:false,name:"François-André Danican Philidor",years:"1726 – 1795",country:"Franța (Dreux)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Philidor.jpg/440px-Philidor.jpg",
+   prof:"Compozitor de operă (unul dintre cei mai importanți din Franța sec. XVIII)",
+   fame:"Philidor a fost considerat cel mai bun jucător din lume timp de 50 de ani — și totuși, pentru el șahul era doar un hobby! Meseria lui adevărată era muzica. A spus primul că 'pionii sunt sufletul șahului' — o idee valabilă și azi.",
+   anec:"La Londra în 1783, Philidor a jucat 3 partide simultan la orb — fără să vadă tablele, anunțând mutările verbal. Publicul a rămas fără cuvinte. Presa londoneză a scris că performanța părea supranaturală."},
+
+  {id:5,era:"vechi",champ:false,name:"Louis-Charles de La Bourdonnais",years:"1795 – 1840",country:"Franța",img:null,
+   prof:"Administrator; director al Café de la Régence din Paris",
+   fame:"La Bourdonnais a fost cel mai puternic jucător din lume după Philidor. Celebru pentru seria de 6 meciuri cu britanicul Alexander McDonnell în 1834 — 85 de partide, cel mai mare eveniment de șah documentat al epocii.",
+   anec:"La Bourdonnais a murit în sărăcie la Londra în 1840, la doar 45 de ani. Comunitatea de șah britanică a organizat o colectă ca să-l poată înmormânta demn — un omagiu emoționant față de adversarul pe care îl învinseseră."},
+
+  {id:6,era:"vechi",champ:false,name:"Howard Staunton",years:"1810 – 1874",country:"Anglia",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Howard_Staunton_1856.jpg/440px-Howard_Staunton_1856.jpg",
+   prof:"Critic literar și specialist în Shakespeare",
+   fame:"Staunton a fost cel mai bun jucător din lume între 1843 și 1851 și a organizat primul turneu internațional de șah din istorie (Londra, 1851). Piesele de șah pe care le folosim azi la toate competițiile oficiale îi poartă numele.",
+   anec:"Staunton a evitat cu orice preț meciul cu Paul Morphy în 1858, invocând mereu că e prea ocupat cu editarea operelor lui Shakespeare. Toată lumea știa că se temea să piardă. Refuzul i-a pătat reputația pentru totdeauna."},
+
+  {id:7,era:"vechi",champ:false,name:"Adolf Anderssen",years:"1818 – 1879",country:"Germania (Breslau)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Adolf_Anderssen.jpg/220px-Adolf_Anderssen.jpg",
+   prof:"Profesor de matematică",
+   fame:"Profesorul Anderssen a fost cel mai bun jucător din lume în anii 1850–1860. Celebru pentru Partida Nemuritoare (1851) și Partida Veșnică (1856) — două dintre cele mai frumoase partide din toată istoria șahului.",
+   anec:"La Londra 1851, Anderssen a venit ca un outsider total — nimeni nu-l știa. A câștigat turneul și s-a întors acasă ca cel mai faimos jucător din lume. A doua zi s-a dus să predea matematică la clasă."},
+
+  {id:8,era:"vechi",champ:false,name:"Paul Morphy",years:"1837 – 1884",country:"SUA (New Orleans, Louisiana)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Paul_Morphy_-_1857.jpg/220px-Paul_Morphy_-_1857.jpg",
+   prof:"Avocat (a absolvit dreptul, dar nu a profesat niciodata)",
+   fame:"Paul Morphy a fost un fenomen: la 20 de ani a bătut toți cei mai buni jucători din lume și la 22 ani s-a retras definitiv din șah. Mulți îl consideră cel mai mare jucător natural din istoria șahului.",
+   anec:"La Paris în 1858, Morphy a jucat simultan la orb împotriva a 8 jucători puternici — câștigând 6 și remizând 2. A anunțat fiecare mutare verbal, fără să vadă tablele. Sala era încremenită."},
+
+  {id:9,era:"vechi",champ:false,name:"Szymon Winawer",years:"1838 – 1920",country:"Polonia (Varșovia)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Szymon_Winawer.jpg/220px-Szymon_Winawer.jpg",
+   prof:"Negustor",
+   fame:"Negustorul Winawer a fost unul dintre cei mai buni jucători ai sec. XIX și unul dintre primii mari reprezentanți ai șahului polonez. Varianta Winawer a Apărării Franceze îi poartă numele și e populară și azi.",
+   anec:"La turneul de la Paris din 1867, Winawer a terminat pe locul 3, în fața unor jucători profesioniști — el, un simplu negustor care juca șah din pasiune."},
+
+  {id:10,era:"vechi",champ:false,name:"Johannes Zukertort",years:"1842 – 1888",country:"Prusia — activ în Anglia",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Johannes_Zukertort.jpg/220px-Johannes_Zukertort.jpg",
+   prof:"Jurnalist și scriitor de șah",
+   fame:"Zukertort a disputat primul meci oficial pentru titlul mondial de șah — în 1886, împotriva lui Steinitz. Acel meci a dat naștere campionatului mondial. La Londra 1883 câștigase primele 22 de partide consecutive — un record.",
+   anec:"La turneul de la Londra din 1883, Zukertort a câștigat primele 22 de partide consecutive — record uluitor. Trei ani mai târziu, el și Steinitz s-au întâlnit în primul Campionat Mondial din istorie."},
+
+  // ── ERA CAMPIONATELOR MONDIALE ──
+  {id:11,era:"clasic",champ:true,name:"Wilhelm Steinitz",years:"1836 – 1900",country:"Boemia — mai târziu SUA",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Wilhelm_Steinitz.jpg/220px-Wilhelm_Steinitz.jpg",
+   prof:"Jurnalist de șah",
+   fame:"Steinitz a fost PRIMUL Campion Mondial Oficial de Șah (1886–1894) și părintele teoriei șahului pozițional modern. A arătat că șahul are legi — centrul, structura pionilor, avantajele mici acumulate pas cu pas. A schimbat totul.",
+   anec:"În ultimii ani ai vieții, Steinitz a înnebunit și credea că poate juca șah cu Dumnezeu prin telefon, dându-i acestuia un cal avans. A murit sărac la New York în 1900 — o ironie tristă a istoriei."},
+
+  {id:12,era:"clasic",champ:false,name:"Mikhail Chigorin",years:"1850 – 1908",country:"Rusia (Gatchina)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Mikhail_Chigorin.jpg/220px-Mikhail_Chigorin.jpg",
+   prof:"Funcționar, ulterior jurnalist de șah",
+   fame:"Chigorin a fost cel mai mare jucător rus al sec. XIX și fondatorul școlii ruse de șah. A pierdut dramatic două meciuri pentru titlul mondial cu Steinitz. Apărarea Chigorin se mai joacă și azi.",
+   anec:"În meciul din 1892, Chigorin juca ultima partidă cu albele într-o poziție câștigătoare — când a comis o gafă teribilă și a pierdut meciul. Sala a rămas încremenită."},
+
+  {id:13,era:"clasic",champ:true,name:"Emanuel Lasker",years:"1868 – 1941",country:"Germania",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Emanuel_Lasker_portrait.jpg/220px-Emanuel_Lasker_portrait.jpg",
+   prof:"Matematician și filosof (doctor în matematică)",
+   fame:"Lasker a deținut titlul de Campion Mondial timp de 27 de ani (1894–1921) — cel mai lung record din istoria șahului! Era un psiholog desăvârșit la tablă: studia fiecare adversar și îl bătea cu propriile slăbiciuni.",
+   anec:"Albert Einstein i-a scris prefața cărții de șah a lui Lasker și a spus că el era 'una dintre cele mai fascinante personalități pe care le-am cunoscut vreodată'. Lasker câștiga partide cu psihologia, nu doar cu calculul."},
+
+  {id:14,era:"clasic",champ:false,name:"Géza Maróczy",years:"1870 – 1951",country:"Ungaria (Szeged)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Geza_Maroczy.jpg/220px-Geza_Maroczy.jpg",
+   prof:"Inginer",
+   fame:"Maróczy a fost unul dintre cei mai puternici jucători ai perioadei 1895–1910. Cutia Maróczy — o formație de pioni la c4 și e4 contra Apărării Siciliene — îi poartă numele și este una dintre cele mai studiate structuri din șahul modern.",
+   anec:"La 70 de ani, Maróczy a condus o partidă de corespondență pentru compatrioți deportați în lagăre sovietice. Șahul ca formă de rezistență și solidaritate umană."},
+
+  {id:15,era:"clasic",champ:false,name:"Siegbert Tarrasch",years:"1862 – 1934",country:"Germania (Breslau)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Siegbert_Tarrasch.jpg/220px-Siegbert_Tarrasch.jpg",
+   prof:"Medic (doctor în medicină)",
+   fame:"Dr. Tarrasch a câștigat turneele de la Breslau, Manchester, Dresden, Leipzig și Viena — și tot n-a reușit să fie campion mondial! A fost cel mai influent profesor de șah al epocii. Deschiderea Tarrasch îi poartă numele.",
+   anec:"Tarrasch a refuzat meciul pentru titlul mondial cu Steinitz în 1892–1893 pentru că era prea ocupat cu pacienții. Ironia e că meseria care l-a ținut departe de coroana mondială i-a adus și respectul generațiilor."},
+
+  {id:16,era:"clasic",champ:false,name:"Harry Nelson Pillsbury",years:"1872 – 1906",country:"SUA (Massachusetts)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Harry_Nelson_Pillsbury.jpg/220px-Harry_Nelson_Pillsbury.jpg",
+   prof:"Șahist profesionist",
+   fame:"Pillsbury a câștigat turneul de la Hastings 1895 la PRIMA sa participare internațională, terminând înaintea lui Steinitz, Chigorin și Tarrasch. A murit tânăr, la 33 de ani.",
+   anec:"Pillsbury a dat simultane la orb cu până la 22 de table. La o demonstrație, i-au dat o listă de 30 de cuvinte complicate pe care le-a memorat instant și le-a recitat la final. Memoria sa era fenomenală."},
+
+  {id:17,era:"clasic",champ:false,name:"Carl Schlechter",years:"1874 – 1918",country:"Austria (Viena)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Carl_Schlechter.jpg/220px-Carl_Schlechter.jpg",
+   prof:"Șahist profesionist și editor",
+   fame:"Schlechter era poreclit Remizierul — juca atât de solid încât aproape că nu pierdea niciodată. În 1910 a jucat meciul pentru titlul mondial cu Lasker și a obținut egalitate 5-5, la un pas de a deveni campion.",
+   anec:"Regulile meciului din 1910 cereau 2 puncte avans față de campion. Schlechter, conducând 5-4, a trebuit să joace riscant în ultima partidă, a pierdut-o și meciul s-a terminat 5-5. O regulă l-a costat coroana mondială."},
+
+  {id:18,era:"clasic",champ:false,name:"Akiba Rubinstein",years:"1882 – 1961",country:"Polonia",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Akiba_Rubinstein.jpg/220px-Akiba_Rubinstein.jpg",
+   prof:"Șahist profesionist",
+   fame:"Rubinstein este considerat unul dintre cei mai mari jucători care nu au câștigat niciodată titlul mondial. Finalurile sale de turnee sunt studiate și azi ca modele perfecte. Varianta Rubinstein din Apărarea Franceză îi poartă numele.",
+   anec:"Rubinstein suferea de agorafobie severă și se ascundea în colțuri la turnee. Dar odată ce se așeza la tablă, parcă o altă personalitate îl cuprinea — calculul său era de o profunzime aproape imposibilă."},
+
+  {id:19,era:"clasic",champ:false,name:"Aron Nimzowitsch",years:"1886 – 1935",country:"Letonia — Germania și Danemarca",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Aaron_Nimzowitsch.jpg/220px-Aaron_Nimzowitsch.jpg",
+   prof:"Scriitor și teoretician de șah",
+   fame:"Nimzowitsch a scris Mein System (1925) — una dintre cele mai influente cărți din istoria șahului. A creat școala hipermodernistă. Apărarea Nimzo-Indiană și alte concepte îi poartă numele.",
+   anec:"Nimzowitsch era faimos pentru temperamentul exploziv. Într-un incident atestat de contemporani, după o mutare slabă a adversarului, s-ar fi ridicat strigând: 'De ce trebuie să pierd față de un idiot?!' — replică devenită legendară."},
+
+  {id:20,era:"clasic",champ:true,name:"José Raúl Capablanca",years:"1888 – 1942",country:"Cuba",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Capablanca.jpg/220px-Capablanca.jpg",
+   prof:"Diplomat (atașat la Ministerul de Externe al Cubei)",
+   fame:"Capablanca a fost Campion Mondial (1921–1927), unul dintre cei mai talentați jucători naturali din istoria șahului. Era renumit pentru finalurile perfecte și claritatea cu care vedea jocul. Mulți l-au numit Mașina de Șah.",
+   anec:"Capablanca a învățat să joace șah la 4 ani, observând cum juca tatăl lui și corectându-i o mutare greșită! La 13 ani l-a bătut pe campionul Cubei, Juan Corzo, într-un meci oficial."},
+
+  {id:21,era:"clasic",champ:true,name:"Alexander Alekhine",years:"1892 – 1946",country:"Rusia — cetățean francez",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Alexander_Alekhine_1935.jpg/220px-Alexander_Alekhine_1935.jpg",
+   prof:"Jurist (avocat, investigator criminal)",
+   fame:"Alekhine a câștigat titlul mondial în 1927 și este singurul campion care a murit cu titlul. Renumit pentru atacuri extrem de complexe și sacrificiale. Apărarea Alekhine (1.e4 Nf6) îi poartă numele.",
+   anec:"În 1933, Alekhine a jucat 32 de partide simultan la orb la Chicago — câștigând 19, remizând 9 și pierzând 4. Evenimentul a durat 12 ore și a fost relatat de presa americană ca un mister al minții umane."},
+
+  {id:22,era:"clasic",champ:false,name:"Efim Bogoljubov",years:"1889 – 1952",country:"Ucraina — activ în Germania",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Bogoljubow.jpg/220px-Bogoljubow.jpg",
+   prof:"Șahist profesionist",
+   fame:"Bogoljubov a câștigat turnee importante în anii 20 și a jucat de două ori pentru titlul mondial cu Alekhine (1929, 1934), pierzând ambele. Apărarea Bogoljubov-Indiană îi poartă numele.",
+   anec:'Bogoljubov este celebru pentru replica: "Când joc cu albul, câștig pentru că am albul; când joc cu negrul, câștig pentru că sunt Bogoljubov!" Confirmată de contemporani ca perfect reprezentativă pentru personalitatea sa.'},
+
+  {id:23,era:"clasic",champ:true,name:"Max Euwe",years:"1901 – 1981",country:"Olanda",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Max_Euwe.jpg/220px-Max_Euwe.jpg",
+   prof:"Profesor de matematică (doctor în matematică)",
+   fame:"Euwe este singurul amator care a câștigat vreodată titlul mondial de șah, în 1935, bătând-ul pe Alekhine! A predat matematică în timp ce era campion mondial. Ulterior a fost președinte al FIDE (1970–1978).",
+   anec:"În timpul campionatului mondial din 1935, Euwe continua să predea lecții de matematică elevilor între runde. Regele Olandei i-a acordat onoruri speciale după victorie. Un profesor de matematică câștigase titlul mondial de șah!"},
+
+  {id:24,era:"clasic",champ:false,name:"Reuben Fine",years:"1914 – 1993",country:"SUA (New York)",img:null,
+   prof:"Psiholog (doctor în psihologie, psihanalist)",
+   fame:"Fine a fost unul dintre cei mai puternici jucători americani ai anilor 1930–1940. A scris Basic Chess Endings (1941), carte de referință. Și-a abandonat complet cariera de șahist pentru a deveni psiholog.",
+   anec:"Fine a fost invitat la Meciul Mondial din 1948 (după moartea lui Alekhine), dar a REFUZAT — prefera studiile de psihologie. A renunțat voluntar la o șansă reală la titlul mondial pentru știință."},
+
+  {id:25,era:"clasic",champ:false,name:"Samuel Reshevsky",years:"1911 – 1992",country:"Polonia — emigrat în SUA",img:null,
+   prof:"Contabil",
+   fame:"Reshevsky a câștigat campionatul SUA de 8 ori. A rămas faimos pentru talentul de prodigie — la 8 ani juca cu adulți prin toată Europa. A combinat toată viața cariera de contabil cu șahul la cel mai înalt nivel.",
+   anec:"La vârsta de 8 ani, Reshevsky a dat o simultană la Paris în fața a 20 de adulți, câștigând toate partidele. Fotografiile — un copilaș pe un scaun înalt, gândindu-se la șah — au înconjurat lumea."},
+
+  {id:26,era:"clasic",champ:false,name:"Miguel Najdorf",years:"1910 – 1997",country:"Polonia — emigrat în Argentina",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Miguel_Najdorf.jpg/220px-Miguel_Najdorf.jpg",
+   prof:"Om de afaceri (firmă de asigurări în Argentina)",
+   fame:"Najdorf a emigrat în Argentina după Holocaust, întreaga sa familie pierzând în Război. A creat Varianta Najdorf a Apărării Siciliene (5...a6) — una dintre cele mai jucate variante din șahul modern.",
+   anec:"În 1947, Najdorf a organizat o simultană la orb cu 45 de adversari. Scopul său adevărat: să ajungă în ziare în toată lumea, sperând că frații săi din Europa vor citi știrea. Nu știa că ei nu mai trăiau."},
+
+  {id:27,era:"clasic",champ:true,name:"Mikhail Botvinnik",years:"1911 – 1995",country:"URSS (Rusia)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Botvinnik.jpg/220px-Botvinnik.jpg",
+   prof:"Inginer electrician (doctor în inginerie)",
+   fame:"Botvinnik a fost campion mondial de trei ori (1948–1957, 1958–1960, 1961–1963) și fondatorul școlii sovietice de șah. A format generații de campioni, inclusiv Karpov și Kasparov.",
+   anec:"Botvinnik fuma deliberat în antrenament ca să se obișnuiască cu fumul adversarilor. Punea muzică tare în cameră ca să-și antreneze concentrarea. Un om de știință al șahului."},
+
+  {id:28,era:"clasic",champ:false,name:"Paul Keres",years:"1916 – 1975",country:"Estonia",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Paul_Keres.jpg/220px-Paul_Keres.jpg",
+   prof:"Șahist profesionist",
+   fame:"Keres a fost supranumit Eternul Secund: de patru ori la rând pe locul 2 în Turneul Candidaților (1953, 1956, 1959, 1962), niciodată campion mondial. Eroul național absolut al șahului estonian.",
+   anec:"Estonia l-a comemorat pe Keres pe bancnota de 5 krooni în 1991. Este unul dintre puținii sportivi din lume apăruți pe o bancnotă națională — omagiul suprem."},
+
+  {id:29,era:"clasic",champ:false,name:"David Bronstein",years:"1924 – 2006",country:"URSS (Ucraina)",img:null,
+   prof:"Scriitor de șah și antrenor",
+   fame:"Bronstein a jucat meciul pentru titlul mondial în 1951 împotriva lui Botvinnik, terminând 12-12. Cartea sa despre Turneul de la Zurich 1953 este considerată una dintre cele mai bune cărți de șah scrise vreodată.",
+   anec:'Bronstein conducea 11.5-9.5 și nu mai avea nevoie decât de un punct din 5 partide. A pierdut două. Meciul a terminat 12-12. Bronstein a spus mai târziu că "presiunile externe" ar fi putut juca un rol — fără a intra în detalii.'},
+
+  {id:30,era:"clasic",champ:true,name:"Vasily Smyslov",years:"1921 – 2010",country:"URSS (Rusia)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Smyslov.jpg/220px-Smyslov.jpg",
+   prof:"Bariton (cântăreț de operă)",
+   fame:"Smyslov a fost campion mondial în 1957–1958, renumit pentru stilul armonios și maestria în finaluri. A participat la Turneul Candidaților timp de 4 decenii. Și mai era bariton — cântăreț de operă de meserie!",
+   anec:"Smyslov a auditionat la Teatrul Bolșoi în tinerețe, terminând pe locul doi. A continuat să cânte în concerte private toată viața. La un banchet din anii 80, a cântat arii de operă spre surprinderea tuturor."},
+
+  {id:31,era:"clasic",champ:false,name:"Efim Geller",years:"1925 – 1998",country:"URSS (Ucraina)",img:null,
+   prof:"Șahist profesionist",
+   fame:"Geller a câștigat campionatul URSS de două ori și era expert în Apărarea Regală Indiana. Are ceva unic: un record pozitiv față de Bobby Fischer — mai mult decât orice alt jucător al epocii.",
+   anec:"Geller l-a bătut pe Fischer de 5 ori în partide individuale. Fischer, care domina aproape pe toată lumea, recunoștea că Geller era unul dintre puținii adversari care îi înțelegea cu adevărat planurile."},
+
+  {id:32,era:"clasic",champ:true,name:"Mikhail Tal",years:"1936 – 1992",country:"URSS (Letonia — Riga)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Mikhail_Tal_1961.jpg/220px-Mikhail_Tal_1961.jpg",
+   prof:"Jurnalist de șah",
+   fame:"Tal — Vrăjitorul din Riga — a fost campion mondial în 1960–1961 și probabil cel mai spectaculos jucător din toată istoria șahului. Sacrificii de piese pe care nimeni nu le putea calcula, atacuri de o complexitate amețitoare.",
+   anec:"Tal era faimos pentru privirea hipnotică la tablă care îi intimida pe adversari. Portisch a declarat că nu putea să se uite în ochii lui Tal. Tal însuși a confirmat că folosea conștient acest efect psihologic."},
+
+  {id:33,era:"clasic",champ:false,name:"Lev Polugaevsky",years:"1934 – 1995",country:"URSS (Rusia)",img:null,
+   prof:"Șahist profesionist",
+   fame:"Polugaevsky a creat Varianta Polugaevsky din Apărarea Siciliană — una dintre cele mai complexe linii din teoria modernă. A participat la mai multe Turnee ale Candidaților.",
+   anec:"Polugaevsky a scris o carte întreagă dedicată unei singure variante pe care o crease: Grandmaster Preparation. Zeci de ani de analiză personală. Considerată și azi o capodoperă a profunzimii analitice."},
+
+  {id:34,era:"clasic",champ:true,name:"Tigran Petrosian",years:"1929 – 1984",country:"URSS (Armenia)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Tigran_Petrosian.jpg/220px-Tigran_Petrosian.jpg",
+   prof:"Editor al revistei de șah '64'",
+   fame:"Iron Tigran — campion mondial 1963–1969. Maestrul absolut al apărării preventive: elimina pericolele ÎNAINTE ca adversarul să le creeze. Câștiga partide în care adversarul nici nu înțelegea când a pierdut.",
+   anec:"Petrosian era surd parțial și purta aparat auditiv. În partide tensionate, scotea aparatul, izolându-se complet de zgomot. Concentrarea sa devenea atunci totală."},
+
+  {id:35,era:"clasic",champ:false,name:"Bent Larsen",years:"1935 – 2010",country:"Danemarca",img:null,
+   prof:"Șahist profesionist și autor",
+   fame:"Larsen a fost cel mai puternic jucător occidental al anilor 1960–1970, cu excepția lui Fischer. Pionier în deschideri originale (Deschiderea Larsen: 1.b3). Nu accepta niciodată remize ușoare.",
+   anec:"La meciul Candidaților din 1971, Larsen a pierdut cu 0-6 față de Fischer — scor nemaivăzut la nivel de elită. A comentat sportiv că Fischer jucase la un nivel pur și simplu inalienabil."},
+
+  {id:36,era:"clasic",champ:true,name:"Boris Spassky",years:"1937 – prezent",country:"URSS — cetățean francez",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Boris_Spassky_1974.jpg/220px-Boris_Spassky_1974.jpg",
+   prof:"Șahist profesionist",
+   fame:"Spassky a fost campion mondial în 1969–1972 și este faimos pentru Meciul Secolului de la Reykjavik (1972) cu Bobby Fischer. Jucător universal, capabil să joace în orice stil.",
+   anec:"La meciul din 1972, după ce Fischer a câștigat partida a 6-a spectaculos, Spassky s-a ridicat și a aplaudat alături de public. Gestul de sportivitate față de adversarul care îl necăjise enorm a rămas în istoria sportului."},
+
+  {id:37,era:"clasic",champ:false,name:"Viktor Korchnoi",years:"1931 – 2016",country:"URSS — cetățean elvețian",img:null,
+   prof:"Șahist profesionist",
+   fame:"Korchnoi — Viktor cel Groaznic — a jucat de două ori pentru titlul mondial (1978, 1981) împotriva lui Karpov. A defectat din URSS în 1976. Combativitate extremă și longevitate excepțională.",
+   anec:"La meciul din 1978, Korchnoi juca știind că fiul său era reținut în URSS. Tabăra sovietică a adus un parapsiholog care se uita fix spre Korchnoi. Meciul a durat 5 luni — un duel politico-sportiv unic."},
+
+  {id:38,era:"clasic",champ:true,name:"Bobby Fischer",years:"1943 – 2008",country:"SUA",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Bobby_Fischer_1960_in_Leipzig_vor_dem_Kandidatenturnier_%28cropped%29.jpg/220px-Bobby_Fischer_1960_in_Leipzig_vor_dem_Kandidatenturnier_%28cropped%29.jpg",
+   prof:"Șahist profesionist (de la vârste fragede)",
+   fame:"Fischer a fost campion mondial (1972–1975) și mulți îl consideră cel mai mare șahist din toate timpurile. Mare Maestru la 15 ani. A câștigat 12 partide consecutive la nivel de elită în 1971 — performanță nemaivăzută.",
+   anec:"La Turneul Candidaților din 1971, Fischer l-a bătut pe Taimanov 6-0, apoi pe Larsen 6-0 — 12 victorii consecutive fără nicio remiză împotriva unor jucători top 10 mondial. Niciun alt jucător nu a mai realizat asta."},
+
+  {id:39,era:"clasic",champ:false,name:"Lajos Portisch",years:"1937 – prezent",country:"Ungaria",img:null,
+   prof:"Șahist profesionist",
+   fame:"Portisch a fost cel mai bun jucător ungar din toate timpurile, unul dintre cei mai constanți jucători de top timp de 4 decenii. A participat la 8 Turnee ale Candidaților — un record de longevitate.",
+   anec:"Portisch a participat la Turneul Candidaților în 8 ediții diferite fără să câștige titlul mondial. Câți jucători din lume pot spune că au concurat la cel mai înalt nivel timp de 40 de ani?"},
+
+  {id:40,era:"clasic",champ:true,name:"Anatoly Karpov",years:"1951 – prezent",country:"URSS / Rusia",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Karpov-1982.jpg/440px-Karpov-1982.jpg",
+   prof:"Șahist profesionist; politician; activist UNICEF",
+   fame:"Karpov a câștigat titlul mondial în 1975 (Fischer a refuzat să joace) și l-a apărat în trei meciuri epice cu Kasparov. Era un jucător de o precizie aproape mecanică, adunând avantaje mici și transformându-le în victorii.",
+   anec:"Meciul din 1984 cu Kasparov a durat 48 de partide și 5 luni! Karpov conducea 5-0. FIDE l-a oprit controversat fără câștigător. Kasparov a acuzat public că oprirea l-a salvat pe Karpov."},
+
+  {id:41,era:"clasic",champ:false,name:"Jan Timman",years:"1951 – prezent",country:"Olanda",img:null,
+   prof:"Șahist profesionist; scriitor; redactor New in Chess",
+   fame:"Timman a fost cel mai puternic jucător occidental al anilor 80, locul 2 mondial în FIDE. A jucat meciul pentru titlul FIDE în 1993 cu Karpov. Stil atacant și creativ.",
+   anec:"În 1993, FIDE i-a desemnat pe Karpov și Timman să joace pentru titlul FIDE, după ce Kasparov și Short fondaseră PCA. Timp de un deceniu lumea șahului a avut doi campioni mondiali — situație de neînțeles pentru publicul larg."},
+
+  {id:42,era:"clasic",champ:true,name:"Garry Kasparov",years:"1963 – prezent",country:"URSS / Rusia",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Garry_Kasparov_in_2012.jpg/440px-Garry_Kasparov_in_2012.jpg",
+   prof:"Șahist profesionist (retras 2005); scriitor; activist politic",
+   fame:"Kasparov a devenit cel mai tânăr Campion Mondial în 1985, la 22 de ani. A fost numărul 1 mondial timp de 20 de ani consecutivi. Meciul din 1997 cu calculatorul Deep Blue este unul dintre cele mai mediatizate din istoria sportului.",
+   anec:"În 1997, Kasparov a abandonat o poziție în care putea forța remiză — șocat de mutarea neașteptată a lui Deep Blue. A sugerat intervenție umană, IBM a negat. A pierdut meciul 2.5-3.5. Momentul în care calculatorul a depășit campionul mondial."},
+
+  // ── ERA COMPUTERELOR ──
+  {id:43,era:"modern",champ:false,name:"Vasyl Ivanchuk",years:"1969 – prezent",country:"Ucraina",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Ivanchuk_Vasyl_2008_01.jpg/440px-Ivanchuk_Vasyl_2008_01.jpg",
+   prof:"Șahist profesionist",
+   fame:"Ivanchuk — Chucky — este unul dintre cei mai talentați și imprevizibili jucători din istoria șahului. A atins locul 2 mondial în 1991. Un geniu capricios — când e în formă, bate pe oricine.",
+   anec:"La Olimpiada din 1992, după ce a pierdut partida decisivă cu Gelfand, Ivanchuk a ieșit în fugă din sală, plângând. A ilustrat perfect ce înseamnă să trăiești șahul cu toată intensitatea emoțională."},
+
+  {id:44,era:"modern",champ:true,name:"Viswanathan Anand",years:"1969 – prezent",country:"India",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Viswanathan_Anand_in_2020.jpg/440px-Viswanathan_Anand_in_2020.jpg",
+   prof:"Șahist profesionist; ambasador cultural al Indiei",
+   fame:"Anand — Tigrul din Madras — a fost campion mondial de 5 ori și primul Mare Maestru indian. Cel mai rapid calculator uman din istoria șahului. A transformat India într-o putere mondială a șahului.",
+   anec:"La Campionatul Mondial din 2014 de la Sochi, Anand a ajuns cu bagajele blocate la Frankfurt, pierzând zile de pregătire. A câștigat totuși 3 partide împotriva lui Carlsen — cel mai bun rezultat al oricărui contracandidant."},
+
+  {id:45,era:"modern",champ:true,name:"Vladimir Kramnik",years:"1975 – prezent",country:"Rusia",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Kramnik-Corus2007.jpg/440px-Kramnik-Corus2007.jpg",
+   prof:"Șahist profesionist (retras din clasic în 2019)",
+   fame:"Kramnik l-a detronat pe Kasparov în 2000 — una dintre cele mai mari surprize din istoria șahului. A reunit titlurile mondiale în 2006. A inventat Berlinul ca armă împotriva Deschiderii Ruy López.",
+   anec:"Kramnik a ales Apărarea Berlineză — considerată inferioară la acea vreme. Kasparov nu a câștigat nicio partidă cu albele în tot meciul. Berlinul a explodat ca popularitate peste noapte."},
+
+  {id:46,era:"modern",champ:true,name:"Veselin Topalov",years:"1975 – prezent",country:"Bulgaria",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Veselin_Topalov_2012.jpg/440px-Veselin_Topalov_2012.jpg",
+   prof:"Șahist profesionist",
+   fame:"Topalov a câștigat Campionatul Mondial FIDE în 2005, dominând cu 10/14. A atins locul 1 mondial. Stilul agresiv și complex l-a adus la vârful lumii.",
+   anec:'Meciul mondial din 2006 cu Kramnik este cunoscut drept "Toiletgate": tabăra lui Topalov a acuzat că Kramnik merge prea des la toaletă, sugerând asistență externă. Scandal uriaș. Kramnik a câștigat totuși meciul.'},
+
+  {id:47,era:"modern",champ:false,name:"Boris Gelfand",years:"1968 – prezent",country:"Israel (născut în Belarus)",img:null,
+   prof:"Șahist profesionist",
+   fame:"Gelfand este unul dintre cei mai longevivi jucători de top — peste 30 de ani în elita mondială. A jucat meciul pentru titlul mondial în 2012 la 43 de ani. Pregătire teoretică enciclopedică.",
+   anec:"Gelfand a ratat titlul mondial la 43 de ani la tie-break rapid — devenind cel mai vârstnic candidat la titlu din era modernă. Câtă consistență să reziști la vârf timp de trei decenii!"},
+
+  {id:48,era:"modern",champ:false,name:"Péter Lékó",years:"1979 – prezent",country:"Ungaria",img:null,
+   prof:"Șahist profesionist; comentator și antrenor",
+   fame:"Lékó a devenit cel mai tânăr Mare Maestru din lume în 1994, la 14 ani și 4 luni. A jucat meciul pentru titlul mondial cu Kramnik în 2004, la un singur pas de a câștiga.",
+   anec:"La meciul mondial din 2004, Lékó conducea 7-6 și avea nevoie doar de o remiză. Kramnik a câștigat ultima partidă sub presiune extremă, salvând titlul 7-7. Lékó a plâns. Toată lumea a plâns."},
+
+  {id:49,era:"modern",champ:false,name:"Gata Kamsky",years:"1974 – prezent",country:"SUA (născut în URSS)",img:null,
+   prof:"Șahist profesionist; avocat",
+   fame:"Kamsky a atins locul 2 mondial la mijlocul anilor 90 și a jucat meciul pentru titlul FIDE cu Karpov în 1996. S-a retras brusc, a absolvit dreptul, apoi s-a întors spectaculos în 2004.",
+   anec:"Tatăl lui Kamsky controla complet cariera fiului — un caz controversat documentat în presa de șah. Gata și-a recâștigat libertatea abia după ce tatăl s-a retras din scenă."},
+
+  {id:50,era:"modern",champ:false,name:"Levon Aronian",years:"1982 – prezent",country:"SUA (născut în Armenia)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Levon_Aronian_2012.jpg/440px-Levon_Aronian_2012.jpg",
+   prof:"Șahist profesionist",
+   fame:"Aronian a dus Armenia la 3 titluri consecutive la Olimpiada de Șah (2006, 2008, 2012) și a atins locul 2 mondial. A câștigat Wijk aan Zee de 4 ori. Stilul creativ l-a transformat în favoritul publicului.",
+   anec:"La Olimpiada din 2006, Armenia a câștigat aurul în fața Rusiei într-un meci decisiv. La întoarcerea în Erevan, echipa a primit primiri de eroi naționali. Fotbalul nu e singurul sport care poate emoționa o țară."},
+
+  {id:51,era:"modern",champ:false,name:"Sergey Karjakin",years:"1990 – prezent",country:"Rusia (născut în Ucraina)",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Sergey_Karjakin_2009.jpg/440px-Sergey_Karjakin_2009.jpg",
+   prof:"Șahist profesionist",
+   fame:"Karjakin — Ministrul Apărării — a devenit cel mai tânăr Mare Maestru din istoria șahului în 2002, la 12 ani și 7 luni. Tehnica defensivă extraordinară l-a dus până la meciul mondial din 2016.",
+   anec:"La meciul mondial din 2016, Karjakin a condus 5-4 față de Carlsen — cel mai aproape a ajuns un contracandidant de a-l detrona. Carlsen a egalat în partida a 10-a și a câștigat tie-break-ul 3-1."},
+
+  {id:52,era:"modern",champ:false,name:"Fabiano Caruana",years:"1992 – prezent",country:"SUA (italo-american)",img:null,
+   prof:"Șahist profesionist",
+   fame:"Caruana a jucat meciul mondial din 2018 cu Carlsen, terminând 6-6 în clasic — nicio partidă câștigată de niciunul! Record în era modernă. Deține cea mai înaltă performanță de rating dintr-un turneu: 3103.",
+   anec:"La Sinquefield Cup 2014, Caruana a câștigat 7 partide consecutive împotriva adversarilor din top 10 mondial. Kasparov, prezent la turneu, a declarat că nu a mai văzut niciodată un nivel de joc atât de constant."},
+
+  {id:53,era:"modern",champ:true,name:"Magnus Carlsen",years:"1990 – prezent",country:"Norvegia",
+   img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Magnus_Carlsen_2023.jpg/440px-Magnus_Carlsen_2023.jpg",
+   prof:"Șahist profesionist; model; cofondator Play Magnus",
+   fame:"Carlsen a câștigat titlul mondial în 2013 și l-a apărat de 5 ori. A atins ratingul Elo de 2882 — cel mai înalt din istoria șahului. Considerat cel mai complet jucător din toate timpurile: excepțional în clasic, rapid și blitz.",
+   anec:"În 2022, Carlsen a refuzat să-și apere titlul, renunțând la coroana clasică după 10 ani de dominație. Tot în 2022 l-a acuzat implicit pe Hans Niemann de trișat — scandal uriaș cu investigații și procese. Carlsen rămâne nr. 1 mondial și joacă, dar pe propriile reguli."}
+];
+
+// ── STATE ────────────────────────────────────────────────────────────
+const state = { vechi:0, clasic:0, modern:0 };
+
+// ── HELPERS ──────────────────────────────────────────────────────────
+function byEra(era) { return P.filter(p => p.era === era); }
+
+function photoHTML(p) {
+  if (!p.img) return '<div class="no-photo">♛</div>';
+  return '<img src="' + p.img + '" alt="' + p.name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+       + '<div class="no-photo" style="display:none">♛</div>';
+}
+
+// ── UPDATE CARD ───────────────────────────────────────────────────────
+function updateCard(era) {
+  var players = byEra(era);
+  var idx = state[era];
+  var p = players[idx];
+  var total = players.length;
+
+  document.getElementById('photo-' + era).innerHTML = photoHTML(p);
+  document.getElementById('name-' + era).textContent = p.name;
+
+  var crown = document.getElementById('crown-' + era);
+  crown.style.display = p.champ ? 'inline-block' : 'none';
+
+  document.getElementById('pnum-' + era).textContent = '#' + p.id + ' din 53';
+  document.getElementById('years-' + era).textContent = p.years;
+  document.getElementById('country-' + era).textContent = p.country;
+  document.getElementById('prof-' + era).textContent = p.prof;
+  document.getElementById('fame-' + era).textContent = p.fame;
+  document.getElementById('anec-' + era).textContent = p.anec;
+
+  document.getElementById('prev-' + era).disabled = (idx === 0);
+  document.getElementById('next-' + era).disabled = (idx === total - 1);
+  document.getElementById('counter-' + era).textContent = (idx + 1) + ' din ' + total;
+
+  var dots = document.querySelectorAll('#dots-' + era + ' .dot');
+  dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+}
+
+function navigate(era, dir) {
+  var players = byEra(era);
+  var next = state[era] + dir;
+  if (next < 0 || next >= players.length) return;
+  state[era] = next;
+  updateCard(era);
+}
+
+function goTo(era, idx) {
+  state[era] = idx;
+  updateCard(era);
+}
+
+// ── ACCORDION ────────────────────────────────────────────────────────
+function toggleEra(era) {
+  var panel = document.getElementById('panel-' + era);
+  var btn   = document.getElementById('btn-' + era);
+  var open  = panel.classList.contains('open');
+  panel.classList.toggle('open', !open);
+  btn.setAttribute('aria-expanded', String(!open));
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────
+function renderTimeline() {
+  var html = '';
+  CHAMPIONS.forEach(function(c) {
+    html += '<div class="champ-pill">'
+          + '<span class="champ-pill-name">♔ ' + c.n + '</span>'
+          + '<span class="champ-pill-year">' + c.y + '</span>'
+          + '</div>';
+  });
+  document.getElementById('tl').innerHTML = html;
+}
+
+function dotsHTML(era) {
+  var players = byEra(era);
+  var html = '';
+  players.forEach(function(_, i) {
+    html += '<button class="dot" onclick="goTo(\'' + era + '\',' + i + ')" title="Jucătorul ' + (i+1) + '"></button>';
+  });
+  return html;
+}
+
+function renderEra(era) {
+  var players = byEra(era);
+  var m = ERAS.find(function(e) { return e.id === era; });
+  return '<div class="era-block">'
+    + '<button class="era-btn" id="btn-' + era + '" aria-expanded="false" onclick="toggleEra(\'' + era + '\')">'
+    + '<span class="era-code">' + m.icon + '</span>'
+    + '<span class="era-titles"><span class="era-name">' + m.name + '</span><span class="era-range">' + m.range + '</span></span>'
+    + '<span class="era-count">' + players.length + ' jucători</span>'
+    + '<span class="era-arrow">▼</span>'
+    + '</button>'
+    + '<div class="era-panel" id="panel-' + era + '">'
+    + '<p class="era-why">' + m.why + '</p>'
+    + '<div class="player-wrap">'
+    // LEFT
+    + '<div class="photo-panel">'
+    + '<div class="photo-frame" id="photo-' + era + '"></div>'
+    + '<div class="photo-name" id="name-' + era + '"></div>'
+    + '<div id="crown-' + era + '" class="photo-crown">♔ Campion Mondial</div>'
+    + '<div class="photo-num" id="pnum-' + era + '"></div>'
+    + '</div>'
+    // RIGHT
+    + '<div class="info-panel">'
+    + '<div class="info-row"><div class="info-row-label">📅 Perioadă de viață</div><div class="info-row-val" id="years-' + era + '"></div></div>'
+    + '<div class="info-row"><div class="info-row-label">🌍 Origine</div><div class="info-row-val" id="country-' + era + '"></div></div>'
+    + '<div class="info-row"><div class="info-row-label">💼 Meseria</div><div class="info-row-val" id="prof-' + era + '"></div></div>'
+    + '<div class="info-text"><div class="info-text-label">♟ Ce l-a făcut faimos</div><div class="info-text-body" id="fame-' + era + '"></div></div>'
+    + '<div class="anecdote-box"><div class="info-text-label">💬 O poveste adevărată</div><div class="anecdote-body" id="anec-' + era + '"></div></div>'
+    + '<div class="nav-row">'
+    + '<button class="nav-btn" id="prev-' + era + '" onclick="navigate(\'' + era + '\',-1)">← Anterior</button>'
+    + '<div class="nav-center"><div class="nav-counter" id="counter-' + era + '"></div>'
+    + '<div class="nav-dots" id="dots-' + era + '">' + dotsHTML(era) + '</div></div>'
+    + '<button class="nav-btn" id="next-' + era + '" onclick="navigate(\'' + era + '\',1)">Următor →</button>'
+    + '</div>'
+    + '</div>'  // info-panel
+    + '</div>'  // player-wrap
+    + '</div>'  // era-panel
+    + '</div>'; // era-block
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────
+document.getElementById('app').innerHTML =
+  renderEra('vechi') + renderEra('clasic') + renderEra('modern');
+
+renderTimeline();
+
+['vechi','clasic','modern'].forEach(function(era) { updateCard(era); });
+</script>
+</body>
+</html>
