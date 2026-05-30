@@ -2,7 +2,6 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CMTZ9GGPMP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -10,47 +9,595 @@
   gtag('js', new Date());
   gtag('config', 'G-CMTZ9GGPMP');
 </script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lecția 13 — Numărarea atacatorilor și apărătorilor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Numărarea atacatorilor și apărătorilor</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #F5A96E; font-family: 'Nunito', sans-serif; color: #1a1a2e; padding: 0 0 60px; }
-#nav { position: sticky; top: 0; background: rgba(245,169,110,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; z-index: 100; border-bottom: 2px solid rgba(255,255,255,0.4); }
-.nav-btn { background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8); border-radius: 50px; padding: 6px 16px; font-family: 'Baloo 2', cursive; font-size: 0.88em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; }
-.nav-btn:hover { background: rgba(255,255,255,0.85); }
-.nav-title { font-family: 'Baloo 2', cursive; font-size: 0.9em; color: #1a3a6b; text-align: center; }
-.nav-badge { background: #1a3a6b; color: white; font-family: 'Baloo 2', cursive; font-size: 0.75em; padding: 3px 12px; border-radius: 20px; }
-.content { max-width: 780px; margin: 0 auto; padding: 60px 16px 0; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
-.card { background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.85); border-radius: 20px; padding: 40px 32px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); max-width: 480px; width: 100%; }
-.card .icon { font-size: 3em; margin-bottom: 16px; display: block; }
-.card h1 { font-family: 'Baloo 2', cursive; font-size: 1.6em; color: #1a3a6b; margin-bottom: 12px; }
-.card p { font-size: 0.96em; line-height: 1.75; color: #2a2a3e; }
-.bottom-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 24px; }
-.nav-prev { background: rgba(255,255,255,0.45); border: 2px solid rgba(255,255,255,0.7); border-radius: 50px; padding: 9px 20px; font-family: 'Baloo 2', cursive; font-size: 0.85em; font-weight: 700; color: #1a3a6b; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
-.nav-prev:hover { background: rgba(255,255,255,0.75); }
-.nav-next { background: #1a3a6b; color: white; border-radius: 50px; padding: 12px 28px; font-family: 'Baloo 2', cursive; font-size: 1em; font-weight: 700; text-decoration: none; transition: all 0.2s; box-shadow: 0 3px 14px rgba(26,58,107,0.35); white-space: nowrap; }
-.nav-next:hover { background: #2a5aab; transform: translateY(-2px); }
+.acc-wrapper { display: flex; flex-direction: column; gap: 10px; }
+.acc-item { background: var(--c-surface); border: 2px solid var(--c-border); border-radius: var(--radius); overflow: hidden; }
+.acc-head {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px; cursor: pointer;
+  font-family: var(--font-display); font-weight: 700; color: var(--c-navy); font-size: var(--fs-md);
+  border: none; background: none; text-align: left; gap: 8px;
+}
+.acc-head:hover { background: rgba(26,58,107,0.06); }
+.acc-item.open .acc-head { background: rgba(26,58,107,0.06); }
+.acc-icon { font-size: 1.25rem; transition: transform 0.22s; flex-shrink: 0; }
+.acc-item.open .acc-icon { transform: rotate(45deg); }
+.acc-body { max-height: 0; overflow: hidden; transition: max-height 0.32s ease; }
+.acc-body.open { max-height: 2400px; }
+.acc-inner { padding: 4px 16px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.ex-dots { display: flex; gap: 6px; flex-wrap: wrap; }
+.ex-dot {
+  background: rgba(255,255,255,0.55); border: 2px solid rgba(26,58,107,0.25);
+  border-radius: 20px; padding: 4px 11px; min-width: 34px;
+  font-family: var(--font-display); font-size: var(--fs-xs); font-weight: 700;
+  color: var(--c-navy); cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.ex-dot:hover  { background: rgba(255,255,255,0.85); }
+.ex-dot.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
+.ex-label { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--c-navy); font-weight: 700; min-height: 1.2em; }
+.ex-ann   { font-size: var(--fs-md); line-height: 1.7; color: var(--c-text); min-height: 2em; }
+.turn-badge { display: inline-block; padding: 3px 14px; border-radius: 50px; font-family: var(--font-display); font-size: 0.82rem; font-weight: 700; }
+.turn-badge.white { background: #f0f0f0; color: var(--c-navy); border: 1.5px solid #ccc; }
+.turn-badge.black { background: #222; color: #fff; border: 1.5px solid #000; }
+.level-badge { display: inline-block; margin-left: 6px; padding: 2px 10px; border-radius: 50px; font-family: var(--font-display); font-size: 0.75rem; font-weight: 700; background: rgba(39,174,96,0.18); color: #1a6b3a; }
+.level-badge.med  { background: rgba(230,126,34,0.18); color: #8a3a00; }
+.level-badge.hard { background: rgba(192,57,43,0.18);  color: #7a1800; }
+.ctrl-row { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 6px; }
+.btn-sm { padding: 7px 15px; border-radius: 50px; font-family: var(--font-display); font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: background .15s, opacity .15s; border: 1.5px solid transparent; }
+.btn-sm:disabled { opacity: 0.28; cursor: default; }
+.btn-prev  { border-color: rgba(26,58,107,0.35); background: rgba(255,255,255,0.55); color: var(--c-navy); }
+.btn-prev:hover:not(:disabled)  { background: rgba(26,58,107,0.10); }
+.btn-reset { border-color: rgba(192,57,43,0.40); background: rgba(255,255,255,0.55); color: #8b1a00; }
+.btn-reset:hover:not(:disabled) { background: rgba(192,57,43,0.10); }
+.btn-cont  { border-color: var(--c-success); background: var(--c-success); color: white; }
+.btn-cont:hover:not(:disabled)  { opacity: 0.86; }
+.btn-next  { border-color: var(--c-navy); background: var(--c-navy); color: white; }
+.btn-next:hover:not(:disabled)  { opacity: 0.86; }
+.btn-hint { border-color: rgba(39,174,96,0.45); background: rgba(39,174,96,0.08); color: #1a6b3a; }
+.btn-hint:hover:not(:disabled)  { background: rgba(39,174,96,0.18); }
+.btn-sol  { border-color: rgba(142,68,173,0.45); background: rgba(142,68,173,0.08); color: #6c3483; }
+.btn-sol:hover:not(:disabled)   { background: rgba(142,68,173,0.18); }
+.btn-tri  { padding: 7px 11px; min-width: 34px; }
+.hint-square { background: rgba(80,200,80,0.65) !important; }
+.last-move-from { background: rgba(80,180,80,0.35) !important; }
+.last-move-to   { background: rgba(80,180,80,0.55) !important; }
+.square-selected { background: rgba(255,200,0,0.55) !important; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+.board-shake { animation: shake 0.35s ease-out; }
+.btn-arena { display: flex; align-items: center; justify-content: center; padding: 11px 20px; border-radius: 50px; background: var(--c-navy); color: white; text-decoration: none; font-family: var(--font-display); font-size: 0.97rem; font-weight: 700; border: none; cursor: pointer; width: 100%; transition: opacity .18s; margin-top: 8px; }
+.btn-arena:hover { opacity: 0.86; }
+.progress-outer { position: relative; }
+.progress-outer::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: rgba(26,26,46,0.88); color: #fff; font-family: var(--font-display); font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; white-space: nowrap; pointer-events: none; z-index: 100; opacity: 0; transition: opacity 0.15s; }
+.progress-outer:hover::after { opacity: 1; }
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
 </head>
 <body>
-<nav id="nav">
-    <a href="hub.html" class="nav-btn">☰ Cuprins</a>
-    <div class="nav-title">Numărarea Atacatorilor</div>
-    <span class="nav-badge">Lecția 12</span>
-</nav>
-<div class="content">
-    <div class="card">
-        <span class="icon">🔢</span>
-        <h1>Numărarea atacatorilor și apărătorilor</h1>
-        <p>Această lecție este în construcție. Revino curând!</p>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Numărarea atacatorilor și apărătorilor</span>
+    <div class="header-progress"><span class="lesson-badge">Nivel I</span></div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+        <div class="promo-overlay" id="promoOverlay">
+          <div class="promo-title">Alege piesa:</div>
+          <div class="promo-btns" id="promoBtns"></div>
+        </div>
+      </div>
     </div>
-    <div class="bottom-nav">
-        <a href="nivel1_lectia12.html" class="nav-prev">◀ Câștig, Egal și Pierdere</a>
-        <a href="nivel1_lectia14.html" class="nav-next">Cooperarea Dintre Piese ▶</a>
-    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+
+        <h1 style="margin-bottom:8px;">Numărarea atacatorilor și apărătorilor</h1>
+        <p style="margin-bottom:14px;">Tabla de șah este un loc periculos. Numărarea atacatorilor și apărătorilor este cheia pentru a captura în siguranță piesele adversarului și pentru a-ți apăra propriile piese.</p>
+
+        <div class="acc-wrapper">
+
+          <!-- ══ SERTAR 1 ══ -->
+          <div class="acc-item" id="acc0">
+            <button class="acc-head" onclick="toggleAcc(0)">
+              <span>Exemplul 1 — Calul din d4</span>
+              <span class="acc-icon">+</span>
+            </button>
+            <div class="acc-body" id="accBody0">
+              <div class="acc-inner">
+                <div class="ex-dots" id="dots1"></div>
+                <div class="ex-label" id="exLabel1"></div>
+                <div class="ex-ann"   id="exAnn1"></div>
+                <div class="hl-box" style="margin-top:4px;">
+                  <strong>Regula:</strong> Dacă sunt mai mulți atacatori decât apărători, de obicei e bine să capturezi. Dacă numerele sunt egale, armata care se apără este în siguranță.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ SERTAR 2 ══ -->
+          <div class="acc-item" id="acc1">
+            <button class="acc-head" onclick="toggleAcc(1)">
+              <span>Exemplul 2 — Schimbul pe g4</span>
+              <span class="acc-icon">+</span>
+            </button>
+            <div class="acc-body" id="accBody1">
+              <div class="acc-inner">
+                <div class="ex-dots" id="dots2"></div>
+                <div class="ex-label" id="exLabel2"></div>
+                <div class="ex-ann"   id="exAnn2"></div>
+                <div class="hl-box warn" style="margin-top:4px;">
+                  <strong>Atenție la ordinea mutărilor!</strong> Chiar dacă atacatorii și apărătorii sunt egali, piesa mai valoroasă intră ultima în schimb.
+                </div>
+                <div class="hl-box">
+                  <strong>Regula valorilor:</strong> Calculează ce schimbi pe ce. Un cal și un pion pentru o regină? Ai câștigat. Un cal și un nebun pentru un turn? Ai pierdut.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ SERTAR 3: Arena ══ -->
+          <div class="acc-item" id="acc2">
+            <button class="acc-head" onclick="toggleAcc(2)">
+              <span>Puzzle-uri — calculează și execută!</span>
+              <span class="acc-icon">+</span>
+            </button>
+            <div class="acc-body" id="accBody2">
+              <div class="acc-inner">
+
+                <p style="margin:0 0 4px 0; font-size:var(--fs-sm); color:var(--c-text);">Dacă ai destui atacatori, declanșezi atacul. Dacă nu, mai aduci unul. Atenție la ordinea intrării pieselor în schimburi!</p>
+
+                <span class="turn-badge white" id="turnBadge">&#9634; Albul mută</span>
+                <span class="level-badge" id="levelBadge">UȘOR</span>
+
+                <div class="progress-outer" id="progressOuter">
+                  <div class="progress-wrap">
+                    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+                  </div>
+                </div>
+
+                <div class="task-msg idle" id="arenaMsg">Se încarcă&hellip;</div>
+
+                <div class="ctrl-row">
+                  <button class="btn-sm btn-prev"  id="prevBtn"  onclick="prevPuzzle()" disabled>&#8592; Precedentul</button>
+                  <button class="btn-sm btn-reset"               onclick="resetPuzzle()">&#8634; Resetează</button>
+                  <button class="btn-sm btn-cont"                onclick="continuePuzzle()">Continuă</button>
+                  <button class="btn-sm btn-next"  id="nextBtn"  onclick="nextPuzzle()" disabled>Următorul &#8594;</button>
+                </div>
+                <div class="ctrl-row">
+                  <button class="btn-sm btn-tri btn-prev" id="stepBackBtn" onclick="stepBack()"    disabled>&#9668;</button>
+                  <button class="btn-sm btn-tri btn-prev" id="stepFwdBtn"  onclick="stepForward()" disabled>&#9658;</button>
+                  <button class="btn-sm btn-hint" id="btnHint" onclick="showHint()">&#128161; Indiciu</button>
+                  <button class="btn-sm btn-sol"  id="btnSol"  onclick="showSolution()">&#9654;&#9654; Soluție</button>
+                </div>
+
+                <button class="btn-arena" id="playAgainBtn" style="display:none;"
+                        onclick="resetAll()">&#127881; Toate rezolvate! Joacă din nou &#8594;</button>
+                <button class="btn-arena" id="resetAllBtn"  style="display:none; background:rgba(192,57,43,0.82);"
+                        onclick="resetAll()">&#8635; Joacă din nou (resetează tot)</button>
+
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /.acc-wrapper -->
+      </div><!-- /.panel-scroll -->
+    </div><!-- /.panel-col -->
+
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="nivel1_lectia5.html" class="nav-btn nav-btn--back">
+      <span class="icon">&#8592;</span><span class="label">Atacul, captura, apărarea</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon">&#8862;</span><span class="label">Cuprins</span>
+    </a>
+    <a href="nivel1_lectia6.html" class="nav-btn nav-btn--forward">
+      <span class="icon">&#8594;</span><span class="label">Atacul asupra regelui</span>
+    </a>
+  </footer>
+
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
+<script>
+var PT       = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+var INIT_FEN = 'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1B4N1/PPP2PPP/R1BQ1RK1 w kq - 0 1';
+
+var EX1 = [
+  { fen:    'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1B4N1/PPP2PPP/R1BQ1RK1 w kq - 0 1',
+    label:  '2 atacatori, 1 apărător — periculos!',
+    ann:    'Calul alb din d4 este atacat de două piese negre (nebunul din c5 și dama din f6), dar apărat de o singură piesă albă (nebunul din b3). Sunt mai mulți atacatori decât apărători — nu e bine pentru armata albă!',
+    arrows: [{from:'c5',to:'d4',ci:1},{from:'f6',to:'d4',ci:1},{from:'b3',to:'d4',ci:0}]
+  },
+  { fen:    'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1BP3N1/PP3PPP/R1BQ1RK1 w kq - 0 1',
+    label:  '2 atacatori, 2 apărători — în siguranță',
+    ann:    'Albul aduce pionul la c3, adăugând un al doilea apărător pentru calul din d4. Acum sunt doi atacatori și doi apărători — armata care se apără este în siguranță.',
+    arrows: [{from:'c5',to:'d4',ci:1},{from:'f6',to:'d4',ci:1},{from:'b3',to:'d4',ci:0},{from:'c3',to:'d4',ci:0}]
+  }
+];
+
+var EX2 = [
+  { fen:    '3r2r1/3q2bk/1p2bn1n/pPp1p1pp/P1PpPp2/3P1P1P/1R2BNPN/2BQKR2 w - - 0 1',
+    label:  'Negrul numără înainte de a muta g4',
+    ann:    'Negrul vrea să mute g4 (g5→g4), dar trebuie să numere: 6 atacatori negri ai câmpului g4 (pionul g5, nebunul e6, caii h6 și f6, dama d7, turnul g8 — ultimii doi după primele capturi), dar deocamdată doar 5 apărători albi (pion f3, pion h3, caii h2 și f2, nebunul e2). Negrul mai are nevoie de un apărător suplimentar.',
+    arrows: [{from:'g5',to:'g4',ci:1},{from:'h6',to:'g4',ci:1},{from:'f3',to:'g4',ci:0},{from:'h3',to:'g4',ci:0}]
+  },
+  { fen:    '3r2r1/3q3k/1p2bn1n/pPp1p1bp/P1PpPp2/3P1P1P/1R2BNP1/2BQKR2 w - - 0 1',
+    label:  'Nebunul s-a mutat — turnul din g8 e liber',
+    ann:    'Nebunul negru de pe g7 s-a mutat la h5, eliberând coloana g. Acum turnul din g8 devine al 6-lea apărător al câmpului g4 — negrul are 6 atacatori și 6 apărători și poate declanșa schimbul!',
+    arrows: [{from:'g8',to:'g4',ci:1},{from:'f3',to:'g4',ci:0},{from:'h3',to:'g4',ci:0}]
+  }
+];
+
+var board        = null;
+var chess        = null;
+var accOpen      = -1;
+var curExSet     = null;
+var curExIdx     = 0;
+
+var PUZZLES      = [];
+var curIdx       = 0;
+var curMoveIdx   = 0;
+var completed    = {};
+var solving      = false;
+var solved       = false;
+var solverColor  = 'w';
+var moveHistory  = [];
+var viewIdx      = 0;
+var autoPlayTimer= null;
+var selSq        = null;
+var arenaActive  = false;
+var pendingSrc   = null;
+var pendingTgt   = null;
+var SAVE_KEY     = 'numarat_arena_progress';
+
+function debounce(fn,d){var t;return function(){clearTimeout(t);t=setTimeout(fn,d);};}
+
+function clearHL(){
+  document.querySelectorAll('.square-selected,.highlight-check,.last-move-from,.last-move-to,.hint-square')
+    .forEach(function(el){el.classList.remove('square-selected','highlight-check','last-move-from','last-move-to','hint-square');});
+}
+function applyHL(sq,cls){var el=document.querySelector('.square-'+sq);if(el)el.classList.add(cls);}
+function setLastMoveHL(from,to){
+  document.querySelectorAll('.last-move-from,.last-move-to')
+    .forEach(function(el){el.classList.remove('last-move-from','last-move-to');});
+  applyHL(from,'last-move-from'); applyHL(to,'last-move-to');
+}
+
+function toggleAcc(idx) {
+  var wasOpen = (accOpen === idx);
+  for (var i = 0; i < 3; i++) {
+    document.getElementById('acc'+i).classList.remove('open');
+    document.getElementById('accBody'+i).classList.remove('open');
+  }
+  arenaActive = false;
+  if (!wasOpen) {
+    accOpen = idx;
+    document.getElementById('acc'+idx).classList.add('open');
+    document.getElementById('accBody'+idx).classList.add('open');
+    setTimeout(function() {
+      board.resize();
+      if      (idx === 0) loadExSet(EX1,'dots1','exLabel1','exAnn1',0);
+      else if (idx === 1) loadExSet(EX2,'dots2','exLabel2','exAnn2',0);
+      else if (idx === 2) startArena();
+    }, 30);
+  } else {
+    accOpen = -1;
+    if (window._annClear) window._annClear();
+    chess = new Chess(INIT_FEN);
+    board.position(INIT_FEN, false);
+  }
+}
+
+function loadExSet(exArr, dotsId, labelId, annId, startIdx) {
+  curExSet = {arr:exArr, dotsId:dotsId, labelId:labelId, annId:annId};
+  var row = document.getElementById(dotsId);
+  row.innerHTML = '';
+  exArr.forEach(function(ex, i) {
+    var btn = document.createElement('button');
+    btn.className = 'ex-dot' + (i === startIdx ? ' active' : '');
+    btn.textContent = i + 1;
+    btn.title = ex.label;
+    btn.onclick = (function(ii){return function(){goEx(ii);};})(i);
+    row.appendChild(btn);
+  });
+  goEx(startIdx);
+}
+
+function goEx(idx) {
+  if (!curExSet) return;
+  curExIdx = idx;
+  var ex = curExSet.arr[idx];
+  document.querySelectorAll('#'+curExSet.dotsId+' .ex-dot').forEach(function(d,j){
+    d.classList.toggle('active', j===idx);
+  });
+  document.getElementById(curExSet.labelId).textContent = ex.label;
+  document.getElementById(curExSet.annId).textContent   = ex.ann;
+  chess = new Chess(ex.fen);
+  board.position(ex.fen, false);
+  if (ex.arrows && window._annSet) {
+    setTimeout(function(){window._annSet(ex.arrows);},80);
+  } else if (window._annClear) {
+    window._annClear();
+  }
+}
+
+function buildPromoDialog(color) {
+  var pieces=['q','r','b','n'];
+  var btns=document.getElementById('promoBtns');
+  btns.innerHTML='';
+  pieces.forEach(function(p){
+    var btn=document.createElement('button');
+    btn.className='promo-btn';
+    var img=document.createElement('img');
+    img.src='https://lichess1.org/assets/piece/caliente/'+(color==='w'?'w':'b')+p.toUpperCase()+'.svg';
+    btn.appendChild(img);
+    btn.onclick=function(){doPromo(p);};
+    btns.appendChild(btn);
+  });
+}
+function showPromo(src,tgt){pendingSrc=src;pendingTgt=tgt;buildPromoDialog(chess.turn());document.getElementById('promoOverlay').style.display='flex';}
+function doPromo(piece){
+  document.getElementById('promoOverlay').style.display='none';
+  var move=chess.move({from:pendingSrc,to:pendingTgt,promotion:piece});
+  if(!move) return;
+  board.position(chess.fen());
+}
+
+function onDragStart(source, piece) {
+  if (!arenaActive||!solving||solved) return false;
+  if (viewIdx<moveHistory.length) return false;
+  if (solverColor==='w'&&piece.startsWith('b')) return false;
+  if (solverColor==='b'&&piece.startsWith('w')) return false;
+  return true;
+}
+function onDrop(source, target) {
+  clearHL(); selSq=null;
+  if (source===target) return 'snapback';
+  if (arenaActive) return tryArenaMove(source,target);
+  return 'snapback';
+}
+function onSnapEnd(){if(chess)board.position(chess.fen());}
+function onMouseoverSquare(square){
+  if(!arenaActive||!solving||solved) return;
+  var moves=chess.moves({square:square,verbose:true});
+  moves.forEach(function(m){
+    var el=document.querySelector('#board .square-'+m.to);
+    if(!el) return;
+    el.classList.add(m.captured?'highlight-capture':'highlight-legal');
+  });
+}
+function onMouseoutSquare(){
+  document.querySelectorAll('#board .highlight-selected,.highlight-legal,.highlight-capture')
+    .forEach(function(el){el.classList.remove('highlight-selected','highlight-legal','highlight-capture');});
+}
+
+function startArena(){
+  arenaActive=true;
+  if(!PUZZLES.length) return;
+  loadState(); updateProgress(); loadPuzzle(curIdx);
+}
+
+function shakeBoard(){
+  var bw=document.getElementById('boardWrapper');
+  bw.classList.remove('board-shake'); void bw.offsetWidth; bw.classList.add('board-shake');
+  bw.addEventListener('animationend',function(){bw.classList.remove('board-shake');},{once:true});
+}
+function celebrate(){if(typeof confetti!=='undefined')confetti({particleCount:80,spread:60,origin:{y:0.60}});}
+function setArenaMsg(type,text){var el=document.getElementById('arenaMsg');el.className='task-msg'+(type?' '+type:'');el.innerHTML=text;}
+
+$(document).on('click','.square-55d63',function(){
+  if(!arenaActive||!solving||solved) return;
+  if(viewIdx<moveHistory.length) return;
+  var sq=$(this).data('square');
+  var piece=chess.get(sq);
+  var moverColor=chess.turn();
+  if(selSq){
+    var prevSq=selSq; clearHL(); selSq=null;
+    if(sq===prevSq) return;
+    if(piece&&piece.color===moverColor){selSq=sq;applyHL(sq,'square-selected');}
+    else tryArenaMove(prevSq,sq);
+  } else {
+    if(!piece||piece.color!==moverColor) return;
+    selSq=sq; applyHL(sq,'square-selected');
+  }
+});
+
+function tryArenaMove(from,to){
+  if(!solving||solved) return 'snapback';
+  var expected=PUZZLES[curIdx].moves[curMoveIdx];
+  if(from!==expected.slice(0,2)||to!==expected.slice(2,4)){
+    shakeBoard();
+    setArenaMsg('err','❌ Nu e bine — gândește-te din nou!');
+    setTimeout(function(){setArenaMsg('idle','<b>'+(solverColor==='w'?'Albul':'Negrul')+' la mutare.</b> Calculează și execută!');},1400);
+    return 'snapback';
+  }
+  var move=chess.move({from:from,to:to,promotion:expected.length>4?expected.slice(4):'q'});
+  if(!move) return 'snapback';
+  board.position(chess.fen(),true);
+  recordMove(from,to); setLastMoveHL(from,to); curMoveIdx++;
+  if(curMoveIdx>=PUZZLES[curIdx].moves.length) onArenaSolved();
+  else{setArenaMsg('idle','✓ Corect! Continuă…');setTimeout(arenaOpponentReply,500);}
+  return undefined;
+}
+function arenaOpponentReply(){
+  if(curMoveIdx>=PUZZLES[curIdx].moves.length) return;
+  var mv=PUZZLES[curIdx].moves[curMoveIdx];
+  var moveObj=chess.move({from:mv.slice(0,2),to:mv.slice(2,4),promotion:mv.length>4?mv.slice(4):'q'});
+  if(moveObj){
+    board.position(chess.fen(),true);
+    recordMove(mv.slice(0,2),mv.slice(2,4)); setLastMoveHL(mv.slice(0,2),mv.slice(2,4)); curMoveIdx++;
+    if(curMoveIdx>=PUZZLES[curIdx].moves.length) onArenaSolved();
+    else setArenaMsg('idle','<b>'+(solverColor==='w'?'Albul':'Negrul')+' la mutare.</b> Calculează și execută!');
+  }
+}
+function onArenaSolved(){
+  solved=true; solving=false;
+  completed[curIdx]=true;
+  saveState(); updateProgress(); celebrate();
+  setArenaMsg('ok','✅ Bravo! Ai calculat și executat corect!');
+  document.getElementById('nextBtn').disabled=(curIdx>=PUZZLES.length-1);
+  document.getElementById('btnHint').disabled=true;
+  document.getElementById('btnSol').disabled=true;
+  var done=Object.keys(completed).length;
+  var rb=document.getElementById('resetAllBtn');
+  if(done>0&&rb) rb.style.display='flex';
+  if(done>=PUZZLES.length) document.getElementById('playAgainBtn').style.display='flex';
+}
+function recordMove(from,to){
+  moveHistory.push({from:from,to:to,prom:'q'});
+  viewIdx=moveHistory.length; updateNavBtns();
+}
+function replayToPos(idx){
+  var temp=new Chess(PUZZLES[curIdx].fen);
+  for(var i=0;i<idx;i++){var m=moveHistory[i];temp.move({from:m.from,to:m.to,promotion:m.prom});}
+  board.position(temp.fen(),false); clearHL();
+  if(idx>0&&moveHistory[idx-1]){applyHL(moveHistory[idx-1].from,'last-move-from');applyHL(moveHistory[idx-1].to,'last-move-to');}
+}
+function stepBack(){if(viewIdx>0){viewIdx--;replayToPos(viewIdx);updateNavBtns();}}
+function stepForward(){if(viewIdx<moveHistory.length){viewIdx++;replayToPos(viewIdx);updateNavBtns();}}
+function updateNavBtns(){
+  document.getElementById('stepBackBtn').disabled=(viewIdx<=0);
+  document.getElementById('stepFwdBtn').disabled=(viewIdx>=moveHistory.length);
+}
+function loadPuzzle(idx){
+  if(idx<0||idx>=PUZZLES.length) return;
+  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
+  curIdx=idx; curMoveIdx=0; solved=false; selSq=null;
+  moveHistory=[]; viewIdx=0;
+  document.getElementById('playAgainBtn').style.display='none';
+  if(window._annClear) window._annClear();
+  var p=PUZZLES[idx];
+  chess=new Chess(p.fen);
+  solverColor=chess.turn();
+  board.orientation(solverColor==='w'?'white':'black');
+  board.position(chess.fen(),false);
+  updateArenaUI(); updateProgress(); saveState();
+  if(completed[idx]){
+    solving=false; solved=true;
+    setArenaMsg('ok','✅ Deja rezolvat — poți încerca din nou!');
+    document.getElementById('nextBtn').disabled=(curIdx>=PUZZLES.length-1);
+    document.getElementById('btnHint').disabled=true;
+    document.getElementById('btnSol').disabled=true;
+  } else {
+    solving=true;
+    setArenaMsg('idle','<b>'+(solverColor==='w'?'Albul':'Negrul')+' la mutare.</b> Calculează și execută!');
+    document.getElementById('nextBtn').disabled=true;
+    document.getElementById('btnHint').disabled=false;
+    document.getElementById('btnSol').disabled=false;
+  }
+  clearHL();
+}
+function updateArenaUI(){
+  var p=PUZZLES[curIdx];
+  var badge=document.getElementById('turnBadge');
+  if(solverColor==='w'){badge.textContent='□ Albul mută';badge.className='turn-badge white';}
+  else{badge.textContent='■ Negrul mută';badge.className='turn-badge black';}
+  var lvl=Math.max(0,Math.min((p.level||1)-1,2));
+  var labels=['UȘOR','MEDIU','GREU'];
+  var classes=['','med','hard'];
+  var lb=document.getElementById('levelBadge');
+  lb.textContent=labels[lvl]; lb.className='level-badge'+(classes[lvl]?' '+classes[lvl]:'');
+  document.getElementById('prevBtn').disabled=(curIdx===0);
+}
+function updateProgress(){
+  var done=Object.keys(completed).length;
+  var total=PUZZLES.length||5;
+  document.getElementById('progressFill').style.width=(done/total*100)+'%';
+  document.getElementById('progressOuter').setAttribute('data-tip',done+' / '+total+' rezolvate');
+}
+function saveState(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({idx:curIdx,completed:completed}));}catch(e){}}
+function loadState(){
+  try{
+    var d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
+    if(!d) return;
+    var raw=d.completed||{};
+    completed={};
+    for(var k in raw){var n=Number(k);if(!isNaN(n))completed[n]=true;}
+    curIdx=typeof d.idx==='number'?Math.min(d.idx,PUZZLES.length-1):0;
+  }catch(e){}
+}
+function prevPuzzle(){if(curIdx>0)loadPuzzle(curIdx-1);}
+function nextPuzzle(){if(curIdx<PUZZLES.length-1)loadPuzzle(curIdx+1);}
+function resetPuzzle(){loadPuzzle(curIdx);}
+function continuePuzzle(){
+  var keys=Object.keys(completed).map(Number);
+  var max=keys.length?Math.max.apply(null,keys):-1;
+  loadPuzzle(Math.min(max+1,PUZZLES.length-1));
+}
+function showHint(){
+  if(!solving||solved||viewIdx<moveHistory.length) return;
+  var src=PUZZLES[curIdx].moves[curMoveIdx].slice(0,2);
+  clearHL(); applyHL(src,'hint-square');
+  setArenaMsg('idle','💡 Indiciu: mută piesa de pe <b>'+src+'</b>.');
+}
+function showSolution(){
+  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
+  solving=false;
+  var p=PUZZLES[curIdx];
+  chess=new Chess(p.fen); moveHistory=[]; viewIdx=0;
+  board.position(p.fen,false); clearHL(); updateNavBtns();
+  document.getElementById('btnHint').disabled=true;
+  document.getElementById('btnSol').disabled=true;
+  setArenaMsg('idle','🔑 Arată soluția…');
+  var playNext=function(){
+    if(viewIdx>=p.moves.length){setArenaMsg('idle','🔑 Soluție completă. Apasă Resetează ca să o încerci tu.');return;}
+    var mv=p.moves[viewIdx];
+    var m={from:mv.slice(0,2),to:mv.slice(2,4),prom:mv.length>4?mv.slice(4):'q'};
+    chess.move({from:m.from,to:m.to,promotion:m.prom});
+    board.position(chess.fen(),true);
+    moveHistory.push(m); viewIdx++; setLastMoveHL(m.from,m.to); updateNavBtns();
+    autoPlayTimer=setTimeout(playNext,700);
+  };
+  playNext();
+}
+function resetAll(){
+  try{localStorage.removeItem(SAVE_KEY);}catch(e){}
+  completed={}; updateProgress(); loadPuzzle(0);
+  document.getElementById('playAgainBtn').style.display='none';
+  document.getElementById('resetAllBtn').style.display='none';
+}
+
+/* ── Init ── */
+chess = new Chess(INIT_FEN);
+board = Chessboard('board', {
+  position:          INIT_FEN,
+  pieceTheme:        PT,
+  showNotation:      true,
+  draggable:         true,
+  onDragStart:       onDragStart,
+  onDrop:            onDrop,
+  onSnapEnd:         onSnapEnd,
+  onMouseoverSquare: onMouseoverSquare,
+  onMouseoutSquare:  onMouseoutSquare
+});
+window.addEventListener('resize', debounce(function(){board.resize();},150));
+
+fetch('data/numarat_puzzles.json')
+  .then(function(r){return r.json();})
+  .then(function(data){
+    PUZZLES=data;
+    updateProgress();
+    setArenaMsg('idle','Deschide sertarul pentru a începe!');
+  })
+  .catch(function(){
+    setArenaMsg('err','⚠ Puzzle-urile nu s-au putut încărca.');
+  });
+
+</script>
 </body>
 </html>
