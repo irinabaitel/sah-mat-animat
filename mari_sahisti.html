@@ -22,28 +22,35 @@
 
     .era-btn {
       width: 100%; display: flex; align-items: center; gap: 12px;
-      padding: 14px 18px; background: var(--c-navy); color: #fff;
-      border: none; cursor: pointer; text-align: left;
+      padding: 14px 18px;
+      background: var(--c-surface-2); color: var(--c-navy);
+      border: 2px solid var(--c-border); cursor: pointer; text-align: left;
       font-family: var(--font-display); transition: background 0.2s;
       border-radius: var(--radius);
     }
-    .era-btn[aria-expanded="true"] { border-radius: var(--radius) var(--radius) 0 0; }
-    .era-btn:hover { background: #2a5aab; }
+    .era-btn[aria-expanded="true"] {
+      border-radius: var(--radius) var(--radius) 0 0;
+      background: var(--c-navy); color: #fff; border-color: var(--c-navy);
+    }
+    .era-btn:not([aria-expanded="true"]):hover { background: var(--c-surface); }
     .era-code {
       width: 36px; height: 36px; border-radius: 8px;
-      background: rgba(255,255,255,0.15);
+      background: rgba(26,58,107,0.08);
       display: flex; align-items: center; justify-content: center;
       font-size: 1.2rem; flex-shrink: 0;
     }
+    .era-btn[aria-expanded="true"] .era-code { background: rgba(255,255,255,0.15); }
     .era-titles { flex: 1; }
     .era-name { font-size: 1rem; font-weight: 700; display: block; line-height: 1.2; }
-    .era-range { font-size: 0.72rem; opacity: 0.75; display: block; margin-top: 1px; }
+    .era-range { font-size: 0.72rem; opacity: 0.65; display: block; margin-top: 1px; }
     .era-count {
-      font-size: 0.7rem; background: rgba(255,255,255,0.18);
+      font-size: 0.7rem; background: rgba(26,58,107,0.1);
+      color: var(--c-navy);
       padding: 2px 9px; border-radius: 12px; flex-shrink: 0;
     }
-    .era-arrow { font-size: 0.7rem; opacity: 0.8; transition: transform 0.3s; flex-shrink: 0; }
-    .era-btn[aria-expanded="true"] .era-arrow { transform: rotate(180deg); }
+    .era-btn[aria-expanded="true"] .era-count { background: rgba(255,255,255,0.18); color: #fff; }
+    .era-arrow { font-size: 0.7rem; opacity: 0.6; transition: transform 0.3s; flex-shrink: 0; }
+    .era-btn[aria-expanded="true"] .era-arrow { transform: rotate(180deg); opacity: 0.8; }
 
     /* ── Panou epocă ── */
     .era-panel {
@@ -107,13 +114,25 @@
       font-size: 0.63rem; font-weight: 800; text-transform: uppercase;
       letter-spacing: 1px; color: rgba(26,58,107,0.5); margin-bottom: 5px;
     }
-    .info-text-body { font-size: 0.86rem; color: var(--c-text); line-height: 1.7; }
+    .info-text-body {
+      font-size: 0.86rem; color: var(--c-text); line-height: 1.7;
+      max-height: 110px; overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: rgba(26,58,107,0.3) transparent;
+    }
+    .info-text-body::-webkit-scrollbar { width: 4px; }
+    .info-text-body::-webkit-scrollbar-thumb { background: rgba(26,58,107,0.3); border-radius: 4px; }
     .anecdote-box {
       background: rgba(26,58,107,0.05);
       border: 1px solid var(--c-border); border-left: 3px solid var(--c-navy);
       border-radius: 10px; padding: 12px 14px;
     }
-    .anecdote-body { font-size: 0.84rem; color: var(--c-text); font-style: italic; line-height: 1.75; }
+    .anecdote-body {
+      font-size: 0.84rem; color: var(--c-text); font-style: italic; line-height: 1.75;
+      max-height: 96px; overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: rgba(26,58,107,0.3) transparent;
+    }
+    .anecdote-body::-webkit-scrollbar { width: 4px; }
+    .anecdote-body::-webkit-scrollbar-thumb { background: rgba(26,58,107,0.3); border-radius: 4px; }
     .anecdote-body::before { content: '💬  '; font-style: normal; }
 
     /* ── Navigare jucători (← →) ── */
@@ -605,7 +624,7 @@ function byEra(era) { return P.filter(function(p) { return p.era === era; }); }
 
 function proxyImg(url) {
   if (!url) return null;
-  return 'https://images.weserv.nl/?url=' + url.replace('https://', '').replace('http://', '');
+  return 'https://images.weserv.nl/?url=' + encodeURIComponent(url);
 }
 
 function photoHTML(p) {
