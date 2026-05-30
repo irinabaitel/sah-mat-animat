@@ -85,29 +85,18 @@
 .vol-btn:hover { background: rgba(255,255,255,0.4); }
 .info-content { display: flex; flex-direction: column; gap: 10px; }
 
-@keyframes hb-slow {
-  0%,100% { transform: translate(-50%,-50%) scale(1); }
-  15%     { transform: translate(-50%,-50%) scale(1.4); }
+15%     { transform: translate(-50%,-50%) scale(1.4); }
   30%     { transform: translate(-50%,-50%) scale(1); }
   45%     { transform: translate(-50%,-50%) scale(1.3); }
   60%     { transform: translate(-50%,-50%) scale(1); }
 }
-@keyframes hb-fast {
-  0%,100% { transform: translate(-50%,-50%) scale(1); }
-  10%     { transform: translate(-50%,-50%) scale(1.55); }
+10%     { transform: translate(-50%,-50%) scale(1.55); }
   20%     { transform: translate(-50%,-50%) scale(1); }
   30%     { transform: translate(-50%,-50%) scale(1.55); }
   40%     { transform: translate(-50%,-50%) scale(1); }
   50%     { transform: translate(-50%,-50%) scale(1.55); }
   60%     { transform: translate(-50%,-50%) scale(1); }
 }
-.heart-badge {
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  font-size: 2em; pointer-events: none; z-index: 15; line-height: 1;
-}
-.heart-badge.hb-slow { animation: hb-slow 1.4s ease-in-out infinite; }
-.heart-badge.hb-fast { animation: hb-fast 0.55s ease-in-out infinite; }
 
 @keyframes confetti-fall {
   0%   { opacity: 1;   transform: translate(0,0) rotate(0deg); }
@@ -303,29 +292,6 @@ const lastMoves = [
   {from:'d7',to:'e8',color:'orange'}
 ];
 
-const heartSteps = {
-  28: {sq:'.square-g8', fast:false},
-  29: {sq:'.square-g8', fast:false},
-  30: {sq:'.square-f8', fast:false},
-  31: {sq:'.square-f8', fast:true},
-  32: {sq:'.square-g8', fast:true},
-  33: {sq:'.square-g8', fast:true}
-};
-
-let heartEl = null;
-
-function removeHeart() {
-  if (heartEl) { heartEl.remove(); heartEl = null; }
-}
-
-function showHeart(squareSel, fast) {
-  removeHeart();
-  const sq = document.querySelector('#board ' + squareSel);
-  if (!sq) return;
-  heartEl = document.createElement('div');
-  heartEl.className = 'heart-badge ' + (fast ? 'hb-fast' : 'hb-slow');
-  heartEl.textContent = '❤️';
-  sq.appendChild(heartEl);
 }
 
 function playKingStep() {
@@ -483,11 +449,9 @@ function goToStep(s) {
   document.querySelectorAll('#board .highlight-check').forEach(el => el.classList.remove('highlight-check'));
   currentStep = s;
   board.position(positions[s], false);
-  removeHeart();
   showLastMove(s);
   updateUI();
-  if (heartSteps[s]) showHeart(heartSteps[s].sq, heartSteps[s].fast);
-  if (s === positions.length - 1) {
+if (s === positions.length - 1) {
     spawnPageConfetti(5000);
     setTimeout(redKingOverlay, 200);
   }
