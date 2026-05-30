@@ -622,13 +622,34 @@ var state = { vechi:0, clasic:0, modern:0 };
 // ── HELPERS ──────────────────────────────────────────────────────────
 function byEra(era) { return P.filter(function(p) { return p.era === era; }); }
 
-function proxyImg(url) {
-  if (!url) return null;
-  return 'https://images.weserv.nl/?url=' + encodeURIComponent(url);
+var LOCAL_IMGS = {
+  4:'img/sahisti/p4_Philidor.jpg', 6:'img/sahisti/p6_Staunton.jpg',
+  7:'img/sahisti/p7_Anderssen.jpg', 8:'img/sahisti/p8_Morphy.jpg',
+  9:'img/sahisti/p9_Winawer.jpg', 10:'img/sahisti/p10_Zukertort.jpg',
+  11:'img/sahisti/p11_Steinitz.webp', 12:'img/sahisti/p12_Chigorin.jpg',
+  13:'img/sahisti/p13_Lasker.jpg', 14:'img/sahisti/p14_Maroczy.png',
+  15:'img/sahisti/p15_Tarrasch.jpg', 16:'img/sahisti/p16_Pillsbury.jpg',
+  17:'img/sahisti/p17_Schlechter.jpg', 18:'img/sahisti/p18_Rubinstein.jpg',
+  19:'img/sahisti/p19_Nimzowitsch.jpg', 20:'img/sahisti/p20_Capablanca.jpg',
+  21:'img/sahisti/p21_Alekhine.jpg', 22:'img/sahisti/p22_Bogoljubov.jpg',
+  23:'img/sahisti/p23_Euwe.jpg', 26:'img/sahisti/p26_Najdorf.jpg',
+  27:'img/sahisti/p27_Botvinnik.jpg', 28:'img/sahisti/p28_Keres.jpg',
+  30:'img/sahisti/p30_Smyslov.jpg', 32:'img/sahisti/p32_Tal.jpg',
+  34:'img/sahisti/p34_Petrosian.jpg', 36:'img/sahisti/p36_Spassky.jpg',
+  38:'img/sahisti/p38_Fischer.jpg', 40:'img/sahisti/p40_Karpov.jpg',
+  42:'img/sahisti/p42_Kasparov.jpg', 43:'img/sahisti/p43_Ivanchuk.jpg',
+  44:'img/sahisti/p44_Anand.jpeg', 45:'img/sahisti/p45_Kramnik.jpg',
+  46:'img/sahisti/p46_Topalov.jpg', 50:'img/sahisti/p50_Aronian.jpg',
+  51:'img/sahisti/p51_Karjakin.jpg', 53:'img/sahisti/p53_Carlsen.jpg',
+  54:'img/sahisti/p54_DingLiren.jpg', 55:'img/sahisti/p55_Gukesh.jpg'
+};
+
+function proxyImg(p) {
+  return LOCAL_IMGS[p.id] || null;
 }
 
 function photoHTML(p) {
-  var src = proxyImg(p.img);
+  var src = proxyImg(p);
   if (!src) return '<div class="no-photo">♛</div>';
   return '<img src="' + src + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
        + '<div class="no-photo" style="display:none">♛</div>';
@@ -737,7 +758,7 @@ function renderChampions() {
   var items = champions.map(function(p) {
     var cy = CHAMP_YEARS[p.name] || '';
     var photoEl = p.img
-      ? '<img src="' + proxyImg(p.img) + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+      ? '<img src="' + proxyImg(p) + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
         + '<div class="champ-item-no-photo" style="display:none">♛</div>'
       : '<div class="champ-item-no-photo">♛</div>';
     return '<div class="champ-item">'
