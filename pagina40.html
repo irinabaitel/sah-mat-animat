@@ -254,9 +254,10 @@ function updateDisplay() {
   if (currentPly === 0) {
     counter.textContent = 'Start';
   } else {
-    const moveNum = Math.ceil(currentPly / 2);
-    const side = (currentPly % 2 === 1) ? 'Alb' : 'Negru';
-    counter.textContent = moveNum + '. ' + side;
+    const i = currentPly - 1;
+    const moveNum = Math.floor(i / 2) + 1;
+    const sep = (i % 2 === 0) ? '. ' : '... ';
+    counter.textContent = moveNum + sep + MOVES[i].san;
   }
 
   document.getElementById('btn-first').disabled = currentPly === 0;
