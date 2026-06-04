@@ -380,7 +380,13 @@ function updateUI() {
   document.querySelectorAll('.mlog-token').forEach(b =>
     b.classList.toggle('active', parseInt(b.dataset.step) === currentStep));
   const activeToken = document.querySelector('.mlog-token.active');
-  if (activeToken) activeToken.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  if (activeToken) {
+    const log = document.getElementById('movesLog');
+    const a = activeToken.getBoundingClientRect();
+    const l = log.getBoundingClientRect();
+    if (a.top < l.top)            log.scrollTop += a.top - l.top;
+    else if (a.bottom > l.bottom) log.scrollTop += a.bottom - l.bottom;
+  }
 
   document.getElementById('phaseBadge').textContent = phaseNames[game.stepPhase[currentStep] || 0];
 
@@ -397,6 +403,35 @@ function updateUI() {
 
 positions = computePositions();
 
+// ===== STOCKFISH =====
+let stockfish = null, sfReady = false, sfCallback = null;
+function initStockfish() {
+  try {
+    const code = "importScripts('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js')";
+    const blob = new Blob([code], { type: 'application/javascript' });
+    stockfish = new Worker(URL.createObjectURL(blob));
+  } catch(e) { try { stockfish = new Worker('stockfish.js'); } catch(e2) { stockfish = null; } }
+  if (!stockfish) return;
+  stockfish.onmessage = function(e) {
+    const msg = e.data;
+    if (msg === 'uciok') { stockfish.postMessage('setoption name Skill Level value 20'); stockfish.postMessage('isready'); }
+    if (msg === 'readyok') sfReady = true;
+    if (typeof msg === 'string' && msg.startsWith('bestmove')) {
+      const mv = msg.split(' ')[1];
+      if (sfCallback) { const cb = sfCallback; sfCallback = null; cb(mv); }
+    }
+  };
+  stockfish.postMessage('uci');
+}
+function askStockfish(fen, depth, callback) {
+  if (!stockfish || !sfReady) { callback(null); return; }
+  sfCallback = callback;
+  stockfish.postMessage('stop');
+  stockfish.postMessage('position fen ' + fen);
+  stockfish.postMessage('go depth ' + depth);
+}
+initStockfish();
+
 let liveChess = new Chess(positions[0]);
 
 function onDropValidate(source, target) {
@@ -405,7 +440,25 @@ function onDropValidate(source, target) {
   if (move === null) return 'snapback';
   if (move.flags.indexOf('c') >= 0 || move.flags.indexOf('e') >= 0) playSound(sndCapture);
   else playSound(sndMove);
-  if (liveChess.in_checkmate()) setTimeout(function() { playSound(sndMate); }, 200);
+  if (liveChess.in_checkmate()) {
+    setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 200);
+  } else {
+    var fenAfterWhite = liveChess.fen();
+    setTimeout(function() {
+      askStockfish(fenAfterWhite, 10, function(bestmove) {
+        if (!bestmove || bestmove === '(none)') return;
+        var g2 = new Chess(fenAfterWhite);
+        var mv2 = g2.move({ from: bestmove.slice(0,2), to: bestmove.slice(2,4), promotion: bestmove[4] || 'q' });
+        liveChess = g2;
+        board.position(g2.fen().split(' ')[0], false);
+        if (g2.in_checkmate()) {
+          setTimeout(function() { playSound(sndMate); redKingOverlay(); }, 200);
+        } else {
+          playSound(mv2 && mv2.captured ? sndCapture : sndMove);
+        }
+      });
+    }, 200);
+  }
 }
 
 const board = Chessboard('board', {
