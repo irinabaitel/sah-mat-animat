@@ -71,6 +71,8 @@
       .arena-clock { height: calc((100dvh - var(--header-h) - var(--footer-h) - 16px) * 0.52 / 8 * 0.65); min-height: 32px; padding: 0 10px; }
       .clock-time { font-size: clamp(1.1rem, 4.5vw, 1.5rem); }
     }
+      /* TOUCH-FIX-TABLA-INTELIGENTA */
+    #boardWrapper { touch-action: none; -webkit-touch-callout: none; }
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -169,6 +171,7 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
 
 <script>
 const sndMove    = new Audio('Sounds/Move.mp3');
