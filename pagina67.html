@@ -112,11 +112,11 @@
           </div>
 
           <div class="gold-rule card">
-            <p>&#127775; <strong>Regula de aur — 4 pași:</strong></p>
-            <p>1. <strong>Turnul pe margine</strong> — pune turnul pe linia sau coloana de margine (vârful cârligului).<br>
-            2. <strong>Calul la locul lui</strong> — plasează calul la două câmpuri diagonal față de regele advers (controlează câmpurile de fugă).<br>
-            3. <strong>Apărătorul calului</strong> — asigură-te că un pion sau o piesă proprie apără calul.<br>
-            4. <strong>Piesa incomodă</strong> — o piesă din armata regelui advers îl blochează chiar pe el, împiedicându-l să fugă.</p>
+            <p>&#127775; <strong>Regula de aur — 4 elemente:</strong></p>
+            <p>1. <strong>Turnul pe margine</strong> — pune turnul pe linia sau coloana de margine, direct lângă regele advers, ca să dea șah și mat (vârful cârligului).<br>
+            2. <strong>Calul la locul lui</strong> — plasează calul la o săritură distanță (pe L) față de turnul tău, apărându-l direct și blocând un câmp crucial de fugă al regelui.<br>
+            3. <strong>Apărătorul calului</strong> — asigură-te că un pion sau o piesă proprie apără calul, pentru ca regele advers să nu-l poată captura.<br>
+            4. <strong>Piesa incomodă</strong> — o piesă din armata regelui advers (adesea un pion de-al lui) îl blochează chiar pe el, împiedicându-l să fugă pe singurul pătrățel liber rămas.</p>
           </div>
 
           <div id="accList" class="acc-list"></div>
@@ -175,10 +175,12 @@ const chapters = [
     },
     arrows: {
       0: [
+        {from:'e8',to:'e8',color:'B'},
         {from:'d7',to:'d7',color:'B'},
         {from:'d6',to:'d6',color:'G'},{from:'f6',to:'f6',color:'G'}
       ],
       1: [
+        {from:'e8',to:'e8',color:'B'},
         {from:'d8',to:'d8',color:'R'},{from:'f8',to:'f8',color:'R'},
         {from:'e7',to:'e7',color:'R'},{from:'e6',to:'e6',color:'R'}
       ]
