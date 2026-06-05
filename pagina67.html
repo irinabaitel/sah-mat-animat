@@ -174,7 +174,12 @@ const chapters = [
       1: '1.Te8# — turnul alunecă pe e8 și dă mat! Regele nu poate fugi: d7 și d5 sunt controlate de cal, d6 de pion, e6 și f8 de turn, f6 ocupat de cal (apărat de pion). <strong>Matul cârlig!</strong> Calul apărat de pion formează cârligul, turnul dă matul protejat chiar de cal.'
     },
     arrows: {
-      0: [{from:'a8',to:'e8',color:'G'},{from:'f6',to:'d7',color:'B'},{from:'f6',to:'d5',color:'B'},{from:'e5',to:'f6',color:'Y'}],
+      0: [
+        {from:'d8',to:'d8',color:'R'},{from:'f8',to:'f8',color:'R'},
+        {from:'e7',to:'e7',color:'R'},{from:'e6',to:'e6',color:'R'},
+        {from:'d7',to:'d7',color:'B'},
+        {from:'d6',to:'d6',color:'G'},{from:'f6',to:'f6',color:'G'}
+      ],
       1: []
     }
   },
@@ -594,9 +599,27 @@ function redrawStudyArrows(chIdx, step) {
     const s = sz / 8;
     return { x: c * s + s / 2, y: (7 - r) * s + s / 2 };
   }
+  const COL_SQ = {
+    G: 'rgba(60,190,80,0.32)',
+    R: 'rgba(220,55,55,0.32)',
+    B: 'rgba(50,130,210,0.32)',
+    Y: 'rgba(215,165,20,0.32)'
+  };
   const SW = 5;
   arrows.forEach(function (arr, i) {
-    if (arr.from === arr.to) return;
+    if (arr.from === arr.to) {
+      const col = COL_SQ[arr.color] || COL_SQ.G;
+      const c = sqCenter(arr.from);
+      const s = sz / 8;
+      const rect = document.createElementNS(NS, 'rect');
+      rect.setAttribute('x', c.x - s / 2 + 1);
+      rect.setAttribute('y', c.y - s / 2 + 1);
+      rect.setAttribute('width',  s - 2);
+      rect.setAttribute('height', s - 2);
+      rect.setAttribute('fill', col);
+      svg.appendChild(rect);
+      return;
+    }
     const col = COL[arr.color] || COL.G;
     const mid = 'sarr' + i;
     const mk  = document.createElementNS(NS, 'marker');
