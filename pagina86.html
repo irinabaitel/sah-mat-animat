@@ -243,25 +243,75 @@ function clearSel(){
 function applyHL(sq,cls){ const el=document.querySelector('.square-'+sq); if(el)el.classList.add(cls); }
 function addSqHl(sq){ const el=document.querySelector('#board .square-'+sq); if(!el)return; const hl=document.createElement('div'); hl.className='sq-hl'; el.appendChild(hl); }
 
-function checkAfterHandMove(from, to){
-  const s=currentStep();
-  if(!positions[s]) return;
-  const cg=new Chess(positions[s]);
-  const mv=cg.move({from,to,promotion:'q'});
-  if(!mv) return;
-  if(cg.in_check()||cg.in_checkmate()){
-    const t=cg.turn();
-    cg.board().forEach((row,ri)=>row.forEach((pc,ci)=>{
-      if(pc&&pc.type==='k'&&pc.color===t) applyHL(String.fromCharCode(97+ci)+(8-ri),'highlight-check');
-    }));
-    if(cg.in_checkmate()) computeRedSquares(cg.fen()).forEach(sq=>addSqHl(sq));
-  }
+// ===== SUNETE + STOCKFISH + EXPLORARE =====
+const sndMove    = new Audio('Sounds/Move.mp3');
+const sndCapture = new Audio('Sounds/Capture.mp3');
+const sndMate    = new Audio('Sounds/Mate.mp3');
+function playSound(snd) { snd.currentTime = 0; snd.play().catch(()=>{}); }
+let stockfish = null, sfReady = false, sfCallback = null;
+function initStockfish() {
+  try {
+    const code = "importScripts('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js')";
+    const blob = new Blob([code], { type: 'application/javascript' });
+    stockfish = new Worker(URL.createObjectURL(blob));
+  } catch(e) { try { stockfish = new Worker('stockfish.js'); } catch(e2) { stockfish = null; } }
+  if (!stockfish) return;
+  stockfish.onmessage = function(e) {
+    const msg = e.data;
+    if (msg === 'uciok') { stockfish.postMessage('setoption name Skill Level value 20'); stockfish.postMessage('isready'); }
+    if (msg === 'readyok') sfReady = true;
+    if (typeof msg === 'string' && msg.startsWith('bestmove')) {
+      const mv = msg.split(' ')[1];
+      if (sfCallback) { const cb = sfCallback; sfCallback = null; cb(mv); }
+    }
+  };
+  stockfish.postMessage('uci');
 }
+function askStockfish(fen, depth, callback) {
+  if (!stockfish || !sfReady) { callback(null); return; }
+  sfCallback = callback;
+  stockfish.postMessage('stop');
+  stockfish.postMessage('position fen ' + fen);
+  stockfish.postMessage('go depth ' + depth);
+}
+initStockfish();
+function applyMatHL(fen) {
+  const rows = fen.split('/');
+  for (let r = 0; r < 8; r++) { let f = 0; for (const ch of rows[r]) { if (ch >= '1' && ch <= '8') f += parseInt(ch); else if (ch === 'k') { applyHL(String.fromCharCode(97+f)+(8-r), 'highlight-check'); return; } else f++; } }
+}
+let exploringFen = null;
 
 let lastDrop=null;
 function onDragStart(){ if(rmbDown)return false; clearSel(); return true; }
 function onDrop(s,t){ if(t==='offboard')return'snapback'; lastDrop={from:s,to:t}; }
-function onSnapEnd(){ if(lastDrop){checkAfterHandMove(lastDrop.from,lastDrop.to);lastDrop=null;} }
+function onSnapEnd(){
+  if(!lastDrop) return;
+  const from=lastDrop.from, to=lastDrop.to; lastDrop=null;
+  const fenBase = exploringFen || positions[currentStep()].split(' ')[0];
+  const gx = new Chess(fenBase + ' w - - 0 1');
+  const move = gx.move({from, to, promotion:'q'});
+  if (!move) { board.position(fenBase, false); return; }
+  clearSel();
+  const afterWhiteFen = gx.fen();
+  exploringFen = afterWhiteFen.split(' ')[0];
+  board.position(exploringFen, false);
+  if (gx.in_checkmate()) {
+    setTimeout(() => { applyMatHL(exploringFen); playSound(sndMate); }, 100);
+  } else {
+    playSound(move.captured ? sndCapture : sndMove);
+    setTimeout(() => {
+      askStockfish(afterWhiteFen, 10, function(bestmove) {
+        if (!bestmove || bestmove === '(none)') return;
+        const g2 = new Chess(afterWhiteFen);
+        const mv2 = g2.move({ from: bestmove.slice(0,2), to: bestmove.slice(2,4), promotion: bestmove[4] || 'q' });
+        exploringFen = g2.fen().split(' ')[0];
+        board.position(exploringFen, false);
+        if (g2.in_checkmate()) { setTimeout(() => { applyMatHL(exploringFen); playSound(sndMate); }, 150); }
+        else { playSound(mv2 && mv2.captured ? sndCapture : sndMove); }
+      });
+    }, 200);
+  }
+}
 
 const board=Chessboard('board',{
   position:chapters[0].fen, pieceTheme:'https://lichess1.org/assets/piece/caliente/{piece}.svg',
@@ -290,6 +340,7 @@ function loadChapter(idx){
 }
 
 function goToStep(s){
+  exploringFen = null;
   clearSel();
   if(window._annClear)window._annClear();
   document.getElementById('moveCounter').dataset.step=s;
