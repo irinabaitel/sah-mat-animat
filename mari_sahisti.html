@@ -66,55 +66,53 @@
       border-left: 3px solid var(--c-navy);
     }
 
-    /* ── Layout jucător (paginat) ── */
-    .player-wrap {
-      display: flex; flex-direction: column; gap: 10px;
+    /* ── Override layout: poza mare în loc de tablă, panou text mai lat ── */
+    .page-main { grid-template-columns: 35fr 65fr; }
+    .board-wrapper { aspect-ratio: auto !important; width: 100% !important; height: 100% !important; box-shadow: none !important; border-radius: 0 !important; background: transparent !important; }
+    .board-col { align-items: stretch !important; }
+
+    .big-photo-card {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column; gap: 12px;
+      background: var(--c-surface); border: 2px solid var(--c-border);
+      border-radius: var(--radius); padding: 16px;
+      align-items: center; text-align: center;
+      overflow: hidden;
     }
-    .player-top {
-      display: grid; grid-template-columns: 200px 1fr;
-      gap: 16px; align-items: start;
-    }
-    .photo-panel {
-      background: var(--c-surface-2); border-radius: var(--radius);
-      border: 2px solid var(--c-border);
-      padding: 14px; text-align: center;
-      position: sticky; top: 16px;
-    }
-    .photo-frame {
-      width: 100%; aspect-ratio: 3/4;
-      border-radius: 10px; overflow: hidden;
+    .big-photo-frame {
+      flex: 1; min-height: 0; width: 100%;
+      border-radius: 12px; overflow: hidden;
       background: rgba(26,58,107,0.06);
       border: 1px solid var(--c-border);
       display: flex; align-items: center; justify-content: center;
-      margin-bottom: 10px;
     }
-    .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .no-photo { font-size: 3rem; opacity: 0.18; }
-    .photo-name { font-size: 0.9rem; font-weight: 800; color: var(--c-navy); line-height: 1.3; margin-bottom: 5px; min-height: 2.6em; }
-    .photo-crown {
-      display: inline-block; font-size: 0.66rem; font-weight: 700;
+    .big-photo-frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .big-photo-placeholder {
+      color: rgba(26,58,107,0.45); font-size: 0.95rem; font-weight: 600;
+      line-height: 1.5; padding: 20px;
+    }
+    .big-photo-placeholder span { font-size: 2rem; opacity: 0.5; display: block; margin-top: 8px; }
+    .big-photo-name {
+      font-family: var(--font-display); font-size: 1.2rem; font-weight: 900;
+      color: var(--c-navy); line-height: 1.25; min-height: 1.25em;
+    }
+    .big-photo-meta {
+      display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap;
+    }
+    .big-photo-crown {
+      font-size: 0.74rem; font-weight: 700;
       background: #fff3cd; color: #c8860a;
       border: 1px solid rgba(200,134,10,0.4);
-      border-radius: 12px; padding: 1px 8px; margin-bottom: 4px;
+      border-radius: 14px; padding: 3px 11px;
     }
-    .photo-num { font-size: 0.66rem; color: rgba(26,58,107,0.5); }
+    .big-photo-num { font-size: 0.78rem; color: rgba(26,58,107,0.55); font-weight: 600; }
+
+    /* ── Layout jucător (panou dreapta) ── */
+    .player-wrap {
+      display: flex; flex-direction: column; gap: 10px;
+    }
 
     .info-panel { display: flex; flex-direction: column; gap: 8px; }
-    /* casetele fame și anecdotă — full-width, înălțime fixă */
-    .info-text-body {
-      max-height: none !important;
-      height: calc(1.7em * 3); overflow-y: auto;
-      scrollbar-width: thin; scrollbar-color: rgba(26,58,107,0.3) transparent;
-    }
-    .info-text-body::-webkit-scrollbar { width: 4px; }
-    .info-text-body::-webkit-scrollbar-thumb { background: rgba(26,58,107,0.3); border-radius: 4px; }
-    .anecdote-body {
-      max-height: none !important;
-      height: calc(1.75em * 3); overflow-y: auto;
-      scrollbar-width: thin; scrollbar-color: rgba(26,58,107,0.3) transparent;
-    }
-    .anecdote-body::-webkit-scrollbar { width: 4px; }
-    .anecdote-body::-webkit-scrollbar-thumb { background: rgba(26,58,107,0.3); border-radius: 4px; }
     .info-row {
       background: var(--c-surface-2); border: 1px solid var(--c-border);
       border-radius: 10px; padding: 10px 13px;
@@ -133,24 +131,16 @@
       letter-spacing: 1px; color: rgba(26,58,107,0.5); margin-bottom: 5px;
     }
     .info-text-body {
-      font-size: 0.86rem; color: var(--c-text); line-height: 1.7;
-      max-height: 110px; overflow-y: auto;
-      scrollbar-width: thin; scrollbar-color: rgba(26,58,107,0.3) transparent;
+      font-size: 0.92rem; color: var(--c-text); line-height: 1.7;
     }
-    .info-text-body::-webkit-scrollbar { width: 4px; }
-    .info-text-body::-webkit-scrollbar-thumb { background: rgba(26,58,107,0.3); border-radius: 4px; }
     .anecdote-box {
       background: rgba(26,58,107,0.05);
       border: 1px solid var(--c-border); border-left: 3px solid var(--c-navy);
       border-radius: 10px; padding: 12px 14px;
     }
     .anecdote-body {
-      font-size: 0.84rem; color: var(--c-text); font-style: italic; line-height: 1.75;
-      max-height: 96px; overflow-y: auto;
-      scrollbar-width: thin; scrollbar-color: rgba(26,58,107,0.3) transparent;
+      font-size: 0.9rem; color: var(--c-text); font-style: italic; line-height: 1.75;
     }
-    .anecdote-body::-webkit-scrollbar { width: 4px; }
-    .anecdote-body::-webkit-scrollbar-thumb { background: rgba(26,58,107,0.3); border-radius: 4px; }
     .anecdote-body::before { content: '💬  '; font-style: normal; }
 
     /* ── Navigare jucători (← →) ── */
@@ -166,6 +156,8 @@
     }
     .pnav-btn:hover:not(:disabled) { background: #2a5aab; }
     .pnav-btn:disabled { opacity: 0.28; cursor: not-allowed; }
+    .pnav-btn.pnav-btn-back-to-eras { background: #c8860a; }
+    .pnav-btn.pnav-btn-back-to-eras:hover { background: #b07608; }
     .pnav-center { text-align: center; flex: 1; }
     .pnav-counter { font-size: 0.78rem; color: var(--c-navy); font-weight: 700; }
     .pnav-dots { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
@@ -223,8 +215,6 @@
     .player-links a:hover { background:var(--c-navy); color:#fff; }
 
     @media (max-width: 620px) {
-      .player-wrap { grid-template-columns: 1fr; }
-      .photo-panel { position: static; }
       .champ-item { grid-template-columns: 80px 1fr; }
     }
   </style>
@@ -243,8 +233,15 @@
 
   <main class="page-main" role="main">
     <div class="board-col">
-      <div class="board-wrapper" id="boardWrapper">
-        <div id="board"></div>
+      <div class="big-photo-card" id="bigPhotoCard">
+        <div class="big-photo-frame" id="bigPhotoFrame">
+          <div class="big-photo-placeholder">Alege o epocă și un jucător<br><span>↦</span></div>
+        </div>
+        <div class="big-photo-name" id="bigPhotoName"></div>
+        <div class="big-photo-meta">
+          <span class="big-photo-crown" id="bigPhotoCrown" style="display:none">♔ Campion Mondial</span>
+          <span class="big-photo-num" id="bigPhotoNum"></span>
+        </div>
       </div>
     </div>
     <div class="panel-col">
@@ -306,91 +303,120 @@ const P = [
   // ── ÎNAINTE DE CAMPIONATUL MONDIAL ──
   {id:1,era:"vechi",champ:false,name:"Abu Bakr al-Suli",years:"~880 – 946",country:"Califatul Abbasid (Bagdad)",img:null,
    prof:"Poet și secretar la curtea califilor abbasizi",
-   fame:"Al-Suli a fost cel mai puternic jucător de șah din lumea arabă medievală. A scris cărți despre șah — Kitab al-Shatranj — care au influențat teoria jocului timp de secole întregi. La curtea califilor din Bagdad, expresia 'joacă mai bine decât al-Suli' era cel mai mare compliment pe care îl putea primi un jucător.",
-   anec:"Al-Suli l-a bătut în mod repetat pe califul al-Muktafi la șah — act remarcabil de curaj la curtea abbasidă, unde nimeni nu îndrăznea să-l înfrângă pe calif. Dar acesta, în loc să se supere, i-a acordat privilegiul rar de a juca cu oricine la curte!"},
+   peak:"A scris Kitab al-Shatranj — primul mare manual de șah/shatranj din istorie",
+   style:"Pozițional și răbdător — a creat primele studii sistematice de finaluri",
+   fame:"Al-Suli a fost cel mai puternic jucător de shatranj (strămoșul șahului) din lumea arabă medievală — și unul dintre marii cărturari ai epocii sale. A trăit la curtea califilor abbasizi din Bagdad — al-Muktafi, al-Muqtadir și al-Radi — fiind în același timp poet, muzician și expert în gastronomie. A scris Kitab al-Shatranj (Cartea Șahului), o lucrare care a sistematizat deschideri, mijlocul de joc și finaluri pentru prima dată în istorie. A inventat și mansubat (probleme de șah) atât de elegante, încât unele se studiază și azi. A fost tutorul prințului care a devenit califul al-Radi — protecția lui i-a asigurat un loc de cinste la curte. După moartea acestuia a căzut în dizgrație și a murit sărac, ascuns în Basra. Reputația lui a fost atât de mare încât, șase secole după moarte, expresia „joacă mai bine decât al-Suli\" era cel mai mare compliment pe care îl putea primi un jucător arab.",
+   anec:"Într-o zi, califul al-Muktafi l-a chemat la palat să-l înfrunte pe campionul curții, un jucător numit al-Mawardi. Al-Suli era considerat un outsider — nimeni nu credea că un cărturar mai tânăr îl poate bate. A câștigat dezinvolt, în fața întregii curți, iar califul a fost atât de impresionat încât l-a numit imediat la curte ca jucător personal. Mai mult, al-Suli a continuat să-l învingă chiar și pe calif — act remarcabil de curaj la curtea abbasidă, unde nimeni nu îndrăznea să-l umilească pe stăpân. Califul, în loc să se supere, i-a acordat privilegiul rar de a juca cu oricine din palat."},
 
   {id:2,era:"vechi",champ:false,name:"Ruy López de Segura",years:"~1530 – ~1580",country:"Spania (Zafra, Extremadura)",img:null,
    prof:"Preot catolic",
-   fame:"Preotul Ruy López a fost cel mai important teoretician al șahului din secolul al XVI-lea. A scris în 1561 prima carte serioasă de teorie a șahului tipărită în Spania. Deschiderea Ruy López (Gambitul Spaniol) este și azi una dintre cele mai jucate deschideri din competițiile mondiale.",
-   anec:"În cartea din 1561, Ruy López sfătuia jucătorii să plaseze tabla astfel încât soarele să fie în ochii adversarului! Dacă asta nu era posibil, recomanda să se stea cu spatele la lumină. Psihologia în șah are o istorie veche de 500 de ani!"},
+   peak:"A scris în 1561 prima carte sistematică de teorie a șahului din Spania",
+   style:"Strategic și calculat — a transformat șahul din distracție în știință",
+   fame:"Preotul Ruy López a fost cel mai important teoretician al șahului din secolul al XVI-lea. În 1559 a vizitat Roma cu o delegație ecleziastică, unde a descoperit școala italiană de șah și a învins maeștrii locali. A scris în 1561 „Libro de la invención liberal y arte del juego del axedrez\", prima carte sistematică de teorie tipărită în Spania. La curtea regelui Filip al II-lea era considerat cel mai bun jucător spaniol — monarhul i-a oferit un beneficiu eclesiastic și un lanț de aur. Deschiderea Ruy López (1.e4 e5 2.Cf3 Cc6 3.Nb5), cunoscută și ca Gambitul Spaniol, îi poartă numele și este și azi una dintre cele mai jucate deschideri din lume. În 1575 a fost învins într-un meci dramatic la curte de italianul Leonardo da Cutri, sub privirile regelui — primul mare meci internațional din istoria șahului.",
+   anec:"În cartea din 1561, Ruy López sfătuia jucătorii să plaseze tabla astfel încât soarele să bată în ochii adversarului! Dacă asta nu era posibil, recomanda să se stea cu spatele la lumină, ca opozantul să fie deranjat de strălucire. Tot el sfătuia jucătorii să mănânce ușor înainte de partidă și să nu bea vin. Psihologia în șah are o istorie de 500 de ani — și începe cu un preot din Extremadura."},
 
   {id:3,era:"vechi",champ:false,name:"Gioachino Greco",years:"1600 – 1634",country:"Italia (Celico, Calabria)",img:null,
-   prof:"Unul dintre primii jucători care a trăit din șah",
-   fame:"Greco — Il Calabrese — a fost primul mare aventurier al șahului: a călătorit prin toată Europa câștigând bani din meciuri și lecții. Manuscrisele sale cu partide și combinații spectaculoase au influențat generații de jucători.",
-   anec:"Greco și-a vândut analizele nobililor europeni la prețuri mari — în Anglia, Franța și Spania. S-a comportat practic ca un antreprenor al șahului cu 400 de ani înainte ca asta să devină normal. A murit bogat la numai 34 de ani, în Caraibe."},
+   prof:"Primul jucător profesionist din istorie — trăia exclusiv din șah",
+   peak:"A pus bazele șahului combinativ modern prin manuscrisele sale, copiate timp de 200 de ani",
+   style:"Combinativ și spectaculos — sacrificii, capcane și mat rapid",
+   fame:"Greco — supranumit „Il Calabrese\" după regiunea natală — a fost primul mare aventurier al șahului și primul om din istorie care a trăit exclusiv din acest joc. Născut într-un sat mic din Calabria, a plecat de tânăr prin Europa, jucând în casele nobililor din Lyon, Roma, Paris, Madrid, Bruxelles și Londra. Manuscrisele lui, scrise pentru cei care îl angajau, conțineau zeci de mini-partide didactice cu sacrificii, capcane și combinații-șablon. „Matul lui Greco\" și alte tipare clasice îi poartă numele și azi. Stilul lui era exuberant: prefera sacrificiul spectaculos în locul jocului prudent — o estetică ce a marcat șahul timp de două secole. La aproximativ 1623, regele Carol I al Angliei l-a invitat la curte; mai târziu Greco a plecat în Indiile de Vest, unde a murit la doar 34 de ani, în Caraibe.",
+   anec:"Greco și-a vândut analizele nobililor europeni la prețuri mari — fiecare manuscris valora cât salariul anual al unui funcționar. A trăit, practic, ca un antreprenor al șahului cu 400 de ani înainte ca asta să devină normal. A murit bogat în Indiile de Vest la doar 34 de ani, lăsându-și moștenirea unui ordin iezuit. Manuscrisele lui au fost recopiate atât de des încât, două secole mai târziu, jucătorii încă învățau șah după partidele lui — fără să-l fi văzut vreodată."},
 
   {id:4,era:"vechi",champ:false,name:"François-André Danican Philidor",years:"1726 – 1795",country:"Franța (Dreux)",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Philidor.jpg/440px-Philidor.jpg",
    prof:"Compozitor de operă (unul dintre cei mai importanți din Franța sec. XVIII)",
-   fame:"Philidor a fost considerat cel mai bun jucător din lume timp de 50 de ani — și totuși, pentru el șahul era doar un hobby! Meseria lui adevărată era muzica. A spus primul că 'pionii sunt sufletul șahului' — o idee valabilă și azi.",
-   anec:"La Londra în 1783, Philidor a jucat 3 partide simultan la orb — fără să vadă tablele, anunțând mutările verbal. Publicul a rămas fără cuvinte. Presa londoneză a scris că performanța părea supranaturală."},
+   peak:"A scris în 1749 „Analyse du jeu des Échecs\", cartea care a întemeiat strategia modernă",
+   style:"Pozițional, bazat pe pioni — cu 200 de ani înaintea timpului său",
+   fame:"Philidor a fost considerat cel mai bun jucător din lume timp de 50 de ani — și totuși, pentru el șahul era doar un hobby! Meseria lui adevărată era muzica: a compus peste 20 de opere, fiind unul dintre părinții genului opéra comique francez. A învățat șahul la 14 ani de la matematicianul Légall de Kermeur la Café de la Régence din Paris. În 1749 a publicat „Analyse du jeu des Échecs\", o lucrare revoluționară în care a formulat principiul care a schimbat șahul pentru totdeauna: „pionii sunt sufletul șahului\". Vreme de aproape jumătate de secol nimeni nu l-a putut bate într-un meci serios. La 57 de ani, la Londra în 1783, a jucat 3 partide simultan la orb — fără să vadă tablele — câștigând două și remizând una. Era atât de respectat încât intrarea lui într-o cafenea era întâmpinată ca a unui monarh. A murit în exil la Londra în 1795, după ce Revoluția Franceză l-a declarat suspect din cauza simpatiilor regaliste.",
+   anec:"La Londra în 1783, Philidor a jucat 3 partide simultan la orb — fără să vadă tablele, anunțând mutările verbal. Publicul a rămas fără cuvinte: nimeni nu mai văzuse așa ceva. Presa londoneză a scris că performanța părea supranaturală, iar Royal Academy of Music a organizat o cină oficială în onoarea lui. Astăzi performanța pare modestă (recordul mondial e peste 50 de table), dar la 1783 a fost considerată un miracol — și a inspirat generații de jucători orbi."},
 
   {id:5,era:"vechi",champ:false,name:"Louis-Charles de La Bourdonnais",years:"1795 – 1840",country:"Franța",img:null,
    prof:"Administrator; director al Café de la Régence din Paris",
-   fame:"La Bourdonnais a fost cel mai puternic jucător din lume după Philidor. Celebru pentru seria de 6 meciuri cu britanicul Alexander McDonnell în 1834 — 85 de partide, cel mai mare eveniment de șah documentat al epocii.",
-   anec:"La Bourdonnais a murit în sărăcie la Londra în 1840, la doar 45 de ani. Comunitatea de șah britanică a organizat o colectă ca să-l poată înmormânta demn — un omagiu emoționant față de adversarul pe care îl învinseseră."},
+   peak:"Seria celor 85 de partide cu McDonnell în 1834 — primul mare meci al șahului modern",
+   style:"Combinativ, agresiv — atac direct asupra regelui",
+   fame:"La Bourdonnais s-a născut pe insula Réunion (Oceanul Indian) într-o familie aristocrată ruinată de Revoluția Franceză. A venit la Paris și a devenit elevul lui Deschapelles, considerat cel mai bun jucător francez după Philidor. A condus Café de la Régence, centrul mondial al șahului în acea epocă. În 1834 a disputat la Londra o serie de 6 meciuri cu britanicul Alexander McDonnell — în total 85 de partide, cel mai mare eveniment de șah documentat al secolului. La Bourdonnais a câștigat clar (45 victorii, 27 înfrângeri, 13 remize) și a fost considerat de facto cel mai puternic jucător din lume. În 1836 a fondat „Le Palamède\", primul ziar de șah din istorie. Și-a pierdut averea într-o investiție în canale și a trăit ultimii ani din partidele jucate pe bani.",
+   anec:"La Bourdonnais a murit în sărăcie la Londra în 1840, la doar 45 de ani, dintr-un atac cerebral. Comunitatea de șah britanică a organizat o colectă ca să-l poată înmormânta demn la cimitirul Kensal Green — chiar lângă mormântul lui Philidor. A fost un omagiu emoționant făcut de un adversar învins față de omul care-i bătuse pe toți englezii. Doi mari rivali din două țări, înmormântați unul lângă altul — o pagină rară de fair-play."},
 
   {id:6,era:"vechi",champ:false,name:"Howard Staunton",years:"1810 – 1874",country:"Anglia",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Howard_Staunton_1856.jpg/440px-Howard_Staunton_1856.jpg",
    prof:"Critic literar și specialist în Shakespeare",
-   fame:"Staunton a fost cel mai bun jucător din lume între 1843 și 1851 și a organizat primul turneu internațional de șah din istorie (Londra, 1851). Piesele de șah pe care le folosim azi la toate competițiile oficiale îi poartă numele.",
-   anec:"Staunton a evitat cu orice preț meciul cu Paul Morphy în 1858, invocând mereu că e prea ocupat cu editarea operelor lui Shakespeare. Toată lumea știa că se temea să piardă. Refuzul i-a pătat reputația pentru totdeauna."},
+   peak:"A organizat primul mare turneu internațional din istorie (Londra, 1851); piesele Staunton devin standardul mondial",
+   style:"Strategic și pozițional — pionier al studiului sistematic",
+   fame:"Staunton, fiu nelegitim al unui conte englez, și-a luat numele după personajul lui Walter Scott — o reinventare tipică pentru epoca victoriană. A fost cel mai bun jucător din lume între 1843 și 1851, după ce l-a învins clar pe campionul francez Saint-Amant la Paris (11-6-4) — meci considerat neoficial pentru titlul mondial. În 1847 a publicat „The Chess-Player's Handbook\", bestsellerul șahului în secolul XIX. În 1851 a organizat primul mare turneu internațional din istorie, la Londra — Anderssen l-a câștigat, iar Staunton însuși a terminat doar al patrulea. Tot el a impus în 1849 modelul de piese „Staunton\", care este și azi standardul oficial al FIDE. În paralel, era critic literar respectat și a editat ediția Routledge a operelor lui Shakespeare. A murit la 64 de ani, la Londra, lovit de un atac de cord în timp ce lucra la un studiu Shakespearean.",
+   anec:"Staunton a evitat cu orice preț meciul cu Paul Morphy în 1858, invocând mereu că e prea ocupat cu editarea operelor lui Shakespeare. Inițial Morphy a venit special din SUA în Anglia pentru această întâlnire; Staunton a temporizat luni de zile, apoi a refuzat definitiv. Toată lumea știa că se temea să piardă în fața tânărului american. Refuzul i-a pătat reputația pentru totdeauna — chiar și azi, când îi auzi numele, mulți spun „cel care a fugit de Morphy\"."},
 
   {id:7,era:"vechi",champ:false,name:"Adolf Anderssen",years:"1818 – 1879",country:"Germania (Breslau)",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Adolf_Anderssen.jpg/220px-Adolf_Anderssen.jpg",
    prof:"Profesor de matematică",
-   fame:"Profesorul Anderssen a fost cel mai bun jucător din lume în anii 1850–1860. Celebru pentru Partida Nemuritoare (1851) și Partida Veșnică (1856) — două dintre cele mai frumoase partide din toată istoria șahului.",
-   fameHTML:'Profesorul Anderssen a fost cel mai bun jucător din lume în anii 1850–1860. Celebru pentru <a href="https://en.wikipedia.org/wiki/Immortal_Game" target="_blank" rel="noopener" style="color:var(--c-navy);font-weight:700;">Partida Nemuritoare</a> (1851) și <a href="https://en.wikipedia.org/wiki/Evergreen_Game" target="_blank" rel="noopener" style="color:var(--c-navy);font-weight:700;">Partida Veșnică</a> (1856) — două dintre cele mai frumoase partide din toată istoria șahului.',
-   anec:"La Londra 1851, Anderssen a venit ca un outsider total — nimeni nu-l știa. A câștigat turneul și s-a întors acasă ca cel mai faimos jucător din lume. A doua zi s-a dus să predea matematică la clasă."},
+   peak:"A câștigat primul mare turneu internațional din lume (Londra, 1851)",
+   style:"Romantic și combinativ — sacrificii spectaculoase pentru atac",
+   fameHTML:'Profesorul Anderssen a fost cel mai bun jucător din lume în deceniile 1850–1860 și emblema „șahului romantic\" — epoca sacrificiilor și a atacurilor frumoase. S-a născut la Breslau (azi Wrocław, Polonia) și a predat matematică toată viața la Friedrichs-Gymnasium. A învățat șahul la 9 ani dintr-o carte, fără profesor. În 1851 a câștigat surprinzător turneul de la Londra organizat de Staunton — devenind primul „campion al lumii\" neoficial. Tot în acel an a jucat <a href="https://en.wikipedia.org/wiki/Immortal_Game" target="_blank" rel="noopener" style="color:var(--c-navy);font-weight:700;">Partida Nemuritoare</a> împotriva lui Kieseritzky — un atac în care a sacrificat ambele ture, nebunul și dama, dând mat. În 1856 a creat <a href="https://en.wikipedia.org/wiki/Evergreen_Game" target="_blank" rel="noopener" style="color:var(--c-navy);font-weight:700;">Partida Veșnică</a> împotriva lui Dufresne — la fel de spectaculoasă. În 1858 a pierdut meciul cu Morphy (2-7), dar l-a recunoscut public ca fiind cel mai bun. În 1866 a pierdut și meciul cu Steinitz (6-8) — astfel ștafeta a trecut la o nouă generație.',
+   anec:"La Londra 1851, Anderssen a venit ca un outsider total — nimeni nu-l știa, era doar un profesor modest dintr-o provincie. A câștigat turneul învingându-i pe Kieseritzky și Staunton însuși, și s-a întors acasă ca cel mai faimos jucător din lume. A doua zi s-a dus să predea matematică la clasă, ca și cum nimic nu s-ar fi întâmplat. Elevii lui au aflat din ziare că profesorul lor de algebră tocmai cucerise titlul mondial neoficial — și au început să-i ceară să le explice „Partida Nemuritoare\" în loc de lecția de geometrie."},
 
   {id:8,era:"vechi",champ:false,name:"Paul Morphy",years:"1837 – 1884",country:"SUA (New Orleans, Louisiana)",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Paul_Morphy_-_1857.jpg/220px-Paul_Morphy_-_1857.jpg",
    prof:"Avocat (a absolvit dreptul, dar nu a profesat niciodată)",
-   fame:"Paul Morphy a fost un fenomen: la 20 de ani a bătut toți cei mai buni jucători din lume și la 22 ani s-a retras definitiv din șah. Mulți îl consideră cel mai mare jucător natural din istoria șahului.",
-   anec:"La Paris în 1858, Morphy a jucat simultan la orb împotriva a 8 jucători puternici — câștigând 6 și remizând 2. A anunțat fiecare mutare verbal, fără să vadă tablele. Sala era încremenită."},
+   peak:"Turneul european din 1858 — i-a învins pe toți cei mai buni jucători din lume",
+   style:"Tactic, intuitiv, rapid — atac direct cu piesele dezvoltate la maximum",
+   fame:"Paul Morphy a fost un fenomen: la 20 de ani a bătut toți cei mai buni jucători din lume, iar la 22 ani s-a retras definitiv din șah. Născut într-o familie creolă bogată din New Orleans, a învățat șahul la 8 ani urmărindu-și unchiul, iar la 12 ani l-a învins pe maestrul european Johann Löwenthal aflat în vizită în Louisiana. A absolvit dreptul la Universitatea din Louisiana, dar era prea tânăr ca să profeseze. În 1857 a câștigat Primul Congres American de Șah la New York. În 1858 a făcut turul Europei: i-a învins pe Anderssen (7-2), Harrwitz (5-2), Löwenthal și toți campionii continentului. Staunton a refuzat meciul cu el — un blot pe cariera englezului. La 22 de ani s-a întors în SUA și pur și simplu s-a oprit din jucat — nimeni nu știe exact de ce. A încercat să practice dreptul fără succes (clienții voiau autografe, nu consultații), iar în ultimii ani a căzut în paranoia și izolare. A murit la 47 de ani în baia casei familiale. Bobby Fischer îl considera cel mai mare jucător din toată istoria.",
+   anec:"La Paris, în 1858, Morphy a jucat simultan la orb împotriva a 8 jucători puternici — câștigând 6 și remizând 2. Stătea cu spatele la cele 8 mese, ținând în minte toate pozițiile, și anunța fiecare mutare verbal. Partida a durat 10 ore fără pauză; presa a relatat că la sfârșit Morphy era proaspăt și politicos, în timp ce mulți spectatori adormiseră. Sala era încremenită: nimeni nu mai văzuse o asemenea demonstrație. A doua zi, Morphy și-a continuat plimbarea prin Paris ca și cum nimic nu s-ar fi întâmplat."},
 
   {id:9,era:"vechi",champ:false,name:"Szymon Winawer",years:"1838 – 1920",country:"Polonia (Varșovia)",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Szymon_Winawer.jpg/220px-Szymon_Winawer.jpg",
-   prof:"Negustor",
-   fame:"Negustorul Winawer a fost unul dintre cei mai buni jucători ai sec. XIX și unul dintre primii mari reprezentanți ai șahului polonez. Varianta Winawer a Apărării Franceze îi poartă numele și e populară și azi.",
-   anec:"La turneul de la Paris din 1867, Winawer a terminat pe locul 3, în fața unor jucători profesioniști — el, un simplu negustor care juca șah din pasiune."},
+   prof:"Negustor de cherestea",
+   peak:"Locul 1 împărțit la marele turneu Paris 1878 — în fața celor mai buni jucători din lume",
+   style:"Solid și defensiv — maestru al pozițiilor închise și al apărărilor neașteptate",
+   fame:"Winawer s-a născut într-o familie evreiască din Varșovia și a descoperit șahul abia ca adult, la peste 25 de ani. Profesia lui principală era comerțul cu cherestea — firma familiei avea afaceri în toată Polonia rusească și Germania. A jucat în 12 turnee internaționale între 1867 și 1901, întotdeauna ca amator pasionat. La Paris 1867 a terminat al doilea, surprinzând lumea șahului. La Paris 1878 a câștigat turneul împreună cu Zukertort, iar la Nuremberg 1883 a împărțit locul 1 cu Blackburne. Varianta Winawer a Apărării Franceze (1.e4 e6 2.d4 d5 3.Cc3 Nb4) îi poartă numele și e una dintre cele mai populare apărări negre și azi, jucată regulat la cel mai înalt nivel. A reprezentat Polonia în mediile internaționale și a fost unul dintre primii mari ambasadori ai șahului polonez în Europa Occidentală.",
+   anec:"La turneul de la Paris din 1867, Winawer a terminat pe locul 2-3 (împărțit cu Steinitz), în fața unor jucători profesioniști care trăiau exclusiv din șah — el, un simplu negustor venit pentru distracție. Nu vorbea bine franceza și aducea cu el doar o valiză mică, fără asistent. După ultima rundă, organizatorii i-au înmânat premiul cu o cerere: „Vă rugăm să jucați mai mult, sunteți prea bun pentru a sta în Varșovia.\" El a zâmbit politicos și a plecat înapoi la cherestea."},
 
   {id:10,era:"vechi",champ:false,name:"Johannes Zukertort",years:"1842 – 1888",country:"Prusia — activ în Anglia",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Johannes_Zukertort.jpg/220px-Johannes_Zukertort.jpg",
-   prof:"Jurnalist și scriitor de șah",
-   fame:"Zukertort a disputat primul meci oficial pentru titlul mondial de șah — în 1886, împotriva lui Steinitz. Acel meci a dat naștere campionatului mondial. La Londra 1883 câștigase primele 22 de partide consecutive — un record.",
-   anec:"La turneul de la Londra din 1883, Zukertort a câștigat primele 22 de partide consecutive — record uluitor. Trei ani mai târziu, el și Steinitz s-au întâlnit în primul Campionat Mondial din istorie."},
+   prof:"Jurnalist și scriitor de șah (poliglot — vorbea 9 limbi)",
+   peak:"Turneul Londra 1883 — câștigat cu un avans uluitor; meciul oficial pentru titlul mondial din 1886",
+   style:"Combinativ și energic — calcul tactic excepțional, atacuri spectaculoase",
+   fame:"Zukertort a fost una dintre cele mai fascinante figuri ale șahului din secolul XIX — un poliglot care vorbea 9 limbi, medic militar și mare jucător. S-a născut în Polonia într-o familie convertită la creștinism și a studiat medicina la Universitatea din Breslau, unde l-a avut profesor pe însuși Adolf Anderssen — viitorul lui mentor în șah. A luptat în armata prusiană în două războaie (Austro-Prusian 1866 și Franco-Prusian 1870), fiind decorat pentru curaj. În 1872 s-a mutat la Londra și a devenit jurnalist de șah. La turneul de la Londra din 1883 a câștigat strălucit, terminând cu trei puncte avans față de Steinitz însuși — performanță considerată miraculoasă. Acest rezultat a dus direct la primul meci oficial pentru titlul mondial, jucat în 1886 la New York, St. Louis și New Orleans. A pierdut acel meci în fața lui Steinitz (5-10-5), epuizat fizic și moral. A murit doi ani mai târziu, brusc, la doar 46 de ani.",
+   anec:"La turneul de la Londra din 1883, Zukertort a câștigat primele 22 de partide aproape fără greșeală — un record uluitor care a impresionat lumea șahului. Pe 19 iunie 1888, în timp ce juca o partidă rapidă la cafeneaua Simpson's-in-the-Strand din Londra, a căzut din scaun lovit de un atac cerebral. A murit câteva ore mai târziu la spital, fără să recapete cunoștința. A fost înmormântat la cimitirul Brompton, iar comunitatea de șah din Londra a strâns bani pentru un mormânt impresionant — există și azi."},
 
   // ── ERA CAMPIONATELOR MONDIALE ──
   {id:11,era:"clasic",champ:true,name:"Wilhelm Steinitz",years:"1836 – 1900",country:"Boemia — mai târziu SUA",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Wilhelm_Steinitz.jpg/220px-Wilhelm_Steinitz.jpg",
    prof:"Jurnalist de șah",
-   fame:"Steinitz a fost PRIMUL Campion Mondial Oficial de Șah (1886–1894) și părintele teoriei șahului pozițional modern. A arătat că șahul are legi — centrul, structura pionilor, avantajele mici acumulate pas cu pas. A schimbat totul.",
-   anec:"În ultimii ani ai vieții, Steinitz a înnebunit și credea că poate juca șah cu Dumnezeu prin telefon, dându-i acestuia un cal avans. A murit sărac la New York în 1900 — o ironie tristă a istoriei."},
+   peak:"A devenit primul Campion Mondial Oficial în 1886, învingându-l pe Zukertort",
+   style:"Pozițional teoretic — acumulare de mici avantaje, transformând șahul într-o știință",
+   fame:"Steinitz a fost PRIMUL Campion Mondial Oficial de Șah (1886–1894) și părintele teoriei șahului pozițional modern. S-a născut într-o familie evreiască săracă la Praga, a învățat șah la Café Kuh din Viena și s-a stabilit la Londra ca jurnalist de șah. Până la 35 de ani era un atacant tipic „romantic\", dar apoi a schimbat radical: a formulat principii — controlul centrului, structura pionilor, mobilitatea pieselor, slăbiciunile permanente — și a arătat că o partidă se câștigă acumulând mici avantaje, nu prin sacrificii spectaculoase. În 1886, la 50 de ani, l-a învins pe Zukertort într-un meci jucat la New York, Saint Louis și New Orleans (12½-7½) — primul meci oficial pentru titlul mondial. A apărat titlul de 4 ori (Chigorin de două ori, Gunsberg, Lasker). A pierdut titlul în 1894 contra unui Lasker mai tânăr cu 32 de ani și revanșa în 1896-97. Ultimii ani au fost marcați de paranoia și sărăcie.",
+   anec:"În ultimii ani, mintea lui Steinitz a cedat. A fost internat în spitalul de boli mintale Manhattan State Hospital, unde le spunea medicilor că poate juca șah cu Dumnezeu prin telefon — și că Îi dă chiar avans un cal, ca să fie un joc cinstit. Le mai spunea că poate muta piesele cu electricitatea creierului. Omul care transformase șahul într-o știință riguroasă a murit cu mintea cufundată în divinitate, sărac, la New York, în 1900. Comunitatea de șah din America i-a strâns bani pentru o înmormântare decentă."},
 
   {id:12,era:"clasic",champ:false,name:"Mikhail Chigorin",years:"1850 – 1908",country:"Rusia (Gatchina)",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Mikhail_Chigorin.jpg/220px-Mikhail_Chigorin.jpg",
    prof:"Funcționar, ulterior jurnalist de șah",
-   fame:"Chigorin a fost cel mai mare jucător rus al sec. XIX și fondatorul școlii ruse de șah. A pierdut dramatic două meciuri pentru titlul mondial cu Steinitz. Apărarea Chigorin se mai joacă și azi.",
-   anec:"În meciul din 1892, Chigorin juca ultima partidă cu albele într-o poziție câștigătoare — când a comis o gafă teribilă și a pierdut meciul. Sala a rămas încremenită."},
+   peak:"A forțat două meciuri pentru titlul mondial cu Steinitz (Habana 1889 și 1892)",
+   style:"Romantic și dinamic — contraatac viu, jocul cailor și sacrificii intuitive",
+   fame:"Chigorin a fost cel mai mare jucător rus al secolului al XIX-lea și părintele școlii ruse de șah. Născut la Gatchina, lângă Sankt Petersburg, a învățat șah relativ târziu (~16 ani), într-un orfelinat. A trăit din funcționăriat până când succesul la Café Dominique l-a făcut profesionist. A fondat în 1876 prima revistă rusă de șah, „Şahmatnîi Lîstok\". Spre deosebire de Steinitz, Chigorin refuza dogmele poziționale rigide — credea în energia pieselor, în calul mai prețios decât nebunul, în contraatacul activ. Această filosofie a influențat profund pe Alehin, Botvinnik și întreaga școală sovietică. A jucat două meciuri pentru titlul mondial cu Steinitz, ambele la Havana (1889 și 1892), pierzând ambele. Apărarea Chigorin (1.d4 d5 2.c4 Nc6) îi poartă numele și se joacă și azi. A murit sărac la Lublin, de diabet, în 1908.",
+   anec:"În partida 23 a meciului de la Habana 1892, Chigorin avea albul într-o poziție câștigătoare clară. Mai avea de făcut o singură mutare logică (Rxb7) pentru a obține remiza din partida finală și a forța prelungirea meciului. În schimb, sub presiunea momentului, a jucat 32.Bb4?? — o gafă atât de elementară încât pierdea imediat o figură. Steinitz a câștigat partida și meciul. Sala din Habana a rămas încremenită; martorii spun că Chigorin a privit tabla un minut întreg fără să clipească. Era poate cel mai aproape în istorie ca Rusia să cucerească titlul mondial cu 56 de ani înaintea lui Botvinnik."},
 
   {id:13,era:"clasic",champ:true,name:"Emanuel Lasker",years:"1868 – 1941",country:"Germania",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Emanuel_Lasker_portrait.jpg/220px-Emanuel_Lasker_portrait.jpg",
    prof:"Matematician și filosof (doctor în matematică)",
-   fame:"Lasker a deținut titlul de Campion Mondial timp de 27 de ani (1894–1921) — cel mai lung record din istoria șahului! Era un psiholog desăvârșit la tablă: studia fiecare adversar și îl bătea cu propriile slăbiciuni.",
-   anec:"Albert Einstein i-a scris prefața cărții de șah a lui Lasker și a spus că el era 'una dintre cele mai fascinante personalități pe care le-am cunoscut vreodată'. Lasker câștiga partide cu psihologia, nu doar cu calculul."},
+   peak:"27 de ani Campion Mondial neîntrerupt (1894–1921) — recordul absolut al istoriei",
+   style:"Psihologic și pragmatic — alegea mutări care îi puneau pe adversari în disconfort",
+   fameHTML:'Lasker a deținut titlul de Campion Mondial timp de 27 de ani (1894–1921) — cel mai lung record din istoria șahului. Născut într-o familie evreiască din Berlinchen (azi Polonia), a făcut doctorat în matematică la Erlangen — un rezultat al său (<a href="https://en.wikipedia.org/wiki/Lasker_ring" target="_blank" rel="noopener" style="color:var(--c-navy);font-weight:700;">inelele Lasker</a>) e studiat și azi în algebra comutativă. A fost prieten cu Albert Einstein, cu care discuta despre relativitate și filosofie. A câștigat titlul în 1894 la 25 de ani împotriva lui Steinitz (10-5) și l-a apărat de cinci ori: contra Steinitz (revanșa), Marshall, Tarrasch, Schlechter și Janowski. A pierdut în 1921 la Habana contra Capablanca. Era un psiholog la tablă — alegea uneori a doua sau a treia cea mai bună mutare, doar ca să-l deranjeze pe adversar. La 67 de ani s-a clasat al treilea la Moscova 1935, învingându-i pe câțiva tineri campioni. A fugit din Germania nazistă în 1933, a trăit în URSS, apoi New York, unde a murit sărac în 1941.',
+   anec:"În 1910, Lasker juca pentru titlul mondial cu Carl Schlechter (un meci scurt de doar 10 partide). La intrarea în ultima partidă era cu un punct dezavantaj — pierdea titlul dacă remiza. Schlechter avea negrul și ar fi trebuit doar să joace solid. În schimb, austriacul a căutat câștigul, a riscat totul și a pierdut într-un final dramatic. Lasker a salvat titlul printr-o partidă pe care el însuși a numit-o „cea mai grea din viața mea\". Albert Einstein, care l-a cunoscut bine, l-a descris ca „una dintre cele mai fascinante personalități pe care le-am întâlnit vreodată\"."},
 
   {id:14,era:"clasic",champ:false,name:"Géza Maróczy",years:"1870 – 1951",country:"Ungaria (Szeged)",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Geza_Maroczy.jpg/220px-Geza_Maroczy.jpg",
    prof:"Inginer",
-   fame:"Maróczy a fost unul dintre cei mai puternici jucători ai perioadei 1895–1910. Cutia Maróczy — o formație de pioni la c4 și e4 contra Apărării Siciliene — îi poartă numele și este una dintre cele mai studiate structuri din șahul modern.",
-   anec:"La 70 de ani, Maróczy a condus o partidă de corespondență pentru compatrioți deportați în lagăre sovietice. Șahul ca formă de rezistență și solidaritate umană."},
+   peak:"Top 3 mondial 1900–1908, cu 3 victorii la Monte Carlo (1902, 1903, 1904)",
+   style:"Solid și pozițional — finaluri impecabile cu turn și dame",
+   fame:"Maróczy a fost unul dintre cei mai puternici jucători ai perioadei 1895–1910 și principalul rival al lui Lasker între cei doi. Născut la Szeged în Ungaria, a studiat ingineria mecanică — o profesie rară pentru un mare jucător de șah al epocii. A izbucnit pe scena internațională la Hastings 1895, unde a împărțit locurile inferioare cu nume precum Pillsbury și Tarrasch. A câștigat Monte Carlo de trei ori (1902, 1903, 1904) și a fost considerat al doilea cel mai puternic din lume după Lasker. Un meci pentru titlul mondial cu Lasker era programat pentru 1906, dar a fost anulat din motive financiare — una dintre marile tragedii ale șahului, căci mulți istorici cred că Maróczy avea șanse reale. Cutia Maróczy (o formație de pioni la c4 și e4 contra Apărării Siciliene) îi poartă numele și e una dintre cele mai studiate structuri pozitionale. A fost antrenorul Verei Menchik, prima campioană mondială feminină. După Primul Război Mondial a condus echipa maghiară la olimpiade.",
+   anec:"La aproape 70 de ani, în plin Război Mondial, Maróczy a aflat că un grup de prieteni de șah maghiari fusese deportat în lagăre sovietice. Le-a propus o partidă de corespondență de echipă — cu un singur set de mutări care călătorea pe drumuri lungi prin Crucea Roșie. Partida n-a fost terminată niciodată — unii dintre prizonieri au murit înainte. Dar gestul a rămas: șahul ca formă de rezistență și solidaritate umană, peste sârmă ghimpată și tăceri impuse. Maróczy a fost cunoscut toată viața pentru blândețe și fair-play."},
 
   {id:15,era:"clasic",champ:false,name:"Siegbert Tarrasch",years:"1862 – 1934",country:"Germania (Breslau)",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Siegbert_Tarrasch.jpg/220px-Siegbert_Tarrasch.jpg",
    prof:"Medic (doctor în medicină)",
-   fame:"Dr. Tarrasch a câștigat turneele de la Breslau, Manchester, Dresden, Leipzig și Viena — și tot n-a reușit să fie campion mondial! A fost cel mai influent profesor de șah al epocii. Deschiderea Tarrasch îi poartă numele.",
-   anec:"Tarrasch a refuzat meciul pentru titlul mondial cu Steinitz în 1892–1893 pentru că era prea ocupat cu pacienții. Ironia e că meseria care l-a ținut departe de coroana mondială i-a adus și respectul generațiilor."},
+   peak:"5 turnee internaționale majore câștigate consecutiv între 1888 și 1894",
+   style:"Clasic dogmatic — controlul centrului, libertatea pieselor, evitarea pionilor dubli",
+   fame:"Dr. Siegbert Tarrasch a fost cel mai influent profesor de șah al epocii sale și „Praeceptor Germaniae\" — profesorul Germaniei. Născut la Breslau (azi Wrocław) într-o familie evreiască, a studiat medicina la Halle și a practicat ca medic la Nürnberg toată viața. Între 1888 și 1894 a câștigat 5 turnee internaționale majore consecutiv — Breslau, Manchester, Dresden, Leipzig și Viena. A scris cărți populare de o claritate didactică rar întâlnită, printre care „Die moderne Schachpartie\" și „Das Schachspiel\", care au format generații întregi. Sistemele Tarrasch din Apărarea Slavă și din Gambitul Damei îi poartă numele. A fost dogmatic în convingerile poziționale — „pionii dubli sunt o slăbiciune!\", „nebunul e mai bun decât calul\" — și a stârnit reacția hipermodernilor (Nimzowitsch, Réti), care i-au demonstrat că dogmele au excepții. În 1908 a jucat meciul pentru titlul mondial cu Lasker la Düsseldorf-München și a pierdut clar (3-8).",
+   anec:"Tarrasch a refuzat meciul pentru titlul mondial cu Steinitz în 1892, când avea ocazia, pentru că era prea ocupat cu cabinetul medical din Nürnberg. „Pacienții mei nu pot aștepta\", a spus el. Decizia l-a costat poate cariera de campion mondial — dar i-a adus respectul pentru integritate profesională. Mai târziu, când Nimzowitsch i-a publicat cărțile contrastante și l-a numit ironic „profesorul dogmatic\", Tarrasch a răspuns: „Înainte de mijlocul jocului, zeii au pus deschiderea\". O replică elegantă, dar generația tânără îi descoperea deja limitele."},
 
   {id:16,era:"clasic",champ:false,name:"Harry Nelson Pillsbury",years:"1872 – 1906",country:"SUA (Massachusetts)",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Harry_Nelson_Pillsbury.jpg/220px-Harry_Nelson_Pillsbury.jpg",
@@ -419,8 +445,10 @@ const P = [
   {id:20,era:"clasic",champ:true,name:"José Raúl Capablanca",years:"1888 – 1942",country:"Cuba",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Capablanca.jpg/220px-Capablanca.jpg",
    prof:"Diplomat (atașat la Ministerul de Externe al Cubei)",
-   fame:"Capablanca a fost Campion Mondial (1921–1927), unul dintre cei mai talentați jucători naturali din istoria șahului. Era renumit pentru finalurile perfecte și claritatea cu care vedea jocul. Mulți l-au numit Mașina de Șah.",
-   anec:"Capablanca a învățat să joace șah la 4 ani, observând cum juca tatăl lui și corectându-i o mutare greșită! La 13 ani l-a bătut pe campionul Cubei, Juan Corzo, într-un meci oficial."},
+   peak:"A devenit Campion Mondial în 1921, învingându-l pe Lasker la Havana fără să piardă nicio partidă",
+   style:"Pozițional cristalin, maestru absolut al finalurilor — câștiga părând că abia se gândește",
+   fame:"Capablanca a fost al treilea Campion Mondial de Șah (1921–1927) și, pentru mulți, cel mai mare talent înnăscut din toată istoria jocului. S-a născut la Havana și a învățat șahul la doar 4 ani, observându-și tatăl jucând în salon. La 13 ani l-a învins pe campionul oficial al Cubei, Juan Corzo, într-un meci de 13 partide — o senzație care a făcut înconjurul lumii. La 20 de ani îl bătea pe campionul SUA, Frank Marshall, cu un scor zdrobitor (8-1). În 1921, la Havana, i-a luat titlul mondial lui Emanuel Lasker fără să piardă nici măcar o partidă din meci. Stilul lui era de o claritate uluitoare: vedea finalurile cu o precizie aproape matematică, fără să calculeze îndelung — adversarii spuneau că pare să joace ghicind. Între 1916 și 1924 a pierdut o singură partidă în 8 ani de turnee — un record care încă uimește. Pe 7 martie 1942, în timp ce urmărea o partidă la Manhattan Chess Club din New York, a suferit un atac cerebral și a murit a doua zi la spital, la doar 53 de ani.",
+   anec:"Capablanca a învățat să joace șah la doar 4 ani — privindu-și tatăl jucând. Într-o zi a oprit jocul și i-a arătat tatălui că făcuse o mutare ilegală cu calul. Tatăl, uimit că băiețelul observase regula, l-a invitat la masă și a pierdut! De atunci nu s-a mai oprit din jucat. La 13 ani l-a învins pe campionul oficial al Cubei, Juan Corzo, într-un meci de 13 partide jucat în cluburile din Havana — un copil care a devenit peste noapte cel mai discutat nume din șahul mondial."},
 
   {id:21,era:"clasic",champ:true,name:"Alexander Alekhine",years:"1892 – 1946",country:"Rusia — cetățean francez",
    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Alexander_Alekhine_1935.jpg/220px-Alexander_Alekhine_1935.jpg",
@@ -692,6 +720,13 @@ function photoHTML(p) {
        + '<div class="no-photo" style="display:none">♛</div>';
 }
 
+function setBigPhoto(p) {
+  document.getElementById('bigPhotoFrame').innerHTML = photoHTML(p);
+  document.getElementById('bigPhotoName').textContent = p.name;
+  document.getElementById('bigPhotoCrown').style.display = p.champ ? 'inline-block' : 'none';
+  document.getElementById('bigPhotoNum').textContent = '#' + p.id + ' din ' + P.length;
+}
+
 // ── UPDATE CARD ───────────────────────────────────────────────────────
 function updateCard(era) {
   var players = byEra(era);
@@ -699,16 +734,20 @@ function updateCard(era) {
   var p = players[idx];
   var total = players.length;
 
-  document.getElementById('photo-' + era).innerHTML = photoHTML(p);
-  document.getElementById('name-' + era).textContent = p.name;
+  setBigPhoto(p);
 
-  var crown = document.getElementById('crown-' + era);
-  crown.style.display = p.champ ? 'inline-block' : 'none';
-
-  document.getElementById('pnum-' + era).textContent = '#' + p.id + ' din ' + P.length;
   document.getElementById('years-' + era).textContent = p.years;
   document.getElementById('country-' + era).textContent = p.country;
   document.getElementById('prof-' + era).textContent = p.prof;
+
+  var peakRow = document.getElementById('peakrow-' + era);
+  if (p.peak) { document.getElementById('peak-' + era).textContent = p.peak; peakRow.style.display = ''; }
+  else { peakRow.style.display = 'none'; }
+
+  var styleRow = document.getElementById('stylerow-' + era);
+  if (p.style) { document.getElementById('style-' + era).textContent = p.style; styleRow.style.display = ''; }
+  else { styleRow.style.display = 'none'; }
+
   var fameEl = document.getElementById('fame-' + era);
   if (p.fameHTML) { fameEl.innerHTML = p.fameHTML; }
   else { fameEl.textContent = p.fame; }
@@ -726,7 +765,16 @@ function updateCard(era) {
   }
 
   document.getElementById('prev-' + era).disabled = (idx === 0);
-  document.getElementById('next-' + era).disabled = (idx === total - 1);
+  var nextBtn = document.getElementById('next-' + era);
+  if (idx === total - 1) {
+    nextBtn.disabled = false;
+    nextBtn.innerHTML = '↑ Toate epocile';
+    nextBtn.classList.add('pnav-btn-back-to-eras');
+  } else {
+    nextBtn.disabled = false;
+    nextBtn.innerHTML = 'Următor →';
+    nextBtn.classList.remove('pnav-btn-back-to-eras');
+  }
   document.getElementById('counter-' + era).textContent = (idx + 1) + ' din ' + total;
 
   var dots = document.querySelectorAll('#dots-' + era + ' .dot');
@@ -736,7 +784,18 @@ function updateCard(era) {
 function navigate(era, dir) {
   var players = byEra(era);
   var next = state[era] + dir;
-  if (next < 0 || next >= players.length) return;
+  if (next < 0) return;
+  if (next >= players.length) {
+    // Ultimul jucător: închide sertarul curent și du userul înapoi la lista de epoci
+    var panel = document.getElementById('panel-' + era);
+    var btn   = document.getElementById('btn-' + era);
+    if (panel && panel.classList.contains('open')) {
+      panel.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+    btn.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
   state[era] = next;
   updateCard(era);
 }
@@ -753,6 +812,7 @@ function toggleEra(id) {
   var open  = panel.classList.contains('open');
   panel.classList.toggle('open', !open);
   btn.setAttribute('aria-expanded', String(!open));
+  if (!open && id !== 'campioni') updateCard(id);
 }
 
 // ── RENDER EPOCE (paginat) ────────────────────────────────────────────
@@ -778,18 +838,12 @@ function renderEra(era) {
     + '<div class="era-panel" id="panel-' + era + '">'
     + '<p class="era-why">' + m.why + '</p>'
     + '<div class="player-wrap">'
-    + '<div class="player-top">'
-    + '<div class="photo-panel">'
-    + '<div class="photo-frame" id="photo-' + era + '"></div>'
-    + '<div class="photo-name" id="name-' + era + '"></div>'
-    + '<div id="crown-' + era + '" class="photo-crown">♔ Campion Mondial</div>'
-    + '<div class="photo-num" id="pnum-' + era + '"></div>'
-    + '</div>'
     + '<div class="info-panel">'
     + '<div class="info-row"><div class="info-row-label">📅 Perioadă de viață</div><div class="info-row-val" id="years-' + era + '"></div></div>'
     + '<div class="info-row"><div class="info-row-label">🌍 Origine</div><div class="info-row-val" id="country-' + era + '"></div></div>'
     + '<div class="info-row"><div class="info-row-label">💼 Meseria</div><div class="info-row-val" id="prof-' + era + '"></div></div>'
-    + '</div>'
+    + '<div class="info-row" id="peakrow-' + era + '"><div class="info-row-label">🏆 Cea mai mare realizare</div><div class="info-row-val" id="peak-' + era + '"></div></div>'
+    + '<div class="info-row" id="stylerow-' + era + '"><div class="info-row-label">🎯 Stil de joc</div><div class="info-row-val" id="style-' + era + '"></div></div>'
     + '</div>'
     + '<div class="info-text"><div class="info-text-label">♟ Ce l-a făcut faimos</div><div class="info-text-body" id="fame-' + era + '"></div></div>'
     + '<div class="anecdote-box"><div class="info-text-label">💬 O poveste adevărată</div><div class="anecdote-body" id="anec-' + era + '"></div></div>'
@@ -845,6 +899,17 @@ document.getElementById('app').innerHTML =
   renderEra('vechi') + renderEra('clasic') + renderEra('modern') + renderChampions();
 
 ['vechi','clasic','modern'].forEach(function(era) { updateCard(era); });
+
+// Poză de bun venit: GOAT (Carlsen) cu mesaj prietenos, până când userul deschide o epocă
+(function welcomePhoto() {
+  var goat = P.find(function(p){ return p.name === 'Magnus Carlsen'; });
+  if (!goat) return;
+  document.getElementById('bigPhotoFrame').innerHTML = photoHTML(goat);
+  document.getElementById('bigPhotoName').textContent = goat.name;
+  document.getElementById('bigPhotoCrown').style.display = 'inline-block';
+  document.getElementById('bigPhotoCrown').textContent = '♛ Cel mai bun din toate timpurile';
+  document.getElementById('bigPhotoNum').textContent = 'alege o epocă să explorezi';
+})();
 </script>
 </body>
 </html>
