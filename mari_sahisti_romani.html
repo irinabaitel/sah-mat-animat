@@ -64,30 +64,50 @@
     }
     .era-panel.open { display: block; }
 
-    /* ── Layout jucător ── */
-    .player-wrap { display: flex; flex-direction: column; gap: 10px; }
-    .player-top { display: grid; grid-template-columns: 200px 1fr; gap: 16px; align-items: start; }
+    /* ── Override layout: poză mare în loc de tablă, panou text mai lat ── */
+    .page-main { grid-template-columns: 35fr 65fr; }
+    .board-wrapper { aspect-ratio: auto !important; width: 100% !important; height: 100% !important; box-shadow: none !important; border-radius: 0 !important; background: transparent !important; }
+    .board-col { align-items: stretch !important; }
 
-    .photo-panel {
-      background: var(--c-surface-2); border-radius: var(--radius);
-      border: 2px solid var(--c-border); padding: 14px; text-align: center;
-      position: sticky; top: 16px;
+    .big-photo-card {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column; gap: 12px;
+      background: var(--c-surface); border: 2px solid var(--c-border);
+      border-radius: var(--radius); padding: 16px;
+      align-items: center; text-align: center;
+      overflow: hidden;
     }
-    .photo-frame {
-      width: 100%; aspect-ratio: 3/4; border-radius: 10px; overflow: hidden;
-      background: rgba(26,58,107,0.06); border: 1px solid var(--c-border);
-      display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
+    .big-photo-frame {
+      flex: 1; min-height: 0; width: 100%;
+      border-radius: 12px; overflow: hidden;
+      background: rgba(26,58,107,0.06);
+      border: 1px solid var(--c-border);
+      display: flex; align-items: center; justify-content: center;
     }
-    .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .no-photo { font-size: 3rem; opacity: 0.18; }
-    .photo-name { font-size: 0.9rem; font-weight: 800; color: var(--c-navy); line-height: 1.3; margin-bottom: 5px; min-height: 2.6em; }
-    .photo-title {
-      display: inline-block; font-size: 0.66rem; font-weight: 700;
+    .big-photo-frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .big-photo-placeholder {
+      color: rgba(26,58,107,0.45); font-size: 0.95rem; font-weight: 600;
+      line-height: 1.5; padding: 20px;
+    }
+    .big-photo-placeholder span { font-size: 2rem; opacity: 0.5; display: block; margin-top: 8px; }
+    .big-photo-name {
+      font-family: var(--font-display); font-size: 1.2rem; font-weight: 900;
+      color: var(--c-navy); line-height: 1.25; min-height: 1.25em;
+    }
+    .big-photo-meta {
+      display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap;
+    }
+    .big-photo-title {
+      font-size: 0.74rem; font-weight: 700;
       background: rgba(26,58,107,0.1); color: var(--c-navy);
-      border: 1px solid var(--c-border); border-radius: 12px;
-      padding: 1px 8px; margin-bottom: 4px;
+      border: 1px solid var(--c-border);
+      border-radius: 14px; padding: 3px 11px;
     }
-    .photo-num { font-size: 0.66rem; color: rgba(26,58,107,0.5); }
+    .big-photo-num { font-size: 0.78rem; color: rgba(26,58,107,0.55); font-weight: 600; }
+    .no-photo { font-size: 3rem; opacity: 0.18; }
+
+    /* ── Layout jucător (panou dreapta) ── */
+    .player-wrap { display: flex; flex-direction: column; gap: 10px; }
 
     .info-panel { display: flex; flex-direction: column; gap: 8px; }
     .info-row { background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: 10px; padding: 10px 13px; }
@@ -97,24 +117,16 @@
     .info-text { background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: 10px; padding: 12px 14px; }
     .info-text-label { font-size: 0.63rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: rgba(26,58,107,0.5); margin-bottom: 5px; }
     .info-text-body {
-      font-size: 0.86rem; color: var(--c-text); line-height: 1.7;
-      height: calc(1.7em * 4); overflow-y: auto;
-      scrollbar-width: thin; scrollbar-color: rgba(26,58,107,0.3) transparent;
+      font-size: 0.92rem; color: var(--c-text); line-height: 1.7;
     }
-    .info-text-body::-webkit-scrollbar { width: 4px; }
-    .info-text-body::-webkit-scrollbar-thumb { background: rgba(26,58,107,0.3); border-radius: 4px; }
 
     .anecdote-box {
       background: rgba(26,58,107,0.05); border: 1px solid var(--c-border);
       border-left: 3px solid var(--c-navy); border-radius: 10px; padding: 12px 14px;
     }
     .anecdote-body {
-      font-size: 0.84rem; color: var(--c-text); font-style: italic; line-height: 1.75;
-      height: calc(1.75em * 4); overflow-y: auto;
-      scrollbar-width: thin; scrollbar-color: rgba(26,58,107,0.3) transparent;
+      font-size: 0.9rem; color: var(--c-text); font-style: italic; line-height: 1.75;
     }
-    .anecdote-body::-webkit-scrollbar { width: 4px; }
-    .anecdote-body::-webkit-scrollbar-thumb { background: rgba(26,58,107,0.3); border-radius: 4px; }
     .anecdote-body::before { content: '💬  '; font-style: normal; }
 
     /* ── Navigare ── */
@@ -127,6 +139,8 @@
     }
     .pnav-btn:hover:not(:disabled) { background: #2a5aab; }
     .pnav-btn:disabled { opacity: 0.28; cursor: not-allowed; }
+    .pnav-btn.pnav-btn-back-to-eras { background: #c8860a; }
+    .pnav-btn.pnav-btn-back-to-eras:hover { background: #b07608; }
     .pnav-center { text-align: center; flex: 1; }
     .pnav-counter { font-size: 0.78rem; color: var(--c-navy); font-weight: 700; }
     .pnav-dots { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
@@ -139,10 +153,7 @@
     }
     .ro-badge span { display: inline-block; width: 6px; height: 14px; border-radius: 1px; }
 
-    @media (max-width: 620px) {
-      .player-top { grid-template-columns: 1fr; }
-      .photo-panel { position: static; }
-    }
+    @media (max-width: 620px) { }
   </style>
   <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
   <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -159,14 +170,21 @@
 
   <main class="page-main" role="main">
     <div class="board-col">
-      <div class="board-wrapper" id="boardWrapper">
-        <div id="board"></div>
+      <div class="big-photo-card" id="bigPhotoCard">
+        <div class="big-photo-frame" id="bigPhotoFrame">
+          <div class="big-photo-placeholder">Alege un șahist român<br><span>↦</span></div>
+        </div>
+        <div class="big-photo-name" id="bigPhotoName"></div>
+        <div class="big-photo-meta">
+          <span class="big-photo-title" id="bigPhotoTitle" style="display:none"></span>
+          <span class="big-photo-num" id="bigPhotoNum"></span>
+        </div>
       </div>
     </div>
     <div class="panel-col">
       <div class="panel-scroll">
 
-        <div class="fide-intro">
+        <div class="fide-intro" id="fideIntro">
           <p>România este unul dintre <strong>membrii fondatori ai FIDE</strong> — Federația Internațională de Șah — semnând actul de constituire la <strong>Paris, 20 iulie 1924</strong>, în cadrul Olimpiadei. Delegatul român, <strong>Ion Gudju</strong>, s-a alăturat celor 14 alte națiuni care au pus bazele organizației ce conduce șahul mondial până azi.</p>
           <p>De-a lungul secolului XX și XXI, România a dat <strong>mari maeștri de renume mondial</strong>, campioni europeni, campioni mondiali pe categorii de vârstă și autori de referință ai teoriei șahului.</p>
         </div>
@@ -208,78 +226,108 @@ $(document).ready(function() {
 const P = [
   { id:1, name:"Adolf Albin", years:"1848 – 1920", city:"București",
     title:"Maestru Internațional", img:null,
-    fame:"Adolf Albin a fost primul șahist român cu recunoaștere internațională. A participat la turnee de elită în toată Europa și a creat Gambitul Albin (1.d4 d5 2.c4 e5) — o replică activă și agresivă la Gambitul Damei, jucată și azi la nivel de mari maeștri.",
-    anec:"La turneul de la New York 1893, Albin a terminat pe locul 5, în fața unor jucători mult mai cunoscuți. Gambitul care îi poartă numele a fost jucat pentru prima dată chiar de el în acel turneu, surprinzând publicul."},
+    peak:"Locul 5 la New York 1893, într-un turneu câștigat de viitorul Campion Mondial Emanuel Lasker",
+    style:"Combinativ și agresiv — prefera inițiativa în detrimentul solidității",
+    fame:"Adolf Albin a fost primul șahist român cu carieră internațională serioasă. Născut la București într-o familie evreiască germană, s-a stabilit ulterior la Viena, unde a învățat șah la Café Central, centrul vieții șahiste austriece. A participat la turnee de elită în toată Europa, dar cea mai mare performanță a obținut-o la New York 1893, unde a terminat pe locul 5, într-un turneu câștigat de Emanuel Lasker (viitorul Campion Mondial) și la care a participat și tânărul Harry Nelson Pillsbury. Tot acolo a introdus Gambitul Albin (1.d4 d5 2.c4 e5) — o replică agresivă la Gambitul Damei, în care negrul sacrifică un pion pentru inițiativă rapidă. Deschiderea este jucată și azi la nivel de mari maeștri, fiind folosită ocazional chiar de Vladimir Kramnik împotriva lui Garry Kasparov.",
+    anec:"La New York 1893, când Albin a aplicat pentru prima dată Gambitul ce avea să-i poarte numele, publicul american a fost surprins de îndrăzneala mutării ...e5. Adversarii nu cunoșteau deschiderea și ezitau la fiecare răspuns. Albin câștiga timp prețios pe ceas — și uneori câștiga și partida. Una dintre primele „bombe teoretice\" jucate vreodată într-un turneu internațional a fost pusă pe tablă de un român."},
 
   { id:2, name:"Ion Gudju", years:"~1878 – ~1947", city:"România",
     title:"Fondator FIDE", img:null,
-    fame:"Ion Gudju a reprezentat România la Paris în iulie 1924, semnând actul de constituire a FIDE alături de delegații din alte 14 țări. Datorită lui, România figurează printre membrii fondatori ai celei mai mari federații de șah din lume.",
-    anec:"La Olimpiada de la Paris 1924, echipa română de șah a jucat în cadrul turneului 'Nations Cup' — una dintre primele competiții internaționale pe echipe. Ion Gudju a fost cel care a asigurat prezența României la masa fondatoare a FIDE în aceeași zi."},
+    peak:"A semnat actul de constituire al FIDE la Paris, 20 iulie 1924",
+    style:"Organizator și diplomat — nu mare jucător de turneu, ci constructor de instituții",
+    fame:"Ion Gudju este omul datorită căruia România figurează printre membrii fondatori ai FIDE — Federația Internațională de Șah. La 20 iulie 1924, la Paris, în cadrul Olimpiadei (atunci numită „turneul națiunilor\"), Gudju a semnat actul de constituire al FIDE alături de delegații din alte 14 țări. A condus federația română de șah în perioada interbelică și a militat pentru recunoașterea internațională a țării ca putere șahistă în formare. Activitatea lui a creat fundația instituțională pe care s-a construit toată tradiția modernă a șahului românesc — de la cluburile naționale până la participările la Olimpiade.",
+    anec:"Iulie 1924 a fost cea mai aglomerată lună din istoria timpurie a șahului mondial: Paris găzduia simultan Olimpiada și ședința de constituire a FIDE. Delegații celor 15 țări fondatoare se mutau între cluburi de șah și mese de negocieri. Ion Gudju a fost printre cei mai discreți, dar și printre cei mai eficienți: la sfârșitul lunii, România era oficial parte din comunitatea șahistă mondială — un statut păstrat neîntrerupt de un secol."},
 
   { id:3, name:"Victor Ciocâltea", years:"1932 – 1983", city:"București",
     title:"Mare Maestru", img:null,
-    fame:"Victor Ciocâltea a fost unul dintre cei mai puternici jucători români ai secolului XX și un pionier al șahului românesc la nivel internațional. A câștigat campionatul național de mai multe ori și a reprezentat România la numeroase olimpiade. Stilul său combinativ și curajul la tablă l-au făcut un favorit al publicului.",
-    anec:"Ciocâltea era cunoscut pentru atacurile îndrăznețe și sacrificiile spectaculoase. Adversarii din occident se temeau de el la tablă — nu pentru soliditate, ci pentru că nu știau niciodată ce sacrificiu nebunesc va urma."},
+    peak:"Mare Maestru în 1978 după 22 de participări la campionatul național",
+    style:"Combinativ și îndrăzneț — sacrificii frecvente, atac direct asupra regelui, surprize tactice",
+    fame:"Victor Ciocâltea a fost unul dintre cei mai populari și mai temuți jucători români ai secolului XX. A câștigat de mai multe ori campionatul național și a reprezentat România la peste 10 Olimpiade între anii 1950 și 1980 — un record absolut. A obținut titlul de Mare Maestru abia în 1978, după zeci de ani de joc la cel mai înalt nivel, fapt explicat de accesul limitat la turnee cu normă GM al jucătorilor din blocul estic. Adversarii din occident se temeau de el la tablă — nu pentru soliditate, ci pentru că nu știau niciodată ce sacrificiu nebunesc avea să urmeze. A murit prematur în 1983, într-un accident, în timpul unui turneu în Spania.",
+    anec:"Despre Ciocâltea circula o vorbă printre maeștrii din anii 60–70: „Dacă rămâi cu el la tablă după mutarea 20, ai pierdut deja.\" Asta pentru că stilul lui exploziv funcționa mai ales în pozițiile complicate. Mai mulți adversari au refuzat oferta lui de remiză în deschidere — și au regretat-o trei ore mai târziu. Era cunoscut și pentru bunul simț la tablă: pierdea cu zâmbetul pe buze și-i felicita pe învingători, indiferent de miza partidei."},
 
   { id:4, name:"Elisabeta Polihroniade", years:"1935 – 2016", city:"București",
     title:"Mare Maestru Feminin", img:null,
-    fame:"Elisabeta Polihroniade a fost cea mai mare șahistă din istoria României. A câștigat campionatul național feminin de 7 ori și a reprezentat România la 9 Olimpiade. A obținut titlul de Maestru Internațional în 1982. Visul ei — titlul de Mare Maestru complet — nu s-a împlinit din cauza condițiilor din România comunistă.",
-    anec:"Polihroniade a trăit cu durerea că sistemul comunist i-a limitat participarea la turnee internaționale. Colege din occident cu performanțe similare obțineau titluri pe care ea nu le putea atinge din lipsă de acces. Generațiile de după au recunoscut amploarea nedreptății."},
+    peak:"7 titluri naționale feminine + 9 Olimpiade reprezentând România",
+    style:"Pozițional clasic — partide lungi, finaluri precise, școală sovietică",
+    fame:"Elisabeta Polihroniade a fost cea mai mare șahistă din istoria României și o personalitate emblematică a generațiilor postbelice. A câștigat campionatul național feminin de șapte ori și a reprezentat România la nouă Olimpiade între anii 1957 și 1990 — o longevitate impresionantă. A obținut titlul de Maestru Internațional Feminin (WIM) și ulterior Mare Maestru Feminin (WGM). A fost și organizator: cluburile pe care le-a coordonat au format zeci de jucătoare profesioniste. Visul ei — titlul complet de Mare Maestru (GM, fără calificativul feminin) — nu s-a împlinit din cauza accesului limitat la turnee internaționale impus de regimul comunist și de constrângerile financiare ale federației.",
+    anec:"După 1989, Polihroniade a vorbit deschis despre frustrarea generației ei de șahiste: aveau talentul, aveau pregătirea, dar nu și ocaziile. „Colege din occident cu performanțe similare obțineau titluri pe care eu nu le puteam atinge — pentru că nu aveam unde să joc.\" Generațiile de șahiste care i-au urmat — Foisor, Bulmaga, l'Ami — au lucrat conștient pentru ca această frustrare să nu se repete. Numele ei a fost dat unei serii de turnee internaționale pentru fete organizate la București."},
 
   { id:5, name:"Florin Gheorghiu", years:"1944 – prezent", city:"București",
     title:"Mare Maestru", img:null,
-    fame:"Florin Gheorghiu a devenit primul Mare Maestru român în 1965, la 21 de ani — un moment istoric pentru șahul românesc. A câștigat campionatul național de 10 ori și a participat la 12 Olimpiade. A fost cel mai bun jucător român timp de două decenii și a reprezentat România cu cinste pe toate marile scene ale lumii.",
-    anec:"Gheorghiu a jucat partide memorabile împotriva tuturor marilor campioni ai epocii — Spassky, Karpov, Korchnoi. A spus odată că secretul longevității sale la tablă este curiozitatea: 'Șahul mă surprinde încă după 60 de ani de joc.'"},
+    peak:"Primul Mare Maestru român, în 1965, la doar 21 de ani",
+    style:"Pozițional clasic — finaluri precise, pregătire teoretică solidă",
+    fame:"Florin Gheorghiu a devenit primul Mare Maestru român în 1965, la doar 21 de ani — un moment de cotitură pentru șahul românesc, care își ieșea pentru prima dată din anonimatul postbelic. A câștigat campionatul național de zece ori și a participat la douăsprezece Olimpiade între 1962 și 1986. A fost cel mai bun jucător român timp de două decenii și a reprezentat România cu demnitate pe toate marile scene ale lumii. A jucat partide memorabile împotriva campionilor mondiali ai epocii — Spassky, Karpov, Korchnoi — obținând rezultate respectabile chiar și împotriva celor mai bine pregătiți adversari sovietici.",
+    anec:"Despre Gheorghiu se spunea că nu pierde o partidă pe care n-ar fi „înțeles-o\" — chiar și înfrângerile lui erau didactice. La un interviu spre 70 de ani, întrebat care e secretul longevității sale la tablă, a răspuns: „Curiozitatea. Șahul mă surprinde încă, după 60 de ani de joc.\" Generații întregi de juniori români au învățat deschiderile din colecția lui de partide — și mulți au mărturisit că Gheorghiu este motivul pentru care au continuat șahul."},
 
   { id:6, name:"Mihai Șuba", years:"1947 – 2025", city:"Cluj-Napoca",
     title:"Mare Maestru", img:null,
-    fame:"Mihai Șuba este un GM și teoretician recunoscut internațional, cunoscut mai ales pentru cartea sa 'Dynamic Chess Strategy' — considerată una dintre cele mai originale cărți de strategie din literatura șahului mondial. S-a stabilit în Spania, unde a jucat și a scris până la sfârșitul vieții.",
-    anec:"Cartea lui Șuba a apărut în 1991 și a schimbat felul în care mulți jucători gândesc strategia. Kasparov însuși a menționat-o ca pe o lectură utilă. Puțini știu că autorul ei a crescut la Cluj și a învățat șahul în România comunistă."},
+    peak:"A scris „Dynamic Chess Strategy\" — referință mondială a strategiei moderne",
+    style:"Dinamic și original — refuza ideile clasice, prefera dezechilibrul",
+    fame:"Mihai Șuba a fost Mare Maestru și unul dintre cei mai originali gânditori ai șahului contemporan. Cunoscut mai ales pentru cartea sa „Dynamic Chess Strategy\", apărută în 1991 — considerată de mulți una dintre cele mai influente lucrări de strategie din ultimii 50 de ani. Cartea contestă mai multe dogme clasice ale lui Steinitz și Tarrasch și propune o viziune dinamică, bazată pe dezechilibre și pe inițiativă. Născut în România, s-a stabilit în Spania după 1989, locuind în Madrid timp de mai bine de două decenii. A jucat toată viața exclusiv sub steagul României, fiind prezent la opt Olimpiade — a refuzat schimbarea federației, deși ar fi avut oportunități. A murit în Spania în 2025, la 78 de ani, rămânând activ în comunitatea șahistă până în ultimul an de viață.",
+    anec:"Cartea lui Șuba a fost menționată de Garry Kasparov însuși ca „o lectură utilă\" — o recunoaștere rară dintr-o sursă care, de obicei, era critic la adresa cărților contemporane. Puțini din lumea șahului mondial știu însă că autorul a crescut la Cluj, a învățat șahul în România comunistă, și că ideile lui „revoluționare\" se născuseră, parțial, din necesitatea de a juca cu negrul împotriva unor jucători sovietici mai bine pregătiți teoretic. Limitarea l-a făcut creativ."},
 
   { id:7, name:"Margareta Teodorescu", years:"1950 – prezent", city:"România",
     title:"Mare Maestru Feminin", img:null,
-    fame:"Margareta Teodorescu a fost una dintre cele mai puternice jucătoare române ale anilor 1970–1990, câștigând campionatul național feminin de mai multe ori. A reprezentat România la olimpiade și turnee europene, menținând tradiția șahului feminin românesc după generația Polihroniade.",
-    anec:"Teodorescu a activat în perioada în care accesul la turnee internaționale era limitat de regimul comunist. Cu toate acestea, a reușit să obțină rezultate remarcabile și să inspire generațiile care i-au urmat."},
+    peak:"Multiplă campioană națională feminină în anii '70 și '80",
+    style:"Solidă pozițional — joc clasic, finaluri îngrijite, pregătire serioasă",
+    fame:"Margareta Teodorescu a fost una dintre cele mai puternice jucătoare românce ale anilor 1970–1990, continuând linia deschisă de generația Polihroniade. A câștigat de mai multe ori campionatul național feminin și a reprezentat România la Olimpiade și la Campionatele Europene pentru echipe naționale. A obținut titlurile de Maestru Internațional Feminin (WIM) și apoi Mare Maestru Feminin (WGM) într-o perioadă în care accesul la turnee internaționale era serios îngreunat de regimul comunist. A continuat să fie activă în comunitatea șahistă după 1989, dedicându-se în mare parte coaching-ului și organizării de turnee pentru copii.",
+    anec:"După 1989, Teodorescu a vorbit despre paradoxul șahistelor din Est: aveau pregătire serioasă cu antrenori foști elevi ai școlii sovietice, dar nu aveau bani de cazare la turneele importante din occident. Multe partide jucate prin anii '80 erau pregătite cu cărți copiate de mână, în condițiile în care literatura de șah occidentală era greu de procurat. „Ne descurcam cum puteam\", obișnuia să spună — fără regrete, dar cu luciditate."},
 
   { id:8, name:"Mihail Marin", years:"1965 – prezent", city:"Cluj-Napoca",
     title:"Mare Maestru", img:null,
-    fame:"Mihail Marin este unul dintre cei mai apreciați autori de șah din lume. Cărțile sale de deschideri și strategie, publicate de Quality Chess, sunt considerate referințe absolute de jucători de la toate nivelurile. A scris serii monumentale despre deschiderile cu 1.e4 și a analizat partidele lui Petrosian, Capablanca și Fischer cu o profunzime ieșită din comun.",
-    anec:"Marin continuă să joace, să scrie și să predea din Cluj. Editorii săi britanici de la Quality Chess spun că e unul dintre cei mai disciplinați și riguroși autori pe care i-au publicat. O mândrie a șahului românesc — prea puțin cunoscută în țară."},
+    peak:"Autor de referință mondială — seria Quality Chess despre 1.e4 și „Learn from the Legends\"",
+    style:"Universal și profund — joacă orice deschidere, dar excelează în pregătire teoretică",
+    fame:"Mihail Marin este Mare Maestru și unul dintre cei mai apreciați autori de șah din lume. Cărțile sale, publicate în special de Quality Chess (Glasgow), sunt considerate referințe absolute la toate nivelurile. Lucrarea „Learn from the Legends\" — o analiză a finalurilor jucate de Capablanca, Botvinnik, Fischer, Karpov și alți cinci campioni — este recunoscută drept una dintre cele mai bune cărți de șah ale anilor 2000, premiată cu Book of the Year de mai multe publicații internaționale. A scris serii monumentale despre deschiderile cu 1.e4 (de exemplu „A Spanish Repertoire for Black\") și despre partidele marilor maeștri. A reprezentat România la mai multe Olimpiade.",
+    anec:"Editorii britanici de la Quality Chess spun că Marin este unul dintre cei mai disciplinați autori pe care i-au publicat — predă manuscrisele la timp, cu analize verificate de motoarele de șah și cu citate complete din partidele de referință. Lucrează din Cluj, într-un cabinet cu pereții acoperiți de cărți de șah. Spune că ideile lui cele mai bune îi vin după ce reanalizează partide vechi cu o privire nouă. „Nu inventezi mare lucru în șah\", obișnuiește să afirme. „Doar redescoperi.\""},
 
   { id:9, name:"Liviu-Dieter Nisipeanu", years:"1976 – prezent", city:"Timișoara",
     title:"Mare Maestru", img:null,
-    fame:"Liviu-Dieter Nisipeanu a câștigat Campionatul European Individual în 2005 și a bătut campionul mondial FIDE Veselin Topalov într-un meci demonstrativ în 2006. A jucat pentru Germania între 2014 și 2023, revenind în echipa României. Unul dintre cei mai puternici jucători pe care i-a dat România.",
-    anec:"La Campionatul European din Varșovia 2005, Nisipeanu a câștigat titlul într-un stil impecabil, terminând cu 9 puncte din 13. A dedicat victoria României. Revenirea sa la echipa națională în 2023 a fost salutată ca o onoare recuperată."},
+    peak:"Campion European Individual 2005 la Varșovia, cu 9/13 puncte",
+    style:"Dinamic și agresiv — pregătire teoretică profundă cu negrul, deschideri ascuțite (Najdorf, Caro-Kann)",
+    fame:"Liviu-Dieter Nisipeanu este unul dintre cei mai puternici jucători pe care i-a produs România. A câștigat Campionatul European Individual în 2005 la Varșovia, încheind impresionant cu 9 puncte din 13. A trecut de ELO 2700, performanță atinsă de foarte puțini jucători români. A jucat pentru Germania între 2014 și 2023, schimbarea fiind motivată de oportunitățile financiare și de antrenament din federația germană, dar a revenit la echipa României. Cunoscut pentru pregătire teoretică profundă cu negrul și pentru capacitatea de a transforma poziții aparent egale în avantaje decisive prin manevre subtile și planuri pe termen lung.",
+    anec:"La Campionatul European din 2005, Nisipeanu venea ca un outsider — federația poloneză organizatoare nici nu îl trecuse pe lista favoriților. A condus turneul de la jumătatea lui și a încheiat neînvins. La conferința de presă a dedicat victoria României și a refuzat să joace pentru alte federații, deși deja primise oferte. Decizia de a trece la Germania în 2014 a fost dureroasă pentru fanii români — iar revenirea sa în 2023 a fost salutată ca „o onoare recuperată\"."},
 
   { id:10, name:"Constantin Lupulescu", years:"1984 – prezent", city:"București",
     title:"Mare Maestru", img:null,
-    fame:"Constantin Lupulescu este unul dintre cei mai de succes jucători români ai generației sale, câștigând campionatul național de 5 ori. Cunoscut pentru pregătirea teoretică solidă și capacitatea de a juca partide lungi, epuizante, în care răbdarea îl avantajează.",
-    anec:"Lupulescu are obiceiul de a analiza adânc în noapte, terminând analize la ore la care colegii dorm de mult. Antrenorii îi spun 'mașina' — nu din lipsă de creativitate, ci pentru consistența cu care tratează fiecare poziție."},
+    peak:"5 titluri de campion național al României — record al generației moderne",
+    style:"Pozițional și răbdător — partide lungi în care precizia face diferența",
+    fame:"Constantin Lupulescu este unul dintre cei mai de succes jucători români ai generației sale, cu cinci titluri de campion național — un record al perioadei moderne. A trecut de ELO 2650 și a făcut parte constant din echipa olimpică a României. Joacă, ca majoritatea profesioniștilor români, atât pentru cluburi din Superliga națională, cât și în campionatele europene — în Bundesliga germană și în Top 16 din Franța, unde a evoluat de-a lungul anilor pentru mai multe echipe. Cunoscut pentru pregătirea teoretică solidă și pentru capacitatea de a juca partide lungi, epuizante, în care răbdarea îl avantajează.",
+    anec:"Antrenorii îi spun „mașina\" — nu din lipsă de creativitate, ci pentru consistența cu care tratează fiecare poziție. Lupulescu are obiceiul de a analiza adânc în noapte, terminând analize la ore la care colegii dorm de mult. Un coleg de antrenament spunea în glumă: „Constantin nu se odihnește între turnee — doar își schimbă orașul.\" Despre stilul lui de joc, un comentator a notat: „Pare că nu se întâmplă nimic — și apoi, pe la mutarea 35, observi că adversarul nu are nicio mutare bună.\""},
 
   { id:11, name:"Alina l'Ami", years:"1985 – prezent", city:"Iași",
     title:"Maestru Internațional / Mare Maestru Feminin", img:null,
-    fame:"Alina l'Ami (născută Moțoc) a câștigat Campionatul Mondial U10 și Campionatul European U18 înainte să se stabilească în Olanda. A reprezentat ulterior Olanda la competiții internaționale, dar rădăcinile ei ieșene rămân o sursă de mândrie pentru șahul românesc.",
-    anec:"La 10 ani, Alina a câștigat titlul mondial la categoria ei în fața unor rivale din țări cu tradiție șahistă mult mai puternică. Antrenorul ei de atunci a spus că nu a mai văzut o concentrare atât de profundă la un copil de această vârstă."},
+    peak:"Campioană Mondială U10 (1995) și Campioană Europeană U18",
+    style:"Atacantă — deschideri ascuțite, complicații tactice, jocul cu negrul activ",
+    fame:"Alina l'Ami (născută Moțoc, la Iași) a fost una dintre cele mai talentate șahiste junioare ale generației ei. A câștigat Campionatul Mondial U10 în 1995 și Campionatul European U18, performanțe care i-au deschis cariera internațională. S-a căsătorit cu Marele Maestru olandez Erwin l'Ami și s-a stabilit în Olanda — de aici provine numele de familie actual. A obținut titlurile de Maestru Internațional (mixt, MI) și Mare Maestru Feminin (WGM). Continuă să joace la turnee internaționale și scrie regulat pe ChessBase despre experiența ei — articolele combină analiza șahistă cu observații personale, devenind un punct de reper pentru comunitatea internațională.",
+    anec:"La doar 10 ani, Alina a câștigat titlul mondial la categoria ei în fața unor rivale din țări cu tradiție șahistă mult mai puternică (China, Rusia, Ungaria). Cei care au antrenat-o atunci au povestit că nu mai văzuseră o concentrare atât de profundă la un copil de această vârstă — „Alina nu juca șah, ea locuia în partidă\", a spus unul dintre ei. Generația de șahiste românce care i-a urmat a privit-o ca pe un model de carieră internațională construită cu seriozitate."},
 
   { id:12, name:"Sabina Foisor", years:"1988 – prezent", city:"România — SUA",
     title:"Mare Maestru Feminin", img:null,
-    fame:"Sabina-Francesca Foisor a emigrat în SUA în 2008 cu o bursă de șah la Universitatea Maryland. A câștigat Campionatul SUA Feminin în 2017 — cea mai mare performanță a carierei. Deși joacă sub drapel american, a crescut în România și a format o parte din identitatea șahului românesc.",
-    anec:"La Campionatul SUA din 2017, Sabina a câștigat titlul aproape neașteptat, depășind favorite cu mult mai mari. Familia ei din România a urmărit partidele în direct pe internet, în mijlocul nopții, plângând de bucurie."},
+    peak:"Campioană SUA Feminin 2017 — titlu cucerit aproape neașteptat",
+    style:"Solidă și pregătită — accent pe deschideri verificate și pe disciplină",
+    fame:"Sabina-Francesca Foisor s-a născut într-o familie de șahiști din România — atât tatăl, cât și mama ei sunt Maeștri Internaționali. A emigrat în SUA în 2008 cu o bursă de șah la Universitatea Maryland — Baltimore County, una dintre cele mai puternice echipe universitare de șah din America. A câștigat Campionatul SUA Feminin în 2017, cea mai mare performanță a carierei sale. Joacă sub drapel american începând din 2009 și a reprezentat SUA la mai multe Olimpiade. Deși a făcut tranziția federației, a crescut în România și formează o parte importantă a identității șahului românesc al generației anilor 2000.",
+    anec:"La Campionatul SUA din 2017, Sabina venea după o pierdere personală dureroasă — moartea mamei ei, Cristina Adela Foisor, în același an. A jucat tot turneul cu o dedicare emoțională rară și a câștigat titlul aproape neașteptat, depășind favorite cu mult mai mari. Familia ei din România a urmărit partidele în direct pe internet, în mijlocul nopții, plângând de bucurie. Sabina a dedicat victoria mamei sale și a păstrat numele Foisor în șah, în continuarea familiei."},
 
   { id:13, name:"Irina Bulmaga", years:"1993 – prezent", city:"Chișinău — România",
     title:"Maestru Internațional / Mare Maestru Feminin", img:null,
-    fame:"Irina Bulmaga, originară din Republica Moldova, a ales să reprezinte România și a devenit nr. 1 feminin al țării din 2016. A obținut titlul WGM în 2012 și IM în 2013, figurând constant în Top 100 mondial feminin. Este o prezență stabilă și profesionistă în șahul românesc.",
-    anec:"Bulmaga scrie cu umor și inteligență despre viața unui șahist profesionist pe blogul ei — despre turnee, oboseală, bucurii și eșecuri. Articolul 'Chess, my brain and I (and pickles)' de pe ChessBase a devenit viral în comunitatea internațională."},
+    peak:"Nr. 1 feminin al României din 2016 și prezență constantă în Top 100 mondial feminin",
+    style:"Universală — pregătire teoretică solidă, finaluri precise, joc răbdător",
+    fame:"Irina Bulmaga s-a născut la Chișinău, în Republica Moldova, dar a ales să reprezinte România începând din 2016, an în care a devenit și nr. 1 feminin al țării. A obținut titlul de Mare Maestru Feminin (WGM) în 2012 și pe cel de Maestru Internațional (mixt, MI) în 2013. Figurează constant în Top 100 mondial feminin și a reprezentat România la mai multe Olimpiade și Campionate Europene pe echipe. Este o prezență stabilă, profesionistă și apreciată în comunitatea șahistă internațională. Scrie regulat pe ChessBase și pe blogul ei personal despre experiența ei la turnee — analize, observații despre psihologie și viața de șahist itinerant.",
+    anec:"Articolul „Chess, my brain and I (and pickles)\" publicat pe ChessBase a devenit viral în comunitatea internațională — Bulmaga descria cu umor și luciditate ce înseamnă să trăiești pe drumuri, între turnee, și cum micile obișnuințe (precum murăturile pe care le păstra cu ea) devin esențiale pentru a-ți menține echilibrul mintal. Stilul ei de scris a deschis o nouă fereastră asupra vieții profesionale a unui șahist — nu glamur și victorii, ci muncă, oboseală și tenacitate."},
 
   { id:14, name:"Bogdan-Daniel Deac", years:"2001 – prezent", city:"Cluj-Napoca",
     title:"Mare Maestru", img:null,
-    fame:"Bogdan-Daniel Deac a devenit Mare Maestru la 14 ani — la acea vreme cel mai tânăr din lume. Cu un rating de 2655, este cel mai bine cotat jucător român în prezent (locul ~62 mondial). A câștigat Reykjavik Open 2024 și a fost invitat la Grand Chess Tour — circuitul de elită al șahului mondial.",
-    anec:"La 14 ani, după ce a obținut ultima normă de GM, Deac s-a dus acasă și a mâncat cu familia. Nu a dat interviuri, nu a organizat petrecere. A doua zi s-a întors la antrenamente. Antrenorul său a spus: 'Asta îl face special.'"},
+    peak:"GM la 14 ani — la momentul respectiv printre cei mai tineri din lume",
+    style:"Universal și matur — joc fără slăbiciuni evidente, pregătire profundă",
+    fame:"Bogdan-Daniel Deac a devenit Mare Maestru la 14 ani și 6 luni — la momentul respectiv printre cei mai tineri GM din lume. Cu un rating peste 2650, este cel mai bine cotat jucător român în prezent și se mișcă în zona Top 100 mondial. A câștigat Reykjavik Open 2024, unul dintre cele mai puternice open-uri de pe glob, și a primit invitații la circuitul Grand Chess Tour. Pregătirea lui combină munca cu antrenori români de la Cluj cu colaborări internaționale. Reprezintă România la Olimpiade și la Campionatele Europene pe echipe, având rezultate stabile chiar și împotriva jucătorilor cu ELO 2700+.",
+    anec:"La 14 ani, după ce a obținut ultima normă de Mare Maestru, Deac s-a dus acasă și a mâncat cu familia. Nu a dat interviuri și nu a organizat petrecere. A doua zi s-a întors la antrenamente. Antrenorul său a spus despre el: „Asta îl face special — că nu pierde nicio secundă pe sărbătorit.\" La 18 ani a refuzat oferta de a juca pentru o federație vest-europeană cu salariu garantat — a rămas la federația română pentru că „aici am început și aici e firesc să continui\". Mărturie a unei mentalități rare în șahul tânăr de azi."},
 
   { id:15, name:"David Gavrilescu", years:"~2003 – prezent", city:"România",
     title:"Mare Maestru", img:null,
-    fame:"David Gavrilescu a obținut titlul de Mare Maestru în 2023, câștigând ulterior Campionatul Național al României. Face parte din generația de tineri care continuă tradiția puternică a șahului românesc, cu un viitor promițător în competițiile internaționale.",
-    anec:"Gavrilescu a câștigat campionatul național la scurt timp după ce a obținut titlul de GM — confirmând că nu a fost o coincidență. Colegii de generație îl descriu ca un jucător extrem de serios și greu de surprins la tablă."}
+    peak:"Mare Maestru în 2023, urmat de titlul de Campion Național al României",
+    style:"Atacant tehnic — pregătire serioasă, joc activ cu negrul, finaluri îngrijite",
+    fame:"David Gavrilescu face parte din noua generație de mari maeștri români — talente formate în primii ani după 2010, beneficiind de acces la motoarele de șah, baze de date moderne și antrenori de nivel internațional. A obținut titlul de Mare Maestru în 2023 și a câștigat ulterior Campionatul Național al României, confirmând că performanța nu a fost o coincidență. Colegii de generație îl descriu ca pe un jucător extrem de serios, foarte greu de surprins la tablă. ELO-ul lui crește constant, iar perspectiva unei cariere internaționale la nivel înalt e deschisă. Reprezintă România la competițiile europene și pregătește lotul național împreună cu generația lui Deac.",
+    anec:"O caracteristică a lui Gavrilescu, recunoscută de partenerii de antrenament, este disciplina cu care își analizează propriile partide după turnee. Nu lasă o înfrângere fără explicație — fiecare gafă e disecată, fiecare poziție revizitată cu motorul. „N-am întâlnit pe cineva atât de obsesiv cu propriul progres în mediul nostru\", a spus un fost coleg de echipă. La conferința de presă după câștigarea campionatului național, a refuzat să vorbească despre planuri mari — a spus doar: „Continui să muncesc.\""}
 ];
 
 var LOCAL_IMGS = {
@@ -309,22 +357,47 @@ function photoHTML(p) {
        + '<div class="no-photo" style="display:none">♟</div>';
 }
 
+function setBigPhoto(p) {
+  document.getElementById('bigPhotoFrame').innerHTML = photoHTML(p);
+  document.getElementById('bigPhotoName').textContent = p.name;
+  var t = document.getElementById('bigPhotoTitle');
+  if (p.title) { t.textContent = '🏆 ' + p.title; t.style.display = 'inline-block'; }
+  else { t.style.display = 'none'; }
+  document.getElementById('bigPhotoNum').textContent = '#' + p.id + ' din ' + P.length;
+}
+
 function updateCard() {
   var p = P[state];
-  document.getElementById('photo-ro').innerHTML = photoHTML(p);
-  document.getElementById('name-ro').textContent = p.name;
-  document.getElementById('title-ro').textContent = p.title;
-  document.getElementById('pnum-ro').textContent = (state + 1) + ' din ' + P.length;
+  setBigPhoto(p);
+
   document.getElementById('years-ro').textContent = p.years;
   document.getElementById('city-ro').textContent = p.city;
   document.getElementById('title-val-ro').textContent = p.title;
+
+  var peakRow = document.getElementById('peakrow-ro');
+  if (p.peak) { document.getElementById('peak-ro').textContent = p.peak; peakRow.style.display = ''; }
+  else { peakRow.style.display = 'none'; }
+
+  var styleRow = document.getElementById('stylerow-ro');
+  if (p.style) { document.getElementById('style-ro').textContent = p.style; styleRow.style.display = ''; }
+  else { styleRow.style.display = 'none'; }
+
   var fameEl = document.getElementById('fame-ro');
   if (p.fameHTML) fameEl.innerHTML = p.fameHTML;
   else fameEl.textContent = p.fame;
   document.getElementById('anec-ro').textContent = p.anec;
 
   document.getElementById('prev-ro').disabled = (state === 0);
-  document.getElementById('next-ro').disabled = (state === P.length - 1);
+  var nextBtn = document.getElementById('next-ro');
+  if (state === P.length - 1) {
+    nextBtn.disabled = false;
+    nextBtn.innerHTML = '↑ Înapoi sus';
+    nextBtn.classList.add('pnav-btn-back-to-eras');
+  } else {
+    nextBtn.disabled = false;
+    nextBtn.innerHTML = 'Următor →';
+    nextBtn.classList.remove('pnav-btn-back-to-eras');
+  }
   document.getElementById('counter-ro').textContent = (state + 1) + ' din ' + P.length;
 
   document.querySelectorAll('#dots-ro .dot').forEach(function(d, i) {
@@ -334,7 +407,19 @@ function updateCard() {
 
 function navigate(dir) {
   var next = state + dir;
-  if (next < 0 || next >= P.length) return;
+  if (next < 0) return;
+  if (next >= P.length) {
+    var panel = document.getElementById('panel-ro');
+    var btn   = document.getElementById('btn-ro');
+    if (panel && panel.classList.contains('open')) {
+      panel.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+    var intro = document.getElementById('fideIntro');
+    if (intro) intro.style.display = '';
+    btn.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
   state = next;
   updateCard();
 }
@@ -347,6 +432,9 @@ function togglePanel() {
   var open  = panel.classList.contains('open');
   panel.classList.toggle('open', !open);
   btn.setAttribute('aria-expanded', String(!open));
+  var intro = document.getElementById('fideIntro');
+  if (intro) intro.style.display = open ? '' : 'none';
+  if (!open) updateCard();
 }
 
 function dotsHTML() {
@@ -365,18 +453,12 @@ document.getElementById('app').innerHTML =
   + '</button>'
   + '<div class="era-panel" id="panel-ro">'
   + '<div class="player-wrap">'
-  + '<div class="player-top">'
-  + '<div class="photo-panel">'
-  + '<div class="photo-frame" id="photo-ro"></div>'
-  + '<div class="photo-name" id="name-ro"></div>'
-  + '<div class="photo-title" id="title-ro"></div>'
-  + '<div class="photo-num" id="pnum-ro"></div>'
-  + '</div>'
   + '<div class="info-panel">'
-  + '<div class="info-row"><div class="info-row-label">📅 Ani</div><div class="info-row-val" id="years-ro"></div></div>'
-  + '<div class="info-row"><div class="info-row-label">📍 Oraș</div><div class="info-row-val" id="city-ro"></div></div>'
+  + '<div class="info-row"><div class="info-row-label">📅 Perioada</div><div class="info-row-val" id="years-ro"></div></div>'
+  + '<div class="info-row"><div class="info-row-label">📍 Locul nașterii</div><div class="info-row-val" id="city-ro"></div></div>'
   + '<div class="info-row"><div class="info-row-label">🏆 Titlu</div><div class="info-row-val" id="title-val-ro"></div></div>'
-  + '</div>'
+  + '<div class="info-row" id="peakrow-ro" style="display:none"><div class="info-row-label">⭐ Performanța cea mai importantă</div><div class="info-row-val" id="peak-ro"></div></div>'
+  + '<div class="info-row" id="stylerow-ro" style="display:none"><div class="info-row-label">🎯 Stil de joc</div><div class="info-row-val" id="style-ro"></div></div>'
   + '</div>'
   + '<div class="info-text"><div class="info-text-label">♟ De ce îl cunoaștem</div><div class="info-text-body" id="fame-ro"></div></div>'
   + '<div class="anecdote-box"><div class="info-text-label">💬 O poveste</div><div class="anecdote-body" id="anec-ro"></div></div>'
@@ -391,6 +473,18 @@ document.getElementById('app').innerHTML =
   + '</div>';
 
 updateCard();
+
+// Poză de bun venit: GOAT român (Bogdan-Daniel Deac) — în top mondial, ELO maxim al țării
+(function welcomePhoto() {
+  var goat = P.find(function(p){ return p.name === 'Bogdan-Daniel Deac'; });
+  if (!goat) return;
+  document.getElementById('bigPhotoFrame').innerHTML = photoHTML(goat);
+  document.getElementById('bigPhotoName').textContent = goat.name;
+  var t = document.getElementById('bigPhotoTitle');
+  t.textContent = '🇷🇴 Cel mai bine cotat român';
+  t.style.display = 'inline-block';
+  document.getElementById('bigPhotoNum').textContent = 'deschide sertarul ca să explorezi';
+})();
 </script>
 </body>
 </html>
