@@ -11,7 +11,7 @@
   gtag('config', 'G-CMTZ9GGPMP');
 </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Gambitul Damei — Deschideri și capcane</title>
+  <title>Partida Italiană — Deschideri și capcane</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -135,7 +135,7 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">Gambitul Damei</span>
+    <span class="header-title">Partida Italiană</span>
     <div class="header-progress">
       <span class="lesson-badge">Nivelul VI</span>
     </div>
@@ -159,15 +159,13 @@
           </div>
 
           <div class="def-box">
-            <p class="def-title">⚔️ Ce este un gambit?</p>
-            <p>Un <strong>gambit</strong> este o situație în care una dintre armate îi <strong>oferă inamicului un avantaj material</strong> (de obicei un pion) pentru a obține <strong>un alt fel de avantaj</strong>, de cele mai multe ori pozițional — de pildă un centru puternic, dezvoltare mai rapidă sau atac.</p>
+            <p class="def-title">🇮🇹 Ce este Partida Italiană?</p>
+            <p>Una dintre cele mai vechi și mai populare deschideri: <strong>1.e4 e5 2.Cf3 Cc6 3.Nc4</strong>. Nebunul iese pe <strong>c4</strong> și țintește direct pionul <strong>f7</strong> — punctul cel mai slab al Negrului, apărat doar de rege. De aici se nasc multe capcane!</p>
           </div>
 
           <div class="card">
-            <p>La <strong>Gambitul Damei</strong>, albul joacă 1.d4 și apoi 2.c4: <strong>oferă pionul din c4</strong> pentru că își dorește centrul doar pentru el.</p>
-            <p>Negrul are de ales:</p>
-            <p>• dacă <strong>capturează</strong> pionul (2…dxc4) → <strong>Gambitul Damei Acceptat</strong>;<br>• dacă <strong>nu capturează</strong>, ci apără pionul d5 cu 2…e6 → <strong>Gambitul Damei Refuzat</strong>.</p>
-            <p>Se numește „gambit" (sacrificiu de pion), dar e un truc: negrul nu-l poate ține, iar albul de obicei <strong>își recuperează pionul mai târziu</strong>, rămânând cu un centru puternic și piese dezvoltate mai repede.</p>
+            <p>Ideea Albului: dezvoltare rapidă (cal + nebun), un centru puternic de pioni și presiune pe <strong>f7</strong>. Negrul poate răspunde liniștit cu 3…Nc5 (<strong>Giuoco Piano</strong>) sau agresiv cu 3…Cf6 (<strong>Apărarea celor Doi Cai</strong>).</p>
+            <p>Pentru că ambele armate țintesc pionul slab din fața regelui advers (f7, respectiv f2), Italiana e plină de <strong>capcane</strong> — și cu Albul, și cu Negrul. Le adăugăm pe rând.</p>
           </div>
 
           <div class="acc-list" id="accList"></div>
@@ -201,11 +199,14 @@
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
-    <a href="nivel6_lectia5.html" class="nav-btn nav-btn--back">
-      <span class="icon">&#8592;</span><span class="label">Partida Italiană</span>
+    <a href="nivel6_lectia4.html" class="nav-btn nav-btn--back">
+      <span class="icon">&#8592;</span><span class="label">Matul școlarului</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon">&#8862;</span><span class="label">Cuprins</span>
+    </a>
+    <a href="nivel6_lectia1.html" class="nav-btn nav-btn--forward">
+      <span class="label">Gambitul Damei</span><span class="icon">&#8594;</span>
     </a>
   </footer>
 
@@ -224,100 +225,112 @@ const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 const chapters = [
 
-  /* 0 — Deschiderea: varianta REFUZATĂ (2…e6) */
+  /* 0 — Ideea deschiderii: Giuoco Piano */
   {
     fen: START, orient: 'white',
-    san: ['d4','d5','c4','e6','Nc3','Nf6','Bg5','Be7'],
+    san: ['e4','e5','Nf3','Nc6','Bc4','Bc5','c3','Nf6','d4','exd4','cxd4','Bb4+'],
     ann: {
-      0: 'Varianta în care Negrul <strong>refuză</strong> pionul: nu capturează pionul de la c4, ci apără d5 cu e6.',
-      1: '<strong>1.d4</strong> — albul împinge pionul în centru și deschide drum nebunului și damei.',
-      2: '<strong>1…d5</strong> — negrul răspunde simetric, ca să nu-l lase pe alb stăpân singur în centru.',
-      3: '<strong>2.c4</strong> — mutarea „gambit": albul oferă pionul din c4, dorind centrul doar pentru el.',
-      4: '<strong>2…e6</strong> — <em>Gambitul Damei Refuzat</em>: negrul nu capturează pionul de la c4, ci își apără pionul din d5 cu e6 și deschide drum nebunului.',
-      5: '<strong>3.Cc3</strong> — albul își scoate calul spre centru și pune și mai multă presiune pe d5.',
-      6: '<strong>3…Cf6</strong> — negrul își dezvoltă calul și apără pătratul d5.',
-      7: '<strong>4.Ng5</strong> — nebunul „leagă" calul din f6: dacă acel cal ar fugi, ar lăsa dama în bătaia nebunului și, în plus, ar slăbi apărarea pionului din d5.',
-      8: '<strong>4…Ne7</strong> — negrul își aduce nebunul, desface legătura și se pregătește pentru rocadă.'
-    },
-    arrows: { 7: [{from:'g5', to:'f6', color:'B'}] }
-  },
-
-  /* 1 — Deschiderea: varianta ACCEPTATĂ (2…dxc4) — linia principală liniștită */
-  {
-    fen: START, orient: 'white',
-    san: ['d4','d5','c4','dxc4','Nf3','Nf6','e3','e6','Bxc4'],
-    ann: {
-      0: 'Varianta în care Negrul <strong>acceptă</strong> pionul.',
-      1: '<strong>1.d4</strong> — pionul în centru.',
-      2: '<strong>1…d5</strong> — simetric.',
-      3: '<strong>2.c4</strong> — albul oferă pionul din c4.',
-      4: '<strong>2…dxc4</strong> — <em>Gambitul Damei Acceptat</em>: negrul capturează pionul.',
-      5: '<strong>3.Cf3</strong> — albul nu se grăbește după pion: dezvoltă calul și controlează centrul (pătratul e5).',
-      6: '<strong>3…Cf6</strong> — negrul se dezvoltă și el (pionul în plus oricum nu poate fi ținut).',
-      7: '<strong>4.e3</strong> — albul deschide drum nebunului din f1, ca să-și recupereze pionul de pe c4.',
-      8: '<strong>4…e6</strong> — negrul își deschide și el drum pentru nebun.',
-      9: '<strong>5.Nxc4</strong> — albul își recuperează pionul cu nebunul și rămâne cu un centru bun și piese dezvoltate. Exact ce voia! 🎯'
-    },
-    arrows: { 9: [{from:'f1', to:'c4', color:'G'}] }
-  },
-
-  /* 2 — CAPCANĂ: lăcomia …b5 din Gambitul Acceptat (câștigă Albul) */
-  {
-    fen: START, orient: 'white', winner: 'w', practiceFrom: 0, winEval: 5,
-    san: ['d4','d5','c4','dxc4','e3','b5','a4','c6','axb5','cxb5','Qf3'],
-    ann: {
-      0:  'Negrul acceptă pionul, apoi se lăcomește să-l țină cu …b5. Vezi cum e pedepsit.',
-      1:  '<strong>1.d4</strong> — pionul în centru.',
-      2:  '<strong>1…d5</strong> — simetric.',
-      3:  '<strong>2.c4</strong> — oferta de gambit.',
-      4:  '<strong>2…dxc4</strong> — negrul acceptă pionul.',
-      5:  '<strong>3.e3</strong> — albul deschide drum nebunului, ca să recupereze liniștit pionul de pe c4.',
-      6:  '<strong>3…b5?!</strong> — negrul se lăcomește: vrea să-și țină pionul în plus, sprijinindu-l cu b5. Dar pierde vremea împingând pioni în loc să-și dezvolte piesele — greșeală tipică de începător.',
-      7:  '<strong>4.a4</strong> — albul atacă imediat lanțul de pioni: lovește pionul b5.',
-      8:  '<strong>4…c6</strong> — negrul își sprijină pionul b5.',
-      9:  '<strong>5.axb5</strong> — albul capturează.',
-      10: '<strong>5…cxb5</strong> — negrul recapturează… dar acum turnul din a8 a rămas descoperit pe diagonala lungă.',
-      11: '<strong>6.Df3!</strong> — POANTA! Dama atacă turnul din a8 pe diagonala lungă, iar pionii de pe aripă sunt slabi. Negrul nu poate salva tot — <strong>pierde material</strong>. A jucat cinci mutări doar cu pioni, fără să dezvolte nicio piesă — lăcomia și timpul pierdut l-au costat scump.'
+      0:  'Partida Italiană: <strong>1.e4 e5 2.Cf3 Cc6 3.Nc4</strong>. Nebunul iese pe c4 și țintește pionul <strong>f7</strong>.',
+      1:  '<strong>1.e4</strong> — Albul ocupă centrul și deschide drum nebunului și damei.',
+      2:  '<strong>1…e5</strong> — Negrul răspunde simetric, în centru.',
+      3:  '<strong>2.Cf3</strong> — calul atacă pionul e5 și se dezvoltă.',
+      4:  '<strong>2…Cc6</strong> — Negrul apără pionul e5 și dezvoltă un cal.',
+      5:  '<strong>3.Nc4</strong> — inima Italienei: nebunul țintește pionul <strong>f7</strong>.',
+      6:  '<strong>3…Nc5</strong> — Negrul face la fel: nebunul lui țintește pionul <strong>f2</strong>. Aceasta e varianta liniștită „Giuoco Piano".',
+      7:  '<strong>4.c3</strong> — Albul pregătește un centru mare de pioni (vrea d4).',
+      8:  '<strong>4…Cf6</strong> — Negrul se dezvoltă și atacă pionul e4.',
+      9:  '<strong>5.d4</strong> — Albul împinge în centru și atacă pionul e5.',
+      10: '<strong>5…exd4</strong> — Negrul capturează.',
+      11: '<strong>6.cxd4</strong> — Albul recapturează și rămâne cu un <strong>centru mare</strong> de pioni. Exact ce voia! 🎯',
+      12: '<strong>6…Nb4+</strong> — Negrul dă un șah ca să nu piardă timp; jocul continuă echilibrat.'
     },
     arrows: {
-      7:  [{from:'a4', to:'b5', color:'R'}],
-      11: [{from:'f3', to:'a8', color:'G'}]
+      5: [{from:'c4', to:'f7', color:'G'}],
+      6: [{from:'c5', to:'f2', color:'B'}]
     }
   },
 
-  /* 3 — CAPCANĂ: Capcana Elefantului (câștigă Negrul) */
+  /* 1 — Ideea deschiderii: Apărarea celor Doi Cai + atacul pe f7 */
   {
-    fen: START, orient: 'black', winner: 'b', practiceFrom: 1, winEval: -4,
-    san: ['d4','d5','c4','e6','Nc3','Nf6','Bg5','Nbd7','cxd5','exd5',
-          'Nxd5','Nxd5','Bxd8','Bb4+','Qd2','Bxd2+','Kxd2','Kxd8'],
+    fen: START, orient: 'white',
+    san: ['e4','e5','Nf3','Nc6','Bc4','Nf6','Ng5','d5','exd5','Na5','Bb5+','c6'],
     ann: {
-      0:  'Capcana Elefantului. Joci cu Negrul: dacă Albul capturează lacom pionul de la d5, cade în cursă.',
-      1:  '<strong>1.d4</strong> — pionul în centru.',
-      2:  '<strong>1…d5</strong> — simetric.',
-      3:  '<strong>2.c4</strong> — oferta de gambit.',
-      4:  '<strong>2…e6</strong> — Gambitul Damei Refuzat.',
-      5:  '<strong>3.Cc3</strong> — presiune pe d5.',
-      6:  '<strong>3…Cf6</strong> — negrul apără d5.',
-      7:  '<strong>4.Ng5</strong> — albul „leagă" calul din f6 (dacă ar fugi, ar lăsa dama în bătaia nebunului).',
-      8:  '<strong>4…Cbd7</strong> — momeala! Negrul mai aduce un cal și lasă impresia că pionul d5 e slab apărat. E o cursă.',
-      9:  '<strong>5.cxd5</strong> — albul capturează pionul din centru.',
-      10: '<strong>5…exd5</strong> — negrul recapturează. Acum pionul d5 pare „gratis", căci calul din f6 e legat… așa crede albul.',
-      11: '<strong>6.Cxd5??</strong> — LĂCOMIA! Albul capturează pionul, convins că negrul nu poate lua (ar pierde dama). Aici calcă elefantul în capcană. 🐘',
-      12: '<strong>6…Cxd5!</strong> — negrul îl capturează oricum! „Chiar dacă îmi iei dama, am pregătit ceva." Poanta urmează.',
-      13: '<strong>7.Nxd8</strong> — albul capturează dama, bucuros. Dar…',
-      14: '<strong>7…Nb4+!</strong> — ȘAHUL INTERMEDIAR! Înainte să-și recupereze dama, negrul dă un șah care schimbă totul.',
-      15: '<strong>8.Dd2</strong> — albul e obligat să blocheze șahul, aducând dama în cale.',
-      16: '<strong>8…Nxd2+</strong> — negrul capturează dama albă, tot cu șah!',
-      17: '<strong>9.Rxd2</strong> — regele alb recapturează nebunul.',
-      18: '<strong>9…Rxd8</strong> — negrul își capturează și nebunul de pe d8. Liniște: <strong>negrul rămâne cu o piesă în plus</strong> (un cal pentru un pion). Elefantul a plătit lăcomia! 🎉'
+      0:  'În loc de 3…Nc5, Negrul poate juca <strong>3…Cf6</strong>, atacând pionul e4. Aceasta e <strong>Apărarea celor Doi Cai</strong>.',
+      1:  '<strong>1.e4</strong>',
+      2:  '<strong>1…e5</strong>',
+      3:  '<strong>2.Cf3</strong> — atacă pionul e5.',
+      4:  '<strong>2…Cc6</strong> — apără pionul e5.',
+      5:  '<strong>3.Nc4</strong> — nebunul țintește f7.',
+      6:  '<strong>3…Cf6</strong> — Negrul atacă pionul e4 (Apărarea celor Doi Cai).',
+      7:  '<strong>4.Cg5!?</strong> — calul se năpustește spre <strong>f7</strong>: împreună cu nebunul, amenință să captureze acolo. E agresiv (calul mută de două ori), dar pune o problemă serioasă.',
+      8:  '<strong>4…d5!</strong> — singura mutare bună: Negrul deschide centrul și alungă nebunul c4, ca să-și apere f7.',
+      9:  '<strong>5.exd5</strong> — Albul capturează pionul.',
+      10: '<strong>5…Ca5!</strong> — mutarea corectă: calul atacă nebunul c4 și scapă din calea lui. (Atenție: 5…Cxd5?! duce la periculosul <em>Fried Liver</em> — vezi capcana!)',
+      11: '<strong>6.Nb5+</strong> — nebunul dă șah retrăgându-se.',
+      12: '<strong>6…c6</strong> — Negrul blochează șahul și alungă nebunul; are un joc bun și recuperează curând pionul.'
     },
     arrows: {
-      7:  [{from:'g5', to:'f6', color:'B'}],
-      11: [{from:'c3', to:'d5', color:'R'}],
-      12: [{from:'f6', to:'d5', color:'G'}],
-      13: [{from:'g5', to:'d8', color:'R'}],
-      14: [{from:'f8', to:'b4', color:'G'}],
-      16: [{from:'b4', to:'d2', color:'G'}]
+      7:  [{from:'g5', to:'f7', color:'R'}, {from:'c4', to:'f7', color:'R'}],
+      8:  [{from:'d5', to:'c4', color:'G'}],
+      10: [{from:'a5', to:'c4', color:'G'}]
+    }
+  },
+
+  /* 2 — CAPCANĂ: Fried Liver (câștigă/atacă Albul) — prezentare */
+  {
+    fen: START, orient: 'white',
+    san: ['e4','e5','Nf3','Nc6','Bc4','Nf6','Ng5','d5','exd5','Nxd5','Nxf7','Kxf7','Qf3+','Ke6','Nc3'],
+    ann: {
+      0:  'Atacul Ficatului Prăjit (<em>Fried Liver</em>): dacă Negrul capturează lacom pionul cu 5…Cxd5?!, Albul dă un cal ca să-i scoată regele la plimbare!',
+      1:  '<strong>1.e4</strong>',
+      2:  '<strong>1…e5</strong>',
+      3:  '<strong>2.Cf3</strong>',
+      4:  '<strong>2…Cc6</strong>',
+      5:  '<strong>3.Nc4</strong> — nebunul țintește f7.',
+      6:  '<strong>3…Cf6</strong> — Apărarea celor Doi Cai.',
+      7:  '<strong>4.Cg5</strong> — calul sare spre f7.',
+      8:  '<strong>4…d5</strong> — Negrul deschide centrul.',
+      9:  '<strong>5.exd5</strong> — Albul capturează.',
+      10: '<strong>5…Cxd5?!</strong> — lacom! Negrul recapturează pionul, dar acum calul din d5 nu mai apără f7. (Mai bine era 5…Ca5.)',
+      11: '<strong>6.Cxf7!</strong> — SACRIFICIUL! Albul dă calul pe f7 ca să tragă regele afară.',
+      12: '<strong>6…Rxf7</strong> — regele e obligat să captureze.',
+      13: '<strong>7.Df3+</strong> — dama intră cu șah și atacă și calul din d5.',
+      14: '<strong>7…Re6</strong> — regele trebuie să apere calul d5, ieșind și mai mult în față. Foarte periculos!',
+      15: '<strong>8.Cc3</strong> — Albul aduce încă o piesă în atac. Regele negru e prins în mijlocul tablei, sub un atac zdrobitor. De aceea Negrul trebuie să joace 5…Ca5, nu 5…Cxd5!'
+    },
+    arrows: {
+      5:  [{from:'c4', to:'f7', color:'G'}],
+      11: [{from:'g5', to:'f7', color:'R'}],
+      13: [{from:'f3', to:'d5', color:'G'}]
+    }
+  },
+
+  /* 3 — CAPCANĂ: capcana șilingului / Blackburne (câștigă Negrul, mat) */
+  {
+    fen: START, orient: 'black', winner: 'b', practiceFrom: 5, winEval: -100,
+    san: ['e4','e5','Nf3','Nc6','Bc4','Nd4','Nxe5','Qg5','Nxf7','Qxg2','Rf1','Qxe4+','Be2','Nf3#'],
+    ann: {
+      0:  'Capcana „șilingului" (<em>Blackburne Shilling Gambit</em>): dacă Albul se lăcomește, Negrul îl matează în câteva mutări! Joci cu <strong>Negrul</strong>.',
+      1:  '<strong>1.e4</strong>',
+      2:  '<strong>1…e5</strong>',
+      3:  '<strong>2.Cf3</strong> — calul atacă pionul e5.',
+      4:  '<strong>2…Cc6</strong> — apără pionul e5.',
+      5:  '<strong>3.Nc4</strong> — Italiana; nebunul țintește f7.',
+      6:  '<strong>3…Cd4?!</strong> — momeala! Calul sare în centru și atacă pionul e5. Obiectiv nu e cea mai bună mutare, dar întinde o cursă.',
+      7:  '<strong>4.Cxe5??</strong> — LĂCOMIA! Albul capturează pionul e5, convins că a câștigat material. Aici cade în capcană.',
+      8:  '<strong>4…Dg5!</strong> — dublă amenințare: dama atacă și calul din e5, și pionul din g2. Albul nu le poate apăra pe amândouă.',
+      9:  '<strong>5.Cxf7</strong> — Albul contraatacă (furculiță pe damă și turn)… dar e prea târziu.',
+      10: '<strong>5…Dxg2</strong> — Negrul capturează pionul g2 și amenință mat pe turnul din f1.',
+      11: '<strong>6.Tf1</strong> — Albul își salvează turnul de la mat.',
+      12: '<strong>6…Dxe4+</strong> — dama capturează pionul e4, cu șah!',
+      13: '<strong>7.Ne2</strong> — Albul e obligat să blocheze șahul cu nebunul.',
+      14: '<strong>7…Cf3#</strong> — MAT! Calul dă mat: regele n-are scăpare, iar nebunul din e2 e blocat. Lăcomia l-a costat partida! 🏆'
+    },
+    arrows: {
+      5:  [{from:'c4', to:'f7', color:'G'}],
+      6:  [{from:'d4', to:'e5', color:'G'}],
+      8:  [{from:'g5', to:'e5', color:'R'}, {from:'g5', to:'g2', color:'R'}],
+      14: [{from:'f3', to:'e1', color:'R'}]
     }
   }
 
@@ -325,16 +338,16 @@ const chapters = [
 
 /* ─── Acordeon: fiecare item încarcă un capitol ─── */
 const accData = [
-  { chIdx: 0, kind: 'opening', num: '📖', title: 'Gambitul Damei Refuzat (2…e6)',
-    desc: 'Negrul nu capturează pionul de la c4, ci apără d5 cu e6. Varianta solidă și cea mai populară.' },
-  { chIdx: 1, kind: 'opening', num: '📖', title: 'Gambitul Damei Acceptat (2…dxc4)',
-    desc: 'Negrul capturează pionul, dar nu-l poate ține: albul joacă calm Cf3 și e3, apoi îl recuperează cu nebunul pe c4.' },
-  { chIdx: 2, kind: 'trap', num: '1', title: 'Cum pedepsești lăcomia din Gambitul Acceptat',
-    badge: { cls: 'badge-white', text: '✅ Câștigi material (cu Albul)' },
-    desc: 'Joci cu <strong>Albul</strong> și câștigi material: dacă Negrul se lăcomește să-și țină pionul cu …b5, dama ta pe f3 pedepsește turnul din colț.' },
-  { chIdx: 3, kind: 'trap', num: '2', title: 'Cum pedepsești Gambitul Damei Refuzat',
-    badge: { cls: 'badge-white', text: '✅ Câștigi material (cu Negrul)' },
-    desc: 'Englezii îi spun <strong>„Elephant Trap"</strong> (Capcana Elefantului) — o cursă atât de mare și de cunoscută, încât până și un jucător puternic poate călca în ea dacă se lăcomește. Joci cu <strong>Negrul</strong>: <strong>Albul pierde dacă capturează lacom la d5</strong>. Negrul își sacrifică dama, apoi, cu o <strong>mutare intermediară</strong> (un șah), îl forțează pe Alb să dea dama pentru un simplu nebun — și rămâne cu o piesă în plus.' }
+  { chIdx: 0, kind: 'opening', num: '📖', title: 'Giuoco Piano — jocul liniștit',
+    desc: 'Varianta liniștită: 3…Nc5. Ambii nebuni țintesc pionul din fața regelui advers (f7, respectiv f2), iar Albul construiește un centru mare cu c3 și d4.' },
+  { chIdx: 1, kind: 'opening', num: '📖', title: 'Apărarea celor Doi Cai (3…Cf6)',
+    desc: 'Varianta agresivă: Negrul atacă imediat pionul e4. Albul se poate năpusti cu 4.Cg5 spre f7, iar Negrul răspunde corect cu 4…d5! și 5…Ca5.' },
+  { chIdx: 2, kind: 'trap', num: '1', title: 'Cum ataci — Atacul Ficatului Prăjit', practice: false,
+    badge: { cls: 'badge-white', text: '⚔️ Atac zdrobitor (cu Albul)' },
+    desc: 'Joci cu <strong>Albul</strong>: dacă Negrul recapturează lacom cu 5…Cxd5?!, sacrifici calul pe f7 (<strong>6.Cxf7!</strong>) și îi scoți regele la plimbare, cu un atac foarte periculos. (Cea mai faimoasă capcană a Italienei.)' },
+  { chIdx: 3, kind: 'trap', num: '2', title: 'Cum pedepsești lăcomia — capcana șilingului', practice: true,
+    badge: { cls: 'badge-black', text: '🏆 Mat în 7 (cu Negrul)' },
+    desc: 'Joci cu <strong>Negrul</strong>: momeala e 3…Cd4?!. Dacă Albul se lăcomește cu <strong>4.Cxe5??</strong>, urmează 4…Dg5! și un mat rapid (…Cf3#). Apasă „🤖 Exersează" și dă tu matul!' }
 ];
 
 let curChapterIdx = 0;
@@ -776,8 +789,8 @@ function pracFinish() {
   document.getElementById('pracPrecision').textContent = 'Precizie: ' + pct + '%';
   document.getElementById('pracProgress').textContent = pracKeyTotal + '/' + pracKeyTotal + ' ✓';
   setPStatus(pct === 100
-    ? '🎉 Perfect! Ai executat capcana fără nicio greșeală!'
-    : '🎉 Bravo! Ai executat capcana! Precizie: ' + pct + '%. Poți încerca „↺ De la capăt".');
+    ? '🎉 Perfect! Ai dat matul fără nicio greșeală!'
+    : '🎉 Bravo! Ai dat matul! Precizie: ' + pct + '%. Poți încerca „↺ De la capăt".');
   document.getElementById('pracSkip').style.display = 'none';
 }
 
@@ -836,7 +849,7 @@ function buildAccordion() {
   const list = document.getElementById('accList');
   let openLbl = false, trapLbl = false;
   accData.forEach(function (d) {
-    if (d.kind === 'opening' && !openLbl) { addLabel(list, '📖 Cele două răspunsuri ale Negrului'); openLbl = true; }
+    if (d.kind === 'opening' && !openLbl) { addLabel(list, '📖 Ideea deschiderii'); openLbl = true; }
     if (d.kind === 'trap'    && !trapLbl) { addLabel(list, '🪤 Capcanele din această deschidere'); trapLbl = true; }
     const item = document.createElement('div');
     item.className = 'acc-item';
@@ -853,7 +866,7 @@ function buildAccordion() {
     const inner = document.createElement('div');
     inner.className = 'acc-inner';
     let innerHtml = '<p class="acc-desc">' + d.desc + '</p>';
-    if (d.kind === 'trap') innerHtml += '<button class="ex-start" onclick="startPractice(' + d.chIdx + ')">🤖 Exersează această capcană</button>';
+    if (d.practice) innerHtml += '<button class="ex-start" onclick="startPractice(' + d.chIdx + ')">🤖 Exersează această capcană</button>';
     inner.innerHTML = innerHtml;
     body.appendChild(inner);
     item.appendChild(hdr);
