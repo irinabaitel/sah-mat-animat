@@ -84,5 +84,32 @@ Legendă: ✅=de folosit · 🔁=dublură · ⏭️=nu e capcană de deschidere 
 - **Puzzle / altele / non-șah util**: 043 (turul calului), 030 (aplicație 3D), 041 (clip meme troll), 027 / 038 (neclare).
 
 ---
-**Bilanț valuri 1+2 (54 filme prelucrate):** ~28 capcane de deschidere utile (câteva dubluri), restul finaluri / puzzle-uri / modele de mat / neclare. **Rămân ~199 de prelucrat.**
+
+## VALUL 3 (filmele 054–083; sărite lung: 066, 075, 078)
+
+27 filme citite (9 agenți × 3). **Valul ăsta = foarte multe finaluri** (studii rege+pion / turn) — merg la Nivel III, NU se reprelucrează.
+
+### ♙ Capcane de deschidere utile (→ Nivel VI)
+| Tag | Deschidere | Cine câștigă | Capcană / linie | Încr. |
+|-----|-----------|--------------|-----------------|-------|
+| 070 | **Philidor, Bird Gambit** (C41) | Alb | mat curat: 1.e4 e5 2.Cf3 d6 3.d4 exd4 4.c3 dxc3 5.Nc4 h6 6.Nxf7+ Rxf7 7.Ce5+ Re8 8.Dh5+ Re7 9.Df7# | mare |
+| 079 | **Contraatacul Traxler** (Doi Cai/Italiană) | Negru | 1.e4 e5 2.Cf3 Cc6 3.Nc4 Cf6 4.Cg5 Nc5 — sac pe f2/f7, regele alb tras în centru → mat | mare |
+| 081 | **Scandinavă, Mieses-Kotroc** | Alb | 1.e4 d5 2.exd5 Dxd5 3.Cc3 (dama iese devreme) → Nb5 amenință Cxc7 furculiță, câștigă turnul | mare |
+| 082 | **Apărarea Alehin** | Alb | 1.e4 Cf6 2.e5 Cd5 3.Cf3 d6 4.Nc4 Cb6, sac Nxf7+ devreme → mat | mare(nume)/medie(linie) |
+| 068 | **Gambitul Blackmar-Diemer** (1.d4 d5 2.e4) | Alb | sac pion pt inițiativă (Dh5, e5) — dublură temă cu 006 | medie |
+| 063 | Spaniolă, var. Schimbului | Negru | animație rapidă „beginners chess", linie incoerentă | mică |
+| 069 | pion-damă 1.d4 (posibil Albin/Lasker) | Alb? | pion trecut avansat + nebun raid c2 (tablă rotită) | mică |
+| 083 | 1.d4 (nume neafișat) | Negru | „Fastest Attack" — rege alb hăituit în centru (tablă rotită) | mică |
+| 056 | 1.e4 miniatură | Negru | mat rapid pe regele alb — cadre editate (2 dame negre?), posibil fake | mică |
+
+### ⏭️ NU sunt capcane de deschidere
+- **Finaluri (→ Nivel III):** 054, 057 (Mitrofanov 1982), 058 (tempo/opoziție), 059 (triangulare Fahrni 1917), 060 (**Lucena**), 061 (turn vs pion), 064 (Rinck 1931), 065 (turn+pion), 071 (Endgame Domination), 073 (Kissling 1915), 074 (opoziție R+p vs R).
+- **Puzzle/studii:** 055 (Mouterde 1922, D+T), 062 (**Carlsen–Naroditsky, subpromovare la cal** → potrivit Nivel IV Subpromovare), 072 (atac de mat incoerent).
+- **Model de mat (→ Nivel V):** 067 (montaj: mat sufocat + Légal).
+- **Montaj „quick tips" (neconvertibil):** 076, 077, 080.
+
+**Bilanț val 3:** ~9 capcane utile (2 dubluri/slabe), ~11 finaluri, restul puzzle/montaj.
+
+---
+**Bilanț valuri 1+2+3 (81 filme prelucrate):** ~37 capcane de deschidere utile (câteva dubluri), restul finaluri (multe!) / puzzle-uri / modele de mat / neclare. **Rămân ~169 de prelucrat** (169 = 253 − 81 − 3 sărite lung).
 
