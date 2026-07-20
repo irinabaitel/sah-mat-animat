@@ -45,6 +45,11 @@ function resetAllProgress() {
 - Există și `playAgainBtn` în puzzleView (pentru când toate puzzle-urile sunt rezolvate)
 - Model de referință: `pagina52.html`
 
+## Indiciu în trepte (modul Exersează)
+Butonul „💡 Indiciu" NU arată direct mutarea scrisă — ajută **vizual, în trepte**:
+1) prima apăsare = **pătratul piesei devine verde** (`.hint-square`); 2) a doua apăsare = **săgeată verde** de la piesă spre destinație (SVG `prac-hint-svg`); 3) a treia = și mutarea scrisă.
+**Se aplică la TOATE lecțiile cu Exersează.** Model de copiat: `nivel6_lectia5.html` (funcțiile `pracHint` / `drawPracHintArrow` / `clearPracHint`, variabila `pracHintStage`, clasa CSS `.hint-square`).
+
 ## Auto-scroll la lista de mutări (lecții cu exemple)
 În paginile de lecție cu `.moves-log` + butoane ◄ ► (de derulare prin exemple), **nu folosi `active.scrollIntoView()`** — scrolează și panoul mare, iar butoanele „fug de sub mouse" când userul apasă pentru mutarea următoare (mai ales pe paginile cu poveste lungă).
 

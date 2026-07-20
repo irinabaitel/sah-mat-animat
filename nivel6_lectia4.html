@@ -62,6 +62,7 @@
       color: var(--c-text); min-height: 60px;
     }
     .square-selected { background: rgba(255,200,0,0.55) !important; }
+    .hint-square { background: rgba(60,190,80,0.60) !important; }
 
     .section-label {
       font-family: var(--font-display); font-weight: 900; color: var(--c-navy);
@@ -466,6 +467,7 @@ let pracFirstTryCount = 0;
 let pracKeyTotal = 0;
 let pracKeyDone = 0;
 let pracRecapTimer = null;
+let pracHintStage = 0;
 
 document.addEventListener('mousedown', function (e) { if (e.button === 2) rmbDown = true;  }, true);
 document.addEventListener('mouseup',   function (e) { if (e.button === 2) rmbDown = false; }, true);
@@ -792,7 +794,8 @@ function startPractice(idx) {
   pracKeyTotal = 0;
   for (let i = ch.practiceFrom; i < ch.san.length; i++) if ((i - ch.practiceFrom) % 2 === 0) pracKeyTotal++;
   pracFirstTryCount = 0; pracKeyDone = 0; pracErrThisMove = false; pracUserTurn = false;
-  clearStudyArrows(); clearSel();
+  pracHintStage = 0;
+  clearStudyArrows(); clearSel(); clearPracHint();
   document.getElementById('navControls').style.display = 'none';
   const panel = document.getElementById('practicePanel');
   const openItem = document.querySelector('#accList .acc-item.open');
@@ -853,7 +856,8 @@ function pracAttemptMove(source, target) {
   if (!pracErrThisMove) pracFirstTryCount++;
   pracKeyDone++;
   pracUserTurn = false;
-  clearSel(); syncBoard(false); updateEval();
+  pracHintStage = 0;
+  clearSel(); clearPracHint(); syncBoard(false); updateEval();
   setPStatus('✔ Corect!');
   updatePracStats();
   setTimeout(pracAfterUser, 560);
@@ -900,13 +904,78 @@ function pracClick(sq) {
   }
 }
 
+function clearPracHint() {
+  document.querySelectorAll('.hint-square').forEach(function (el) { el.classList.remove('hint-square'); });
+  const s = document.getElementById('prac-hint-svg');
+  if (s) s.remove();
+}
+
+function drawPracHintArrow(from, to) {
+  clearStudyArrows();
+  const old = document.getElementById('prac-hint-svg'); if (old) old.remove();
+  const NS = 'http://www.w3.org/2000/svg';
+  const bw = document.getElementById('boardWrapper'); if (!bw) return;
+  const ori = board.orientation();
+  const tlName = ori === 'white' ? 'a8' : 'h1';
+  const tlSq = bw.querySelector('[data-square="' + tlName + '"]');
+  let sqSz, svgX = 0, svgY = 0;
+  if (tlSq) {
+    sqSz = tlSq.offsetWidth;
+    const bwRect = bw.getBoundingClientRect(), tlRect = tlSq.getBoundingClientRect();
+    svgX = Math.round(tlRect.left - bwRect.left); svgY = Math.round(tlRect.top - bwRect.top);
+  } else { sqSz = bw.offsetWidth / 8; }
+  const sz = sqSz * 8;
+  const svg = document.createElementNS(NS, 'svg');
+  svg.id = 'prac-hint-svg';
+  svg.style.cssText = 'position:absolute;pointer-events:none;z-index:20;';
+  svg.style.left = svgX + 'px'; svg.style.top = svgY + 'px';
+  svg.style.width = sz + 'px'; svg.style.height = sz + 'px';
+  const defs = document.createElementNS(NS, 'defs'); svg.appendChild(defs);
+  const col = 'rgba(60,190,80,0.92)';
+  const mk = document.createElementNS(NS, 'marker');
+  mk.setAttribute('id', 'phintarr'); mk.setAttribute('markerWidth', '10'); mk.setAttribute('markerHeight', '7');
+  mk.setAttribute('refX', '8'); mk.setAttribute('refY', '3.5'); mk.setAttribute('orient', 'auto');
+  const mp = document.createElementNS(NS, 'path'); mp.setAttribute('d', 'M0,0 L9,3.5 L0,7 L2.5,3.5 Z'); mp.setAttribute('fill', col);
+  mk.appendChild(mp); defs.appendChild(mk);
+  function sqCenter(sq) { let c = sq.charCodeAt(0) - 97, r = parseInt(sq[1]) - 1; if (ori === 'black') { c = 7 - c; r = 7 - r; } const s = sz / 8; return { x: c * s + s / 2, y: (7 - r) * s + s / 2 }; }
+  const f = sqCenter(from), t = sqCenter(to), dx = t.x - f.x, dy = t.y - f.y, len = Math.sqrt(dx * dx + dy * dy);
+  if (len < 1) return;
+  const ux = dx / len, uy = dy / len, SW = 5;
+  const ln = document.createElementNS(NS, 'line');
+  ln.setAttribute('x1', f.x); ln.setAttribute('y1', f.y); ln.setAttribute('x2', t.x - ux * SW); ln.setAttribute('y2', t.y - uy * SW);
+  ln.setAttribute('stroke', col); ln.setAttribute('stroke-width', String(SW)); ln.setAttribute('stroke-linecap', 'round');
+  ln.setAttribute('marker-end', 'url(#phintarr)');
+  svg.appendChild(ln);
+  bw.appendChild(svg);
+}
+
+/* Indiciu în trepte: 1) pătratul piesei (verde) → 2) + săgeata spre destinație → 3) mutarea scrisă */
 function pracHint() {
   if (!practiceMode || !pracUserTurn) return;
   const ch = chapters[curChapterIdx];
   const expected = ch.san[pGame.history().length];
+  const tmp = new Chess(pGame.fen());
+  const mv = tmp.move(expected);
+  if (!mv) return;
   pracErrThisMove = true;
   updatePracStats();
-  setPStatus('💡 Indiciu: mutarea câștigătoare este <strong>' + toRo(expected) + '</strong>. Joacă-o pe tablă!');
+  pracHintStage++;
+  const markFrom = function () {
+    const el = document.querySelector('.square-' + mv.from);
+    if (el) el.classList.add('hint-square');
+  };
+  if (pracHintStage === 1) {
+    markFrom();
+    setPStatus('💡 Piesa de mutat e pe pătratul <strong>verde</strong>. (Apasă din nou pentru săgeată.)');
+  } else if (pracHintStage === 2) {
+    markFrom();
+    drawPracHintArrow(mv.from, mv.to);
+    setPStatus('💡 Mută piesa în direcția <strong>săgeții verzi</strong>.');
+  } else {
+    markFrom();
+    drawPracHintArrow(mv.from, mv.to);
+    setPStatus('💡 Mutarea este <strong>' + toRo(mv.san) + '</strong>. Joac-o pe tablă!');
+  }
 }
 
 function pracRestart() {
@@ -917,6 +986,7 @@ function pracRestart() {
 function pracExit() {
   if (pracRecapTimer) { clearTimeout(pracRecapTimer); pracRecapTimer = null; }
   practiceMode = false; pracUserTurn = false; pGame = null;
+  pracHintStage = 0; clearPracHint();
   document.getElementById('practicePanel').style.display = 'none';
   document.getElementById('evalBar').style.display = 'none';
   document.querySelector('.board-stage').classList.remove('practicing');
