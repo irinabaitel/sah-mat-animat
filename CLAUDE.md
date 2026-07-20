@@ -75,10 +75,12 @@ Brandul vechi "Cufărul cu Șah" = abandonat. Storylinea Tusk + Kibo = **ABANDON
 | III | Finaluri esențiale | 12 finaluri |
 | IV | Tactici și combinații | 15 tehnici; Zugzwang: pagina88.html + arenă pagina88a.html; Calul Troian (Darul Grecesc): pagina89.html + arenă pagina89a.html; Subpromovarea: pagina90.html + arenă pagina90a.html (40 puzzle-uri fiecare) |
 | V | Modele de mat | 28 modele; Damiano: pagina87.html |
-| VI | Capcane și miniaturi | în curând |
+| VI | **Deschideri și capcane în deschidere** | în lucru — vezi `HANDOFF_NIVEL6.md` |
 | Bonus | 6 minijocuri interactive | |
 
 Istoria Șahului = secțiune separată (Chaturanga, Shatranj, Xiangqi, Shogi, Răspândire, Europa, AI).
+
+**➡️ Pentru starea la zi a Nivelului VI (lecții gata, workflow filme, reguli de stil, ce urmează) citește `HANDOFF_NIVEL6.md` din rădăcina repo-ului.** E documentul de continuitate (poți relua de pe orice dispozitiv care are repo-ul).
 
 ### Fișiere cheie
 - `hub.html` — hub central cu cele 6 niveluri
