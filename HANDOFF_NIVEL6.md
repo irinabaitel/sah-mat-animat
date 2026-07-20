@@ -46,6 +46,10 @@ Mod Exersează: robotul joacă adversarul, userul joacă **partea câștigătoar
 **REGULĂ TARE: userul exersează ÎNTOTDEAUNA partea CÂȘTIGĂTOARE.** Fried Liver e doar prezentare
 (sacrificiu → bara de material ar deruta), deci `practice:false`.
 
+**Indiciu în trepte (la toate lecțiile cu Exersează):** butonul „💡 Indiciu" ajută vizual —
+1ª apăsare = pătratul piesei verde (`.hint-square`); 2ª = săgeată verde spre destinație; 3ª = mutarea scrisă.
+Vezi `pracHint`/`drawPracHintArrow`/`clearPracHint` + `pracHintStage` în `nivel6_lectia5.html`.
+
 ## Verificarea liniilor (OBLIGATORIU)
 **Nicio linie nu intră în lecție neverificată.** Folosește python-chess (instalat):
 `scratchpad/try_line.py "e4 e5 Bc4 ..."` → spune dacă toate mutările sunt legale + dacă e MAT.
