@@ -380,6 +380,45 @@ const chapters = [
     arrows: {}
   },
 
+  /* 8 — Altă pedeapsă: metoda GM Igor Smirnov (mat de nebun) */
+  {
+    fen: START, orient: 'black', winner: 'b', practiceFrom: 7, winEval: -100,
+    san: ['e4','e5','Bc4','Nc6','Qf3','Nf6','c3','d5','exd5','e4','Qe3','Ne5','Bb3','Nd3+','Kd1','Bc5','Qe2','Nxf2+','Kc2','Bg4','Qc4','Bd1#'],
+    ann: {
+      0:  'O pedeapsă mai spectaculoasă, arătată de <strong>GM Igor Smirnov</strong>: dacă Albul insistă cu matul școlarului, îl matezi tu „pe la spate"! Joci cu <strong>Negrul</strong>.',
+      1:  '<strong>1.e4</strong> — Albul deschide.',
+      2:  '<strong>1…e5</strong>',
+      3:  '<strong>2.Nc4</strong> — nebunul țintește pionul f7.',
+      4:  '<strong>2…Cc6</strong> — aperi pionul e5 și dezvolți un cal.',
+      5:  '<strong>3.Df3</strong> — dama iese: împreună cu nebunul amenință Dxf7#.',
+      6:  '<strong>3…Cf6</strong> — mai întâi <strong>oprești amenințarea</strong> și dezvolți.',
+      7:  '<strong>4.c3</strong> — Albul vrea să-ți <strong>blocheze calul</strong>, să nu sară la d4.',
+      8:  '<strong>4…d5!</strong> — <strong>lovești în centru</strong> chiar când Albul e nedezvoltat.',
+      9:  '<strong>5.exd5</strong> — Albul capturează pionul.',
+      10: '<strong>5…e4!</strong> — <strong>ataci dama și câștigi un tempo</strong> — și eliberezi câmpul e5 pentru cal.',
+      11: '<strong>6.De3</strong> — dama se retrage.',
+      12: '<strong>6…Ce5!</strong> — <strong>calul sare și lovește nebunul</strong> (și scapă de pionul d5).',
+      13: '<strong>7.Nb3</strong> — <strong>nebunul se retrage</strong>.',
+      14: '<strong>7…Cd3+!</strong> — <strong>furculiță cu șah</strong>: ai deja o poziție câștigătoare! Dama nu poate captura calul, pentru că a fugit prea departe.',
+      15: '<strong>8.Rd1</strong> — regele fuge.',
+      16: '<strong>8…Nc5!</strong> — <strong>încă un tempo</strong>: nebunul lovește dama de pe e3.',
+      17: '<strong>9.De2</strong> — dama se mută iar.',
+      18: '<strong>9…Cxf2+!</strong> — <strong>încă o furculiță</strong>: ești pe cale să câștigi turnul… dar nici nu-ți trebuie!',
+      19: '<strong>10.Rc2</strong> — regele se plimbă.',
+      20: '<strong>10…Ng4!</strong> — <strong>nebunul lovește dama din nou</strong>.',
+      21: '<strong>11.Dc4</strong> — dama fuge iar.',
+      22: '<strong>11…Nd1#</strong> — <strong>MAT de nebun!</strong> Îl matezi pe Alb chiar în colțul lui. 🏆'
+    },
+    arrows: {
+      12: [{from:'e5', to:'c4', color:'G'}],
+      14: [{from:'d3', to:'e1', color:'R'}, {from:'d3', to:'c1', color:'G'}],
+      16: [{from:'c5', to:'e3', color:'G'}],
+      18: [{from:'f2', to:'h1', color:'G'}, {from:'f2', to:'d1', color:'R'}],
+      20: [{from:'g4', to:'e2', color:'G'}],
+      22: [{from:'d1', to:'c2', color:'R'}]
+    }
+  },
+
 ];
 
 /* ─── Acordeon: fiecare item încarcă un capitol ─── */
@@ -393,7 +432,10 @@ const accData = [
     desc: 'Gonești regina cu 3…g6, apoi ai <strong>5 mutări salvatoare</strong> (întăresc f7 sau taie atacul). Orice altă mutare (ca …d6) → mat. Apasă un buton ca să vezi fiecare apărare — sau mută tu piesele pe tablă!' },
   { chIdx: 2, kind: 'trap', num: '3', title: 'Cum pedepsești matul școlarului', practice: false,
     badge: { cls: 'badge-black', text: '🏆 Pedeapsă → mat (cu Negrul)' },
-    desc: 'Dacă Albul se încăpățânează cu dama (și joacă g4), Negrul îl pedepsește până la <strong>mat</strong> (…Df2#)! Fugărești dama și ataci fără milă. Poți muta tu piesele pe tablă.' }
+    desc: 'Dacă Albul se încăpățânează cu dama (și joacă g4), Negrul îl pedepsește până la <strong>mat</strong> (…Df2#)! Fugărești dama și ataci fără milă. Poți muta tu piesele pe tablă.' },
+  { chIdx: 8, kind: 'trap', num: '4', title: 'Altă pedeapsă — metoda lui Smirnov', practice: true,
+    badge: { cls: 'badge-black', text: '🏆 Mat de nebun (cu Negrul)' },
+    desc: 'O linie mai spectaculoasă, arătată de <strong>GM Igor Smirnov</strong>: lovești în centru cu <strong>…d5</strong> și <strong>…e4</strong>, calul face furculițe (…Cd3+, …Cxf2+), iar nebunii dau <strong>mat</strong> (…Nd1#)! Apasă „🤖 Exersează acest mat" și joacă tu mutările Negrului.' }
 ];
 
 let curChapterIdx = 0;
