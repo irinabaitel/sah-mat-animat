@@ -71,9 +71,9 @@ Rafturile vizuale cu capcanele clasificate: artifact publicat (link în istoricu
 **Pe măsură ce se clasifică filmele, se ADAUGĂ capcane la fiecare deschidere existentă** (structura e extensibilă).
 
 ## Filozofia deschiderilor (box în fiecare lecție de deschidere)
-Fiecare lecție de deschidere are un box `.quote-box` cu ideea lui **Aron Nimzovici**:
-teoria = jocul marilor maeștri; nu memora orbește, înțelege DE CE; din deschidere de obicei **pierzi**,
-nu câștigi; o capcană merge **doar dacă adversarul greșește** — de aceea învățăm și cum s-o dăm, și cum să n-o pățim.
+Fiecare lecție de deschidere are un box `.quote-box` cu două idei, ATRIBUITE CORECT:
+- **Aron Nimzovici** — doar: teoria deschiderilor = **jocul marilor maeștri** (o linie a devenit „teorie" pentru că cineva a jucat-o cel mai bine).
+- **Antrenorul Christiansen Sava** — partea practică: nu memora orbește, înțelege DE CE; din deschidere de obicei **pierzi**, nu câștigi; o capcană merge **doar dacă adversarul greșește** — deci învățăm și cum s-o dăm, și cum să n-o pățim.
 Model: `nivel6_lectia5.html` (sub note-box-ul „Ține minte"). **Pune-l în orice deschidere nouă.**
 
 ## Reguli de limbaj/stil (cerute de user — aplică-le mereu)
