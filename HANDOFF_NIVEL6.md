@@ -70,6 +70,12 @@ Rafturile vizuale cu capcanele clasificate: artifact publicat (link în istoricu
 
 **Pe măsură ce se clasifică filmele, se ADAUGĂ capcane la fiecare deschidere existentă** (structura e extensibilă).
 
+## Filozofia deschiderilor (box în fiecare lecție de deschidere)
+Fiecare lecție de deschidere are un box `.quote-box` cu ideea lui **Aron Nimzovici**:
+teoria = jocul marilor maeștri; nu memora orbește, înțelege DE CE; din deschidere de obicei **pierzi**,
+nu câștigi; o capcană merge **doar dacă adversarul greșește** — de aceea învățăm și cum s-o dăm, și cum să n-o pățim.
+Model: `nivel6_lectia5.html` (sub note-box-ul „Ține minte"). **Pune-l în orice deschidere nouă.**
+
 ## Reguli de limbaj/stil (cerute de user — aplică-le mereu)
 - „legat/a lega/leagă" pentru pin (NU „pironit/țintuit"); „capturează" (NU „înșfacă/ia"); „pentru că" (NU „fiindcă").
 - Numește pionii pe pătrat: „pionul f7/f2" (NU „pionul din fața regelui").
