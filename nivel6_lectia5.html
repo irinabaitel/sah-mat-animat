@@ -293,32 +293,102 @@ const chapters = [
     }
   },
 
-  /* 2 — CAPCANĂ: Fried Liver (câștigă/atacă Albul) — prezentare */
+  /* 2 — CAPCANĂ: Fried Liver — atacul care reușește (câștigă Albul, MAT) */
   {
-    fen: START, orient: 'white',
-    san: ['e4','e5','Nf3','Nc6','Bc4','Nf6','Ng5','d5','exd5','Nxd5','Nxf7','Kxf7','Qf3+','Ke6','Nc3'],
+    fen: START, orient: 'white', winner: 'w', practiceFrom: 10, winEval: 100,
+    san: ['e4','e5','Nf3','Nc6','Bc4','Nf6','Ng5','d5','exd5','Nxd5','Nxf7','Kxf7','Qf3+','Ke6','Nc3','Bd6','Bxd5+','Kd7','Qf5+','Ke7','Qf7#'],
     ann: {
-      0:  'Atacul Ficatului Prăjit (<em>Fried Liver</em>): dacă Negrul capturează lacom pionul cu 5…Cxd5?!, Albul dă un cal ca să-i scoată regele la plimbare!',
+      0:  'Atacul Ficatului Prăjit (<em>Fried Liver</em>) — cea mai faimoasă capcană a Italienei. Dacă Negrul recapturează lacom cu 5…Cxd5?!, sacrifici un cal pe f7 și îi vânezi regele până la MAT! Joci cu <strong>Albul</strong>.',
       1:  '<strong>1.e4</strong>',
       2:  '<strong>1…e5</strong>',
       3:  '<strong>2.Cf3</strong>',
       4:  '<strong>2…Cc6</strong>',
       5:  '<strong>3.Nc4</strong> — nebunul țintește f7.',
       6:  '<strong>3…Cf6</strong> — Apărarea celor Doi Cai.',
-      7:  '<strong>4.Cg5</strong> — calul sare spre f7.',
-      8:  '<strong>4…d5</strong> — Negrul deschide centrul.',
-      9:  '<strong>5.exd5</strong> — Albul capturează.',
-      10: '<strong>5…Cxd5?!</strong> — lacom! Negrul recapturează pionul, dar acum calul din d5 nu mai apără f7. (Mai bine era 5…Ca5.)',
-      11: '<strong>6.Cxf7!</strong> — SACRIFICIUL! Albul dă calul pe f7 ca să tragă regele afară.',
+      7:  '<strong>4.Cg5</strong> — calul se alătură atacului pe f7: acum pionul e atacat de două ori.',
+      8:  '<strong>4…d5</strong> — Negrul deschide centrul ca să se apere.',
+      9:  '<strong>5.exd5</strong> — Albul capturează pionul.',
+      10: '<strong>5…Cxd5?!</strong> — greșeala! Negrul recapturează cu calul, dar acum calul din d5 <strong>nu mai apără f7</strong>. (Corect era 5…Ca5 sau 5…Cd4 — vezi „Cum te aperi".)',
+      11: '<strong>6.Cxf7!</strong> — SACRIFICIUL! Dai calul pe f7 ca să scoți regele din adăpost.',
       12: '<strong>6…Rxf7</strong> — regele e obligat să captureze.',
-      13: '<strong>7.Df3+</strong> — dama intră cu șah și atacă și calul din d5.',
-      14: '<strong>7…Re6</strong> — regele trebuie să apere calul d5, ieșind și mai mult în față. Foarte periculos!',
-      15: '<strong>8.Cc3</strong> — Albul aduce încă o piesă în atac. Regele negru e prins în mijlocul tablei, sub un atac zdrobitor. De aceea Negrul trebuie să joace 5…Ca5, nu 5…Cxd5!'
+      13: '<strong>7.Df3+</strong> — dama intră cu șah ȘI atacă în același timp calul din d5 (dublă lovitură).',
+      14: '<strong>7…Re6</strong> — singura mutare care ține calul d5; regele iese și mai mult. (Dacă fuge cu 7…Rg8 sau 7…Re8, atunci 8.Dxd5 câștigă calul și rămâi cu pion în plus + atac.)',
+      15: '<strong>8.Cc3</strong> — aduci încă o piesă: calul d5 e acum atacat de trei ori. Regele negru e prins în centru.',
+      16: '<strong>8…Nd6?</strong> — Negrul încearcă să se dezvolte (nebunul la d6), dar regele expus îl costă totul.',
+      17: '<strong>9.Nxd5+</strong> — nebunul capturează calul, cu șah: ți-ai recuperat piesa și continui atacul.',
+      18: '<strong>9…Rd7</strong> — regele fuge.',
+      19: '<strong>10.Df5+</strong> — dama dă șah și împinge regele.',
+      20: '<strong>10…Re7</strong> — regele nu mai are unde fugi.',
+      21: '<strong>11.Df7#</strong> — MAT! Frumusețea Fried Liver-ului. 🏆'
     },
     arrows: {
       5:  [{from:'c4', to:'f7', color:'G'}],
+      7:  [{from:'g5', to:'f7', color:'R'}, {from:'c4', to:'f7', color:'R'}],
       11: [{from:'g5', to:'f7', color:'R'}],
-      13: [{from:'f3', to:'d5', color:'G'}]
+      13: [{from:'f3', to:'d5', color:'G'}],
+      17: [{from:'c4', to:'d5', color:'R'}],
+      21: [{from:'f7', to:'e7', color:'R'}]
+    }
+  },
+
+  /* 3 — APĂRARE: 5…Ca5 (varianta sigură) */
+  {
+    fen: START, orient: 'black',
+    san: ['e4','e5','Nf3','Nc6','Bc4','Nf6','Ng5','d5','exd5','Na5','Bb5+','c6','dxc6','bxc6','Be2','h6','Nf3','e4'],
+    ann: {
+      0:  'Cum te aperi de Fried Liver — varianta sigură: <strong>5…Ca5!</strong> În loc să recapturezi lacom pionul, muți calul și lovești nebunul. Joci cu <strong>Negrul</strong>.',
+      1:  '<strong>1.e4</strong>',
+      2:  '<strong>1…e5</strong>',
+      3:  '<strong>2.Cf3</strong>',
+      4:  '<strong>2…Cc6</strong>',
+      5:  '<strong>3.Nc4</strong> — Italiana.',
+      6:  '<strong>3…Cf6</strong> — Apărarea celor Doi Cai.',
+      7:  '<strong>4.Cg5</strong> — calul se năpustește spre f7.',
+      8:  '<strong>4…d5</strong> — deschizi centrul.',
+      9:  '<strong>5.exd5</strong> — Albul capturează.',
+      10: '<strong>5…Ca5!</strong> — CHEIA! În loc de 5…Cxd5?? (Fried Liver), calul atacă nebunul c4 și fuge din calea lui. Nu-ți expui regele.',
+      11: '<strong>6.Nb5+</strong> — nebunul dă șah retrăgându-se (ca să nu fie capturat).',
+      12: '<strong>6…c6</strong> — blochezi șahul și ataci din nou nebunul.',
+      13: '<strong>7.dxc6</strong> — Albul capturează pionul.',
+      14: '<strong>7…bxc6</strong> — recapturezi; nebunul b5 e atacat iar.',
+      15: '<strong>8.Ne2</strong> — nebunul se retrage la loc sigur.',
+      16: '<strong>8…h6</strong> — alungi calul din g5.',
+      17: '<strong>9.Cf3</strong> — calul se retrage.',
+      18: '<strong>9…e4!</strong> — împingi în centru și ataci calul. Ai dat un pion, dar ai <strong>doi nebuni, centru puternic și inițiativă</strong> — poziția e foarte bună pentru Negru. 🛡️'
+    },
+    arrows: {
+      10: [{from:'a5', to:'c4', color:'G'}],
+      18: [{from:'e4', to:'f3', color:'G'}]
+    }
+  },
+
+  /* 4 — APĂRARE: 5…Cd4 (varianta ascuțită, Fritz) */
+  {
+    fen: START, orient: 'black',
+    san: ['e4','e5','Nf3','Nc6','Bc4','Nf6','Ng5','d5','exd5','Nd4','c3','b5','Bf1','Nxd5','cxd4','Qxg5'],
+    ann: {
+      0:  'Cum te aperi de Fried Liver — varianta ascuțită: <strong>5…Cd4!?</strong> (Fritz). Mai curajoasă: calul sare în centru și contraatacă. Joci cu <strong>Negrul</strong>.',
+      1:  '<strong>1.e4</strong>',
+      2:  '<strong>1…e5</strong>',
+      3:  '<strong>2.Cf3</strong>',
+      4:  '<strong>2…Cc6</strong>',
+      5:  '<strong>3.Nc4</strong> — Italiana.',
+      6:  '<strong>3…Cf6</strong> — Apărarea celor Doi Cai.',
+      7:  '<strong>4.Cg5</strong> — calul spre f7.',
+      8:  '<strong>4…d5</strong> — deschizi centrul.',
+      9:  '<strong>5.exd5</strong> — Albul capturează.',
+      10: '<strong>5…Cd4!?</strong> — varianta Fritz: în loc să recapturezi, calul sare în centru și amenință Cxf3+ (i-ar strica pionii din fața regelui).',
+      11: '<strong>6.c3</strong> — Albul alungă calul.',
+      12: '<strong>6…b5!</strong> — contralovitura: ataci nebunul c4 și câștigi timp (nu-ți grăbești calul).',
+      13: '<strong>7.Nf1</strong> — nebunul se retrage (nu are pătrat mai bun).',
+      14: '<strong>7…Cxd5</strong> — celălalt cal recuperează pionul din d5.',
+      15: '<strong>8.cxd4</strong> — Albul capturează calul din d4… dar acum calul lui din g5 a rămas neapărat!',
+      16: '<strong>8…Dxg5!</strong> — poanta: dama capturează calul din g5 și recuperezi materialul. Poziție echilibrată, cu piese active și regele în siguranță — fără riscurile din Fried Liver. 🛡️'
+    },
+    arrows: {
+      10: [{from:'d4', to:'f3', color:'G'}],
+      12: [{from:'b5', to:'c4', color:'G'}],
+      16: [{from:'d8', to:'g5', color:'G'}]
     }
   },
 
@@ -359,12 +429,18 @@ const accData = [
     desc: 'Varianta liniștită: 3…Nc5. Ambii nebuni țintesc pionul din fața regelui advers (f7, respectiv f2), iar Albul construiește un centru mare cu c3 și d4.' },
   { chIdx: 1, kind: 'opening', num: '📖', title: 'Apărarea celor Doi Cai (3…Cf6)',
     desc: 'Varianta agresivă: Negrul atacă imediat pionul e4. Albul se poate năpusti cu 4.Cg5 spre f7, iar Negrul răspunde corect cu 4…d5! și 5…Ca5.<br><br>💡 <strong>De ce „doi" cai?</strong> Aici Albul a jucat <em>nebunul</em> (3.Nc4), deci se numără doar caii Negrului (Cc6 și Cf6). Dacă în schimb Albul ar juca al doilea <em>cal</em> (3.Cc3), am avea <strong>Jocul celor Trei Cai</strong>, iar cu 3…Cf6 — <strong>Jocul celor Patru Cai</strong>.' },
-  { chIdx: 2, kind: 'trap', num: '1', title: 'Cum ataci — Atacul Ficatului Prăjit', practice: false,
-    badge: { cls: 'badge-white', text: '⚔️ Atac zdrobitor (cu Albul)' },
-    desc: 'Joci cu <strong>Albul</strong>: dacă Negrul recapturează lacom cu 5…Cxd5?!, sacrifici calul pe f7 (<strong>6.Cxf7!</strong>) și îi scoți regele la plimbare, cu un atac foarte periculos. (Cea mai faimoasă capcană a Italienei.)' },
-  { chIdx: 3, kind: 'trap', num: '2', title: 'Cum pedepsești lăcomia — capcana șilingului', practice: true,
+  { chIdx: 2, kind: 'trap', num: '1', title: 'Cum ataci — Atacul Ficatului Prăjit', practice: true,
+    badge: { cls: 'badge-white', text: '🏆 Mat (cu Albul)' },
+    desc: 'Joci cu <strong>Albul</strong>: dacă Negrul recapturează lacom cu 5…Cxd5?!, sacrifici calul pe f7 (<strong>6.Cxf7!</strong>), îi scoți regele la plimbare și, dacă se apără prost, îl <strong>matezi</strong>! Apasă „🤖 Exersează" și execută tu atacul.' },
+  { chIdx: 5, kind: 'trap', num: '2', title: 'Cum pedepsești lăcomia — capcana șilingului', practice: true,
     badge: { cls: 'badge-black', text: '🏆 Mat în 7 (cu Negrul)' },
-    desc: 'Joci cu <strong>Negrul</strong>: momeala e 3…Cd4?!. Dacă Albul se lăcomește cu <strong>4.Cxe5??</strong>, urmează 4…Dg5! și un mat rapid (…Cf3#). Apasă „🤖 Exersează" și dă tu matul!' }
+    desc: 'Joci cu <strong>Negrul</strong>: momeala e 3…Cd4?!. Dacă Albul se lăcomește cu <strong>4.Cxe5??</strong>, urmează 4…Dg5! și un mat rapid (…Cf3#). Apasă „🤖 Exersează" și dă tu matul!' },
+  { chIdx: 3, kind: 'defense', num: '🛡️', title: 'Cum te aperi (1): 5…Ca5 — sigur', practice: false,
+    badge: { cls: 'badge-black', text: '🛡️ În siguranță (cu Negrul)' },
+    desc: 'Joci cu <strong>Negrul</strong>: în loc de 5…Cxd5?? (care duce la Fried Liver), joci <strong>5…Ca5!</strong> — muți calul, ataci nebunul și îți ții regele în siguranță. Dai un pion, dar ai doi nebuni și inițiativă.' },
+  { chIdx: 4, kind: 'defense', num: '🛡️', title: 'Cum te aperi (2): 5…Cd4 — ascuțit (Fritz)', practice: false,
+    badge: { cls: 'badge-black', text: '⚔️ Contraatac (cu Negrul)' },
+    desc: 'Joci cu <strong>Negrul</strong>: <strong>5…Cd4!?</strong> (varianta Fritz) — mai curajoasă. Calul sare în centru, ataci nebunul cu …b5, apoi recuperezi materialul. Pentru cei cărora le place lupta ascuțită.' }
 ];
 
 let curChapterIdx = 0;
@@ -933,10 +1009,11 @@ function addLabel(list, text) {
 
 function buildAccordion() {
   const list = document.getElementById('accList');
-  let openLbl = false, trapLbl = false;
+  let openLbl = false, trapLbl = false, defLbl = false;
   accData.forEach(function (d) {
     if (d.kind === 'opening' && !openLbl) { addLabel(list, '📖 Ideea deschiderii'); openLbl = true; }
     if (d.kind === 'trap'    && !trapLbl) { addLabel(list, '🪤 Capcanele din această deschidere'); trapLbl = true; }
+    if (d.kind === 'defense' && !defLbl) { addLabel(list, '🛡️ Cum te aperi de Fried Liver'); defLbl = true; }
     const item = document.createElement('div');
     item.className = 'acc-item';
     item.dataset.ch = d.chIdx;
