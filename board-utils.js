@@ -121,17 +121,17 @@
 
     /* săgeți — pornesc din centrul pătratului sursă,
        vârful ajunge exact în centrul pătratului destinație */
-    var SW = 5;   /* stroke-width; cu markerUnits=strokeWidth, vârful e la SW px după endpoint */
+    var SW = Math.max(3, sqSz * 0.09);   /* proporțional cu tabla; vârful e la SW px după endpoint */
     annArrows.forEach(function (arr, i) {
       var col = COLORS[arr.ci || 0].arrow;
       var mid = 'ann' + i;
       var mk = document.createElementNS(NS, 'marker');
       mk.setAttribute('id', mid);
-      mk.setAttribute('markerWidth', '10'); mk.setAttribute('markerHeight', '7');
-      mk.setAttribute('refX', '8');         mk.setAttribute('refY', '3.5');
+      mk.setAttribute('markerWidth', '4'); mk.setAttribute('markerHeight', '4');
+      mk.setAttribute('refX', '3.5');      mk.setAttribute('refY', '2');
       mk.setAttribute('orient', 'auto');
       var mp = document.createElementNS(NS, 'path');
-      mp.setAttribute('d', 'M0,0 L9,3.5 L0,7 L2.5,3.5 Z');
+      mp.setAttribute('d', 'M0,0 L4,2 L0,4 L1,2 Z');
       mp.setAttribute('fill', col);
       mk.appendChild(mp); defs.appendChild(mk);
 

@@ -377,6 +377,7 @@ function goToStep(s) {
   document.getElementById('moveCounter').dataset.step = s;
   board.position(positions[s], false);
   sGame = new Chess(positions[s]);
+  showCheckHL(sGame);
   redrawStudyArrows(s);
   updateUI(s);
 }
@@ -470,6 +471,25 @@ function buildMovesList() {
   }
 }
 
+function clearCheckHL() {
+  document.querySelectorAll('.highlight-check').forEach(function (el) { el.classList.remove('highlight-check'); });
+}
+function matedKingSquare(game) {
+  if (!game || !game.in_checkmate()) return null;
+  const turn = game.turn();
+  const bd = game.board();
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const pc = bd[r][c];
+    if (pc && pc.type === 'k' && pc.color === turn) return 'abcdefgh'[c] + (8 - r);
+  }
+  return null;
+}
+function showCheckHL(game) {
+  clearCheckHL();
+  const sq = matedKingSquare(game);
+  if (sq) { const el = document.querySelector('.square-' + sq); if (el) el.classList.add('highlight-check'); }
+}
+
 function clearStudyArrows() {
   const ex = document.getElementById('study-arrows-svg');
   if (ex) ex.remove();
@@ -518,17 +538,17 @@ function redrawStudyArrows(step) {
     const s = sz / 8;
     return { x: c * s + s / 2, y: (7 - r) * s + s / 2 };
   }
-  const SW = 5;
+  const SW = Math.max(3, sqSz * 0.09);
   arrows.forEach(function (arr, i) {
     if (arr.from === arr.to) return;
     const col = COL[arr.color] || COL.G;
     const mid = 'sarr' + i;
     const mk  = document.createElementNS(NS, 'marker');
-    mk.setAttribute('id', mid); mk.setAttribute('markerWidth', '10');
-    mk.setAttribute('markerHeight', '7'); mk.setAttribute('refX', '8');
-    mk.setAttribute('refY', '3.5');       mk.setAttribute('orient', 'auto');
+    mk.setAttribute('id', mid); mk.setAttribute('markerWidth', '4');
+    mk.setAttribute('markerHeight', '4'); mk.setAttribute('refX', '3.5');
+    mk.setAttribute('refY', '2');          mk.setAttribute('orient', 'auto');
     const mp = document.createElementNS(NS, 'path');
-    mp.setAttribute('d', 'M0,0 L9,3.5 L0,7 L2.5,3.5 Z');
+    mp.setAttribute('d', 'M0,0 L4,2 L0,4 L1,2 Z');
     mp.setAttribute('fill', col);
     mk.appendChild(mp); defs.appendChild(mk);
     const f  = sqCenter(arr.from), t = sqCenter(arr.to);
@@ -605,7 +625,7 @@ function startPractice(idx) {
   for (let i = ch.practiceFrom; i < ch.san.length; i++) if ((i - ch.practiceFrom) % 2 === 0) pracKeyTotal++;
   pracFirstTryCount = 0; pracKeyDone = 0; pracErrThisMove = false; pracUserTurn = false;
   pracHintStage = 0;
-  clearStudyArrows(); clearSel(); clearPracHint();
+  clearStudyArrows(); clearSel(); clearPracHint(); clearCheckHL();
   document.getElementById('navControls').style.display = 'none';
   const panel = document.getElementById('practicePanel');
   const openItem = document.querySelector('#accList .acc-item.open');
@@ -687,6 +707,7 @@ function pracAfterUser() {
 function pracFinish() {
   pracUserTurn = false;
   updateEval();
+  showCheckHL(pGame);
   const pct = pracKeyTotal ? Math.round(pracFirstTryCount / pracKeyTotal * 100) : 100;
   document.getElementById('pracPrecision').textContent = 'Precizie: ' + pct + '%';
   document.getElementById('pracProgress').textContent = pracKeyTotal + '/' + pracKeyTotal + ' ✓';
@@ -743,14 +764,14 @@ function drawPracHintArrow(from, to) {
   const defs = document.createElementNS(NS, 'defs'); svg.appendChild(defs);
   const col = 'rgba(60,190,80,0.92)';
   const mk = document.createElementNS(NS, 'marker');
-  mk.setAttribute('id', 'phintarr'); mk.setAttribute('markerWidth', '10'); mk.setAttribute('markerHeight', '7');
-  mk.setAttribute('refX', '8'); mk.setAttribute('refY', '3.5'); mk.setAttribute('orient', 'auto');
-  const mp = document.createElementNS(NS, 'path'); mp.setAttribute('d', 'M0,0 L9,3.5 L0,7 L2.5,3.5 Z'); mp.setAttribute('fill', col);
+  mk.setAttribute('id', 'phintarr'); mk.setAttribute('markerWidth', '4'); mk.setAttribute('markerHeight', '4');
+  mk.setAttribute('refX', '3.5'); mk.setAttribute('refY', '2'); mk.setAttribute('orient', 'auto');
+  const mp = document.createElementNS(NS, 'path'); mp.setAttribute('d', 'M0,0 L4,2 L0,4 L1,2 Z'); mp.setAttribute('fill', col);
   mk.appendChild(mp); defs.appendChild(mk);
   function sqCenter(sq) { let c = sq.charCodeAt(0) - 97, r = parseInt(sq[1]) - 1; if (ori === 'black') { c = 7 - c; r = 7 - r; } const s = sz / 8; return { x: c * s + s / 2, y: (7 - r) * s + s / 2 }; }
   const f = sqCenter(from), t = sqCenter(to), dx = t.x - f.x, dy = t.y - f.y, len = Math.sqrt(dx * dx + dy * dy);
   if (len < 1) return;
-  const ux = dx / len, uy = dy / len, SW = 5;
+  const ux = dx / len, uy = dy / len, SW = Math.max(3, sqSz * 0.09);
   const ln = document.createElementNS(NS, 'line');
   ln.setAttribute('x1', f.x); ln.setAttribute('y1', f.y); ln.setAttribute('x2', t.x - ux * SW); ln.setAttribute('y2', t.y - uy * SW);
   ln.setAttribute('stroke', col); ln.setAttribute('stroke-width', String(SW)); ln.setAttribute('stroke-linecap', 'round');
@@ -796,7 +817,7 @@ function pracRestart() {
 function pracExit() {
   if (pracRecapTimer) { clearTimeout(pracRecapTimer); pracRecapTimer = null; }
   practiceMode = false; pracUserTurn = false; pGame = null;
-  pracHintStage = 0; clearPracHint();
+  pracHintStage = 0; clearPracHint(); clearCheckHL();
   document.getElementById('practicePanel').style.display = 'none';
   document.getElementById('evalBar').style.display = 'none';
   document.querySelector('.board-stage').classList.remove('practicing');
