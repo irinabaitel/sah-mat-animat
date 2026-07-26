@@ -111,5 +111,32 @@ Legendă: ✅=de folosit · 🔁=dublură · ⏭️=nu e capcană de deschidere 
 **Bilanț val 3:** ~9 capcane utile (2 dubluri/slabe), ~11 finaluri, restul puzzle/montaj.
 
 ---
-**Bilanț valuri 1+2+3 (81 filme prelucrate):** ~37 capcane de deschidere utile (câteva dubluri), restul finaluri (multe!) / puzzle-uri / modele de mat / neclare. **Rămân ~169 de prelucrat** (169 = 253 − 81 − 3 sărite lung).
+
+## VALUL 4 (filmele 084–113; sărite lung: 090, 092, 094; eșuate: 096, 097, 102, 106 — linkuri /share/r/, de reluat)
+
+23 filme citite (8 agenți). Iar multe finaluri + compilații educative.
+
+### ♙ Capcane de deschidere utile (→ Nivel VI)
+| Tag | Deschidere | Cine câștigă | Capcană / linie | Încr. |
+|-----|-----------|--------------|-----------------|-------|
+| 104 | **Apărarea Franceză** | Alb | „Crush the French": damă+nebun pe f7, rege negru prins pe e7 → ≈Dd6# (NU e Matul Școlarului, e Franceză 1…e6) | mare(nume)/mică(linie) |
+| 108 | **Caro-Kann Mate Trap** | Alb | 1.e4 c6 2.d4 d5 3.Cc3 Cf6 … mat pe regele negru care cade în cursă | mare(nume)/medie(linie) |
+| 095 | **Gambitul Danez** | Alb | 1.e4 e5 2.d4 exd4 3.c3 dxc3 4.Nc4 cxb2 5.Nxb2 — 2 pioni sacrificați, 2 nebuni pe diagonale spre f7/g7 (atac, nu mat forțat) | medie |
+| 112 | **Gambitul Blackmar-Diemer** (1.d4 d5 2.Cc3 Cf6 3.e4) | Alb | rocada lungă, Df2+Cg5, mat pe regele expus (dublură temă cu 006/068) | medie |
+| 100 | sistem offbeat cu **fianchetto b3** (Larsen/Owen) | Alb | atac cal+damă pe regele rocat scurt → ≈Dxh7#/Cxh7 | medie/mică |
+| 109 | **Apărarea Scandinavă** | Negru | sac de nebun …Nxc2!! spre regele alb (tablă rotită, meme) | mică |
+| 084 | miniatură 1.e4 (posibil tip Blackburne) | Negru | „Win in 8 moves": …Dg2 lângă regele e1 + cal spre f3 = mat (tablă rotită) | mică |
+| 113 | **COMPILAȚIE 5 capcane** (titluri pe ecran: „Reti Trap", „Two Knights Defense Trap" +3) | mixt | de spart în capcane individuale mai târziu | sursă |
+
+### ⏭️ NU sunt capcane de deschidere
+- **Finaluri (→ Nivel III):** 085 (triangulație „ENDGAME #35"), 086 (opoziție „ENDGAME #38"), 089 (tehnică turn), 101 (turn vs pion), 105 (Damă vs Pion, Magnus).
+- **Puzzle/studiu:** 098 (Platov 1927, 2T vs D).
+- **Model de mat (→ Nivel V):** 107 (Turn + Nebun).
+- **Coaching/principii (→ eventual Nivel II):** 088 (4 criterii de evaluare a unei mutări).
+- **Neclar/compilații/non-șah (sar):** 087 (montaj), 091 (compilație sacrificii), 093 (3 greșeli comune), 099 (meme), 103 (tablă fizică nelizibilă, spaniolă), 110 (**non-șah: rețetă** 😄), 111 (compilație sfaturi).
+
+**Bilanț val 4:** ~7 capcane utile + 1 compilație de spart, ~6 finaluri/studiu, 1 model mat, restul coaching/neclar/non-șah.
+
+---
+**Bilanț valuri 1+2+3+4 (104 filme prelucrate):** ~44 capcane de deschidere utile (câteva dubluri), restul finaluri (multe!) / puzzle-uri / modele de mat / coaching / neclare. **Rămân ~142 de prelucrat** (142 = 253 − 104 − 6 sărite lung − 1 dublă-numărare; aprox).
 
