@@ -458,6 +458,42 @@ const chapters = [
       12: [{from:'h4', to:'c4', color:'G'}],
       18: [{from:'f1', to:'e1', color:'R'}]
     }
+  },
+
+  /* 7 — PEDEAPSA: Contraatacul Traxler (4…Nc5), mat dacă Albul se lăcomește */
+  {
+    fen: START, orient: 'black', winner: 'b', practiceFrom: 7, winEval: -100,
+    san: ['e4','e5','Nf3','Nc6','Bc4','Nf6','Ng5','Bc5','Nxf7','Bxf2+','Kxf2','Nxe4+','Ke3','Qh4','Nxh8','Qf4+','Ke2','Qf2+','Kd3','Nb4+','Kxe4','Qf4#'],
+    ann: {
+      0:  'Contraatacul Traxler. În loc să apere pionul f7, Negrul dă un contraatac; dacă Albul se lăcomește, urmează mat. Joci cu <strong>Negrul</strong>.',
+      1:  '<strong>1.e4</strong>',
+      2:  '<strong>1…e5</strong>',
+      3:  '<strong>2.Cf3</strong>',
+      4:  '<strong>2…Cc6</strong>',
+      5:  '<strong>3.Nc4</strong>',
+      6:  '<strong>3…Cf6</strong>',
+      7:  '<strong>4.Cg5</strong> — calul se apropie de f7.',
+      8:  '<strong>4…Nc5</strong> — contraatacul Traxler: Negrul nu apără f7, ci scoate nebunul spre f2.',
+      9:  '<strong>5.Cxf7</strong> — Albul capturează pe f7, cu furculiță pe damă și turn.',
+      10: '<strong>5…Nxf2+</strong> — Negrul sacrifică nebunul, cu șah, ca să scoată regele.',
+      11: '<strong>6.Rxf2</strong> — Albul ia nebunul; regele iese în față.',
+      12: '<strong>6…Cxe4+</strong> — calul capturează pionul, tot cu șah.',
+      13: '<strong>7.Re3</strong> — regele urcă spre centru, o plimbare periculoasă.',
+      14: '<strong>7…Dh4</strong> — dama intră în atac; amenință Df4.',
+      15: '<strong>8.Cxh8</strong> — Albul se lăcomește după turn, în loc să-și apere regele.',
+      16: '<strong>8…Df4+</strong> — șah; regele nu are unde sta bine.',
+      17: '<strong>9.Re2</strong>',
+      18: '<strong>9…Df2+</strong> — încă un șah, împing regele.',
+      19: '<strong>10.Rd3</strong>',
+      20: '<strong>10…Cb4+</strong> — calul intră cu șah.',
+      21: '<strong>11.Rxe4</strong> — regele capturează calul, dar ajunge în bătaia damei.',
+      22: '<strong>11…Df4#</strong> — mat.'
+    },
+    arrows: {
+      8:  [{from:'c5', to:'f2', color:'G'}],
+      14: [{from:'h4', to:'f4', color:'G'}],
+      22: [{from:'f4', to:'e4', color:'R'}]
+    }
   }
 
 ];
@@ -476,7 +512,10 @@ const accData = [
     desc: 'Joci cu <strong>Negrul</strong>: momeala e 3…Cd4?!. Dacă Albul se lăcomește cu <strong>4.Cxe5??</strong>, urmează 4…Dg5! și un mat rapid (…Cf3#). Apasă „🤖 Exersează" și dă tu matul!' },
   { chIdx: 6, kind: 'defense', num: '⚔️', title: 'Cum pedepsești Fried Liver (…Cxe4!?)', practice: true,
     badge: { cls: 'badge-black', text: '🏆 Mat în 9 (cu Negrul)' },
-    desc: 'Joci cu <strong>Negrul</strong>: în loc să te aperi, <strong>contraataci</strong> cu 4…Cxe4!?. Dacă Albul se lăcomește (Cxf7, apoi Cxh8), îl matezi cu dama: …Dxf1#. Poți exersa linia.' }
+    desc: 'Joci cu <strong>Negrul</strong>: în loc să te aperi, <strong>contraataci</strong> cu 4…Cxe4!?. Dacă Albul se lăcomește (Cxf7, apoi Cxh8), îl matezi cu dama: …Dxf1#. Poți exersa linia.' },
+  { chIdx: 7, kind: 'defense', num: '⚔️', title: 'Contraatacul Traxler (4…Nc5)', practice: true,
+    badge: { cls: 'badge-black', text: '🏆 Mat (cu Negrul)' },
+    desc: 'Joci cu <strong>Negrul</strong>: contraatacul Traxler, <strong>4…Nc5</strong>. Nu aperi f7, ci sacrifici pe f2 (…Nxf2+) și scoți regele alb la plimbare. Dacă Albul se lăcomește, urmează mat. Poți exersa linia.' }
 ];
 
 let curChapterIdx = 0;
