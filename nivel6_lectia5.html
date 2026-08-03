@@ -434,30 +434,28 @@ const chapters = [
     fen: START, orient: 'black', winner: 'b', practiceFrom: 7, winEval: -100,
     san: ['e4','e5','Nf3','Nc6','Bc4','Nf6','Ng5','Nxe4','Nxf7','Qh4','g3','Nxg3','Nxh8','Qe4+','Be2','Qxh1+','Bf1','Qxf1#'],
     ann: {
-      0:  'Cum <strong>pedepsești</strong> Fried Liver-ul: în loc să te aperi, contraataci cu <strong>4…Cxe4!?</strong> și, dacă Albul se lăcomește, îl matezi în 9! Joci cu <strong>Negrul</strong>.',
+      0:  'Pedeapsă la Fried Liver (mat în 9). Joci cu <strong>Negrul</strong>.',
       1:  '<strong>1.e4</strong>',
       2:  '<strong>1…e5</strong>',
       3:  '<strong>2.Cf3</strong>',
       4:  '<strong>2…Cc6</strong>',
-      5:  '<strong>3.Nc4</strong> — Italiana; nebunul țintește f7.',
-      6:  '<strong>3…Cf6</strong> — Apărarea celor Doi Cai.',
-      7:  '<strong>4.Cg5</strong> — calul se năpustește spre f7.',
-      8:  '<strong>4…Cxe4!?</strong> — momeala! Mutarea e „la noroc": dacă Albul e echilibrat, câștigă un cal pentru un pion. Dar tu te bazezi pe <strong>lăcomia</strong> lui — furculița calului (apărat de nebun) pe f7.',
-      9:  '<strong>5.Cxf7</strong> — Albul mușcă momeala: furculiță pe damă și turn.',
-      10: '<strong>5…Dh4!</strong> — regina scapă de atacul calului și <strong>pregătește atacul</strong>.',
-      11: '<strong>6.g3</strong> — Albul se apără (blochează dama).',
-      12: '<strong>6…Cxg3!</strong> — capturezi cu calul și <strong>descoperi atacul damei</strong> asupra nebunului din c4.',
-      13: '<strong>7.Cxh8</strong> — Albul se lăcomește să ia turnul (ideea Fried Liver) în loc să-și apere regele. Fatal!',
-      14: '<strong>7…De4+!</strong> — ataci regele, nu turnul; ideea ta e <strong>finalul rapid</strong>!',
-      15: '<strong>8.Ne2</strong> — Albul e obligat să blocheze șahul cu nebunul.',
-      16: '<strong>8…Dxh1+</strong> — dama capturează turnul, cu șah. Finalul e aproape…',
-      17: '<strong>9.Nf1</strong> — Albul mai blochează un șah.',
-      18: '<strong>9…Dxf1#</strong> — MAT! Lăcomia l-a costat partida. 🏆'
+      5:  '<strong>3.Nc4</strong>',
+      6:  '<strong>3…Cf6</strong>',
+      7:  '<strong>4.Cg5</strong>',
+      8:  '<strong>4…Cxe4</strong> — Mutarea aceasta este la noroc; dacă Albul este echilibrat, observă că poate câștiga un cal pentru un pion; Negrul se bazează pe lăcomia Albului, furculița cu calul (apărat de nebun) la f7.',
+      9:  '<strong>5.Cxf7</strong>',
+      10: '<strong>5…Dh4</strong> — Regina scapă de atacul calului și pregătește atacul.',
+      11: '<strong>6.g3</strong> — Albul se apără.',
+      12: '<strong>6…Cxg3</strong> — Negrul capturează cu calul, descoperind atacul damei asupra nebunului din c4.',
+      13: '<strong>7.Cxh8</strong> — Albul se lăcomește să captureze turnul (ideea atacului Fried Liver) în loc să se preocupe de siguranța regelui.',
+      14: '<strong>7…De4+</strong> — Negrul atacă regele, nu vrea să captureze; ideea lui este de final rapid!',
+      15: '<strong>8.Ne2</strong>',
+      16: '<strong>8…Dxh1+</strong> — finalul e aproape…',
+      17: '<strong>9.Nf1</strong>',
+      18: '<strong>9…Dxf1#</strong>'
     },
     arrows: {
-      8:  [{from:'e4', to:'g5', color:'R'}],
       12: [{from:'h4', to:'c4', color:'G'}],
-      14: [{from:'e4', to:'e1', color:'R'}],
       18: [{from:'f1', to:'e1', color:'R'}]
     }
   }
@@ -476,15 +474,9 @@ const accData = [
   { chIdx: 5, kind: 'trap', num: '2', title: 'Cum pedepsești lăcomia — capcana șilingului', practice: true,
     badge: { cls: 'badge-black', text: '🏆 Mat în 7 (cu Negrul)' },
     desc: 'Joci cu <strong>Negrul</strong>: momeala e 3…Cd4?!. Dacă Albul se lăcomește cu <strong>4.Cxe5??</strong>, urmează 4…Dg5! și un mat rapid (…Cf3#). Apasă „🤖 Exersează" și dă tu matul!' },
-  { chIdx: 3, kind: 'defense', num: '🛡️', title: 'Cum te aperi (1): 5…Ca5 — sigur', practice: false,
-    badge: { cls: 'badge-black', text: '🛡️ În siguranță (cu Negrul)' },
-    desc: 'Joci cu <strong>Negrul</strong>: în loc de 5…Cxd5?? (care duce la Fried Liver), joci <strong>5…Ca5!</strong> — muți calul, ataci nebunul și îți ții regele în siguranță. Dai un pion, dar ai doi nebuni și inițiativă.' },
-  { chIdx: 4, kind: 'defense', num: '🛡️', title: 'Cum te aperi (2): 5…Cd4 — ascuțit (Fritz)', practice: false,
-    badge: { cls: 'badge-black', text: '⚔️ Contraatac (cu Negrul)' },
-    desc: 'Joci cu <strong>Negrul</strong>: <strong>5…Cd4!?</strong> (varianta Fritz) — mai curajoasă. Calul sare în centru, ataci nebunul cu …b5, apoi recuperezi materialul. Pentru cei cărora le place lupta ascuțită.' },
   { chIdx: 6, kind: 'defense', num: '⚔️', title: 'Cum pedepsești Fried Liver (…Cxe4!?)', practice: true,
     badge: { cls: 'badge-black', text: '🏆 Mat în 9 (cu Negrul)' },
-    desc: 'Joci cu <strong>Negrul</strong>: în loc să te aperi, <strong>contraataci</strong> cu 4…Cxe4!?. Dacă Albul se lăcomește (Cxf7, apoi Cxh8), îl matezi cu dama: …Dxf1#. Apasă „🤖 Exersează" și dă tu matul!' }
+    desc: 'Joci cu <strong>Negrul</strong>: în loc să te aperi, <strong>contraataci</strong> cu 4…Cxe4!?. Dacă Albul se lăcomește (Cxf7, apoi Cxh8), îl matezi cu dama: …Dxf1#. Poți exersa linia.' }
 ];
 
 let curChapterIdx = 0;
@@ -1076,9 +1068,8 @@ function buildAccordion() {
   const list = document.getElementById('accList');
   let openLbl = false, trapLbl = false, defLbl = false;
   accData.forEach(function (d) {
-    if (d.kind === 'opening' && !openLbl) { addLabel(list, '📖 Ideea deschiderii'); openLbl = true; }
     if (d.kind === 'trap'    && !trapLbl) { addLabel(list, '🪤 Capcanele din această deschidere'); trapLbl = true; }
-    if (d.kind === 'defense' && !defLbl) { addLabel(list, '🛡️ Cum te aperi (și pedepsești) Fried Liver'); defLbl = true; }
+    if (d.kind === 'defense' && !defLbl) { addLabel(list, '⚔️ Cum pedepsești Fried Liver'); defLbl = true; }
     const item = document.createElement('div');
     item.className = 'acc-item';
     item.dataset.ch = d.chIdx;
