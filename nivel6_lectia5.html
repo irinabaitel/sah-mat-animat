@@ -302,10 +302,10 @@ const chapters = [
     }
   },
 
-  /* 2 — CAPCANĂ: Fried Liver — atacul care reușește (câștigă Albul, MAT) */
+  /* 2 — Fried Liver: sacrificiul + atacul (linia clasică Polerio) — prezentare */
   {
-    fen: START, orient: 'white', winner: 'w', practiceFrom: 10, winEval: 100,
-    san: ['e4','e5','Nf3','Nc6','Bc4','Nf6','Ng5','d5','exd5','Nxd5','Nxf7','Kxf7','Qf3+','Ke6','Nc3','Bd6','Bxd5+','Kd7','Qf5+','Ke7','Qf7#'],
+    fen: START, orient: 'white',
+    san: ['e4','e5','Nf3','Nc6','Bc4','Nf6','Ng5','d5','exd5','Nxd5','Nxf7','Kxf7','Qf3+','Ke6','Nc3','Ncb4','Qe4','c6','a3','Na6','d4'],
     ann: {
       0:  'Atacul Ficatului Prăjit (<em>Fried Liver</em>) — cea mai cunoscută capcană a partidei Italiene. Dacă Negrul recapturează lacom cu 5…Cxd5?!, sacrifici un cal pe f7 și îi scoți regele la plimbare. Joci cu <strong>Albul</strong>.',
       1:  '<strong>1.e4</strong>',
@@ -315,7 +315,7 @@ const chapters = [
       5:  '<strong>3.Nc4</strong> — nebunul țintește f7.',
       6:  '<strong>3…Cf6</strong> — Apărarea celor Doi Cai.',
       7:  '<strong>4.Cg5</strong> — calul se alătură atacului pe f7: acum pionul e atacat de două ori.',
-      8:  '<strong>4…d5</strong> — Negrul deschide centrul ca să se apere.',
+      8:  '<strong>4…d5</strong> — Negrul lovește în centru cu pionul d5, ca să se apere.',
       9:  '<strong>5.exd5</strong> — Albul capturează pionul.',
       10: '<strong>5…Cxd5?!</strong> — aici e greșeala: Negrul recapturează cu calul, dar acum calul din d5 nu mai apără f7. (Ca să eviți Fried Liver, corect e <strong>5…Ca5</strong>: calul atacă nebunul c4 și scapă de atacul pionului, fără să-ți expui regele.)',
       11: '<strong>6.Cxf7!</strong> — sacrificiul: dai calul pe f7 ca să scoți regele din adăpost.',
@@ -323,20 +323,19 @@ const chapters = [
       13: '<strong>7.Df3+</strong> — regina intră cu șah și atacă în același timp calul din d5.',
       14: '<strong>7…Re6</strong> — singura mutare care apără și calul din d5; regele iese și mai mult. (Dacă fuge cu 7…Rg8 sau 7…Re8, atunci 8.Dxd5 câștigă calul.)',
       15: '<strong>8.Cc3</strong> — aduci încă o piesă în atac: calul d5 e atacat de trei ori și încolțești regele rămas în centru.',
-      16: '<strong>8…Nd6?</strong> — Negrul încearcă să se dezvolte (nebunul la d6), dar regele rămas în centru îl costă scump.',
-      17: '<strong>9.Nxd5+</strong> — nebunul capturează calul, cu șah: ți-ai recuperat piesa și continui atacul.',
-      18: '<strong>9…Rd7</strong> — regele fuge.',
-      19: '<strong>10.Df5+</strong> — regina dă șah și împinge regele.',
-      20: '<strong>10…Re7</strong> — regele iese; urmează matul.',
-      21: '<strong>11.Df7#</strong> — mat.'
+      16: '<strong>8…Ccb4</strong> — mutarea principală: Negrul apără calul din d5 cu celălalt cal.',
+      17: '<strong>9.De4</strong> — regina se așază în centru: amenință Dxb4 și, dacă pleacă calul din d5, Dxd5#.',
+      18: '<strong>9…c6</strong> — Negrul sprijină calul din d5 cu pionul.',
+      19: '<strong>10.a3</strong> — gonești calul de pe b4.',
+      20: '<strong>10…Ca6</strong> — calul se retrage.',
+      21: '<strong>11.d4</strong> — deschizi jocul spre regele expus. Albul e cu un cal mai puțin, dar are un atac puternic asupra regelui rămas în centru. Cu apărare perfectă Negrul se ține, dar în practică Albul câștigă des — de aceea Fried Liver e temut.'
     },
     arrows: {
       5:  [{from:'c4', to:'f7', color:'G'}],
       7:  [{from:'g5', to:'f7', color:'R'}, {from:'c4', to:'f7', color:'R'}],
       11: [{from:'g5', to:'f7', color:'R'}],
       13: [{from:'f3', to:'f7', color:'R'}, {from:'f3', to:'d5', color:'G'}],
-      17: [{from:'c4', to:'d5', color:'R'}],
-      21: [{from:'f7', to:'e7', color:'R'}]
+      17: [{from:'e4', to:'d5', color:'R'}, {from:'e4', to:'b4', color:'R'}]
     }
   },
 
@@ -406,7 +405,7 @@ const chapters = [
     fen: START, orient: 'black', winner: 'b', practiceFrom: 5, winEval: -100,
     san: ['e4','e5','Nf3','Nc6','Bc4','Nd4','Nxe5','Qg5','Nxf7','Qxg2','Rf1','Qxe4+','Be2','Nf3#'],
     ann: {
-      0:  'Capcana „șilingului" (<em>Blackburne Shilling Gambit</em>): dacă Albul se lăcomește, Negrul îl matează în câteva mutări. Joci cu <strong>Negrul</strong>.',
+      0:  'Capcana „șilingului" (<em>Blackburne Shilling Gambit</em>). Se spune că marele jucător englez Joseph Blackburne, prin cafenelele Londrei de acum vreo 150 de ani, câștiga câte un șiling (o monedă mică) de la amatori, întinzându-le tocmai această cursă — de aici numele. Dacă Albul se lăcomește, Negrul îl matează în câteva mutări. Joci cu <strong>Negrul</strong>.',
       1:  '<strong>1.e4</strong>',
       2:  '<strong>1…e5</strong>',
       3:  '<strong>2.Cf3</strong> — calul atacă pionul e5.',
@@ -505,9 +504,9 @@ const accData = [
     desc: 'Varianta liniștită: 3…Nc5. Ambii nebuni țintesc pionul din fața regelui advers (f7, respectiv f2), iar Albul construiește un centru mare cu c3 și d4.' },
   { chIdx: 1, kind: 'opening', num: '📖', title: 'Apărarea celor Doi Cai (3…Cf6)',
     desc: 'Varianta agresivă: Negrul atacă imediat pionul e4. Albul se poate năpusti cu 4.Cg5 spre f7, iar Negrul răspunde corect cu 4…d5! și 5…Ca5.<br><br>💡 <strong>De ce „doi" cai?</strong> Aici Albul a jucat <em>nebunul</em> (3.Nc4), deci se numără doar caii Negrului (Cc6 și Cf6). Dacă în schimb Albul ar juca al doilea <em>cal</em> (3.Cc3), am avea <strong>Jocul celor Trei Cai</strong>, iar cu 3…Cf6 — <strong>Jocul celor Patru Cai</strong>.' },
-  { chIdx: 2, kind: 'trap', num: '1', title: 'Cum ataci — Atacul Ficatului Prăjit', practice: true,
-    badge: { cls: 'badge-white', text: 'Mat (cu Albul)' },
-    desc: 'Joci cu <strong>Albul</strong>: dacă Negrul recapturează lacom cu 5…Cxd5?!, sacrifici calul pe f7 (<strong>6.Cxf7!</strong>), îi scoți regele la plimbare și, dacă se apără prost, urmează mat. Poți exersa atacul.' },
+  { chIdx: 2, kind: 'trap', num: '1', title: 'Cum ataci — Atacul Ficatului Prăjit', practice: false,
+    badge: { cls: 'badge-white', text: 'Atac puternic (cu Albul)' },
+    desc: 'Joci cu <strong>Albul</strong>: dacă Negrul recapturează lacom cu 5…Cxd5?!, sacrifici calul pe f7 (<strong>6.Cxf7!</strong>) și îi scoți regele la plimbare. În linia principală, Albul are un atac puternic pentru piesa sacrificată.' },
   { chIdx: 5, kind: 'trap', num: '2', title: 'Cum pedepsești lăcomia — capcana șilingului', practice: true,
     badge: { cls: 'badge-black', text: 'Mat în 7 (cu Negrul)' },
     desc: 'Joci cu <strong>Negrul</strong>: momeala e 3…Cd4?!. Dacă Albul se lăcomește cu <strong>4.Cxe5??</strong>, urmează 4…Dg5! și un mat rapid (…Cf3#). Poți exersa linia.' },
