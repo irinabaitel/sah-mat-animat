@@ -108,7 +108,8 @@ Userul a observat că adnotările deveniseră **exagerate, „ca Gemini"**. Ceri
 **Comentariile userului = ÎNTOCMAI:** când folosești comentariile ei (din studii Lichess), pune-le **exact cum le-a scris**; corectezi DOAR greșeli de tastare, diacritice lipsă, majuscule. NU reformula în stilul tău. (A prins că modificasem comentariile ei — le-am pus înapoi întocmai.)
 
 ## Efecte vizuale (la toate lecțiile)
-- **Mat:** pătratul regelui matat primește `.highlight-check` (radial roșu din master-template) — în studiu ȘI în Exersează (helper `matedKingSquare`/`showCheckHL`, apelat în `goToStep` și `pracFinish`).
+- **Șah ȘI mat:** pătratul regelui în șah primește `.highlight-check` (radial roșu din master-template) — la ORICE șah, nu doar la mat. Helper `checkedKingSquare` (folosește `game.in_check()`, acoperă și matul) → `showCheckHL`. Apelat în studiu (`goToStep`) și în Exersează (`pracRecap`, `pracAttemptMove`, `pracAfterUser`, `pracFinish`). *(Model implementat în `nivel6_lectia5.html`, 6 aug — de copiat pe celelalte lecții.)*
+- **Sunete (`Sounds/Move.mp3`, `Capture.mp3`, `Mate.mp3`):** la fiecare mutare — mat→Mate, captură (SAN cu „x")→Capture, altfel→Move. Helper `playMoveSound(san, game)` + `playSnd`. În studiu se aude doar la avans înainte (`s === prevStep + 1`), nu la salt/înapoi; în Exersează la toate mutările. *(Idem: model în lecția 5, de propagat.)*
 - **Săgeți:** mici, proporționale cu tabla (`SW = sqSz*0.09`, `markerWidth=4`) — nu mari/fixe (arătau uriașe pe telefon). Aplicat în lecții + `board-utils.js`.
 
 ## Resursă: seria „Lupta șahistă" (Chess Architect)
