@@ -23,6 +23,9 @@
 .map-col {
   display: flex; align-items: center; justify-content: center;
   min-height: 0; min-width: 0;
+  /* demonstratia mutarilor se aseaza peste TOATA coloana, nu doar peste poza
+     (poza e mai scunda decat coloana, iar tabla ramanea mica) */
+  position: relative;
 }
 .map-wrap {
   width: 100%;
@@ -379,19 +382,20 @@
         <div class="map-cap">
           Japonia, secolele IX–X — vărul samurailor al șahului nostru.
         </div>
+      </div>
 
-        <!-- Demonstrația de mutare a piesei promovate (apare la click) -->
-        <div class="promo-demo" id="promoDemo" aria-hidden="true">
-          <div class="promo-demo__head">
-            <span class="promo-demo__title" id="promoDemoTitle"></span>
-          </div>
-          <div class="promo-demo__mid">
-            <div class="promo-demo__board" id="promoDemoBoard"></div>
-          </div>
-          <div class="promo-demo__legend">
-            <span class="lg lg-piece"><img id="promoDemoLegendImg" src="" alt=""> piesa promovată</span>
-            <span class="lg lg-dot"><i></i> unde poate muta</span>
-          </div>
+      <!-- Demonstrația de mutare a piesei promovate (apare la click).
+           Sta peste toata coloana, ca tabla sa fie cat mai mare. -->
+      <div class="promo-demo" id="promoDemo" aria-hidden="true">
+        <div class="promo-demo__head">
+          <span class="promo-demo__title" id="promoDemoTitle"></span>
+        </div>
+        <div class="promo-demo__mid">
+          <div class="promo-demo__board" id="promoDemoBoard"></div>
+        </div>
+        <div class="promo-demo__legend">
+          <span class="lg lg-piece"><img id="promoDemoLegendImg" src="" alt=""> piesa promovată</span>
+          <span class="lg lg-dot"><i></i> unde poate muta</span>
         </div>
       </div>
     </div>
