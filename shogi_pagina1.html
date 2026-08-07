@@ -169,30 +169,24 @@
   color: #991b1b;
 }
 
-/* ── Demonstrația mutărilor (overlay peste poza din stânga) ── */
+/* ── Demonstrația mutărilor (overlay peste poza din stânga) ──
+   Fundal in tonul paginii, nu inchis: tabla e vedeta si ocupa tot spatiul. */
 .promo-demo {
   position: absolute; inset: 0; z-index: 5;
   display: none; flex-direction: column;
-  background: linear-gradient(160deg, #2a1c12, #140d07);
-  padding: 14px;
-  gap: 12px;
+  background: var(--c-bg);
+  padding: 10px;
+  gap: 8px;
 }
 .promo-demo.open { display: flex; }
-.promo-demo__head { display: flex; align-items: center; gap: 12px; }
-.promo-demo__back {
-  font-family: var(--font-display); font-weight: 800;
-  font-size: var(--fs-sm);
-  color: #2a1c12; background: #f3e2bb;
-  border: none; border-radius: 999px;
-  padding: 7px 14px; cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,.3);
-  transition: background .12s, transform .12s;
+.promo-demo__head {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; flex-shrink: 0;
 }
-.promo-demo__back:hover { background: #fff; transform: translateY(-1px); }
 .promo-demo__title {
   font-family: var(--font-display); font-weight: 800;
-  font-size: var(--fs-md); color: #f3e2bb;
-  text-shadow: 0 1px 4px rgba(0,0,0,.6);
+  font-size: var(--fs-md); color: var(--c-navy);
+  text-align: center;
 }
 /* zona de mijloc: da tablei spatiul disponibil, fara sa-i impuna forma */
 .promo-demo__mid {
@@ -236,7 +230,8 @@
 .promo-demo__legend {
   display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
   font-family: var(--font-display); font-weight: 700;
-  font-size: var(--fs-sm); color: #f3e2bb;
+  font-size: var(--fs-sm); color: var(--c-navy);
+  flex-shrink: 0;
 }
 .promo-demo__legend .lg { display: inline-flex; align-items: center; gap: 6px; }
 .promo-demo__legend .lg-piece img { width: 24px; height: 24px; }
@@ -388,7 +383,6 @@
         <!-- Demonstrația de mutare a piesei promovate (apare la click) -->
         <div class="promo-demo" id="promoDemo" aria-hidden="true">
           <div class="promo-demo__head">
-            <button class="promo-demo__back" id="promoDemoBack" type="button">⟵ Înapoi</button>
             <span class="promo-demo__title" id="promoDemoTitle"></span>
           </div>
           <div class="promo-demo__mid">
@@ -520,7 +514,7 @@ const sertare = [
 <div class="hl-box warn">⚖️ <strong>Aici e altfel decât la șah:</strong> la noi, pionul ajuns pe ultima linie <em>trebuie</em> să promoveze. La Shogi, promovarea e o <strong>alegere</strong> — poți spune „nu, mulțumesc" și lăsa piesa așa cum e. Uneori chiar merită: un Cal nepromovat sare peste piese, pe când Aurul în care s-ar transforma nu poate.<br><br>Singura situație în care promovarea e <strong>obligatorie</strong>: când piesa ar rămâne blocată, fără nicio mutare — pionul și lăncierul ajunși pe ultima linie, calul ajuns pe ultimele două.</div>
 
 <h4>📋 Cine ce devine după promovare:</h4>
-<p class="promo-hint">👆 Apasă pe piesa promovată (cea din dreapta) ca să vezi pe tablă cum mută.</p>
+<p class="promo-hint">👆 Apasă pe piesa promovată (cea din dreapta) ca să vezi pe tablă cum mută. Apeși pe alta — tabla se schimbă.</p>
 <div class="promo-pair">
   <img src="img/shogi/rook.svg" alt="Turn">
   <span class="label">Turn</span>
@@ -708,7 +702,6 @@ const promoDemo      = document.getElementById('promoDemo');
 const promoDemoBoard = document.getElementById('promoDemoBoard');
 const promoDemoTitle = document.getElementById('promoDemoTitle');
 const promoDemoLegImg= document.getElementById('promoDemoLegendImg');
-const promoDemoBack  = document.getElementById('promoDemoBack');
 
 function patrateleUnde(cheie, r0, c0) {
   const p = PROMO_MOVES[cheie];
@@ -769,7 +762,6 @@ function deschidePromoDemo(cheie) {
   promoDemo.classList.add('open');
   promoDemo.setAttribute('aria-hidden', 'false');
   dimensioneazaTabla();          // dupa ce a devenit vizibila, altfel masoara 0
-  promoDemoBack.focus();
 }
 
 function inchidePromoDemo() {
@@ -790,7 +782,8 @@ document.addEventListener('keydown', function(e){
   e.preventDefault();
   deschidePromoDemo(img.dataset.promo);
 });
-promoDemoBack.addEventListener('click', inchidePromoDemo);
+// Nu exista buton „Inapoi": apesi pe alta piesa promovata si tabla se schimba.
+// Escape ramane, ca sa se poata reveni la poza cu samuraiul.
 document.addEventListener('keydown', function(e){
   if (e.key === 'Escape' && promoDemo.classList.contains('open')) inchidePromoDemo();
 });
