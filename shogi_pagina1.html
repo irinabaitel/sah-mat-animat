@@ -182,14 +182,10 @@
   gap: 8px;
 }
 .promo-demo.open { display: flex; }
-.promo-demo__head {
-  display: flex; align-items: center; justify-content: center;
-  gap: 12px; flex-shrink: 0;
-}
-.promo-demo__title {
+/* numele piesei nu mai sta sus, ci in legenda de jos, langa imaginea ei */
+.promo-demo__legend .lg-piece span {
   font-family: var(--font-display); font-weight: 800;
-  font-size: var(--fs-md); color: var(--c-navy);
-  text-align: center;
+  color: var(--c-navy);
 }
 /* zona de mijloc: da tablei spatiul disponibil, fara sa-i impuna forma */
 .promo-demo__mid {
@@ -387,14 +383,11 @@
       <!-- Demonstrația de mutare a piesei promovate (apare la click).
            Sta peste toata coloana, ca tabla sa fie cat mai mare. -->
       <div class="promo-demo" id="promoDemo" aria-hidden="true">
-        <div class="promo-demo__head">
-          <span class="promo-demo__title" id="promoDemoTitle"></span>
-        </div>
         <div class="promo-demo__mid">
           <div class="promo-demo__board" id="promoDemoBoard"></div>
         </div>
         <div class="promo-demo__legend">
-          <span class="lg lg-piece"><img id="promoDemoLegendImg" src="" alt=""> piesa promovată</span>
+          <span class="lg lg-piece"><img id="promoDemoLegendImg" src="" alt=""> <span id="promoDemoLegendName"></span></span>
           <span class="lg lg-dot"><i></i> unde poate muta</span>
         </div>
       </div>
@@ -684,28 +677,28 @@ document.addEventListener('keydown', function(e){
    Piesa noastră privește în sus, deci „înainte" = rândul de deasupra.   */
 const PROMO_MOVES = {
   dragon: {
-    nume: 'Dragon (Turnul promovat)', img: 'img/shogi/dragon.svg',
+    nume: 'Dragon (Turnul promovat)', scurt: 'Dragonul', img: 'img/shogi/dragon.svg',
     raze: [[-1,0],[1,0],[0,-1],[0,1]],                 // ca turnul, oricât de departe
     pasi: [[-1,-1],[-1,1],[1,-1],[1,1]]                // plus un pas pe diagonală
   },
   horse: {
-    nume: 'Cal-Dragon (Nebunul promovat)', img: 'img/shogi/horse.svg',
+    nume: 'Cal-Dragon (Nebunul promovat)', scurt: 'Calul-Dragon', img: 'img/shogi/horse.svg',
     raze: [[-1,-1],[-1,1],[1,-1],[1,1]],               // ca nebunul, oricât de departe
     pasi: [[-1,0],[1,0],[0,-1],[0,1]]                  // plus un pas drept
   },
   // Argintul, Calul, Lăncierul și Pionul devin toate Aur — mută la fel
-  promotedsilver: { nume: 'Aur (Argintul promovat)',  img: 'img/shogi/promotedsilver.svg',  aur: true },
-  promotedknight: { nume: 'Aur (Calul promovat)',     img: 'img/shogi/promotedknight.svg',  aur: true },
-  promotedlance:  { nume: 'Aur (Lăncierul promovat)', img: 'img/shogi/promotedlance.svg',   aur: true },
-  tokin:          { nume: 'Tokin (Pionul promovat)',  img: 'img/shogi/tokin.svg',           aur: true }
+  promotedsilver: { nume: 'Aur (Argintul promovat)',  scurt: 'Argintul de aur',  img: 'img/shogi/promotedsilver.svg',  aur: true },
+  promotedknight: { nume: 'Aur (Calul promovat)',     scurt: 'Calul de aur',     img: 'img/shogi/promotedknight.svg',  aur: true },
+  promotedlance:  { nume: 'Aur (Lăncierul promovat)', scurt: 'Lăncierul de aur', img: 'img/shogi/promotedlance.svg',   aur: true },
+  tokin:          { nume: 'Tokin (Pionul promovat)',  scurt: 'Tokin (pionul de aur)', img: 'img/shogi/tokin.svg',      aur: true }
 };
 // Aurul: un pas în orice direcție, mai puțin cele două diagonale din spate
 const PASI_AUR = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,0]];
 
 const promoDemo      = document.getElementById('promoDemo');
 const promoDemoBoard = document.getElementById('promoDemoBoard');
-const promoDemoTitle = document.getElementById('promoDemoTitle');
 const promoDemoLegImg= document.getElementById('promoDemoLegendImg');
+const promoDemoLegNume = document.getElementById('promoDemoLegendName');
 
 function patrateleUnde(cheie, r0, c0) {
   const p = PROMO_MOVES[cheie];
@@ -760,7 +753,7 @@ function deschidePromoDemo(cheie) {
       promoDemoBoard.appendChild(cell);
     }
   }
-  promoDemoTitle.textContent = p.nume;
+  promoDemoLegNume.textContent = p.scurt || p.nume;
   promoDemoLegImg.src = p.img;
   promoDemoLegImg.alt = p.nume;
   promoDemo.classList.add('open');
