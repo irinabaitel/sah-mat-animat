@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMTZ9GGPMP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMTZ9GGPMP');
+</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Fazele Jocului și Obiectivele Lor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <style>
+    /* ── ACORDEOANE ── */
+    .acc-item { border-radius:14px; border:1.5px solid rgba(26,58,107,0.16); margin-bottom:10px; overflow:hidden; background:rgba(255,255,255,0.55); }
+    .acc-head { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; cursor:pointer; background:rgba(26,58,107,0.06); font-family:var(--font-display); font-size:1.05rem; font-weight:700; color:var(--c-navy); user-select:none; transition:background .15s; gap:10px; }
+    .acc-head:hover, .acc-head.open { background:rgba(26,58,107,0.11); }
+    .acc-icon { font-size:0.72rem; flex-shrink:0; transition:transform .25s; }
+    .acc-head.open .acc-icon { transform:rotate(90deg); }
+    .acc-body { max-height:0; overflow:hidden; transition:max-height .4s ease; }
+    .acc-body.open { max-height:6000px; }
+    .acc-inner { padding:14px 16px 18px; display:flex; flex-direction:column; gap:11px; }
+    .acc-tag { font-size:0.85rem; font-weight:700; color:rgba(26,26,46,.55); }
+
+    /* ── ENUMERARE FAZE ── */
+    .phase-enum { list-style:none; padding:0; margin:12px 0; display:flex; flex-direction:column; gap:8px; }
+    .phase-enum li { display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-size:1.12rem; color:var(--c-navy); }
+    .phase-enum .num { font-size:1.35rem; }
+
+    /* ── LISTE ── */
+    .no-list, .yes-list { list-style:none; padding:0; margin:4px 0 0; display:flex; flex-direction:column; gap:6px; }
+    .no-list li, .yes-list li { display:flex; gap:8px; align-items:flex-start; font-size:1.0rem; line-height:1.55; color:#2a2a3e; }
+    .no-list li::before { content:"✗"; color:#c8321e; font-weight:900; flex-shrink:0; }
+    .yes-list li::before { content:"•"; color:var(--c-navy); font-weight:900; flex-shrink:0; }
+
+    /* ── CUTII EVIDENȚIERE ── */
+    .h-box { background:rgba(26,58,107,0.08); border-left:4px solid var(--c-navy); border-radius:0 12px 12px 0; padding:12px 16px; font-size:1.0rem; line-height:1.7; }
+    .h-box.gold { background:rgba(180,130,0,0.10); border-left-color:#b08000; }
+    .h-box.gold strong { color:#705000; }
+    .h-box.warn { background:rgba(200,80,0,0.09); border-left-color:#c05000; }
+    .h-box.warn strong { color:#8b3000; }
+
+    /* ── BUTON ARENĂ (albastru, lat) ── */
+    .btn-arena {
+      display:flex; align-items:center; justify-content:center;
+      margin-top:16px; padding:14px 20px; border-radius:50px;
+      background:var(--c-navy); color:white; text-decoration:none;
+      font-family:var(--font-display); font-size:1.05rem; font-weight:700;
+      border:none; cursor:pointer; width:100%; transition:opacity .18s;
+      box-shadow:0 3px 12px rgba(26,58,107,0.32);
+    }
+    .btn-arena:hover { opacity:0.88; }
+
+    /* ── EXERCIȚII ── */
+    .slide-badge { display:inline-block; background:rgba(200,110,0,0.13); border:1.5px solid rgba(200,110,0,0.35); border-radius:20px; padding:4px 18px; font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:#7a3e00; margin-bottom:6px; }
+    .ex-prog-wrap { display:flex; align-items:center; gap:8px; margin-top:8px; }
+    .ex-prog-bar  { flex:1; height:8px; background:rgba(26,58,107,0.12); border-radius:4px; overflow:hidden; }
+    .ex-prog-fill { height:100%; background:var(--c-navy); border-radius:4px; transition:width .4s ease; }
+    .ex-prog-lbl  { font-family:var(--font-display); font-size:var(--fs-xs); color:rgba(26,26,46,.45); white-space:nowrap; }
+    .ex-q { font-family:var(--font-display); font-size:1.14rem; color:var(--c-navy); font-weight:700; line-height:1.4; margin:12px 0 8px; text-align:center; }
+    .phase-btns { display:flex; gap:10px; }
+    .phase-btn { flex:1; padding:14px 8px; border-radius:14px; border:2px solid rgba(26,58,107,0.28); background:rgba(255,255,255,0.75); font-family:var(--font-display); font-weight:700; color:var(--c-navy); cursor:pointer; transition:all .15s; display:flex; flex-direction:column; align-items:center; gap:2px; }
+    .phase-btn .big { font-size:1.5rem; }
+    .phase-btn .sml { font-size:0.72rem; color:rgba(26,26,46,.6); }
+    .phase-btn:hover:not(:disabled) { background:rgba(26,58,107,0.10); border-color:var(--c-navy); }
+    .phase-btn:disabled { cursor:default; }
+    .phase-btn.correct { background:rgba(40,160,80,0.18); border-color:#28a050; color:#1a5a30; }
+    .phase-btn.wrong   { background:rgba(200,50,30,0.12); border-color:#c8321e; color:#8b1a00; }
+    .ex-explain { font-size:0.98rem; line-height:1.6; color:#2a2a3e; margin-top:10px; padding:10px 14px; background:rgba(26,58,107,0.06); border-radius:10px; }
+    .sec-next-btn { padding:11px 28px; border-radius:50px; border:none; background:var(--c-navy); color:white; font-family:var(--font-display); font-size:var(--fs-sm); font-weight:700; cursor:pointer; transition:all .2s; box-shadow:0 3px 10px rgba(26,58,107,0.30); }
+    .sec-next-btn:hover { background:var(--c-navy-2); transform:translateY(-2px); }
+    .sec-back-btn { padding:9px 20px; border-radius:50px; border:none; background:rgba(26,58,107,0.15); color:var(--c-navy); font-family:var(--font-display); font-size:var(--fs-sm); font-weight:700; cursor:pointer; transition:all .2s; }
+    .sec-back-btn:hover { background:rgba(26,58,107,0.28); }
+    .sec-btn-row { display:flex; gap:8px; justify-content:space-between; align-items:center; margin-top:8px; }
+
+    #boardWrapper { touch-action:none; -webkit-touch-callout:none; }
+    .panel-scroll p, .panel-scroll li { font-size:1.04rem; line-height:1.72; color:#2a2a3e; }
+  </style>
+  <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
+  <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Fazele Jocului</span>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll" id="panel-scroll">
+
+        <!-- ══════════ LECȚIE ══════════ -->
+        <div id="sec-lesson">
+
+          <p>Acum, când cunoaștem bazele jocului, putem privi și altfel o partidă de șah.</p>
+
+          <p style="margin-top:10px;">Știm că, în principiu, o partidă de șah <strong>ar putea</strong> fi alcătuită din trei părți. Spun „ar putea" pentru că nu este obligatoriu să dureze atât — uneori, dacă se fac greșeli mari în deschidere, partida se poate termina subit, chiar și după 2–3–4 mutări (matul prostului, matul școlarului, matul lui Legal…). Totuși, presupunând că lucrurile merg cum trebuie, fazele unei partide de șah sunt:</p>
+
+          <ul class="phase-enum">
+            <li><span class="num">🌅</span> Deschiderea</li>
+            <li><span class="num">⚔️</span> Jocul de mijloc</li>
+            <li><span class="num">👑</span> Finalul</li>
+          </ul>
+
+          <p>Fiecare dintre aceste faze are <strong>obiective clare</strong> — adică, în fiecare fază, urmărim să realizăm anumite lucruri. Imediat ce obiectivele unei faze sunt îndeplinite, se intră în faza următoare, care are alte obiective!</p>
+
+          <!-- ══════════ ACORDEON ══════════ -->
+          <div id="acc-wrapper" style="margin-top:14px;">
+
+            <!-- DESCHIDEREA -->
+            <div class="acc-item">
+              <div class="acc-head" id="mAcc0" onclick="toggleAcc(0)">
+                <span>🌅 Deschiderea</span>
+                <span class="acc-icon">▶</span>
+              </div>
+              <div class="acc-body" id="body0">
+                <div class="acc-inner">
+                  <div class="acc-tag">Obiective: câștigă teritoriu / controlează centrul · dezvoltă trupele · pune regele la adăpost</div>
+
+                  <p>În deschidere urmărim să <strong>controlăm centrul</strong> — câmpurile e4, d4, e5, d5 — fie punând unul-doi pioni acolo, fie controlându-le cu ajutorul cailor. La început de drum alegem să mutăm pionii centrali: deschidem diagonalele pe care ies nebunii la luptă și, în plus, câștigăm teritoriu.</p>
+
+                  <p>Toate pătrățelele din spatele pionilor noștri reprezintă <strong>teritoriul armatei</strong>. La început avem 8 pătrățele în spatele pionilor, apoi teritoriul crește pe măsură ce înaintăm. Acolo piesele stau în siguranță — de aceea păstrăm zidul de pioni cât mai întreg, ca să nu pierdem pionii aiurea. Dacă în deschidere câștigăm 4–5 pătrățele de teritoriu, este perfect!</p>
+
+                  <p>Următorul obiectiv este <strong>dezvoltarea trupelor</strong>: figurile ușoare (caii și nebunii) trebuie scoase la luptă, mutându-le pe rând. Nu se fac mai multe mutări la rând cu aceeași piesă — se pierde timp din dezvoltare.</p>
+
+                  <p>Un alt obiectiv important este <strong>punerea regelui la adăpost</strong>: în centrul tablei este expus și ușor de atacat. De cele mai multe ori facem <strong>rocada</strong>, regele ajungând în spatele unui zid de „pioni de casă" care îl protejează.</p>
+
+                  <p>După ce toate piesele ușoare au ieșit la luptă, se așează și regina pe un câmp convenabil, astfel încât turnurile „să se vadă" între ele. În acest moment deschiderea este terminată și începe jocul de mijloc.</p>
+
+                  <div class="h-box">Atenție: obiectivele nu se îndeplinesc pe rând, ci cam <strong>în același timp</strong>!</div>
+
+                  <div class="h-box warn">
+                    <strong>✗ Ce NU trebuie să facem în deschidere:</strong>
+                    <ul class="no-list" style="margin-top:6px;">
+                      <li>Să mutăm de mai multe ori cu aceeași piesă</li>
+                      <li>Să scoatem regina prea devreme la luptă</li>
+                      <li>Să scoatem caii pe margine</li>
+                      <li>Să începem partida cu pionii de pe coloana <em>a</em> sau <em>h</em></li>
+                      <li>Să schimbăm piese fără un motiv bun</li>
+                      <li>Să deplasăm pionii care apără regele</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- JOCUL DE MIJLOC -->
+            <div class="acc-item">
+              <div class="acc-head" id="mAcc1" onclick="toggleAcc(1)">
+                <span>⚔️ Jocul de mijloc</span>
+                <span class="acc-icon">▶</span>
+              </div>
+              <div class="acc-body" id="body1">
+                <div class="acc-inner">
+                  <div class="acc-tag">Obiective: atacă · incomodează · rămâi cu o armată mai numeroasă</div>
+
+                  <p>În jocul de mijloc fiecare jucător își face un <strong>plan de atac</strong> al pieselor adversarului, dar în același timp își apără propriile piese. Se urmăresc trei obiective principale:</p>
+                  <ul class="yes-list">
+                    <li>Crearea de slăbiciuni în tabăra inamicului</li>
+                    <li>Pătrunderea în teritoriul advers</li>
+                    <li>Păstrarea unei armate mai numeroase decât a adversarului (prin capturi sau schimburi avantajoase)</li>
+                  </ul>
+
+                  <div class="h-box">
+                    Aici se dă <strong>bătălia principală</strong> și se folosesc toate tacticile învățate: legarea, frigăruia (atacul laser), atacul dublu, atacul prin descoperire, îndepărtarea apărătorului, atragerea, supraîncărcarea. Dacă tacticile sunt îndreptate asupra regelui, de multe ori se poate obține <strong>matul chiar în jocul de mijloc</strong>.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FINALUL -->
+            <div class="acc-item">
+              <div class="acc-head" id="mAcc2" onclick="toggleAcc(2)">
+                <span>👑 Finalul</span>
+                <span class="acc-icon">▶</span>
+              </div>
+              <div class="acc-body" id="body2">
+                <div class="acc-inner">
+                  <div class="acc-tag">Obiective: regele intră în luptă · avantaj material · promovare · mat (sau pat, la nevoie)</div>
+
+                  <p>Se consideră că jocul de mijloc s-a terminat și se intră în <strong>final</strong> atunci când una dintre armate valorează <strong>14 pioni sau mai puțin</strong>.</p>
+
+                  <p>În acest moment intră în luptă însuși <strong>regele</strong>, care până atunci a stat ascuns în spatele pieselor sale. Importanța fiecărei mutări crește, pentru că nu mai sunt destui soldați pe tablă care să repare eventualele greșeli.</p>
+
+                  <p>În final se încearcă obținerea unui avantaj material și mai mare — prin capturarea altor piese sau prin avansarea și promovarea unui pion — și apoi declanșarea atacului final. Dacă ajungem în final dintr-o poziție inferioară, cu o armată mai puțin valoroasă, încercăm obținerea unei remize, eventual forțând <strong>pat</strong>.</p>
+
+                  <div class="h-box gold">
+                    <strong>🍒 Știați că…</strong> se spune că marele campion mondial <strong>Alexander Alekhine</strong> vorbea despre o „a patra fază" a jocului — cea care urmează după <strong>promovarea pionului</strong>. Când un pion umil devine Damă, pe tablă parcă începe o partidă cu totul nouă!
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /acc-wrapper -->
+
+          <!-- BUTON ARENĂ -->
+          <button class="btn-arena" onclick="startExercise()">🧭 Exerciții — Ghicește faza!</button>
+
+        </div>
+
+        <!-- ══════════ EXERCIȚII ══════════ -->
+        <div id="sec-ex" style="display:none;">
+          <span class="slide-badge">🧭 În ce fază ne aflăm?</span>
+          <div class="ex-prog-wrap">
+            <div class="ex-prog-bar"><div class="ex-prog-fill" id="ex-prog-fill" style="width:0%"></div></div>
+            <div class="ex-prog-lbl" id="ex-prog-lbl">1/6</div>
+          </div>
+          <div class="ex-q" id="ex-q">Privește poziția și alege faza:</div>
+          <div class="phase-btns" id="phase-btns">
+            <button class="phase-btn" id="pb-D"  onclick="answerEx('D')"><span class="big">🌅</span><span>Deschidere</span><span class="sml">D</span></button>
+            <button class="phase-btn" id="pb-JM" onclick="answerEx('JM')"><span class="big">⚔️</span><span>Joc de mijloc</span><span class="sml">JM</span></button>
+            <button class="phase-btn" id="pb-F"  onclick="answerEx('F')"><span class="big">👑</span><span>Final</span><span class="sml">F</span></button>
+          </div>
+          <div id="ex-explain-box"></div>
+          <div class="sec-btn-row">
+            <button class="sec-back-btn" onclick="backToLesson()">&#8592; Înapoi la lecție</button>
+            <button class="sec-next-btn" id="ex-next-btn" style="display:none" onclick="exNext()">Următoarea →</button>
+          </div>
+        </div>
+
+      </div><!-- /panel-scroll -->
+
+      <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
+
+    </div><!-- /panel-col -->
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
+    <a href="hub.html" class="nav-btn nav-btn--back">
+      <span class="icon" aria-hidden="true">&#8592;</span>
+      <span class="label">Cuprins</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon" aria-hidden="true">&#8862;</span>
+      <span class="label">Cuprins</span>
+    </a>
+    <a href="hub.html" class="nav-btn nav-btn--forward">
+      <span class="label">Nivelul II</span>
+      <span class="icon" aria-hidden="true">&#8594;</span>
+    </a>
+  </footer>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════
+   EXERCIȚII — poziții din materialul profului (de validat)
+═══════════════════════════════════════════════════ */
+const EXERCISES = [
+  { fen:'r5k1/pp3p1p/2b3p1/6P1/4q3/8/P4QP1/R4R1K',
+    answer:'JM',
+    explain:'Piese grele active (dame și turnuri), regii sunt la adăpost, bătălia e în toi — jocul de mijloc.' },
+  { fen:'r2qkb1r/5p1p/p1npbp2/1p1Np3/4P3/N7/PPP2PPP/R2QKB1R',
+    answer:'D',
+    explain:'Piesele abia ies din casă, ambii regi sunt încă în centru, pionii aproape neatinși — deschidere.' },
+  { fen:'r3k2r/pbq2ppN/1p2p1n1/2b1PP1Q/3pB1Pn/8/PP1N3P/R1B2R1K',
+    answer:'JM',
+    explain:'Toate piesele dezvoltate și încleștate în luptă, tactici îndreptate spre rege — joc de mijloc.' },
+  { fen:'r1b1rbk1/ppqn1ppp/2p2n2/4p3/2P1P3/1P3NP1/PBQN1PBP/R2R2K1',
+    answer:'JM',
+    explain:'Dezvoltare completă, rocadele făcute, turnurile comunică, planul e în desfășurare — joc de mijloc.' },
+  { fen:'8/8/5p2/pB1Q1pk1/Pp2p3/1P6/5q2/3K4',
+    answer:'F',
+    explain:'Foarte puține piese, iar regii au ieșit deja în luptă — final.' },
+  { fen:'r6k/6bp/1p1p4/3np3/1PR3PB/P4P2/3K2P1/8',
+    answer:'F',
+    explain:'Material redus și regele alb activ în centru (d2) — final.' }
+];
+
+const PHASE_NAMES = { D:'Deschidere', JM:'Joc de mijloc', F:'Final' };
+
+/* ═══════════════════════════════════════════════════
+   STATE + BOARD
+═══════════════════════════════════════════════════ */
+const PIECE_THEME = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
+var board = null;
+var exIdx = 0, exScore = 0, exAnswered = false;
+var inExercise = false;
+
+board = Chessboard('board', {
+  position:   'start',
+  pieceTheme: PIECE_THEME,
+  draggable:  true,
+  onDrop:     function(){ return 'snapback'; }   // tablă ilustrativă
+});
+
+function debounce(fn, d) { var t; return function(){ var a=arguments; clearTimeout(t); t=setTimeout(function(){ fn.apply(null,a); }, d); }; }
+window.addEventListener('resize', debounce(function(){
+  board.resize();
+  if (inExercise) board.position(EXERCISES[exIdx].fen, false);
+}, 150));
+
+/* ── ACORDEON (doar text) ── */
+function toggleAcc(idx) {
+  var body = document.getElementById('body'+idx);
+  var head = document.getElementById('mAcc'+idx);
+  var wasOpen = body.classList.contains('open');
+  [0,1,2].forEach(function(i){
+    document.getElementById('body'+i).classList.remove('open');
+    document.getElementById('mAcc'+i).classList.remove('open');
+  });
+  if (!wasOpen) { body.classList.add('open'); head.classList.add('open'); }
+}
+
+/* ── EXERCIȚII ── */
+function startExercise() {
+  inExercise = true;
+  document.getElementById('sec-lesson').style.display = 'none';
+  document.getElementById('sec-ex').style.display     = '';
+  document.getElementById('phase-btns').style.display = '';
+  document.getElementById('ex-q').style.display       = '';
+  exIdx = 0; exScore = 0;
+  loadEx(0);
+  document.getElementById('panel-scroll').scrollTop = 0;
+  setTimeout(function(){ board.resize(); }, 40);
+}
+
+function backToLesson() {
+  inExercise = false;
+  document.getElementById('sec-ex').style.display     = 'none';
+  document.getElementById('sec-lesson').style.display = '';
+  clearFeedback();
+  board.position('start', false);
+  document.getElementById('panel-scroll').scrollTop = 0;
+  setTimeout(function(){ board.resize(); }, 40);
+}
+
+function loadEx(i) {
+  exIdx = i;
+  exAnswered = false;
+  board.position(EXERCISES[i].fen, false);
+  ['D','JM','F'].forEach(function(k){
+    var b = document.getElementById('pb-'+k);
+    b.classList.remove('correct','wrong');
+    b.disabled = false;
+  });
+  document.getElementById('ex-explain-box').innerHTML = '';
+  document.getElementById('ex-next-btn').style.display = 'none';
+  document.getElementById('ex-prog-fill').style.width = (i / EXERCISES.length * 100) + '%';
+  document.getElementById('ex-prog-lbl').textContent  = (i+1) + '/' + EXERCISES.length;
+  clearFeedback();
+}
+
+function answerEx(choice) {
+  if (exAnswered) return;
+  exAnswered = true;
+  var ex = EXERCISES[exIdx];
+  ['D','JM','F'].forEach(function(k){ document.getElementById('pb-'+k).disabled = true; });
+  document.getElementById('pb-'+ex.answer).classList.add('correct');
+  if (choice === ex.answer) {
+    exScore++;
+    showFeedback('✅ Corect — ' + PHASE_NAMES[ex.answer] + '!', 'success');
+  } else {
+    document.getElementById('pb-'+choice).classList.add('wrong');
+    showFeedback('❌ Nu chiar. Era: ' + PHASE_NAMES[ex.answer] + '.', 'error');
+  }
+  document.getElementById('ex-explain-box').innerHTML = '<div class="ex-explain">💡 '+ex.explain+'</div>';
+  var nb = document.getElementById('ex-next-btn');
+  nb.style.display = '';
+  nb.textContent = (exIdx < EXERCISES.length-1) ? 'Următoarea →' : 'Vezi rezultatul →';
+}
+
+function exNext() {
+  if (exIdx < EXERCISES.length - 1) { loadEx(exIdx + 1); document.getElementById('panel-scroll').scrollTop = 0; }
+  else showResult();
+}
+
+function showResult() {
+  document.getElementById('ex-prog-fill').style.width = '100%';
+  document.getElementById('ex-prog-lbl').textContent  = EXERCISES.length + '/' + EXERCISES.length;
+  document.getElementById('phase-btns').style.display = 'none';
+  document.getElementById('ex-q').style.display       = 'none';
+  var msg = (exScore === EXERCISES.length)
+    ? 'Perfect! Recunoști fazele dintr-o privire. 🏆'
+    : (exScore >= EXERCISES.length-1 ? 'Foarte bine! Aproape perfect. 👏' : 'Bun început — recitește fazele și mai încearcă. 💪');
+  document.getElementById('ex-explain-box').innerHTML =
+      '<div style="text-align:center;padding:14px 0;">'
+    + '<div style="font-size:3em;">🎯</div>'
+    + '<div class="ex-q" style="display:block;">Scor: '+exScore+' / '+EXERCISES.length+'</div>'
+    + '<p style="margin-top:6px;">'+msg+'</p>'
+    + '<button class="sec-next-btn" style="margin-top:14px;" onclick="startExercise()">↺ Reia exercițiile</button>'
+    + '</div>';
+  document.getElementById('ex-next-btn').style.display = 'none';
+  clearFeedback();
+}
+
+/* ── FEEDBACK ── */
+function showFeedback(msg, type) {
+  var bar = document.getElementById('feedbackBar');
+  bar.className = 'feedback-bar ' + type;
+  bar.textContent = msg;
+}
+function clearFeedback() {
+  var bar = document.getElementById('feedbackBar');
+  bar.className = 'feedback-bar';
+  bar.textContent = '';
+}
+
+/* ── INIT ── */
+$(document).ready(function() {
+  board.position('start', false);
+});
+</script>
+<script src="board-utils.js"></script>
+</body>
+</html>
