@@ -152,6 +152,90 @@
   font-size: .9em; color: var(--c-navy);
   min-width: 80px; text-align: center;
 }
+/* piesa promovată e click-abilă → arată mutările pe tablă */
+.promo-pair img.promo-new {
+  cursor: pointer;
+  border-radius: 8px;
+  transition: transform .12s, box-shadow .12s, background .12s;
+}
+.promo-pair img.promo-new:hover {
+  transform: scale(1.12);
+  background: rgba(153,27,27,.10);
+  box-shadow: 0 0 0 3px rgba(153,27,27,.35);
+}
+.promo-hint {
+  display: flex; align-items: center; gap: 6px;
+  margin: 2px 0 8px; font-size: .92em; font-weight: 700;
+  color: #991b1b;
+}
+
+/* ── Demonstrația mutărilor (overlay peste poza din stânga) ── */
+.promo-demo {
+  position: absolute; inset: 0; z-index: 5;
+  display: none; flex-direction: column;
+  background: linear-gradient(160deg, #2a1c12, #140d07);
+  padding: 14px;
+  gap: 12px;
+}
+.promo-demo.open { display: flex; }
+.promo-demo__head { display: flex; align-items: center; gap: 12px; }
+.promo-demo__back {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: var(--fs-sm);
+  color: #2a1c12; background: #f3e2bb;
+  border: none; border-radius: 999px;
+  padding: 7px 14px; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  transition: background .12s, transform .12s;
+}
+.promo-demo__back:hover { background: #fff; transform: translateY(-1px); }
+.promo-demo__title {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: var(--fs-md); color: #f3e2bb;
+  text-shadow: 0 1px 4px rgba(0,0,0,.6);
+}
+.promo-demo__board {
+  flex: 1; min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  aspect-ratio: 1 / 1;
+  width: min(100%, calc(100% - 0px));
+  max-width: 100%;
+  margin: 0 auto;
+  align-self: center;
+  background: #e3b96b;
+  border: 3px solid #5a3a1a;
+  border-radius: 4px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.45);
+  overflow: hidden;
+}
+.sb-cell {
+  position: relative;
+  border: 1px solid rgba(90,58,26,.55);
+  display: flex; align-items: center; justify-content: center;
+}
+.sb-cell img { width: 86%; height: 86%; object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.3)); }
+.sb-cell.sb-from { background: rgba(255,221,120,.55); }
+.sb-cell.sb-move::after {
+  content: ""; position: absolute;
+  width: 34%; height: 34%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(34,139,34,.92) 60%, rgba(34,139,34,.55) 100%);
+  box-shadow: 0 0 4px rgba(0,0,0,.3);
+}
+.promo-demo__legend {
+  display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: var(--fs-sm); color: #f3e2bb;
+}
+.promo-demo__legend .lg { display: inline-flex; align-items: center; gap: 6px; }
+.promo-demo__legend .lg-piece img { width: 24px; height: 24px; }
+.promo-demo__legend .lg-dot i {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(34,139,34,.92) 60%, rgba(34,139,34,.55) 100%);
+  display: inline-block;
+}
 .piece-list .pinfo { flex: 1; min-width: 0; }
 .piece-list .pname {
   font-family: var(--font-display);
@@ -291,6 +375,19 @@
         <div class="map-cap">
           Japonia, secolele IX–X — vărul samurailor al șahului nostru.
         </div>
+
+        <!-- Demonstrația de mutare a piesei promovate (apare la click) -->
+        <div class="promo-demo" id="promoDemo" aria-hidden="true">
+          <div class="promo-demo__head">
+            <button class="promo-demo__back" id="promoDemoBack" type="button">⟵ Înapoi</button>
+            <span class="promo-demo__title" id="promoDemoTitle"></span>
+          </div>
+          <div class="promo-demo__board" id="promoDemoBoard"></div>
+          <div class="promo-demo__legend">
+            <span class="lg lg-piece"><img id="promoDemoLegendImg" src="" alt=""> piesa promovată</span>
+            <span class="lg lg-dot"><i></i> unde poate muta</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -408,49 +505,51 @@ const sertare = [
   { num:'5.', emoji:'🎖️', title:'Promovarea — toată lumea capătă super-puteri!',
     body:`
 <p>La șahul clasic, doar pionul promovează. La Shogi, <strong>aproape TOATE piesele promovează</strong>!</p>
-<p>Tabla are o zonă specială numită <strong>„Tabăra Adversă"</strong> — ultimele <strong>3 linii</strong> de sus. Când o piesă de-a ta pășește în această zonă (sau pleacă din ea), o întorci pur și simplu <strong>invers</strong>. Pe spatele piesei e scris un alt caracter cu <strong>cerneală roșie</strong> — și piesa ta a promovat!</p>
+<p>Tabla are o zonă specială numită <strong>„Tabăra Adversă"</strong> — ultimele <strong>3 linii</strong> de sus. Când o piesă de-a ta <strong>intră</strong> în zonă, <strong>mută în interiorul</strong> ei sau <strong>iese</strong> din ea, o întorci pur și simplu <strong>invers</strong>. Pe spatele piesei e scris un alt caracter cu <strong>cerneală roșie</strong> — și piesa ta a promovat!</p>
+<div class="hl-box warn">⚖️ <strong>Aici e altfel decât la șah:</strong> la noi, pionul ajuns pe ultima linie <em>trebuie</em> să promoveze. La Shogi, promovarea e o <strong>alegere</strong> — poți spune „nu, mulțumesc" și lăsa piesa așa cum e. Uneori chiar merită: un Cal nepromovat sare peste piese, pe când Aurul în care s-ar transforma nu poate.<br><br>Singura situație în care promovarea e <strong>obligatorie</strong>: când piesa ar rămâne blocată, fără nicio mutare — pionul și lăncierul ajunși pe ultima linie, calul ajuns pe ultimele două.</div>
 
 <h4>📋 Cine ce devine după promovare:</h4>
+<p class="promo-hint">👆 Apasă pe piesa promovată (cea din dreapta) ca să vezi pe tablă cum mută.</p>
 <div class="promo-pair">
   <img src="img/shogi/rook.svg" alt="Turn">
   <span class="label">Turn</span>
   <span class="arrow">⟶</span>
-  <img src="img/shogi/dragon.svg" alt="Dragon">
+  <img class="promo-new" data-promo="dragon" tabindex="0" role="button" title="Vezi cum mută" src="img/shogi/dragon.svg" alt="Dragon">
   <span class="label">Dragon 🐲<br><small>+ 1 pas pe diagonală</small></span>
 </div>
 <div class="promo-pair">
   <img src="img/shogi/bishop.svg" alt="Nebun">
   <span class="label">Nebun</span>
   <span class="arrow">⟶</span>
-  <img src="img/shogi/horse.svg" alt="Cal-Dragon">
+  <img class="promo-new" data-promo="horse" tabindex="0" role="button" title="Vezi cum mută" src="img/shogi/horse.svg" alt="Cal-Dragon">
   <span class="label">Cal-Dragon 🐎<br><small>+ 1 pas drept</small></span>
 </div>
 <div class="promo-pair">
   <img src="img/shogi/silver.svg" alt="Argint">
   <span class="label">Argint</span>
   <span class="arrow">⟶</span>
-  <img src="img/shogi/promotedsilver.svg" alt="Aur">
+  <img class="promo-new" data-promo="promotedsilver" tabindex="0" role="button" title="Vezi cum mută" src="img/shogi/promotedsilver.svg" alt="Aur">
   <span class="label">Aur 🥇</span>
 </div>
 <div class="promo-pair">
   <img src="img/shogi/knight.svg" alt="Cal">
   <span class="label">Cal</span>
   <span class="arrow">⟶</span>
-  <img src="img/shogi/promotedknight.svg" alt="Aur">
+  <img class="promo-new" data-promo="promotedknight" tabindex="0" role="button" title="Vezi cum mută" src="img/shogi/promotedknight.svg" alt="Aur">
   <span class="label">Aur 🥇</span>
 </div>
 <div class="promo-pair">
   <img src="img/shogi/lance.svg" alt="Lăncier">
   <span class="label">Lăncier</span>
   <span class="arrow">⟶</span>
-  <img src="img/shogi/promotedlance.svg" alt="Aur">
+  <img class="promo-new" data-promo="promotedlance" tabindex="0" role="button" title="Vezi cum mută" src="img/shogi/promotedlance.svg" alt="Aur">
   <span class="label">Aur 🥇</span>
 </div>
 <div class="promo-pair">
   <img src="img/shogi/pawn.svg" alt="Pion">
   <span class="label">Pion</span>
   <span class="arrow">⟶</span>
-  <img src="img/shogi/tokin.svg" alt="Tokin">
+  <img class="promo-new" data-promo="tokin" tabindex="0" role="button" title="Vezi cum mută" src="img/shogi/tokin.svg" alt="Tokin">
   <span class="label">Tokin 🥇<br><small>(pion de aur)</small></span>
 </div>
 <p style="margin-top:10px;"><strong>NU promovează:</strong> <img src="img/shogi/king.svg" alt="Rege" style="width:24px;height:24px;vertical-align:middle;"> Regele și <img src="img/shogi/gold.svg" alt="Aur" style="width:24px;height:24px;vertical-align:middle;"> Aurul — aurul e deja la nivel maxim!</p>
@@ -569,6 +668,104 @@ modal.addEventListener('click', function(e){
 });
 document.addEventListener('keydown', function(e){
   if (e.key === 'Escape' && modal.classList.contains('open')) closeLishogi();
+});
+
+/* ── Demonstrația mutărilor pieselor promovate ──────────────
+   Click pe piesa promovată → tablă 9×9 cu punctele unde poate muta.
+   Piesa noastră privește în sus, deci „înainte" = rândul de deasupra.   */
+const PROMO_MOVES = {
+  dragon: {
+    nume: 'Dragon (Turnul promovat)', img: 'img/shogi/dragon.svg',
+    raze: [[-1,0],[1,0],[0,-1],[0,1]],                 // ca turnul, oricât de departe
+    pasi: [[-1,-1],[-1,1],[1,-1],[1,1]]                // plus un pas pe diagonală
+  },
+  horse: {
+    nume: 'Cal-Dragon (Nebunul promovat)', img: 'img/shogi/horse.svg',
+    raze: [[-1,-1],[-1,1],[1,-1],[1,1]],               // ca nebunul, oricât de departe
+    pasi: [[-1,0],[1,0],[0,-1],[0,1]]                  // plus un pas drept
+  },
+  // Argintul, Calul, Lăncierul și Pionul devin toate Aur — mută la fel
+  promotedsilver: { nume: 'Aur (Argintul promovat)',  img: 'img/shogi/promotedsilver.svg',  aur: true },
+  promotedknight: { nume: 'Aur (Calul promovat)',     img: 'img/shogi/promotedknight.svg',  aur: true },
+  promotedlance:  { nume: 'Aur (Lăncierul promovat)', img: 'img/shogi/promotedlance.svg',   aur: true },
+  tokin:          { nume: 'Tokin (Pionul promovat)',  img: 'img/shogi/tokin.svg',           aur: true }
+};
+// Aurul: un pas în orice direcție, mai puțin cele două diagonale din spate
+const PASI_AUR = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,0]];
+
+const promoDemo      = document.getElementById('promoDemo');
+const promoDemoBoard = document.getElementById('promoDemoBoard');
+const promoDemoTitle = document.getElementById('promoDemoTitle');
+const promoDemoLegImg= document.getElementById('promoDemoLegendImg');
+const promoDemoBack  = document.getElementById('promoDemoBack');
+
+function patrateleUnde(cheie, r0, c0) {
+  const p = PROMO_MOVES[cheie];
+  const out = new Set();
+  const inTabla = (r, c) => r >= 0 && r < 9 && c >= 0 && c < 9;
+  const pasi = p.aur ? PASI_AUR : (p.pasi || []);
+  pasi.forEach(function(d){
+    const r = r0 + d[0], c = c0 + d[1];
+    if (inTabla(r, c)) out.add(r + ',' + c);
+  });
+  (p.raze || []).forEach(function(d){
+    let r = r0 + d[0], c = c0 + d[1];
+    while (inTabla(r, c)) { out.add(r + ',' + c); r += d[0]; c += d[1]; }
+  });
+  return out;
+}
+
+function deschidePromoDemo(cheie) {
+  const p = PROMO_MOVES[cheie];
+  if (!p) return;
+  const r0 = 4, c0 = 4;                       // piesa se așază în mijlocul tablei
+  const tinte = patrateleUnde(cheie, r0, c0);
+
+  promoDemoBoard.innerHTML = '';
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'sb-cell';
+      if (r === r0 && c === c0) {
+        cell.classList.add('sb-from');
+        const img = document.createElement('img');
+        img.src = p.img; img.alt = p.nume;
+        cell.appendChild(img);
+      } else if (tinte.has(r + ',' + c)) {
+        cell.classList.add('sb-move');
+      }
+      promoDemoBoard.appendChild(cell);
+    }
+  }
+  promoDemoTitle.textContent = p.nume;
+  promoDemoLegImg.src = p.img;
+  promoDemoLegImg.alt = p.nume;
+  promoDemo.classList.add('open');
+  promoDemo.setAttribute('aria-hidden', 'false');
+  promoDemoBack.focus();
+}
+
+function inchidePromoDemo() {
+  promoDemo.classList.remove('open');
+  promoDemo.setAttribute('aria-hidden', 'true');
+}
+
+// delegare: sertarele se construiesc din JS, deci ascultăm pe document
+document.addEventListener('click', function(e){
+  const img = e.target.closest('img.promo-new[data-promo]');
+  if (!img) return;
+  deschidePromoDemo(img.dataset.promo);
+});
+document.addEventListener('keydown', function(e){
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const img = e.target.closest && e.target.closest('img.promo-new[data-promo]');
+  if (!img) return;
+  e.preventDefault();
+  deschidePromoDemo(img.dataset.promo);
+});
+promoDemoBack.addEventListener('click', inchidePromoDemo);
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && promoDemo.classList.contains('open')) inchidePromoDemo();
 });
 </script>
 </body>
