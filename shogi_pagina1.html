@@ -194,16 +194,17 @@
   font-size: var(--fs-md); color: #f3e2bb;
   text-shadow: 0 1px 4px rgba(0,0,0,.6);
 }
-.promo-demo__board {
+/* zona de mijloc: da tablei spatiul disponibil, fara sa-i impuna forma */
+.promo-demo__mid {
   flex: 1; min-height: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.promo-demo__board {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   grid-template-rows: repeat(9, 1fr);
-  aspect-ratio: 1 / 1;
-  width: min(100%, calc(100% - 0px));
-  max-width: 100%;
-  margin: 0 auto;
-  align-self: center;
+  /* latura se calculeaza din JS = min(latime, inaltime disponibila),
+     ca sa iasa patrata pe orice ecran */
   background: #e3b96b;
   border: 3px solid #5a3a1a;
   border-radius: 4px;
@@ -382,7 +383,9 @@
             <button class="promo-demo__back" id="promoDemoBack" type="button">⟵ Înapoi</button>
             <span class="promo-demo__title" id="promoDemoTitle"></span>
           </div>
-          <div class="promo-demo__board" id="promoDemoBoard"></div>
+          <div class="promo-demo__mid">
+            <div class="promo-demo__board" id="promoDemoBoard"></div>
+          </div>
           <div class="promo-demo__legend">
             <span class="lg lg-piece"><img id="promoDemoLegendImg" src="" alt=""> piesa promovată</span>
             <span class="lg lg-dot"><i></i> unde poate muta</span>
@@ -715,6 +718,21 @@ function patrateleUnde(cheie, r0, c0) {
   return out;
 }
 
+// tabla trebuie sa iasa PATRATA: latura = cat e mai mic dintre latimea si
+// inaltimea disponibila (altfel se intinde dupa forma containerului)
+function dimensioneazaTabla() {
+  const mid = promoDemoBoard.parentElement;
+  if (!mid) return;
+  const latura = Math.floor(Math.min(mid.clientWidth, mid.clientHeight));
+  if (latura > 0) {
+    promoDemoBoard.style.width  = latura + 'px';
+    promoDemoBoard.style.height = latura + 'px';
+  }
+}
+window.addEventListener('resize', function(){
+  if (promoDemo.classList.contains('open')) dimensioneazaTabla();
+});
+
 function deschidePromoDemo(cheie) {
   const p = PROMO_MOVES[cheie];
   if (!p) return;
@@ -742,6 +760,7 @@ function deschidePromoDemo(cheie) {
   promoDemoLegImg.alt = p.nume;
   promoDemo.classList.add('open');
   promoDemo.setAttribute('aria-hidden', 'false');
+  dimensioneazaTabla();          // dupa ce a devenit vizibila, altfel masoara 0
   promoDemoBack.focus();
 }
 
