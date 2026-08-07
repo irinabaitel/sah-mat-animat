@@ -28,9 +28,10 @@ Nivelul VI = deschideri consacrate + capcanele lor.
 | `nivel6_lectia3.html` | **Altă mutare nefericită** | 1.e4 e5 2.Dh5 Re7?? 3.Dxe5# (regula piesei atinse) |
 | `nivel6_lectia4.html` | **Matul școlarului** | Cum îl dai / cum te aperi (5 apărări cu butoane) / cum pedepsești (…Df2#) / **Altă pedeapsă — metoda Smirnov** (…Nd1#, cu Exersează) |
 | `nivel6_lectia5.html` | **Partida Italiană** | cea mai lucrată lecție — vezi secțiunea dedicată mai jos |
+| `nivel6_lectia6.html` | **Partida Spaniolă** | 2 intro (Morphy, Berlin) + 4 capcane, toate verificate python-chess ȘI chess.js 0.10.3 — vezi secțiunea dedicată mai jos |
 | `nivel6_lectia1.html` | **Gambitul Damei** | Refuzat/Acceptat + lăcomia …b5 (Alb) + Capcana Elefantului (Negru) |
 
-**Navigație (footer):** lectia2 → lectia3 → lectia4 → lectia5 (Italiana) → lectia1 (Gambitul Damei).
+**Navigație (footer):** lectia2 → lectia3 → lectia4 → lectia5 (Italiana) → lectia6 (Spaniola) → lectia1 (Gambitul Damei).
 **Hub:** cardul Nivel VI din `hub.html` are toate linkabile.
 
 ## Partida Italiană — stare la zi (`nivel6_lectia5.html`)
@@ -45,6 +46,27 @@ Nivelul VI = deschideri consacrate + capcanele lor.
 - ⚔️ **Cum pedepsești Fried Liver** (DOAR pedepse, userul a scos apărările Ca5/Fritz): **4…Cxe4** (linia userului din studiul Lichess `fMdmefv9`, mat în 9 …Dxf1#, Exersează) + **Contraatacul Traxler 4…Nc5** (din filmul ei 079; linia FORȚATĂ verificată: 7.Re3 Dh4 = mat, arătat 8.Cxh8 Df4+ 9.Re2 Df2+ 10.Rd3 Cb4+ 11.Rxe4 Df4#).
 
 Chapters 3 (Ca5) și 4 (Fritz) încă există în array dar NU sunt în accData (nefolosite). accData a căpătat și `kind:'defense'` cu eticheta „⚔️ Cum pedepsești Fried Liver".
+
+## Partida Spaniolă — stare la zi (`nivel6_lectia6.html`) — GATA (6 aug 2026)
+**Intro:** def-box „Ce este Partida Spaniolă?" (bazat pe textul cerut de user + ton echilibrat, „leagă" nu „pironit"), card cu cele 4 răspunsuri (Morphy 3…a6, Berlin 3…Cf6, Steinitz 3…d6, Schliemann 3…f5), quote-box Nimzovici+Chess Architect.
+**Episodul Chess Architect pentru Spaniolă GĂSIT (7 aug):** „Lupta Șahistă — Faza 1: Partida Spaniolă"
+`https://www.youtube.com/watch?v=3TXHuFSCK9s`. Am adăugat un card „Cum o descrie Christiansen Sava"
+cu descrierea LUI (transcriere `yt-dlp --write-subs --sub-lang ro`): regina jocurilor deschise, cel mai
+principial sistem deschis; amenințarea de la 3.Nb5 care „planează" dar nu poate fi dusă la capăt acum;
+de ce nu schimbă pe c6 (perechea de nebuni); frontiera c+d și expansiunea lentă; „tortura spaniolă"
+de pe vremea lui Karpov; sfatul „dacă ești temperamental, nu juca Spaniola". Toate linkurile de credit
+din lecție duc acum la episodul exact.
+
+**7 capitole (toate verificate python-chess ȘI chess.js 0.10.3):**
+- 📖 Ch0 Morphy (3…a6, linia clasică) · Ch1 Berlin (3…Cf6 → finalul Berlin, povestea Kramnik-Kasparov 2000).
+- 🪤 pro-Alb (secțiune „Capcanele din această deschidere"): **Ch2 Tarrasch–Marco 1892** (Steinitz; greșeala 7…O-O??; câștig piesă la 18.c4; `practice:false` — 18 mutări, tehnică) · **Ch3 mat sufocat Mortimer** Cd6# (greșeala 6…cxb5??; refutare 6…d6!; `practice:false` fiindcă Albul dă nebunul înainte de mat = bara eval ar deruta) · **Ch4 Anastasia în Berlin** (…Dxh7+!! Th5#; **NU e forțat** — 11…Dxe7! salvează; marcat onest; `practice:false`).
+- ⚔️ pro-Negru (secțiune „Cum pedepsești Albul lacom"): **Ch5 Arca lui Noe** (greșeala 8.Dxd4??; …c4! prinde nebunul b3; `practice:true`, winner 'b', practiceFrom:11) · **Ch6 Mortimer …Da5+** (greșeala 5.Cxe5??; furculiță câștigă calul; `practice:true`, winner 'b', practiceFrom:7).
+
+**Observația frumoasă (Mortimer are ambele fețe din ACEEAȘI poziție):** după 4…Ce7 5.Cxe5 c6 — 6.Na4? → Negrul câștigă cu 6…Da5+ (Ch6); 6.Cc4! → Albul dă mat sufocat dacă Negrul se lăcomește 6…cxb5?? 7.Cd6# (Ch3). Adnotările se referă reciproc.
+
+**Sursele:** 2 reel-uri FB ale userului — reel `1012679151230348` = Berlin/Anastasia (Ch4); reel `1649887902766531` = Mortimer …Da5+ (Ch6). Matul sufocat (Ch3) găsit de un agent. Arca lui Noe (Ch5) și Tarrasch (Ch2) = clasice, aduse de mine. Toate verificate cu `scratchpad/try_line.py`.
+
+**Regulă nouă (user, 6 aug):** limita capcanelor ridicată 10→**20 mutări**. Și: în comentarii **marchează explicit mutarea-greșeală** care duce la înfrângere/pierdere de material (vezi memoria `feedback_marcheaza_mutarea_pierzatoare`).
 
 ## Motorul lecțiilor (cum se construiește o lecție nouă)
 Model de referință: `nivel6_lectia5.html` (sau `lectia1`). chessboard.js 1.0.0 + chess.js 0.10.3
@@ -97,7 +119,7 @@ Citare DELICATĂ (cerut de user): NU scrie „Antrenorul Christiansen Sava"; doa
 - Prima capcană a unei deschideri = una în care JOCI deschiderea și CÂȘTIGI (partea care o alege).
 - Titlul capcanei unde câștigă partea care NU deține deschiderea = „Cum pedepsești…".
 - Badge: verde = „✅ Câștigi material/Mat în N (cu Albul/Negrul)"; roșu = „⚠️ Câștigă Negrul — material/mat". Distinge mereu mat vs material.
-- Deschiderea se prezintă pe 4–6 mutări, scopul fiecărei mutări. **Max 10 mutări per capcană.**
+- Deschiderea se prezintă pe 4–6 mutări, scopul fiecărei mutări. **Max 20 mutări per capcană.** (ridicat de la 10 → 20, cerut de user 6 aug 2026 — deblochează linii mai lungi ca Tarrasch în Spaniolă.)
 - Ton educativ, hazliu cu măsură. NU intra în contul chess.com al userului.
 - Sursă de încredere pentru explicații: **GM Igor Smirnov** (`youtube.com/@GMIgorSmirnov/shorts`).
   Când folosești un filmuleț, adnotările = comentariile LUI traduse în română, nu inventate.
@@ -115,10 +137,17 @@ Userul a observat că adnotările deveniseră **exagerate, „ca Gemini"**. Ceri
 ## Resursă: seria „Lupta șahistă" (Chess Architect)
 Antrenorul userului, **Christiansen Sava**, are pe YouTube (canal **Chess Architect**, site `chessarchitect.ro`) o serie **„Lupta șahistă — Faza N: <Deschiderea>"** cu descrieri proprii, calde, ale deschiderilor.
 - Ep. Partida Italiană: `https://www.youtube.com/watch?v=KjTpoqt27WA` (folosit la intro-ul lecției 5).
-- **Caută episodul pentru fiecare deschidere nouă** (Spaniolă etc.) și folosește descrierea LUI la intro. Transcriere: `yt-dlp --skip-download --write-auto-subs --sub-lang "ro"` (videourile-s în română, NU „en").
+- **Cum găsești episodul unei deschideri:**
+  `yt-dlp --flat-playlist --print "%(title)s ||| %(url)s" "https://www.youtube.com/@ChessArchitect/search?query=Lupta%20%C8%99ahist%C4%83"`
+  Seria are episoade (Faza 1) pentru: Italiana, Spaniola, Vieneza, Doi Cai, Gambitul Regelui, Gambitul Evans,
+  Gambitul Nordic, Gambitul Danez/Central, Ponziani, Philidor, Apărarea Rusă, Deschiderea Owen, Deschiderea
+  Nebunului, Apărarea Modernă, Mexicana, Chigorin, Baltică, Slavă, Marshall, Albin, Ben-Oni, Volga, Budapesta,
+  Indiana Veche, Olandeza (3 variante), Gambitul Damei Acceptat/Refuzat, Jocuri Deschise/Închise/de Flanc.
+  Fazele 2 și 3 = strategie/finaluri (utile pentru Nivel II și III).
+- **Caută episodul pentru fiecare deschidere nouă** și folosește descrierea LUI la intro. Transcriere: `yt-dlp --skip-download --write-auto-subs --sub-lang "ro"` (videourile-s în română, NU „en").
 
 ## CE URMEAZĂ
-1. **Partida Spaniolă** (Ruy Lopez) — următoarea deschidere „cu Albul" (după Italiana, înainte de Gambitul Damei). Are nevoie de o capcană „câștigă Albul" (Spaniola avea în rafturi doar capcane pro-Negru — caută una în filmele 084+).
+1. ~~Partida Spaniolă~~ — **GATA** (`nivel6_lectia6.html`, 6 aug 2026). De rafinat: episodul Chess Architect exact pentru Spaniolă (creditul e acum doar către canal). Opțional: de decis cu userul dacă matul sufocat Mortimer (Ch3) merită `practice:true` în ciuda barei de eval.
 2. Deschideri „cu Negrul": Siciliana, Caro-Kann/Franceză, Gambitul Stafford, Englund, Elephant.
 3. Continuă clasificarea filmelor 084+ pe valuri; adaugă capcanele găsite la deschiderea potrivită.
 4. `REGULA #1` din CLAUDE.md: **întreabă userul înainte de a începe lucru mare.**
