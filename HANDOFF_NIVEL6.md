@@ -88,14 +88,18 @@ Vezi `pracHint`/`drawPracHintArrow`/`clearPracHint` + `pracHintStage` în `nivel
 
 ## Verificarea liniilor (OBLIGATORIU)
 **Nicio linie nu intră în lecție neverificată.** Folosește python-chess (instalat):
-`scratchpad/try_line.py "e4 e5 Bc4 ..."` → spune dacă toate mutările sunt legale + dacă e MAT.
+`python tools/try_line.py "e4 e5 Bc4 ..."` (mutat din `scratchpad/` în `tools/`, ca să fie în repo
+și pe tabletă; `scratchpad/` e acum în `.gitignore` — acolo stau doar filme/cadre temporare) → spune dacă toate mutările sunt legale + dacă e MAT.
 Userul urăște erorile de șah (ex. „furculiță pe pion apărat"). Reconstrucția din cadre video e
 NESIGURĂ pentru linii demonstrative → **când e greu, cere userului să pună linia în studiul ei Lichess**
 (xMvnWhmH) și importă PGN cu `?comments=true` (workflow care merge mereu).
 
 ## Workflow filme Facebook/YouTube (pentru capcane noi)
-Userul a strâns ~253 filmulețe FB (linkuri în `scratchpad/fb_links.txt`). Pipeline:
-1. `scratchpad/grab_wave.py START COUNT` → descarcă (yt-dlp, fără login) + taie cadre (ffmpeg din imageio-ffmpeg). Sare filmele >360s.
+Userul a strâns ~253 filmulețe FB. **ATENȚIE (7 aug):** `scratchpad/fb_links.txt` și
+`scratchpad/grab_wave.py` **NU mai există** — au fost șterse odată cu curățarea spațiului de lucru.
+Când se reia clasificarea filmelor 114+, trebuie cerută userului din nou lista de linkuri și rescris
+scriptul de descărcare (rețeta e mai jos). Pipeline:
+1. `grab_wave.py START COUNT` → descarcă (yt-dlp, fără login) + taie cadre (ffmpeg din imageio-ffmpeg). Sare filmele >360s.
 2. Agenți paraleli citesc cadrele din `scratchpad/frames_fb/{tag}/` și clasifică (deschidere/culoare/mat sau material).
 3. Catalog în `capcane_din_filmulete.md`. Comentariile AUTORULUI: ia transcrierea audio cu
    `yt-dlp --skip-download --write-auto-subs --sub-lang "en.*"` → tradu în română (vezi mai jos).
