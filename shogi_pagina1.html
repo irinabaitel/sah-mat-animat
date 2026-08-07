@@ -204,7 +204,13 @@
   grid-template-columns: repeat(9, 1fr);
   grid-template-rows: repeat(9, 1fr);
   /* latura se calculeaza din JS = min(latime, inaltime disponibila),
-     ca sa iasa patrata pe orice ecran */
+     ca sa iasa patrata pe orice ecran.
+     flex:none + min-width/height:0 = nu se lasa intinsa sau umflata de
+     continut (altfel imaginile pieselor ii impun o latime minima si iese lata) */
+  flex: none;
+  min-width: 0; min-height: 0;
+  box-sizing: border-box;
+  aspect-ratio: 1 / 1;
   background: #e3b96b;
   border: 3px solid #5a3a1a;
   border-radius: 4px;
@@ -213,6 +219,7 @@
 }
 .sb-cell {
   position: relative;
+  min-width: 0; min-height: 0;   /* celula nu se umfla dupa imaginea din ea */
   border: 1px solid rgba(90,58,26,.55);
   display: flex; align-items: center; justify-content: center;
 }
@@ -221,7 +228,8 @@
 .sb-cell.sb-from { background: rgba(255,221,120,.55); }
 .sb-cell.sb-move::after {
   content: ""; position: absolute;
-  width: 34%; height: 34%; border-radius: 50%;
+  width: 34%; aspect-ratio: 1 / 1; height: auto;  /* mereu rotund, nu oval */
+  border-radius: 50%;
   background: radial-gradient(circle, rgba(34,139,34,.92) 60%, rgba(34,139,34,.55) 100%);
   box-shadow: 0 0 4px rgba(0,0,0,.3);
 }
