@@ -134,6 +134,36 @@ subpromovarea nu putea fi jucată. Acum `pracAttemptMove` citește piesa din SAN
 **Navigație finală Nivel VI:** intro → 2 → 3 → 4 → 5 (Italiana) → 6 (Spaniola) → 7 (Vieneza) →
 8 (Gambitul Regelui) → 9 (Rusa) → 10 (Philidor) → 1 (Gambitul Damei) → 11 (Albin) → 12 (Budapesta, ultima).
 
+## Jocurile semi-deschise — 4 lecții noi, sursa Igor Smirnov (23 aug 2026)
+`nivel6_lectia13` **Siciliana** · `nivel6_lectia14` **Franceza** · `nivel6_lectia15` **Caro-Kann** ·
+`nivel6_lectia16` **Scandinava**.
+
+**Decizia userului:** fiindcă „Lupta șahistă" nu are (încă) episoade pentru semi-deschise, intro-urile se
+scriu după **GM Igor Smirnov** (Remote Chess Academy), traduse din engleză. Fiecare lecție are un
+**note-box care spune explicit sursa**. Userul a propus și cartea lui Levy Rozman — nu o folosim: nu o avem
+și oricum n-am putea reproduce text dintr-o carte pe un site public.
+Transcrieri: `yt-dlp --skip-download --write-auto-subs --sub-lang "en"` pe `@GMIgorSmirnov`.
+Videourile folosite: Siciliana `2miolLK8DiI`, Franceza `f0FIJePXmgk`, Caro-Kann `HvER2idtW6M`,
+Scandinava `sKoBj-kL0hg`.
+
+**Capcanele (toate arătate de Smirnov, toate verificate cu Stockfish):**
+- Siciliana: 🪤 **Dxf2#** în varianta clasică (6.Ne3 Cg4! 7.N-mută Db6! 8.Cb3?? Dxf2#) ·
+  ⚔️ **Smith-Morra** (5…Cf6?? 6.e5! dxe5?? 7.Nxf7+! Rxf7 8.Dxd8).
+- Franceza: 🪤 **Cxe5** după 5.Nb5?! Nd7 (câștigi un pion) · ⚔️ **9.Nb5+!!** șah descoperit care câștigă
+  dama, dacă Negrul capturează pe d4 înainte de …Nd7. Regula lecției: **întâi Nd7, apoi capturi**.
+- Caro-Kann: 🪤 **pionul d4** în varianta Înaintată (…Ng4 iese ÎNAINTE de …e6 — diferența față de Franceză) ·
+  ⚔️ **Cd6#** mat sufocat (5.De2! Cgf6?? 6.Cd6#) — merge doar în Caro-Kann, în Franceză c7 ar captura ·
+  ⚔️ **nebunul prins** cu 4.h4! e6?? 5.g4 și 6.f3.
+- Scandinava: 🪤 **Dxf2#** în varianta 2…Cf6 (7.Nd2?? Dxd4! 8.Cf3?? Dxf2#) · ⚔️ **Nxf7#** dacă Negrul
+  retrage dama pe d8 (4.Nc4! întâi nebunul, apoi 6.Ce5!! Nxd1?? 7.Nxf7#) — același tipar ca matul lui Legall.
+
+**Nivelul VI e complet acum: 17 pagini** — intro, 3 maturi rapide, 5 deschideri cu Albul
+(Italiana, Spaniola, Vieneza, Gambitul Regelui, Gambitul Damei) și 8 apărări cu Negrul
+(Rusa/Stafford, Philidor, Siciliana, Franceza, Caro-Kann, Scandinava, Albin, Budapesta).
+Fiecare are minimum 2 capcane și Exersează la toate capitolele.
+
+**Navigație finală:** intro → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 13 → 14 → 15 → 16 → 1 → 11 → 12.
+
 ## Motorul lecțiilor (cum se construiește o lecție nouă)
 Model de referință: `nivel6_lectia5.html` (sau `lectia1`). chessboard.js 1.0.0 + chess.js 0.10.3
 + jQuery 3.5.1, piese `caliente` de pe lichess CDN, `master-template.css`, `board-utils.js`.
