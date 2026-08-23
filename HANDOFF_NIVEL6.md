@@ -31,7 +31,11 @@ Nivelul VI = deschideri consacrate + capcanele lor.
 | `nivel6_lectia6.html` | **Partida Spaniolă** | 2 intro (Morphy, Berlin) + 4 capcane, toate verificate python-chess ȘI chess.js 0.10.3 — vezi secțiunea dedicată mai jos |
 | `nivel6_lectia1.html` | **Gambitul Damei** | Refuzat/Acceptat + lăcomia …b5 (Alb) + Capcana Elefantului (Negru) |
 
-**Navigație (footer):** lectia2 → lectia3 → lectia4 → lectia5 (Italiana) → lectia6 (Spaniola) → lectia1 (Gambitul Damei).
+| `nivel6_intro.html` | **De ce învățăm despre deschideri** | prima pagină a nivelului; doar text + tablă „avanpremieră" (buclă cu primele 3 mutări din Italiana, Spaniola, Gambitul Damei Refuzat/Acceptat, array `openings`) |
+
+**Navigație (footer):** intro → lectia2 → lectia3 → lectia4 → lectia5 (Italiana) → lectia6 (Spaniola) → lectia1 (Gambitul Damei).
+
+**Regulă (20 aug 2026):** note-box-ul „Ține minte" + quote-box-ul cu filozofia deschiderilor apar **o singură dată**, în `nivel6_intro.html` — au fost scoase din lecțiile 1, 5, 6 și NU se mai pun în lecții noi.
 **Hub:** cardul Nivel VI din `hub.html` are toate linkabile.
 
 ## Partida Italiană — stare la zi (`nivel6_lectia5.html`)
@@ -150,8 +154,15 @@ Antrenorul userului, **Christiansen Sava**, are pe YouTube (canal **Chess Archit
   Fazele 2 și 3 = strategie/finaluri (utile pentru Nivel II și III).
 - **Caută episodul pentru fiecare deschidere nouă** și folosește descrierea LUI la intro. Transcriere: `yt-dlp --skip-download --write-auto-subs --sub-lang "ro"` (videourile-s în română, NU „en").
 
+## Pagina de intro (`nivel6_intro.html`)
+Prima pagină a nivelului: „De ce învățăm despre deschideri" (Nimzovici + Christiansen), iar în stânga o **tablă care derulează în buclă primele mutări** din deschiderile nivelului.
+**⚠️ La FIECARE lecție nouă de deschidere: adaugă deschiderea în lista `openings` din `nivel6_intro.html`**, în ordinea lecțiilor. Momentan conține: Italiana, Spaniola, Gambitul Damei (Refuzat + Acceptat).
+
 ## CE URMEAZĂ
-1. ~~Partida Spaniolă~~ — **GATA** (`nivel6_lectia6.html`, 6 aug 2026). De rafinat: episodul Chess Architect exact pentru Spaniolă (creditul e acum doar către canal). Opțional: de decis cu userul dacă matul sufocat Mortimer (Ch3) merită `practice:true` în ciuda barei de eval.
+1. ~~Partida Spaniolă~~ — **GATA** (`nivel6_lectia6.html`, 6 aug 2026; corecturi de conținut + Exersează la toate capitolele, 23 aug 2026). De rafinat: episodul Chess Architect exact pentru Spaniolă (creditul e acum doar către canal).
+   - Corecturi 23 aug: numele deschiderii (Ruy López a studiat-o, nu a inventat-o) + regula generală de denumire; „pune presiune"/„face rocada" peste tot; explicat de ce nu 5…Cxe4 la Morphy; Berlineza — Kramnik a jucat-o **cu negrele**; Tarrasch — regele nu mai e pe coloana e după rocadă, nebunul e7 rămâne neapărat la 14.f3, turnul din d8 e **atacat**, nu legat, coloana d se deschide pentru Ta1; Mortimer — calul de pe c4 apără a5; 7.Cc3 apără nebunul a4. Capitolul **Anastasia a fost scos** (linia nu era autentică — 11…d6 nu e o mutare firească).
+   - **Exersează activ la toate cele 7 capitole** (inclusiv deschiderile) prin `practiceFrom` + `winner` + `isOpening` + `finishMsg`. La `isOpening` bara de evaluare e ascunsă și mesajul e „Joacă mutarea din deschidere". **Model de copiat pe lecțiile viitoare.**
+   - Rămas de lămurit cu userul: la Tarrasch cerea explicație pentru „de ce nu Txc4 la mutarea 13" — la mutarea 13 nu există piesă pe c4; s-a explicat în schimb 13…Txd3? (c2 apără) + pericolul ultimei linii.
 2. Deschideri „cu Negrul": Siciliana, Caro-Kann/Franceză, Gambitul Stafford, Englund, Elephant.
 3. Continuă clasificarea filmelor 084+ pe valuri; adaugă capcanele găsite la deschiderea potrivită.
 4. `REGULA #1` din CLAUDE.md: **întreabă userul înainte de a începe lucru mare.**
