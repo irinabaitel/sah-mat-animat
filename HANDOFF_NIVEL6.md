@@ -33,7 +33,7 @@ Nivelul VI = deschideri consacrate + capcanele lor.
 
 | `nivel6_intro.html` | **De ce învățăm despre deschideri** | prima pagină a nivelului; doar text + tablă „avanpremieră" (buclă cu primele 3 mutări din Italiana, Spaniola, Gambitul Damei Refuzat/Acceptat, array `openings`) |
 
-**Navigație (footer):** intro → lectia2 → lectia3 → lectia4 → lectia5 (Italiana) → lectia6 (Spaniola) → lectia1 (Gambitul Damei).
+**Navigație (footer):** intro → lectia2 → lectia3 → lectia4 → lectia5 (Italiana) → lectia6 (Spaniola) → lectia7 (Vieneza) → lectia8 (Gambitul Regelui) → lectia1 (Gambitul Damei, ultima).
 
 **Regulă (20 aug 2026):** note-box-ul „Ține minte" + quote-box-ul cu filozofia deschiderilor apar **o singură dată**, în `nivel6_intro.html` — au fost scoase din lecțiile 1, 5, 6 și NU se mai pun în lecții noi.
 **Hub:** cardul Nivel VI din `hub.html` are toate linkabile.
@@ -85,6 +85,29 @@ din d5, contează să rămână un grănicer acolo; Apărarea Tarrasch …c5, Si
 la secțiunea ⚔️ „Cum pedepsești Albul lacom"**, cu `badge-black` (era 🪤 cu badge verde) și titlu corect
 (pedepsești lăcomia de la d5, nu „Gambitul Damei Refuzat") · la capcana …b5, finalul spune concret ce pierde
 Negrul (turnul din a8 **sau** pionul b5, în funcție de cum se apără).
+
+## Partida Vieneză (`nivel6_lectia7.html`) și Gambitul Regelui (`nivel6_lectia8.html`) — GATA (23 aug 2026)
+Episoade Chess Architect: Vieneza `https://www.youtube.com/watch?v=qiS3TvYlkg0`, Gambitul Regelui
+`https://www.youtube.com/watch?v=Qi8XV8WUjiM`. Descrierile LUI sunt în cardurile de intro.
+
+**Vieneza — 5 capitole:** 📖 3.Nc4 (joc liniștit) · 📖 3.g3 (fianchetto) · 📖 3.f4 Gambitul Vienez (răspunsul
+corect 3…d5!) · 🪤 pro-Alb **capcana damei la h5** (3…Cxe4?! 4.Dh5! g6?? 5.Dxe5+! → +piesă) ·
+⚔️ pro-Negru **capcana turnului din h1** (5.fxe5?? Cxc3 6.bxc3 Dh4+ 7.g3?? De4+! 8.De2 Dxh1).
+
+**Gambitul Regelui — 4 capitole:** 📖 Acceptat (2…exf4, 3.Cf3! împotriva …Dh4+) · 📖 Refuzat (2…Nc5) ·
+🪤 pro-Alb **nebunul rătăcit din Contragambitul Falkbeer** (7.De2! Nf2+?? 8.Rd1! — regele NU poate lua,
+nebunul e apărat de calul e4; nebunul rămâne prins) · ⚔️ pro-Negru **3.fxe5?? Dh4+! 4.g3 Dxe4+! 5.De2 Dxh1**.
+
+**⚙️ Instrument de verificare (important, de refolosit):** toate liniile au fost verificate cu **Stockfish**,
+nu doar cu python-chess. Rețetă: `npm i stockfish` în scratchpad, apoi rulează motorul ca CLI cu
+`node node_modules/stockfish/bin/stockfish-18-lite-single.js` (build-ul multithreaded NU merge în node).
+Comenzile `position`+`go` trebuie **etalate cu `sleep`** între ele — `position` se execută imediat, deci fără
+pauză toate căutările analizează ultima poziție. Scriptul `sfeval.sh` din scratchpad face asta.
+Multe „capcane" din cărți nu rezistă la motor (Allgaier, Muzio, capcana coloanei h, Legall în Gambitul
+Regelui) — **verifică înainte de a scrie o lecție**.
+
+**Regulă (user, 23 aug):** fiecare deschidere trebuie să aibă **cel puțin 2 capcane**. Plan: încă ~4-5
+deschideri **cu Negrul** (Siciliana, Franceza/Caro-Kann, Scandinava, Gambitul Stafford).
 
 ## Motorul lecțiilor (cum se construiește o lecție nouă)
 Model de referință: `nivel6_lectia5.html` (sau `lectia1`). chessboard.js 1.0.0 + chess.js 0.10.3
