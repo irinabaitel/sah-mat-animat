@@ -109,6 +109,31 @@ Regelui) — **verifică înainte de a scrie o lecție**.
 **Regulă (user, 23 aug):** fiecare deschidere trebuie să aibă **cel puțin 2 capcane**. Plan: încă ~4-5
 deschideri **cu Negrul** (Siciliana, Franceza/Caro-Kann, Scandinava, Gambitul Stafford).
 
+## Apărări cu Negrul — 4 lecții noi (23 aug 2026)
+`nivel6_lectia9` **Apărarea Rusă + Gambitul Stafford** · `nivel6_lectia10` **Apărarea Philidor** ·
+`nivel6_lectia11` **Contragambitul Albin** · `nivel6_lectia12` **Gambitul Budapesta**.
+
+**⚠️ DESCOPERIRE IMPORTANTĂ:** seria „Lupta șahistă — Faza 1" **NU a ajuns încă la jocurile semi-deschise** —
+nu există episod pentru Siciliană, Franceză, Caro-Kann sau Scandinavă (playlisturile existente sunt Jocuri
+Deschise / Închise / Semi-Închise). De aceea am ales apărări **care AU episod**. De verificat periodic dacă
+au apărut episoade noi; abia atunci se pot face lecțiile de Siciliană/Franceză/Caro-Kann/Scandinavă în vocea lui.
+
+**Capcanele (toate verificate cu Stockfish):**
+- Rusă: 🪤 **matul din Gambitul Stafford** (6.Ng5?? Cxe4!! 7.Nxd8 Nxf2+! 8.Re2 Ng4#) · ⚔️ **capcana grabei**
+  (3…Cxe4?? 4.De2! Cf6?? 5.Cc6+ șah descoperit → câștigă dama).
+- Philidor: 🪤 **matul lui Legall** (5.Cxe5!! Nxd1?? 6.Nxf7+ Re7 7.Cd5#) · 🪤 **atacul dublu 7.Db3!** (f7+b7) ·
+  ⚔️ **7.Ng5?? Cxe4!** (legarea care nu e legare — nu e regele în spate).
+- Albin: 🪤 **capcana Lasker** cu **subpromovare în cal** (7…fxg1=C+!! 8.Txg1 Ng4+ → câștigă dama) ·
+  ⚔️ **6.fxe3!** (nu lua nebunul).
+- Budapesta: 🪤 **capcana Kieninger** (7.a3?? Cgxe5! 8.axb4?? Cd3# — mat sufocat) · ⚔️ **8.Cxe5!**.
+
+**⚙️ Patch nou în motor (`nivel6_lectia11.html`):** modul Exersează avea `promotion: 'q'` hardcodat, deci
+subpromovarea nu putea fi jucată. Acum `pracAttemptMove` citește piesa din SAN-ul așteptat
+(`/=([QRBNDTNC])/`) și promovează corect. **De copiat în orice lecție viitoare cu subpromovare.**
+
+**Navigație finală Nivel VI:** intro → 2 → 3 → 4 → 5 (Italiana) → 6 (Spaniola) → 7 (Vieneza) →
+8 (Gambitul Regelui) → 9 (Rusa) → 10 (Philidor) → 1 (Gambitul Damei) → 11 (Albin) → 12 (Budapesta, ultima).
+
 ## Motorul lecțiilor (cum se construiește o lecție nouă)
 Model de referință: `nivel6_lectia5.html` (sau `lectia1`). chessboard.js 1.0.0 + chess.js 0.10.3
 + jQuery 3.5.1, piese `caliente` de pe lichess CDN, `master-template.css`, `board-utils.js`.
