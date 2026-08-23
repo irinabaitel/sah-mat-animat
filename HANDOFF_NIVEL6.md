@@ -72,6 +72,20 @@ din lecție duc acum la episodul exact.
 
 **Regulă nouă (user, 6 aug):** limita capcanelor ridicată 10→**20 mutări**. Și: în comentarii **marchează explicit mutarea-greșeală** care duce la înfrângere/pierdere de material (vezi memoria `feedback_marcheaza_mutarea_pierzatoare`).
 
+## Gambitul Damei — stare la zi (`nivel6_lectia1.html`) (23 aug 2026)
+**Episoadele Chess Architect GĂSITE:** „Lupta Șahistă — Faza 1: Gambitul Damei Acceptat"
+`https://www.youtube.com/watch?v=nXOg0b6ch8g` și „…Refuzat" `https://www.youtube.com/watch?v=v0M_xKz0Tpc`.
+Adăugat cardul „Cum le descrie Christiansen Sava" cu descrierea LUI (jocuri închise / 1.d4; la Acceptat —
+control permanent pe e4, atenție la lovitura …e5; la Refuzat — 2.c4 nu oferă un pion, ci amenință pionul
+din d5, contează să rămână un grănicer acolo; Apărarea Tarrasch …c5, Siegbert Tarrasch, avută și de Kasparov;
+„piatră de încercare" pentru cine joacă 1.d4).
+
+**Corecturi 23 aug:** Albul/Negrul cu majusculă în toate adnotările · **Exersează la toate cele 4 capitole**
+(și la deschideri, prin `isOpening`+`practiceFrom`+`finishMsg`, ca la Spaniolă) · **Capcana Elefantului mutată
+la secțiunea ⚔️ „Cum pedepsești Albul lacom"**, cu `badge-black` (era 🪤 cu badge verde) și titlu corect
+(pedepsești lăcomia de la d5, nu „Gambitul Damei Refuzat") · la capcana …b5, finalul spune concret ce pierde
+Negrul (turnul din a8 **sau** pionul b5, în funcție de cum se apără).
+
 ## Motorul lecțiilor (cum se construiește o lecție nouă)
 Model de referință: `nivel6_lectia5.html` (sau `lectia1`). chessboard.js 1.0.0 + chess.js 0.10.3
 + jQuery 3.5.1, piese `caliente` de pe lichess CDN, `master-template.css`, `board-utils.js`.
