@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMTZ9GGPMP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMTZ9GGPMP');
+</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harta Nivelului II — Planuri și principii</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="master-template.css">
+  <style>
+    /* pagina de hartă are conținut lung → derulare pe toată lățimea */
+    .map-main { flex: 1; min-height: 0; overflow-y: auto; padding: var(--gap); }
+    .map-inner { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+
+    .card {
+      background: var(--c-surface); border: 2px solid var(--c-border);
+      border-radius: var(--radius); padding: 14px 18px;
+    }
+    .card p { font-size: var(--fs-md); line-height: 1.75; color: var(--c-text); margin-bottom: 8px; }
+    .card p:last-child { margin-bottom: 0; }
+    .card p strong { color: var(--c-navy); }
+    .card-title {
+      font-family: var(--font-display); font-weight: 900; color: var(--c-navy);
+      font-size: var(--fs-h2); margin-bottom: 6px;
+    }
+
+    /* ── cele trei trepte ── */
+    .trepte { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+    .treapta {
+      flex: 1 1 210px; background: rgba(255,255,255,0.45);
+      border: 2px solid var(--c-border); border-radius: var(--radius); padding: 10px 13px;
+    }
+    .treapta .t-nume { font-family: var(--font-display); font-weight: 900; color: var(--c-navy); font-size: var(--fs-md); }
+    .treapta .t-desc { font-size: var(--fs-sm); color: var(--c-text); line-height: 1.55; margin-top: 2px; }
+
+    /* ── comutator vederi ── */
+    .vederi { display: flex; gap: 8px; justify-content: center; padding: 2px 0 4px; }
+    .v-btn {
+      padding: 9px 20px; border-radius: var(--radius-sm); border: 2px solid var(--c-navy);
+      background: transparent; color: var(--c-navy); font-family: var(--font-display);
+      font-weight: 700; font-size: var(--fs-sm); cursor: pointer; transition: all 0.15s;
+    }
+    .v-btn.activ { background: var(--c-navy); color: #fff; }
+    .v-btn:hover:not(.activ) { background: rgba(26,58,107,0.10); }
+
+    /* ── blocuri tematice ── */
+    .bloc { background: var(--c-surface); border: 2px solid var(--c-border); border-radius: var(--radius); overflow: hidden; }
+    .bloc-cap {
+      display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+      padding: 11px 16px; background: rgba(26,58,107,0.07);
+      border-bottom: 2px solid var(--c-border);
+    }
+    .bloc-lit { font-family: var(--font-display); font-weight: 900; color: var(--c-navy); font-size: 1.15rem; }
+    .bloc-nume { font-family: var(--font-display); font-weight: 900; color: var(--c-navy); font-size: var(--fs-md); }
+    .bloc-nota { font-size: var(--fs-sm); color: var(--c-text-muted); }
+    .bloc-lista { list-style: none; margin: 0; padding: 6px 10px 10px; }
+    .bloc-lista li {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 7px 8px; border-radius: 10px; font-size: var(--fs-md); line-height: 1.5;
+    }
+    .bloc-lista li:hover { background: rgba(26,58,107,0.05); }
+    .tema { color: var(--c-text); font-weight: 700; }
+    .tema a { color: var(--c-navy); text-decoration: underline; }
+    .stare {
+      margin-left: auto; font-size: var(--fs-xs); font-weight: 700;
+      font-family: var(--font-display); padding: 2px 10px; border-radius: 20px; white-space: nowrap;
+    }
+    .s-gata { background: rgba(39,174,96,0.16); color: #1a6b4a; border: 1.5px solid #27ae60; }
+    .s-nou  { background: rgba(230,126,34,0.16); color: #a35a10; border: 1.5px solid #e67e22; }
+    .s-link { background: rgba(26,58,107,0.10); color: var(--c-navy); border: 1.5px solid var(--c-navy); }
+    .pilot  { background: rgba(39,174,96,0.10); border: 1.5px dashed #27ae60; }
+
+    /* ── vedere pe traseu ── */
+    .traseu { list-style: none; margin: 0; padding: 0; counter-reset: pas; }
+    .traseu li {
+      display: flex; align-items: center; gap: 12px; padding: 8px 12px;
+      border-bottom: 1.5px solid rgba(255,255,255,0.55); font-size: var(--fs-md);
+    }
+    .traseu li:last-child { border-bottom: none; }
+    .traseu li::before {
+      counter-increment: pas; content: counter(pas);
+      flex: none; width: 28px; height: 28px; border-radius: 50%;
+      background: var(--c-navy); color: #fff; font-family: var(--font-display);
+      font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; justify-content: center;
+    }
+    .traseu .eticheta {
+      margin-left: auto; font-size: var(--fs-xs); font-family: var(--font-display);
+      font-weight: 700; color: var(--c-navy); background: rgba(26,58,107,0.09);
+      padding: 2px 9px; border-radius: 20px; white-space: nowrap;
+    }
+    .note-box {
+      background: rgba(26,58,107,0.06); border: 1.5px dashed var(--c-navy);
+      border-radius: var(--radius); padding: 11px 15px;
+      font-size: var(--fs-sm); line-height: 1.65; color: var(--c-text);
+    }
+    .note-box strong { color: var(--c-navy); }
+    @media (max-width: 700px) {
+      .stare { margin-left: 0; }
+      .traseu .eticheta { display: none; }
+    }
+  </style>
+<link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
+<link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">Harta Nivelului II</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Planuri și principii</span>
+    </div>
+  </header>
+
+  <main class="map-main" role="main">
+    <div class="map-inner">
+
+      <div class="card">
+        <p class="card-title">Cum e făcut nivelul acesta</p>
+        <p>Nivelurile de pe platformă sunt <strong>rafturi tematice</strong>, nu trepte: finalurile la III, tacticile la IV, deschiderile la VI. Te duci acolo unde vrei să te întărești. Dar <strong>Nivelurile I și II sunt pentru toată lumea</strong> — de aici pornește tot.</p>
+        <p>Fiecare temă are <strong>o singură pagină</strong>, cu tot ce ține de ea. Iar în pagină găsești aceeași temă pe <strong>trei trepte</strong>, ca să intri de unde ești. Nu contează vârsta: un copil de clasa a IV-a care începe azi pornește de la prima treaptă, ca toți ceilalți.</p>
+        <div class="trepte">
+          <div class="treapta">
+            <div class="t-nume">🐣 Văd tema</div>
+            <div class="t-desc">3–6 piese pe tablă. Tema curată, fără nimic în jur. Ți se arată unde să te uiți.</div>
+          </div>
+          <div class="treapta">
+            <div class="t-nume">🐦 O găsesc singur</div>
+            <div class="t-desc">6–10 piese. Tema e acolo, dar trebuie s-o cauți tu. Nimeni nu-ți mai arată.</div>
+          </div>
+          <div class="treapta">
+            <div class="t-nume">🦅 O folosesc în partidă</div>
+            <div class="t-desc">Poziție dintr-un joc adevărat, unde tema e doar o bucată din plan.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="vederi">
+        <button class="v-btn activ" id="btn-teme" onclick="vedere('teme')">📚 Pe teme</button>
+        <button class="v-btn" id="btn-traseu" onclick="vedere('traseu')">🧭 Pe traseu</button>
+      </div>
+
+      <div id="v-teme"></div>
+
+      <div id="v-traseu" style="display:none;">
+        <div class="card">
+          <p class="card-title">🧭 Ordinea în care le-aș preda</p>
+          <p>Vederea „pe teme" e pentru găsit repede. Asta e pentru predat: temele se amestecă între blocuri, ca la clasă — nu faci cinci lecții de pioni una după alta.</p>
+        </div>
+        <div class="bloc" style="margin-top:12px;">
+          <ol class="traseu" id="lista-traseu"></ol>
+        </div>
+      </div>
+
+      <div class="note-box" id="rezumat"></div>
+
+    </div>
+  </main>
+
+  <footer class="page-footer" role="navigation" aria-label="Navigare">
+    <!-- prima pagină a nivelului: fără „Înapoi", dar păstrăm locul ca „Cuprins" să rămână centrat -->
+    <span class="nav-btn nav-btn--back" style="visibility:hidden" aria-hidden="true">
+      <span class="icon">&#8592;</span><span class="label">Înapoi</span>
+    </span>
+    <a href="hub.html" class="nav-btn nav-btn--contents">
+      <span class="icon">&#8862;</span><span class="label">Cuprins</span>
+    </a>
+    <a href="nivel2_lectia1.html" class="nav-btn nav-btn--forward">
+      <span class="label">Fazele jocului</span><span class="icon">&#8594;</span>
+    </a>
+  </footer>
+
+</div>
+
+<script>
+/* stare: 'gata' = pagina există · 'nou' = de scris · 'link' = trimite la altă pagină de pe site */
+const BLOCURI = [
+  { lit: 'A', nume: 'Cum mă uit la tablă', nota: 'înainte să muți, trebuie să vezi',
+    teme: [
+      { t: 'Ce văd pe tablă?', d: 'material, unde e regele, cine e activ', s: 'nou' },
+      { t: 'Activitatea pieselor', d: 'piese care lucrează și piese care dorm', s: 'nou' },
+      { t: 'Mobilitatea', d: 'câte lucruri poate face o piesă de acolo unde stă', s: 'nou' },
+      { t: 'Relațiile dintre piese', d: 'cine atacă, cine apără, ce se schimbă', s: 'nou' },
+      { t: 'Cele trei întrebări', d: 'Ce văd? · Ce se poate întâmpla? · Ce aleg?', s: 'nou' },
+      { t: 'Piese atârnate. Numărătoarea', d: 'ai făcut asta la Nivelul I', s: 'link', h: 'nivel1_lectia13.html' }
+    ] },
+
+  { lit: 'B', nume: 'Cum mă apăr', nota: 'blocul care lipsea de pe tot site-ul',
+    teme: [
+      { t: 'Mă apăr de un atac dublu', d: 'mut, apăr, blochez — sau atac eu ceva mai mare', s: 'nou', pilot: true },
+      { t: 'Mă apăr de o legătură', d: 'cum scapi când o piesă nu are voie să se miște', s: 'nou' },
+      { t: 'Atac o piesă legată', d: 'partea cealaltă: ce faci cu o piesă care nu poate fugi', s: 'nou' },
+      { t: 'Amenințările', d: 'cum le vezi venind, înainte să fie prea târziu', s: 'nou' },
+      { t: 'Mă apăr de mat', d: 'ai făcut asta la Nivelul I', s: 'link', h: 'aparare_mat.html' }
+    ] },
+
+  { lit: 'C', nume: 'Cooperarea pieselor', nota: 'nicio piesă nu câștigă singură',
+    teme: [
+      { t: 'Cooperarea în deschidere', d: '', s: 'nou' },
+      { t: 'Cooperarea în jocul de mijloc', d: '', s: 'nou' },
+      { t: 'Cooperarea în final', d: '', s: 'nou' },
+      { t: 'Bateria', d: 'Damă + Nebun, Turn + Turn — două piese pe aceeași linie', s: 'nou' }
+    ] },
+
+  { lit: 'D', nume: 'Regulile de aur', nota: 'ce faci în primele mutări, și de ce',
+    teme: [
+      { t: 'Fazele jocului și obiectivele lor', d: '', s: 'gata', h: 'nivel2_lectia1.html' },
+      { t: 'Centrul și spațiul', d: '', s: 'nou' },
+      { t: 'Avantajul în dezvoltare', d: 'și cum îl pierzi dacă nu-l folosești la timp', s: 'nou' },
+      { t: 'Dama scoasă prea repede', d: 'de ce te costă, chiar dacă pare puternică', s: 'nou' },
+      { t: 'Legătura dintre turnuri și centralizarea', d: '', s: 'nou' },
+      { t: 'Tabelul de analiză', d: 'cum verifici o mutare înainte s-o joci', s: 'nou' }
+    ] },
+
+  { lit: 'E', nume: 'Punctele slabe', nota: 'unde se sparge o poziție',
+    teme: [
+      { t: 'Pionul lui Ahile — f2 și f7', d: 'punctul apărat doar de rege', s: 'nou' },
+      { t: 'Coloana deschisă și linia a 7-a', d: 'unde își doresc turnurile să ajungă', s: 'nou' },
+      { t: 'Slăbiciunea ultimei linii', d: 'ai făcut asta la Nivelul V', s: 'link', h: 'pagina65.html' }
+    ] },
+
+  { lit: 'F', nume: 'Structura de pioni', nota: '„pionii sunt sufletul șahului" — Philidor',
+    teme: [
+      { t: 'Pioni dublați', d: '', s: 'nou' },
+      { t: 'Pionul izolat', d: 'slăbiciune sau forță? depinde de fază', s: 'nou' },
+      { t: 'Pionul înapoiat', d: '', s: 'nou' },
+      { t: 'Pionul liber și susținerea lui', d: '', s: 'nou' },
+      { t: 'Avanpostul', d: 'câmpul de unde nu te poate alunga niciun pion', s: 'nou' }
+    ] },
+
+  { lit: 'G', nume: 'Piesele, comparate', nota: 'nu toate piesele valorează la fel, mereu',
+    teme: [
+      { t: 'Perechea de nebuni', d: '', s: 'nou' },
+      { t: 'Calul, mai puternic decât nebunul', d: 'când și de ce se întâmplă asta', s: 'nou' },
+      { t: 'Nebun bun, nebun rău', d: '', s: 'nou' },
+      { t: 'Când schimbi piese și când nu', d: '', s: 'nou' },
+      { t: 'Ce faci cu avantajul material', d: 'l-ai câștigat — acum cum îl transformi în victorie?', s: 'nou' },
+      { t: 'Atacul la rege', d: 'când ai voie să pornești, și cu ce', s: 'nou' }
+    ] },
+
+  { lit: 'H', nume: 'Tactica — pagina de reper', nota: 'exercițiile sunt la Nivelul IV, dar tema se înțelege de aici',
+    teme: [
+      { t: 'Atacul dublu și furculița', d: 'o piesă atacă două lucruri deodată', s: 'link', h: 'pagina94.html' },
+      { t: 'Legătura', d: 'piesa din față nu are voie să se miște', s: 'link', h: 'pagina51.html' },
+      { t: 'Atacul laser (frigăruia)', d: 'ca legătura, dar invers: în față stă piesa mare', s: 'link', h: 'pagina53.html' },
+      { t: 'Atacul prin descoperire', d: 'muți o piesă și lovește cea din spatele ei', s: 'link', h: 'pagina95.html' },
+      { t: 'Șahul dublu', d: 'două piese dau șah odată — regele trebuie să fugă', s: 'link', h: 'pagina4.html' },
+      { t: 'Atragerea și devierea', d: 'îl faci să mute unde vrei tu', s: 'link', h: 'pagina59.html' },
+      { t: 'Îndepărtarea apărătorului', d: 'scoți paznicul, apoi iei ce păzea', s: 'link', h: 'pagina98.html' },
+      { t: 'Atacul triplu', d: 'lipsește de pe site', s: 'nou' },
+      { t: 'Dubla lovitură', d: 'lipsește de pe site', s: 'nou' },
+      { t: 'Eliminarea apărătorului, pe cele patru feluri', d: 'prin capturare · atac · atragere · distragere — acum sunt pagini răzlețe', s: 'nou' }
+    ] },
+
+  { lit: 'I', nume: 'Punte spre finaluri', nota: 'de făcut la Nivelul III',
+    teme: [
+      { t: 'Câmpuri cheie și opoziția', d: 'se face la Nivelul III', s: 'link', h: 'hub.html' },
+      { t: 'Pătratul pionului', d: 'se face la Nivelul III', s: 'link', h: 'hub.html' }
+    ] }
+];
+
+/* ordinea de predat — amestecă blocurile, ca la clasă */
+const TRASEU = [
+  ['Fazele jocului și obiectivele lor', 'D'],
+  ['Ce văd pe tablă?', 'A'],
+  ['Relațiile dintre piese', 'A'],
+  ['Piese atârnate. Numărătoarea', 'A'],
+  ['Centrul și spațiul', 'D'],
+  ['Avantajul în dezvoltare', 'D'],
+  ['Dama scoasă prea repede', 'D'],
+  ['Legătura dintre turnuri și centralizarea', 'D'],
+  ['Cooperarea în deschidere', 'C'],
+  ['Pionul lui Ahile — f2 și f7', 'E'],
+  ['Activitatea pieselor', 'A'],
+  ['Mobilitatea', 'A'],
+  ['Atacul dublu și furculița', 'H'],
+  ['Mă apăr de un atac dublu', 'B'],
+  ['Legătura', 'H'],
+  ['Atacul laser (frigăruia)', 'H'],
+  ['Mă apăr de o legătură', 'B'],
+  ['Atac o piesă legată', 'B'],
+  ['Atacul prin descoperire', 'H'],
+  ['Șahul dublu', 'H'],
+  ['Amenințările', 'B'],
+  ['Mă apăr de mat', 'B'],
+  ['Cooperarea în jocul de mijloc', 'C'],
+  ['Bateria', 'C'],
+  ['Coloana deschisă și linia a 7-a', 'E'],
+  ['Slăbiciunea ultimei linii', 'E'],
+  ['Tabelul de analiză', 'D'],
+  ['Cele trei întrebări', 'A'],
+  ['Atragerea și devierea', 'H'],
+  ['Îndepărtarea apărătorului', 'H'],
+  ['Eliminarea apărătorului, pe cele patru feluri', 'H'],
+  ['Atacul triplu', 'H'],
+  ['Dubla lovitură', 'H'],
+  ['Pioni dublați', 'F'],
+  ['Pionul izolat', 'F'],
+  ['Pionul înapoiat', 'F'],
+  ['Avanpostul', 'F'],
+  ['Perechea de nebuni', 'G'],
+  ['Nebun bun, nebun rău', 'G'],
+  ['Calul, mai puternic decât nebunul', 'G'],
+  ['Când schimbi piese și când nu', 'G'],
+  ['Atacul la rege', 'G'],
+  ['Ce faci cu avantajul material', 'G'],
+  ['Pionul liber și susținerea lui', 'F'],
+  ['Cooperarea în final', 'C'],
+  ['Câmpuri cheie și opoziția', 'I'],
+  ['Pătratul pionului', 'I']
+];
+
+const ETICHETE = { gata: 'gata', nou: 'de scris', link: 'e în altă parte' };
+const CLASE    = { gata: 's-gata', nou: 's-nou', link: 's-link' };
+
+function construieste() {
+  const gazda = document.getElementById('v-teme');
+  BLOCURI.forEach(function (b) {
+    const bloc = document.createElement('div');
+    bloc.className = 'bloc';
+    let h = '<div class="bloc-cap"><span class="bloc-lit">' + b.lit + '.</span>' +
+            '<span class="bloc-nume">' + b.nume + '</span>' +
+            '<span class="bloc-nota">— ' + b.nota + '</span></div><ul class="bloc-lista">';
+    b.teme.forEach(function (t) {
+      const nume = t.h ? '<a href="' + t.h + '">' + t.t + '</a>' : t.t;
+      h += '<li' + (t.pilot ? ' class="pilot"' : '') + '>' +
+           '<span class="tema">' + nume + (t.pilot ? ' &nbsp;⭐' : '') + '</span>' +
+           (t.d ? '<span class="bloc-nota">' + t.d + '</span>' : '') +
+           '<span class="stare ' + CLASE[t.s] + '">' + ETICHETE[t.s] + '</span></li>';
+    });
+    bloc.innerHTML = h + '</ul>';
+    gazda.appendChild(bloc);
+    gazda.appendChild(Object.assign(document.createElement('div'), { style: 'height:12px' }));
+  });
+
+  const lista = document.getElementById('lista-traseu');
+  TRASEU.forEach(function (p) {
+    const li = document.createElement('li');
+    li.innerHTML = '<span>' + p[0] + '</span><span class="eticheta">' + p[1] + '</span>';
+    lista.appendChild(li);
+  });
+
+  let gata = 0, nou = 0, link = 0;
+  BLOCURI.forEach(function (b) { b.teme.forEach(function (t) {
+    if (t.s === 'gata') gata++; else if (t.s === 'nou') nou++; else link++;
+  }); });
+  document.getElementById('rezumat').innerHTML =
+    '📊 <strong>Unde suntem:</strong> ' + (gata + nou + link) + ' de teme în tot nivelul — <strong>' +
+    gata + '</strong> gata, <strong>' + nou + '</strong> de scris, <strong>' + link +
+    '</strong> care trimit la pagini existente. Tema marcată cu ⭐ e cea la care lucrăm acum.';
+}
+
+function vedere(care) {
+  const teme = care === 'teme';
+  document.getElementById('v-teme').style.display   = teme ? 'block' : 'none';
+  document.getElementById('v-traseu').style.display = teme ? 'none' : 'block';
+  document.getElementById('btn-teme').classList.toggle('activ', teme);
+  document.getElementById('btn-traseu').classList.toggle('activ', !teme);
+  document.querySelector('.map-main').scrollTop = 0;
+}
+
+construieste();
+</script>
+</body>
+</html>
