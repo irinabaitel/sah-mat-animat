@@ -144,15 +144,16 @@
 
       <div class="vederi">
         <button class="v-btn activ" id="btn-teme" onclick="vedere('teme')">📚 Pe teme</button>
-        <button class="v-btn" id="btn-traseu" onclick="vedere('traseu')">🧭 Pe traseu</button>
+        <button class="v-btn" id="btn-traseu" onclick="vedere('traseu')">🧭 Ordinea de parcurs</button>
       </div>
 
       <div id="v-teme"></div>
 
       <div id="v-traseu" style="display:none;">
         <div class="card">
-          <p class="card-title">🧭 Ordinea în care le-aș preda</p>
-          <p>Vederea „pe teme" e pentru găsit repede. Asta e pentru predat: temele se amestecă între blocuri, ca la clasă — nu faci cinci lecții de pioni una după alta.</p>
+          <p class="card-title">🧭 Ordinea de parcurs</p>
+          <p>Vederea „pe teme" e pentru găsit repede ceva anume. Asta e pentru mers de la cap la coadă: temele se amestecă între blocuri, ca să nu dai peste cinci lecții de pioni una după alta.</p>
+          <p><strong>Nu e obligatorie.</strong> Dacă știi deja ce vrei, du-te direct acolo. Dar dacă nu știi de unde să începi, mergi în ordinea asta și nu greșești.</p>
         </div>
         <div class="bloc" style="margin-top:12px;">
           <ol class="traseu" id="lista-traseu"></ol>
@@ -259,10 +260,12 @@ const BLOCURI = [
       { t: 'Eliminarea apărătorului, pe cele patru feluri', d: 'prin capturare · atac · atragere · distragere — acum sunt pagini răzlețe', s: 'nou' }
     ] },
 
-  { lit: 'I', nume: 'Punte spre finaluri', nota: 'de făcut la Nivelul III',
+  { lit: 'I', nume: 'Primele finaluri de pioni', nota: 'locul lor e aici, nu la Nivelul III',
     teme: [
-      { t: 'Câmpuri cheie și opoziția', d: 'se face la Nivelul III', s: 'link', h: 'hub.html' },
-      { t: 'Pătratul pionului', d: 'se face la Nivelul III', s: 'link', h: 'hub.html' }
+      { t: 'Câmpuri cheie', d: 'pătratele de unde regele câștigă partida', s: 'nou' },
+      { t: 'Opoziția', d: 'cine se dă înapoi primul, pierde', s: 'nou' },
+      { t: 'Pătratul pionului', d: 'ajunge regele sau nu? se vede dintr-o privire', s: 'nou' },
+      { t: 'Pătratul magic și pătratul mișcător', d: '', s: 'nou' }
     ] }
 ];
 
@@ -313,8 +316,10 @@ const TRASEU = [
   ['Ce faci cu avantajul material', 'G'],
   ['Pionul liber și susținerea lui', 'F'],
   ['Cooperarea în final', 'C'],
-  ['Câmpuri cheie și opoziția', 'I'],
-  ['Pătratul pionului', 'I']
+  ['Câmpuri cheie', 'I'],
+  ['Opoziția', 'I'],
+  ['Pătratul pionului', 'I'],
+  ['Pătratul magic și pătratul mișcător', 'I']
 ];
 
 const ETICHETE = { gata: 'gata', nou: 'de scris', link: 'e în altă parte' };
