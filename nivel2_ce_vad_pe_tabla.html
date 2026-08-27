@@ -74,6 +74,8 @@
       color: var(--c-text); min-height: 60px;
     }
     .square-selected { background: rgba(255,200,0,0.55) !important; }
+    /* de unde a plecat si unde a ajuns ultima piesa mutata */
+    .last-move { box-shadow: inset 0 0 0 100px rgba(155,199,0,0.42); }
     .hint-square { background: rgba(60,190,80,0.60) !important; }
 
     .section-label {
@@ -199,7 +201,7 @@
               </div></div>
               <div class="tac"><span class="t-ico">3️⃣</span><div>
                 <div class="t-nume">Amenințări</div>
-                <div class="t-txt">Ce pot să amenint pentru mutarea următoare? „Îți iau piesa", „te fac mat", „îți gonesc dama". <strong>Cea mai valoroasă amenințare e la damă</strong> — e cea mai puternică piesă a lui, deci dacă o gonești, câștigi timp. Dar orice amenințare îl pune pe el să se apere, în loc să te atace pe tine.</div>
+                <div class="t-txt">Ce pot să amenint pentru mutarea următoare? <strong>Cea mai tare e amenințarea de mat</strong> — în fața ei, adversarul lasă totul din mână și se apără. Pe locul doi vine amenințarea la damă, fiindcă e piesa lui cea mai scumpă și e obligată să fugă. Apoi restul: „îți iau nebunul", „îți intru pe linia a șaptea". <strong>Orice amenințare îl pune pe el să se apere, în loc să te atace pe tine.</strong></div>
               </div></div>
             </div>
           </div>
@@ -208,6 +210,10 @@
             <p class="def-title">Și acum, întoarce întrebarea</p>
             <p>După ce adversarul mută, pune-ți exact aceleași trei întrebări — <strong>pentru el</strong>. Are el un șah? O captură? Ce amenință?</p>
             <p>Pentru că, până la urmă, aproape toate partidele se pierd dintr-un singur motiv: <strong>„n-am întrebat de ce a mutat acolo".</strong></p>
+          </div>
+
+          <div class="note-box">
+            ✋ <strong>Pe tablă poți muta oricând, liber</strong> — trage piesele cum vrei, ca să încerci idei. Butonul <strong>„Joacă tu mutările"</strong> e altceva: acolo se așteaptă exact mutarea din lecție, iar dacă dai alta îți spune ce era bun la ea.
           </div>
 
           <div class="acc-list" id="accList"></div>
@@ -308,7 +314,7 @@ const chapters = [
     finishMsg: 'Dama albă e gonită — și tu ai câștigat o mutare!',
     san: ['Re8'],
     ann: {
-      0: '3️⃣ <strong>Amenințările.</strong> Cea mai valoroasă amenințare e cea care gonește dama — fiindcă dama e piesa cea mai scumpă, deci e obligată să fugă. <br><br>Dama albă stă în mijlocul tablei, pe e4. Câte piese negre o pot amenința dintr-o singură mutare? <br><br><strong>Cinci.</strong> Turnul din d6, turnul din f8, nebunul din d7, calul din a6 și chiar pionul din f7. Găsește-le pe toate înainte să muți.',
+      0: '3️⃣ <strong>Amenințările.</strong> Cea mai tare e amenințarea de <strong>mat</strong>. Pe locul doi vine cea la <strong>damă</strong> — pe care o vedem aici, fiindcă e cea mai ușor de recunoscut. <br><br>Dama albă stă în mijlocul tablei, pe e4. Câte piese negre o pot amenința dintr-o singură mutare? <br><br><strong>Cinci.</strong> Turnul din d6, turnul din f8, nebunul din d7, calul din a6 și chiar pionul din f7. Găsește-le pe toate înainte să muți.',
       1: '<strong>…Te8</strong> — turnul intră pe coloana e și dama trebuie să plece. Ai câștigat o mutare pe gratis. <br><br>Ține minte: <strong>o amenințare nu trebuie să câștige ceva pe loc.</strong> E de ajuns să-l pună pe el să se apere — cât timp se apără, nu te atacă.'
     },
     arrows: {
@@ -323,12 +329,14 @@ const chapters = [
     fen: '7k/1b5p/2q3p1/5p2/2P5/7P/1P3Q2/2R3K1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: 4,
     finishMsg: 'Șahul era răspunsul!',
-    san: ['Qd4+'],
+    san: ['Qd4+','Kg8','Qd5+'],
     ann: {
       0: 'Joci cu <strong>Albul</strong>. Pune-ți cele trei întrebări, în ordine. Ai un șah? Ai o captură? Ce poți amenința?',
-      1: '<strong>Dd4+!</strong> — șah pe diagonala mare. Și, în același timp, dama albă atacă <strong>nebunul din b7</strong>, care e neapărat. Negrul trebuie să pareze șahul, apoi nebunul cade. <strong>Prima întrebare a fost și răspunsul.</strong>'
+      1: '<strong>Dd4+!</strong> — șah pe diagonala mare. Nu câștigă nimic pe loc, dar uită-te ce puține răspunsuri îi lasă Negrului: <strong>doar două</strong>.',
+      2: '<strong>…Rg8</strong> — regele se dă la o parte. <em>(Cealaltă era …Df6, blocarea cu dama — dar atunci 2.Dxf6+ o ia pur și simplu, fiindcă n-o recapturează nimeni.)</em>',
+      3: '<strong>2.Dd5+!</strong> — și acum se vede rostul primului șah. Dama dă șah pe noua diagonală <strong>și atacă dama neagră din c6</strong>. Regele trebuie mutat, apoi dama cade. <strong>Prima întrebare a fost și răspunsul — doar că răspunsul avea două etaje.</strong>'
     },
-    arrows: { 1: [{from:'d4', to:'h8', color:'R'}, {from:'d4', to:'b7', color:'R'}] }
+    arrows: { 1: [{from:'d4', to:'h8', color:'R'}], 3: [{from:'d5', to:'g8', color:'R'}, {from:'d5', to:'c6', color:'R'}] }
   },
 
   /* 4 */
@@ -388,10 +396,10 @@ const accData = [
   { chIdx: 1, kind: 't1', num: '2️⃣', title: 'Capturile — și cele care par absurde', practice: true,
     desc: 'Dama ia un cal apărat. Pare o prostie. Nu e — dar se vede abia peste patru mutări.' },
   { chIdx: 2, kind: 't1', num: '3️⃣', title: 'Amenințările — câte feluri?', practice: true,
-    desc: 'Cea mai valoroasă amenințare e cea care gonește dama. Dama albă stă pe e4, iar <strong>cinci</strong> piese negre o pot amenința dintr-o mutare. Le vezi pe toate?' },
+    desc: 'Cea mai tare amenințare e cea de mat; pe locul doi, cea la damă. Dama albă stă pe e4, iar <strong>cinci</strong> piese negre o pot amenința dintr-o mutare. Le vezi pe toate?' },
 
   { chIdx: 3, kind: 't2', num: '1', title: 'Cele trei întrebări', practice: true,
-    desc: 'Joci cu <strong>Albul</strong>. Pune-ți întrebările în ordine și oprește-te la prima care dă ceva.' },
+    desc: 'Joci cu <strong>Albul</strong>. Pune-ți întrebările în ordine. Primul șah nu câștigă nimic — dar pregătește al doilea.' },
   { chIdx: 4, kind: 't2', num: '2', title: 'Cele trei întrebări', practice: true,
     desc: 'Joci cu <strong>Albul</strong>. Aici prima întrebare nu duce nicăieri. Treci la a doua.' },
   { chIdx: 5, kind: 't2', num: '3', title: 'Cele trei întrebări', practice: true,
@@ -405,12 +413,16 @@ const accData = [
 let curChapterIdx = 0;
 let positions     = [];
 
+let moveSquares = [];      /* pentru fiecare semimutare: {from, to} */
+
 function computePositions(ch) {
   const c = new Chess(ch.fen);
   const fens = [c.fen()];
+  moveSquares = [];
   for (const mv of ch.san) {
     const result = c.move(mv);
     if (!result) { console.error('Mutare invalida:', mv, 'in', c.fen()); break; }
+    moveSquares.push({ from: result.from, to: result.to });
     fens.push(c.fen());
   }
   return fens;
@@ -542,6 +554,8 @@ function goToStep(s) {
   document.getElementById('moveCounter').dataset.step = s;
   board.position(positions[s], false);
   sGame = new Chess(positions[s]);
+  if (s > 0 && moveSquares[s - 1]) showLastMove(moveSquares[s - 1].from, moveSquares[s - 1].to);
+  else clearLastMove();
   showCheckHL(sGame);
   if (s > 0 && s === prevStep + 1) playMoveSound(chapters[curChapterIdx].san[s - 1], sGame);
   redrawStudyArrows(s);
@@ -635,6 +649,19 @@ function buildMovesList() {
     }
     log.appendChild(row);
   }
+}
+
+/* ─── Ultima mutare: colorăm câmpul de plecare și cel de sosire ─── */
+function clearLastMove() {
+  document.querySelectorAll('.last-move').forEach(function (el) { el.classList.remove('last-move'); });
+}
+function showLastMove(from, to) {
+  clearLastMove();
+  if (!from || !to) return;
+  [from, to].forEach(function (sq) {
+    const el = document.querySelector('.square-' + sq);
+    if (el) el.classList.add('last-move');
+  });
 }
 
 function clearCheckHL() {
@@ -792,7 +819,7 @@ function startPractice(idx) {
   for (let i = ch.practiceFrom; i < ch.san.length; i++) if ((i - ch.practiceFrom) % 2 === 0) pracKeyTotal++;
   pracFirstTryCount = 0; pracKeyDone = 0; pracErrThisMove = false; pracUserTurn = false;
   pracHintStage = 0;
-  clearStudyArrows(); clearSel(); clearPracHint(); clearCheckHL();
+  clearStudyArrows(); clearSel(); clearPracHint(); clearCheckHL(); clearLastMove();
   document.getElementById('navControls').style.display = 'none';
   const panel = document.getElementById('practicePanel');
   const openItem = document.querySelector('#accList .acc-item.open');
@@ -845,9 +872,18 @@ function pracAttemptMove(source, target) {
   if (!mv) return false;                       // ilegal → snapback fără mesaj
   const clean = function (s) { return s.replace(/[+#]/g, ''); };
   if (clean(mv.san) !== clean(expected)) {
+    /* mutarea e legală, dar nu e cea din lecție — spunem CE a fost bine la ea */
+    const eraSah = pGame.in_check();
+    const eraMat = pGame.in_checkmate();
+    const eraCaptura = mv.san.indexOf('x') !== -1;
     pGame.undo();
     pracErrThisMove = true;
-    setPStatus('❌ Nu chiar aceasta — mai încearcă. (Poți cere un 💡 Indiciu.)');
+    let msg;
+    if (eraMat)          msg = '😮 E chiar mat! Dar lecția merge pe altă mutare — încearc-o și pe aceea.';
+    else if (eraSah)     msg = '✔ Da, e șah! Dar nu ăsta e cel căutat aici. Mai uită-te.';
+    else if (eraCaptura) msg = '✔ E o captură bună de văzut — dar lecția are altceva în vedere. Mai încearcă.';
+    else                 msg = '❌ Nu chiar aceasta — mai încearcă. (Poți cere un 💡 Indiciu.)';
+    setPStatus(msg);
     updatePracStats();
     return false;
   }
@@ -855,7 +891,7 @@ function pracAttemptMove(source, target) {
   pracKeyDone++;
   pracUserTurn = false;
   pracHintStage = 0;
-  clearSel(); clearPracHint(); syncBoard(false); updateEval(); showCheckHL(pGame); playMoveSound(mv.san, pGame);
+  clearSel(); clearPracHint(); syncBoard(false); updateEval(); showLastMove(mv.from, mv.to); showCheckHL(pGame); playMoveSound(mv.san, pGame);
   setPStatus('✔ Corect!');
   updatePracStats();
   setTimeout(pracAfterUser, 560);
@@ -866,8 +902,8 @@ function pracAfterUser() {
   const ch = chapters[curChapterIdx];
   if (pGame.history().length >= ch.san.length) { pracFinish(); return; }
   var sanRobot = ch.san[pGame.history().length];   // mutarea robotului (adversarul)
-  pGame.move(sanRobot);
-  syncBoard(true); updateEval(); showCheckHL(pGame); playMoveSound(sanRobot, pGame);
+  var mvRobot = pGame.move(sanRobot);
+  syncBoard(true); updateEval(); if (mvRobot) showLastMove(mvRobot.from, mvRobot.to); showCheckHL(pGame); playMoveSound(sanRobot, pGame);
   if (pGame.history().length >= ch.san.length) { pracFinish(); return; }
   pracUserTurn = true; pracErrThisMove = false;
   setPStatus(turnPrompt());
