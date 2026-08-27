@@ -208,7 +208,7 @@
 
           <div class="def-box">
             <p class="def-title">Regula: o mutare, două treburi</p>
-            <p>Când ești atacat, ai patru feluri de a te apăra: <strong>fugi</strong> · <strong>aperi</strong> · <strong>capturezi</strong> · <strong>te bagi între</strong>.</p>
+            <p>Când ești atacat, ai patru feluri de a te apăra: <strong>fugi</strong> · <strong>aperi</strong> · <strong>capturezi</strong> · <strong>te pui în cale</strong>.</p>
             <p>Împotriva unui atac dublu, <strong>una singură nu ajunge niciodată</strong>. Îți trebuie o mutare care le face pe două deodată — de exemplu piesa atacată fuge <em>și</em> o apără pe cealaltă. Sau fuge <em>și</em> dă șah.</p>
             <p>Când găsești mutarea aia, atacul lui era o lingură.</p>
           </div>
@@ -217,16 +217,14 @@
             <p><strong>Cele cinci întrebări</strong> — ordinea în care să te uiți, când adversarul te-a lovit în două locuri:</p>
             <p>1. <strong>Care dintre piesele mele sunt în pericol?</strong> Amândouă, sau doar una pare?<br>
                2. <strong>Pot să-l iau pe atacator?</strong> Sau să-l schimb?<br>
-               3. <strong>Pot să fug, să apăr sau să mă bag între</strong> — și să fac două dintre astea cu o singură mutare?<br>
+               3. <strong>Pot să fug, să apăr sau să mă pun în cale</strong> — și să fac două dintre astea cu o singură mutare?<br>
                4. <strong>Pot să contraatac?</strong><br>
                5. <strong>Pot să dau șah cu piesa atacată</strong>, să leg piesa care mă atacă, sau să amenint mat?</p>
             <p class="credit">Lista de întrebări e din metoda <strong>Step</strong> (manualul profesorului, pasul 3).</p>
           </div>
 
           <div class="note-box">
-            🍴 <strong>Una nu iartă niciodată: furculița cu șah.</strong> Dacă regele tău e atacat, el trebuie mutat — n-ai încotro, cealaltă piesă se pierde. De aia furculița cu șah se vede <em>înainte</em>, nu după.
-            <br><br>
-            <span style="opacity:.75">Pozițiile din lecție sunt din lecțiile ChessKid (lecția 9) și verificate cu motorul de șah.</span>
+            🍴 <strong>Una nu iartă niciodată: furculița cu șah.</strong> Dacă regele tău e atacat, el trebuie mutat — n-ai încotro, cealaltă piesă se pierde. De aia furculița cu șah trebuie oprită <em>înainte</em> să apară.
           </div>
 
           <div class="acc-list" id="accList"></div>
@@ -297,7 +295,7 @@ const chapters = [
     ann: {
       0: '🍴 <strong>O furculiță adevărată.</strong> Calul din e7 dă <strong>șah</strong> regelui și, în același timp, atacă turnul din c8. Uită-te bine și caută o scăpare… nu e niciuna. Regele e în șah, deci <strong>trebuie</strong> mutat. Asta e regula jocului.',
       1: '<strong>…Rf7</strong> — regele se mută. Puteai la fel de bine Rf8 sau Rh8; toate pierd turnul.',
-      2: '<strong>Cxc8</strong> — turnul se duce. <strong>Aici nu era nicio lingură.</strong> Ține minte poziția asta: când calul dă șah și mai atacă ceva, e prea târziu. Furculița cu șah se oprește <em>înainte</em> să apară.'
+      2: '<strong>Cxc8</strong> — și turnul e capturat. <strong>Aici nu era nicio lingură.</strong> Ține minte poziția asta: când calul dă șah și mai atacă ceva, e deja prea târziu. <strong>Furculița cu șah trebuie oprită înainte să apară.</strong>'
     },
     arrows: { 0: [{from:'e7', to:'g8', color:'R'}, {from:'e7', to:'c8', color:'R'}] }
   },
@@ -369,18 +367,20 @@ const chapters = [
               1: [{from:'b7', to:'c7', color:'G'}, {from:'b7', to:'b5', color:'G'}] }
   },
 
-  /* 5 */
+  /* 5 — din Step: fug ȘI mă pun în cale */
   {
-    fen: '7k/6p1/pb2p2p/1p2Pp2/1P2bP2/P1Br4/6P1/R4R1K w - - 1 2', orient: 'white',
-    winner: 'w', practiceFrom: 0, winEval: -4,
-    finishMsg: 'Ai ales cel mai mic rău — uneori atât se poate.',
-    san: ['Kh2','Rxc3'],
+    fen: '7k/5ppp/5n2/2N5/1q6/8/P1P1QPPP/1K6 w - - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: 2,
+    finishMsg: 'O mutare, două treburi — și ai ieșit chiar mai bine!',
+    san: ['Nb3'],
     ann: {
-      0: 'Acum ești tu Albul, și tocmai ai încasat-o. Turnul negru a venit pe <strong>d3</strong> și atacă <strong>nebunul din c3</strong> și <strong>turnul din f1</strong>. Caută lingura… și fii cinstit cu tine dacă n-o găsești.',
-      1: '<strong>Rh2</strong> — nu e nicio lingură. Nebunul nu poate fugi apărând turnul, nu poți da șah, nu poți lua turnul negru, nu te poți băga între. <strong>Uneori atacul dublu chiar câștigă</strong> — și atunci salvezi ce e mai valoros și joci mai departe.',
-      2: '<strong>…Txc3</strong> — nebunul se duce. Nu orice atac dublu are scăpare. Important e <strong>să te uiți de fiecare dată</strong> — ca să n-o ratezi când există.'
+      0: 'Joci cu <strong>Albul</strong>, și ai încasat-o urât: dama neagră a venit pe b4 și dă <strong>șah</strong> pe coloana b, iar în același timp atacă <strong>calul din c5</strong>. Șahul trebuie parat — deci pare că pierzi calul. Caută lingura.',
+      1: '<strong>Cb3!</strong> — calul fuge de sub atac <strong>și se pune în calea șahului</strong>, pe b3. Iar acolo e apărat de pionul din c2, deci dama nu-l poate lua. O mutare, două treburi — a treia formă de apărare pe care o poți combina. Negrul rămâne cu dama prost plasată și Albul stă chiar mai bine.'
     },
-    arrows: { 0: [{from:'d3', to:'c3', color:'R'}, {from:'d3', to:'f1', color:'R'}] }
+    arrows: {
+      0: [{from:'b4', to:'b1', color:'R'}, {from:'b4', to:'c5', color:'R'}],
+      1: [{from:'c2', to:'b3', color:'G'}]
+    }
   },
 
   /* ══ SUNT MAESTRU ══ */
@@ -417,7 +417,7 @@ const accData = [
     desc: 'Calul a sărit pe b5 și lovește turnul și nebunul. Găsește mutarea care face două treburi.' },
   { chIdx: 5, kind: 't2', num: '3', title: 'Cuțit, furculiță sau lingură?', practice: true,
     badge: { cls: 'badge-white', text: 'joci cu Albul' },
-    desc: 'De data asta ești tu cel atacat, cu piesele albe. Caută lingura — și fii cinstit cu tine dacă nu există.' },
+    desc: 'De data asta joci cu piesele albe. Dama neagră îți dă șah și îți atacă și calul. Pare că nu ai ce face.' },
 
   { chIdx: 6, kind: 't3', num: '♟️', title: 'Apărarea Philidor — nu-l lăsa să se nască', practice: true,
     desc: 'Dintr-o deschidere adevărată. Atacul dublu vine peste o mutare. Tu trebuie să-l vezi venind și să-l oprești dinainte.' }
