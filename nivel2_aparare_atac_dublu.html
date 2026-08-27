@@ -344,11 +344,11 @@ const chapters = [
     finishMsg: 'Corect — nici măcar nu era atac dublu!',
     san: ['Nxd6','exd6'],
     ann: {
-      0: 'Calul alb din d6 atacă <strong>nebunul din b5</strong> și <strong>turnul din f8</strong>. Cuțit, furculiță sau lingură? Uită-te bine înainte să răspunzi.',
-      1: '<strong>…Cxd6!</strong> — lingură. Calul care ataca putea fi pur și simplu <strong>capturat</strong>, de calul din e8. Prima întrebare, mereu: <em>„pot să-l iau?"</em> Dacă poți, n-a fost niciodată atac dublu.',
+      0: 'Calul alb din d6 atacă <strong>nebunul din b5</strong> și <strong>calul din e8</strong>. Cuțit, furculiță sau lingură? Uită-te bine înainte să răspunzi — sunt <em>trei</em> motive pentru care nu e ce pare.',
+      1: '<strong>…Cxd6!</strong> — lingură, și încă una mare. <strong>Unu:</strong> nebunul din b5 e apărat de pionul din c6. <strong>Doi:</strong> calul din e8 e apărat de turnul din f8 — deci nici măcar n-ar fi fost un câștig, ci un schimb. <strong>Trei:</strong> calul care ataca putea fi pur și simplu <strong>capturat</strong>. Prima întrebare, mereu: <em>„pot să-l iau?"</em> Dacă poți, n-a fost niciodată atac dublu.',
       2: '<strong>exd6</strong> — Albul recapturează, dar Negrul n-a pierdut nimic.'
     },
-    arrows: { 0: [{from:'d6', to:'b5', color:'R'}, {from:'d6', to:'f8', color:'R'}],
+    arrows: { 0: [{from:'d6', to:'b5', color:'R'}, {from:'d6', to:'e8', color:'R'}, {from:'c6', to:'b5', color:'G'}, {from:'f8', to:'e8', color:'G'}],
               1: [{from:'e8', to:'d6', color:'G'}] }
   },
 
@@ -412,7 +412,7 @@ const accData = [
     desc: 'Același fel de cuțit, altă scăpare: nebunul fuge <strong>cu șah</strong>, iar adversarul n-are timp să ia a doua piesă.' },
 
   { chIdx: 3, kind: 't2', num: '1', title: 'Cuțit, furculiță sau lingură?', practice: true,
-    desc: 'Calul alb atacă două piese negre. Hotărăște tu ce e — și, dacă e lingură, arată de ce.' },
+    desc: 'Calul alb atacă două piese negre. Hotărăște tu ce e — și, dacă e lingură, arată de ce. (Aici sunt trei motive.)' },
   { chIdx: 4, kind: 't2', num: '2', title: 'Cuțit, furculiță sau lingură?', practice: true,
     desc: 'Calul a sărit pe b5 și lovește turnul și nebunul. Găsește mutarea care face două treburi.' },
   { chIdx: 5, kind: 't2', num: '3', title: 'Cuțit, furculiță sau lingură?', practice: true,
