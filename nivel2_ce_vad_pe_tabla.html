@@ -313,12 +313,16 @@ const chapters = [
     winner: 'b', practiceFrom: 0, winEval: 8,
     finishMsg: 'Dama albă e gonită — și tu ai câștigat o mutare!',
     san: ['Re8'],
+    accept: { 0: ['Re8','Re6','Rd4','Bc6','Bf5','Nc5','f5'] },
+    altMsg: 'Sunt șapte mutări bune aici — ai găsit una dintre ele.',
     ann: {
-      0: '3️⃣ <strong>Amenințările.</strong> Cea mai tare e amenințarea de <strong>mat</strong>. Pe locul doi vine cea la <strong>damă</strong> — pe care o vedem aici, fiindcă e cea mai ușor de recunoscut. <br><br>Dama albă stă în mijlocul tablei, pe e4. Câte piese negre o pot amenința dintr-o singură mutare? <br><br><strong>Cinci.</strong> Turnul din d6, turnul din f8, nebunul din d7, calul din a6 și chiar pionul din f7. Găsește-le pe toate înainte să muți.',
-      1: '<strong>…Te8</strong> — turnul intră pe coloana e și dama trebuie să plece. Ai câștigat o mutare pe gratis. <br><br>Ține minte: <strong>o amenințare nu trebuie să câștige ceva pe loc.</strong> E de ajuns să-l pună pe el să se apere — cât timp se apără, nu te atacă.'
+      0: '3️⃣ <strong>Amenințările.</strong> Cea mai tare e amenințarea de <strong>mat</strong>. Pe locul doi vine cea la <strong>damă</strong> — pe care o vedem aici, fiindcă e cea mai ușor de recunoscut. <br><br>Dama albă stă în mijlocul tablei, pe e4. Câte piese negre o pot amenința dintr-o singură mutare? <br><br><strong>Cinci piese</strong> — turnul din d6, turnul din f8, nebunul din d7, calul din a6 și chiar pionul din f7 — dar <strong>șapte mutări</strong>, fiindcă turnul din d6 și nebunul au fiecare câte două câmpuri bune. <strong>Oricare dintre ele e corectă</strong>, iar la „Joacă tu mutările" ți se acceptă toate șapte. <br><br>Ai grijă la un lucru, totuși: piesa cu care ataci trebuie să fie <strong>în siguranță</strong> acolo unde ajunge. Aici toate șapte sunt — de pildă …Td4 pare că se dă degeaba, dar e apărat de nebunul din g7, deci Dxd4 Nxd4 ar fi un târg excelent pentru Negru.',
+      1: '<strong>…Te8</strong> — una dintre cele șapte. Turnul intră pe coloana e (apărat de nebunul din d7) și dama trebuie să plece. Ai câștigat o mutare pe gratis. <br><br>Ține minte: <strong>o amenințare nu trebuie să câștige ceva pe loc.</strong> E de ajuns să-l pună pe el să se apere — cât timp se apără, nu te atacă.'
     },
     arrows: {
-      0: [{from:'d6', to:'e6', color:'G'}, {from:'f8', to:'e8', color:'G'}, {from:'d7', to:'c6', color:'G'}, {from:'a6', to:'c5', color:'G'}, {from:'f7', to:'f5', color:'G'}]
+      0: [{from:'d6', to:'e6', color:'G'}, {from:'d6', to:'d4', color:'G'}, {from:'f8', to:'e8', color:'G'},
+           {from:'d7', to:'c6', color:'G'}, {from:'d7', to:'f5', color:'G'}, {from:'a6', to:'c5', color:'G'},
+           {from:'f7', to:'f5', color:'G'}]
     }
   },
 
@@ -396,7 +400,7 @@ const accData = [
   { chIdx: 1, kind: 't1', num: '2️⃣', title: 'Capturile — și cele care par absurde', practice: true,
     desc: 'Dama ia un cal apărat. Pare o prostie. Nu e — dar se vede abia peste patru mutări.' },
   { chIdx: 2, kind: 't1', num: '3️⃣', title: 'Amenințările — câte feluri?', practice: true,
-    desc: 'Cea mai tare amenințare e cea de mat; pe locul doi, cea la damă. Dama albă stă pe e4, iar <strong>cinci</strong> piese negre o pot amenința dintr-o mutare. Le vezi pe toate?' },
+    desc: 'Cea mai tare amenințare e cea de mat; pe locul doi, cea la damă. Dama albă stă pe e4, iar <strong>cinci piese</strong> negre o pot amenința — în <strong>șapte feluri</strong>. Le vezi pe toate? Oricare e acceptată.' },
 
   { chIdx: 3, kind: 't2', num: '1', title: 'Cele trei întrebări', practice: true,
     desc: 'Joci cu <strong>Albul</strong>. Pune-ți întrebările în ordine. Primul șah nu câștigă nimic — dar pregătește al doilea.' },
@@ -871,6 +875,22 @@ function pracAttemptMove(source, target) {
   const mv = pGame.move({ from: source, to: target, promotion: 'q' });
   if (!mv) return false;                       // ilegal → snapback fără mesaj
   const clean = function (s) { return s.replace(/[+#]/g, ''); };
+  /* unele exerciții au mai multe răspunsuri bune, nu doar unul */
+  const alt = (ch.accept && ch.accept[pGame.history().length - 1]) || null;
+  const potrivitAlt = alt && alt.some(function (a) { return clean(a) === clean(mv.san); });
+  if (potrivitAlt && clean(mv.san) !== clean(expected)) {
+    if (!pracErrThisMove) pracFirstTryCount++;
+    pracKeyDone++;
+    pracUserTurn = false;
+    pracHintStage = 0;
+    clearSel(); clearPracHint(); syncBoard(false); updateEval();
+    showLastMove(mv.from, mv.to); showCheckHL(pGame); playMoveSound(mv.san, pGame);
+    setPStatus('✔ Corect! <strong>' + toRo(mv.san) + '</strong> e una dintre mutările bune. ' +
+               (ch.altMsg || ''));
+    updatePracStats();
+    setTimeout(pracFinish, 700);
+    return true;
+  }
   if (clean(mv.san) !== clean(expected)) {
     /* mutarea e legală, dar nu e cea din lecție — spunem CE a fost bine la ea */
     const eraSah = pGame.in_check();
