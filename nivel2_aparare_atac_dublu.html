@@ -74,6 +74,8 @@
       color: var(--c-text); min-height: 60px;
     }
     .square-selected { background: rgba(255,200,0,0.55) !important; }
+    /* de unde a plecat si unde a ajuns ultima piesa mutata */
+    .last-move { box-shadow: inset 0 0 0 100px rgba(155,199,0,0.42); }
     .hint-square { background: rgba(60,190,80,0.60) !important; }
 
     .section-label {
@@ -225,6 +227,10 @@
 
           <div class="note-box">
             🍴 <strong>Una nu iartă niciodată: furculița cu șah.</strong> Dacă regele tău e atacat, el trebuie mutat — n-ai încotro, cealaltă piesă se pierde. De aia furculița cu șah trebuie oprită <em>înainte</em> să apară.
+          </div>
+
+          <div class="note-box">
+            ✋ <strong>Pe tablă poți muta oricând, liber</strong> — trage piesele cum vrei, ca să încerci idei. Butonul <strong>„Joacă tu mutările"</strong> e altceva: acolo se așteaptă exact mutarea din lecție, iar dacă dai alta îți spune ce era bun la ea.
           </div>
 
           <div class="acc-list" id="accList"></div>
@@ -426,12 +432,16 @@ const accData = [
 let curChapterIdx = 0;
 let positions     = [];
 
+let moveSquares = [];      /* pentru fiecare semimutare: {from, to} */
+
 function computePositions(ch) {
   const c = new Chess(ch.fen);
   const fens = [c.fen()];
+  moveSquares = [];
   for (const mv of ch.san) {
     const result = c.move(mv);
     if (!result) { console.error('Mutare invalida:', mv, 'in', c.fen()); break; }
+    moveSquares.push({ from: result.from, to: result.to });
     fens.push(c.fen());
   }
   return fens;
@@ -563,6 +573,8 @@ function goToStep(s) {
   document.getElementById('moveCounter').dataset.step = s;
   board.position(positions[s], false);
   sGame = new Chess(positions[s]);
+  if (s > 0 && moveSquares[s - 1]) showLastMove(moveSquares[s - 1].from, moveSquares[s - 1].to);
+  else clearLastMove();
   showCheckHL(sGame);
   if (s > 0 && s === prevStep + 1) playMoveSound(chapters[curChapterIdx].san[s - 1], sGame);
   redrawStudyArrows(s);
@@ -656,6 +668,19 @@ function buildMovesList() {
     }
     log.appendChild(row);
   }
+}
+
+/* ─── Ultima mutare: colorăm câmpul de plecare și cel de sosire ─── */
+function clearLastMove() {
+  document.querySelectorAll('.last-move').forEach(function (el) { el.classList.remove('last-move'); });
+}
+function showLastMove(from, to) {
+  clearLastMove();
+  if (!from || !to) return;
+  [from, to].forEach(function (sq) {
+    const el = document.querySelector('.square-' + sq);
+    if (el) el.classList.add('last-move');
+  });
 }
 
 function clearCheckHL() {
@@ -813,7 +838,7 @@ function startPractice(idx) {
   for (let i = ch.practiceFrom; i < ch.san.length; i++) if ((i - ch.practiceFrom) % 2 === 0) pracKeyTotal++;
   pracFirstTryCount = 0; pracKeyDone = 0; pracErrThisMove = false; pracUserTurn = false;
   pracHintStage = 0;
-  clearStudyArrows(); clearSel(); clearPracHint(); clearCheckHL();
+  clearStudyArrows(); clearSel(); clearPracHint(); clearCheckHL(); clearLastMove();
   document.getElementById('navControls').style.display = 'none';
   const panel = document.getElementById('practicePanel');
   const openItem = document.querySelector('#accList .acc-item.open');
@@ -866,9 +891,18 @@ function pracAttemptMove(source, target) {
   if (!mv) return false;                       // ilegal → snapback fără mesaj
   const clean = function (s) { return s.replace(/[+#]/g, ''); };
   if (clean(mv.san) !== clean(expected)) {
+    /* mutarea e legală, dar nu e cea din lecție — spunem CE a fost bine la ea */
+    const eraSah = pGame.in_check();
+    const eraMat = pGame.in_checkmate();
+    const eraCaptura = mv.san.indexOf('x') !== -1;
     pGame.undo();
     pracErrThisMove = true;
-    setPStatus('❌ Nu chiar aceasta — mai încearcă. (Poți cere un 💡 Indiciu.)');
+    let msg;
+    if (eraMat)          msg = '😮 E chiar mat! Dar lecția merge pe altă mutare — încearc-o și pe aceea.';
+    else if (eraSah)     msg = '✔ Da, e șah! Dar nu ăsta e cel căutat aici. Mai uită-te.';
+    else if (eraCaptura) msg = '✔ E o captură bună de văzut — dar lecția are altceva în vedere. Mai încearcă.';
+    else                 msg = '❌ Nu chiar aceasta — mai încearcă. (Poți cere un 💡 Indiciu.)';
+    setPStatus(msg);
     updatePracStats();
     return false;
   }
@@ -876,7 +910,7 @@ function pracAttemptMove(source, target) {
   pracKeyDone++;
   pracUserTurn = false;
   pracHintStage = 0;
-  clearSel(); clearPracHint(); syncBoard(false); updateEval(); showCheckHL(pGame); playMoveSound(mv.san, pGame);
+  clearSel(); clearPracHint(); syncBoard(false); updateEval(); showLastMove(mv.from, mv.to); showCheckHL(pGame); playMoveSound(mv.san, pGame);
   setPStatus('✔ Corect!');
   updatePracStats();
   setTimeout(pracAfterUser, 560);
@@ -887,8 +921,8 @@ function pracAfterUser() {
   const ch = chapters[curChapterIdx];
   if (pGame.history().length >= ch.san.length) { pracFinish(); return; }
   var sanRobot = ch.san[pGame.history().length];   // mutarea robotului (adversarul)
-  pGame.move(sanRobot);
-  syncBoard(true); updateEval(); showCheckHL(pGame); playMoveSound(sanRobot, pGame);
+  var mvRobot = pGame.move(sanRobot);
+  syncBoard(true); updateEval(); if (mvRobot) showLastMove(mvRobot.from, mvRobot.to); showCheckHL(pGame); playMoveSound(sanRobot, pGame);
   if (pGame.history().length >= ch.san.length) { pracFinish(); return; }
   pracUserTurn = true; pracErrThisMove = false;
   setPStatus(turnPrompt());
