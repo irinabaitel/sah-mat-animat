@@ -890,6 +890,22 @@ function pracAttemptMove(source, target) {
   const mv = pGame.move({ from: source, to: target, promotion: 'q' });
   if (!mv) return false;                       // ilegal → snapback fără mesaj
   const clean = function (s) { return s.replace(/[+#]/g, ''); };
+  /* unele exerciții au mai multe răspunsuri bune, nu doar unul */
+  const alt = (ch.accept && ch.accept[pGame.history().length - 1]) || null;
+  const potrivitAlt = alt && alt.some(function (a) { return clean(a) === clean(mv.san); });
+  if (potrivitAlt && clean(mv.san) !== clean(expected)) {
+    if (!pracErrThisMove) pracFirstTryCount++;
+    pracKeyDone++;
+    pracUserTurn = false;
+    pracHintStage = 0;
+    clearSel(); clearPracHint(); syncBoard(false); updateEval();
+    showLastMove(mv.from, mv.to); showCheckHL(pGame); playMoveSound(mv.san, pGame);
+    setPStatus('✔ Corect! <strong>' + toRo(mv.san) + '</strong> e una dintre mutările bune. ' +
+               (ch.altMsg || ''));
+    updatePracStats();
+    setTimeout(pracFinish, 700);
+    return true;
+  }
   if (clean(mv.san) !== clean(expected)) {
     /* mutarea e legală, dar nu e cea din lecție — spunem CE a fost bine la ea */
     const eraSah = pGame.in_check();
