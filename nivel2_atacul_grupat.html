@@ -302,16 +302,16 @@ const chapters = [
     }
   },
 
-  /* 2 — schimbul pe un câmp 1–1 */
+  /* 2 — un singur atacator: linia de bază față de care se măsoară „grupat" */
   {
     fen: '8/1k6/2n4R/2P1N3/r4P2/2K4p/8/8 b - - 0 1', orient: 'black',
     winner: 'b', practiceFrom: 0, winEval: 0,
-    finishMsg: 'Schimb egal la piese — dar nu în interesul tău.',
+    finishMsg: 'Singur pe un câmp nu câștigi nimic — de-asta te aduni.',
     san: ['Nxe5','fxe5'],
     ann: {
-      0: '⚖️ <strong>Când scorul e 1–1.</strong> Poziție nouă. Uită-te la câmpul <strong>e5</strong>, unde stă un <strong>cal alb</strong>. <br><br>Cine îl controlează? Din partea Negrului, calul din c6. Din partea Albului, pionul din f4. Scorul: <strong>1–1</strong>. <br><br>Negrul se gândește: „dacă îi dau calul afară, mi-l dă și el pe al meu." Pare că iese la zero. <br><br>Dar înainte să schimbi, mai numără o dată — de data asta <strong>toată tabla</strong>: Albul are turn, cal și <strong>doi</strong> pioni; Negrul are turn, cal și <strong>un</strong> pion. <strong>Albul stă mai bine, cu un pion în plus.</strong> <br><br>Ține minte întrebarea asta și încearcă schimbul.',
+      0: '⚖️ <strong>Când ești singur pe un câmp.</strong> Ca să înțelegi de ce merită să te aduni mai mulți, uită-te întâi ce se întâmplă când ești <em>singur</em>. <br><br>Poziție nouă. Câmpul <strong>e5</strong>, unde stă un <strong>cal alb</strong>. Cine îl controlează? Negrul — calul din c6. Albul — pionul din f4. <strong>Unu la unu.</strong> <br><br>Negrul se gândește: „dacă îi dau calul afară, mi-l dă și el pe al meu." Ai dreptate: <strong>când ești singur pe un câmp, nu ai cum să câștigi ceva — poți doar să faci un schimb.</strong> <br><br>Încearcă, și pe urmă hotărâm dacă schimbul acela era bun.',
       1: '<strong>…Cxe5</strong> — Negrul capturează.',
-      2: '<strong>fxe5</strong> — și Albul recapturează, cum era de așteptat. <br><br>La piese, socoteala iese la zero: un cal pentru un cal. <strong>Dar schimbul tot nu era în interesul Negrului.</strong> <br><br>Uită-te ce a rămas pe tablă: turn contra turn, și Albul cu un pion în plus. Cu cât se schimbă mai multe piese, cu atât pionul acela în plus <em>cântărește mai greu</em> — pentru că e din ce în ce mai puțin altceva pe tablă. <br><br>🧭 <strong>Regula: dacă ești în minus, ferește-te de schimburi. Dacă ești în plus, caută-le.</strong> Cel care rămâne fără piese pe tablă nu mai are cu ce să se apere de pionul celuilalt. <br><br>Aici Negrul avea <strong>…Cd4</strong>, care ține calul pe tablă și îl pune pe un câmp bun, chiar în mijloc. <br><br>Și tot de reținut: <em>nu vei termina partida cu toată armata pe tablă.</em> Schimburile fac parte din joc — doar că întrebarea nu e „pierd o piesă?", ci <strong>„pe cine ajută schimbul ăsta?"</strong>'
+      2: '<strong>fxe5</strong> — și Albul recapturează, cum era de așteptat. Un cal pentru un cal: la piese, socoteala iese la zero. <br><br><strong>Și totuși schimbul nu era în interesul Negrului.</strong> Mai numără o dată, de data asta toată tabla: Albul are turn, cal și <strong>doi</strong> pioni; Negrul are turn, cal și <strong>un</strong> pion. Albul e cel care stă mai bine. Cu cât se schimbă mai multe piese, cu atât pionul acela în plus cântărește mai greu — rămâne tot mai puțin altceva pe tablă. <br><br>🧭 <strong>Nu faci schimb de piese decât dacă ești în avantaj — sau dacă schimbul te bagă în avantaj.</strong> Aici Negrul avea <strong>…Cd4</strong>, care ține calul pe tablă și îl duce în mijloc. <br><br>Ține minte concluzia, că din ea se naște toată lecția: <strong>cu un singur atacator nu poți decât să schimbi.</strong> Ca să <em>câștigi</em> ceva, trebuie să fii mai mulți pe același câmp. <br><br>👉 Vrei să vezi cum arată asta? Uită-te la <strong>aceeași poziție</strong>, dar la câmpul <strong>c6</strong> — acolo Albul chiar are un atac grupat. E exercițiul 2 de la „Mă pricep".'
     },
     arrows: { 0: [{from:'c6', to:'e5', color:'R'}, {from:'f4', to:'e5', color:'G'}] }
   },
@@ -343,7 +343,7 @@ const chapters = [
     accept: { 0: ['Nxc6','Rxc6'] },
     altMsg: 'Merge și așa — dar vezi mai jos de ce una e mai bună.',
     ann: {
-      0: 'Aceeași poziție ca la exercițiul cu schimbul, dar acum joci cu <strong>Albul</strong> și te uiți la alt câmp: <strong>c6</strong>, unde stă calul negru. <br><br>Fă socoteala: Albul are <strong>doi</strong> — calul din e5 și turnul din h6. Negrul are <strong>unul</strong> — regele din b7. Doi contra unu. <br><br>Dar apărătorul e <strong>regele</strong>. Și asta schimbă tot. Ia calul și vezi.',
+      0: 'Aceeași poziție ca la „Când ești singur pe un câmp" — dar acum joci cu <strong>Albul</strong> și te uiți la câmpul unde el <em>chiar</em> are un atac grupat: <strong>c6</strong>, unde stă calul negru. <br><br>Fă socoteala: Albul are <strong>doi</strong> — calul din e5 și turnul din h6. Negrul are <strong>unul</strong> — regele din b7. Doi contra unu. <br><br>Dar apărătorul e <strong>regele</strong>. Și asta schimbă tot. Ia calul și vezi.',
       1: '<strong>Cxc6!</strong> — și acum uită-te bine: <strong>regele nu poate recaptura.</strong> <br><br>Dacă ar veni pe c6, ar intra chiar în bătaia turnului din h6 — iar regele n-are voie să se mute într-un câmp atacat. Așa că nu recapturează nimeni: Albul câștigă un cal <strong>pe gratis</strong>. <br><br><strong>Regula: un rege nu poate fi apărător adevărat, dacă mai ai un al doilea atacator pe câmpul acela.</strong> Doi contra rege înseamnă, de fapt, doi contra zero. <br><br><em>(Mergea și Txc6, dar e mai bine cu calul: tai tot cu piesa mai puțin valoroasă.)</em>'
     },
     arrows: {
@@ -378,8 +378,8 @@ const accData = [
     desc: 'Un singur nebun pe tablă. Controlează f7 — dar nu controlează b7. De ce?' },
   { chIdx: 1, kind: 't1', num: '🧮', title: 'Scorul pe un câmp: 2–2', practice: false,
     desc: 'Patru piese se uită la același pătrățel. Numeri, scrii scorul, și știi dacă merită să intri.' },
-  { chIdx: 2, kind: 't1', num: '⚖️', title: 'Când scorul e 1–1', practice: true,
-    desc: 'Un cal alb stă pe un câmp controlat o dată de fiecare. Schimb egal la piese — dar chiar merită? Fă-l și vezi.' },
+  { chIdx: 2, kind: 't1', num: '⚖️', title: 'Când ești singur pe un câmp', practice: true,
+    desc: 'Unu la unu: poți doar să schimbi, nu să câștigi. De-aici pornește tot — ca să câștigi ceva, trebuie să fii mai mulți.' },
 
   { chIdx: 3, kind: 't2', num: '1', title: 'Doi contra unu — dar cu care tai?', practice: true,
     badge: { cls: 'badge-white', text: '8 puncte diferență' },
