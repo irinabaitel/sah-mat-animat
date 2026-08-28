@@ -393,16 +393,20 @@ const chapters = [
 
   /* 6 */
   {
-    fen: 'rn1qkbnr/ppp2ppp/8/4p3/2B1P3/5Q2/PPP2PPP/RNB1K2R b KQkq - 3 6', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: -1,
-    finishMsg: 'Ai oprit atacul dublu înainte să se nască!',
-    san: ['Qd7'],
+    fen: 'r1bqkb1r/ppp2ppp/2n2n2/3Pp1N1/2B5/8/PPPP1PPP/RNBQK2R b KQkq - 0 5', orient: 'black',
+    winner: 'b', practiceFrom: 0, winEval: 0,
+    finishMsg: 'Nu l-ai lăsat să se nască!',
+    san: ['Na5'],
+    accept: { 0: ['Na5','Nd4','b5'] },
+    altMsg: 'Și asta merge — important e că n-ai luat pionul cu calul.',
     ann: {
-      0: 'Dintr-o partidă adevărată — <strong>Apărarea Philidor</strong>. Aici atacul dublu <strong>încă nu s-a întâmplat</strong>. Dar dacă joci firescul <strong>6…Cf6?</strong>, Albul are <strong>7.Db3!</strong> și dama lovește în două locuri: <strong>b7</strong>, unde pionul e neapărat, și <strong>f7</strong>. <em>(La f7 nu e chiar atac dublu — acolo dama și nebunul lovesc împreună același punct; asta se cheamă <strong>atac grupat</strong>. Dar tot nu poți apăra și b7, și f7.)</em> Cum îl oprești dinainte?',
-      1: '<strong>…Dd7!</strong> — dama iese și <strong>apără dinainte pionul din b7</strong>. Acum Db3 nu mai înseamnă nimic. Merg la fel de bine și …De7 sau …Df6. Negrul stă tot puțin mai prost — a greșit mai devreme — dar nu mai pierde nimic. <strong>Cea mai bună apărare împotriva unui atac dublu e să nu-l lași să se nască.</strong>'
+      0: 'Din <strong>Apărarea celor doi cai</strong>, o deschidere pe care o joacă toată lumea: <strong>1.e4 e5 2.Cf3 Cc6 3.Nc4 Cf6 4.Cg5 d5 5.exd5</strong>. Joci cu <strong>Negrul</strong>. <br><br>Aici atacul dublu <strong>încă nu s-a întâmplat</strong>. Mutarea care sare în ochi e <strong>5…Cxd5?</strong> — îți iei pionul înapoi, pare firesc. <br><br>Dar atunci urmează <strong>6.Cxf7! Rxf7 7.Df3+</strong>, iar dama dă șah regelui <em>și</em> atacă în același timp calul din d5. Regele trebuie să iasă din șah, deci calul rămâne descoperit. <br><br>Nu lua pionul. <strong>Mută calul din c6 undeva unde face treabă.</strong>',
+      1: '<strong>…Ca5!</strong> — și atacul dublu nu se mai naște niciodată. <br><br>Calul pleacă din c6 și <strong>atacă nebunul din c4</strong>, adică exact piesa care ținea presiunea pe f7. Albul trebuie să se ocupe de nebun, iar Negrul are timp să-și scoată pionul înapoi mai târziu. Merg și <strong>…Cd4</strong> sau <strong>…b5</strong>, tot cu ideea de a-l alunga. <br><br>Da, Negrul rămâne un pion în minus pentru o vreme — dar are piesele active și partida e în echilibru. Compară cu cealaltă variantă: după 5…Cxd5 6.Cxf7 Rxf7 7.Df3+, singura mutare care ține calul e <strong>7…Re6??</strong>, cu regele plimbat în mijlocul tablei, la mutarea a șaptea. Nu vrei asta. <br><br><strong>Cea mai bună apărare împotriva unui atac dublu e să nu-l lași să se nască.</strong> Uită-te cu o mutare înainte: „dacă joc asta, ce ajunge să lovească în două locuri deodată?"'
     },
-    arrows: { 0: [{from:'f3', to:'b3', color:'B'}, {from:'c4', to:'f7', color:'B'}],
-              1: [{from:'d7', to:'b7', color:'G'}] }
+    arrows: {
+      0: [{from:'g5', to:'f7', color:'R'}, {from:'c4', to:'f7', color:'R'}],
+      1: [{from:'a5', to:'c4', color:'G'}]
+    }
   }
 
 ];
@@ -425,8 +429,8 @@ const accData = [
     badge: { cls: 'badge-white', text: 'joci cu Albul' },
     desc: 'De data asta joci cu piesele albe. Dama neagră îți dă șah și îți atacă și calul. Pare că nu ai ce face.' },
 
-  { chIdx: 6, kind: 't3', num: '♟️', title: 'Apărarea Philidor — nu-l lăsa să se nască', practice: true,
-    desc: 'Dintr-o deschidere adevărată. Atacul dublu vine peste o mutare. Tu trebuie să-l vezi venind și să-l oprești dinainte.' }
+  { chIdx: 6, kind: 't3', num: '♞', title: 'Nu-l lăsa să se nască', practice: true,
+    desc: 'Dintr-o deschidere adevărată. Mutarea care sare în ochi pierde. Vezi atacul dublu cu o mutare înainte și oprește-l.' }
 ];
 
 let curChapterIdx = 0;
