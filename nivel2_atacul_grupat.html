@@ -156,7 +156,14 @@
     }
     .prac-btn.ghost { background: transparent; color: var(--c-navy); }
     .prac-btn:hover { opacity: 0.88; }
-  </style>
+  
+    /* caseta „cum se folosește pagina" — verde transparent */
+    .note-box.how-box {
+      background: rgba(46, 160, 96, 0.14);
+      border-left-color: #2ea060;
+      border-color: #2ea060;
+    }
+</style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
 </head>
@@ -197,7 +204,7 @@
               </div></div>
               <div class="tac"><span class="t-ico">🎯</span><div>
                 <div class="t-nume">Atac grupat — mai multe piese, o țintă</div>
-                <div class="t-txt"><strong>Mai multe</strong> piese de-ale tale se adună pe <strong>același</strong> pătrățel. Aici nu-l pui în fața unei alegeri — pur și simplu ești mai mulți acolo.</div>
+                <div class="t-txt"><strong>Mai multe</strong> piese de-ale tale se adună pe <strong>același</strong> pătrățel. Aici nu-l pui în fața unei alegeri — pur și simplu ai mai multe trupe acolo.</div>
               </div></div>
             </div>
           </div>
@@ -207,10 +214,9 @@
             <p><strong>„O piesă controlează un câmp dacă ar putea să dea afară de pe tablă un inamic care s-ar așeza acolo."</strong></p>
             <p>Ca să știi dacă merită să intri undeva, faci o socoteală simplă: <strong>numeri câți controlează câmpul de o parte și câți de cealaltă</strong>, și scrii scorul — alb–negru. Dacă ai mai mulți, de obicei intri.</p>
             <p>Dar numai „de obicei". Mai contează <strong>două</strong> lucruri, și pe amândouă le vezi în lecția asta: <strong>cine taie primul</strong>, și <strong>ce piesă e apărătorul</strong>.</p>
-            <p class="credit">După lecțiile <strong>1.2 — Control</strong> și <strong>1.19 — Atacul</strong>, de Christiansen Sava (<a href="https://chessarchitect.ro/" target="_blank" rel="noopener">Chess Architect</a>).</p>
           </div>
 
-          <div class="note-box">
+          <div class="note-box how-box">
             ✋ <strong>Pe tablă poți muta oricând, liber</strong> — trage piesele cum vrei, ca să încerci idei. Butonul <strong>„Joacă tu mutările"</strong> e altceva: acolo se așteaptă exact mutarea din lecție, iar dacă dai alta îți spune ce era bun la ea.
           </div>
 
@@ -319,9 +325,9 @@ const chapters = [
     finishMsg: 'Ai tăiat cu piesa potrivită!',
     san: ['hxg5','fxg5'],
     ann: {
-      0: 'Joci cu <strong>Albul</strong>. Turnul negru stă pe <strong>g5</strong>. Fă socoteala: cine îl controlează? <br><br>Albul are <strong>doi</strong> — dama din d2 și pionul din h4. Negrul are <strong>unul</strong> — pionul din f6. Doi contra unu, deci intri. <br><br>Dar cu care dintre ei? <em>Aici se câștigă sau se pierde partida.</em>',
-      1: '<strong>hxg5!</strong> — cu <strong>pionul</strong>. Adică cu cea mai ieftină piesă pe care o ai acolo.',
-      2: '<strong>…fxg5</strong> — Negrul recapturează, și socoteala e limpede: ai dat un pion, ai luat un turn. <strong>Ieși cu patru puncte în plus.</strong> <br><br>⚠️ Iar acum vezi de ce conta atât de mult: dacă tăiai cu <strong>Dxg5??</strong>, după …fxg5 dădeai dama pentru un turn și ieșeai cu <strong>patru puncte în minus</strong>. Aceeași socoteală, același câmp — și opt puncte diferență, doar din <em>cine</em> a tăiat primul. <br><br><strong>Regula: la un atac grupat, taie întotdeauna cu cea mai ieftină piesă.</strong>'
+      0: 'Joci cu <strong>Albul</strong>. Turnul negru stă pe <strong>g5</strong>. Fă socoteala: cine îl controlează? <br><br>Albul are <strong>doi</strong> — dama din d2 și pionul din h4. Negrul are <strong>unul</strong> — pionul din f6. Doi contra unu, deci intri. <br><br>Dar cu care dintre ei? Aici se face, de obicei, gafa — sau, mai des, un <em>schimb neavantajos</em>.',
+      1: '<strong>hxg5!</strong> — cu <strong>pionul</strong>. Adică cu cea mai puțin valoroasă piesă pe care o ai acolo.',
+      2: '<strong>…fxg5</strong> — Negrul recapturează, și socoteala e limpede: ai dat un pion, ai luat un turn. <strong>Ieși cu patru puncte în plus.</strong> <br><br>⚠️ Compară cu cealaltă variantă: dacă tăiai cu <strong>Dxg5</strong>, după …fxg5 dădeai dama pentru un turn și ieșeai cu <strong>patru puncte în minus</strong>. Aceeași socoteală, același câmp — și opt puncte diferență între cele două, doar din <em>cine</em> a tăiat primul. <br><br>Nu e capăt de lume: o gafă nu pierde partida neapărat, mai ales la nivelul nostru. Dar e un <strong>schimb neavantajos</strong>, iar ăstea se adună. <br><br><strong>Regula: când ai o haită de atacatori și el are o haită de apărători, de regulă capturezi cu piesa cea mai puțin valoroasă.</strong> Cea mai puțin valoroasă intră prima, cea mai valoroasă stă la coadă și culege la sfârșit.'
     },
     arrows: {
       0: [{from:'d2', to:'g5', color:'G'}, {from:'h4', to:'g5', color:'G'}, {from:'f6', to:'g5', color:'R'}]
@@ -338,7 +344,7 @@ const chapters = [
     altMsg: 'Merge și așa — dar vezi mai jos de ce una e mai bună.',
     ann: {
       0: 'Aceeași poziție ca la exercițiul cu schimbul, dar acum joci cu <strong>Albul</strong> și te uiți la alt câmp: <strong>c6</strong>, unde stă calul negru. <br><br>Fă socoteala: Albul are <strong>doi</strong> — calul din e5 și turnul din h6. Negrul are <strong>unul</strong> — regele din b7. Doi contra unu. <br><br>Dar apărătorul e <strong>regele</strong>. Și asta schimbă tot. Ia calul și vezi.',
-      1: '<strong>Cxc6!</strong> — și acum uită-te bine: <strong>regele nu poate recaptura.</strong> <br><br>Dacă ar veni pe c6, ar intra chiar în bătaia turnului din h6 — iar regele n-are voie să se mute într-un câmp atacat. Așa că nu recapturează nimeni: Albul câștigă un cal <strong>pe gratis</strong>. <br><br><strong>Regula: un rege nu poate fi apărător adevărat, dacă mai ai un al doilea atacator pe câmpul acela.</strong> Doi contra rege înseamnă, de fapt, doi contra zero. <br><br><em>(Mergea și Txc6, dar e mai bine cu calul: taie tot cu piesa mai ieftină.)</em>'
+      1: '<strong>Cxc6!</strong> — și acum uită-te bine: <strong>regele nu poate recaptura.</strong> <br><br>Dacă ar veni pe c6, ar intra chiar în bătaia turnului din h6 — iar regele n-are voie să se mute într-un câmp atacat. Așa că nu recapturează nimeni: Albul câștigă un cal <strong>pe gratis</strong>. <br><br><strong>Regula: un rege nu poate fi apărător adevărat, dacă mai ai un al doilea atacator pe câmpul acela.</strong> Doi contra rege înseamnă, de fapt, doi contra zero. <br><br><em>(Mergea și Txc6, dar e mai bine cu calul: tai tot cu piesa mai puțin valoroasă.)</em>'
     },
     arrows: {
       0: [{from:'e5', to:'c6', color:'G'}, {from:'h6', to:'c6', color:'G'}, {from:'b7', to:'c6', color:'R'}],
@@ -350,19 +356,17 @@ const chapters = [
 
   /* 5 — grupat și dublu în aceeași poziție */
   {
-    fen: 'rn1qkbnr/ppp2ppp/8/4p3/2B1P3/5Q2/PPP2PPP/RNB1K2R b KQkq - 3 6', orient: 'black',
+    fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p1N1/2B1P3/8/PPPP1PPP/RNBQK2R b KQkq - 5 4', orient: 'black',
     winner: 'b', practiceFrom: 0, winEval: -1,
-    finishMsg: 'Le-ai deosebit pe amândouă!',
-    san: ['Qd7'],
-    accept: { 0: ['Qd7','Qe7','Qf6'] },
-    altMsg: 'Merge — important e că ai apărat pionul din b7.',
+    finishMsg: 'Ai tăiat drumul, nu ai adus apărători!',
+    san: ['d5'],
     ann: {
-      0: 'Din <strong>Apărarea Philidor</strong>. Joci cu <strong>Negrul</strong>. Albul amenință <strong>Db3</strong>, iar atunci pe tablă apar <em>amândouă</em> lucrurile despre care am vorbit — și e important să le deosebești: <br><br>🎯 <strong>Atac grupat pe f7:</strong> dama de pe b3 și nebunul din c4 s-ar uita <strong>amândouă la același pătrățel</strong>. Doi contra unu — f7 e apărat doar de rege. <br>🍴 <strong>Atac dublu pe b7:</strong> aceeași damă, de pe același câmp, ar lovi <strong>și</strong> pionul din b7, care n-are niciun apărător. <br><br>O piesă, două ținte — și, în plus, ajutor pe una dintre ele. Nu le poți apăra pe amândouă după ce se întâmplă. Deci oprește-o dinainte.',
-      1: '<strong>…Dd7!</strong> — dama iese și <strong>apără pionul din b7</strong>. Acum Db3 nu mai are rost: pe b7 e apărat, iar pe f7 regele ține. Merg la fel de bine …De7 sau …Df6. <br><br>Ține minte deosebirea, că se confundă ușor: <br>🍴 <strong>atac dublu</strong> = o piesă, două ținte — îl pui în fața unei alegeri <br>🎯 <strong>atac grupat</strong> = mai multe piese, o țintă — pur și simplu ești mai mulți acolo'
+      0: 'Din <strong>Apărarea celor doi cai</strong>, o deschidere pe care o vezi la orice concurs de copii. S-a jucat <strong>1.e4 e5 2.Cf3 Cc6 3.Nc4 Cf6 4.Cg5</strong>, și joci cu <strong>Negrul</strong>. <br><br>Fă socoteala pe <strong>f7</strong>: <br><strong>Albul</strong> — nebunul din c4 și calul din g5. <strong>Doi.</strong> <br><strong>Negrul</strong> — doar regele din e8. <strong>Unu.</strong> <br><br>Doi contra unu, împotriva ta. Și nu ai de unde aduce un al doilea apărător pe f7 — încearcă și vei vedea că nu există. <br><br>Deci nu apăra. <strong>Fă socoteala să nu mai fie doi.</strong>',
+      1: '<strong>…d5!</strong> — și pionul se așează chiar în drumul nebunului. <br><br>Nu ai apărat f7. Ai <strong>scos un atacator din socoteală</strong>: nebunul din c4 nu mai vede până acolo, deci scorul pe f7 e acum <strong>unu la unu</strong> — și calul singur nu poate intra. În plus, ataci nebunul, deci Albul trebuie să se ocupe de el. <br><br>Ăsta e al treilea lucru de ținut minte despre atacul grupat, pe lângă <em>cine taie primul</em> și <em>ce piesă e apărătorul</em>: <br><br>🛡️ <strong>Când socoteala e împotriva ta, ai două căi.</strong> Ori aduci încă un apărător, ori îi iei lui un atacator — mutându-l, luându-l, sau tăindu-i drumul. A doua e adesea mai bună, pentru că apărătorii aduși în grabă stau prost. <br><br>Și, ca să nu le confunzi: <br>🍴 <strong>atac dublu</strong> = o piesă, două ținte — îl pui în fața unei alegeri <br>🎯 <strong>atac grupat</strong> = mai multe piese, o țintă — pur și simplu ai mai multe trupe acolo'
     },
     arrows: {
-      0: [{from:'c4', to:'f7', color:'G'}, {from:'f3', to:'b3', color:'B'}],
-      1: [{from:'d7', to:'b7', color:'G'}]
+      0: [{from:'c4', to:'f7', color:'R'}, {from:'g5', to:'f7', color:'R'}, {from:'e8', to:'f7', color:'G'}],
+      1: [{from:'g5', to:'f7', color:'R'}, {from:'e8', to:'f7', color:'G'}]
     }
   }
 
@@ -379,12 +383,12 @@ const accData = [
 
   { chIdx: 3, kind: 't2', num: '1', title: 'Doi contra unu — dar cu care tai?', practice: true,
     badge: { cls: 'badge-white', text: '8 puncte diferență' },
-    desc: 'Joci cu <strong>Albul</strong>. Ai doi atacatori pe același câmp. Alegerea greșită te costă <strong>opt puncte</strong>.' },
+    desc: 'Joci cu <strong>Albul</strong>. Ai doi atacatori pe același câmp. Între cele două tăieturi sunt <strong>opt puncte</strong> diferență.' },
   { chIdx: 4, kind: 't2', num: '2', title: 'Când apărătorul e regele', practice: true,
     desc: 'Joci cu <strong>Albul</strong>. Doi contra unu — dar acel „unu" e regele. Contează?' },
 
-  { chIdx: 5, kind: 't3', num: '🍴', title: 'Grupat sau dublu?', practice: true,
-    desc: 'Dintr-o deschidere adevărată, unde apar <strong>amândouă deodată</strong>. Le deosebești — și oprești ce urmează.' }
+  { chIdx: 5, kind: 't3', num: '✂️', title: 'Când socoteala e împotriva ta', practice: true,
+    desc: 'Dintr-o deschidere adevărată. Doi atacatori, un apărător — și nu ai de unde aduce al doilea. Ce faci atunci?' }
 ];
 
 let curChapterIdx = 0;

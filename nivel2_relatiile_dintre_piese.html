@@ -156,7 +156,13 @@
     }
     .prac-btn.ghost { background: transparent; color: var(--c-navy); }
     .prac-btn:hover { opacity: 0.88; }
-  </style>
+  
+    /* caseta „cum se folosește pagina" — verde transparent */
+    .note-box.how-box {
+      background: rgba(46, 160, 96, 0.14);
+      border-left-color: #2ea060;
+    }
+</style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
 </head>
@@ -186,7 +192,7 @@
           <div class="def-box">
             <p class="def-title">Piesele nu stau singure pe tablă</p>
             <p>Fiecare piesă e legată de celelalte — de ale tale și de ale lui. Unele legături te ajută, altele te încurcă. Iar cine le vede, joacă altfel.</p>
-            <p>Sunt <strong>cinci</strong> feluri de legături. Două se fac <strong>cu armata adversă</strong>, trei <strong>în propria ta armată</strong>. Dintre acestea din urmă, una e <strong>toxică</strong> — și de obicei ți-o faci singur.</p>
+            <p>Sunt <strong>cinci</strong> feluri de legături. Două se fac <strong>cu armata adversă</strong>, trei <strong>în propria ta armată</strong>. Dintre acestea din urmă, una e <strong>rea</strong> — și de obicei ți-o faci singur.</p>
           </div>
 
           <div class="card">
@@ -209,24 +215,23 @@
               </div></div>
               <div class="tac"><span class="t-ico">🧱</span><div>
                 <div class="t-nume">Protecție</div>
-                <div class="t-txt">O piesă <strong>se pune între</strong> un inamic care atacă și un coleg care e atacat. Îl scoate din bătaie. Cei mai buni paravane sunt pionii — sunt ieftini și stau acolo fără să se plictisească.</div>
+                <div class="t-txt">O piesă <strong>se așează între</strong> un inamic care atacă și un coleg care e atacat. Îl scoate din bătaie. Cei mai buni paravane sunt pionii — sunt cei mai puțin valoroși și stau acolo fără să se plictisească.</div>
               </div></div>
               <div class="tac"><span class="t-ico">🚫</span><div>
                 <div class="t-nume">Limitare — relația rea</div>
-                <div class="t-txt"><strong>„Soldații tăi se pun unul în drumul celuilalt și se încurcă reciproc."</strong> Nimeni nu te-a atacat, dar armata ta se sufocă singură. Pe asta trebuie s-o găsești la timp, ca s-o vindeci.</div>
+                <div class="t-txt"><strong>Soldații tăi se așează unul în drumul celuilalt și se încurcă reciproc.</strong> Nimeni nu te-a atacat, dar armata ta se sufocă singură. Pe asta trebuie s-o găsești la timp, ca s-o vindeci.</div>
               </div></div>
             <div class="note-box" style="margin-top:10px;">
-              ⚠️ <strong>„Atenție! Să nu confunzi apărarea cu limitarea."</strong> La apărare, colegul din drum te <em>ajută</em> — te răzbună dacă ești luat. La limitare, colegul din drum doar te <em>încurcă</em> — îți ia un câmp și nu-ți dă nimic în schimb.
+              ⚠️ <strong>„Atenție! Să nu confunzi apărarea cu limitarea."</strong> La susținere, colegul din drum te <em>ajută</em> — te răzbună dacă ești luat. La limitare, colegul din drum doar te <em>încurcă</em> — îți ia un câmp și nu-ți dă nimic în schimb.
             </div>
             </div>
-            <p class="credit">După lecțiile <strong>1.4 — Relații între figuri. Noi și adversarul</strong> și <strong>1.5 — Relații între figuri. Noi</strong>, de Christiansen Sava (<a href="https://chessarchitect.ro/" target="_blank" rel="noopener">Chess Architect</a>).</p>
           </div>
 
           <div class="note-box">
-            👑 <strong>Un gând de ținut minte, chiar dacă sună dur:</strong> ești un administrator de resurse. Nu te îndrăgosti de piesele tale — „calul ăsta îmi place, îl păstrez până la final" nu e un plan. Contează scopul, nu cine ajunge la el.
+            👑 <strong>Un gând de ținut minte, chiar dacă sună dur:</strong> ești un administrator de resurse. Nu te îndrăgosti de piesele tale — „calul ăsta îmi place, îl păstrez până la final" nu e un plan. Contează să îți atingi scopul — victoria sau remiza — nu cu ce piese rămâi la final.
           </div>
 
-          <div class="note-box">
+          <div class="note-box how-box">
             ✋ <strong>Pe tablă poți muta oricând, liber</strong> — trage piesele cum vrei, ca să încerci idei. Butonul <strong>„Joacă tu mutările"</strong> e altceva: acolo se așteaptă exact mutarea din lecție, iar dacă dai alta îți spune ce era bun la ea.
           </div>
 
@@ -302,62 +307,59 @@ const chapters = [
     arrows: { 0: [{from:'g2', to:'a8', color:'R'}] }
   },
 
-  /* 1 — limitare */
+  /* 1 — incomodare */
   {
     fen: 'r5k1/4bppp/8/4P3/1P6/P5P1/5PBP/2R3K1 b - - 0 1', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: -3,
-    finishMsg: 'Ai văzut ce înseamnă un câmp otrăvit.',
-    san: ['Bd6','exd6'],
+    winner: 'b', practiceFrom: 0, winEval: 0,
+    finishMsg: 'Ai găsit un câmp curat!',
+    san: ['Bg5'],
+    accept: { 0: ['Bf8','Bd8','Bg5'] },
+    altMsg: 'Bun — ai pus nebunul pe un câmp unde nu-l poate lua nimeni.',
     ann: {
-      0: '⛔ <strong>Incomodarea.</strong> Aceeași tablă, altă privire. Uită-te acum la <strong>nebunul negru din e7</strong> și numără-i câmpurile: are opt. <br><br>Dar patru dintre ele sunt <strong>otrăvite</strong>: pe <strong>c5</strong> îl ia pionul din b4, pe <strong>d6</strong> și pe <strong>f6</strong> îl ia pionul din e5, iar dacă înșfacă pionul de pe b4, îl recapturează cel din a3. <br><br>Nimeni nu i-a interzis să meargă acolo. Doar că l-ar costa. Încearcă, să vezi.',
-      1: '<strong>…Nd6??</strong> — nebunul chiar poate merge acolo. Nimic nu-l oprește mecanic.',
-      2: '<strong>exd6</strong> — și moare pe loc. <br><br>Asta e incomodarea: nu i-ai <em>interzis</em> nimic, dar i-ai făcut jumătate din câmpuri de nefolosit. Nebunul negru are, practic, patru câmpuri, nu opt. <strong>Doi pioni albi i-au tăiat jumătate din viață.</strong>'
+      0: '⛔ <strong>Incomodarea.</strong> Aceeași tablă, altă privire. Uită-te acum la <strong>nebunul negru din e7</strong> și numără-i câmpurile: are <strong>șapte</strong> — f8, d8, g5, h4, f6, d6, c5 — plus captura de pe b4. <br><br>Dar <strong>cinci</strong> dintre ele sunt <strong>otrăvite</strong>: pe <strong>d6</strong> și pe <strong>f6</strong> îl ia pionul din e5, pe <strong>c5</strong> îl ia pionul din b4, pe <strong>h4</strong> îl ia pionul din g3, iar dacă el capturează pionul de pe b4, îl recapturează cel din a3. <br><br>Nimeni nu i-a interzis să meargă acolo. Doar că l-ar costa. <strong>Pune-l pe un câmp în siguranță</strong> — au rămas trei.',
+      1: '<strong>…Ng5</strong> — un câmp curat. Mergeau la fel de bine <strong>…Nf8</strong> și <strong>…Nd8</strong>, dar acolo nebunul stă îngrămădit acasă. <br><br>Din șapte câmpuri i-au rămas trei. <strong>Trei pioni albi — e5, b4 și g3 — i-au stricat tot feng shui-ul</strong>, fără să-l atace nimeni. Asta e incomodarea: nu-i interzici nimic, îi faci câmpurile de nefolosit.'
     },
     arrows: {
-      0: [{from:'b4', to:'c5', color:'Y'}, {from:'e5', to:'d6', color:'Y'}, {from:'e5', to:'f6', color:'Y'}, {from:'a3', to:'b4', color:'Y'}]
+      0: [{from:'e5', to:'d6', color:'Y'}, {from:'e5', to:'f6', color:'Y'},
+          {from:'b4', to:'c5', color:'Y'}, {from:'g3', to:'h4', color:'Y'}, {from:'a3', to:'b4', color:'Y'}]
     }
   },
 
-  /* 2 — incomodare (toxică) */
+  /* 2 — protecție (diagrama lui) */
   {
-    fen: '2rqk3/4np1p/2pb2p1/8/8/8/5PPP/R2R2K1 b - - 0 1', orient: 'black',
+    fen: '3r2k1/p4p1p/6p1/1Q1Bp3/3b3q/1P3P1P/P1R3P1/3R1K2 w - - 0 1', orient: 'black',
     practice: false,
     san: [],
     ann: {
-      0: '🚫 <strong>Limitarea — relația rea.</strong> Poziție nouă, și de data asta ne uităm <em>acasă</em>, la propria armată. <br><br>Calul negru din <strong>e7</strong>. Un cal sănătos are opt câmpuri; ăsta, din colțul lui, ar avea șase: c8, c6, d5, f5, g6, g8. <br><br>Numără câte poate folosi de fapt: <strong>trei</strong>. Pe <strong>c8</strong> stă turnul lui, pe <strong>c6</strong> și pe <strong>g6</strong> stau pionii lui. <br><br>Nu l-a atacat nimeni. Nu i-a interzis nimeni nimic. <strong>Propria lui armată i-a luat jumătate din câmpuri.</strong> <br><br>Soldații se pun unul în drumul celuilalt și se încurcă reciproc — și, spre deosebire de apărare, colegul din drum nu-i dă nimic în schimb. Asta e relația pe care trebuie s-o găsești la timp, ca s-o vindeci.'
+      0: '🧱 <strong>Protecția.</strong> Nebunul alb din <strong>d5</strong> privește pe diagonală în sus: e6, f7, g8. La capătul ei stă <strong>regele negru</strong>. <br><br>De ce nu e șah? Pentru că <strong>pionul negru din f7 s-a așezat între ei</strong>. Cât timp stă acolo, regele e scos din bătaie. <br><br>Asta e protecția: o piesă <strong>se așează între</strong> un inamic care atacă și un coleg care e atacat. E cea mai discretă dintre relații — n-o vezi până nu dispare. Iar cei mai buni paravane sunt pionii: sunt cei mai puțin valoroși și stau acolo fără să se plictisească.'
     },
-    arrows: {
-      0: [{from:'c8', to:'e7', color:'B'}, {from:'c6', to:'e7', color:'B'}, {from:'g6', to:'e7', color:'B'}]
-    }
+    arrows: { 0: [{from:'d5', to:'g8', color:'R'}] },
+    hl: { 0: [{sq:'f7', cls:'hint-square'}] }
   },
 
-  /* 3 — apărare */
+  /* 3 — susținere (diagrama lui) */
   {
-    fen: '2rqk3/4np1p/2pb2p1/8/8/8/5PPP/3RR1K1 w - - 0 1', orient: 'white',
+    fen: '1rbq1rk1/p3bppp/1p1ppn2/2p5/1PPnP3/P1NP1NP1/3B1PBP/R2Q1RK1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: 0,
-    finishMsg: 'Ai văzut consecința — asta e apărarea.',
-    san: ['Rxe7+','Kxe7'],
+    finishMsg: 'Ai văzut consecința — asta e susținerea.',
+    san: ['Nxd4','cxd4'],
     ann: {
-      0: '🛡️ <strong>Susținerea (apărarea).</strong> Aceeași poziție, dar acum turnul alb a venit pe <strong>e1</strong> și privește pe coloana e drept la <strong>calul din e7</strong>. Îl poate lua? Da. Îl oprește ceva? Nu. <br><br>Dar uită-te ce stă lângă cal: <strong>regele negru, pe e8</strong>. Regele apără calul. <br><br>Asta nu împiedică nimic. Încearcă și vezi ce se întâmplă.',
-      1: '<strong>Txe7+</strong> — turnul chiar îl ia. Apărarea nu l-a oprit.',
-      2: '<strong>…Rxe7</strong> — dar acum regele îl ia pe el. <br><br>Albul a dat un turn pentru un cal: un târg prost. <strong>Când aperi o piesă nu-i împiedici moartea — dar cine o ia intră în atacul apărătorului.</strong> Iar consecința asta e de obicei destul cât adversarul să se răzgândească.'
+      0: '🛡️ <strong>Susținerea (apărarea).</strong> În mijlocul tablei stă un <strong>cal negru pe d4</strong>, chiar în fața armatei albe. Calul alb din <strong>f3</strong> îl poate lua. Îl oprește ceva? Nu. <br><br>Dar uită-te ce e în spatele lui: <strong>pionul negru din c5</strong>. Calul negru e <em>apărat de colegul său pion</em>. <br><br>Asta nu împiedică nimic. Încearcă și vezi ce se întâmplă.',
+      1: '<strong>Cxd4</strong> — calul alb chiar intră pe câmpul calului negru și-l elimină de pe tablă. Susținerea nu l-a oprit.',
+      2: '<strong>…cxd4</strong> — dar acum pionul îl elimină pe el, la rândul lui. <br><br>Ăsta e tot rostul susținerii: <strong>cine intră în pătrățica piesei apărate, intră în atacul apărătorului</strong>. Nu-i împiedici moartea colegului — dar creezi o consecință. Iar consecința e de obicei destul cât adversarul să se răzgândească.'
     },
-    arrows: { 0: [{from:'e1', to:'e7', color:'R'}, {from:'e8', to:'e7', color:'G'}] }
+    arrows: { 0: [{from:'f3', to:'d4', color:'R'}, {from:'c5', to:'d4', color:'G'}] }
   },
 
-  /* 4 — protecție */
+  /* 4 — limitare (diagrama lui) */
   {
-    fen: '2rqk3/4np1p/2pb2p1/8/8/8/5PPP/3RR1K1 b - - 0 1', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: -4,
-    finishMsg: 'Ai văzut ce se întâmplă când pleacă paravanul.',
-    san: ['Bf4','Rxd8+','Kxd8'],
+    fen: 'r3k2r/pp3ppp/1qn1p3/2bn4/6b1/1Q2PN2/PP2BPPP/RNB2RK1 w - - 0 1', orient: 'white',
+    practice: false,
+    san: [],
     ann: {
-      0: '🧱 <strong>Protecția.</strong> A treia privire pe aceeași tablă. Turnul alb din <strong>d1</strong> se uită în sus pe coloana d. Ce vede? <strong>Nebunul negru din d6</strong>. <br><br>Dar în spatele nebunului, tot pe coloana d, stă <strong>dama neagră</strong>. Nebunul e un <strong>paravan</strong>: cât timp e acolo, dama e scoasă din bătaie. <br><br>Vezi ce se întâmplă dacă paravanul pleacă.',
-      1: '<strong>…Nf4?</strong> — nebunul se plimbă. Pare o mutare nevinovată: nimeni nu-l ataca.',
-      2: '<strong>Txd8+</strong> — coloana s-a deschis, iar dama era la capătul ei.',
-      3: '<strong>…Rxd8</strong> — Negrul recapturează, dar a dat dama pentru un turn. <br><br><strong>Protecția e cea mai discretă dintre relații</strong> — nu se vede până nu dispare. Iar cei mai buni paravane sunt pionii: sunt ieftini și stau acolo fără să se plictisească.'
+      0: '🚫 <strong>Limitarea — relația rea.</strong> Poziție nouă, și de data asta ne uităm <em>acasă</em>, la propria armată. <br><br>Nebunul alb din <strong>c1</strong>. Un nebun de colț are, în mod normal, două drumuri: unul spre b2 și unul spre d2, e3, f4 și mai departe. <br><br>Numără câte mutări are de fapt: <strong>una singură</strong>, d2. Pe <strong>b2</strong> stă pionul lui. Pe <strong>e3</strong> stă tot pionul lui, și-i taie și celălalt drum. <br><br>Nu l-a atacat nimeni. Nu i-a interzis nimeni nimic. <strong>Propria lui armată i-a luat drumurile.</strong> Soldații se așează unul în drumul celuilalt și se încurcă reciproc — și, spre deosebire de susținere, colegul din drum nu-i dă nimic în schimb.'
     },
-    arrows: { 0: [{from:'d1', to:'d6', color:'R'}, {from:'d6', to:'d8', color:'B'}] }
+    arrows: { 0: [{from:'c1', to:'b2', color:'B'}, {from:'c1', to:'e3', color:'B'}] }
   },
 
   /* ══ MĂ PRICEP ══ */
@@ -371,9 +373,10 @@ const chapters = [
     accept: { 0: ['Nd5','Nf5','Ng8','c5'] },
     altMsg: 'Orice mutare care îi dă calului aer e bună.',
     ann: {
-      0: 'Joci cu <strong>Negrul</strong>. În poziția asta ai o <strong>relație de limitare</strong> în propria armată — cea rea. Găsește-o — și apoi fă o mutare care o desface.',
-      1: '<strong>…Cd5</strong> — calul iese din colț, în mijlocul tablei, unde are din nou opt câmpuri. <br><br>Mergeau la fel de bine <strong>…Cf5</strong>, <strong>…Cg8</strong>, sau chiar <strong>…c5</strong> — care nu mută calul, ci <strong>îi eliberează pionul din față</strong>. Toate rezolvă aceeași problemă: piesa ta cea mai înghesuită capătă aer. <br><br><strong>Când n-ai ce ataca, întreabă-te care dintre piesele tale stă cel mai prost.</strong> De obicei aia e mutarea.'
-    }
+      0: 'Joci cu <strong>Negrul</strong>. În poziția asta ai o <strong>relație de limitare</strong> în propria armată — cea rea. Găsește-o, și apoi fă o mutare care o desface.',
+      1: '<strong>…Cd5</strong> — calul din e7 avea șase câmpuri și putea folosi doar trei: pe c8 stătea turnul lui, pe c6 și pe g6 pionii lui. Acum iese în mijlocul tablei, unde are din nou opt. <br><br>Mergeau la fel de bine <strong>…Cf5</strong>, <strong>…Cg8</strong>, sau chiar <strong>…c5</strong> — care nu mută calul, ci <strong>îi eliberează un câmp</strong>. <br><br><strong>Când n-ai ce ataca, întreabă-te care dintre piesele tale stă cel mai prost.</strong> Piesa aceea se mută pe un câmp mai bun, de unde devine <strong>mai activă</strong> — adică ajunge să vadă mai multe câmpuri și să aibă mai mult de lucru. (Vom vedea într-o lecție întreagă ce înseamnă asta.) De obicei aia e mutarea.'
+    },
+    arrows: { 0: [{from:'e7', to:'c8', color:'B'}, {from:'e7', to:'c6', color:'B'}, {from:'e7', to:'g6', color:'B'}] }
   },
 
   /* 6 */
@@ -386,28 +389,24 @@ const chapters = [
     altMsg: 'Bun — turnul a ieșit din bătaia nebunului, și în siguranță.',
     ann: {
       0: 'Joci cu <strong>Negrul</strong>. Aici problema vine <strong>de afară</strong>: una dintre piesele tale e într-o relație proastă cu o piesă albă. Care, și ce faci?',
-      1: '<strong>…Tb8</strong> — turnul iese de pe diagonala lungă și nebunul alb nu mai are ce privi. <br><br>Merg mai multe: <strong>…Tb8, …Td8, …Te8, …Tf8, …Ta7, …Ta6, …Ta4</strong>, ba chiar <strong>…Txa3</strong>, care mai și înșfacă un pion. <br><br>⚠️ Dar două dintre ele <strong>pierd turnul</strong>: pe <strong>c8</strong> îl ia turnul alb din c1, iar pe <strong>a5</strong> îl ia pionul din b4. Nu e destul să fugi — trebuie să fugi <em>undeva unde ești în siguranță</em>. <br><br>Ține minte: la o relație de atac ai două feluri de scăpare — <strong>pleci</strong>, sau <strong>bagi ceva în cale</strong>. Aici nu ai ce băga în cale, deci pleci.'
+      1: '<strong>…Tb8</strong> — turnul iese de pe diagonala lungă și nebunul alb nu mai are ce privi. <br><br>Merg mai multe: <strong>…Tb8, …Td8, …Te8, …Tf8, …Ta7, …Ta6, …Ta4</strong>, ba chiar <strong>…Txa3</strong>, care mai și capturează un pion. <br><br>⚠️ Dar două dintre ele <strong>pierd turnul</strong>: pe <strong>c8</strong> îl ia turnul alb din c1, iar pe <strong>a5</strong> îl ia pionul din b4. Nu e destul să fugi — trebuie să fugi <em>undeva unde ești în siguranță</em>. <br><br>Ține minte: la o relație de atac ai două feluri de scăpare — <strong>pleci</strong>, sau <strong>bagi ceva în cale</strong>. Aici nu ai ce băga în cale, deci pleci.'
     },
     arrows: { 0: [{from:'g2', to:'a8', color:'R'}] }
   },
 
   /* ══ SUNT MAESTRU ══ */
 
-  /* 7 */
+  /* 7 — nebunul din b3 */
   {
-    fen: '2rqk3/4np1p/2pb2p1/8/8/8/5PPP/3RR1K1 b - - 0 1', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: 0,
-    finishMsg: 'Ai văzut toate cele trei deodată!',
-    san: ['Kf8'],
-    accept: { 0: ['Kf8','Qb6','Qa5','Nd5','Nf5','Ng8'] },
-    altMsg: 'E una dintre mutările care rezolvă. Citește mai jos de ce.',
+    fen: 'r1bqkb1r/2pp1ppp/2n2n2/1p2p3/p3P3/1BN2N2/PPPP1PPP/R1BQ1RK1 w kq - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: 0,
+    finishMsg: 'Singurul câmp bun — l-ai găsit!',
+    san: ['Bd5'],
     ann: {
-      0: 'Ultima privire pe aceeași poziție, și cea mai grea. Joci cu <strong>Negrul</strong>, iar aici sunt <strong>trei relații deodată</strong>: <br><br>🚫 calul din e7 e <strong>limitat</strong> de propriile piese <br>🛡️ dar e <strong>susținut</strong> de rege <br>🧱 iar nebunul din d6 e <strong>paravanul</strong> damei <br><br>Toate trei atârnă de același lucru. Vezi de care? Fă o mutare care descurcă situația.',
-      1: '<strong>…Rf8</strong> — și cu asta se schimbă totul deodată. <br><br>Regele pleacă de pe coloana e, deci <strong>calul nu mai e legat</strong> și poate în sfârșit să se miște. Dama iese de pe coloana d, deci <strong>nebunul nu mai e obligat să stea paravan</strong> și poate juca liber. <br><br>Mergeau și <strong>…Db6</strong> sau <strong>…Da5</strong> — dama pleacă singură de pe coloana periculoasă. <br><br>Asta e ideea întregii lecții: <strong>piesele nu stau singure.</strong> Când muți una, se schimbă toate legăturile din jur — și de multe ori o singură mutare bună desface trei noduri.'
+      0: 'Joci cu <strong>Albul</strong>, și e o situație care li se întâmplă des începătorilor: <strong>limitare și atac în același timp</strong>. <br><br>Nebunul din <strong>b3</strong> e atacat de pionul negru din a4 și trebuie să plece. Dar înapoi nu poate: pe <strong>a2</strong> și pe <strong>c2</strong> stau proprii lui pioni. Îi rămân cinci câmpuri în față — și pe patru din ele e luat. <br><br>Unul singur ține. Care?',
+      1: '<strong>Nd5!</strong> — singurul. Calul negru din f6 chiar îl poate lua, dar atunci <strong>exd5</strong> și pionul alb recapturează: nebunul e <em>susținut</em>, iar schimbul e cinstit. <br><br>Celelalte patru pierd piesa: pe <strong>e6</strong> îl iau pionii din d7 sau f7, pe <strong>c4</strong> pionul din b5, pe <strong>a4</strong> pionul din b5 sau turnul din a8, iar <strong>Nxf7+</strong> Rxf7 dă un nebun pe un pion. <br><br>Morala: când o piesă e și limitată acasă, și atacată de afară, nu-i mai rămân multe câmpuri. Caută-l pe cel unde e <strong>apărată</strong> — de obicei ăla e singurul.'
     },
-    arrows: {
-      0: [{from:'e1', to:'e7', color:'R'}, {from:'d1', to:'d6', color:'R'}, {from:'e8', to:'e7', color:'G'}, {from:'d6', to:'d8', color:'B'}]
-    }
+    arrows: { 0: [{from:'a4', to:'b3', color:'R'}, {from:'b3', to:'a2', color:'B'}, {from:'b3', to:'c2', color:'B'}] }
   }
 
 ];
@@ -417,22 +416,22 @@ const accData = [
   { chIdx: 0, kind: 't1', num: '🎯', title: 'Atacul — cu piesele lui', practice: true,
     desc: 'Nebunul alb privește de la un capăt la altul al diagonalei, drept în turnul negru. „Pot să intru în pătrățica ta."' },
   { chIdx: 1, kind: 't1', num: '⛔', title: 'Incomodarea — cu piesele lui', practice: true,
-    desc: 'Nebunul negru are opt câmpuri, dar <strong>patru sunt otrăvite</strong>. Poate merge acolo — doar că l-ar costa.' },
-  { chIdx: 2, kind: 't1', num: '🚫', title: 'Limitarea — relația rea', practice: false,
-    badge: { cls: 'badge-black', text: 'de evitat' },
-    desc: 'Un cal cu <strong>trei câmpuri din șase</strong>. Nu l-a atacat nimeni — colegii lui i le-au luat.' },
+    desc: 'Nebunul negru are șapte câmpuri, dar <strong>cinci sunt otrăvite</strong>. Poate merge acolo — doar că l-ar costa.' },
+  { chIdx: 2, kind: 't1', num: '🧱', title: 'Protecția — la tine acasă', practice: false,
+    desc: 'Un pion s-a așezat între nebunul care atacă și regele atacat. Cea mai discretă dintre relații.' },
   { chIdx: 3, kind: 't1', num: '🛡️', title: 'Susținerea — la tine acasă', practice: true,
-    desc: 'Regele stă în drumul calului. Cine îl ia pe cal, intră în atacul regelui.' },
-  { chIdx: 4, kind: 't1', num: '🧱', title: 'Protecția — la tine acasă', practice: true,
-    desc: 'Nebunul se pune între turnul care atacă și dama atacată. Vezi ce se întâmplă în clipa în care pleacă.' },
+    desc: 'Calul negru e apărat de colegul său pion. Cine intră în pătrățica lui, intră în atacul pionului.' },
+  { chIdx: 4, kind: 't1', num: '🚫', title: 'Limitarea — relația rea', practice: false,
+    badge: { cls: 'badge-black', text: 'de evitat' },
+    desc: 'Un nebun cu <strong>o singură mutare</strong>. Nu l-a atacat nimeni — proprii lui pioni i-au luat drumurile.' },
 
-  { chIdx: 5, kind: 't2', num: '1', title: 'Găsește relația toxică', practice: true,
+  { chIdx: 5, kind: 't2', num: '1', title: 'Găsește relația rea', practice: true,
     desc: 'Joci cu <strong>Negrul</strong>. Nimeni nu te atacă — și totuși ceva nu e în regulă acasă la tine. Care e relația rea, și cum o vindeci?' },
   { chIdx: 6, kind: 't2', num: '2', title: 'Rupe relația proastă', practice: true,
     desc: 'Joci cu <strong>Negrul</strong>. De data asta problema vine de afară. Sunt <strong>opt</strong> mutări bune — dar și două care par bune și pierd turnul.' },
 
-  { chIdx: 7, kind: 't3', num: '🕸️', title: 'Trei relații deodată', practice: true,
-    desc: 'Joci cu <strong>Negrul</strong>. Un cal limitat, un rege care susține, un nebun paravan — toate atârnă de același lucru. O singură mutare le descurcă pe toate.' }
+  { chIdx: 7, kind: 't3', num: '♗', title: 'Nebunul fără ieșire', practice: true,
+    desc: 'Joci cu <strong>Albul</strong>. Limitare acasă și atac de afară, în același timp. Cinci câmpuri, patru pierd piesa. Găsește-l pe al cincilea.' }
 ];
 
 let curChapterIdx = 0;
@@ -711,10 +710,25 @@ function showCheckHL(game) {
 function clearStudyArrows() {
   const ex = document.getElementById('study-arrows-svg');
   if (ex) ex.remove();
+  document.querySelectorAll('.study-hl').forEach(function (el) {
+    el.classList.remove('study-hl', 'hint-square');
+  });
+}
+
+/* câmpuri colorate declarate în capitol prin  hl: { pas: [{sq, cls}] } */
+function drawStudyHL(step) {
+  const ch = chapters[curChapterIdx];
+  const list = ch.hl && ch.hl[step];
+  if (!list) return;
+  list.forEach(function (h) {
+    const el = document.querySelector('.square-' + h.sq);
+    if (el) el.classList.add('study-hl', h.cls || 'hint-square');
+  });
 }
 
 function redrawStudyArrows(step) {
   clearStudyArrows();
+  drawStudyHL(step);
   const ch = chapters[curChapterIdx];
   const arrows = ch.arrows && ch.arrows[step];
   if (!arrows || arrows.length === 0) return;
