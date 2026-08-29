@@ -123,6 +123,29 @@ html, body {
   text-align:   center;
 }
 
+/* buton mic in stanga antetului — intoarcere la harta nivelului */
+.header-back {
+  grid-column:  1;
+  justify-self: start;
+  display:      inline-flex;
+  align-items:  center;
+  gap:          6px;
+  background:   rgba(255,255,255,0.55);
+  color:        var(--c-navy);
+  font-family:  var(--font-display);
+  font-size:    var(--fs-sm);
+  font-weight:  var(--fw-bold);
+  text-decoration: none;
+  padding:      3px 12px;
+  border:       1.5px solid var(--c-navy);
+  border-radius:var(--radius-sm);
+  white-space:  nowrap;
+  transition:   background .15s ease;
+}
+.header-back:hover { background: rgba(255,255,255,0.9); }
+.header-back .hb-txt { display: inline; }
+@media (max-width: 640px) { .header-back .hb-txt { display: none; } }
+
 .header-progress {
   grid-column:  3;
   justify-self: end;
