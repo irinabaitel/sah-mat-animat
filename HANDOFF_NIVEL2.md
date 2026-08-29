@@ -84,3 +84,18 @@ Deci cele trei momente contează, în ordinea asta:
 ## Idee de reorganizare (amânată)
 Lecțiile de tactici ar putea fi urmate imediat de „Cum mă apăr de…" pe aceeași temă —
 sau apărarea să facă parte din aceeași lecție. **Se decide când ajungem acolo în traseu.**
+
+
+## Matul și apărarea de mat NU rămân la Nivelul II (cerut de autoare, august 2026)
+
+**Matul** și **Apărarea împotriva matului** sunt deja la **Nivelul I**, puse acolo intenționat,
+ca elevii să poată începe să joace cât mai devreme. Prin urmare:
+
+- se **scot** din traseul Nivelului II temele care le repetă;
+- cel mult, se **reface / se îmbunătățește lecția existentă** de la Nivelul I.
+
+Teme din harta Nivelului II vizate de decizia asta:
+- `Mă apăr de mat — bazele` (acum `link` → `aparare_mat.html`)
+- `Mă apăr de mat — când atacul e adevărat` (acum `nou`, nefăcută)
+
+**Se decide când ajungem acolo în traseu** — deocamdată rămân în hartă.
