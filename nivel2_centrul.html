@@ -163,9 +163,10 @@
       border-left-color: #2ea060;
     }
 
-    /* câmpuri evidențiate în lecția despre centru */
-    .hl-a { background: rgba(60,190,80,0.55) !important; }
-    .hl-b { background: rgba(70,140,220,0.50) !important; }
+    /* câmpuri evidențiate în lecția despre centru — peste culoarea pătrățelului,
+       ca la .last-move, ca să se vadă în continuare tabla dedesubt */
+    .hl-a { box-shadow: inset 0 0 0 100px rgba(60,190,80,0.38); }
+    .hl-b { box-shadow: inset 0 0 0 100px rgba(70,140,220,0.34); }
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -197,7 +198,7 @@
           <div class="def-box">
             <p class="def-title">De ce se bat toți pe mijlocul tablei?</p>
             <p>Ți s-a spus, probabil, „scoate piesele spre centru". Sună a regulă de învățat pe de rost. Nu e — e o <strong>socoteală</strong>, și o poți face singur, chiar acum.</p>
-            <p>Ia un cal, pune-l singur pe o tablă goală și numără-i câmpurile. Din <strong>colț</strong>, la g1: <strong>3</strong>. Mai spre mijloc, la c2: <strong>6</strong>. În centru, la e4: <strong>8</strong>. Același cal, de trei ori mai mult de lucru.</p>
+            <p>Ia un cal, pune-l singur pe o tablă goală și <strong>numără câmpurile pe care se poate muta</strong>. Din <strong>colț</strong>, la g1: <strong>3</strong>. Mai spre mijloc, la c2: <strong>6</strong>. În centru, la e4: <strong>8</strong>. <br><br>Același cal, din trei poziții, are un număr diferit de posibilități.</p>
           </div>
 
           <div class="card">
@@ -209,22 +210,22 @@
               </div></div>
               <div class="tac"><span class="t-ico">👁️</span><div>
                 <div class="t-nume">Controlează multe câmpuri</div>
-                <div class="t-txt">Și, mai ales, câmpuri <strong>din jumătatea lui</strong> de tablă. Acolo se dă lupta.</div>
+                <div class="t-txt">Și, mai ales, câmpuri <strong>din jumătatea lui</strong> de tablă. Pentru că scopul tău e să-l dai mat, iar matul se întâmplă, de cele mai multe ori, la el acasă: <strong>în jumătatea mea mă apăr, în a lui atac</strong>.</div>
               </div></div>
               <div class="tac"><span class="t-ico">🎯</span><div>
                 <div class="t-nume">Atacă o piesă a adversarului</div>
-                <div class="t-txt">Cea mai directă formă de activitate: îl pune pe el să răspundă.</div>
+                <div class="t-txt">Cea mai directă formă de activitate: de cele mai multe ori îl <strong>obligă</strong> să răspundă.</div>
               </div></div>
             </div>
             <p style="margin-top:12px;">Deocamdată, <strong>spațiul</strong> înseamnă exact atât: <strong>câte câmpuri poți folosi tu și câte poate folosi el.</strong> Se numără, ca tot restul. (Mai târziu vom vorbi și despre spațiul din spatele pionilor.)</p>
           </div>
 
           <div class="note-box">
-            📍 <strong>Cum se cheamă mijlocul.</strong> Cele <strong>patru</strong> câmpuri din inima tablei — <strong>d4, d5, e4, e5</strong> — sunt <strong>centrul</strong>. <br><br>Câmpurile din jurul lor, inelul de la c3 până la f3, f6 și c6, se cheamă <strong>câmpurile centrale</strong>. Și acolo e bine să-ți duci piesele.
+            📍 <strong>Cum se cheamă mijlocul.</strong> Cele <strong>patru</strong> câmpuri din inima tablei — <strong>d4, d5, e4, e5</strong> — sunt <strong>centrul</strong>. <br><br>Cele <strong>douăsprezece</strong> din jurul lor, inelul de la c3 până la f3, f6 și c6, se cheamă <strong>centrul extins</strong>. Și acolo e bine să-ți duci piesele.
           </div>
 
           <div class="note-box">
-            ⚠️ <strong>Atenție la o capcană.</strong> Nu toate piesele câștigă din centru. <strong>Turnul are 14 câmpuri de oriunde l-ai pune</strong> — din colț sau din mijloc, tot 14. Pentru el nu contează unde stă, ci <strong>dacă are o coloană liberă</strong> în față. <br><br>Calul, nebunul și dama, în schimb, câștigă mult din centru.
+            ⚠️ <strong>Atenție la o capcană.</strong> Nu toate piesele câștigă din centru. <strong>Turnul are 14 câmpuri de oriunde l-ai pune</strong> — din colț sau din mijloc, tot 14. Pentru el nu contează unde stă, ci <strong>dacă are o coloană liberă</strong> în față. <br><br>Calul, nebunul și dama sunt, în schimb, <strong>mai mobile din centru</strong>.
           </div>
 
           <div class="note-box how-box">
@@ -332,7 +333,7 @@ const chapters = [
     practice: false,
     san: [],
     ann: {
-      0: '📍 <strong>Cum se cheamă mijlocul.</strong> Tabla e goală, ca să vezi limpede numele locurilor. <br><br>Cele patru câmpuri din <span style="color:#2ea060;font-weight:700;">verde</span> — <strong>d4, d5, e4, e5</strong> — sunt <strong>centrul</strong>. Ele sunt inima tablei. <br><br>Inelul din <span style="color:#3c74c8;font-weight:700;">albastru</span> din jurul lor se cheamă <strong>câmpurile centrale</strong>. Sunt douăsprezece, de la c3 până la f3, de la f3 la f6, de la f6 la c6 și înapoi la c3. <br><br>Când auzi „scoate piesele spre centru", asta înseamnă: <strong>în pătratul ăsta, sau în jurul lui.</strong> Nu pentru că așa scrie undeva, ci pentru că de acolo piesele tale au cele mai multe câmpuri și văd cel mai bine în jumătatea adversarului.'
+      0: '📍 <strong>Cum se cheamă mijlocul.</strong> Tabla e goală, ca să vezi limpede numele locurilor. <br><br>Cele <strong>patru</strong> câmpuri din <span style="color:#2ea060;font-weight:700;">verde</span> — <strong>d4, d5, e4, e5</strong> — se numesc <strong>centrul</strong>. Ele sunt inima tablei. <br><br>Cele <strong>douăsprezece</strong> din <span style="color:#3c74c8;font-weight:700;">albastru</span> din jurul lor se numesc <strong>centrul extins</strong>: de la c3 până la f3, de la f3 la f6, de la f6 la c6 și înapoi la c3. <br><br>Când auzi „scoate piesele spre centru", asta înseamnă: <strong>în pătratul ăsta, sau în jurul lui.</strong> Nu pentru că așa scrie undeva, ci pentru că de acolo piesele tale au cele mai multe câmpuri și văd cel mai bine în jumătatea adversarului.'
     },
     hl: { 0: [
       {sq:'d4',cls:'hl-a'},{sq:'d5',cls:'hl-a'},{sq:'e4',cls:'hl-a'},{sq:'e5',cls:'hl-a'},
@@ -354,7 +355,7 @@ const chapters = [
     altMsg: 'Și asta e bună — tot activitate se cheamă.',
     ann: {
       0: 'Joci cu <strong>Albul</strong>. Uită-te la cele două armate și întreabă-te care stă mai bine — nu <em>cine are mai mult material</em>, că materialul e egal, ci <strong>ale cui piese au mai mult de lucru</strong>. <br><br><strong>Albul:</strong> nebunul din c5 și calul din e5 stau amândoi în mijloc și privesc adânc în jumătatea Negrului. <br><strong>Negrul:</strong> calul din c8 stă în colț, nebunul din e6 are doar patru câmpuri și e legat de apărarea pionului din d5, iar regele n-are unde să se ducă. <br><br>Găsește o mutare care îți crește și mai mult activitatea.',
-      1: '<strong>Rd4!</strong> — și regele intră în centru. <br><br>Într-un final, <strong>regele nu mai e o piesă de ascuns: e o piesă de folosit.</strong> Din d4 el ține c5, d5, e5 și lucrează cot la cot cu nebunul și cu calul. De aici Albul are un plan limpede: calul pleacă spre f4 (Ce5-d3-f4), unde va ataca pionul din d5 și nebunul din e6. <br><br>Mergea la fel de bine <strong>Cc6</strong>, care bagă calul și mai adânc. <br><br>Ține minte de ce merge Albul mai bine aici: <strong>nu are nimic în plus, dar toate piesele lui au de lucru și niciuna dintre ale lui nu are.</strong>'
+      1: '<strong>Rd4!</strong> — și regele intră în centru. <br><br>Într-un final, <strong>regele nu mai e o piesă de ascuns: e o piesă de folosit.</strong> Din d4 el ține c5, d5, e5 și lucrează cot la cot cu nebunul și cu calul. De aici Albul are un plan limpede: calul pleacă spre f4 (Ce5-d3-f4), unde va ataca pionul din d5 și nebunul din e6. <br><br>Mergea la fel de bine <strong>Cc6</strong>, care pătrunde și mai adânc în poziția lui. <br><br>Ține minte <strong>de ce are Albul avantaj aici</strong>: nu are nimic în plus ca material, dar toate piesele lui au de lucru, iar ale Negrului nu au.'
     },
     arrows: { 0: [{from:'c5', to:'f8', color:'G'}, {from:'e5', to:'c6', color:'G'}] }
   },
@@ -402,8 +403,8 @@ const accData = [
     desc: 'Trei câmpuri contra opt. Aceeași piesă — toată diferența vine din locul unde stă.' },
   { chIdx: 1, kind: 't1', num: '♝', title: 'Nebunul din colț și nebunul din centru', practice: false,
     desc: 'Șapte contra treisprezece. Numeri singur, pe tablă, și vezi de ce nu e o regulă, ci o socoteală.' },
-  { chIdx: 2, kind: 't1', num: '📍', title: 'Centrul și câmpurile centrale', practice: false,
-    desc: 'Cele patru câmpuri din inima tablei, și inelul din jurul lor. Cum se cheamă fiecare.' },
+  { chIdx: 2, kind: 't1', num: '📍', title: 'Centrul și centrul extins', practice: false,
+    desc: 'Patru câmpuri verzi — centrul. Douăsprezece albastre în jurul lor — centrul extins.' },
 
   { chIdx: 3, kind: 't2', num: '1', title: 'Cine stă mai bine?', practice: true,
     desc: 'Joci cu <strong>Albul</strong>. Material egal — dar toate piesele tale au de lucru și niciuna dintre ale lui nu are.' },
