@@ -63,3 +63,24 @@ Ideea pedagogică pe care o subliniază: **mai bine mai multe scenarii scurte de
 - Toate liniile se verifică cu Stockfish — vezi rețeta din `HANDOFF_NIVEL6.md`.
 - Cardul de intro se scrie în **vocea lui Christiansen**, din transcriere (`yt-dlp --sub-lang ro`).
 - Fiecare lecție nouă se adaugă în `hub.html`, la cardul Nivelului II, și se leagă în footere.
+
+
+## Plan pentru „Slăbiciunea ultimei linii" (cerut de autoare, august 2026)
+
+Pasul din traseu e acum doar un **link** către pagina de mat pe ultima linie. Urmează să
+devină **lecție proprie de Nivel II**, iar linkul spre matul pe ultima linie să vină
+**la finalul** ei, ca aplicație.
+
+Ce trebuie să explice lecția, în formularea autoarei:
+
+> După rocadă — **nu imediat**, dar **înainte de a pleca cu ambele turnuri de pe ultima
+> linie** — trebuie făcut acel **luft** care ne salvează.
+
+Deci cele trei momente contează, în ordinea asta:
+1. faci rocada — încă nu e nevoie de luft;
+2. cât timp un turn păzește ultima linie, tot nu e urgent;
+3. **în clipa în care al doilea turn pleacă de pe ultima linie**, luftul devine obligatoriu.
+
+## Idee de reorganizare (amânată)
+Lecțiile de tactici ar putea fi urmate imediat de „Cum mă apăr de…" pe aceeași temă —
+sau apărarea să facă parte din aceeași lecție. **Se decide când ajungem acolo în traseu.**
