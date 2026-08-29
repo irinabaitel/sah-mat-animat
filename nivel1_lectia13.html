@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
+<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CMTZ9GGPMP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -9,71 +10,158 @@
   gtag('js', new Date());
   gtag('config', 'G-CMTZ9GGPMP');
 </script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Numărarea atacatorilor și apărătorilor</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-<link rel="stylesheet" href="master-template.css">
-<style>
-.acc-wrapper { display: flex; flex-direction: column; gap: 10px; }
-.acc-item { background: var(--c-surface); border: 2px solid var(--c-border); border-radius: var(--radius); overflow: hidden; }
-.acc-head {
-  width: 100%; display: flex; justify-content: space-between; align-items: center;
-  padding: 14px 16px; cursor: pointer;
-  font-family: var(--font-display); font-weight: 700; color: var(--c-navy); font-size: var(--fs-md);
-  border: none; background: none; text-align: left; gap: 8px;
-}
-.acc-head:hover { background: rgba(26,58,107,0.06); }
-.acc-item.open .acc-head { background: rgba(26,58,107,0.06); }
-.acc-icon { font-size: 1.25rem; transition: transform 0.22s; flex-shrink: 0; }
-.acc-item.open .acc-icon { transform: rotate(45deg); }
-.acc-body { max-height: 0; overflow: hidden; transition: max-height 0.32s ease; }
-.acc-body.open { max-height: 2400px; }
-.acc-inner { padding: 4px 16px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
-.ex-dots { display: flex; gap: 6px; flex-wrap: wrap; }
-.ex-dot {
-  background: rgba(255,255,255,0.55); border: 2px solid rgba(26,58,107,0.25);
-  border-radius: 20px; padding: 4px 11px; min-width: 34px;
-  font-family: var(--font-display); font-size: var(--fs-xs); font-weight: 700;
-  color: var(--c-navy); cursor: pointer; transition: all 0.15s; text-align: center;
-}
-.ex-dot:hover  { background: rgba(255,255,255,0.85); }
-.ex-dot.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
-.ex-label { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--c-navy); font-weight: 700; min-height: 1.2em; }
-.ex-ann   { font-size: var(--fs-md); line-height: 1.7; color: var(--c-text); min-height: 2em; }
-.turn-badge { display: inline-block; padding: 3px 14px; border-radius: 50px; font-family: var(--font-display); font-size: 0.82rem; font-weight: 700; }
-.turn-badge.white { background: #f0f0f0; color: var(--c-navy); border: 1.5px solid #ccc; }
-.turn-badge.black { background: #222; color: #fff; border: 1.5px solid #000; }
-.level-badge { display: inline-block; margin-left: 6px; padding: 2px 10px; border-radius: 50px; font-family: var(--font-display); font-size: 0.75rem; font-weight: 700; background: rgba(39,174,96,0.18); color: #1a6b3a; }
-.level-badge.med  { background: rgba(230,126,34,0.18); color: #8a3a00; }
-.level-badge.hard { background: rgba(192,57,43,0.18);  color: #7a1800; }
-.ctrl-row { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 6px; }
-.btn-sm { padding: 7px 15px; border-radius: 50px; font-family: var(--font-display); font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: background .15s, opacity .15s; border: 1.5px solid transparent; }
-.btn-sm:disabled { opacity: 0.28; cursor: default; }
-.btn-prev  { border-color: rgba(26,58,107,0.35); background: rgba(255,255,255,0.55); color: var(--c-navy); }
-.btn-prev:hover:not(:disabled)  { background: rgba(26,58,107,0.10); }
-.btn-reset { border-color: rgba(192,57,43,0.40); background: rgba(255,255,255,0.55); color: #8b1a00; }
-.btn-reset:hover:not(:disabled) { background: rgba(192,57,43,0.10); }
-.btn-cont  { border-color: var(--c-success); background: var(--c-success); color: white; }
-.btn-cont:hover:not(:disabled)  { opacity: 0.86; }
-.btn-next  { border-color: var(--c-navy); background: var(--c-navy); color: white; }
-.btn-next:hover:not(:disabled)  { opacity: 0.86; }
-.btn-hint { border-color: rgba(39,174,96,0.45); background: rgba(39,174,96,0.08); color: #1a6b3a; }
-.btn-hint:hover:not(:disabled)  { background: rgba(39,174,96,0.18); }
-.btn-sol  { border-color: rgba(142,68,173,0.45); background: rgba(142,68,173,0.08); color: #6c3483; }
-.btn-sol:hover:not(:disabled)   { background: rgba(142,68,173,0.18); }
-.btn-tri  { padding: 7px 11px; min-width: 34px; }
-.hint-square { background: rgba(80,200,80,0.65) !important; }
-.last-move-from { background: rgba(80,180,80,0.35) !important; }
-.last-move-to   { background: rgba(80,180,80,0.55) !important; }
-.square-selected { background: rgba(255,200,0,0.55) !important; }
-@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
-.board-shake { animation: shake 0.35s ease-out; }
-.btn-arena { display: flex; align-items: center; justify-content: center; padding: 11px 20px; border-radius: 50px; background: var(--c-navy); color: white; text-decoration: none; font-family: var(--font-display); font-size: 0.97rem; font-weight: 700; border: none; cursor: pointer; width: 100%; transition: opacity .18s; margin-top: 8px; }
-.btn-arena:hover { opacity: 0.86; }
-.progress-outer { position: relative; }
-.progress-outer::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: rgba(26,26,46,0.88); color: #fff; font-family: var(--font-display); font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; white-space: nowrap; pointer-events: none; z-index: 100; opacity: 0; transition: opacity 0.15s; }
-.progress-outer:hover::after { opacity: 1; }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Piese atârnate. Numărătoarea</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <style>
+    .info-content { display: flex; flex-direction: column; gap: 10px; }
+    .card {
+      background: var(--c-surface); border: 2px solid var(--c-border);
+      border-radius: var(--radius); padding: 14px 16px;
+    }
+    .card p {
+      font-size: var(--fs-md); line-height: 1.75; color: var(--c-text);
+      margin-bottom: 8px; text-align: justify;
+    }
+    .card p:last-child { margin-bottom: 0; }
+    .card p strong { color: var(--c-navy); }
+    .card a { color: var(--c-navy); text-decoration: underline; font-weight: 700; }
+    .card .credit { font-size: var(--fs-sm); color: var(--c-navy); font-weight: 700; margin-top: 2px; }
+    .note-box {
+      background: rgba(26,58,107,0.06); border: 1.5px dashed var(--c-navy);
+      border-radius: var(--radius); padding: 11px 14px;
+      font-size: var(--fs-sm); line-height: 1.6; color: var(--c-text);
+    }
+    .note-box strong { color: var(--c-navy); }
+    .def-box {
+      background: linear-gradient(135deg, #fff8e1, #fff3cd);
+      border: 2px solid #f4c842; border-radius: var(--radius); padding: 12px 15px;
+    }
+    .def-box p { font-size: var(--fs-md); line-height: 1.7; color: var(--c-text); margin: 0; }
+    .def-box p strong { color: var(--c-navy); }
+    .def-title { font-family: var(--font-display); font-weight: 900; color: var(--c-navy); margin-bottom: 6px !important; }
+    .quote-box {
+      background: rgba(26,58,107,0.05); border-left: 4px solid var(--c-navy);
+      border-radius: var(--radius); padding: 12px 15px;
+    }
+    .quote-box p { font-size: var(--fs-md); line-height: 1.7; color: var(--c-text); margin: 0 0 8px; }
+    .quote-box p:last-child { margin-bottom: 0; }
+    .quote-box strong { color: var(--c-navy); }
+    .quote-box .q-title { font-family: var(--font-display); font-weight: 900; color: var(--c-navy); }
+    .quote-box .q-author { font-size: var(--fs-sm); color: var(--c-navy); font-weight: 700; }
+    .quote-box a { color: var(--c-navy); font-weight: 700; text-decoration: underline; }
+    .step-controls {
+      display: flex; align-items: center; justify-content: center; gap: 8px; padding: 4px 0;
+    }
+    .ctrl-btn {
+      background: var(--c-navy); color: white; border: none; border-radius: 50%;
+      width: 36px; height: 36px; font-size: 0.9em; cursor: pointer;
+      transition: background 0.2s; display: flex; align-items: center; justify-content: center;
+    }
+    .ctrl-btn:hover:not(:disabled) { background: #2a5aab; }
+    .ctrl-btn:disabled { background: rgba(26,58,107,0.22); cursor: not-allowed; }
+    .move-counter {
+      background: var(--c-surface); border: 2px solid var(--c-border); border-radius: 20px;
+      padding: 4px 12px; font-weight: 700; color: var(--c-navy);
+      font-size: 0.85em; min-width: 104px; text-align: center;
+    }
+    .annotation-box {
+      background: var(--c-surface); border: 2px solid var(--c-border);
+      border-left: 4px solid var(--c-navy); border-radius: var(--radius);
+      padding: 12px 14px; font-size: var(--fs-md); line-height: 1.7;
+      color: var(--c-text); min-height: 60px;
+    }
+    .square-selected { background: rgba(255,200,0,0.55) !important; }
+    /* de unde a plecat si unde a ajuns ultima piesa mutata */
+    .last-move { box-shadow: inset 0 0 0 100px rgba(155,199,0,0.42); }
+    .hint-square { background: rgba(60,190,80,0.60) !important; }
+
+    .section-label {
+      font-family: var(--font-display); font-weight: 900; color: var(--c-navy);
+      font-size: var(--fs-md); margin: 16px 2px 2px; display: flex; align-items: center; gap: 6px;
+    }
+    .acc-list { display: flex; flex-direction: column; gap: 6px; }
+    .acc-item {
+      border: 2px solid var(--c-border); border-radius: var(--radius);
+      overflow: hidden; background: var(--c-surface); transition: border-color 0.15s;
+    }
+    .acc-item:hover, .acc-item.open { border-color: var(--c-navy); }
+    .acc-header {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 11px 14px; cursor: pointer; user-select: none; transition: background 0.15s;
+    }
+    .acc-item.open .acc-header, .acc-header:hover { background: rgba(26,58,107,0.07); }
+    .acc-num { font-family: var(--font-display); font-weight: 900; color: var(--c-navy); font-size: var(--fs-md); min-width: 22px; }
+    .acc-title { font-weight: 700; color: var(--c-navy); font-size: var(--fs-md); font-family: var(--font-display); }
+    .acc-chevron { font-size: 0.7em; color: var(--c-navy); transition: transform 0.22s; display: inline-block; margin-left: auto; }
+    .acc-item.open .acc-chevron { transform: rotate(90deg); }
+    .acc-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .acc-item.open .acc-body { max-height: 720px; }
+    .acc-inner { padding: 2px 14px 12px; }
+    .acc-desc { font-size: var(--fs-md); line-height: 1.7; color: var(--c-text); margin-bottom: 6px; }
+    .badge {
+      display: inline-block; padding: 2px 10px; border-radius: 20px;
+      font-size: 0.72em; font-weight: 700; font-family: var(--font-display);
+    }
+    .badge-white { background: rgba(46,125,50,0.14); color: #2e7d32; border: 1.5px solid #2e7d32; }
+    .badge-black { background: rgba(192,57,43,0.13); color: #c0392b; border: 1.5px solid #c0392b; }
+
+    #navControls { display: none; flex-direction: column; gap: 10px; padding: 8px 0 4px; }
+
+    /* ── Exersează ── */
+    .board-stage { width: 100%; height: 100%; display: flex; gap: 8px; align-items: center; justify-content: center; }
+    .board-stage.practicing .board-wrapper { width: min(calc(100% - 26px), var(--avail-h)); }
+    .eval-bar {
+      display: none; width: 18px; background: #4a4a4a; border-radius: 5px;
+      overflow: hidden; position: relative; flex: none; align-self: center;
+    }
+    .eval-fill {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      background: #f2f2f2; height: 50%; transition: height 0.45s ease;
+    }
+    .ex-start {
+      margin-top: 8px; padding: 9px 16px; border-radius: 50px; border: none;
+      background: var(--c-navy); color: #fff; font-family: var(--font-display);
+      font-weight: 700; font-size: var(--fs-sm); cursor: pointer; width: 100%;
+    }
+    .ex-start:hover { opacity: 0.88; }
+    .tacam { display: flex; flex-direction: column; gap: 7px; margin-top: 6px; }
+    .tac {
+      display: flex; gap: 11px; align-items: flex-start;
+      background: rgba(255,255,255,0.45); border: 2px solid var(--c-border);
+      border-radius: var(--radius); padding: 9px 12px;
+    }
+    .tac .t-ico { font-size: 1.5rem; line-height: 1.1; flex: none; }
+    .tac .t-nume { font-family: var(--font-display); font-weight: 900; color: var(--c-navy); font-size: var(--fs-md); }
+    .tac .t-txt { font-size: var(--fs-sm); line-height: 1.6; color: var(--c-text); }
+    .treapta-cap {
+      font-family: var(--font-display); font-weight: 900; color: var(--c-navy);
+      font-size: var(--fs-md); margin: 16px 2px 2px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+    }
+    .treapta-cap .t-mic { font-family: var(--font-body); font-weight: 700; font-size: var(--fs-sm); color: var(--c-text-muted); }
+    #practicePanel { display: none; flex-direction: column; gap: 9px; padding: 6px 0 4px; }
+    .prac-status {
+      background: var(--c-surface); border: 2px solid var(--c-border); border-left: 4px solid var(--c-navy);
+      border-radius: var(--radius); padding: 11px 14px; font-size: var(--fs-md); line-height: 1.6;
+      color: var(--c-text); min-height: 24px; font-weight: 700;
+    }
+    .prac-stats { display: flex; justify-content: space-between; font-weight: 700; color: var(--c-navy); font-size: var(--fs-sm); padding: 0 4px; }
+    .prac-controls { display: flex; gap: 6px; flex-wrap: wrap; }
+    .prac-btn {
+      flex: 1; min-width: 84px; padding: 8px 10px; border-radius: 20px; border: 2px solid var(--c-navy);
+      background: var(--c-navy); color: #fff; font-family: var(--font-display); font-weight: 700;
+      font-size: var(--fs-sm); cursor: pointer;
+    }
+    .prac-btn.ghost { background: transparent; color: var(--c-navy); }
+    .prac-btn:hover { opacity: 0.88; }
+  
+    /* caseta „cum se folosește pagina" — verde transparent */
+    .note-box.how-box {
+      background: rgba(46, 160, 96, 0.14);
+      border-left-color: #2ea060;
+    }
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -82,123 +170,94 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">Numărarea atacatorilor și apărătorilor</span>
-    <div class="header-progress"><span class="lesson-badge">Nivel I</span></div>
+    <span class="header-title">Piese atârnate. Numărătoarea</span>
+    <div class="header-progress">
+      <span class="lesson-badge">Nivelul I</span>
+    </div>
   </header>
 
   <main class="page-main" role="main">
-
     <div class="board-col">
-      <div class="board-wrapper" id="boardWrapper">
-        <div id="board"></div>
-        <div class="promo-overlay" id="promoOverlay">
-          <div class="promo-title">Alege piesa:</div>
-          <div class="promo-btns" id="promoBtns"></div>
+      <div class="board-stage">
+        <div class="eval-bar" id="evalBar"><div class="eval-fill" id="evalFill"></div></div>
+        <div class="board-wrapper" id="boardWrapper">
+          <div id="board"></div>
         </div>
       </div>
     </div>
-
     <div class="panel-col">
       <div class="panel-scroll">
-        <p style="margin-bottom:14px;">Tabla de șah este un loc periculos. Numărarea atacatorilor și apărătorilor este cheia pentru a captura în siguranță piesele adversarului și pentru a-ți apăra propriile piese.</p>
+        <div class="info-content">
 
-        <div class="acc-wrapper">
+          <div class="def-box">
+            <p class="def-title">Piesa ta e atacată. Și acum?</p>
+            <p>Prima grijă a oricărui jucător nu e să atace. E să nu piardă piese degeaba. Iar ca să nu pierzi piese, trebuie să răspunzi la două întrebări, de fiecare dată când adversarul mută:</p>
+            <p><strong>1. Am vreo piesă atacată?</strong> &nbsp;·&nbsp; <strong>2. Dacă da, e apărată sau e singură?</strong></p>
+            <p>O piesă atacată și <strong>neapărată</strong> se cheamă <strong>piesă atârnată</strong>. Atârnă acolo, gata să cadă — și adversarul o poate lua pe gratis.</p>
+          </div>
 
-          <!-- ══ SERTAR 1 ══ -->
-          <div class="acc-item" id="acc0">
-            <button class="acc-head" onclick="toggleAcc(0)">
-              <span>Exemplul 1 — Calul din d4</span>
-              <span class="acc-icon">+</span>
-            </button>
-            <div class="acc-body" id="accBody0">
-              <div class="acc-inner">
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <button class="btn-sm btn-tri btn-prev" id="nav1Prev" onclick="goExRel(-1)" disabled>&#9668;</button>
-                  <div class="ex-dots" id="dots1"></div>
-                  <button class="btn-sm btn-tri btn-prev" id="nav1Next" onclick="goExRel(1)">&#9658;</button>
-                </div>
-                <div class="ex-label" id="exLabel1"></div>
-                <div class="ex-ann"   id="exAnn1"></div>
-                <div class="hl-box" style="margin-top:4px;">
-                  Dacă sunt mai mulți atacatori decât apărători, de obicei e bine să capturezi (exact ca la piesele atârnate — neapărate). Dacă numărul de atacatori este egal cu numărul de apărători, armata care se apără este în siguranță.
-                </div>
-              </div>
+          <div class="card">
+            <p><strong>Când o piesă de-a ta e atacată, ai patru răspunsuri.</strong> Nu unul — patru. Le vezi pe rând în lecție:</p>
+            <div class="tacam">
+              <div class="tac"><span class="t-ico">🏃</span><div>
+                <div class="t-nume">Fug</div>
+                <div class="t-txt">O mut de acolo. Cel mai simplu — dar ai grijă <em>unde</em> o muți.</div>
+              </div></div>
+              <div class="tac"><span class="t-ico">🛡️</span><div>
+                <div class="t-nume">O apăr</div>
+                <div class="t-txt">Aduc un coleg care s-o răzbune. Nu împiedic captura — dar el plătește pentru ea.</div>
+              </div></div>
+              <div class="tac"><span class="t-ico">⚔️</span><div>
+                <div class="t-nume">Îl capturez pe atacator</div>
+                <div class="t-txt">Nu mai e cine să atace. Ori cu piesa atacată, ori cu alta.</div>
+              </div></div>
+              <div class="tac"><span class="t-ico">🧱</span><div>
+                <div class="t-nume">Pun ceva în cale</div>
+                <div class="t-txt">Doar împotriva pieselor care merg în linie: dama, turnul, nebunul. Împotriva calului nu ai ce pune în cale.</div>
+              </div></div>
             </div>
           </div>
 
-          <!-- ══ SERTAR 2 ══ -->
-          <div class="acc-item" id="acc1">
-            <button class="acc-head" onclick="toggleAcc(1)">
-              <span>Exemplul 2 — Schimbul pe g4</span>
-              <span class="acc-icon">+</span>
-            </button>
-            <div class="acc-body" id="accBody1">
-              <div class="acc-inner">
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <button class="btn-sm btn-tri btn-prev" id="nav2Prev" onclick="goExRel(-1)" disabled>&#9668;</button>
-                  <div class="ex-dots" id="dots2"></div>
-                  <button class="btn-sm btn-tri btn-prev" id="nav2Next" onclick="goExRel(1)">&#9658;</button>
-                </div>
-                <div class="ex-label" id="exLabel2"></div>
-                <div class="ex-ann"   id="exAnn2"></div>
-                <div class="hl-box" style="margin-top:4px;">
-                  Atunci când numărăm atacatorii și apărătorii trebuie să fim atenți cine are piese mai valoroase. De aceea trebuie să vedem ce am schimba pe ce: normal că am schimba un cal și un pion pentru o regină (două piese pentru una!), sau doi pioni pentru un nebun, dar sigur nu am dori să schimbăm un cal și un nebun pentru un turn. Dar o regină și un pion pentru două turnuri? 10 la 10 — uneori regina și pionul sunt mai buni, alteori două turnuri sunt mai bune. Valoarea pieselor ne ajută să ne gândim dacă un schimb este bun sau nu, dar totul depinde de poziția celorlalte piese de pe tablă.
-                </div>
-                <div class="hl-box warn">
-                  <strong>Regula:</strong> Trebuie să calculezi valoarea pieselor pentru a decide dacă un schimb este bun pentru tine sau pentru adversar.
-                </div>
-              </div>
+          <div class="note-box">
+            🔢 <strong>Numărătoarea.</strong> Ca să știi dacă o piesă e în siguranță, numeri: <strong>câți o atacă</strong> și <strong>câți o apără</strong>. Dacă atacatorii sunt mai mulți, piesa e în pericol. Dacă sunt la fel de mulți, de obicei e un schimb — și atunci mai contează ceva: <strong>cât valorează piesele</strong>.
+          </div>
+
+          <div class="note-box">
+            ⚖️ <strong>De unde vin punctele.</strong> Pune fiecare piesă singură pe <strong>d5</strong>, în mijlocul tablei goale, și numără-i câmpurile unde poate ajunge: <br><br>calul — <strong>8</strong> &nbsp;·&nbsp; nebunul — <strong>13</strong> &nbsp;·&nbsp; turnul — <strong>14</strong> &nbsp;·&nbsp; dama — <strong>27</strong> &nbsp;·&nbsp; pionul — <strong>1</strong> <br><br>De-aici vin valorile: pionul <strong>1</strong>, calul și nebunul <strong>3</strong>, turnul <strong>5</strong>, dama <strong>9</strong>. Cine ajunge în mai multe locuri face mai multă treabă, deci valorează mai mult. <br><br>Regele nu are punct: el nu poate fi capturat niciodată, deci rămâne pe tablă până la sfârșit.
+          </div>
+
+          <div class="note-box how-box">
+            ✋ <strong>Pe tablă poți muta oricând, liber</strong> — trage piesele cum vrei, ca să încerci idei. Butonul <strong>„Joacă tu mutările"</strong> e altceva: acolo se așteaptă exact mutarea din lecție, iar dacă dai alta îți spune ce era bun la ea.
+          </div>
+
+          <div class="acc-list" id="accList"></div>
+
+          <div id="navControls">
+            <div class="step-controls">
+              <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima poziție">&#9198;</button>
+              <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="Înapoi">&#9664;</button>
+              <div class="move-counter" id="moveCounter">Start</div>
+              <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="Înainte">&#9654;</button>
+              <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima poziție">&#9197;</button>
+            </div>
+            <div class="annotation-box" id="annotationBox"></div>
+            <div class="moves-log" id="movesLog"></div>
+          </div>
+
+          <div id="practicePanel">
+            <div class="prac-status" id="pracStatus"></div>
+            <div class="prac-stats"><span id="pracProgress">0/0</span><span id="pracPrecision">Precizie: 100%</span></div>
+            <div class="prac-controls">
+              <button class="prac-btn" id="pracSkip" onclick="pracSkip()">⏩ Sari</button>
+              <button class="prac-btn" id="pracHintBtn" onclick="pracHint()">💡 Indiciu</button>
+              <button class="prac-btn" id="pracRestart" onclick="pracRestart()">↺ De la capăt</button>
+              <button class="prac-btn ghost" id="pracExit" onclick="pracExit()">✕ Ieși</button>
             </div>
           </div>
 
-          <!-- ══ SERTAR 3: Arena ══ -->
-          <div class="acc-item" id="acc2">
-            <button class="acc-head" onclick="toggleAcc(2)">
-              <span>Puzzle-uri — calculează și execută!</span>
-              <span class="acc-icon">+</span>
-            </button>
-            <div class="acc-body" id="accBody2">
-              <div class="acc-inner">
-
-                <p style="margin:0 0 4px 0; font-size:var(--fs-sm); color:var(--c-text);">Dacă armata ta are destui atacatori, declanșezi atacul, dacă nu, mai aduci un atacator. Atenție la ordinea intrării pieselor în schimburi! Dacă piesele tale sunt atacate, ai grijă să le aperi bine.</p>
-
-                <span class="turn-badge white" id="turnBadge">&#9634; Albul mută</span>
-                <span class="level-badge" id="levelBadge">UȘOR</span>
-
-                <div class="progress-outer" id="progressOuter">
-                  <div class="progress-wrap">
-                    <div class="progress-fill" id="progressFill" style="width:0%"></div>
-                  </div>
-                </div>
-
-                <div class="task-msg idle" id="arenaMsg">Se încarcă&hellip;</div>
-
-                <div class="ctrl-row">
-                  <button class="btn-sm btn-prev"  id="prevBtn"  onclick="prevPuzzle()" disabled>&#8592; Precedentul</button>
-                  <button class="btn-sm btn-reset"               onclick="resetPuzzle()">&#8634; Resetează</button>
-                  <button class="btn-sm btn-cont"                onclick="continuePuzzle()">Continuă</button>
-                  <button class="btn-sm btn-next"  id="nextBtn"  onclick="nextPuzzle()" disabled>Următorul &#8594;</button>
-                </div>
-                <div class="ctrl-row">
-                  <button class="btn-sm btn-tri btn-prev" id="stepBackBtn" onclick="stepBack()"    disabled>&#9668;</button>
-                  <button class="btn-sm btn-tri btn-prev" id="stepFwdBtn"  onclick="stepForward()" disabled>&#9658;</button>
-                  <button class="btn-sm btn-hint" id="btnHint" onclick="showHint()">&#128161; Indiciu</button>
-                  <button class="btn-sm btn-sol"  id="btnSol"  onclick="showSolution()">&#9654;&#9654; Soluție</button>
-                </div>
-
-                <button class="btn-arena" id="playAgainBtn" style="display:none;"
-                        onclick="resetAll()">&#127881; Toate rezolvate! Joacă din nou &#8594;</button>
-                <button class="btn-arena" id="resetAllBtn"  style="display:none; background:rgba(192,57,43,0.82);"
-                        onclick="resetAll()">&#8635; Joacă din nou (resetează tot)</button>
-
-              </div>
-            </div>
-          </div>
-
-        </div><!-- /.acc-wrapper -->
-      </div><!-- /.panel-scroll -->
-    </div><!-- /.panel-col -->
-
+        </div>
+      </div>
+    </div>
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
@@ -209,424 +268,877 @@
       <span class="icon">&#8862;</span><span class="label">Cuprins</span>
     </a>
     <a href="nivel1_lectia6.html" class="nav-btn nav-btn--forward">
-      <span class="icon">&#8594;</span><span class="label">Atacul asupra regelui</span>
+      <span class="label">Atacul asupra regelui</span><span class="icon">&#8594;</span>
     </a>
   </footer>
 
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-<script src="board-utils.js"></script>
 <script>
-var PT       = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
-var INIT_FEN = 'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1B4N1/PPP2PPP/R1BQ1RK1 w kq - 0 1';
+function toRo(san) {
+  const map = { K:'R', Q:'D', R:'T', B:'N', N:'C' };
+  return san.replace(/[KQRBN]/g, m => map[m]);
+}
 
-var EX1 = [
-  { fen:    'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1B4N1/PPP2PPP/R1BQ1RK1 w kq - 0 1',
-    label:  '2 atacatori, 1 apărător — periculos!',
-    ann:    'Câte piese negre ar putea captura acest cal? Două. Câte piese albe îl apără? Una. Deci cu doi atacatori negri și un singur apărător alb, sigur nu e bine pentru armata albă.',
-    arrows: [{from:'c5',to:'d4',ci:1},{from:'f6',to:'d4',ci:1},{from:'d1',to:'d4',ci:0}]
+const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+const chapters = [
+
+  /* ══ ÎNȚELEG — cele patru răspunsuri ══ */
+
+  /* 0 — fug */
+  {
+    fen: '6k1/8/8/1b1R4/8/8/2n5/6K1 b - - 0 1', orient: 'black',
+    winner: 'b', practiceFrom: 0, winEval: 0,
+    finishMsg: 'Ai scos nebunul din bătaie!',
+    san: ['Ba4'],
+    accept: { 0: ['Ba4','Ba6','Bc6','Bc4','Be8','Be2'] },
+    altMsg: 'Bun — nebunul a plecat pe un câmp unde nu-l ajunge nimeni.',
+    ann: {
+      0: '🏃 <strong>Fug.</strong> Uită-te la <strong>nebunul negru din b5</strong>. Turnul alb din d5 se uită drept la el, pe rândul 5, și între ei nu e nimeni. <br><br>Nebunul e atacat. Și mai e ceva: nu-l apără nimeni. <strong>E o piesă atârnată</strong> — dacă Negrul nu face nimic, turnul o ia pe gratis. <br><br>Cel mai simplu răspuns: pleacă de acolo. Mută nebunul.',
+      1: '<strong>…Na4</strong> — nebunul a ieșit de pe rândul 5 și turnul nu mai are ce lua. <br><br>Mergeau și <strong>…Na6, …Nc6, …Nc4, …Ne8, …Ne2</strong>. <br><br>⚠️ Dar atenție unde fugi: pe <strong>d7</strong> și pe <strong>d3</strong> nebunul rămâne tot în bătaia turnului, doar că pe coloană în loc de rând. Iar pe <strong>f1</strong> îl ia regele alb. <strong>Nu e destul să fugi — trebuie să fugi undeva în siguranță.</strong>'
+    },
+    arrows: { 0: [{from:'d5', to:'b5', color:'R'}] }
   },
-  { fen:    'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1BP3N1/PP3PPP/R1BQ1RK1 w kq - 0 1',
-    label:  '2 atacatori, 2 apărători — în siguranță',
-    ann:    'Presupunând că Negrul nu a fost atent și a făcut rocada în loc să captureze cu nebunul, Albul ar putea să plece cu calul undeva în siguranță, dar dacă își dorește să aibă un cal în centrul tablei, trebuie să mai aducă un apărător — pionul din c2 la c3. În acest moment sunt doi atacatori și doi apărători ai calului din d4. Dacă numărul de atacatori este egal cu numărul de apărători, armata care se apără este în siguranță.',
-    arrows: [{from:'c5',to:'d4',ci:1},{from:'f6',to:'d4',ci:1},{from:'d1',to:'d4',ci:0},{from:'c3',to:'d4',ci:0}]
+
+  /* 1 — o apăr */
+  {
+    fen: '6k1/8/8/1b1R4/8/8/2n5/6K1 b - - 0 1', orient: 'black',
+    winner: 'b', practiceFrom: 0, winEval: 0,
+    finishMsg: 'Nebunul are acum cine să-l răzbune.',
+    san: ['Na3'],
+    ann: {
+      0: '🛡️ <strong>O apăr.</strong> Aceeași poziție. De data asta nu mai fugim — îi aducem nebunului un apărător. <br><br>Cine poate? <strong>Calul din c2.</strong> Găsește câmpul de unde calul ajunge la b5.',
+      1: '<strong>…Ca3!</strong> — de pe a3, calul păzește b5. <br><br>Turnul tot poate lua nebunul, dar acum plătește: Txb5 Cxb5, turn contra nebun. Albul nu va face asta. <strong>Apărarea nu împiedică captura — creează o consecință.</strong> <br><br>⚠️ Și acum partea la care greșesc toți începătorii: mai există un câmp de unde calul apără nebunul — <strong>d4</strong>. Și e greșit! Pe d4, calul intră chiar în bătaia turnului. Albul joacă Txd4 și ia calul degeaba. <br><br><strong>Când aduci un apărător, uită-te dacă apărătorul e el însuși în siguranță.</strong> Altfel ai doar impresia că ești apărat.'
+    },
+    arrows: { 0: [{from:'d5', to:'b5', color:'R'}, {from:'c2', to:'a3', color:'G'}] }
+  },
+
+  /* 2 — îl capturez pe atacator */
+  {
+    fen: 'k7/1p6/8/2n5/8/1N6/P7/6K1 b - - 0 1', orient: 'black',
+    winner: 'b', practiceFrom: 0, winEval: 0,
+    finishMsg: 'Nu mai e cine să atace.',
+    san: ['Nxb3','axb3'],
+    accept: { 0: ['Nxb3','b6','Nd7','Ne6','Ne4','Nd3','Na6','Na4'] },
+    altMsg: 'Merge și așa — dar citește mai jos de ce captura e cea mai simplă aici.',
+    ann: {
+      0: '⚔️ <strong>Îl capturez pe atacator.</strong> Poziție nouă. Cei doi cai se atacă unul pe altul — se cheamă <strong>atac reciproc</strong>. <br><br>Numără: calul alb din <strong>b3</strong> e apărat de pionul din a2. Calul negru din <strong>c5</strong> nu e apărat de nimeni — <strong>e atârnat</strong>. <br><br>E rândul Negrului, și ăsta e norocul lui. Ce face?',
+      1: '<strong>…Cxb3</strong> — îl ia chiar pe atacator. Nu mai are cine să-l amenințe.',
+      2: '<strong>axb3</strong> — pionul recapturează, cum era de așteptat. Cal contra cal: schimb egal, nimeni n-a pierdut nimic. <br><br>Negrul mai avea două căi: să <strong>fugă</strong> cu calul, sau să-l <strong>apere</strong> jucând …b7-b6. Toate trei sunt bune. <br><br>Ține minte însă cine era în pericol: <strong>calul atârnat era al Negrului.</strong> Dacă ar fi fost rândul Albului, el ar fi jucat Cxc5 și ar fi câștigat un cal pe degeaba, pentru că n-avea cine să recaptureze.'
+    },
+    arrows: { 0: [{from:'c5', to:'b3', color:'R'}, {from:'b3', to:'c5', color:'R'}, {from:'a2', to:'b3', color:'G'}] }
+  },
+
+  /* 3 — pun ceva în cale */
+  {
+    fen: 'k7/8/2p5/3b4/8/4P3/6Q1/6K1 w - - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: 0,
+    finishMsg: 'Ai tăiat diagonala!',
+    san: ['e4'],
+    accept: { 0: ['e4','Qf2','Qf1','Qh2','Qh3','Qf3'] },
+    altMsg: 'Merge — dama e în siguranță. Citește mai jos și varianta cu pionul.',
+    ann: {
+      0: '🧱 <strong>Pun ceva în cale.</strong> Poziție nouă, joci cu <strong>Albul</strong>. <br><br>Nebunul negru din <strong>d5</strong> privește pe diagonală în jos: e4, f3, g2 — unde stă <strong>dama albă</strong>. Dama e atacată de un nebun, adică de o piesă care valorează mult mai puțin. Trebuie neapărat să faci ceva. <br><br>Poți să fugi cu dama, sigur. Dar mai există o cale: <strong>bagă ceva în calea nebunului.</strong>',
+      1: '<strong>e4!</strong> — pionul se așează chiar pe diagonală, între nebun și damă. Nebunul nu mai vede până la g2. <br><br>Și pionul? E atacat de nebun, dar dacă Nxe4, dama de pe g2 recapturează — Dxe4, nebun pentru pion. Deci pionul stă bine acolo. <br><br>Mergea și să fugi cu dama (Df2, Df1, Dh2…). <br><br>❌ Ce <em>nu</em> faci: <strong>Dxd5??</strong> — dama capturează nebunul, dar pionul din c6 recapturează, cxd5, și ai dat o damă de 9 puncte pe un nebun de 3. <br><br>⚠️ Ține minte: <strong>ceva în cale poți pune numai împotriva pieselor care merg în linie</strong> — dama, turnul, nebunul. Împotriva unui cal nu ai ce pune în cale: el sare peste.'
+    },
+    arrows: { 0: [{from:'d5', to:'g2', color:'R'}] }
+  },
+
+  /* 4 — numărătoarea */
+  {
+    fen: 'k7/6p1/5n2/8/4R2B/8/8/6K1 w - - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: 0,
+    finishMsg: 'Turnul e salvat!',
+    san: ['Bxf6','gxf6'],
+    accept: { 0: ['Bxf6','Re1','Re2','Re3','Re5','Re6','Re7','Rb4','Rc4','Rd4','Rf4'] },
+    altMsg: 'Bun — turnul nu mai e în pericol.',
+    ann: {
+      0: '🔢 <strong>Numărătoarea.</strong> Joci cu <strong>Albul</strong>. Calul negru din <strong>f6</strong> atacă turnul alb din <strong>e4</strong>. <br><br>Numără pentru turn: îl atacă <strong>unu</strong> (calul), îl apără <strong>zero</strong>. Turnul e <strong>atârnat</strong> — și e o piesă de 5 puncte atacată de una de 3. Trebuie făcut ceva. <br><br>Numără acum și pentru cal: îl atacă <strong>unu</strong> (nebunul din h4), îl apără <strong>unu</strong> (pionul din g7). Unu la unu — deci pe f6 nu câștigi nimic, dar poți face un schimb. <br><br>Găsește o soluție. Sunt două feluri.',
+      1: '<strong>Nxf6</strong> — nebunul îl ia pe cal. Atacatorul a dispărut, deci turnul e salvat.',
+      2: '<strong>…gxf6</strong> — pionul recapturează, cum arăta numărătoarea. Nebun contra cal: <strong>schimb egal</strong>, amândoi valorează 3. <br><br>Cealaltă soluție era la fel de bună: <strong>mută pur și simplu turnul</strong> undeva unde calul nu-l ajunge. <br><br>Asta e toată numărătoarea: te uiți la o piesă, numeri câți o atacă și câți o apără, și abia pe urmă hotărăști. <strong>Zero apărători înseamnă piesă atârnată — pe aia o pierzi prima.</strong>'
+    },
+    arrows: { 0: [{from:'f6', to:'e4', color:'R'}, {from:'h4', to:'f6', color:'G'}, {from:'g7', to:'f6', color:'B'}] }
+  },
+
+  /* ══ MĂ PRICEP ══ */
+
+  /* 5 */
+  {
+    fen: 'k7/8/8/4q2N/8/6P1/8/1K6 w - - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: 0,
+    finishMsg: 'Calul e în siguranță!',
+    san: ['g4'],
+    accept: { 0: ['g4','Nf4'] },
+    altMsg: 'Corect — și asta e una dintre cele două soluții.',
+    ann: {
+      0: 'Joci cu <strong>Albul</strong>. Dama neagră din e5 atacă <strong>calul alb din h5</strong>, iar calul nu e apărat de nimeni: e <strong>atârnat</strong>. <br><br>Sunt <strong>două</strong> mutări bune. Găsește una — și pe urmă vezi dacă o ghicești și pe a doua.',
+      1: '<strong>g4!</strong> — pionul urcă un pas și de acolo păzește calul. Dama poate să-l ia, dar atunci pionul o recapturează: damă pentru cal, un târg pe care Negrul nu-l face. <br><br>A doua soluție era <strong>Cf4</strong>. Pare ciudată — calul se mută pe un câmp <em>tot</em> atacat de damă. Dar f4 e păzit de pionul din g3, deci și acolo dama ar plăti prea scump. <br><br>❌ Iar celelalte două mutări de cal pierd piesa: pe <strong>g7</strong> și pe <strong>f6</strong> calul e atacat de damă și nu-l apără nimeni. <br><br>Morala: <strong>„atacat" nu înseamnă „pierdut".</strong> Contează dacă cel care te-ar lua plătește sau nu.'
+    },
+    arrows: { 0: [{from:'e5', to:'h5', color:'R'}] }
+  },
+
+  /* 6 */
+  {
+    fen: '6k1/8/8/1b1R4/8/8/2n5/6K1 b - - 0 1', orient: 'black',
+    winner: 'b', practiceFrom: 0, winEval: 0,
+    finishMsg: 'Ai ocolit capcana!',
+    san: ['Na3'],
+    accept: { 0: ['Na3','Ba4','Ba6','Bc6','Bc4','Be8','Be2','Nb4'] },
+    altMsg: 'Bun — nebunul e în siguranță și n-ai dat nimic pe degeaba.',
+    ann: {
+      0: 'Ultima dată pe poziția asta, și acum ai voie să alegi singur. Joci cu <strong>Negrul</strong>: nebunul din b5 e atacat de turn. <br><br>Ai <strong>trei</strong> feluri de a-l salva — fugi, îl aperi, sau îl ataci pe atacator. Numai <strong>„pun ceva în cale"</strong> nu merge: între turn și nebun nu e loc de nimic, sunt lipiți pe rândul 5 cu un singur câmp între ei… iar acel câmp, c5, e chiar în bătaia turnului. <br><br>Găsește o mutare bună — și ferește-te de cele două care par bune și pierd.',
+      1: '<strong>…Ca3</strong> — apărătorul vine pe un câmp unde el însuși e în siguranță. Curat. <br><br>Mergeau și toate fugile bune ale nebunului (…Na4, …Na6, …Nc6, …Nc4, …Ne8, …Ne2), și chiar <strong>…Cb4</strong>, care nu apără nebunul, dar <strong>atacă turnul</strong> — și atunci Albul are el de rezolvat o problemă. <br><br>❌ Cele două care par bune și pierd: <strong>…Cd4??</strong>, unde apărătorul intră singur în bătaia turnului, și <strong>…Nd7??</strong> sau <strong>…Nd3??</strong>, unde nebunul fuge de pe rând drept pe coloana turnului. <br><br>Asta e tot ce trebuie să reții din lecție: <strong>înainte să muți, uită-te dacă piesa ajunge undeva unde e atacată.</strong> Și numără — atacatori și apărători.'
+    },
+    arrows: { 0: [{from:'d5', to:'b5', color:'R'}] }
   }
+
 ];
 
-var EX2 = [
-  { fen:    '3r2r1/3q2bk/1p2bn1n/pPp1p1pp/P1PpPp2/3P1P1P/1R2BNPN/2BQKR2 w - - 0 1',
-    label:  '6 atacatori negri, 5 apărători albi — negrul trebuie să mai aducă unul',
-    ann:    'Negrul ar dori să mute g5, dar înainte de asta ar trebui să numere cu atenție atacatorii și apărătorii acestui câmp: sunt 6 atacatori, nebunul și regina devin atacatori după ce fxg4. Apărători ar fi 5 (pionul din h5, caii, nebunul și regina). Sunt mai puțini apărători, deci negrul mai are nevoie de încă unul pentru a putea muta în siguranță la g4.',
-    arrows: [
-      {from:'g5',to:'g4',ci:1},{from:'h5',to:'g4',ci:1},
-      {from:'h6',to:'g4',ci:1},{from:'f6',to:'g4',ci:1},
-      {from:'e6',to:'g4',ci:1},{from:'d7',to:'g4',ci:1},
-      {from:'h2',to:'g4',ci:0},{from:'f2',to:'g4',ci:0},
-      {from:'h3',to:'g4',ci:0},{from:'e2',to:'g4',ci:0},
-      {from:'d1',to:'g4',ci:0}
-    ]
-  },
-  { fen:    '3r1br1/3q3k/1p2bn1n/pPp1p1pp/P1PpPp2/3P1P1P/1R2BNPN/2BQKR2 w - - 0 1',
-    label:  'Nebunul pe f8 — turnul din g8 devine al 6-lea apărător',
-    ann:    'Negrul obține al 6-lea apărător mutând nebunul din g7 pe f8 și eliberând calea turnului. În acest moment albul nu mai poate opri g4.',
-    arrows: [
-      {from:'g5',to:'g4',ci:1},{from:'h5',to:'g4',ci:1},
-      {from:'h6',to:'g4',ci:1},{from:'f6',to:'g4',ci:1},
-      {from:'e6',to:'g4',ci:1},{from:'d7',to:'g4',ci:1},
-      {from:'h2',to:'g4',ci:0},{from:'f2',to:'g4',ci:0},
-      {from:'h3',to:'g4',ci:0},{from:'e2',to:'g4',ci:0},
-      {from:'d1',to:'g4',ci:0},{from:'g8',to:'g4',ci:1}
-    ]
-  }
+/* ─── Acordeon: fiecare item încarcă un capitol ─── */
+const accData = [
+  { chIdx: 0, kind: 't1', num: '🏃', title: 'Fug', practice: true,
+    desc: 'Nebunul negru e atacat de turn și nu-l apără nimeni. E o piesă <strong>atârnată</strong>. Cel mai simplu: pleacă.' },
+  { chIdx: 1, kind: 't1', num: '🛡️', title: 'O apăr', practice: true,
+    desc: 'Aceeași poziție, alt răspuns: aduci un apărător. Dar ai grijă — un câmp e bun, altul pierde calul.' },
+  { chIdx: 2, kind: 't1', num: '⚔️', title: 'Îl capturez pe atacator', practice: true,
+    desc: 'Doi cai care se atacă unul pe altul. Unul e apărat, celălalt e atârnat. E rândul celui atârnat.' },
+  { chIdx: 3, kind: 't1', num: '🧱', title: 'Pun ceva în cale', practice: true,
+    desc: 'Un nebun se uită drept la damă. Nu fugi neapărat — taie-i diagonala.' },
+  { chIdx: 4, kind: 't1', num: '🔢', title: 'Numărătoarea', practice: true,
+    desc: 'Câți o atacă, câți o apără. Un turn atârnat și un cal apărat, în aceeași poziție.' },
+
+  { chIdx: 5, kind: 't2', num: '1', title: 'Două soluții, nu una', practice: true,
+    desc: 'Joci cu <strong>Albul</strong>. Calul e atârnat, dar sunt <strong>două</strong> mutări care îl salvează. Găsește-le.' },
+  { chIdx: 6, kind: 't2', num: '2', title: 'Alege singur cum îl salvezi', practice: true,
+    desc: 'Joci cu <strong>Negrul</strong>. Trei feluri de a-l salva funcționează — și trei mutări care par bune pierd piesa.' }
 ];
 
-var board        = null;
-var chess        = null;
-var accOpen      = -1;
-var curExSet     = null;
-var curExIdx     = 0;
+let curChapterIdx = 0;
+let positions     = [];
 
-var PUZZLES      = [];
-var curIdx       = 0;
-var curMoveIdx   = 0;
-var completed    = {};
-var solving      = false;
-var solved       = false;
-var solverColor  = 'w';
-var moveHistory  = [];
-var viewIdx      = 0;
-var autoPlayTimer= null;
-var selSq        = null;
-var arenaActive  = false;
-var pendingSrc   = null;
-var pendingTgt   = null;
-var SAVE_KEY     = 'numarat_arena_progress';
+let moveSquares = [];      /* pentru fiecare semimutare: {from, to} */
 
-function debounce(fn,d){var t;return function(){clearTimeout(t);t=setTimeout(fn,d);};}
-
-function clearHL(){
-  document.querySelectorAll('.square-selected,.highlight-check,.last-move-from,.last-move-to,.hint-square')
-    .forEach(function(el){el.classList.remove('square-selected','highlight-check','last-move-from','last-move-to','hint-square');});
-}
-function applyHL(sq,cls){var el=document.querySelector('.square-'+sq);if(el)el.classList.add(cls);}
-function setLastMoveHL(from,to){
-  document.querySelectorAll('.last-move-from,.last-move-to')
-    .forEach(function(el){el.classList.remove('last-move-from','last-move-to');});
-  applyHL(from,'last-move-from'); applyHL(to,'last-move-to');
-}
-
-function toggleAcc(idx) {
-  var wasOpen = (accOpen === idx);
-  for (var i = 0; i < 3; i++) {
-    document.getElementById('acc'+i).classList.remove('open');
-    document.getElementById('accBody'+i).classList.remove('open');
+function computePositions(ch) {
+  const c = new Chess(ch.fen);
+  const fens = [c.fen()];
+  moveSquares = [];
+  for (const mv of ch.san) {
+    const result = c.move(mv);
+    if (!result) { console.error('Mutare invalida:', mv, 'in', c.fen()); break; }
+    moveSquares.push({ from: result.from, to: result.to });
+    fens.push(c.fen());
   }
-  arenaActive = false;
-  if (!wasOpen) {
-    accOpen = idx;
-    document.getElementById('acc'+idx).classList.add('open');
-    document.getElementById('accBody'+idx).classList.add('open');
-    setTimeout(function() {
-      board.resize();
-      if      (idx === 0) loadExSet(EX1,'dots1','exLabel1','exAnn1',0);
-      else if (idx === 1) loadExSet(EX2,'dots2','exLabel2','exAnn2',0);
-      else if (idx === 2) startArena();
-    }, 30);
-  } else {
-    accOpen = -1;
-    if (window._annClear) window._annClear();
-    chess = new Chess(INIT_FEN);
-    board.position(INIT_FEN, false);
-  }
+  return fens;
 }
 
-function goExRel(delta) {
-  if (!curExSet) return;
-  goEx(Math.max(0, Math.min(curExSet.arr.length - 1, curExIdx + delta)));
-}
+let selSq   = null;
+let sGame   = null;
+let rmbDown = false;
 
-function loadExSet(exArr, dotsId, labelId, annId, startIdx) {
-  var prevId = dotsId === 'dots1' ? 'nav1Prev' : 'nav2Prev';
-  var nextId = dotsId === 'dots1' ? 'nav1Next' : 'nav2Next';
-  curExSet = {arr:exArr, dotsId:dotsId, labelId:labelId, annId:annId, prevId:prevId, nextId:nextId};
-  var row = document.getElementById(dotsId);
-  row.innerHTML = '';
-  exArr.forEach(function(ex, i) {
-    var btn = document.createElement('button');
-    btn.className = 'ex-dot' + (i === startIdx ? ' active' : '');
-    btn.textContent = i + 1;
-    btn.title = ex.label;
-    btn.onclick = (function(ii){return function(){goEx(ii);};})(i);
-    row.appendChild(btn);
-  });
-  goEx(startIdx);
-}
+/* ── stare Exersează ── */
+let practiceMode = false;
+let pGame = null;
+let pracSel = null;
+let pracUserTurn = false;
+let pracErrThisMove = false;
+let pracFirstTryCount = 0;
+let pracKeyTotal = 0;
+let pracKeyDone = 0;
+let pracRecapTimer = null;
+let pracHintStage = 0;
 
-function goEx(idx) {
-  if (!curExSet) return;
-  curExIdx = idx;
-  var ex = curExSet.arr[idx];
-  document.querySelectorAll('#'+curExSet.dotsId+' .ex-dot').forEach(function(d,j){
-    d.classList.toggle('active', j===idx);
-  });
-  document.getElementById(curExSet.labelId).textContent = ex.label;
-  document.getElementById(curExSet.annId).textContent   = ex.ann;
-  if (curExSet.prevId) document.getElementById(curExSet.prevId).disabled = (idx <= 0);
-  if (curExSet.nextId) document.getElementById(curExSet.nextId).disabled = (idx >= curExSet.arr.length - 1);
-  chess = new Chess(ex.fen);
-  board.position(ex.fen, false);
-  if (ex.arrows && window._annSet) {
-    setTimeout(function(){window._annSet(ex.arrows);},80);
-  } else if (window._annClear) {
-    window._annClear();
-  }
-}
+document.addEventListener('mousedown', function (e) { if (e.button === 2) rmbDown = true;  }, true);
+document.addEventListener('mouseup',   function (e) { if (e.button === 2) rmbDown = false; }, true);
 
-function buildPromoDialog(color) {
-  var pieces=['q','r','b','n'];
-  var btns=document.getElementById('promoBtns');
-  btns.innerHTML='';
-  pieces.forEach(function(p){
-    var btn=document.createElement('button');
-    btn.className='promo-btn';
-    var img=document.createElement('img');
-    img.src='https://lichess1.org/assets/piece/caliente/'+(color==='w'?'w':'b')+p.toUpperCase()+'.svg';
-    btn.appendChild(img);
-    btn.onclick=function(){doPromo(p);};
-    btns.appendChild(btn);
-  });
-}
-function showPromo(src,tgt){pendingSrc=src;pendingTgt=tgt;buildPromoDialog(chess.turn());document.getElementById('promoOverlay').style.display='flex';}
-function doPromo(piece){
-  document.getElementById('promoOverlay').style.display='none';
-  var move=chess.move({from:pendingSrc,to:pendingTgt,promotion:piece});
-  if(!move) return;
-  board.position(chess.fen());
+function clearSel() {
+  document.querySelectorAll('.square-selected').forEach(function (el) { el.classList.remove('square-selected'); });
+  selSq = null;
+  pracSel = null;
 }
 
 function onDragStart(source, piece) {
-  if (!arenaActive||!solving||solved) return false;
-  if (viewIdx<moveHistory.length) return false;
-  if (solverColor==='w'&&piece.startsWith('b')) return false;
-  if (solverColor==='b'&&piece.startsWith('w')) return false;
+  if (rmbDown) return false;
+  clearSel();
+  if (practiceMode) {
+    if (!pracUserTurn) return false;
+    const w = chapters[curChapterIdx].winner;
+    if (w === 'w' && piece.charAt(0) === 'b') return false;
+    if (w === 'b' && piece.charAt(0) === 'w') return false;
+    return true;
+  }
   return true;
 }
 function onDrop(source, target) {
-  clearHL(); selSq=null;
-  if (source===target) return 'snapback';
-  if (arenaActive) return tryArenaMove(source,target);
-  return 'snapback';
+  if (practiceMode) {
+    if (target === 'offboard') return 'snapback';
+    return pracAttemptMove(source, target) ? undefined : 'snapback';
+  }
+  if (target === 'offboard') return 'snapback';
+  /* studiu: mutare liberă DAR legală (respectă regulile șahului) */
+  if (sGame) {
+    const mv = sGame.move({ from: source, to: target, promotion: 'q' });
+    if (!mv) return 'snapback';
+    clearStudyArrows();
+    board.position(sGame.fen(), false);
+    return;
+  }
 }
-function onSnapEnd(){if(chess)board.position(chess.fen());}
-function onMouseoverSquare(square){
-  if(!arenaActive||!solving||solved) return;
-  var moves=chess.moves({square:square,verbose:true});
-  moves.forEach(function(m){
-    var el=document.querySelector('#board .square-'+m.to);
-    if(!el) return;
-    el.classList.add(m.captured?'highlight-capture':'highlight-legal');
-  });
-}
-function onMouseoutSquare(){
-  document.querySelectorAll('#board .highlight-selected,.highlight-legal,.highlight-capture')
-    .forEach(function(el){el.classList.remove('highlight-selected','highlight-legal','highlight-capture');});
-}
+function onSnapEnd() {}
 
-function startArena(){
-  arenaActive=true;
-  if(!PUZZLES.length) return;
-  loadState(); updateProgress(); loadPuzzle(curIdx);
-}
+const board = Chessboard('board', {
+  position:   START,
+  pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+  draggable:  true,
+  onDragStart, onDrop, onSnapEnd
+});
 
-function shakeBoard(){
-  var bw=document.getElementById('boardWrapper');
-  bw.classList.remove('board-shake'); void bw.offsetWidth; bw.classList.add('board-shake');
-  bw.addEventListener('animationend',function(){bw.classList.remove('board-shake');},{once:true});
-}
-function celebrate(){if(typeof confetti!=='undefined')confetti({particleCount:80,spread:60,origin:{y:0.60}});}
-function setArenaMsg(type,text){var el=document.getElementById('arenaMsg');el.className='task-msg'+(type?' '+type:'');el.innerHTML=text;}
-
-$(document).on('click','.square-55d63',function(){
-  if(!arenaActive||!solving||solved) return;
-  if(viewIdx<moveHistory.length) return;
-  var sq=$(this).data('square');
-  var piece=chess.get(sq);
-  var moverColor=chess.turn();
-  if(selSq){
-    var prevSq=selSq; clearHL(); selSq=null;
-    if(sq===prevSq) return;
-    if(piece&&piece.color===moverColor){selSq=sq;applyHL(sq,'square-selected');}
-    else tryArenaMove(prevSq,sq);
+$(document).on('click', '.square-55d63', function (e) {
+  if (e.button !== 0) return;
+  const sq  = $(this).data('square');
+  if (practiceMode) { pracClick(sq); return; }
+  const pos = board.position();
+  if (selSq) {
+    const prevSq = selSq;
+    clearSel();
+    if (sq !== prevSq && sGame) {
+      const mv = sGame.move({ from: prevSq, to: sq, promotion: 'q' });
+      if (mv) { clearStudyArrows(); board.position(sGame.fen(), false); }
+    }
   } else {
-    if(!piece||piece.color!==moverColor) return;
-    selSq=sq; applyHL(sq,'square-selected');
+    if (pos[sq]) {
+      selSq = sq;
+      const el = document.querySelector('.square-' + sq);
+      if (el) el.classList.add('square-selected');
+    }
   }
 });
 
-function tryArenaMove(from,to){
-  if(!solving||solved) return 'snapback';
-  var expected=PUZZLES[curIdx].moves[curMoveIdx];
-  if(from!==expected.slice(0,2)||to!==expected.slice(2,4)){
-    shakeBoard();
-    setArenaMsg('err','❌ Nu e bine — gândește-te din nou!');
-    setTimeout(function(){setArenaMsg('idle','<b>'+(solverColor==='w'?'Albul':'Negrul')+' la mutare.</b> Calculează și execută!');},1400);
-    return 'snapback';
+function sizeEvalBar() {
+  const bw = document.getElementById('boardWrapper');
+  const eb = document.getElementById('evalBar');
+  if (bw && eb) eb.style.height = bw.offsetHeight + 'px';
+}
+
+window.addEventListener('resize', function () {
+  board.resize();
+  if (practiceMode) { sizeEvalBar(); updateEval(); }
+  else redrawStudyArrows(currentStep());
+  if (window._annRender) window._annRender();
+});
+
+function currentStep() {
+  return parseInt(document.getElementById('moveCounter').dataset.step || '0');
+}
+
+function loadChapter(idx) {
+  curChapterIdx = idx;
+  const ch = chapters[idx];
+  positions = computePositions(ch);
+  board.orientation(ch.orient || 'white');
+  buildMovesList();
+  goToStep(0);
+}
+
+/* ─── Sunete (Sounds/) — la mutare, captură, mat ─── */
+var sndMove    = new Audio('Sounds/Move.mp3');
+var sndCapture = new Audio('Sounds/Capture.mp3');
+var sndMate    = new Audio('Sounds/Mate.mp3');
+function playSnd(s) { try { s.currentTime = 0; s.play().catch(function () {}); } catch (e) {} }
+function playMoveSound(san, game) {
+  if (game && game.in_checkmate()) { playSnd(sndMate); return; }
+  if (san && san.indexOf('x') !== -1) playSnd(sndCapture);
+  else playSnd(sndMove);
+}
+
+function goToStep(s) {
+  const prevStep = parseInt(document.getElementById('moveCounter').dataset.step, 10);
+  clearSel();
+  if (window._annClear) window._annClear();
+  document.getElementById('moveCounter').dataset.step = s;
+  board.position(positions[s], false);
+  sGame = new Chess(positions[s]);
+  if (s > 0 && moveSquares[s - 1]) showLastMove(moveSquares[s - 1].from, moveSquares[s - 1].to);
+  else clearLastMove();
+  showCheckHL(sGame);
+  if (s > 0 && s === prevStep + 1) playMoveSound(chapters[curChapterIdx].san[s - 1], sGame);
+  redrawStudyArrows(s);
+  updateUI(s);
+}
+
+function goFirst() { goToStep(0); }
+function goLast()  { goToStep(positions.length - 1); }
+function goPrev()  { const s = currentStep(); if (s > 0) goToStep(s - 1); }
+function goNext()  { const s = currentStep(); if (s < positions.length - 1) goToStep(s + 1); }
+
+function getMoveLabel(s) {
+  if (s === 0) return 'Start';
+  const parts   = positions[s - 1].split(' ');
+  const turn    = parts[1];
+  const moveNum = parts[5];
+  const san     = chapters[curChapterIdx].san[s - 1];
+  return turn === 'w' ? moveNum + '. ' + toRo(san) : moveNum + '… ' + toRo(san);
+}
+
+function updateUI(s) {
+  const total = positions.length - 1;
+  const mc = document.getElementById('moveCounter');
+  mc.textContent = getMoveLabel(s);
+  mc.dataset.step = s;
+  document.getElementById('btnFirst').disabled = s === 0;
+  document.getElementById('btnPrev').disabled  = s === 0;
+  document.getElementById('btnNext').disabled  = s === total;
+  document.getElementById('btnLast').disabled  = s === total;
+  document.querySelectorAll('.mlog-token').forEach(function (b) {
+    b.classList.toggle('active', parseInt(b.dataset.step) === s);
+  });
+  const active = document.querySelector('.mlog-token.active');
+  if (active) {
+    const log = document.getElementById('movesLog');
+    const a = active.getBoundingClientRect();
+    const l = log.getBoundingClientRect();
+    if (a.top < l.top)            log.scrollTop += a.top - l.top;
+    else if (a.bottom > l.bottom) log.scrollTop += a.bottom - l.bottom;
   }
-  var move=chess.move({from:from,to:to,promotion:expected.length>4?expected.slice(4):'q'});
-  if(!move) return 'snapback';
-  board.position(chess.fen(),true);
-  recordMove(from,to); setLastMoveHL(from,to); curMoveIdx++;
-  if(curMoveIdx>=PUZZLES[curIdx].moves.length) onArenaSolved();
-  else{setArenaMsg('idle','✓ Corect! Continuă…');setTimeout(arenaOpponentReply,500);}
-  return undefined;
+  const ch  = chapters[curChapterIdx];
+  const box = document.getElementById('annotationBox');
+  const txt = (ch.ann && ch.ann[s] !== undefined) ? ch.ann[s] : '';
+  box.className = 'annotation-box';
+  box.innerHTML = txt || (s === 0
+    ? '<em style="opacity:.55">Apasă &#9654; pentru a avansa prin mutări.</em>'
+    : '');
 }
-function arenaOpponentReply(){
-  if(curMoveIdx>=PUZZLES[curIdx].moves.length) return;
-  var mv=PUZZLES[curIdx].moves[curMoveIdx];
-  var moveObj=chess.move({from:mv.slice(0,2),to:mv.slice(2,4),promotion:mv.length>4?mv.slice(4):'q'});
-  if(moveObj){
-    board.position(chess.fen(),true);
-    recordMove(mv.slice(0,2),mv.slice(2,4)); setLastMoveHL(mv.slice(0,2),mv.slice(2,4)); curMoveIdx++;
-    if(curMoveIdx>=PUZZLES[curIdx].moves.length) onArenaSolved();
-    else setArenaMsg('idle','<b>'+(solverColor==='w'?'Albul':'Negrul')+' la mutare.</b> Calculează și execută!');
+
+function createMoveBtn(san, step, cls) {
+  const btn = document.createElement('button');
+  btn.className = 'mlog-token ' + cls;
+  btn.textContent = toRo(san);
+  btn.dataset.step = step;
+  btn.onclick = function () { goToStep(step); };
+  return btn;
+}
+
+function buildMovesList() {
+  const ch  = chapters[curChapterIdx];
+  const log = document.getElementById('movesLog');
+  log.innerHTML = '';
+  const total = ch.san.length;
+  if (total === 0) return;
+  let i = 0;
+  while (i < total) {
+    const parts   = positions[i].split(' ');
+    const turn    = parts[1];
+    const moveNum = parts[5];
+    const row = document.createElement('div');
+    row.className = 'mlog-row';
+    const numSpan = document.createElement('span');
+    numSpan.className = 'mlog-num';
+    numSpan.textContent = moveNum + '.';
+    row.appendChild(numSpan);
+    if (turn === 'b') {
+      const plh = document.createElement('span');
+      plh.className = 'mlog-token mlog-w';
+      plh.textContent = '…';
+      plh.style.cssText = 'opacity:0.28;cursor:default;pointer-events:none;';
+      row.appendChild(plh);
+      row.appendChild(createMoveBtn(ch.san[i], i + 1, 'mlog-b'));
+      i++;
+    } else {
+      row.appendChild(createMoveBtn(ch.san[i], i + 1, 'mlog-w'));
+      i++;
+      if (i < total) {
+        row.appendChild(createMoveBtn(ch.san[i], i + 1, 'mlog-b'));
+        i++;
+      }
+    }
+    log.appendChild(row);
   }
 }
-function onArenaSolved(){
-  solved=true; solving=false;
-  completed[curIdx]=true;
-  saveState(); updateProgress(); celebrate();
-  setArenaMsg('ok','✅ Bravo! Ai calculat și executat corect!');
-  document.getElementById('nextBtn').disabled=(curIdx>=PUZZLES.length-1);
-  document.getElementById('btnHint').disabled=true;
-  document.getElementById('btnSol').disabled=true;
-  var done=Object.keys(completed).length;
-  var rb=document.getElementById('resetAllBtn');
-  if(done>0&&rb) rb.style.display='flex';
-  if(done>=PUZZLES.length) document.getElementById('playAgainBtn').style.display='flex';
+
+/* ─── Ultima mutare: colorăm câmpul de plecare și cel de sosire ─── */
+function clearLastMove() {
+  document.querySelectorAll('.last-move').forEach(function (el) { el.classList.remove('last-move'); });
 }
-function recordMove(from,to){
-  moveHistory.push({from:from,to:to,prom:'q'});
-  viewIdx=moveHistory.length; updateNavBtns();
+function showLastMove(from, to) {
+  clearLastMove();
+  if (!from || !to) return;
+  [from, to].forEach(function (sq) {
+    const el = document.querySelector('.square-' + sq);
+    if (el) el.classList.add('last-move');
+  });
 }
-function replayToPos(idx){
-  var temp=new Chess(PUZZLES[curIdx].fen);
-  for(var i=0;i<idx;i++){var m=moveHistory[i];temp.move({from:m.from,to:m.to,promotion:m.prom});}
-  board.position(temp.fen(),false); clearHL();
-  if(idx>0&&moveHistory[idx-1]){applyHL(moveHistory[idx-1].from,'last-move-from');applyHL(moveHistory[idx-1].to,'last-move-to');}
+
+function clearCheckHL() {
+  document.querySelectorAll('.highlight-check').forEach(function (el) { el.classList.remove('highlight-check'); });
 }
-function stepBack(){if(viewIdx>0){viewIdx--;replayToPos(viewIdx);updateNavBtns();}}
-function stepForward(){if(viewIdx<moveHistory.length){viewIdx++;replayToPos(viewIdx);updateNavBtns();}}
-function updateNavBtns(){
-  document.getElementById('stepBackBtn').disabled=(viewIdx<=0);
-  document.getElementById('stepFwdBtn').disabled=(viewIdx>=moveHistory.length);
+function checkedKingSquare(game) {
+  if (!game || !game.in_check()) return null;   // acoperă și șahul, și matul
+  const turn = game.turn();
+  const bd = game.board();
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const pc = bd[r][c];
+    if (pc && pc.type === 'k' && pc.color === turn) return 'abcdefgh'[c] + (8 - r);
+  }
+  return null;
 }
-function loadPuzzle(idx){
-  if(idx<0||idx>=PUZZLES.length) return;
-  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
-  curIdx=idx; curMoveIdx=0; solved=false; selSq=null;
-  moveHistory=[]; viewIdx=0;
-  document.getElementById('playAgainBtn').style.display='none';
-  if(window._annClear) window._annClear();
-  var p=PUZZLES[idx];
-  chess=new Chess(p.fen);
-  solverColor=chess.turn();
-  board.orientation(solverColor==='w'?'white':'black');
-  board.position(chess.fen(),false);
-  updateArenaUI(); updateProgress(); saveState();
-  if(completed[idx]){
-    solving=false; solved=true;
-    setArenaMsg('ok','✅ Deja rezolvat — poți încerca din nou!');
-    document.getElementById('nextBtn').disabled=(curIdx>=PUZZLES.length-1);
-    document.getElementById('btnHint').disabled=true;
-    document.getElementById('btnSol').disabled=true;
+function showCheckHL(game) {
+  clearCheckHL();
+  const sq = checkedKingSquare(game);
+  if (sq) { const el = document.querySelector('.square-' + sq); if (el) el.classList.add('highlight-check'); }
+}
+
+function clearStudyArrows() {
+  const ex = document.getElementById('study-arrows-svg');
+  if (ex) ex.remove();
+  document.querySelectorAll('.study-hl').forEach(function (el) {
+    el.classList.remove('study-hl', 'hint-square');
+  });
+}
+
+/* câmpuri colorate declarate în capitol prin  hl: { pas: [{sq, cls}] } */
+function drawStudyHL(step) {
+  const ch = chapters[curChapterIdx];
+  const list = ch.hl && ch.hl[step];
+  if (!list) return;
+  list.forEach(function (h) {
+    const el = document.querySelector('.square-' + h.sq);
+    if (el) el.classList.add('study-hl', h.cls || 'hint-square');
+  });
+}
+
+function redrawStudyArrows(step) {
+  clearStudyArrows();
+  drawStudyHL(step);
+  const ch = chapters[curChapterIdx];
+  const arrows = ch.arrows && ch.arrows[step];
+  if (!arrows || arrows.length === 0) return;
+  const NS  = 'http://www.w3.org/2000/svg';
+  const bw  = document.getElementById('boardWrapper');
+  if (!bw) return;
+  const ori    = board.orientation();
+  const tlName = ori === 'white' ? 'a8' : 'h1';
+  const tlSq   = bw.querySelector('[data-square="' + tlName + '"]');
+  let sqSz, svgX = 0, svgY = 0;
+  if (tlSq) {
+    sqSz = tlSq.offsetWidth;
+    const bwRect = bw.getBoundingClientRect();
+    const tlRect = tlSq.getBoundingClientRect();
+    svgX = Math.round(tlRect.left - bwRect.left);
+    svgY = Math.round(tlRect.top  - bwRect.top);
   } else {
-    solving=true;
-    setArenaMsg('idle','<b>'+(solverColor==='w'?'Albul':'Negrul')+' la mutare.</b> Calculează și execută!');
-    document.getElementById('nextBtn').disabled=true;
-    document.getElementById('btnHint').disabled=false;
-    document.getElementById('btnSol').disabled=false;
+    sqSz = bw.offsetWidth / 8;
   }
-  clearHL();
-}
-function updateArenaUI(){
-  var p=PUZZLES[curIdx];
-  var badge=document.getElementById('turnBadge');
-  if(solverColor==='w'){badge.textContent='□ Albul mută';badge.className='turn-badge white';}
-  else{badge.textContent='■ Negrul mută';badge.className='turn-badge black';}
-  var lvl=Math.max(0,Math.min((p.level||1)-1,2));
-  var labels=['UȘOR','MEDIU','GREU'];
-  var classes=['','med','hard'];
-  var lb=document.getElementById('levelBadge');
-  lb.textContent=labels[lvl]; lb.className='level-badge'+(classes[lvl]?' '+classes[lvl]:'');
-  document.getElementById('prevBtn').disabled=(curIdx===0);
-}
-function updateProgress(){
-  var done=Object.keys(completed).length;
-  var total=PUZZLES.length||5;
-  document.getElementById('progressFill').style.width=(done/total*100)+'%';
-  document.getElementById('progressOuter').setAttribute('data-tip',done+' / '+total+' rezolvate');
-}
-function saveState(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({idx:curIdx,completed:completed}));}catch(e){}}
-function loadState(){
-  try{
-    var d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
-    if(!d) return;
-    var raw=d.completed||{};
-    completed={};
-    for(var k in raw){var n=Number(k);if(!isNaN(n))completed[n]=true;}
-    curIdx=typeof d.idx==='number'?Math.min(d.idx,PUZZLES.length-1):0;
-  }catch(e){}
-}
-function prevPuzzle(){if(curIdx>0)loadPuzzle(curIdx-1);}
-function nextPuzzle(){if(curIdx<PUZZLES.length-1)loadPuzzle(curIdx+1);}
-function resetPuzzle(){loadPuzzle(curIdx);}
-function continuePuzzle(){
-  var keys=Object.keys(completed).map(Number);
-  var max=keys.length?Math.max.apply(null,keys):-1;
-  loadPuzzle(Math.min(max+1,PUZZLES.length-1));
-}
-function showHint(){
-  if(!solving||solved||viewIdx<moveHistory.length) return;
-  var src=PUZZLES[curIdx].moves[curMoveIdx].slice(0,2);
-  clearHL(); applyHL(src,'hint-square');
-  setArenaMsg('idle','💡 Indiciu: mută piesa de pe <b>'+src+'</b>.');
-}
-function showSolution(){
-  if(autoPlayTimer){clearTimeout(autoPlayTimer);autoPlayTimer=null;}
-  solving=false;
-  var p=PUZZLES[curIdx];
-  chess=new Chess(p.fen); moveHistory=[]; viewIdx=0;
-  board.position(p.fen,false); clearHL(); updateNavBtns();
-  document.getElementById('btnHint').disabled=true;
-  document.getElementById('btnSol').disabled=true;
-  setArenaMsg('idle','🔑 Arată soluția…');
-  var playNext=function(){
-    if(viewIdx>=p.moves.length){setArenaMsg('idle','🔑 Soluție completă. Apasă Resetează ca să o încerci tu.');return;}
-    var mv=p.moves[viewIdx];
-    var m={from:mv.slice(0,2),to:mv.slice(2,4),prom:mv.length>4?mv.slice(4):'q'};
-    chess.move({from:m.from,to:m.to,promotion:m.prom});
-    board.position(chess.fen(),true);
-    moveHistory.push(m); viewIdx++; setLastMoveHL(m.from,m.to); updateNavBtns();
-    autoPlayTimer=setTimeout(playNext,700);
+  const sz = sqSz * 8;
+  const svg = document.createElementNS(NS, 'svg');
+  svg.id = 'study-arrows-svg';
+  svg.style.cssText = 'position:absolute;pointer-events:none;z-index:20;';
+  svg.style.left   = svgX + 'px';
+  svg.style.top    = svgY + 'px';
+  svg.style.width  = sz + 'px';
+  svg.style.height = sz + 'px';
+  const defs = document.createElementNS(NS, 'defs');
+  svg.appendChild(defs);
+  const COL = {
+    G: 'rgba(60,190,80,0.85)',
+    R: 'rgba(220,55,55,0.85)',
+    B: 'rgba(50,130,210,0.85)',
+    Y: 'rgba(215,165,20,0.85)'
   };
-  playNext();
-}
-function resetAll(){
-  try{localStorage.removeItem(SAVE_KEY);}catch(e){}
-  completed={}; updateProgress(); loadPuzzle(0);
-  document.getElementById('playAgainBtn').style.display='none';
-  document.getElementById('resetAllBtn').style.display='none';
-}
-
-/* ── Init ── */
-chess = new Chess(INIT_FEN);
-board = Chessboard('board', {
-  position:          INIT_FEN,
-  pieceTheme:        PT,
-  showNotation:      true,
-  draggable:         true,
-  onDragStart:       onDragStart,
-  onDrop:            onDrop,
-  onSnapEnd:         onSnapEnd,
-  onMouseoverSquare: onMouseoverSquare,
-  onMouseoutSquare:  onMouseoutSquare
-});
-window.addEventListener('resize', debounce(function(){board.resize();},150));
-
-fetch('data/numarat_puzzles.json')
-  .then(function(r){return r.json();})
-  .then(function(data){
-    PUZZLES=data;
-    updateProgress();
-    setArenaMsg('idle','Deschide sertarul pentru a începe!');
-  })
-  .catch(function(){
-    setArenaMsg('err','⚠ Puzzle-urile nu s-au putut încărca.');
+  function sqCenter(sq) {
+    let c = sq.charCodeAt(0) - 97, r = parseInt(sq[1]) - 1;
+    if (ori === 'black') { c = 7 - c; r = 7 - r; }
+    const s = sz / 8;
+    return { x: c * s + s / 2, y: (7 - r) * s + s / 2 };
+  }
+  const SW = Math.max(3, sqSz * 0.09);
+  arrows.forEach(function (arr, i) {
+    if (arr.from === arr.to) return;
+    const col = COL[arr.color] || COL.G;
+    const mid = 'sarr' + i;
+    const mk  = document.createElementNS(NS, 'marker');
+    mk.setAttribute('id', mid); mk.setAttribute('markerWidth', '4');
+    mk.setAttribute('markerHeight', '4'); mk.setAttribute('refX', '3.5');
+    mk.setAttribute('refY', '2');          mk.setAttribute('orient', 'auto');
+    const mp = document.createElementNS(NS, 'path');
+    mp.setAttribute('d', 'M0,0 L4,2 L0,4 L1,2 Z');
+    mp.setAttribute('fill', col);
+    mk.appendChild(mp); defs.appendChild(mk);
+    const f  = sqCenter(arr.from), t = sqCenter(arr.to);
+    const dx = t.x - f.x, dy = t.y - f.y;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    if (len < 1) return;
+    const ux = dx / len, uy = dy / len;
+    const ln = document.createElementNS(NS, 'line');
+    ln.setAttribute('x1', f.x);           ln.setAttribute('y1', f.y);
+    ln.setAttribute('x2', t.x - ux * SW); ln.setAttribute('y2', t.y - uy * SW);
+    ln.setAttribute('stroke', col);
+    ln.setAttribute('stroke-width', String(SW));
+    ln.setAttribute('stroke-linecap', 'round');
+    ln.setAttribute('marker-end', 'url(#' + mid + ')');
+    svg.appendChild(ln);
   });
+  bw.appendChild(svg);
+}
 
+document.addEventListener('keydown', function (e) {
+  if (practiceMode) return;
+  if (e.key === 'ArrowRight') goNext();
+  if (e.key === 'ArrowLeft')  goPrev();
+  if (e.key === 'Home')       goFirst();
+  if (e.key === 'End')        goLast();
+});
+
+/* ═══════════ Exersează (robot vs. user pe partea câștigătoare) ═══════════ */
+function setPStatus(t) { document.getElementById('pracStatus').innerHTML = t; }
+
+function winnerName(w) { return w === 'w' ? 'Albului' : 'Negrului'; }
+
+function turnPrompt() {
+  const ch = chapters[curChapterIdx];
+  if (ch.isOpening) return 'E rândul tău! Joacă mutarea din deschidere a ' + winnerName(ch.winner) + '.';
+  return 'E rândul tău! Găsește mutarea câștigătoare a ' + winnerName(ch.winner) + '.';
+}
+
+function syncBoard(animate) { board.position(pGame.fen(), !!animate); }
+
+function materialEval(game) {
+  const val = { p:1, n:3, b:3, r:5, q:9 };
+  const b = game.board();
+  let s = 0;
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const pc = b[r][c];
+    if (pc) s += (pc.color === 'w' ? 1 : -1) * (val[pc.type] || 0);
+  }
+  return s;
+}
+
+function updateEval() {
+  if (!pGame) return;
+  let e = materialEval(pGame);            // + = alb mai bine
+  const ch = chapters[curChapterIdx];
+  if (ch && ch.winEval != null && pGame.history().length >= ch.san.length) e = ch.winEval;
+  if (pGame.in_checkmate()) e = (pGame.turn() === 'w') ? -100 : 100;
+  const adv = (board.orientation() === 'white') ? e : -e;   // avantajul părții de JOS
+  const p = Math.max(4, Math.min(96, 50 + adv * 4));         // bara se umple spre partea de jos
+  document.getElementById('evalFill').style.height = p + '%';
+}
+
+function updatePracStats() {
+  const pct = pracKeyDone ? Math.round(pracFirstTryCount / pracKeyDone * 100) : 100;
+  document.getElementById('pracPrecision').textContent = 'Precizie: ' + pct + '%';
+  document.getElementById('pracProgress').textContent = pracKeyDone + '/' + pracKeyTotal;
+}
+
+function startPractice(idx) {
+  practiceMode = true;
+  curChapterIdx = idx;
+  const ch = chapters[idx];
+  pGame = new Chess(ch.fen);
+  pracKeyTotal = 0;
+  for (let i = ch.practiceFrom; i < ch.san.length; i++) if ((i - ch.practiceFrom) % 2 === 0) pracKeyTotal++;
+  pracFirstTryCount = 0; pracKeyDone = 0; pracErrThisMove = false; pracUserTurn = false;
+  pracHintStage = 0;
+  clearStudyArrows(); clearSel(); clearPracHint(); clearCheckHL(); clearLastMove();
+  document.getElementById('navControls').style.display = 'none';
+  const panel = document.getElementById('practicePanel');
+  const openItem = document.querySelector('#accList .acc-item.open');
+  if (openItem) openItem.parentNode.insertBefore(panel, openItem.nextElementSibling);
+  panel.style.display = 'flex';
+  document.getElementById('evalBar').style.display = ch.isOpening ? 'none' : 'block';
+  document.getElementById('pracSkip').style.display = ch.practiceFrom > 2 ? '' : 'none';
+  document.querySelector('.board-stage').classList.add('practicing');
+  board.orientation(ch.winner === 'w' ? 'white' : 'black');
+  board.position(ch.fen, false);
+  setTimeout(function () { board.resize(); sizeEvalBar(); updateEval(); }, 40);
+  updatePracStats();
+  setPStatus('🔁 Recapitulăm deschiderea… (poți sări peste)');
+  pracRecap(function () {
+    pracUserTurn = true; pracErrThisMove = false;
+    document.getElementById('pracSkip').style.display = 'none';
+    setPStatus(turnPrompt());
+    updatePracStats();
+  });
+}
+
+function pracRecap(done) {
+  const ch = chapters[curChapterIdx];
+  function step() {
+    if (pGame.history().length >= ch.practiceFrom) { done(); return; }
+    var sanR = ch.san[pGame.history().length];
+    pGame.move(sanR);
+    syncBoard(true); updateEval(); showCheckHL(pGame); playMoveSound(sanR, pGame);
+    pracRecapTimer = setTimeout(step, 480);
+  }
+  step();
+}
+
+function pracSkip() {
+  if (pracRecapTimer) { clearTimeout(pracRecapTimer); pracRecapTimer = null; }
+  const ch = chapters[curChapterIdx];
+  while (pGame.history().length < ch.practiceFrom) pGame.move(ch.san[pGame.history().length]);
+  syncBoard(false); updateEval();
+  document.getElementById('pracSkip').style.display = 'none';
+  pracUserTurn = true; pracErrThisMove = false;
+  setPStatus(turnPrompt());
+  updatePracStats();
+}
+
+function pracAttemptMove(source, target) {
+  if (!pracUserTurn) return false;
+  const ch = chapters[curChapterIdx];
+  const expected = ch.san[pGame.history().length];
+  const mv = pGame.move({ from: source, to: target, promotion: 'q' });
+  if (!mv) return false;                       // ilegal → snapback fără mesaj
+  const clean = function (s) { return s.replace(/[+#]/g, ''); };
+  /* unele exerciții au mai multe răspunsuri bune, nu doar unul */
+  const alt = (ch.accept && ch.accept[pGame.history().length - 1]) || null;
+  const potrivitAlt = alt && alt.some(function (a) { return clean(a) === clean(mv.san); });
+  if (potrivitAlt && clean(mv.san) !== clean(expected)) {
+    if (!pracErrThisMove) pracFirstTryCount++;
+    pracKeyDone++;
+    pracUserTurn = false;
+    pracHintStage = 0;
+    clearSel(); clearPracHint(); syncBoard(false); updateEval();
+    showLastMove(mv.from, mv.to); showCheckHL(pGame); playMoveSound(mv.san, pGame);
+    setPStatus('✔ Corect! <strong>' + toRo(mv.san) + '</strong> e una dintre mutările bune. ' +
+               (ch.altMsg || ''));
+    updatePracStats();
+    setTimeout(pracFinish, 700);
+    return true;
+  }
+  if (clean(mv.san) !== clean(expected)) {
+    /* mutarea e legală, dar nu e cea din lecție — spunem CE a fost bine la ea */
+    const eraSah = pGame.in_check();
+    const eraMat = pGame.in_checkmate();
+    const eraCaptura = mv.san.indexOf('x') !== -1;
+    pGame.undo();
+    pracErrThisMove = true;
+    let msg;
+    if (eraMat)          msg = '😮 E chiar mat! Dar lecția merge pe altă mutare — încearc-o și pe aceea.';
+    else if (eraSah)     msg = '✔ Da, e șah! Dar nu ăsta e cel căutat aici. Mai uită-te.';
+    else if (eraCaptura) msg = '✔ E o captură bună de văzut — dar lecția are altceva în vedere. Mai încearcă.';
+    else                 msg = '❌ Nu chiar aceasta — mai încearcă. (Poți cere un 💡 Indiciu.)';
+    setPStatus(msg);
+    updatePracStats();
+    return false;
+  }
+  if (!pracErrThisMove) pracFirstTryCount++;
+  pracKeyDone++;
+  pracUserTurn = false;
+  pracHintStage = 0;
+  clearSel(); clearPracHint(); syncBoard(false); updateEval(); showLastMove(mv.from, mv.to); showCheckHL(pGame); playMoveSound(mv.san, pGame);
+  setPStatus('✔ Corect!');
+  updatePracStats();
+  setTimeout(pracAfterUser, 560);
+  return true;
+}
+
+function pracAfterUser() {
+  const ch = chapters[curChapterIdx];
+  if (pGame.history().length >= ch.san.length) { pracFinish(); return; }
+  var sanRobot = ch.san[pGame.history().length];   // mutarea robotului (adversarul)
+  var mvRobot = pGame.move(sanRobot);
+  syncBoard(true); updateEval(); if (mvRobot) showLastMove(mvRobot.from, mvRobot.to); showCheckHL(pGame); playMoveSound(sanRobot, pGame);
+  if (pGame.history().length >= ch.san.length) { pracFinish(); return; }
+  pracUserTurn = true; pracErrThisMove = false;
+  setPStatus(turnPrompt());
+}
+
+function pracFinish() {
+  pracUserTurn = false;
+  updateEval();
+  showCheckHL(pGame);
+  const ch = chapters[curChapterIdx];
+  const pct = pracKeyTotal ? Math.round(pracFirstTryCount / pracKeyTotal * 100) : 100;
+  document.getElementById('pracPrecision').textContent = 'Precizie: ' + pct + '%';
+  document.getElementById('pracProgress').textContent = pracKeyTotal + '/' + pracKeyTotal + ' ✓';
+  const msg = pGame.in_checkmate() ? 'Mat!' : (ch.finishMsg || 'Ai jucat toată linia corect!');
+  setPStatus(pct === 100
+    ? '🎉 Perfect! ' + msg + ' Fără nicio greșeală!'
+    : '🎉 Bravo! ' + msg + ' Precizie: ' + pct + '%. Poți încerca „↺ De la capăt".');
+  document.getElementById('pracSkip').style.display = 'none';
+}
+
+function pracClick(sq) {
+  if (!pracUserTurn) return;
+  const ch = chapters[curChapterIdx];
+  const pos = board.position();
+  if (pracSel) {
+    const from = pracSel;
+    clearSel();
+    pracAttemptMove(from, sq);
+  } else {
+    const pc = pos[sq];
+    if (pc && pc.charAt(0) === ch.winner) {
+      pracSel = sq;
+      const el = document.querySelector('.square-' + sq);
+      if (el) el.classList.add('square-selected');
+    }
+  }
+}
+
+function clearPracHint() {
+  document.querySelectorAll('.hint-square').forEach(function (el) { el.classList.remove('hint-square'); });
+  const s = document.getElementById('prac-hint-svg');
+  if (s) s.remove();
+}
+
+function drawPracHintArrow(from, to) {
+  clearStudyArrows();
+  const old = document.getElementById('prac-hint-svg'); if (old) old.remove();
+  const NS = 'http://www.w3.org/2000/svg';
+  const bw = document.getElementById('boardWrapper'); if (!bw) return;
+  const ori = board.orientation();
+  const tlName = ori === 'white' ? 'a8' : 'h1';
+  const tlSq = bw.querySelector('[data-square="' + tlName + '"]');
+  let sqSz, svgX = 0, svgY = 0;
+  if (tlSq) {
+    sqSz = tlSq.offsetWidth;
+    const bwRect = bw.getBoundingClientRect(), tlRect = tlSq.getBoundingClientRect();
+    svgX = Math.round(tlRect.left - bwRect.left); svgY = Math.round(tlRect.top - bwRect.top);
+  } else { sqSz = bw.offsetWidth / 8; }
+  const sz = sqSz * 8;
+  const svg = document.createElementNS(NS, 'svg');
+  svg.id = 'prac-hint-svg';
+  svg.style.cssText = 'position:absolute;pointer-events:none;z-index:20;';
+  svg.style.left = svgX + 'px'; svg.style.top = svgY + 'px';
+  svg.style.width = sz + 'px'; svg.style.height = sz + 'px';
+  const defs = document.createElementNS(NS, 'defs'); svg.appendChild(defs);
+  const col = 'rgba(60,190,80,0.92)';
+  const mk = document.createElementNS(NS, 'marker');
+  mk.setAttribute('id', 'phintarr'); mk.setAttribute('markerWidth', '4'); mk.setAttribute('markerHeight', '4');
+  mk.setAttribute('refX', '3.5'); mk.setAttribute('refY', '2'); mk.setAttribute('orient', 'auto');
+  const mp = document.createElementNS(NS, 'path'); mp.setAttribute('d', 'M0,0 L4,2 L0,4 L1,2 Z'); mp.setAttribute('fill', col);
+  mk.appendChild(mp); defs.appendChild(mk);
+  function sqCenter(sq) { let c = sq.charCodeAt(0) - 97, r = parseInt(sq[1]) - 1; if (ori === 'black') { c = 7 - c; r = 7 - r; } const s = sz / 8; return { x: c * s + s / 2, y: (7 - r) * s + s / 2 }; }
+  const f = sqCenter(from), t = sqCenter(to), dx = t.x - f.x, dy = t.y - f.y, len = Math.sqrt(dx * dx + dy * dy);
+  if (len < 1) return;
+  const ux = dx / len, uy = dy / len, SW = Math.max(3, sqSz * 0.09);
+  const ln = document.createElementNS(NS, 'line');
+  ln.setAttribute('x1', f.x); ln.setAttribute('y1', f.y); ln.setAttribute('x2', t.x - ux * SW); ln.setAttribute('y2', t.y - uy * SW);
+  ln.setAttribute('stroke', col); ln.setAttribute('stroke-width', String(SW)); ln.setAttribute('stroke-linecap', 'round');
+  ln.setAttribute('marker-end', 'url(#phintarr)');
+  svg.appendChild(ln);
+  bw.appendChild(svg);
+}
+
+/* Indiciu în trepte: 1) pătratul piesei (verde) → 2) + săgeata spre destinație → 3) mutarea scrisă */
+function pracHint() {
+  if (!practiceMode || !pracUserTurn) return;
+  const ch = chapters[curChapterIdx];
+  const expected = ch.san[pGame.history().length];
+  const tmp = new Chess(pGame.fen());
+  const mv = tmp.move(expected);
+  if (!mv) return;
+  pracErrThisMove = true;
+  updatePracStats();
+  pracHintStage++;
+  const markFrom = function () {
+    const el = document.querySelector('.square-' + mv.from);
+    if (el) el.classList.add('hint-square');
+  };
+  if (pracHintStage === 1) {
+    markFrom();
+    setPStatus('💡 Piesa de mutat e pe pătratul <strong>verde</strong>. (Apasă din nou pentru săgeată.)');
+  } else if (pracHintStage === 2) {
+    markFrom();
+    drawPracHintArrow(mv.from, mv.to);
+    setPStatus('💡 Mută piesa în direcția <strong>săgeții verzi</strong>.');
+  } else {
+    markFrom();
+    drawPracHintArrow(mv.from, mv.to);
+    setPStatus('💡 Mutarea este <strong>' + toRo(mv.san) + '</strong>. Joac-o pe tablă!');
+  }
+}
+
+function pracRestart() {
+  if (pracRecapTimer) { clearTimeout(pracRecapTimer); pracRecapTimer = null; }
+  startPractice(curChapterIdx);
+}
+
+function pracExit() {
+  if (pracRecapTimer) { clearTimeout(pracRecapTimer); pracRecapTimer = null; }
+  practiceMode = false; pracUserTurn = false; pGame = null;
+  pracHintStage = 0; clearPracHint(); clearCheckHL();
+  document.getElementById('practicePanel').style.display = 'none';
+  document.getElementById('evalBar').style.display = 'none';
+  document.querySelector('.board-stage').classList.remove('practicing');
+  document.getElementById('navControls').style.display = 'flex';
+  setTimeout(function () { board.resize(); }, 30);
+  loadChapter(curChapterIdx);
+}
+
+/* ─── Construiește acordeonul ─── */
+function addLabel(list, text) {
+  const lbl = document.createElement('div');
+  lbl.className = 'section-label';
+  lbl.innerHTML = text;
+  list.appendChild(lbl);
+}
+
+function buildAccordion() {
+  const list = document.getElementById('accList');
+  let openLbl = false, trapLbl = false, defLbl = false;
+  accData.forEach(function (d) {
+    if (d.kind === 't1' && !openLbl) { addLabel(list, '<span class="treapta-cap">🐣 Înțeleg <span class="t-mic">cele cinci relații, una câte una</span></span>'); openLbl = true; }
+    if (d.kind === 't2' && !trapLbl) { addLabel(list, '<span class="treapta-cap">🐦 Mă pricep <span class="t-mic">le găsești tu pe tablă și le repari</span></span>'); trapLbl = true; }
+    if (d.kind === 't3' && !defLbl)  { addLabel(list, '<span class="treapta-cap">🦅 Sunt maestru <span class="t-mic">mai multe relații deodată, într-o singură poziție</span></span>'); defLbl = true; }
+    const item = document.createElement('div');
+    item.className = 'acc-item';
+    item.dataset.ch = d.chIdx;
+    const hdr = document.createElement('div');
+    hdr.className = 'acc-header';
+    let hdrHtml = '<span class="acc-num">' + d.num + '</span>' +
+                  '<span class="acc-title">' + d.title + '</span>';
+    if (d.badge) hdrHtml += '<span class="badge ' + d.badge.cls + '">' + d.badge.text + '</span>';
+    hdrHtml += '<span class="acc-chevron">&#9658;</span>';
+    hdr.innerHTML = hdrHtml;
+    const body  = document.createElement('div');
+    body.className = 'acc-body';
+    const inner = document.createElement('div');
+    inner.className = 'acc-inner';
+    let innerHtml = '<p class="acc-desc">' + d.desc + '</p>';
+    if (d.practice) {
+      const exLbl = '🤖 Joacă tu mutările';
+      innerHtml += '<button class="ex-start" onclick="startPractice(' + d.chIdx + ')">' + exLbl + '</button>';
+    }
+    inner.innerHTML = innerHtml;
+    body.appendChild(inner);
+    item.appendChild(hdr);
+    item.appendChild(body);
+    list.appendChild(item);
+    hdr.addEventListener('click', function () {
+      item.classList.contains('open') ? closeAcc(item) : openAcc(item);
+    });
+  });
+}
+
+function openAcc(item) {
+  if (item.classList.contains('open')) return;
+  if (practiceMode) pracExit();
+  document.querySelectorAll('#accList .acc-item.open').forEach(function (o) {
+    if (o !== item) o.classList.remove('open');
+  });
+  item.classList.add('open');
+  const controls = document.getElementById('navControls');
+  item.parentNode.insertBefore(controls, item.nextElementSibling);
+  controls.style.display = 'flex';
+  loadChapter(parseInt(item.dataset.ch));
+}
+
+function closeAcc(item) {
+  item.classList.remove('open');
+  document.getElementById('navControls').style.display = 'none';
+}
+
+buildAccordion();
+/* toate acordeoanele închise la intrare; tabla inițială e liberă pentru mutări legale */
+sGame = new Chess(START);
 </script>
+
+<script src="board-utils.js"></script>
 </body>
 </html>
