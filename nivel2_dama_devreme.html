@@ -343,33 +343,40 @@ const chapters = [
     hl: { 0: [{sq:'c7',cls:'hl-b'}] }
   },
 
-  /* 4 — gonește regina albă */
+  /* 4 — Scandinava: dezvoltă cu tempo */
   {
-    fen: 'rnb1kb1r/ppp1qppp/8/4p2Q/4p3/1B6/PPPPNPPP/R1B1K2R b KQkq - 1 7', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: -5,
-    finishMsg: 'Cu un pion! Regina trebuie să fugă.',
-    san: ['g6'],
+    fen: 'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: 1,
+    finishMsg: 'Ai dezvoltat și ai atacat, dintr-o mutare!',
+    san: ['Nc3'],
     ann: {
-      0: 'De data asta greșeala e a <strong>Albului</strong>: și-a scos regina pe <strong>h5</strong> la mutarea a șasea. Joci cu <strong>Negrul</strong>. <br><br>Găsește mutarea care o gonește. <br><br>💡 Indiciu: nu-ți trebuie o piesă mare.',
-      1: '<strong>…g6</strong> — un simplu pion pune regina pe fugă. <br><br>Merge pentru că pionul e apărat de cel din h7: regina nu-l poate lua. Iar ea trebuie să plece <em>chiar acum</em>, deci Albul mai pierde un tempo. <br><br>Să vedem cinstit cum stau amândoi. <strong>La material</strong>, Negrul e cu un pion în plus. <strong>La dezvoltare</strong>, Albul stă mai bine: are trei figuri scoase, Negrul doar regina. <br><br>Deci nici Negrul n-a făcut mare lucru până acum — și el și-a scos regina devreme, pe e7. Dar mutarea de regină a Albului îl costă încă un tempo, și cu asta echilibrul se înclină. <br><br>Reține doar atât: <strong>o regină ieșită devreme se gonește cu ce ai la îndemână, iar de fiecare dată când fuge, tu câștigi o mutare.</strong>'
+      0: 'Asta e <strong>Apărarea Scandinavă</strong>, o deschidere pe care o vezi la orice concurs de copii: <strong>1.e4 d5 2.exd5 Dxd5</strong>. Joci cu <strong>Albul</strong>. <br><br>Negrul și-a recuperat pionul, dar și-a scos regina în mijlocul tablei la mutarea a doua. <br><br>Tentația e s-o alungi imediat, cu orice. Dar ai grijă: dacă o gonești cu o mutare care nu-ți folosește la nimic altceva, pierdeți amândoi câte un tempo și nu câștigi nimic. <br><br><strong>Găsește mutarea care o gonește și îți scoate o figură în același timp.</strong>',
+      1: '<strong>3.Cc3!</strong> — calul iese pe cel mai bun câmp al lui, ține d5 și e4… <strong>și atacă regina pe drum</strong>. <br><br>Ea trebuie să plece a doua oară. Iar mutarea ta n-a fost pierdută: era oricum una dintre cele trei misiuni. <br><br>Asta e toată ideea, și merită ținută minte ca o regulă: <strong>nu alerga după regină cu mutări inutile — gonește-o cu mutări care te dezvoltă.</strong> Atunci ea pierde timp, iar tu nu. <br><br>⚖️ Cinstit vorbind: asta nu înseamnă că Negrul e pierdut. <strong>Scandinava e o deschidere adevărată</strong>, jucată și de maeștri — Negrul știe că regina lui va fi gonită și acceptă asta, în schimbul altor lucruri. Dar tempoul îl câștigă Albul, și principiul rămâne același peste tot.'
     },
-    arrows: { 0: [{from:'h5', to:'e8', color:'B'}] }
+    arrows: { 0: [{from:'b1', to:'c3', color:'G'}] },
+    hl: { 0: [{sq:'d5',cls:'hl-b'}] }
   },
 
   /* ══ SUNT MAESTRU ══ */
 
-  /* 5 — gonești și te dezvolți deodată */
+  /* 5 — regina plecată după un pion */
   {
-    fen: 'rn2kbnr/pp3ppp/2p1p3/3pPq2/3P4/8/PPP2PPP/RNBQKB1R w KQkq - 0 7', orient: 'white',
-    winner: 'w', practiceFrom: 0, winEval: 4,
-    finishMsg: 'Gonești regina și scoți o piesă — dintr-o mutare.',
-    san: ['Bd3'],
+    fen: 'rnb1kbnr/pppp1ppp/8/4p3/2B1q3/5N2/PPPP1PPP/RNBQ1RK1 w kq - 0 5', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: 7,
+    finishMsg: 'Regina a plecat după un pion și n-a mai găsit drumul înapoi.',
+    san: ['Bxf7+','Kxf7','Ng5+','Ke8','Nxe4'],
     ann: {
-      0: 'Joci cu <strong>Albul</strong>. Regina neagră stă pe <strong>f5</strong>, în mijlocul tablei. A ajuns acolo după două mutări de regină, în timp ce restul armatei ei stă acasă. <br><br>O poți goni în mai multe feluri. Dar una singură dintre mutări face <strong>două treburi deodată</strong>: o alungă <em>și</em> îți scoate o figură pe un câmp bun. <br><br>Găsește-o.',
-      1: '<strong>Nd3!</strong> — nebunul iese din colț, se așază pe diagonala care privește spre h7… <strong>și atacă regina pe drum</strong>. <br><br>Asta e felul elegant de a pedepsi o regină ieșită devreme: <strong>nu pierzi tu timp gonind-o, ci o gonești cu o mutare pe care oricum voiai s-o faci.</strong> Ea fuge, tu ai o piesă în plus dezvoltată. <br><br>Compară cu ce ar fi fost dacă o goneai cu o mutare inutilă — atunci pierdeați amândoi câte un tempo și nu câștigai nimic. <br><br><strong>Regula, pe scurt: gonește piesele adversarului cu mutări care te dezvoltă.</strong>'
+      0: 'Joci cu <strong>Albul</strong>. S-a jucat <strong>1.e4 e5 2.Cf3 Df6 3.Nc4 Dg6 4.0-0 Dxe4</strong> — o partidă cum se joacă la orice concurs de copii. <br><br>Numără ce a făcut Negrul: <strong>trei mutări de regină</strong> și niciuna de figură. Iar acum a mai făcut ceva — a plecat după pionul din e4, adică s-a dus și mai departe de casă. <br><br>Albul, în schimb, are un cal și un nebun afară și e rocat. <strong>Are o figură în plus în joc, deci are dreptul la ceva.</strong> <br><br>Uită-te la nebunul din c4 și la calul din f3, și găsește-le împreună o treabă.',
+      1: '<strong>5.Nxf7+!</strong> — nebunul se sacrifică pe cel mai sensibil punct al Negrului. Pare o nebunie: dai o figură de trei pe un pion de unu.',
+      2: '<strong>…Rxf7</strong> — regele e obligat să ia, altfel rămâne și fără pion, și în șah. Dar acum e scos afară, pe f7.',
+      3: '<strong>6.Cg5+!</strong> — și aici se vede totul. Calul dă șah regelui de pe f7 <strong>și atacă regina de pe e4</strong>, în același timp. <br><br>Furculiță. Regele trebuie să iasă din șah <em>chiar acum</em>, deci n-are cum s-o mai apere.',
+      4: '<strong>…Re8</strong> — regele se retrage. Putea juca și …Re7, …Rg6 sau …Rf6; am verificat toate patru, regina cade la fel.',
+      5: '<strong>7.Cxe4</strong> — și regina e a Albului. <br><br>Socoteala finală: Albul a dat un nebun (3) și a luat un pion (1) plus o regină (9). <strong>Iese în câștig cât șapte pioni.</strong> <br><br>Uită-te înapoi la cum a început: nu cu o gafă mare, ci cu <strong>Df6 la mutarea a doua</strong>. Regina a ieșit prima, a fost gonită, a fost gonită iar, a plecat după un pion — și n-a mai găsit drumul înapoi. <br><br>Iar pionul din f7 nu era vinovat cu nimic: el își făcea treaba lui, doar că e păzit numai de rege, și de-aia acolo se sparge totul.'
     },
-    arrows: { 0: [{from:'f1', to:'d3', color:'G'}] },
-    hl: { 0: [{sq:'f5',cls:'hl-b'}] }
+    arrows: {
+      0: [{from:'c4', to:'f7', color:'R'}],
+      3: [{from:'g5', to:'f7', color:'R'}, {from:'g5', to:'e4', color:'R'}]
+    }
   }
 
 ];
@@ -385,11 +392,11 @@ const accData = [
 
   { chIdx: 3, kind: 't2', num: '1', title: 'Gonește regina neagră', practice: true,
     desc: 'Joci cu <strong>Albul</strong>. Ce a lăsat Negrul neapărat mutându-și regina de acasă?' },
-  { chIdx: 4, kind: 't2', num: '2', title: 'Gonește regina albă', practice: true,
-    desc: 'Joci cu <strong>Negrul</strong>. Nu-ți trebuie o piesă mare — o regină e alungată cel mai umilitor de un pion.' },
+  { chIdx: 4, kind: 't2', num: '2', title: 'Gonește-o cu o mutare folositoare', practice: true,
+    desc: 'Joci cu <strong>Albul</strong>. Din Apărarea Scandinavă. O poți alunga în multe feluri — găsește-l pe cel care îți scoate și o figură.' },
 
-  { chIdx: 5, kind: 't3', num: '🎯', title: 'Gonește și dezvoltă-te deodată', practice: true,
-    desc: 'Joci cu <strong>Albul</strong>. O poți goni în mai multe feluri, dar una singură îți scoate și o piesă.' }
+  { chIdx: 5, kind: 't3', num: '🍴', title: 'Regina plecată după un pion', practice: true,
+    desc: 'Joci cu <strong>Albul</strong>. Trei mutări de regină și niciuna de figură. Nebunul și calul tău au o treabă de făcut împreună.' }
 ];
 
 let curChapterIdx = 0;
@@ -1059,8 +1066,8 @@ function buildAccordion() {
   let openLbl = false, trapLbl = false, defLbl = false;
   accData.forEach(function (d) {
     if (d.kind === 't1' && !openLbl) { addLabel(list, '<span class="treapta-cap">🐣 Înțeleg <span class="t-mic">ce pățește regina ieșită prea devreme</span></span>'); openLbl = true; }
-    if (d.kind === 't2' && !trapLbl) { addLabel(list, '<span class="treapta-cap">🐦 Mă pricep <span class="t-mic">tu ești cel care o gonește</span></span>'); trapLbl = true; }
-    if (d.kind === 't3' && !defLbl)  { addLabel(list, '<span class="treapta-cap">🦅 Sunt maestru <span class="t-mic">o gonești cu piesa care se dezvoltă în același timp</span></span>'); defLbl = true; }
+    if (d.kind === 't2' && !trapLbl) { addLabel(list, '<span class="treapta-cap">🐦 Mă pricep <span class="t-mic">tu ești cel care o gonește — dar cu folos</span></span>'); trapLbl = true; }
+    if (d.kind === 't3' && !defLbl)  { addLabel(list, '<span class="treapta-cap">🦅 Sunt maestru <span class="t-mic">când regina se îndepărtează prea mult de casă</span></span>'); defLbl = true; }
     const item = document.createElement('div');
     item.className = 'acc-item';
     item.dataset.ch = d.chIdx;
