@@ -192,7 +192,7 @@
           <div class="def-box">
             <p class="def-title">Numărătoarea îți spune că <em>poți</em>. Nu și dacă <em>merită</em>.</p>
             <p>La Nivelul I ai învățat să numeri atacatorii și apărătorii, și să vezi piesele atârnate. Aici mergi mai departe, la întrebarea care urmează: <strong>ce iese din schimbul ăsta?</strong></p>
-            <p>Când capturezi o piesă <strong>apărată</strong>, nu iei nimic pe gratis — faci un <strong>schimb</strong>. Iar un schimb se judecă în puncte: <strong>cât iei minus cât dai înapoi</strong>.</p>
+            <p>Când capturezi o piesă <strong>apărată</strong>, nu iei nimic pe gratis — faci un <strong>schimb</strong>. Iar un schimb se judecă în <strong>valoare</strong>: cât iei minus cât dai înapoi. Iar valoarea, cum ai învățat la Nivelul I, se măsoară <strong>în pioni</strong>.</p>
           </div>
 
           <div class="card">
@@ -200,7 +200,7 @@
             <div class="tacam">
               <div class="tac"><span class="t-ico">⚖️</span><div>
                 <div class="t-nume">Cât valorează</div>
-                <div class="t-txt">Unu la unu la număr poate însemna oricum în puncte. Un pion care ia o damă e tot „unu la unu".</div>
+                <div class="t-txt">Unu la unu — un apărător contra un atacator, sau invers — poate să însemne orice în valoare. Un pion care ia o damă e tot „unu la unu".</div>
               </div></div>
               <div class="tac"><span class="t-ico">🔀</span><div>
                 <div class="t-nume">Care captură, dacă ai două</div>
@@ -208,17 +208,17 @@
               </div></div>
               <div class="tac"><span class="t-ico">🚪</span><div>
                 <div class="t-nume">Dacă apărătorul poate fi dat la o parte</div>
-                <div class="t-txt">Piesa e apărată — deocamdată. Ia întâi apărătorul, și abia pe urmă piesa.</div>
+                <div class="t-txt">Piesa e apărată — deocamdată. Îl elimini pe apărător, sau îl trimiți de acolo, și abia pe urmă iei piesa.</div>
               </div></div>
             </div>
           </div>
 
           <div class="note-box">
-            🧭 <strong>Trei întrebări, în ordinea asta.</strong> Când te uiți la o poziție, pune-le pe rând: <br><br><strong>1. Ce e atacat?</strong> &nbsp;·&nbsp; <strong>2. Cine e apărătorul?</strong> &nbsp;·&nbsp; <strong>3. Pot să scap de apărător?</strong>
+            🧭 <strong>Trei întrebări, în ordinea asta.</strong> Când te uiți la o poziție, pune-le pe rând: <br><br><strong>1. Cine e atacat?</strong> &nbsp;·&nbsp; <strong>2. Cine e apărătorul?</strong> &nbsp;·&nbsp; <strong>3. Pot să elimin apărătorul — sau să-l trimit de acolo?</strong>
           </div>
 
           <div class="note-box">
-            💰 <strong>Punctele, pe scurt.</strong> pion <strong>1</strong> &nbsp;·&nbsp; cal și nebun <strong>3</strong> &nbsp;·&nbsp; turn <strong>5</strong> &nbsp;·&nbsp; damă <strong>9</strong>. <br><br>Schimbul dintre un turn și un cal (sau un nebun) se întâmplă atât de des încât are nume propriu: se cheamă <strong>calitatea</strong>. Cine ia turnul și dă calul <strong>câștigă calitatea</strong>, adică 2 puncte.
+            💰 <strong>Valorile, pe scurt.</strong> pion <strong>1</strong> &nbsp;·&nbsp; cal și nebun <strong>3</strong> &nbsp;·&nbsp; turn <strong>5</strong> &nbsp;·&nbsp; damă <strong>9</strong> — toate în pioni. <br><br>La un schimb între o piesă mai valoroasă și una mai puțin valoroasă, despre cel care iese în câștig spunem că <strong>a câștigat o calitate</strong>. Cel mai des se întâmplă între turn și cal (sau nebun) — atât de des, încât mulți așa o și știu.
           </div>
 
           <div class="note-box how-box">
@@ -293,12 +293,12 @@ const chapters = [
   {
     fen: '7k/2p5/1q6/2P5/1P6/8/8/6K1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: 8,
-    finishMsg: 'Opt puncte dintr-o mutare!',
+    finishMsg: 'Cât opt pioni dintr-o mutare!',
     san: ['cxb6','cxb6'],
     ann: {
-      0: '⚖️ <strong>Schimb avantajos.</strong> Joci cu <strong>Albul</strong>. Dama neagră stă pe <strong>b6</strong>, iar pionul tău din c5 o poate lua. <br><br>Numără întâi, ca la Nivelul I: dama e <strong>apărată</strong> — de pionul din c7. Deci n-o iei pe gratis: pionul tău va fi recapturat. E un <strong>schimb</strong>. <br><br>Și acum întrebarea nouă: <em>merită schimbul?</em> Fă-l și socotim.',
+      0: '⚖️ <strong>Schimb avantajos.</strong> Joci cu <strong>Albul</strong>. Dama neagră stă pe <strong>b6</strong>, iar pionul tău din c5 o poate lua. <br><br>Numără întâi, ca la Nivelul I: dama e <strong>apărată</strong> — de pionul din c7. Deci n-o iei pe gratis: pionul tău va fi recapturat. E un <strong>schimb</strong>. <br><br>⚠️ Și aici e ceva de reținut pe viață: <strong>dacă o piesă e apărată, asta nu-ți dă garanția că nu va fi capturată.</strong> Apărarea nu e un zid. Ea spune doar atât: „cine mă ia, plătește". Iar dacă plata e mică și câștigul e mare, adversarul o ia fără să stea pe gânduri — exact ca aici. <br><br>Deci întrebarea nu e „e apărată?", ci <em>merită schimbul?</em> Fă-l și socotim.',
       1: '<strong>cxb6</strong> — pionul ia dama.',
-      2: '<strong>…cxb6</strong> — pionul negru recapturează, cum era de așteptat. <br><br>Acum socoteala: ai luat o <strong>damă (9)</strong> și ai dat un <strong>pion (1)</strong>. <strong>9 − 1 = 8 puncte câștigate.</strong> Cea mai mare diferență posibilă dintr-un schimb. <br><br>Asta e tot ce înseamnă „schimb avantajos": <strong>ce iei valorează mai mult decât ce dai înapoi.</strong>'
+      2: '<strong>…cxb6</strong> — pionul negru recapturează, cum era de așteptat. <br><br>Acum socoteala: ai luat o <strong>damă</strong>, care valorează cât 9 pioni, și ai dat un <strong>pion</strong>, care valorează 1. <strong>9 − 1: ai câștigat cât opt pioni.</strong> Cea mai mare diferență posibilă dintr-un schimb. <br><br>Asta e tot ce înseamnă „schimb avantajos": <strong>ce iei valorează mai mult decât ce dai înapoi.</strong>'
     },
     arrows: { 0: [{from:'c5', to:'b6', color:'R'}, {from:'c7', to:'b6', color:'G'}] }
   },
@@ -307,12 +307,12 @@ const chapters = [
   {
     fen: '5rk1/8/8/8/8/5Q2/6B1/6K1 b - - 0 1', orient: 'black',
     winner: 'b', practiceFrom: 0, winEval: -4,
-    finishMsg: 'Patru puncte pentru Negru!',
+    finishMsg: 'Cât patru pioni pentru Negru!',
     san: ['Rxf3','Bxf3'],
     ann: {
       0: '⚖️ <strong>Aceeași socoteală, alte piese.</strong> Acum joci cu <strong>Negrul</strong>. Turnul tău din f8 se uită în jos pe coloana f, drept la <strong>dama albă din f3</strong>. <br><br>Dama e apărată de nebunul din g2 — deci iar e un schimb, nu o captură gratuită. Socotește dinainte cât iese, și abia pe urmă mută.',
       1: '<strong>…Txf3</strong> — turnul ia dama.',
-      2: '<strong>Nxf3</strong> — nebunul recapturează. <br><br>Socoteala: ai luat o <strong>damă (9)</strong> și ai dat un <strong>turn (5)</strong>. <strong>9 − 5 = 4 puncte.</strong> <br><br>Mai puțin decât la exemplul cu pionul, dar tot foarte bun. <strong>Cu cât e mai ieftină piesa cu care intri, cu atât iese mai mult din schimb.</strong>'
+      2: '<strong>Nxf3</strong> — nebunul recapturează. <br><br>Socoteala: ai luat o <strong>damă (9 pioni)</strong> și ai dat un <strong>turn (5 pioni)</strong>. <strong>9 − 5: ai câștigat cât patru pioni.</strong> <br><br>Mai puțin decât la exemplul cu pionul, dar tot foarte bun. <strong>Cu cât e mai ieftină piesa cu care intri, cu atât iese mai mult din schimb.</strong>'
     },
     arrows: { 0: [{from:'f8', to:'f3', color:'R'}, {from:'g2', to:'f3', color:'G'}] }
   },
@@ -326,7 +326,7 @@ const chapters = [
     ann: {
       0: '🏆 <strong>Calitatea.</strong> Joci cu <strong>Albul</strong>. Calul tău din a2 poate lua <strong>turnul negru din c3</strong>. <br><br>Turnul e apărat — de celălalt turn negru, din c8, pe aceeași coloană. Deci schimb, nu cadou. Fă-l.',
       1: '<strong>Cxc3</strong> — calul ia turnul.',
-      2: '<strong>…Txc3</strong> — celălalt turn recapturează. <br><br>Socoteala: ai luat un <strong>turn (5)</strong> și ai dat un <strong>cal (3)</strong>. <strong>5 − 3 = 2 puncte.</strong> <br><br>Schimbul ăsta — turn contra cal sau nebun — se întâmplă atât de des încât are nume propriu: se cheamă <strong>calitatea</strong>. Tu ai <em>câștigat calitatea</em>, adversarul a <em>pierdut calitatea</em>. <br><br>Doar două puncte, dar e o diferență care se simte: turnul lucrează mult mai bine în final decât calul.'
+      2: '<strong>…Txc3</strong> — celălalt turn recapturează. <br><br>Socoteala: ai luat un <strong>turn (5 pioni)</strong> și ai dat un <strong>cal (3 pioni)</strong>. <strong>5 − 3: ai câștigat cât doi pioni.</strong> <br><br>Ai schimbat o piesă mai puțin valoroasă pe una mai valoroasă, deci ai <strong>câștigat o calitate</strong>. Adversarul a <em>pierdut o calitate</em>. <br><br>Doar cât doi pioni, dar e o diferență care se simte: turnul lucrează mult mai bine în final decât calul.'
     },
     arrows: { 0: [{from:'a2', to:'c3', color:'R'}, {from:'c8', to:'c3', color:'G'}] }
   },
@@ -340,9 +340,9 @@ const chapters = [
     finishMsg: 'Ai luat-o pe cea mare!',
     san: ['Nxb5','Bxb5'],
     ann: {
-      0: '🔀 Joci cu <strong>Albul</strong>. Calul tău din <strong>c3</strong> are <em>două</em> capturi bune: poate lua <strong>dama din b5</strong> sau <strong>turnul din e4</strong>. <br><br>Amândouă sunt apărate de același nebun, cel din c6 — deci amândouă sunt schimburi, și amândouă îți aduc puncte. <br><br>Dar una îți aduce mult mai mult. <strong>Socotește-le pe amândouă înainte să muți.</strong>',
+      0: '🔀 Joci cu <strong>Albul</strong>. Calul tău din <strong>c3</strong> are <em>două</em> capturi bune: poate lua <strong>dama din b5</strong> sau <strong>turnul din e4</strong>. <br><br>Amândouă sunt apărate de același nebun, cel din c6 — deci amândouă sunt schimburi, și amândouă îți aduc ceva. <br><br>Dar una îți aduce mult mai mult. <strong>Socotește-le pe amândouă înainte să muți — și capturează piesa cea mai valoroasă.</strong>',
       1: '<strong>Cxb5</strong> — calul ia dama.',
-      2: '<strong>…Nxb5</strong> — nebunul recapturează. Socoteala: <strong>damă (9) minus cal (3) = 6 puncte</strong>. <br><br>Cealaltă captură era și ea bună, dar mult mai mică: Cxe4 Nxe4 înseamnă <strong>turn (5) minus cal (3) = 2 puncte</strong>. <br><br>Șase în loc de doi, doar pentru că te-ai uitat de două ori. <br><br><strong>Regula: nu te mulțumi cu primul schimb avantajos pe care îl vezi.</strong> Când ai două capturi, socotește-le pe amândouă și ia-o pe cea mai grasă.'
+      2: '<strong>…Nxb5</strong> — nebunul recapturează. Socoteala: <strong>damă (9) minus cal (3): cât șase pioni</strong>. <br><br>Cealaltă captură era și ea bună, dar mult mai mică: Cxe4 Nxe4 înseamnă <strong>turn (5) minus cal (3): cât doi pioni</strong>. <br><br>Șase în loc de doi, doar pentru că te-ai uitat de două ori. <br><br><strong>Regula: nu te mulțumi cu primul schimb avantajos pe care îl vezi. Când ai două capturi, socotește-le pe amândouă și capturează piesa cea mai valoroasă.</strong>'
     },
     arrows: { 0: [{from:'c3', to:'b5', color:'R'}, {from:'c3', to:'e4', color:'Y'}, {from:'c6', to:'b5', color:'G'}, {from:'c6', to:'e4', color:'G'}] }
   },
@@ -354,9 +354,9 @@ const chapters = [
     finishMsg: 'Turnul, nu nebunul!',
     san: ['gxf6+','Kxf6'],
     ann: {
-      0: '🔀 Joci cu <strong>Albul</strong>. Pionul tău din <strong>g5</strong> are două capturi: poate lua <strong>turnul din f6</strong> sau <strong>nebunul din h6</strong>. <br><br>Numără și socotește. Amândouă merg — dar care aduce mai mult?',
+      0: '🔀 Joci cu <strong>Albul</strong>. Pionul tău din <strong>g5</strong> are două capturi: poate lua <strong>turnul din f6</strong> sau <strong>nebunul din h6</strong>. <br><br>Numără și socotește. Amândouă merg — dar <strong>capturează piesa cea mai valoroasă</strong>. Care e?',
       1: '<strong>gxf6+</strong> — pionul ia turnul, cu șah.',
-      2: '<strong>…Rxf6</strong> — regele recapturează. Socoteala: <strong>turn (5) minus pion (1) = 4 puncte</strong>. <br><br>Cealaltă captură: gxh6+ Rxh6 înseamnă <strong>nebun (3) minus pion (1) = 2 puncte</strong>. <br><br>Exact <strong>două puncte diferență</strong> — pentru că un turn valorează cu doi mai mult decât un nebun. Aceeași mutare de pion, două rezultate diferite. <br><br>Când ai de ales, întreabă-te mereu: <strong>care dintre ele e piesa mai valoroasă?</strong>'
+      2: '<strong>…Rxf6</strong> — regele recapturează. Socoteala: <strong>turn (5) minus pion (1): cât patru pioni</strong>. <br><br>Cealaltă captură: gxh6+ Rxh6 înseamnă <strong>nebun (3) minus pion (1): cât doi pioni</strong>. <br><br>Exact <strong>cât doi pioni diferență</strong> — pentru că un turn valorează cu doi pioni mai mult decât un nebun. Aceeași mutare de pion, două rezultate diferite. <br><br>Când ai de ales, întreabă-te mereu: <strong>care dintre ele e piesa mai valoroasă?</strong>'
     },
     arrows: { 0: [{from:'g5', to:'f6', color:'R'}, {from:'g5', to:'h6', color:'Y'}] }
   },
@@ -370,10 +370,10 @@ const chapters = [
     finishMsg: 'Cu șah! Asta era toată diferența.',
     san: ['Bxb6+','cxb6','Rxc4'],
     ann: {
-      0: '🚪 <strong>Dă apărătorul la o parte.</strong> Joci cu <strong>Albul</strong>. Pune-ți cele trei întrebări. <br><br><strong>Ce e atacat?</strong> Turnul negru din c4 — de turnul tău din c1. <br><strong>Cine e apărătorul?</strong> Calul negru din b6. Unu la unu, deci Txc4 Cxc4 nu-ți aduce nimic. <br><strong>Pot să scap de apărător?</strong> Da — ai două piese care ajung pe b6: calul din d5 și nebunul din a5. <br><br>⚠️ Și aici e toată lecția: <strong>numai una dintre ele funcționează.</strong> Uită-te bine la ce se întâmplă imediat după, și alege.',
+      0: '🚪 <strong>Dă apărătorul la o parte.</strong> Joci cu <strong>Albul</strong>. Pune-ți cele trei întrebări. <br><br><strong>Ce e atacat?</strong> Turnul negru din c4 — de turnul tău din c1. <br><strong>Cine e apărătorul?</strong> Calul negru din b6. Unu la unu, deci Txc4 Cxc4 nu-ți aduce nimic. <br><strong>Pot să elimin apărătorul?</strong> Da — ai două piese care ajung pe b6: calul din d5 și nebunul din a5. <br><br>⚠️ Și aici e toată lecția: <strong>numai una dintre ele funcționează.</strong> Uită-te bine la ce se întâmplă imediat după, și alege.',
       1: '<strong>Nxb6+!</strong> — nebunul îl ia pe apărător, și o face <strong>cu șah</strong>. Regele negru trebuie să se ocupe de șah chiar acum; nu are timp de nimic altceva. <br><br>De ce contează? Pentru că turnul tău din c1 și turnul lui din c4 <strong>se atacă unul pe altul</strong> — cine capturează primul câștigă. Dacă îi lași o mutare liberă, el ia primul.',
       2: '<strong>…cxb6</strong> — Negrul e obligat să recaptureze, ca să iasă din șah.',
-      3: '<strong>Txc4</strong> — și abia acum, cu apărătorul dispărut, turnul cade. <br><br>Socoteala: ai dat un <strong>nebun (3)</strong> și ai luat un <strong>cal (3)</strong> plus un <strong>turn (5)</strong>. <strong>Ieși cu 5 puncte în plus.</strong> <br><br>❌ Iar acum vezi de ce cealaltă capturare pierdea tot: după <strong>Cxb6??</strong> — fără șah — Negrul are o mutare liberă și joacă <strong>…Txc1</strong>, luând el primul turnul. Albul iese cu <strong>2 puncte în minus</strong>. <br><br>Șapte puncte diferență între cele două, și tot ce le desparte e un singur șah. <br><br><strong>Când elimini un apărător într-un atac reciproc, fă-o cu șah.</strong> Șahul îi ia adversarului mutarea liberă cu care ți-ar fi luat-o el înainte.'
+      3: '<strong>Txc4</strong> — și abia acum, cu apărătorul dispărut, turnul cade. <br><br>Socoteala: ai dat un <strong>nebun (3 pioni)</strong> și ai luat un <strong>cal (3)</strong> plus un <strong>turn (5)</strong>. <strong>Ieși în câștig cât cinci pioni.</strong> <br><br>❌ Iar acum vezi de ce cealaltă capturare pierdea tot: după <strong>Cxb6??</strong> — fără șah — Negrul are o mutare liberă și joacă <strong>…Txc1</strong>, luând el primul turnul. Albul iese <strong>în pierdere cât doi pioni</strong>. <br><br>Cât șapte pioni diferență între cele două, și tot ce le desparte e un singur șah. <br><br><strong>Când elimini un apărător într-un atac reciproc, fă-o cu șah.</strong> Șahul îi ia adversarului mutarea liberă cu care ți-ar fi luat-o el înainte.'
     },
     arrows: {
       0: [{from:'c1', to:'c4', color:'R'}, {from:'b6', to:'c4', color:'G'}, {from:'c4', to:'c1', color:'R'}]
@@ -385,19 +385,19 @@ const chapters = [
 /* ─── Acordeon: fiecare item încarcă un capitol ─── */
 const accData = [
   { chIdx: 0, kind: 't1', num: '⚖️', title: 'Un pion care ia o damă', practice: true,
-    desc: 'Cea mai mare diferență posibilă dintr-un schimb: <strong>opt puncte</strong>. De aici pornește toată socoteala.' },
+    desc: 'Cea mai mare diferență posibilă dintr-un schimb: <strong>cât opt pioni</strong>. De aici pornește toată socoteala.' },
   { chIdx: 1, kind: 't1', num: '⚖️', title: 'Un turn care ia o damă', practice: true,
     desc: 'Aceeași socoteală, alte piese. Cu cât intri cu o piesă mai puțin valoroasă, cu atât iese mai mult.' },
   { chIdx: 2, kind: 't1', num: '🏆', title: 'Calitatea', practice: true,
-    desc: 'Turn contra cal: <strong>două puncte</strong>. Schimbul ăsta se întâmplă atât de des încât are nume propriu.' },
+    desc: 'Turn contra cal: <strong>cât doi pioni</strong>. Când iei o piesă mai valoroasă decât cea pe care o dai, ai câștigat o calitate.' },
 
   { chIdx: 3, kind: 't2', num: '1', title: 'Două capturi. Care?', practice: true,
-    desc: 'Joci cu <strong>Albul</strong>. Calul are două capturi bune. Una aduce 6 puncte, cealaltă 2.' },
+    desc: 'Joci cu <strong>Albul</strong>. Calul are două capturi bune. Capturează piesa cea mai valoroasă.' },
   { chIdx: 4, kind: 't2', num: '2', title: 'Iar două capturi', practice: true,
-    desc: 'Joci cu <strong>Albul</strong>. Un pion, două ținte. Exact două puncte diferență între ele.' },
+    desc: 'Joci cu <strong>Albul</strong>. Un pion, două ținte. Exact cât doi pioni diferență între ele.' },
 
   { chIdx: 5, kind: 't3', num: '🚪', title: 'Dă apărătorul la o parte', practice: true,
-    desc: 'Joci cu <strong>Albul</strong>. Poți lua apărătorul cu două piese — dar numai una câștigă. Șapte puncte diferență.' }
+    desc: 'Joci cu <strong>Albul</strong>. Poți lua apărătorul cu două piese — dar numai una câștigă. Cât șapte pioni diferență.' }
 ];
 
 let curChapterIdx = 0;
