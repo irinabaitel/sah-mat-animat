@@ -293,6 +293,65 @@ h1 {
 }
 .fs-btn:hover { background: rgba(255,255,255,0.85); }
 .fs-btn:active { transform: scale(0.94); }
+
+/* ═══════ Relief 3D ═══════ */
+
+body {
+    background-color: #F5A96E;
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,0.10) 9%, transparent 9%),
+        linear-gradient(150deg, #F8BC8C 0%, #F5A96E 55%, #EB9257 100%);
+    background-size: 28px 28px, 100% 100%;
+    background-attachment: fixed;
+}
+
+/* CARD DE NIVEL — lespede cu muchie la bază */
+.level-card {
+    background: #FFFAF2;
+    border: none;
+    border-radius: 26px;
+    box-shadow:
+        0 14px 32px rgba(0,0,0,0.18),
+        0 3px 8px rgba(0,0,0,0.07),
+        inset 0 -6px 0 rgba(0,0,0,0.06);
+    transition: transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .28s ease;
+}
+.level-card:hover {
+    transform: translateY(-8px);
+    box-shadow:
+        0 24px 44px rgba(0,0,0,0.24),
+        0 4px 10px rgba(0,0,0,0.09),
+        inset 0 -6px 0 rgba(0,0,0,0.06);
+}
+.stripe { height: 7px; }
+
+/* LISTA DE TEME — separator punctat și rândul care alunecă la hover */
+.topics li {
+    border-bottom: 1px dashed rgba(160,82,45,0.22);
+    transition: color .18s ease, transform .18s ease;
+}
+.topics li:hover { transform: translateX(4px); }
+.topics li::before { font-size: 0.95em; }
+
+/* BUTON care se apasă de-adevăratelea */
+.card-btn {
+    padding: 10px 22px;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.20), 0 8px 16px rgba(0,0,0,0.14);
+    transition: transform .08s ease, box-shadow .08s ease, filter .2s;
+}
+.card-btn:hover  { filter: brightness(1.12); }
+.card-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.20), 0 3px 6px rgba(0,0,0,0.12);
+}
+
+/* titlurile din antet, vizibile pe fundalul cu textură */
+.hub-title, h1 { text-shadow: 0 3px 6px rgba(0,0,0,0.22); }
+
+@media (max-width: 540px) {
+    .level-card { border-radius: 22px; }
+    .level-card:hover { transform: translateY(-5px); }
+}
 </style>
 </head>
 <body>
