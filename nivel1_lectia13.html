@@ -465,6 +465,20 @@ function clearSel() {
   pracSel = null;
 }
 
+/* Pe tablele de studiu poți muta cu oricare tabără, nu doar cu cea la rând —
+   sunt table de încercat idei, nu partide. Mutarea rămâne legală. */
+function mutaLiber(from, to) {
+  let mv = sGame.move({ from: from, to: to, promotion: 'q' });
+  if (mv) return mv;
+  const p = sGame.fen().split(' ');
+  p[1] = (p[1] === 'w') ? 'b' : 'w';
+  p[3] = '-';
+  const alt = new Chess(p.join(' '));
+  mv = alt.move({ from: from, to: to, promotion: 'q' });
+  if (mv) { sGame = alt; return mv; }
+  return null;
+}
+
 function onDragStart(source, piece) {
   if (rmbDown) return false;
   clearSel();
@@ -485,7 +499,7 @@ function onDrop(source, target) {
   if (target === 'offboard') return 'snapback';
   /* studiu: mutare liberă DAR legală (respectă regulile șahului) */
   if (sGame) {
-    const mv = sGame.move({ from: source, to: target, promotion: 'q' });
+    const mv = mutaLiber(source, target);
     if (!mv) return 'snapback';
     clearStudyArrows();
     board.position(sGame.fen(), false);
@@ -510,8 +524,7 @@ $(document).on('click', '.square-55d63', function (e) {
     const prevSq = selSq;
     clearSel();
     if (sq !== prevSq && sGame) {
-      const mv = sGame.move({ from: prevSq, to: sq, promotion: 'q' });
-      if (mv) { clearStudyArrows(); board.position(sGame.fen(), false); }
+      if (mutaLiber(prevSq, sq)) { clearStudyArrows(); board.position(sGame.fen(), false); }
     }
   } else {
     if (pos[sq]) {
