@@ -351,7 +351,7 @@ const chapters = [
     san: ['Nc6'],
     ann: {
       0: 'Acum se schimbă rolurile. Joci cu <strong>Negrul</strong>, și tu ești cel legat. <br><br>Nebunul alb din <strong>b5</strong> privește pe diagonala b5–c6–d7–e8. Turnul tău din <strong>d7</strong> stă chiar în fața regelui — deci are <strong>zero mutări</strong>. <br><br>Ai patru feluri de apărare. Aici merge cel mai simplu dintre ele: <strong>bagă ceva în cale.</strong> <br><br>Care piesă poate ajunge pe diagonala aceea?',
-      1: '<strong>…Cc6!</strong> — calul din colț sare exact pe câmpul dintre nebun și turn. <br><br>Diagonala e tăiată, deci <strong>legătura nu mai există</strong>: turnul e din nou liber să se miște. <br><br>Iar calul de pe c6 nu e în pericol: îl apără și pionul din b7, și turnul din d7. Dacă nebunul îl ia, îl recapturezi. <br><br>Asta e cea mai curată apărare împotriva unei legături — și e aceeași idee pe care ai folosit-o la Pionul lui Ahile, când ai tăiat diagonala cu …d5.'
+      1: '<strong>…Cc6!</strong> — calul din colț sare exact pe câmpul dintre nebun și turn. <br><br>Diagonala e tăiată, deci <strong>legătura nu mai există</strong>: turnul e din nou liber să se miște. <br><br>Iar calul de pe c6 nu e în pericol: îl apără <strong>pionul din b7</strong>. Dacă nebunul îl ia, pionul recapturează — nebun pentru cal, schimb cinstit. <br><br>Asta e cea mai curată apărare împotriva unei legături — și e aceeași idee pe care ai folosit-o la Pionul lui Ahile, când ai tăiat diagonala cu …d5.'
     },
     arrows: { 0: [{from:'b5', to:'e8', color:'R'}], 1: [{from:'b7', to:'c6', color:'G'}, {from:'d7', to:'c6', color:'G'}] },
     hl: { 0: [{sq:'d7',cls:'hl-b'},{sq:'c6',cls:'hl-a'}] }
@@ -378,14 +378,14 @@ const chapters = [
     fen: 'r1b5/p7/2n5/3B4/8/8/4K3/6k1 b - - 0 1', orient: 'black',
     winner: 'b', practiceFrom: 0, winEval: 0,
     finishMsg: 'Legătura a rămas — dar nu mai doare.',
-    san: ['Bb7'],
-    accept: { 0: ['Bb7','Bd7'] },
-    altMsg: 'Și …Nd7 e bună — amândouă apără calul.',
+    san: ['Bd7'],
+    accept: { 0: ['Bd7','Bb7'] },
+    altMsg: 'Și …Nb7 e bună — ba chiar face ceva în plus. Citește mai jos.',
     ann: {
       0: 'Joci cu <strong>Negrul</strong>. Nebunul alb din <strong>d5</strong> îți leagă calul din <strong>c6</strong> de turnul din <strong>a8</strong>. <br><br>E o legătură <em>relativă</em>: calul are șapte mutări, poate pleca oricând. Dar dacă pleacă, Nxa8 îți ia turnul. <br><br>Aici nu ai ce pune în cale între nebun și cal — sunt vecini. Și nu ai cu ce să-l capturezi pe nebun. <br><br>Îți rămâne a treia apărare. Găsește-o.',
-      1: '<strong>…Nb7!</strong> — nebunul tău vine și îl apără pe cal. Mergea la fel de bine <strong>…Nd7</strong>. <br><br>Acum, dacă Albul joacă Nxc6, tu răspunzi Nxc6: nebun pentru cal, schimb cinstit. Legătura nu-ți mai face rău. <br><br>⚠️ <strong>Dar fii atent la ce s-a întâmplat de fapt, pentru că aici greșesc mulți:</strong> legătura <em>nu a dispărut</em>. Nebunul alb tot ține diagonala, calul tot stă în fața turnului. <br><br>Ce ai făcut e altceva: <strong>ai făcut-o nedureroasă — deocamdată.</strong> Dacă Albul mai aduce un atacator asupra calului, socoteala se schimbă din nou și trebuie să te aperi iar. <br><br>De-aia, dintre cele patru apărări, <strong>capturarea celui care leagă e cea mai bună</strong>: aia închide subiectul. Apărarea doar îl amână.'
+      1: '<strong>…Nd7!</strong> — nebunul tău vine și îl apără pe cal. <br><br>Acum, dacă Albul joacă Nxc6, tu răspunzi Nxc6: nebun pentru cal, schimb cinstit. Legătura nu-ți mai face rău. <br><br>⚠️ <strong>Dar fii atent la ce s-a întâmplat de fapt, pentru că aici greșesc mulți:</strong> legătura <em>nu a dispărut</em>. Nebunul alb tot ține diagonala d5–c6–b7–a8, iar calul tot stă în fața turnului. Dacă acum calul ar pleca, Nxa8 tot îți ia turnul. <br><br>Ce ai făcut e altceva: <strong>ai făcut legătura nedureroasă — deocamdată.</strong> Dacă Albul mai aduce un atacator asupra calului, socoteala se schimbă din nou și trebuie să te aperi iar. <br><br>💡 <strong>Merge și …Nb7</strong>, și e chiar mai bună — dar pentru alt motiv. Pe b7 nebunul nu doar apără calul, ci <strong>se așază chiar pe diagonală, între cal și turn</strong>. Așa nu mai are ce lega: legătura dispare de tot. Adică e, de fapt, apărarea „pun ceva în cale", pe care ai învățat-o mai devreme. <br><br>De-aia, dintre cele patru apărări, <strong>a apăra e cea mai slabă</strong>: doar amână. Cele care taie sau capturează închid subiectul.'
     },
-    arrows: { 0: [{from:'d5', to:'a8', color:'R'}], 1: [{from:'b7', to:'c6', color:'G'}, {from:'d5', to:'a8', color:'R'}] },
+    arrows: { 0: [{from:'d5', to:'a8', color:'R'}], 1: [{from:'d7', to:'c6', color:'G'}, {from:'d5', to:'a8', color:'R'}] },
     hl: { 0: [{sq:'c6',cls:'hl-b'}], 1: [{sq:'c6',cls:'hl-b'}] }
   }
 
@@ -404,7 +404,7 @@ const accData = [
     desc: 'Joci cu <strong>Albul</strong>. Cea mai curată soluție dintre toate — și rezolvă problema definitiv.' },
 
   { chIdx: 4, kind: 't3', num: '🛡️', title: 'Apărarea care nu desface legătura', practice: true,
-    desc: 'Joci cu <strong>Negrul</strong>. N-ai ce pune în cale și n-ai cu ce captura. Ce-ți rămâne, și ce <em>nu</em> rezolvă asta?' }
+    desc: 'Joci cu <strong>Negrul</strong>. Îți aperi calul — dar află și ce <em>nu</em> rezolvă apărarea.' }
 ];
 
 let curChapterIdx = 0;
