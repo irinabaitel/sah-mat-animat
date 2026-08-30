@@ -360,7 +360,7 @@ const chapters = [
     finishMsg: 'Ai dezvoltat și ai atacat, dintr-o mutare!',
     san: ['e4','d5','exd5','Qxd5','Nc3'],
     ann: {
-      0: 'Hai să vedem întâi cum se ajunge aici. Asta e <strong>Apărarea Scandinavă</strong>, o deschidere pe care o întâlnești la orice concurs de copii. <br><br><span class="mv-line"><button class="mv-link" onclick="goToStep(1)">1.e4</button><button class="mv-link" onclick="goToStep(2)">d5</button><button class="mv-link" onclick="goToStep(3)">2.exd5</button><button class="mv-link" onclick="goToStep(4)">Dxd5</button></span> <br>Apasă pe oricare mutare ca s-o vezi pe tablă.',
+      0: 'Hai să vedem întâi cum se ajunge aici. Asta e <strong>Apărarea Scandinavă</strong>, o deschidere pe care o întâlnești la orice concurs de copii. <br><br><span class="mv-line"><button class="mv-link" onclick="goMove(4,1)">1.e4</button><button class="mv-link" onclick="goMove(4,2)">d5</button><button class="mv-link" onclick="goMove(4,3)">2.exd5</button><button class="mv-link" onclick="goMove(4,4)">Dxd5</button></span> <br>Apasă pe oricare mutare ca s-o vezi pe tablă.',
       1: '<strong>1.e4</strong> — Misiunea 1, pionul în centru.',
       2: '<strong>…d5</strong> — Negrul nu răspunde în oglindă, ci îl atacă pe loc pe pionul din e4. Asta e ideea Scandinavei.',
       3: '<strong>2.exd5</strong> — Albul capturează. Acum Negrul e cu un pion în minus și trebuie să și-l ia înapoi.',
@@ -375,21 +375,29 @@ const chapters = [
 
   /* 5 — regina plecată după un pion */
   {
-    fen: 'rnb1kbnr/pppp1ppp/8/4p3/2B1q3/5N2/PPPP1PPP/RNBQ1RK1 w kq - 0 5', orient: 'white',
-    winner: 'w', practiceFrom: 0, winEval: 7,
+    fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 8, winEval: 7,
     finishMsg: 'Regina a plecat după un pion și n-a mai găsit drumul înapoi.',
-    san: ['Bxf7+','Kxf7','Ng5+','Ke8','Nxe4'],
+    san: ['e4','e5','Nf3','Qf6','Bc4','Qg6','O-O','Qxe4','Bxf7+','Kxf7','Ng5+','Ke8','Nxe4'],
     ann: {
-      0: 'Joci cu <strong>Albul</strong>. S-a jucat <strong>1.e4 e5 2.Cf3 Df6 3.Nc4 Dg6 4.0-0 Dxe4</strong> — o partidă cum se joacă la orice concurs de copii. <br><br>Numără ce a făcut Negrul: <strong>trei mutări de regină</strong> și niciuna de figură. Iar acum a mai făcut ceva — a plecat după pionul din e4, adică s-a dus și mai departe de casă. <br><br>Albul, în schimb, are un cal și un nebun afară și e rocat. Are un <strong>avantaj de dezvoltare</strong> — și, mai important, are un <strong>plan</strong>: nebunul din c4 va atrage regele de pe ultima linie, iar calul va ataca apoi în stil mare. <br><br>Pentru o regină merită să întârzii un pic dezvoltarea! <br><br>Uită-te la nebunul din c4 și la calul din f3, și găsește-le împreună o treabă.',
-      1: '<strong>5.Nxf7+!</strong> — nebunul se sacrifică pe cel mai sensibil punct al Negrului. Pare o nebunie: dai o figură de trei pe un pion de unu.',
-      2: '<strong>…Rxf7</strong> — regele e obligat să ia, altfel rămâne și fără pion, și în șah. Dar acum e scos afară, pe f7.',
-      3: '<strong>6.Cg5+!</strong> — și aici se vede totul. Calul dă șah regelui de pe f7 <strong>și atacă regina de pe e4</strong>, în același timp. <br><br>Furculiță. Regele trebuie să iasă din șah <em>chiar acum</em>, deci n-are cum s-o mai apere.',
-      4: '<strong>…Re8</strong> — regele se retrage. Putea juca și …Re7, …Rg6 sau …Rf6; am verificat toate patru, regina cade la fel.',
-      5: '<strong>7.Cxe4</strong> — și regina e a Albului. <br><br>Socoteala finală: Albul a dat un nebun (3) și a luat un pion (1) plus o regină (9). <strong>Iese în câștig cât șapte pioni.</strong> <br><br>Uită-te înapoi la cum a început: nu cu o gafă mare, ci cu <strong>Df6 la mutarea a doua</strong>. Regina a ieșit prima, a fost gonită, a fost gonită iar, a plecat după un pion — și n-a mai găsit drumul înapoi. <br><br>Iar pionul din f7 nu era vinovat cu nimic: el își făcea treaba lui, doar că e păzit numai de rege, și de-aia acolo se sparge totul.'
+      0: 'O partidă cum se joacă la orice concurs de copii. Derulează începutul — sau apasă direct pe o mutare, ca s-o vezi pe tablă. <br><br><span class="mv-line"><button class="mv-link" onclick="goMove(5,1)">1.e4</button><button class="mv-link" onclick="goMove(5,2)">e5</button><button class="mv-link" onclick="goMove(5,3)">2.Cf3</button><button class="mv-link" onclick="goMove(5,4)">Df6</button><button class="mv-link" onclick="goMove(5,5)">3.Nc4</button><button class="mv-link" onclick="goMove(5,6)">Dg6</button><button class="mv-link" onclick="goMove(5,7)">4.0-0</button><button class="mv-link" onclick="goMove(5,8)">Dxe4</button></span>',
+      1: '<strong>1.e4</strong> — Misiunea 1, pionul în centru.',
+      2: '<strong>…e5</strong> — Negrul răspunde în oglindă.',
+      3: '<strong>2.Cf3</strong> — calul iese și atacă pionul din e5. Totul e în regulă până aici.',
+      4: '<strong>…Df6?</strong> — și iată greșeala. Negrul apără pionul, dar o face cu regina. <br><br>Un cal pe f6 ar fi făcut aceeași treabă — și ar fi fost o figură dezvoltată, nu una expusă.',
+      5: '<strong>3.Nc4</strong> — Albul își continuă liniștit misiunile: nebunul iese și privește spre f7.',
+      6: '<strong>…Dg6?</strong> — <strong>a doua mutare de regină.</strong> Ea se plimbă, iar Negrul tot n-a scos nicio figură.',
+      7: '<strong>4.0-0</strong> — Misiunea 3, regele la adăpost. Albul a bifat deja toate trei.',
+      8: '<strong>…Dxe4</strong> — <strong>a treia mutare de regină</strong>, și de data asta pleacă după un pion, adică și mai departe de casă. <br><br>Joci cu <strong>Albul</strong>. Numără cum stau: Negrul a mutat de trei ori cu regina și n-a scos nicio figură. Tu ai un cal și un nebun afară și ești rocat. <br><br>Ai un <strong>avantaj de dezvoltare</strong> — și, mai important, ai un <strong>plan</strong>: nebunul din c4 va atrage regele de pe ultima linie, iar calul va ataca apoi în stil mare. <br><br>Pentru o regină merită să întârzii un pic dezvoltarea! <br><br>Uită-te la nebunul din c4 și la calul din f3, și găsește-le împreună o treabă.',
+      9: '<strong>5.Nxf7+!</strong> — nebunul se sacrifică pe cel mai sensibil punct al Negrului. Pare o nebunie: dai o figură de trei pe un pion de unu.',
+      10: '<strong>…Rxf7</strong> — regele e obligat să ia, altfel rămâne și fără pion, și în șah. Dar acum e scos afară, pe f7.',
+      11: '<strong>6.Cg5+!</strong> — și aici se vede totul. Calul dă șah regelui de pe f7 <strong>și atacă regina de pe e4</strong>, în același timp. <br><br>Furculiță. Regele trebuie să iasă din șah <em>chiar acum</em>, deci n-are cum s-o mai apere.',
+      12: '<strong>…Re8</strong> — regele se retrage. Putea juca și …Re7, …Rg6 sau …Rf6; am verificat toate patru, regina cade la fel.',
+      13: '<strong>7.Cxe4</strong> — și regina e a Albului. <br><br>Socoteala finală: Albul a dat un nebun (3) și a luat un pion (1) plus o regină (9). <strong>Iese în câștig cât șapte pioni.</strong> <br><br>Uită-te înapoi la cum a început: nu cu o gafă mare, ci cu <strong>Df6 la mutarea a doua</strong>. Regina a ieșit prima, a fost gonită, a fost gonită iar, a plecat după un pion — și n-a mai găsit drumul înapoi. <br><br>Iar pionul din f7 nu era vinovat cu nimic: el își făcea treaba lui, doar că e păzit numai de rege, și de-aia acolo se sparge totul.'
     },
     arrows: {
-      0: [{from:'c4', to:'f7', color:'R'}],
-      3: [{from:'g5', to:'f7', color:'R'}, {from:'g5', to:'e4', color:'R'}]
+      8: [{from:'c4', to:'f7', color:'R'}],
+      11: [{from:'g5', to:'f7', color:'R'}, {from:'g5', to:'e4', color:'R'}]
     }
   }
 
@@ -548,6 +556,20 @@ function playMoveSound(san, game) {
   if (game && game.in_checkmate()) { playSnd(sndMate); return; }
   if (san && san.indexOf('x') !== -1) playSnd(sndCapture);
   else playSnd(sndMove);
+}
+
+/* ─── Șir de mutări clicabil din text: deschide capitolul și sare la mutare ─── */
+function goMove(chIdx, step) {
+  const item = document.querySelector('#accList .acc-item[data-ch="' + chIdx + '"]');
+  if (!item) return;
+  if (!item.classList.contains('open')) openAcc(item);
+  goToStep(step);
+  const sc = document.querySelector('.panel-scroll');
+  if (sc) {
+    const a = item.getBoundingClientRect(), l = sc.getBoundingClientRect();
+    if (a.top < l.top) sc.scrollTop += a.top - l.top;
+    else if (a.bottom > l.bottom) sc.scrollTop += a.bottom - l.bottom;
+  }
 }
 
 function goToStep(s) {

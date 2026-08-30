@@ -128,7 +128,17 @@
     }
     .prac-btn.ghost { background: transparent; color: var(--c-navy); }
     .prac-btn:hover { opacity: 0.88; }
-  </style>
+  
+    /* șir de mutări pe care se poate apăsa, direct din text */
+    .mv-line { display: inline-flex; flex-wrap: wrap; gap: 5px; margin: 4px 0; }
+    .mv-link {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.92em;
+      color: var(--c-navy); background: rgba(255,255,255,0.75);
+      border: 1.5px solid rgba(26,58,107,0.35); border-radius: 7px;
+      padding: 2px 9px; cursor: pointer; transition: background .12s ease;
+    }
+    .mv-link:hover { background: #fff; border-color: var(--c-navy); }
+</style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
 </head>
@@ -369,6 +379,20 @@ function loadChapter(idx) {
   board.orientation(ch.orient || 'white');
   buildMovesList();
   goToStep(0);
+}
+
+/* ─── Șir de mutări clicabil din text: deschide capitolul și sare la mutare ─── */
+function goMove(chIdx, step) {
+  const item = document.querySelector('#accList .acc-item[data-ch="' + chIdx + '"]');
+  if (!item) return;
+  if (!item.classList.contains('open')) openAcc(item);
+  goToStep(step);
+  const sc = document.querySelector('.panel-scroll');
+  if (sc) {
+    const a = item.getBoundingClientRect(), l = sc.getBoundingClientRect();
+    if (a.top < l.top) sc.scrollTop += a.top - l.top;
+    else if (a.bottom > l.bottom) sc.scrollTop += a.bottom - l.bottom;
+  }
 }
 
 function goToStep(s) {

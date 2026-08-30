@@ -140,7 +140,17 @@
     }
     .prac-btn.ghost { background: transparent; color: var(--c-navy); }
     .prac-btn:hover { opacity: 0.88; }
-  </style>
+  
+    /* șir de mutări pe care se poate apăsa, direct din text */
+    .mv-line { display: inline-flex; flex-wrap: wrap; gap: 5px; margin: 4px 0; }
+    .mv-link {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.92em;
+      color: var(--c-navy); background: rgba(255,255,255,0.75);
+      border: 1.5px solid rgba(26,58,107,0.35); border-radius: 7px;
+      padding: 2px 9px; cursor: pointer; transition: background .12s ease;
+    }
+    .mv-link:hover { background: #fff; border-color: var(--c-navy); }
+</style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
 </head>
@@ -173,7 +183,7 @@
           </div>
 
           <div class="card">
-            <p>Primele mutări: <strong>1.e4 e5 2.Cf3 Cc6 3.Nc4</strong>. Nebunul iese pe <strong>c4</strong>, pe o diagonală lungă, către <strong>f7 — călcâiul lui Ahile</strong> al Negrului (apărat doar de rege). Dacă lovești acolo, regele rămâne <strong>„derocat"</strong> — fără rocadă. Dar lovitura pe f7 e <em>utopică</em> dacă Negrul se apără bine, așa că azi nebunul din c4 înseamnă mai ales <strong>controlul câmpului d5</strong>.</p>
+            <p>Primele mutări: <span class="mv-line"><button class="mv-link" onclick="goMove(0,1)">1.e4</button><button class="mv-link" onclick="goMove(0,2)">e5</button><button class="mv-link" onclick="goMove(0,3)">2.Cf3</button><button class="mv-link" onclick="goMove(0,4)">Cc6</button><button class="mv-link" onclick="goMove(0,5)">3.Nc4</button></span>. Nebunul iese pe <strong>c4</strong>, pe o diagonală lungă, către <strong>f7 — călcâiul lui Ahile</strong> al Negrului (apărat doar de rege). Dacă lovești acolo, regele rămâne <strong>„derocat"</strong> — fără rocadă. Dar lovitura pe f7 e <em>utopică</em> dacă Negrul se apără bine, așa că azi nebunul din c4 înseamnă mai ales <strong>controlul câmpului d5</strong>.</p>
             <p>După <strong>3.Nc4</strong>, Negrul are <strong>patru feluri</strong> de a continua:</p>
             <p>• <strong>3…Nc5</strong> — jocul liniștit (<em>Giuoco Piano</em>): și nebunul negru iese, țintind f2;<br>
                • <strong>3…Cf6</strong> — <strong>Apărarea celor Doi Cai</strong>: atacă imediat pionul e4;<br>
@@ -245,7 +255,7 @@ const chapters = [
     fen: START, orient: 'white',
     san: ['e4','e5','Nf3','Nc6','Bc4','Bc5','c3','Nf6','d4','exd4','cxd4','Bb4+'],
     ann: {
-      0:  'Partida Italiană: <strong>1.e4 e5 2.Cf3 Cc6 3.Nc4</strong>. Nebunul iese pe c4 și țintește pionul <strong>f7</strong>.',
+      0:  'Partida Italiană: <span class="mv-line"><button class="mv-link" onclick="goMove(0,1)">1.e4</button><button class="mv-link" onclick="goMove(0,2)">e5</button><button class="mv-link" onclick="goMove(0,3)">2.Cf3</button><button class="mv-link" onclick="goMove(0,4)">Cc6</button><button class="mv-link" onclick="goMove(0,5)">3.Nc4</button></span>. Nebunul iese pe c4 și țintește pionul <strong>f7</strong>.',
       1:  '<strong>1.e4</strong> — Albul ocupă centrul și deschide drum nebunului și damei.',
       2:  '<strong>1…e5</strong> — Negrul răspunde simetric, în centru.',
       3:  '<strong>2.Cf3</strong> — calul atacă pionul e5 și se dezvoltă.',
@@ -638,6 +648,20 @@ function playMoveSound(san, game) {
   if (game && game.in_checkmate()) { playSnd(sndMate); return; }
   if (san && san.indexOf('x') !== -1) playSnd(sndCapture);
   else playSnd(sndMove);
+}
+
+/* ─── Șir de mutări clicabil din text: deschide capitolul și sare la mutare ─── */
+function goMove(chIdx, step) {
+  const item = document.querySelector('#accList .acc-item[data-ch="' + chIdx + '"]');
+  if (!item) return;
+  if (!item.classList.contains('open')) openAcc(item);
+  goToStep(step);
+  const sc = document.querySelector('.panel-scroll');
+  if (sc) {
+    const a = item.getBoundingClientRect(), l = sc.getBoundingClientRect();
+    if (a.top < l.top) sc.scrollTop += a.top - l.top;
+    else if (a.bottom > l.bottom) sc.scrollTop += a.bottom - l.bottom;
+  }
 }
 
 function goToStep(s) {
