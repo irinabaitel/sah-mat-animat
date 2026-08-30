@@ -249,7 +249,7 @@
 
           <div class="def-box" style="margin-top:14px;">
             <p class="def-title">Reține asta din lecție</p>
-            <p><strong>Înainte să muți o piesă, uită-te dacă nu cumva îi iei drumul alteia. Și nu-ți schimba piesele care lucrează — material egal nu înseamnă poziție egală.</strong></p>
+            <p><strong>Înainte să muți o piesă, uită-te dacă nu cumva îi iei drumul alteia. Iar înainte să dai piesele care lucrează, numără: dacă numărătoarea e la egalitate, nu câștigi nimic — doar rămâi fără echipă.</strong></p>
           </div>
 
           <div id="navControls">
@@ -362,20 +362,21 @@ const chapters = [
 
   /* ══ SUNT MAESTRU ══ */
 
-  /* 3 — piesele care lucrează nu se schimbă */
+  /* 3 — combinația care nu merită */
   {
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', orient: 'white',
-    practice: false,
-    san: ['e4','e5','Nf3','Nc6','Bc4','Bc5','O-O','Nf6','Ng5','O-O','Nxf7','Rxf7','Bxf7+','Kxf7'],
+    winner: 'w', practiceFrom: 10, winEval: 0,
+    finishMsg: 'Ai lăsat combinația și ți-ai scos ultima figură. Bine!',
+    san: ['e4','e5','Nf3','Nc6','Bc4','Bc5','O-O','Nf6','Ng5','O-O','Nc3'],
+    accept: { 10: ['Nc3','c3','d3'] },
+    altMsg: 'Și asta e bună — orice mutare liniștită de dezvoltare e mai bună decât combinația.',
     ann: {
-      0: '⚖️ <strong>Material egal, poziție inegală.</strong> Un început de <strong>Apărare a celor doi cai</strong>, jucat bine de amândoi. Derulează până la capăt și pe urmă socotim. <br><br><span class="mv-line"><button class="mv-link" onclick="goMove(3,1)">1.e4</button><button class="mv-link" onclick="goMove(3,2)">e5</button><button class="mv-link" onclick="goMove(3,3)">2.Cf3</button><button class="mv-link" onclick="goMove(3,4)">Cc6</button><button class="mv-link" onclick="goMove(3,5)">3.Nc4</button><button class="mv-link" onclick="goMove(3,6)">Nc5</button><button class="mv-link" onclick="goMove(3,7)">4.0-0</button><button class="mv-link" onclick="goMove(3,8)">Cf6</button><button class="mv-link" onclick="goMove(3,9)">5.Cg5</button><button class="mv-link" onclick="goMove(3,10)">0-0</button></span>',
-      10: '<strong>…0-0</strong> — să fim exacți: <strong>niciunul n-a terminat cele trei misiuni.</strong> Amândoi au un pion în centru și amândoi au făcut rocada, dar dezvoltarea nu e gata. <br><br>Numără ofițerii scoși de acasă: <strong>Negrul are trei</strong> — calul din c6, calul din f6 și nebunul din c5. <strong>Albul are doi</strong> — calul și nebunul. <br><br>Și acum Albul are o idee: calul din g5 și nebunul din c4 se uită amândoi la f7. Poate câștiga <em>calitatea</em> acolo — turn contra figură.',
-      11: '<strong>6.Cxf7</strong> — calul ia pionul și <strong>atacă dama din d8</strong>. <br><br>⚠️ Și atât. Dacă Negrul n-ar fi făcut rocada, calul ar fi atacat de pe f7 și dama, și turnul din h8 — o furculiță adevărată. Dar turnul a plecat de acolo la rocadă, așa că <strong>lovitura cade în gol pe jumătate</strong>. Calul va fi capturat, iar Albul va da și nebunul ca să ia turnul.',
-      12: '<strong>…Txf7</strong> — Negrul ia calul cu turnul.',
-      13: '<strong>7.Nxf7+</strong> — și nebunul recapturează turnul, cu șah.',
-      14: '<strong>…Rxf7</strong> — regele ia nebunul. Hai să socotim. <br><br><strong>La material:</strong> Albul a dat un cal (3) și un nebun (3), a luat un turn (5) și un pion (1). <strong>6 contra 6. Exact egal.</strong> <br><br><strong>La piese care lucrează:</strong> uită-te pe tablă. Albul mai are pe cineva ieșit din casă? Turnul din f1 și atât — restul stau pe rândul întâi. Negrul are calul din c6, calul din f6 și nebunul din c5, toate afară și active. <br><br>Albul <strong>și-a schimbat exact cele două piese care lucrau</strong>, iar în locul lor n-a rămas nimic. E ca și cum ai da doi jucători de pe teren pentru doi de pe bancă. <br><br>Regele negru a rămas fără rocadă, e drept — dar în poziția asta nu-l amenință nimeni, tocmai pentru că Albul nu mai are cu ce să atace. <br><br><strong>Material egal nu înseamnă poziție egală.</strong> Când faci un schimb, nu socoti doar punctele: socotește și <em>cine rămâne cu piesele care fac treabă.</em>'
+      0: '⚖️ <strong>O joci sau nu?</strong> O deschidere italiană, jucată normal de amândoi. Apasă pe o mutare ca s-o vezi pe tablă. <br><br><span class="mv-line"><button class="mv-link" onclick="goMove(3,1)">1.e4</button><button class="mv-link" onclick="goMove(3,2)">e5</button><button class="mv-link" onclick="goMove(3,3)">2.Cf3</button><button class="mv-link" onclick="goMove(3,4)">Cc6</button><button class="mv-link" onclick="goMove(3,5)">3.Nc4</button><button class="mv-link" onclick="goMove(3,6)">Nc5</button><button class="mv-link" onclick="goMove(3,7)">4.0-0</button><button class="mv-link" onclick="goMove(3,8)">Cf6</button><button class="mv-link" onclick="goMove(3,9)">5.Cg5</button><button class="mv-link" onclick="goMove(3,10)">0-0</button></span>',
+      10: 'Joci cu <strong>Albul</strong>. Uită-te ce frumos stau piesele tale: <strong>calul din g5 și nebunul din c4 se uită amândoi la f7</strong>. Vezi imediat combinația — <strong>Cxf7</strong>, turnul ia calul, nebunul ia turnul. Câștigi <em>calitatea</em>: turn contra figură. <br><br>Sună bine. Dar înainte s-o joci, fă numărătoarea pe f7, ca la lecția cu schimburile. <br><br><strong>Câți atacă? Câți apără?</strong> <br><br>Numără și hotărăște: o joci, sau faci altceva?',
+      11: '<strong>6.Cc3</strong> — scoți ultima figură ușoară și lași combinația în pace. Asta e răspunsul corect, și iată de ce. <br><br><strong>Numărătoarea pe f7:</strong> o atacă <strong>doi</strong> — nebunul din c4 și calul din g5. O apără tot <strong>doi</strong> — turnul din f8 și regele din g8. <strong>Doi la doi.</strong> <br><br>Iar la doi la doi, cum știi de la lecția cu schimburile, <em>nu câștigi nimic — doar schimbi</em>. <br><br>Și acum partea care ține de lecția asta: <strong>ce ai schimba?</strong> Calul și nebunul tău, singurele două figuri pe care le-ai scos din casă, contra unui turn care stătea în colț și nu făcea nimic. La puncte iese exact egal, <strong>6 contra 6</strong>. Dar după aceea tu rămâi cu turnurile în colț și cu calul și nebunul care n-au mișcat niciodată, iar Negrul are trei figuri în joc. <br><br>Motorul e de acord: din poziția asta, combinația îți înrăutățește poziția cu aproape doi pioni. <br><br>🔍 <strong>Și acum întrebarea bună: de ce în alte partide aceeași combinație chiar câștigă?</strong> <br><br>Pentru că acolo <strong>Negrul nu a apucat să facă rocada.</strong> În Atacul ficatului prăjit — <em>1.e4 e5 2.Cf3 Cc6 3.Nc4 Cf6 4.Cg5 d5 5.exd5 Cxd5?! 6.Cxf7!</em> — regele negru e încă pe e8, iar turnul lui stă pe <strong>h8</strong>. Calul care intră pe f7 le atacă atunci <em>pe amândouă deodată</em>: dama de pe d8 și turnul de pe h8. Aia e o furculiță adevărată, și de-aia sacrificiul merită. <br><br>La noi, turnul plecase la rocadă de pe h8 pe f8 — deci nu mai e nimic de furculițat, iar pe f7 apărătorii s-au dublat. <strong>Aceeași combinație, două rezultate. Rocada face toată diferența.</strong> <br><br>Morala lecției: <strong>înainte să dai piesele care lucrează, numără. Dacă numărătoarea e la egalitate, nu câștigi nimic — doar rămâi fără echipă.</strong>'
     },
-    arrows: { 10: [{from:'g5', to:'f7', color:'R'}, {from:'c4', to:'f7', color:'R'}] }
+    arrows: { 10: [{from:'g5', to:'f7', color:'R'}, {from:'c4', to:'f7', color:'R'}, {from:'f8', to:'f7', color:'G'}, {from:'g8', to:'f7', color:'G'}] },
+    hl: { 10: [{sq:'f7',cls:'hl-b'}] }
   }
 
 ];
@@ -390,8 +391,8 @@ const accData = [
   { chIdx: 2, kind: 't2', num: '1', title: 'Eliberează nebunul', practice: true,
     desc: 'Joci cu <strong>Albul</strong>. O figură n-a plecat încă de acasă, și e închisă de un pion propriu.' },
 
-  { chIdx: 3, kind: 't3', num: '⚖️', title: 'Material egal, poziție inegală', practice: false,
-    desc: 'Șase contra șase, perfect egal la puncte. Și totuși o tabără stă mult mai bine. De ce?' }
+  { chIdx: 3, kind: 't3', num: '⚖️', title: 'O joci sau nu?', practice: true,
+    desc: 'Joci cu <strong>Albul</strong>. Vezi o combinație care câștigă calitatea. Numără pe f7 înainte s-o joci.' }
 ];
 
 let curChapterIdx = 0;
@@ -1089,7 +1090,7 @@ function buildAccordion() {
   accData.forEach(function (d) {
     if (d.kind === 't1' && !openLbl) { addLabel(list, '<span class="treapta-cap">🐣 Înțeleg <span class="t-mic">piese care se ajută, piese care se încurcă</span></span>'); openLbl = true; }
     if (d.kind === 't2' && !trapLbl) { addLabel(list, '<span class="treapta-cap">🐦 Mă pricep <span class="t-mic">eliberezi piesa care stă închisă</span></span>'); trapLbl = true; }
-    if (d.kind === 't3' && !defLbl)  { addLabel(list, '<span class="treapta-cap">🦅 Sunt maestru <span class="t-mic">material egal, și totuși cineva stă mult mai bine</span></span>'); defLbl = true; }
+    if (d.kind === 't3' && !defLbl)  { addLabel(list, '<span class="treapta-cap">🦅 Sunt maestru <span class="t-mic">o combinație tentantă — și decizia de a n-o juca</span></span>'); defLbl = true; }
     const item = document.createElement('div');
     item.className = 'acc-item';
     item.dataset.ch = d.chIdx;
