@@ -140,7 +140,17 @@
     }
     .prac-btn.ghost { background: transparent; color: var(--c-navy); }
     .prac-btn:hover { opacity: 0.88; }
-  </style>
+  
+    /* șir de mutări pe care se poate apăsa, direct din text */
+    .mv-line { display: inline-flex; flex-wrap: wrap; gap: 5px; margin: 4px 0; }
+    .mv-link {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.92em;
+      color: var(--c-navy); background: rgba(255,255,255,0.75);
+      border: 1.5px solid rgba(26,58,107,0.35); border-radius: 7px;
+      padding: 2px 9px; cursor: pointer; transition: background .12s ease;
+    }
+    .mv-link:hover { background: #fff; border-color: var(--c-navy); }
+</style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
 </head>
@@ -169,7 +179,7 @@
 
           <div class="def-box">
             <p class="def-title">Ce este Apărarea Philidor?</p>
-            <p>Începe cu <strong>1.e4 e5 2.Cf3 d6</strong>. Când Albul atacă granița cu calul, Negrul alege să-și <strong>apere pionul cu un pion</strong>. E o alegere solidă și liniștită.</p>
+            <p>Începe cu <span class="mv-line"><button class="mv-link" onclick="goMove(0,1)">1.e4</button><button class="mv-link" onclick="goMove(0,2)">e5</button><button class="mv-link" onclick="goMove(0,3)">2.Cf3</button><button class="mv-link" onclick="goMove(0,4)">d6</button></span>. Când Albul atacă granița cu calul, Negrul alege să-și <strong>apere pionul cu un pion</strong>. E o alegere solidă și liniștită.</p>
             <p>Numele vine de la <strong>François-André Danican Philidor</strong>, francez din secolul XVIII, care a fost și jucător de șah, și compozitor de operă — pe vremea aceea, puțini oameni aveau resurse ca să facă artă și știință. El e cel care a spus că <strong>pionii sunt sufletul șahului</strong>.</p>
           </div>
 
@@ -487,6 +497,20 @@ function playMoveSound(san, game) {
   if (game && game.in_checkmate()) { playSnd(sndMate); return; }
   if (san && san.indexOf('x') !== -1) playSnd(sndCapture);
   else playSnd(sndMove);
+}
+
+/* ─── Șir de mutări clicabil din text: deschide capitolul și sare la mutare ─── */
+function goMove(chIdx, step) {
+  const item = document.querySelector('#accList .acc-item[data-ch="' + chIdx + '"]');
+  if (!item) return;
+  if (!item.classList.contains('open')) openAcc(item);
+  goToStep(step);
+  const sc = document.querySelector('.panel-scroll');
+  if (sc) {
+    const a = item.getBoundingClientRect(), l = sc.getBoundingClientRect();
+    if (a.top < l.top) sc.scrollTop += a.top - l.top;
+    else if (a.bottom > l.bottom) sc.scrollTop += a.bottom - l.bottom;
+  }
 }
 
 function goToStep(s) {
