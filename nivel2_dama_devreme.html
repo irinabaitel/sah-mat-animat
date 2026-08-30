@@ -167,6 +167,16 @@
        ca la .last-move, ca să se vadă în continuare tabla dedesubt */
     .hl-a { box-shadow: inset 0 0 0 100px rgba(60,190,80,0.38); }
     .hl-b { box-shadow: inset 0 0 0 100px rgba(70,140,220,0.34); }
+
+    /* șir de mutări pe care se poate apăsa, direct din text */
+    .mv-line { display: inline-flex; flex-wrap: wrap; gap: 5px; margin: 4px 0; }
+    .mv-link {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.92em;
+      color: var(--c-navy); background: rgba(255,255,255,0.75);
+      border: 1.5px solid rgba(26,58,107,0.35); border-radius: 7px;
+      padding: 2px 9px; cursor: pointer; transition: background .12s ease;
+    }
+    .mv-link:hover { background: #fff; border-color: var(--c-navy); }
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -210,7 +220,7 @@
           </div>
 
           <div class="note-box">
-            🧭 <strong>Când e gata deschiderea?</strong> Nu când ți se pare ție. Sunt cinci lucruri de bifat: <br><br>· <strong>un pion în centru</strong> <br>· <strong>figurile ușoare scoase</strong> — caii și nebunii — pe câmpuri folositoare, pe cât se poate centrale <br>· <strong>regele în siguranță</strong> — rocada <br>· <strong>regina pe un câmp bun</strong> <br>· <strong>turnurile legate</strong>, adică fără nimic între ele <br><br>Numără de câte mutări mai ai nevoie ca să le bifezi pe toate, și de câte are nevoie adversarul. <br><br>⚠️ Și ține minte regula: <strong>nu declanșezi atacul asupra adversarului până când deschiderea nu este terminată</strong>, pentru că până atunci nu ai suficientă forță de atac. Dacă tu termini mai repede decât el, atunci timpul acela în plus e al tău.
+            🧭 <strong>Când se termină deschiderea?</strong> Când ai încheiat toate cele <strong>cinci misiuni</strong>: <br><br>· <strong>un pion în centru</strong> <br>· <strong>figurile ușoare scoase</strong> — caii și nebunii — pe câmpuri folositoare, pe cât se poate centrale <br>· <strong>regele în siguranță</strong> — rocada <br>· <strong>regina pe un câmp bun</strong> <br>· <strong>turnurile legate</strong>, adică fără nimic între ele <br><br>Numără de câte mutări mai ai nevoie ca să le bifezi pe toate, și de câte are nevoie adversarul. <br><br>⚠️ Și ține minte regula: <strong>nu declanșezi atacul asupra adversarului până când deschiderea nu este terminată</strong>, pentru că până atunci nu ai suficientă forță de atac. Dacă tu termini mai repede decât el, atunci timpul acela în plus e al tău.
           </div>
 
           <div class="note-box how-box">
@@ -307,7 +317,7 @@ const chapters = [
       1: '<strong>…Rd8?</strong> — regele vine lângă c7 și îl păzește. Pare inteligent.',
       2: '<strong>6.Cxc7!</strong> — calul capturează pionul, deși regele îl apără. De ce îndrăznește? Pentru că de pe c7 atacă și <strong>turnul din a8</strong>, iar Negrul e tentat să-l ia.',
       3: '<strong>…Rxc7</strong> — regele îl recapturează. Acum uită-te unde stă regele și unde stă regina.',
-      4: '<strong>7.Cd5+</strong> — <strong>furculiță regală.</strong> Calul dă șah regelui de pe c7 <em>și</em> atacă regina de pe f6, în același timp. Regele trebuie să iasă din șah, deci regina cade. <br><br>Și acum, cine e vinovat? <strong>Nu Df6, ci Rxc7.</strong> Cât timp regele stătea pe e8, calul de pe d5 n-avea cum să-i dea șah și reginei în același timp — cele două erau prea departe una de alta. <strong>Regele e cel care a venit lângă regină</strong>, pe c7, și le-a pus pe amândouă în bătaia aceluiași cal. <br><br>Reține totuși de ce a pornit tot: regina ieșise devreme, iar <strong>o piesă atât de valoroasă e cel mai ușor de fugărit, pentru că nu își permite să stea pe loc.</strong>'
+      4: '<strong>7.Cd5+</strong> — <strong>furculiță regală.</strong> Calul dă șah regelui de pe c7 <em>și</em> atacă regina de pe f6, în același timp. Regele trebuie să iasă din șah, deci regina cade. <br><br>Mutarea <strong>…Rxc7</strong> a fost cea care a așezat regele nefericit: de pe c7 el ajunge pe același câmp cu regina în bătaia unui singur cal, și așa devine posibil atacul dublu cu <strong>Cd5</strong>. Cât timp regele stătea pe e8, cele două erau prea departe una de alta. <br><br>Iar la început a fost regina ieșită devreme. <strong>O piesă atât de valoroasă e cel mai ușor de fugărit, pentru că nu își permite să stea pe loc.</strong>'
     },
     arrows: { 4: [{from:'d5', to:'c7', color:'R'}, {from:'d5', to:'f6', color:'R'}] }
   },
@@ -350,7 +360,7 @@ const chapters = [
     finishMsg: 'Ai dezvoltat și ai atacat, dintr-o mutare!',
     san: ['e4','d5','exd5','Qxd5','Nc3'],
     ann: {
-      0: 'Hai să vedem întâi cum se ajunge aici. Asta e <strong>Apărarea Scandinavă</strong>, o deschidere pe care o întâlnești la orice concurs de copii. Derulează primele mutări.',
+      0: 'Hai să vedem întâi cum se ajunge aici. Asta e <strong>Apărarea Scandinavă</strong>, o deschidere pe care o întâlnești la orice concurs de copii. <br><br><span class="mv-line"><button class="mv-link" onclick="goToStep(1)">1.e4</button><button class="mv-link" onclick="goToStep(2)">d5</button><button class="mv-link" onclick="goToStep(3)">2.exd5</button><button class="mv-link" onclick="goToStep(4)">Dxd5</button></span> <br>Apasă pe oricare mutare ca s-o vezi pe tablă.',
       1: '<strong>1.e4</strong> — Misiunea 1, pionul în centru.',
       2: '<strong>…d5</strong> — Negrul nu răspunde în oglindă, ci îl atacă pe loc pe pionul din e4. Asta e ideea Scandinavei.',
       3: '<strong>2.exd5</strong> — Albul capturează. Acum Negrul e cu un pion în minus și trebuie să și-l ia înapoi.',
@@ -370,7 +380,7 @@ const chapters = [
     finishMsg: 'Regina a plecat după un pion și n-a mai găsit drumul înapoi.',
     san: ['Bxf7+','Kxf7','Ng5+','Ke8','Nxe4'],
     ann: {
-      0: 'Joci cu <strong>Albul</strong>. S-a jucat <strong>1.e4 e5 2.Cf3 Df6 3.Nc4 Dg6 4.0-0 Dxe4</strong> — o partidă cum se joacă la orice concurs de copii. <br><br>Numără ce a făcut Negrul: <strong>trei mutări de regină</strong> și niciuna de figură. Iar acum a mai făcut ceva — a plecat după pionul din e4, adică s-a dus și mai departe de casă. <br><br>Albul, în schimb, are un cal și un nebun afară și e rocat. <strong>Are o figură în plus în joc, deci are dreptul la ceva.</strong> <br><br>Uită-te la nebunul din c4 și la calul din f3, și găsește-le împreună o treabă.',
+      0: 'Joci cu <strong>Albul</strong>. S-a jucat <strong>1.e4 e5 2.Cf3 Df6 3.Nc4 Dg6 4.0-0 Dxe4</strong> — o partidă cum se joacă la orice concurs de copii. <br><br>Numără ce a făcut Negrul: <strong>trei mutări de regină</strong> și niciuna de figură. Iar acum a mai făcut ceva — a plecat după pionul din e4, adică s-a dus și mai departe de casă. <br><br>Albul, în schimb, are un cal și un nebun afară și e rocat. Are un <strong>avantaj de dezvoltare</strong> — și, mai important, are un <strong>plan</strong>: nebunul din c4 va atrage regele de pe ultima linie, iar calul va ataca apoi în stil mare. <br><br>Pentru o regină merită să întârzii un pic dezvoltarea! <br><br>Uită-te la nebunul din c4 și la calul din f3, și găsește-le împreună o treabă.',
       1: '<strong>5.Nxf7+!</strong> — nebunul se sacrifică pe cel mai sensibil punct al Negrului. Pare o nebunie: dai o figură de trei pe un pion de unu.',
       2: '<strong>…Rxf7</strong> — regele e obligat să ia, altfel rămâne și fără pion, și în șah. Dar acum e scos afară, pe f7.',
       3: '<strong>6.Cg5+!</strong> — și aici se vede totul. Calul dă șah regelui de pe f7 <strong>și atacă regina de pe e4</strong>, în același timp. <br><br>Furculiță. Regele trebuie să iasă din șah <em>chiar acum</em>, deci n-are cum s-o mai apere.',
