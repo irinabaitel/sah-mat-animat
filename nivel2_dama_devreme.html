@@ -293,64 +293,74 @@ const chapters = [
 
   /* 0 — regina iese și e gonită imediat */
   {
-    fen: 'r1bqkbnr/pppp1ppp/2n5/8/3N4/2N5/PPP1PPPP/R1BQKB1R b KQkq - 0 4', orient: 'black',
-    winner: 'w', practiceFrom: 0, winEval: 3,
-    finishMsg: 'Regina s-a întors acasă — două mutări aruncate.',
-    san: ['Qf6','Ndb5','Qd8'],
+    fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', orient: 'black',
+    winner: 'w', practiceFrom: 7, winEval: 3,
+    finishMsg: 'Regina s-a întors acasă — două mutări irosite.',
+    san: ['Nc3','e5','Nf3','Nc6','d4','exd4','Nxd4','Qf6','Ndb5','Qd8'],
     ann: {
-      0: '👑 <strong>Regina iese prea devreme.</strong> S-a jucat <strong>1.Cc3 e5 2.Cf3 Cc6 3.d4 exd4 4.Cxd4</strong>. Joci cu <strong>Negrul</strong>. <br><br>Câmpul <strong>f6</strong> arată bine, nu? E în centru, e liber, de acolo se vede departe. Mulți copii duc regina acolo. <br><br>Hai s-o ducem, ca să vezi ce se întâmplă. <br><br><em>(Ține minte întrebarea asta pentru mai târziu: care piesă ar fi trebuit, de fapt, să se ducă pe f6?)</em>',
-      1: '<strong>…Df6?</strong> — regina e în centru și pare grozavă. <br><br>Numai că, mutând-o de pe d8, s-a întâmplat ceva ce nu se vede: <strong>pionul din c7 a rămas neapărat.</strong> Regina îl păzea de acasă.',
-      2: '<strong>5.Cdb5!</strong> — și calul sare exact pe câmpul de unde atacă pionul din c7. Amenință Cxc7+, cu furculiță pe rege și pe turnul din a8. <br><br>Negrul trebuie să facă ceva, acum.',
-      3: '<strong>…Dd8</strong> — regina se întoarce de unde a plecat, ca să apere iar pionul. <br><br>Numără ce s-a întâmplat: Negrul a făcut <strong>două mutări cu regina</strong> (f6 și înapoi pe d8) și a ajuns exact de unde a plecat. <strong>Două tempouri irosite.</strong> În timpul ăsta Albul a scos un cal pe b5, unde stă bine. <br><br>Iar acum răspunsul la întrebarea de la început: pe f6 trebuia să se ducă <strong>calul</strong>, nu regina. Cu <strong>4…Cf6</strong> poziția era în regulă. Aceeași căsuță, altă piesă. Și mare diferență!'
+      0: '👑 <strong>Regina iese prea devreme.</strong> Derulează începutul partidei — sau apasă direct pe o mutare, ca s-o vezi pe tablă. <br><br><span class="mv-line"><button class="mv-link" onclick="goMove(0,1)">1.Cc3</button><button class="mv-link" onclick="goMove(0,2)">e5</button><button class="mv-link" onclick="goMove(0,3)">2.Cf3</button><button class="mv-link" onclick="goMove(0,4)">Cc6</button><button class="mv-link" onclick="goMove(0,5)">3.d4</button><button class="mv-link" onclick="goMove(0,6)">exd4</button><button class="mv-link" onclick="goMove(0,7)">4.Cxd4</button></span>',
+      1: '<strong>1.Cc3</strong> — calul iese primul, cum e ordinea.',
+      2: '<strong>…e5</strong> — Negrul ocupă centrul.',
+      3: '<strong>2.Cf3</strong> — al doilea cal, și atacă pionul din e5.',
+      4: '<strong>…Cc6</strong> — Negrul îl apără, tot cu o figură dezvoltată. Până aici, amândoi joacă bine.',
+      5: '<strong>3.d4</strong> — Albul lovește în centru.',
+      6: '<strong>…exd4</strong> — Negrul capturează.',
+      7: '<strong>4.Cxd4</strong> — Albul recapturează, și acum e rândul Negrului. <br><br>Joci cu <strong>Negrul</strong>. Câmpul <strong>f6</strong> arată bine, nu? E în centru, e liber, de acolo se vede departe. Mulți copii duc regina acolo. <br><br>Hai s-o ducem, ca să vezi ce se întâmplă. <br><br><em>(Ține minte întrebarea asta pentru mai târziu: care piesă ar fi trebuit, de fapt, să se ducă pe f6?)</em>',
+      8: '<strong>…Df6?</strong> — regina e în centru și pare grozavă. <br><br>Numai că, mutând-o de pe d8, s-a întâmplat ceva ce nu se vede: <strong>pionul din c7 a rămas neapărat.</strong> Regina îl păzea de acasă.',
+      9: '<strong>5.Cdb5!</strong> — și calul sare exact pe câmpul de unde atacă pionul din c7. Amenință Cxc7+, cu furculiță pe rege și pe turnul din a8. <br><br>Negrul trebuie să facă ceva, acum.',
+      10: '<strong>…Dd8</strong> — regina se întoarce de unde a plecat, ca să apere iar pionul. <br><br>Numără ce s-a întâmplat: Negrul a făcut <strong>două mutări cu regina</strong> (f6 și înapoi pe d8) și a ajuns exact de unde a plecat. <strong>Două tempouri irosite.</strong> În timpul ăsta Albul a scos un cal pe b5, unde stă bine. <br><br>Iar acum răspunsul la întrebarea de la început: pe f6 trebuia să se ducă <strong>calul</strong>, nu regina. Cu <strong>4…Cf6</strong> poziția era în regulă. Aceeași căsuță, altă piesă. Și mare diferență!'
     },
-    arrows: { 2: [{from:'b5', to:'c7', color:'R'}] }
+    arrows: { 9: [{from:'b5', to:'c7', color:'R'}] }
   },
 
   /* 1 — dacă apără regele */
   {
-    fen: 'r1b1kbnr/pppp1ppp/2n2q2/1N6/8/2N5/PPP1PPPP/R1BQKB1R b KQkq - 2 5', orient: 'black',
-    winner: 'w', practiceFrom: 0, winEval: 6,
+    fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', orient: 'black',
+    winner: 'w', practiceFrom: 9, winEval: 6,
     finishMsg: 'Furculiță regală — regina cade.',
-    san: ['Kd8','Nxc7','Kxc7','Nd5+'],
+    san: ['Nc3','e5','Nf3','Nc6','d4','exd4','Nxd4','Qf6','Ndb5','Kd8','Nxc7','Kxc7','Nd5+'],
     ann: {
-      0: '„Bine", zice Negrul, „nu-mi mut regina înapoi. <strong>Îl apăr pe c7 cu regele.</strong>" Joci cu <strong>Negrul</strong> — încearcă. <br><br>La prima vedere pare o idee bună: regele nu iese nicăieri, doar se dă un pas într-o parte și păzește pionul.',
-      1: '<strong>…Rd8?</strong> — regele vine lângă c7 și îl păzește. Pare inteligent.',
-      2: '<strong>6.Cxc7!</strong> — calul capturează pionul, deși regele îl apără. De ce îndrăznește? Pentru că de pe c7 atacă și <strong>turnul din a8</strong>, iar Negrul e tentat să-l ia.',
-      3: '<strong>…Rxc7</strong> — regele îl recapturează. Acum uită-te unde stă regele și unde stă regina.',
-      4: '<strong>7.Cd5+</strong> — <strong>furculiță regală.</strong> Calul dă șah regelui de pe c7 <em>și</em> atacă regina de pe f6, în același timp. Regele trebuie să iasă din șah, deci regina cade. <br><br>Mutarea <strong>…Rxc7</strong> a fost cea care a așezat regele nefericit: de pe c7 el ajunge pe același câmp cu regina în bătaia unui singur cal, și așa devine posibil atacul dublu cu <strong>Cd5</strong>. Cât timp regele stătea pe e8, cele două erau prea departe una de alta. <br><br>Iar la început a fost regina ieșită devreme. <strong>O piesă atât de valoroasă e cel mai ușor de fugărit, pentru că nu își permite să stea pe loc.</strong>'
+      0: '⚔️ Aceeași partidă, dar Negrul alege altfel la mutarea a cincea. Apasă pe o mutare ca s-o vezi pe tablă. <br><br><span class="mv-line"><button class="mv-link" onclick="goMove(1,1)">1.Cc3</button><button class="mv-link" onclick="goMove(1,2)">e5</button><button class="mv-link" onclick="goMove(1,3)">2.Cf3</button><button class="mv-link" onclick="goMove(1,4)">Cc6</button><button class="mv-link" onclick="goMove(1,5)">3.d4</button><button class="mv-link" onclick="goMove(1,6)">exd4</button><button class="mv-link" onclick="goMove(1,7)">4.Cxd4</button><button class="mv-link" onclick="goMove(1,8)">…Df6</button><button class="mv-link" onclick="goMove(1,9)">5.Cdb5</button></span>',
+      9: '„Bine", zice Negrul, „nu-mi mut regina înapoi. <strong>Îl apăr pe c7 cu regele.</strong>" Joci cu <strong>Negrul</strong> — încearcă. <br><br>La prima vedere pare o idee bună: regele nu iese nicăieri, doar se dă un pas într-o parte și păzește pionul.',
+      10: '<strong>…Rd8?</strong> — regele vine lângă c7 și îl păzește. Pare inteligent.',
+      11: '<strong>6.Cxc7!</strong> — calul capturează pionul, deși regele îl apără. De ce îndrăznește? Pentru că de pe c7 atacă și <strong>turnul din a8</strong>, iar Negrul e tentat să-l ia.',
+      12: '<strong>…Rxc7</strong> — regele îl recapturează. Acum uită-te unde stă regele și unde stă regina.',
+      13: '<strong>7.Cd5+</strong> — <strong>furculiță regală.</strong> Calul dă șah regelui de pe c7 <em>și</em> atacă regina de pe f6, în același timp. Regele trebuie să iasă din șah, deci regina cade. <br><br>Mutarea <strong>…Rxc7</strong> a fost cea care a așezat regele nefericit: de pe c7 el ajunge pe același câmp cu regina în bătaia unui singur cal, și așa devine posibil atacul dublu cu <strong>Cd5</strong>. Cât timp regele stătea pe e8, cele două erau prea departe una de alta. <br><br>Iar la început a fost regina ieșită devreme. <strong>O piesă atât de valoroasă e cel mai ușor de fugărit, pentru că nu își permite să stea pe loc.</strong>'
     },
-    arrows: { 4: [{from:'d5', to:'c7', color:'R'}, {from:'d5', to:'f6', color:'R'}] }
+    arrows: { 13: [{from:'d5', to:'c7', color:'R'}, {from:'d5', to:'f6', color:'R'}] }
   },
 
   /* 2 — pedeapsa dusă până la capăt */
   {
-    fen: 'r1bqkbnr/pppp1ppp/2n5/1N6/8/2N5/PPP1PPPP/R1BQKB1R w KQkq - 3 6', orient: 'white',
-    winner: 'w', practiceFrom: 0, winEval: 4,
+    fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 10, winEval: 4,
     finishMsg: 'Doi atacatori, un apărător — c7 cade.',
-    san: ['Bf4','d6','Nd5'],
+    san: ['Nc3','e5','Nf3','Nc6','d4','exd4','Nxd4','Qf6','Ndb5','Qd8','Bf4','d6','Nd5'],
     ann: {
-      0: 'Regina s-a întors pe d8 și pionul din c7 e iar apărat. S-a terminat? Nu. Joci cu <strong>Albul</strong>. <br><br>Ai un cal bine plasat pe b5 și un avans de dezvoltare. <strong>Folosește-l</strong> — și adu încă o piesă în joc, ca la lecția trecută.',
-      1: '<strong>6.Nf4</strong> — nebunul iese, și nu oriunde: de pe f4 se uită tot spre <strong>c7</strong>. Nu mai e o mutare de dezvoltare, e una care ținteşte.',
-      2: '<strong>…d6</strong> — Negrul își deschide și el drumul nebunului, în sfârșit.',
-      3: '<strong>7.Cd5!</strong> — și acum fă numărătoarea pe <strong>c7</strong>, exact ca la lecția despre schimburi. <br><br><strong>Îl atacă doi:</strong> calul din b5 și calul din d5. <br><strong>Îl apără unul:</strong> regina din d8. <br><br>Doi la unu. Negrul nu mai poate ține c7, și odată cu el se prăbușește totul. <br><br>Uită-te înapoi la ce a pornit dezastrul: <strong>o singură mutare de regină, la mutarea a patra.</strong> N-a fost o gafă care pierde o piesă pe loc — a fost o mutare care a lăsat un pion neapărat și a dăruit adversarului două tempouri. Restul a venit de la sine.'
+      0: '🧮 Ne întoarcem la varianta în care regina se retrage pe d8. Apasă pe o mutare ca s-o vezi pe tablă. <br><br><span class="mv-line"><button class="mv-link" onclick="goMove(2,1)">1.Cc3</button><button class="mv-link" onclick="goMove(2,2)">e5</button><button class="mv-link" onclick="goMove(2,3)">2.Cf3</button><button class="mv-link" onclick="goMove(2,4)">Cc6</button><button class="mv-link" onclick="goMove(2,5)">3.d4</button><button class="mv-link" onclick="goMove(2,6)">exd4</button><button class="mv-link" onclick="goMove(2,7)">4.Cxd4</button><button class="mv-link" onclick="goMove(2,8)">…Df6</button><button class="mv-link" onclick="goMove(2,9)">5.Cdb5</button><button class="mv-link" onclick="goMove(2,10)">…Dd8</button></span>',
+      10: 'Regina s-a întors pe d8 și pionul din c7 e iar apărat. S-a terminat? Nu. Joci cu <strong>Albul</strong>. <br><br>Ai un cal bine plasat pe b5 și un avans de dezvoltare. <strong>Folosește-l</strong> — și adu încă o piesă în joc, ca la lecția trecută.',
+      11: '<strong>6.Nf4</strong> — nebunul iese, și nu oriunde: de pe f4 se uită tot spre <strong>c7</strong>. Nu mai e o mutare de dezvoltare, e una care țintește.',
+      12: '<strong>…d6</strong> — Negrul își deschide și el drumul nebunului, în sfârșit.',
+      13: '<strong>7.Cd5!</strong> — și acum fă numărătoarea pe <strong>c7</strong>, exact ca la lecția despre schimburi. <br><br><strong>Îl atacă doi:</strong> calul din b5 și calul din d5. <br><strong>Îl apără unul:</strong> regina din d8. <br><br>Doi la unu. Negrul nu mai poate ține c7, și odată cu el se prăbușește totul. <br><br>Uită-te înapoi la ce a pornit dezastrul: <strong>o singură mutare de regină, la mutarea a patra.</strong> N-a fost o gafă care pierde o piesă pe loc — a fost o mutare care a lăsat un pion neapărat și a dăruit adversarului două tempouri. Restul a venit de la sine.'
     },
-    arrows: { 3: [{from:'b5', to:'c7', color:'R'}, {from:'d5', to:'c7', color:'R'}, {from:'d8', to:'c7', color:'G'}] }
+    arrows: { 13: [{from:'b5', to:'c7', color:'R'}, {from:'d5', to:'c7', color:'R'}, {from:'d8', to:'c7', color:'G'}] }
   },
 
   /* ══ MĂ PRICEP ══ */
 
   /* 3 — gonește regina neagră */
   {
-    fen: 'r1b1kbnr/pppp1ppp/2n2q2/8/3N4/2N5/PPP1PPPP/R1BQKB1R w KQkq - 1 5', orient: 'white',
-    winner: 'w', practiceFrom: 0, winEval: 3,
+    fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 8, winEval: 3,
     finishMsg: 'Ai găsit câmpul!',
-    san: ['Ndb5'],
+    san: ['Nc3','e5','Nf3','Nc6','d4','exd4','Nxd4','Qf6','Ndb5'],
     ann: {
-      0: 'Aceeași poziție, dar acum joci cu <strong>Albul</strong> și trebuie s-o găsești singur. <br><br>Negrul tocmai a jucat <strong>…Df6</strong>. Întreabă-te: <strong>ce a lăsat neapărat mutând regina de acasă?</strong> <br><br>Găsește câmpul de unde calul tău din d4 lovește exact acolo.',
-      1: '<strong>Cdb5!</strong> — de pe b5 calul atacă pionul din <strong>c7</strong>, rămas fără apărător în clipa în care regina a plecat de pe d8. <br><br>Amenințarea e Cxc7+, furculiță pe rege și pe turnul din a8. Negrul e obligat să răspundă imediat. <br><br>⚖️ Să fim cinstiți cu ce e mutarea asta: <strong>nu e o mutare de dezvoltare.</strong> Calul era deja scos, e a doua oară când îl muți — exact lucrul pe care ți-am spus să-l eviți. <br><br>Ce o justifică e altceva: <strong>îl obligi pe adversar să piardă un tempo ca să apere c7.</strong> Tu ai mutat de două ori cu aceeași piesă, dar și el a mutat de două ori cu regina, deci ieși în avantaj. <br><br>Și tot cinstit: cumva alergi după fluturi. <strong>Mulți maeștri ar ignora un câștig atât de mic</strong> și și-ar scoate liniștiți restul figurilor, ca să termine deschiderea mai repede. <br><br>Reține deci nu mutarea, ci ideea: o regină ieșită prea devreme se pedepsește <strong>lovind ce a lăsat descoperit</strong>, nu alergând după ea.'
+      0: 'Aceeași deschidere, dar acum o găsești tu. Apasă pe o mutare ca s-o vezi pe tablă. <br><br><span class="mv-line"><button class="mv-link" onclick="goMove(3,1)">1.Cc3</button><button class="mv-link" onclick="goMove(3,2)">e5</button><button class="mv-link" onclick="goMove(3,3)">2.Cf3</button><button class="mv-link" onclick="goMove(3,4)">Cc6</button><button class="mv-link" onclick="goMove(3,5)">3.d4</button><button class="mv-link" onclick="goMove(3,6)">exd4</button><button class="mv-link" onclick="goMove(3,7)">4.Cxd4</button><button class="mv-link" onclick="goMove(3,8)">…Df6</button></span>',
+      8: 'Joci cu <strong>Albul</strong>. Negrul tocmai a jucat <strong>…Df6</strong>. <br><br>Întreabă-te: <strong>ce a lăsat neapărat mutând regina de acasă?</strong> <br><br>Găsește câmpul de unde calul tău din d4 lovește exact acolo.',
+      9: '<strong>Cdb5!</strong> — de pe b5 calul atacă pionul din <strong>c7</strong>, rămas fără apărător în clipa în care regina a plecat de pe d8. <br><br>Amenințarea e Cxc7+, furculiță pe rege și pe turnul din a8. Negrul e obligat să răspundă imediat. <br><br>⚖️ Să fim cinstiți cu ce e mutarea asta: <strong>nu e o mutare de dezvoltare.</strong> Calul era deja scos, e a doua oară când îl muți — exact lucrul pe care ți-am spus să-l eviți. <br><br>Ce o justifică e altceva: <strong>îl obligi pe adversar să piardă un tempo ca să apere c7.</strong> Tu ai mutat de două ori cu aceeași piesă, dar și el a mutat de două ori cu regina, deci ieși în avantaj. <br><br>Și tot cinstit: cumva alergi după fluturi. <strong>Mulți maeștri ar ignora un câștig atât de mic</strong> și și-ar scoate liniștiți restul figurilor, ca să termine deschiderea mai repede. <br><br>Reține deci nu mutarea, ci ideea: o regină ieșită prea devreme se pedepsește <strong>lovind ce a lăsat descoperit</strong>, nu alergând după ea.'
     },
-    arrows: { 0: [{from:'d8', to:'f6', color:'B'}] },
-    hl: { 0: [{sq:'c7',cls:'hl-b'}] }
+    arrows: { 8: [{from:'d8', to:'f6', color:'B'}] },
+    hl: { 8: [{sq:'c7',cls:'hl-b'}] }
   },
 
   /* 4 — Scandinava: dezvoltă cu tempo */
