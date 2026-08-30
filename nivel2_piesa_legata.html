@@ -214,8 +214,6 @@
             <p><strong>Când tu ai legat: atac-o încă o dată.</strong></p>
             <p style="font-size:0.94em;">O legătură singură, de multe ori, nu câștigă nimic — doar imobilizează. Dar tocmai de asta te poți folosi: <strong>piesa legată nu poate fugi</strong>, deci dacă o mai ataci o dată, o câștigi.</p>
             <p style="font-size:0.94em;">Ataci cu <strong>piesa cea mai puțin valoroasă</strong> pe care o ai la îndemână — de cele mai multe ori cu un pion. Dacă ataci cu o piesă mare, s-ar putea ca cea legată să fie totuși destul de apărată.</p>
-            <p style="margin-top:10px;"><strong>Trei întrebări, în ordinea asta:</strong></p>
-            <p style="font-size:0.94em;">1. <strong>Care piesă e legată?</strong> &nbsp;·&nbsp; 2. <strong>O pot ataca încă o dată, cu ceva ieftin?</strong> &nbsp;·&nbsp; 3. <strong>După mutarea mea, mai are el vreo apărare?</strong></p>
           </div>
 
           <div class="card">
@@ -245,9 +243,6 @@
             ⚡ <strong>Și mai e una, cea mai frumoasă: contraatacul.</strong> În loc să te ocupi de legătură, îi dai lui ceva mai urgent de rezolvat. Cel mai simplu contraatac e cel <strong>cu șah</strong> — el trebuie să răspundă imediat, iar tu câștigi mutarea de care aveai nevoie.
           </div>
 
-          <div class="note-box how-box">
-            ✋ <strong>Pe tablă poți muta oricând, liber</strong> — trage piesele cum vrei, ca să încerci idei, cu oricare tabără. Butonul <strong>„Joacă tu mutările"</strong> e altceva: acolo se așteaptă exact mutarea din lecție, iar dacă dai alta îți spune ce era bun la ea.
-          </div>
 
           <div class="acc-list" id="accList"></div>
 
@@ -378,12 +373,14 @@ const chapters = [
     fen: 'r1b5/p7/2n5/3B4/8/8/4K3/6k1 b - - 0 1', orient: 'black',
     winner: 'b', practiceFrom: 0, winEval: 0,
     finishMsg: 'Legătura a rămas — dar nu mai doare.',
-    san: ['Bd7'],
+    san: ['Bd7','Bxc6','Bxc6'],
     accept: { 0: ['Bd7','Bb7'] },
     altMsg: 'Și …Nb7 e bună — ba chiar face ceva în plus. Citește mai jos.',
     ann: {
       0: 'Joci cu <strong>Negrul</strong>. Nebunul alb din <strong>d5</strong> îți leagă calul din <strong>c6</strong> de turnul din <strong>a8</strong>. <br><br>E o legătură <em>relativă</em>: calul are șapte mutări, poate pleca oricând. Dar dacă pleacă, Nxa8 îți ia turnul. <br><br>Aici nu ai ce pune în cale între nebun și cal — sunt vecini. Și nu ai cu ce să-l capturezi pe nebun. <br><br>Îți rămâne a treia apărare. Găsește-o.',
-      1: '<strong>…Nd7!</strong> — nebunul tău vine și îl apără pe cal. <br><br>Acum, dacă Albul joacă Nxc6, tu răspunzi Nxc6: nebun pentru cal, schimb cinstit. Legătura nu-ți mai face rău. <br><br>⚠️ <strong>Dar fii atent la ce s-a întâmplat de fapt, pentru că aici greșesc mulți:</strong> legătura <em>nu a dispărut</em>. Nebunul alb tot ține diagonala d5–c6–b7–a8, iar calul tot stă în fața turnului. Dacă acum calul ar pleca, Nxa8 tot îți ia turnul. <br><br>Ce ai făcut e altceva: <strong>ai făcut legătura nedureroasă — deocamdată.</strong> Dacă Albul mai aduce un atacator asupra calului, socoteala se schimbă din nou și trebuie să te aperi iar. <br><br>💡 <strong>Merge și …Nb7</strong>, și e chiar mai bună — dar pentru alt motiv. Pe b7 nebunul nu doar apără calul, ci <strong>se așază chiar pe diagonală, între cal și turn</strong>. Așa nu mai are ce lega: legătura dispare de tot. Adică e, de fapt, apărarea „pun ceva în cale", pe care ai învățat-o mai devreme. <br><br>De-aia, dintre cele patru apărări, <strong>a apăra e cea mai slabă</strong>: doar amână. Cele care taie sau capturează închid subiectul.'
+      1: '<strong>…Nd7!</strong> — nebunul tău vine și îl apără pe cal. <br><br>Acum, dacă Albul joacă <button class="mv-link" onclick="goMove(4,2)">Nxc6</button>, tu răspunzi <button class="mv-link" onclick="goMove(4,3)">Nxc6</button>: nebun pentru cal, schimb cinstit. Legătura nu-ți mai face rău. <em>(Apasă pe mutări ca să le vezi pe tablă.)</em> <br><br>⚠️ <strong>Dar fii atent la ce s-a întâmplat de fapt, pentru că aici greșesc mulți:</strong> legătura <em>nu a dispărut</em>. Nebunul alb tot ține diagonala d5–c6–b7–a8, iar calul tot stă în fața turnului. Dacă acum calul ar pleca, Nxa8 tot îți ia turnul. <br><br>Ce ai făcut e altceva: <strong>ai făcut legătura nedureroasă — deocamdată.</strong> Dacă Albul mai aduce un atacator asupra calului, socoteala se schimbă din nou și trebuie să te aperi iar. <br><br>💡 <strong>Merge și …Nb7</strong>, și e chiar mai bună — dar pentru alt motiv. Pe b7 nebunul nu doar apără calul, ci <strong>se așază chiar pe diagonală, între cal și turn</strong>. Așa nu mai are ce lega: legătura dispare de tot. Adică e, de fapt, apărarea „pun ceva în cale", pe care ai învățat-o mai devreme. <br><br>De-aia, dintre cele patru apărări, <strong>a apăra e cea mai slabă</strong>: doar amână. Cele care taie sau capturează închid subiectul.',
+      2: '<strong>Nxc6</strong> — Albul ia calul, cum era de așteptat.',
+      3: '<strong>…Nxc6</strong> — și nebunul tău recapturează. Nebun pentru cal, schimb cinstit: nimeni n-a câștigat nimic. <br><br>Exact asta voiai. Fără <em>…Nd7</em>, calul ar fi căzut degeaba.'
     },
     arrows: { 0: [{from:'d5', to:'a8', color:'R'}], 1: [{from:'d7', to:'c6', color:'G'}, {from:'d5', to:'a8', color:'R'}] },
     hl: { 0: [{sq:'c6',cls:'hl-b'}], 1: [{sq:'c6',cls:'hl-b'}] }
