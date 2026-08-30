@@ -210,7 +210,7 @@
               </div></div>
               <div class="tac"><span class="t-ico">🐴</span><div>
                 <div class="t-nume">2. Dezvoltă figurile</div>
-                <div class="t-txt">Armata trebuie să iasă la luptă. <strong>Întâi caii, apoi nebunii, apoi dama.</strong> Se eliberează și câmpurile dintre turnuri, ca ele să se poată vedea una pe cealaltă.</div>
+                <div class="t-txt">Armata trebuie să iasă la luptă. <strong>Întâi caii, apoi nebunii, apoi dama.</strong> Se eliberează și câmpurile dintre turnuri, ca ele să se poată vedea unul pe celălalt.</div>
               </div></div>
               <div class="tac"><span class="t-ico">🏰</span><div>
                 <div class="t-nume">3. Adăpostește regele</div>
@@ -380,7 +380,7 @@ const chapters = [
     san: ['O-O'],
     ann: {
       0: 'Joci cu <strong>Albul</strong>, și de data asta poziția pare în regulă. Amândoi au jucat mult, s-au făcut schimburi, figurile sunt afară. <br><br>Numără misiunile pentru fiecare, cinstit: <br><br><strong>Negrul:</strong> centru — da. Figuri scoase — nebunul pe b6, caii pe f6 și g6. Rege adăpostit — <strong>da, e rocat</strong>. Trei din trei. <br><strong>Albul:</strong> centru — da. Figuri scoase — caii pe e3 și f3, nebunul pe d2, dama pe e2. Rege adăpostit — <strong>uită-te bine.</strong> <br><br>Găsește ce lipsește.',
-      1: '<strong>0-0!</strong> — regele alb era încă pe <strong>e1</strong>, în mijlocul tablei, cu opt figuri pe tablă de fiecare parte. <br><br>Era ușor de trecut cu vederea, pentru că toate <em>celelalte</em> figuri își făcuseră treaba. Dar exact asta e capcana: <strong>o poziție care arată dezvoltată nu e dezvoltată dacă regele a rămas în centru.</strong> <br><br>Și mai e ceva ce se rezolvă în aceeași mutare. Uită-te pe rândul întâi <em>după</em> rocadă: între turnul din a1 și cel din f1 nu mai stă nimeni. <strong>Turnurile se văd una pe cealaltă</strong> — abia acum se pot ajuta între ele. <br><br>Asta era ultima bucată din Misiunea 2, cea pe care o uită toată lumea: <em>se eliberează câmpurile dintre turnuri.</em>'
+      1: '<strong>0-0!</strong> — regele alb era încă pe <strong>e1</strong>, în mijlocul tablei, cu opt figuri pe tablă de fiecare parte. <br><br>Era ușor de trecut cu vederea, pentru că toate <em>celelalte</em> figuri își făcuseră treaba. Dar exact asta e capcana: <strong>o poziție care arată dezvoltată nu e dezvoltată dacă regele a rămas în centru.</strong> <br><br>Și mai e ceva ce se rezolvă în aceeași mutare. Uită-te pe rândul întâi <em>după</em> rocadă: între turnul din a1 și cel din f1 nu mai stă nimeni. <strong>Turnurile se văd unul pe celălalt</strong> — abia acum se pot ajuta între ele. <br><br>Asta era ultima bucată din Misiunea 2, cea pe care o uită toată lumea: <em>se eliberează câmpurile dintre turnuri.</em>'
     },
     arrows: { 0: [{from:'e1', to:'g1', color:'G'}] },
     hl: { 0: [{sq:'e1',cls:'hl-b'}] }
@@ -449,6 +449,20 @@ function clearSel() {
   pracSel = null;
 }
 
+/* Pe tablele de studiu poți muta cu oricare tabără, nu doar cu cea la rând —
+   sunt table de încercat idei, nu partide. Mutarea rămâne legală. */
+function mutaLiber(from, to) {
+  let mv = sGame.move({ from: from, to: to, promotion: 'q' });
+  if (mv) return mv;
+  const p = sGame.fen().split(' ');
+  p[1] = (p[1] === 'w') ? 'b' : 'w';
+  p[3] = '-';
+  const alt = new Chess(p.join(' '));
+  mv = alt.move({ from: from, to: to, promotion: 'q' });
+  if (mv) { sGame = alt; return mv; }
+  return null;
+}
+
 function onDragStart(source, piece) {
   if (rmbDown) return false;
   clearSel();
@@ -469,7 +483,7 @@ function onDrop(source, target) {
   if (target === 'offboard') return 'snapback';
   /* studiu: mutare liberă DAR legală (respectă regulile șahului) */
   if (sGame) {
-    const mv = sGame.move({ from: source, to: target, promotion: 'q' });
+    const mv = mutaLiber(source, target);
     if (!mv) return 'snapback';
     clearStudyArrows();
     board.position(sGame.fen(), false);
@@ -494,8 +508,7 @@ $(document).on('click', '.square-55d63', function (e) {
     const prevSq = selSq;
     clearSel();
     if (sq !== prevSq && sGame) {
-      const mv = sGame.move({ from: prevSq, to: sq, promotion: 'q' });
-      if (mv) { clearStudyArrows(); board.position(sGame.fen(), false); }
+      if (mutaLiber(prevSq, sq)) { clearStudyArrows(); board.position(sGame.fen(), false); }
     }
   } else {
     if (pos[sq]) {
