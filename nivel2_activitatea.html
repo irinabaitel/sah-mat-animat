@@ -215,15 +215,15 @@
             <p><strong>Două cuvinte care seamănă, dar nu înseamnă același lucru:</strong></p>
             <div class="tacam">
               <div class="tac"><span class="t-ico">🏃</span><div>
-                <div class="t-nume">Mobilitatea — unde se poate duce</div>
-                <div class="t-txt">Câte câmpuri are piesa unde poate <strong>ajunge</strong>. Se numără mutările ei, și atât.</div>
+                <div class="t-nume">Mobilitatea — unde poate ajunge</div>
+                <div class="t-txt">Câmpurile pe care piesa <strong>poate ajunge</strong>. Cu cât sunt mai multe, cu atât spunem că piesa are o <strong>mobilitate mai mare</strong>.</div>
               </div></div>
               <div class="tac"><span class="t-ico">👁️</span><div>
-                <div class="t-nume">Activitatea — ce face de acolo</div>
-                <div class="t-txt">Câte câmpuri <strong>ține sub control</strong>, ce piese ale lui <strong>atacă</strong> și ce piese de-ale tale <strong>apără</strong>. Nu unde ajunge, ci la ce folosește.</div>
+                <div class="t-nume">Activitatea — la ce folosește</div>
+                <div class="t-txt"><strong>Folosirea mobilității ca să faci lucruri:</strong> să <strong>aperi piese proprii</strong> sau să <strong>ataci piese ale adversarului</strong>. Nu unde ajunge, ci ce face de acolo.</div>
               </div></div>
             </div>
-            <p style="margin-top:12px; font-size:0.94em;">De obicei merg împreună: o piesă cu multe mutări ține și multe câmpuri. Dar nu întotdeauna. O piesă poate avea <strong>puține mutări și totuși o treabă adevărată</strong> — de pildă un nebun care nu se poate duce nicăieri, dar apără trei piese de-ale tale. Și invers: o piesă se poate plimba în voie prin spatele armatei, fără să atingă nimic important.</p>
+            <p style="margin-top:12px; font-size:0.94em;">Mobilitatea e <strong>condiția</strong>, activitatea e <strong>rezultatul</strong>. Fără mobilitate n-ai ce face — dar nici mobilitatea singură nu ajunge: o piesă se poate plimba în voie prin spatele armatei tale fără să atingă nimic important. <strong>Multe mutări care nu duc nicăieri nu înseamnă activitate.</strong></p>
             <p style="margin-top:12px;"><strong>O piesă căreia îi lipsește mobilitatea pățește două lucruri:</strong></p>
             <div class="tacam">
               <div class="tac"><span class="t-ico">😴</span><div>
@@ -235,7 +235,7 @@
                 <div class="t-txt">Dacă nu are unde să fugă, e destul ca cineva s-o atace. O piesă fără câmpuri e o piesă prinsă.</div>
               </div></div>
             </div>
-            <p style="margin-top:12px;"><strong>Cine ajunge așa?</strong> Piesele de la <strong>marginea tablei</strong>, și piesele așezate pe câmpuri de unde n-au mutări bune — de obicei pentru că le stau în drum <em>proprii pioni</em>.</p>
+            <p style="margin-top:12px;"><strong>Cine ajunge așa?</strong> Piesele de la <strong>marginea tablei</strong>, și piesele așezate pe câmpuri de unde n-au mutări bune — de obicei pentru că <strong>le stau în drum propriile piese</strong>, nu neapărat pionii.</p>
           </div>
 
           <div class="note-box">
@@ -310,27 +310,28 @@ const chapters = [
 
   /* ══ ÎNȚELEG ══ */
 
-  /* 0 — cine lucrează și cine doarme */
+  /* 0 — așa nu */
   {
     fen: '1k6/pppq2pr/n3b2p/3p1p2/3P1P2/P1P3P1/1B1Q3P/1N4KR w - - 0 1', orient: 'white',
     practice: false,
     san: [],
     ann: {
-      0: '😴 <strong>Piese care lucrează, piese care dorm.</strong> O poziție ciudată, aleasă anume: aici <em>fiecare</em> tabără are trei piese care nu fac nimic. <br><br>Ia-le pe rând și numără-le mutările — poți să și încerci pe tablă. <br><br><strong>La Negru:</strong> <br>· <strong>calul din a6</strong> — 2 mutări, și amândouă înapoi. Stă la marginea tablei. <br>· <strong>turnul din h7</strong> — <strong>1 singură mutare</strong>, pe h8. Îl închid propriii lui pioni, din g7 și h6. <br>· <strong>nebunul din e6</strong> — 2 mutări. E strâns între pionii lui, d5 și f5. <br><br><strong>La Alb:</strong> <br>· <strong>turnul din h1</strong> — <strong>zero mutări</strong>. Îl blochează propriul rege din g1 și propriul pion din h2. <br>· <strong>calul din b1</strong> — <strong>zero mutări</strong>. Toate cele trei câmpuri ale lui sunt ocupate de piese albe. <br>· <strong>nebunul din b2</strong> — 2 mutări, înapoi în colț. Pionii din a3 și c3 i-au închis diagonalele. <br><br>Compară cu <strong>damele</strong>: fiecare are <strong>9 mutări</strong>. <br><br>Materialul e egal, piesele sunt toate pe tablă. Dar patru dintre ele abia respiră, iar două nu pot mișca deloc. <strong>Cine numără doar piesele nu vede nimic din poziția asta.</strong> <br><br>👁️ <strong>Și acum uită-te și la activitate, nu doar la mobilitate.</strong> Ia fiecare piesă adormită și întreabă-te <em>ce atacă</em>: <br><br>· nebunul din e6 — nimic; · turnul din h7 — nimic; · calul din a6 — nimic; <br>· turnul din h1 — nimic; · calul din b1 — nimic; · nebunul din b2 — nimic. <br><br><strong>Niciuna dintre cele șase nu atinge nimic la adversar.</strong> Toate stau acasă și păzesc. Asta e diferența dintre mobilitate și activitate — și de-aia lecția se cheamă așa. <br><br>⚖️ Există totuși o nuanță, ca să fim drepți: <strong>nebunul negru din e6 are doar 2 mutări, dar apără trei piese</strong> — pionii din d5 și f5 și dama din d7. E o piesă pasivă, dar nu inutilă. Pe când <strong>turnul alb din h1 ține doar două câmpuri</strong> — g1, unde stă regele, și h2 — și nici pe acelea nu poate ajunge. Nu toate piesele adormite dorm la fel de adânc.'
+      0: '❌ <strong>Așa NU.</strong> O poziție aleasă anume: aici <em>fiecare</em> tabără are trei piese care nu fac nimic. <br><br>Ia-le pe rând și numără câmpurile pe care pot ajunge — poți încerca și pe tablă. <br><br><strong>La Alb:</strong> <br>· <strong>turnul din h1</strong> — <strong>zero</strong>. Îl blochează propriul rege din g1 și propriul pion din h2. <br>· <strong>calul din b1</strong> — <strong>zero</strong>. Toate cele trei câmpuri ale lui sunt ocupate de piese albe. <br>· <strong>nebunul din b2</strong> — <strong>două</strong>, amândouă înapoi în colț. Pionii din a3 și c3 i-au închis diagonalele. <br><br><strong>La Negru:</strong> <br>· <strong>calul din a6</strong> — două mutări, dar amândouă <strong>sinucigașe</strong>: pe c5 îl ia pionul din d4, pe b4 îl iau pionii din a3 și c3. <br>· <strong>turnul din h7</strong> — <strong>una singură</strong>, pe h8. Îl închid propriii lui pioni, din g7 și h6. <br>· <strong>nebunul din e6</strong> — două mutări, amândouă <strong>înapoi</strong>, pe f7 și g8. E strâns între pionii lui, d5 și f5. <br><br>Compară cu <strong>damele</strong>: fiecare are <strong>9</strong>. <br><br>👁️ <strong>Și acum partea de activitate.</strong> Ia fiecare piesă de pe tablă și întreabă-te ce atacă la adversar. <br><br>Răspunsul, pentru toate: <strong>nimic</strong>. Nicio piesă albă nu atinge nimic negru, și invers. Toate stau acasă. <br><br>Materialul e egal, toate piesele sunt pe tablă — și totuși nu se întâmplă nimic. <strong>Cine numără doar piesele nu vede nimic din poziția asta.</strong>'
     },
     hl: { 0: [{sq:'h1',cls:'hl-b'},{sq:'b1',cls:'hl-b'},{sq:'b2',cls:'hl-b'},
               {sq:'a6',cls:'hl-a'},{sq:'h7',cls:'hl-a'},{sq:'e6',cls:'hl-a'}] }
   },
 
-  /* 1 — temporar sau pentru totdeauna */
+  /* 1 — așa da */
   {
-    fen: '1k6/pppq2pr/n3b2p/3p1p2/3P1P2/P1P3P1/1B1Q3P/1N4KR w - - 0 1', orient: 'white',
+    fen: '1k6/pppq2pr/n3b2p/3p1p2/3P1P2/P1PQ1NP1/1B3K1P/3R4 w - - 0 1', orient: 'white',
     practice: false,
     san: [],
     ann: {
-      0: '⏳ <strong>Temporar sau pentru totdeauna.</strong> Aceeași poziție, dar acum întrebarea e alta: <em>care dintre piesele adormite pot fi trezite?</em> <br><br><strong>Se rezolvă ușor:</strong> turnul alb din h1 și calul alb din b1. Pe amândoi îi blochează piese care <em>se pot muta</em> — regele și dama. Câteva mutări, și sunt din nou în joc. Necazul e <strong>temporar</strong>. <br><br><strong>Se rezolvă greu:</strong> nebunul alb din b2. Lui îi stau în cale pionii din a3, c3 și d4 — iar <strong>pionii nu se pot întoarce niciodată</strong>. Cât timp stau acolo, nebunul rămâne închis. Asta e o lipsă de mobilitate <strong>de durată</strong>, și de-aia se spune că nebunii pățesc asta cel mai des. <br><br><strong>Nu se rezolvă deloc:</strong> calul negru din a6. Are două câmpuri, și <em>amândouă îl pierd</em> — pe <strong>c5</strong> îl ia pionul din d4, pe <strong>b4</strong> îl iau pionii din a3 și c3. <br><br>Calul acela nu e doar adormit. <strong>E prins.</strong> Și cu asta trecem la ce se întâmplă cu piesele care rămân fără câmpuri.'
+      0: '✅ <strong>Așa DA.</strong> Exact aceeași poziție, cu o singură deosebire: Albul și-a mutat între timp <strong>patru piese</strong> pe câmpuri mai bune. Turnul din h1 a ajuns pe <strong>d1</strong>, calul din b1 pe <strong>f3</strong>, dama pe <strong>d3</strong>, iar regele s-a dat la o parte pe <strong>f2</strong>. Negrul a rămas neschimbat. <br><br><strong>Numără din nou mobilitatea:</strong> <br><br>· turnul: de la <strong>0</strong> la <strong>8</strong> mutări; <br>· calul: de la <strong>0</strong> la <strong>6</strong>; <br>· dama: de la 9 la <strong>11</strong>. <br><br><strong>Și acum activitatea</strong>, care e partea importantă: dama de pe d3 <strong>atacă două piese negre</strong> — pionul din f5 și calul din a6. În poziția dinainte, niciuna dintre piesele albe nu atingea absolut nimic. <br><br>Asta e diferența dintre cele două noțiuni, văzută pe aceeași tablă: <strong>mai întâi le-a dat piese mobilitate, și abia apoi ele au putut face ceva.</strong> <br><br>⏳ Un singur lucru <em>nu</em> s-a putut repara: <strong>nebunul din b2 are tot două mutări.</strong> Lui îi stau în cale pionii din a3, c3 și d4 — iar <strong>pionii nu se pot întoarce niciodată</strong>. Turnul, calul și dama aveau un necaz <strong>temporar</strong>; nebunul are unul <strong>de durată</strong>. De-aia se spune că nebunii pățesc asta cel mai des.'
     },
-    hl: { 0: [{sq:'h1',cls:'hl-a'},{sq:'b1',cls:'hl-a'},{sq:'b2',cls:'hl-b'},{sq:'a6',cls:'hl-b'},{sq:'c5',cls:'hl-b'},{sq:'b4',cls:'hl-b'}] }
+    hl: { 0: [{sq:'d1',cls:'hl-a'},{sq:'f3',cls:'hl-a'},{sq:'d3',cls:'hl-a'},
+              {sq:'f5',cls:'hl-b'},{sq:'a6',cls:'hl-b'},{sq:'b2',cls:'hl-b'}] }
   },
 
   /* ══ MĂ PRICEP ══ */
@@ -371,10 +372,10 @@ const chapters = [
 
 /* ─── Acordeon: fiecare item încarcă un capitol ─── */
 const accData = [
-  { chIdx: 0, kind: 't1', num: '😴', title: 'Piese care lucrează, piese care dorm', practice: false,
-    desc: 'Șase piese adormite deodată, trei de fiecare culoare. Două dintre ele n-au nicio mutare.' },
-  { chIdx: 1, kind: 't1', num: '⏳', title: 'Temporar sau pentru totdeauna', practice: false,
-    desc: 'Unele piese proaste se trezesc din câteva mutări. Altele rămân închise de proprii pioni. Iar una e deja prinsă.' },
+  { chIdx: 0, kind: 't1', num: '❌', title: 'Așa NU — piese care dorm', practice: false,
+    desc: 'Șase piese adormite deodată, trei de fiecare culoare. Două n-au nicio mutare, și nimeni nu atacă nimic.' },
+  { chIdx: 1, kind: 't1', num: '✅', title: 'Așa DA — aceleași piese, mutate', practice: false,
+    desc: 'Aceeași poziție, cu patru piese albe duse pe câmpuri bune. Turnul de la 0 la 8, iar dama începe să atace.' },
 
   { chIdx: 2, kind: 't2', num: '1', title: 'Trezește turnul', practice: true,
     desc: 'Joci cu <strong>Albul</strong>. Un turn cu zero mutări, și doi vinovați — dar numai unul se poate da la o parte.' },
@@ -1076,7 +1077,7 @@ function buildAccordion() {
   const list = document.getElementById('accList');
   let openLbl = false, trapLbl = false, defLbl = false;
   accData.forEach(function (d) {
-    if (d.kind === 't1' && !openLbl) { addLabel(list, '<span class="treapta-cap">🐣 Înțeleg <span class="t-mic">piese care lucrează și piese care dorm</span></span>'); openLbl = true; }
+    if (d.kind === 't1' && !openLbl) { addLabel(list, '<span class="treapta-cap">🐣 Înțeleg <span class="t-mic">aceeași poziție, o dată prost și o dată bine</span></span>'); openLbl = true; }
     if (d.kind === 't2' && !trapLbl) { addLabel(list, '<span class="treapta-cap">🐦 Mă pricep <span class="t-mic">trezești piesa care doarme</span></span>'); trapLbl = true; }
     if (d.kind === 't3' && !defLbl)  { addLabel(list, '<span class="treapta-cap">🦅 Sunt maestru <span class="t-mic">o piesă fără câmpuri e o piesă pierdută</span></span>'); defLbl = true; }
     const item = document.createElement('div');
