@@ -461,6 +461,7 @@ function onDrop(source, target) {
     if (!mv) return 'snapback';
     clearStudyArrows();
     board.position(sGame.fen(), false);
+    showCheckHL(sGame);          /* sahul se recalculeaza si dupa mutarile libere */
     return;
   }
 }
@@ -482,7 +483,7 @@ $(document).on('click', '.square-55d63', function (e) {
     const prevSq = selSq;
     clearSel();
     if (sq !== prevSq && sGame) {
-      if (mutaLiber(prevSq, sq)) { clearStudyArrows(); board.position(sGame.fen(), false); }
+      if (mutaLiber(prevSq, sq)) { clearStudyArrows(); board.position(sGame.fen(), false); showCheckHL(sGame); }
     }
   } else {
     if (pos[sq]) {
