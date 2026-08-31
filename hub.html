@@ -669,6 +669,34 @@ body {
     }
   });
 })();
+
+/* Fiecare listă de teme își ține minte unde ai rămas cu derularea,
+   ca la întoarcerea în hub să nu sari înapoi la prima lecție. */
+(function(){
+  var CHEIE = 'hub-derulare-';
+  function numeNivel(ul){
+    var corp = ul.closest('.card-body') || ul.parentNode;
+    var n = corp.querySelector('.level-num');
+    return n ? n.textContent.trim() : '';
+  }
+  document.querySelectorAll('ul.topics').forEach(function(ul){
+    var nume = numeNivel(ul);
+    if (!nume) return;
+    var k = CHEIE + nume;
+    function salveaza(){ try { localStorage.setItem(k, String(ul.scrollTop)); } catch(e) {} }
+    try {
+      var v = parseInt(localStorage.getItem(k) || '0', 10);
+      if (v > 0) ul.scrollTop = v;
+    } catch(e) {}
+    var t = null;
+    ul.addEventListener('scroll', function(){
+      clearTimeout(t);
+      t = setTimeout(salveaza, 120);
+    }, { passive: true });
+    /* dacă pleacă spre o lecție, salvăm pe loc, fără să mai așteptăm */
+    ul.addEventListener('pointerdown', salveaza);
+  });
+})();
 </script>
 </body>
 </html>
