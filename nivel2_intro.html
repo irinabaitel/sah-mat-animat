@@ -277,6 +277,18 @@ const BLOCURI = [
     ] }
 ];
 
+/* Temele predate pe pagini de alt nivel (tacticile, de la Nivelul IV) se
+   deschid cu ?n=2, ca nivel2-traseu.js să le pună jos butoanele traseului
+   nostru. Așa nu clonăm paginile — corectăm mereu într-un singur loc. */
+function adrTema(h) {
+  return h.indexOf('nivel2_') === 0 ? h : h + '?n=2';
+}
+
+const LINK_TEMA = {};
+BLOCURI.forEach(function (b) {
+  b.teme.forEach(function (t) { if (t.h) LINK_TEMA[t.t] = t.h; });
+});
+
 /* ordinea de predat — amestecă blocurile, ca la clasă */
 const TRASEU = [
   ['Fazele jocului și obiectivele lor', 'D'],
@@ -343,7 +355,7 @@ function construieste() {
             '<span class="bloc-nume">' + b.nume + '</span>' +
             '<span class="bloc-nota">— ' + b.nota + '</span></div><ul class="bloc-lista">';
     b.teme.forEach(function (t) {
-      const nume = t.h ? '<a href="' + t.h + '">' + t.t + '</a>' : t.t;
+      const nume = t.h ? '<a href="' + adrTema(t.h) + '">' + t.t + '</a>' : t.t;
       h += '<li' + (t.pilot ? ' class="pilot"' : '') + '>' +
            '<span class="tema">' + nume + (t.pilot ? ' &nbsp;⭐' : '') + '</span>' +
            (t.d ? '<span class="bloc-nota">' + t.d + '</span>' : '') +
@@ -357,7 +369,9 @@ function construieste() {
   const lista = document.getElementById('lista-traseu');
   TRASEU.forEach(function (p) {
     const li = document.createElement('li');
-    li.innerHTML = '<span>' + p[0] + '</span><span class="eticheta">' + p[1] + '</span>';
+    const h  = LINK_TEMA[p[0]];
+    const nume = h ? '<a href="' + adrTema(h) + '">' + p[0] + '</a>' : p[0];
+    li.innerHTML = '<span>' + nume + '</span><span class="eticheta">' + p[1] + '</span>';
     lista.appendChild(li);
   });
 
