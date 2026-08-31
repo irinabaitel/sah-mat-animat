@@ -112,6 +112,13 @@
     .ex-btn:hover, .ex-btn.active { background: var(--c-navy); color: white; }
 
     #navControls { display: flex; flex-direction: column; gap: 10px; padding: 4px 0 6px; }
+    .mv-link {
+      display: inline; font-family: var(--font-display); font-weight: 700;
+      font-size: 0.97em; color: var(--c-navy); background: rgba(26,58,107,0.09);
+      border: 1px solid rgba(26,58,107,0.28); border-radius: 6px;
+      padding: 0 6px; cursor: pointer; line-height: 1.5;
+    }
+    .mv-link:hover { background: var(--c-navy); color: #fff; }
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -295,12 +302,12 @@ const chapters = [
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     san: ['d4','e6','Nf3','f5','Nc3','Nf6','Bg5','Be7','Bxf6','Bxf6','e4','fxe4','Nxe4','b6','Ne5','O-O','Bd3','Bb7','Qh5','Qe7','Qxh7+','Kxh7','Nxf6+','Kh6','Neg4+','Kg5','h4+','Kf4','g3+','Kf3','Be2+','Kg2','Rh2+','Kg1','Kd2#'],
     ann: {
-      0: '👑 <strong>Atracția fatală.</strong> Partida asta s-a jucat la <strong>Londra, în 1912</strong>, într-un club de șah, între <strong>Edward Lasker</strong> și <strong>Sir George Thomas</strong> — un maestru englez, campion al Angliei de două ori. <br><br>Se joacă în câteva secunde și se învață pe viață: regele negru va fi <strong>târât de pe g8 tocmai până pe g1</strong>, prin toată tabla, și va fi făcut mat acolo. <br><br>Derulează mutare cu mutare. Începutul e liniștit — atenție de la mutarea a zecea.',
-      19: 'Până aici, o deschidere obișnuită. Amândoi și-au scos figurile, Negrul a făcut rocada, iar dama albă a ieșit pe h5. <br><br>Uită-te acum la piesele albe: dama pe <strong>h5</strong>, calul pe <strong>e5</strong>, nebunul pe <strong>d3</strong>, calul pe <strong>e4</strong>. Toate patru privesc spre regele negru. <br><br>Și acum urmează, în cuvintele lui: <em>„cea mai violentă mutare".</em>',
+      0: '👑 <strong>Atracția fatală.</strong> Partida asta s-a jucat la <strong>Londra, în 1912</strong>, într-un club de șah, între <strong>Edward Lasker</strong> și <strong>Sir George Thomas</strong> — un maestru englez, campion al Angliei de două ori. <br><br>Se joacă în câteva secunde și se învață pe viață: regele negru va fi <strong>târât de pe g8 tocmai până pe g1</strong>, prin toată tabla, și va fi făcut mat acolo. <br><br>Derulează mutare cu mutare. Începutul e liniștit — atenție de la mutarea a zecea. <br><br><em style="opacity:.75">Secvența este prezentată cu comentariile lui GothamChess.</em>',
+      19: 'Până aici, o deschidere obișnuită. Amândoi și-au scos figurile, Negrul a făcut rocada, iar dama albă a ieșit pe h5. <br><br>Uită-te acum la piesele albe: dama pe <strong>h5</strong>, calul pe <strong>e5</strong>, nebunul pe <strong>d3</strong>, calul pe <strong>e4</strong>. Toate patru privesc spre regele negru. <br><br>Și acum urmează cea mai violentă mutare din toată partida.',
       20: '<strong>11.Dxh7+!!</strong> — dama ia pionul din h7 și se dă degeaba. <br><br><em>„Dama ia h7. …Ce?!"</em> <br><br>Nu e o combinație care câștigă material. E o mutare care are un singur scop: <strong>să scoată regele din casă</strong>. Iar Negrul <em>trebuie</em> s-o ia — e șah, n-are altceva.',
       21: '<strong>…Rxh7</strong> — forțat. <br><br><em>„Acum începe procesul de extracție."</em>',
       22: '<strong>12.Cxf6+</strong> — calul ia nebunul, și acum uită-te cine dă șah: <strong>și calul din f6, și nebunul din d3</strong>, care tocmai a rămas cu drumul liber. <br><br>Ăsta e <strong>șahul dublu</strong> — <em>„cea mai violentă, cea mai ucigătoare tactică din tot șahul"</em>. La un șah dublu nu poți nici captura, nici pune ceva în cale: <strong>regele trebuie să se mute</strong>, și atât.',
-      23: '<strong>…Rh6</strong> — regele iese în față. <br><br>Avea, de fapt, <strong>exact două variante</strong>: <br><br>· să se întoarcă pe <strong>h8</strong> — dar atunci urma <strong>13.Cg6#</strong>, mat cu calul. <em>„Uită-te la geometria aia!"</em> <br>· sau să vină în față, ca aici. <br><br>Și acum lucrul cel mai uimitor la poziția asta: <strong>de aici încolo, fiecare mutare e forțată.</strong> Amândoi joacă singura mutare pe care o au. <br><br>Dacă vrei, oprește-te aici și încearcă să calculezi singur până la capăt.',
+      23: '<strong>…Rh6</strong> — regele iese în față. <br><br>Avea, de fapt, <strong>exact două variante</strong>: <br><br>· să se întoarcă pe <strong>h8</strong> — dar atunci urma <strong>13.Cg6#</strong>, mat cu calul. <em>„Uită-te la geometria aia!"</em> (<button class="mv-link" onclick="showAlt(23,[&quot;Kh8&quot;,&quot;Ng6#&quot;],&quot;h8&quot;)">vezi varianta pe tablă</button>) <br>· sau să vină în față, ca aici. <br><br>Și acum lucrul cel mai uimitor la poziția asta: <strong>de aici încolo, fiecare mutare e forțată.</strong> Amândoi joacă singura mutare pe care o au. <br><br>Dacă vrei, oprește-te aici și încearcă să calculezi singur până la capăt.',
       24: '<strong>13.Ceg4+</strong> — al doilea cal intră în atac. <br><br><em>„Și fiecare câmp e ocupat, în afară de ăsta."</em> Regele n-are decât un singur loc unde să meargă — tot înainte. <br><br><em>„Aducem regele mai aproape. Vino aici."</em> De-aici i se trage și porecla partidei: <strong>Atracția fatală</strong>.',
       25: '<strong>…Rg5</strong> — regele negru e deja în mijlocul tablei, la mutarea a treisprezecea.',
       26: '<strong>14.h4+</strong> — un pion dă șah unui rege. <br><br>Și poate s-o facă pentru că e <strong>apărat de turnul din h1</strong>, care n-a mutat toată partida.',
@@ -311,7 +318,7 @@ const chapters = [
       31: '<strong>…Rg2</strong> — singura.',
       32: '<strong>17.Th2+</strong> — turnul care păzea pionul din h4 intră și el în joc, cu șah.',
       33: '<strong>…Rg1</strong> — și regele negru ajunge pe <strong>g1</strong>. <br><br>A plecat de pe g8. A traversat toată tabla, șapte mutări, fără să aibă vreodată de ales.',
-      34: '<strong>18.Rd2#</strong> — <strong>mat</strong>, dat de rege. <br><br>💡 Iar aici e poanta pe care o știu toți șahiștii: în poziția asta erau <strong>două</strong> maturi. Cel mai frumos ar fi fost <strong>18.0-0-0#</strong> — <em>mat prin rocadă mare!</em> Dar Edward Lasker a jucat Rd2, care dă mat la fel de bine. <br><br>Uită-te încă o dată la tabla întreagă: regele negru e făcut mat <strong>în colțul din care a plecat regele alb</strong>, iar toată armata albă e încă acasă. <br><br>Asta e atragerea: <strong>nu câștigi material, câștigi regele.</strong> Dama de nouă puncte a fost dată pentru un pion — dar a scos afară singura piesă care nu are voie să moară.'
+      34: '<strong>18.Rd2#</strong> — <strong>mat</strong>, dat de rege. <br><br>💡 Iar aici e poanta pe care o știu toți șahiștii: în poziția asta erau <strong>două</strong> maturi. Cel mai frumos ar fi fost <strong>18.0-0-0#</strong> — <em>mat prin rocadă mare!</em> Dar Edward Lasker a jucat Rd2, care dă mat la fel de bine. <br><br>Privește bine tabla: regele negru e făcut mat <strong>pe linia 1</strong>, a fost atras până la capătul lumii. <br><br>Lasker, care juca cu albele, a folosit atragerea <strong>nu pentru a câștiga material</strong> (chiar a sacrificat regina pentru un pion), <strong>ci pentru a câștiga regele!</strong>'
     },
     arrows: {
       19: [{from:'h5',to:'h7',color:'R'},{from:'d3',to:'h7',color:'R'}],
@@ -412,6 +419,7 @@ function loadChapter(idx) {
 /* ── Step navigation ── */
 function goToStep(s) {
   clearSel();
+  document.querySelectorAll('.highlight-check').forEach(function (e) { e.classList.remove('highlight-check'); });
   if (window._annClear) window._annClear();
   document.getElementById('moveCounter').dataset.step = s;
   board.position(positions[s], false);
@@ -569,7 +577,7 @@ function redrawStudyArrows(chIdx, step) {
     return { x: c * s + s / 2, y: (7 - r) * s + s / 2 };
   }
 
-  const SW = 5;
+  const SW = 4;                       /* standard master-template.css, sec. 12 */
   arrows.forEach(function (arr, i) {
     if (arr.from === arr.to) return;
     const col = COL[arr.color] || COL.G;
@@ -588,9 +596,10 @@ function redrawStudyArrows(chIdx, step) {
     const len = Math.sqrt(dx * dx + dy * dy);
     if (len < 1) return;
     const ux = dx / len, uy = dy / len;
+    const sqS = sz / 8;                 /* sageata pleaca de langa piesa, nu din centrul ei */
     const ln = document.createElementNS(NS, 'line');
-    ln.setAttribute('x1', f.x);           ln.setAttribute('y1', f.y);
-    ln.setAttribute('x2', t.x - ux * SW); ln.setAttribute('y2', t.y - uy * SW);
+    ln.setAttribute('x1', f.x + ux * sqS * 0.30); ln.setAttribute('y1', f.y + uy * sqS * 0.30);
+    ln.setAttribute('x2', t.x - ux * sqS * 0.38); ln.setAttribute('y2', t.y - uy * sqS * 0.38);
     ln.setAttribute('stroke', col);
     ln.setAttribute('stroke-width', String(SW));
     ln.setAttribute('stroke-linecap', 'round');
@@ -608,6 +617,27 @@ document.addEventListener('keydown', function (e) {
   if (e.key === 'Home')       goFirst();
   if (e.key === 'End')        goLast();
 });
+
+
+/* ── Varianta laterala (o linie care nu s-a jucat) ── */
+function showAlt(step, sans, matSq) {
+  const g = new Chess(positions[step]);
+  const ro = [];
+  sans.forEach(function (m) { g.move(m); ro.push(toRo(m)); });
+  clearSel();
+  clearStudyArrows();
+  board.position(g.fen(), true);
+  if (matSq) {
+    setTimeout(function () {
+      const el = document.querySelector('.square-' + matSq);
+      if (el) el.classList.add('highlight-check');
+    }, 260);
+  }
+  const box = document.getElementById('annotationBox');
+  box.innerHTML =
+    '<strong>Varianta care nu s-a jucat:</strong> ' + ro.join(' ') +
+    ' — mat. <br><br><button class="mv-link" onclick="goToStep(' + step + ')">&#9664; Înapoi la partidă</button>';
+}
 
 /* ── Attract types + accordion ── */
 const attractTypes = [
@@ -666,7 +696,6 @@ function buildAccordion() {
     item.appendChild(body);
     list.appendChild(item);
 
-    item.addEventListener('mouseenter', function () { openAcc(item); });
     hdr.addEventListener('click', function () {
       item.classList.contains('open') ? closeAcc(item) : openAcc(item);
     });
@@ -682,6 +711,10 @@ function openAcc(item) {
   const controls = document.getElementById('navControls');
   item.parentNode.insertBefore(controls, item.nextElementSibling);
   controls.style.display = '';
+  /* comenzile si desfasuratorul arata exemplul sectiunii deschise, nu pe al alteia */
+  const activ = item.querySelector('.ex-btn.active');
+  const primul = activ || item.querySelector('.ex-btn');
+  if (primul) loadExAcc(primul, parseInt(primul.dataset.ch, 10));
 }
 
 function closeAcc(item, keepControls) {
