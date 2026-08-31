@@ -241,7 +241,7 @@
     </a>
     <a href="nivel1_lectia2.html" class="nav-btn nav-btn--forward">
       <span class="icon">&#8594;</span>
-      <span class="label">Lecția 2</span>
+      <span class="label">Cum se mișcă piesele</span>
     </a>
   </footer>
 
@@ -488,7 +488,7 @@ function endGame() {
     setStatus(msg, cls);
     const btn = document.getElementById('btn-next');
     const isLast = activeVariant >= VARIANTS.length - 1;
-    btn.textContent = isLast ? '🏠 Înapoi la Lecția 2' : `Varianta ${activeVariant + 2} ▶`;
+    btn.textContent = isLast ? '🏠 Înapoi la Cum se mișcă piesele' : `Varianta ${activeVariant + 2} ▶`;
     btn.onclick = isLast ? () => location.href='nivel1_lectia2.html' : goNextVariant;
     btn.style.display = 'block';
 }
