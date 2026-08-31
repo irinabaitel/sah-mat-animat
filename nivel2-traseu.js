@@ -85,7 +85,20 @@ window.TRASEU_N2 = [
 
   function scurt(text) { return text.length > 26 ? text.slice(0, 25) + '…' : text; }
 
+  /* sus-stanga: intoarcerea la harta nivelului, ca pe lectiile de Nivel II */
+  function harta() {
+    var cap = document.querySelector('.page-header');
+    if (!cap || cap.querySelector('.header-back')) return;
+    var a = document.createElement('a');
+    a.href = 'nivel2_intro.html';
+    a.className = 'header-back';
+    a.title = 'Harta Nivelului II';
+    a.innerHTML = '<span class="hb-ico">&#8862;</span><span class="hb-txt">Harta nivelului</span>';
+    cap.insertBefore(a, cap.firstChild);
+  }
+
   function gata() {
+    harta();
     var f = document.querySelector('.page-footer');
     if (!f) return;
     var inainte = vecin(-1), dupa = vecin(1);
@@ -95,14 +108,15 @@ window.TRASEU_N2 = [
         '<span class="icon">&#8592;</span><span class="label">' + scurt(inainte.t) + '</span></a>'
       : '<a href="nivel2_intro.html" class="nav-btn nav-btn--back">' +
         '<span class="icon">&#8592;</span><span class="label">Înapoi</span></a>';
-    h += '<a href="nivel2_intro.html" class="nav-btn nav-btn--contents">' +
-         '<span class="icon">&#8862;</span><span class="label">Traseul</span></a>';
+    /* butonul din mijloc ramane Cuprins; harta nivelului e sus-stanga */
+    h += '<a href="hub.html" class="nav-btn nav-btn--contents">' +
+         '<span class="icon">&#8862;</span><span class="label">Cuprins</span></a>';
     if (dupa) {
       h += '<a href="' + adr(dupa) + '" class="nav-btn nav-btn--forward">' +
            '<span class="icon">&#8594;</span><span class="label">' + scurt(dupa.t) + '</span></a>';
     } else {
       h += '<a href="nivel2_intro.html" class="nav-btn nav-btn--forward">' +
-           '<span class="icon">&#8594;</span><span class="label">Traseul</span></a>';
+           '<span class="icon">&#8594;</span><span class="label">Harta nivelului</span></a>';
     }
     f.innerHTML = h;
   }
