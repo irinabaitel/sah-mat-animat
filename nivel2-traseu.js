@@ -31,7 +31,7 @@ window.TRASEU_N2 = [
   { t: 'Piesa legată — o atac și mă apăr', h: 'nivel2_piesa_legata.html' },
   { t: 'Atacul prin descoperire', h: 'pagina95.html' },
   { t: 'Șahul dublu', h: 'pagina4.html' },
-  { t: 'Amenințările', h: null },
+  { t: 'Amenințările', h: 'nivel2_amenintari.html' },
   { t: 'Mă apăr de mat — bazele', h: 'aparare_mat.html' },
   { t: 'Cooperarea în jocul de mijloc', h: null },
   { t: 'Bateria', h: null },
