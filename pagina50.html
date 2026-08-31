@@ -11,7 +11,7 @@
   gtag('config', 'G-CMTZ9GGPMP');
 </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Arenă Atac Dublu</title>
+  <title>Arenă Atacul dublu</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -147,7 +147,7 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title" id="pageTitle">Arenă Atac Dublu</span>
+    <span class="header-title" id="pageTitle">Arenă Atacul dublu</span>
   </header>
 
   <main class="page-main" role="main">
@@ -163,7 +163,7 @@
 
         <!-- ── LECȚIE ── -->
         <div id="lectureView">
-          <div class="panel-heading">Arenă Atac Dublu</div>
+          <div class="panel-heading">Arenă Atacul dublu</div>
 
           <p><strong>Atacul dublu</strong> este tactica prin care o piesă amenință simultan două ținte ale adversarului. Dacă una este regele, cealaltă piesă este pierdută.</p>
 
@@ -179,7 +179,7 @@
             </p>
           </div>
 
-          <button class="btn-arena" id="arenaBtn" onclick="startArena()">🎯 Arenă Atac Dublu →</button>
+          <button class="btn-arena" id="arenaBtn" onclick="startArena()">🎯 Arenă Atacul dublu →</button>
           <button class="btn-arena" id="continueBtn" onclick="continueArena()"
                   style="display:none; margin-top:8px; background:var(--c-success);">
             ▶ Continuă
@@ -192,7 +192,7 @@
 
         <!-- ── PUZZLE ── -->
         <div id="puzzleView">
-          <div class="panel-heading">Atac Dublu</div>
+          <div class="panel-heading">Atacul dublu</div>
           <span class="turn-badge white" id="turnBadge">⬜ Albul mută</span>
           <span class="level-badge" id="levelBadge">UȘOR</span>
 
@@ -224,7 +224,7 @@
 
       </div>
       <button class="arena-back-btn" id="arenaBackBtn" style="display:none"
-              onclick="backToLecture()">← Atac Dublu</button>
+              onclick="backToLecture()">← Atacul dublu</button>
       <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
     </div>
 
@@ -233,7 +233,7 @@
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
     <a href="pagina49.html" class="nav-btn nav-btn--back">
       <span class="icon" aria-hidden="true">←</span>
-      <span class="label">Atac Dublu</span>
+      <span class="label">Atacul dublu</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon" aria-hidden="true">&#8862;</span>
@@ -527,7 +527,7 @@ function updateArenaBtn() {
     if (!ab) return;
     const allDone = done >= PUZZLES.length;
     if (done > 0) {
-      ab.textContent = '🎯 Arenă Atac Dublu (' + done + '/' + PUZZLES.length + ' rezolvate)';
+      ab.textContent = '🎯 Arenă Atacul dublu (' + done + '/' + PUZZLES.length + ' rezolvate)';
       if (cb) {
         if (allDone) {
           cb.style.display = 'none';
@@ -540,7 +540,7 @@ function updateArenaBtn() {
       }
       if (rb) rb.style.display = 'flex';
     } else {
-      ab.textContent = '🎯 Arenă Atac Dublu →';
+      ab.textContent = '🎯 Arenă Atacul dublu →';
       if (cb) cb.style.display = 'none';
       if (rb) rb.style.display = 'none';
     }
