@@ -544,7 +544,7 @@ function redrawStudyArrows(chIdx, step) {
     return { x: c * s + s / 2, y: (7 - r) * s + s / 2 };
   }
 
-  const SW = 5;
+  const SW = 4;                       /* standard master-template.css, sec. 12 */
   arrows.forEach(function (arr, i) {
     if (arr.from === arr.to) return;
     const col = COL[arr.color] || COL.G;
@@ -563,9 +563,10 @@ function redrawStudyArrows(chIdx, step) {
     const len = Math.sqrt(dx * dx + dy * dy);
     if (len < 1) return;
     const ux = dx / len, uy = dy / len;
+    const sqS = sz / 8;                 /* sageata pleaca de langa piesa, nu din centrul ei */
     const ln = document.createElementNS(NS, 'line');
-    ln.setAttribute('x1', f.x);           ln.setAttribute('y1', f.y);
-    ln.setAttribute('x2', t.x - ux * SW); ln.setAttribute('y2', t.y - uy * SW);
+    ln.setAttribute('x1', f.x + ux * sqS * 0.30); ln.setAttribute('y1', f.y + uy * sqS * 0.30);
+    ln.setAttribute('x2', t.x - ux * sqS * 0.38); ln.setAttribute('y2', t.y - uy * sqS * 0.38);
     ln.setAttribute('stroke', col);
     ln.setAttribute('stroke-width', String(SW));
     ln.setAttribute('stroke-linecap', 'round');
@@ -633,7 +634,6 @@ function buildAccordion() {
     item.appendChild(body);
     list.appendChild(item);
 
-    item.addEventListener('mouseenter', function () { openAcc(item); });
     hdr.addEventListener('click', function () {
       item.classList.contains('open') ? closeAcc(item) : openAcc(item);
     });
@@ -649,6 +649,10 @@ function openAcc(item) {
   const controls = document.getElementById('navControls');
   item.parentNode.insertBefore(controls, item.nextElementSibling);
   controls.style.display = '';
+  /* comenzile si desfasuratorul arata exemplul sectiunii deschise, nu pe al alteia */
+  const activ = item.querySelector('.ex-btn.active');
+  const primul = activ || item.querySelector('.ex-btn');
+  if (primul) loadExAcc(primul, parseInt(primul.dataset.ch, 10));
 }
 
 function closeAcc(item, keepControls) {

@@ -406,7 +406,7 @@ function redrawArrows(chIdx,step){
   const defs=document.createElementNS(NS,'defs'); svg.appendChild(defs);
   const COL={G:'rgba(60,190,80,0.85)',R:'rgba(220,55,55,0.85)',B:'rgba(50,130,210,0.85)',Y:'rgba(215,165,20,0.85)'};
   function sqC(sq){ let c=sq.charCodeAt(0)-97,r=parseInt(sq[1])-1; if(ori==='black'){c=7-c;r=7-r;} const s=sz/8; return{x:c*s+s/2,y:(7-r)*s+s/2}; }
-  const SW=5;
+  const SW = 4;
   arrows.forEach((arr,i)=>{
     if(arr.from===arr.to)return;
     const col=COL[arr.color]||COL.G, mid='sarr'+i;
@@ -414,7 +414,9 @@ function redrawArrows(chIdx,step){
     const mp=document.createElementNS(NS,'path'); mp.setAttribute('d','M0,0 L9,3.5 L0,7 L2.5,3.5 Z'); mp.setAttribute('fill',col); mk.appendChild(mp); defs.appendChild(mk);
     const f=sqC(arr.from),t=sqC(arr.to),dx=t.x-f.x,dy=t.y-f.y,len=Math.sqrt(dx*dx+dy*dy); if(len<1)return;
     const ux=dx/len,uy=dy/len, ln=document.createElementNS(NS,'line');
-    ln.setAttribute('x1',f.x); ln.setAttribute('y1',f.y); ln.setAttribute('x2',t.x-ux*SW); ln.setAttribute('y2',t.y-uy*SW);
+    var sqS = sz / 8;
+    ln.setAttribute('x1', f.x + ux * sqS * 0.30); ln.setAttribute('y1', f.y + uy * sqS * 0.30);
+    ln.setAttribute('x2', t.x - ux * sqS * 0.38); ln.setAttribute('y2', t.y - uy * sqS * 0.38);
     ln.setAttribute('stroke',col); ln.setAttribute('stroke-width',String(SW)); ln.setAttribute('stroke-linecap','round'); ln.setAttribute('marker-end','url(#'+mid+')');
     svg.appendChild(ln);
   });
@@ -452,7 +454,6 @@ function buildAccordion(){
     type.examples.forEach(ex=>{ html+='<button class="ex-btn" data-ch="'+ex.ch+'" onclick="loadExAcc(this,'+ex.ch+')">'+ex.label+'</button>'; });
     html+='</div>'; inner.innerHTML=html; body.appendChild(inner);
     item.appendChild(hdr); item.appendChild(body); list.appendChild(item);
-    item.addEventListener('mouseenter',()=>openAcc(item));
     hdr.addEventListener('click',()=>item.classList.contains('open')?closeAcc(item):openAcc(item));
   });
 }
@@ -462,6 +463,9 @@ function openAcc(item){
   item.classList.add('open'); item.querySelector('.acc-body').style.maxHeight='600px';
   const ctrl=document.getElementById('navControls');
   item.parentNode.insertBefore(ctrl,item.nextElementSibling); ctrl.style.display='';
+  /* comenzile si desfasuratorul arata exemplul sectiunii deschise */
+  var _b = item.querySelector('.ex-btn.active') || item.querySelector('.ex-btn');
+  if (_b) loadExAcc(_b, parseInt(_b.dataset.ch, 10));
 }
 function closeAcc(item,keep){
   item.classList.remove('open'); item.querySelector('.acc-body').style.maxHeight='0';
