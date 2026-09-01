@@ -358,7 +358,7 @@ const chapters = [
     san: ['Nxd6','exd6'],
     ann: {
       0: 'Calul alb din d6 atacă <strong>nebunul din b5</strong> și <strong>calul din e8</strong>. Cuțit, furculiță sau lingură? Uită-te bine înainte să răspunzi — sunt <em>trei</em> motive pentru care nu e ce pare.',
-      1: '<strong>…Cxd6!</strong> — lingură, și încă una mare. <strong>Unu:</strong> nebunul din b5 e apărat de pionul din c6. <strong>Doi:</strong> calul din e8 e apărat de turnul din f8 — deci nici măcar n-ar fi fost un câștig, ci un schimb. <strong>Trei:</strong> calul care ataca putea fi pur și simplu <strong>capturat</strong>. Prima întrebare, mereu: <em>„pot să-l iau?"</em> Dacă poți, n-a fost niciodată atac dublu.',
+      1: '<strong>…Cxd6!</strong> — lingură și încă una mare. <strong>Unu:</strong> nebunul din b5 e apărat de pionul din c6. <strong>Doi:</strong> calul din e8 e apărat de turnul din f8 — deci nici măcar n-ar fi fost un câștig, ci un schimb. <strong>Trei:</strong> calul care ataca putea fi pur și simplu <strong>capturat</strong>. Prima întrebare, mereu: <em>„pot să-l iau?"</em> Dacă poți, n-a fost niciodată atac dublu.',
       2: '<strong>exd6</strong> — Albul recapturează, dar Negrul n-a pierdut nimic.'
     },
     arrows: { 0: [{from:'d6', to:'b5', color:'R'}, {from:'d6', to:'e8', color:'R'}, {from:'c6', to:'b5', color:'G'}, {from:'f8', to:'e8', color:'G'}],
@@ -387,7 +387,7 @@ const chapters = [
     finishMsg: 'O mutare, două treburi — și ai ieșit chiar mai bine!',
     san: ['Nb3'],
     ann: {
-      0: 'Joci cu <strong>Albul</strong>, și ai încasat-o urât: dama neagră a venit pe b4 și dă <strong>șah</strong> pe coloana b, iar în același timp atacă <strong>calul din c5</strong>. Șahul trebuie parat — deci pare că pierzi calul. Caută lingura.',
+      0: 'Joci cu <strong>Albul</strong> și ai încasat-o urât: dama neagră a venit pe b4 și dă <strong>șah</strong> pe coloana b, iar în același timp atacă <strong>calul din c5</strong>. Șahul trebuie parat — deci pare că pierzi calul. Caută lingura.',
       1: '<strong>Cb3!</strong> — calul se așază în calea șahului, ca un <strong>scut</strong>. Și nu poate fi capturat, fiindcă e <strong>apărat de doi pioni</strong>: cel din a2 și cel din c2. O mutare, două treburi — calul fuge de sub atac și, în același timp, îi taie drumul șahului. Negrul rămâne cu dama prost așezată, iar Albul stă chiar mai bine decât înainte.'
     },
     arrows: {
@@ -730,7 +730,7 @@ function clearCheckHL() {
   document.querySelectorAll('.highlight-check').forEach(function (el) { el.classList.remove('highlight-check'); });
 }
 function checkedKingSquare(game) {
-  if (!game || !game.in_check()) return null;   // acoperă și șahul, și matul
+  if (!game || !game.in_check()) return null;   // acoperă și șahul și matul
   const turn = game.turn();
   const bd = game.board();
   for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
