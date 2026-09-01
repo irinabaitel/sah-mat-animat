@@ -29,7 +29,7 @@ window.TRASEU_N2 = [
   { t: 'Mă apăr de un atac dublu', h: 'nivel2_aparare_atac_dublu.html' },
   { t: 'Legătura', h: 'pagina51.html' },
   { t: 'Atacul laser (frigăruia)', h: 'pagina53.html' },
-  { t: 'Piesa legată — o atac și mă apăr', h: 'nivel2_piesa_legata.html' },
+  { t: 'Piesa legată — cum o atac și cum o apăr', h: 'nivel2_piesa_legata.html' },
   { t: 'Atacul prin descoperire', h: 'pagina95.html' },
   { t: 'Amenințările', h: 'nivel2_amenintari.html' },
   { t: 'Mă apăr de mat — bazele', h: 'aparare_mat.html' },
