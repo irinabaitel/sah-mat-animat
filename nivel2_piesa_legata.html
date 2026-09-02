@@ -177,6 +177,16 @@
       padding: 2px 9px; cursor: pointer; transition: background .12s ease;
     }
     .mv-link:hover { background: #fff; border-color: var(--c-navy); }
+    .parte-cap {
+      font-family: var(--font-display); font-weight: 900; color: var(--c-navy);
+      font-size: 1.12rem; line-height: 1.35; display: block; margin-bottom: 6px;
+      padding-bottom: 5px; border-bottom: 2px solid rgba(26,58,107,0.18);
+    }
+    .parte-cap .p-nr {
+      display: inline-block; min-width: 26px; height: 26px; line-height: 26px;
+      text-align: center; border-radius: 50%; background: var(--c-navy); color: #fff;
+      font-size: 0.86rem; margin-right: 8px; vertical-align: 1px;
+    }
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -210,7 +220,7 @@
           </div>
 
           <div class="card">
-            <p><strong>1. Când tu ai legat o piesă a adversarului: mai atac-o o dată.</strong></p>
+            <span class="parte-cap"><span class="p-nr">1</span>Când tu ai legat o piesă a adversarului: mai atac-o o dată</span>
             <p style="font-size:0.94em;">O legătură, singură, de cele mai multe ori nu câștigă nimic — doar ține piesa pe loc. Dar tocmai de asta te poți folosi: <strong>piesa legată nu poate fugi</strong>, deci dacă o mai ataci încă o dată, <strong>cresc șansele să o poți câștiga</strong>.</p>            <p style="font-size:0.94em;">Spunem „cresc șansele", nu „o câștigi", pentru că, la rândul lui, <strong>și adversarul poate aduce apărători</strong>. De-aceea lupta se dă pe câmpul acela: tu aduci încă un atacator, el încă un apărător și așa mai departe.</p>
             <p style="font-size:0.94em;">Numărătoarea rămâne cea de la atacul grupat: dacă aduci <strong>mai mulți atacatori decât are el apărători</strong>, poți câștiga piesa aceea.</p><p style="font-size:0.94em;">Contează însă și <strong>cu ce</strong> ataci. Dacă ataci cu o piesă mai valoroasă, iar piesa lui e apărată, s-ar putea să faci <strong>schimburi dezavantajoase</strong>: dai mult și primești puțin.</p>
             <p style="margin-top:10px;"><strong>Patru întrebări, în ordinea asta:</strong></p>
@@ -218,7 +228,7 @@
           </div>
 
           <div class="card">
-            <p><strong>2. Când piesa ta e legată: ai patru feluri de apărare.</strong></p>
+            <span class="parte-cap"><span class="p-nr">2</span>Când piesa ta e legată: ai patru feluri de apărare</span>
             <p style="font-size:0.94em;">Primele trei le știi de la Nivelul I, de când o piesă de-a ta era atacată. A patra e cea mai frumoasă.</p>
             <div class="tacam">
               <div class="tac"><span class="t-ico">🧱</span><div>
@@ -435,22 +445,22 @@ const chapters = [
 
 /* ─── Acordeon: fiecare item încarcă un capitol ─── */
 const accData = [
-  { chIdx: 0, kind: 't1', num: '🔗', title: 'Legătura absolută', practice: true,
-    desc: 'Un cal țintuit în fața regelui: zero mutări. Legătura singură nu câștigă nimic — dar dacă îl mai ataci o dată?' },
-  { chIdx: 1, kind: 't1', num: '🔗', title: 'Legătura relativă', practice: true,
-    desc: 'De data asta piesa legată <em>poate</em> pleca. Numai că, dacă pleacă, va fi capturat ce era în spatele ei.' },
-  { chIdx: 2, kind: 't1', num: '🧮', title: 'Numărătoarea: aduc al doilea atacator', practice: true,
-    desc: 'Unu la unu pe câmpul unde stă piesa legată. Tu aduci un atacator, el aduce un apărător — și abia la sfârșit se vede cine iese în avantaj.' },
-  { chIdx: 3, kind: 't1', num: '🧮', title: 'Și el mai aduce un apărător', practice: true,
-    desc: 'Numeri singur. Mutarea bună aduce un atacator — și pregătește încă unul.' },
+  { chIdx: 0, kind: 't1', num: '1', title: 'Legătura absolută: mai atac-o o dată', practice: true,
+    desc: 'Partea întâi. Un cal țintuit în fața regelui: zero mutări. Ataci cu pionul — o mutare și calul cade.' },
+  { chIdx: 3, kind: 't1', num: '2', title: 'Aduc al doilea atacator', practice: true,
+    desc: 'Partea întâi. Unu la unu pe câmpul unde stă piesa legată. O mutare și socoteala se schimbă.' },
+  { chIdx: 4, kind: 't1', num: '3', title: 'Pun ceva în cale', practice: true,
+    desc: 'Partea a doua. Joci cu <strong>Negrul</strong>. Turnul tău e țintuit în fața regelui. Taie diagonala!' },
+  { chIdx: 5, kind: 't1', num: '4', title: 'Îl capturez pe cel care leagă', practice: true,
+    desc: 'Partea a doua. Joci cu <strong>Albul</strong>. Cea mai curată soluție dintre toate — și rezolvă problema definitiv.' },
 
-  { chIdx: 4, kind: 't2', num: '1', title: 'Pun ceva în cale', practice: true,
-    desc: 'Joci cu <strong>Negrul</strong>. Turnul tău e țintuit în fața regelui. Taie diagonala!' },
-  { chIdx: 5, kind: 't2', num: '2', title: 'Îl capturez pe cel care leagă', practice: true,
-    desc: 'Joci cu <strong>Albul</strong>. Cea mai curată soluție dintre toate — și rezolvă problema definitiv.' },
+  { chIdx: 1, kind: 't2', num: '🔗', title: 'Legătura relativă', practice: true,
+    desc: 'Piesa legată <em>poate</em> pleca — dar dacă pleacă, cade regina din spatele ei. Trei mutări, până se vede.' },
+  { chIdx: 6, kind: 't2', num: '🛡️', title: 'Apărarea care nu desface legătura', practice: true,
+    desc: 'Joci cu <strong>Negrul</strong>. Îți aperi calul, apoi urmărești schimbul până la capăt — și afli ce <em>nu</em> rezolvă apărarea.' },
 
-  { chIdx: 6, kind: 't3', num: '🛡️', title: 'Apărarea care nu desface legătura', practice: true,
-    desc: 'Joci cu <strong>Negrul</strong>. Îți aperi calul — dar află și ce <em>nu</em> rezolvă apărarea.' }
+  { chIdx: 2, kind: 't3', num: '🧮', title: 'Când se adună schimburile', practice: true,
+    desc: 'Tu aduci un atacator, el aduce un apărător, tu mai aduci unul. Iar la sfârșit contează <em>ordinea</em> în care capturezi.' }
 ];
 
 let curChapterIdx = 0;
@@ -1147,9 +1157,9 @@ function buildAccordion() {
   const list = document.getElementById('accList');
   let openLbl = false, trapLbl = false, defLbl = false;
   accData.forEach(function (d) {
-    if (d.kind === 't1' && !openLbl) { addLabel(list, '<span class="treapta-cap">🐣 Înțeleg <span class="t-mic">cum ataci o piesă legată</span></span>'); openLbl = true; }
-    if (d.kind === 't2' && !trapLbl) { addLabel(list, '<span class="treapta-cap">🐦 Mă pricep <span class="t-mic">cum te aperi când piesa ta e legată</span></span>'); trapLbl = true; }
-    if (d.kind === 't3' && !defLbl)  { addLabel(list, '<span class="treapta-cap">🦅 Sunt maestru <span class="t-mic">apărarea care nu desface legătura</span></span>'); defLbl = true; }
+    if (d.kind === 't1' && !openLbl) { addLabel(list, '<span class="treapta-cap">🐣 Înțeleg <span class="t-mic">o singură mutare, în amândouă rolurile</span></span>'); openLbl = true; }
+    if (d.kind === 't2' && !trapLbl) { addLabel(list, '<span class="treapta-cap">🐦 Mă pricep <span class="t-mic">o mică succesiune de schimburi</span></span>'); trapLbl = true; }
+    if (d.kind === 't3' && !defLbl)  { addLabel(list, '<span class="treapta-cap">🦅 Sunt maestru <span class="t-mic">când se adună schimburile</span></span>'); defLbl = true; }
     const item = document.createElement('div');
     item.className = 'acc-item';
     item.dataset.ch = d.chIdx;
