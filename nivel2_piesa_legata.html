@@ -442,6 +442,24 @@ const chapters = [
     arrows: { 0: [{from:'d5', to:'a8', color:'R'}], 1: [{from:'d7', to:'c6', color:'G'}, {from:'d5', to:'a8', color:'R'}] },
     hl: { 0: [{sq:'c6',cls:'hl-b'}], 1: [{sq:'c6',cls:'hl-b'}] }
   }
+,
+
+  /* 7 — contraatacul cu sah, dat chiar de piesa legata */
+  {
+    fen: 'k5r1/6b1/7P/8/6R1/7P/7K/8 b - - 0 1', orient: 'black',
+    winner: 'b', practiceFrom: 0, winEval: 0,
+    finishMsg: 'Șah! Legătura s-a rupt și n-ai pierdut nimic.',
+    san: ['Be5+'],
+    ann: {
+      0: '⚡ <strong>Ultima apărare și cea mai frumoasă.</strong> Joci cu <strong>Negrul</strong>. <br><br>Uită-te pe coloana g: turnul alb din <strong>g4</strong>, nebunul tău din <strong>g7</strong>, iar în spatele lui turnul tău din <strong>g8</strong>. Nebunul e legat, iar turnul din spate <strong>nu e apărat de nimeni</strong>. <br><br>Dacă nebunul pleacă pur și simplu, Txg8 îți ia turnul. <br><br>Ia-le pe rând, ca să vezi că nu merge nimic din ce știi: <br><br>· <strong>nu ai ce pune în cale</strong> — nebunul și turnul tău sunt vecini; <br>· <strong>nu poți captura</strong> turnul din g4; <br>· <strong>nu poți apăra</strong> turnul din g8 cu nimic; <br>· iar dacă muți turnul din spate, de pildă …Tf8, urmează <strong>hxg7</strong> și pierzi nebunul. <br><br>Îți rămâne a patra: <strong>contraatacul</strong>. Găsește-l — și uită-te unde stă regele alb.',
+      1: '<strong>…Ne5+!</strong> — nebunul pleacă <strong>dând șah</strong>, pe diagonala e5–f4–g3–h2. <br><br>Ăsta e secretul: piesa legată n-a fugit pur și simplu, ci a plecat cu o amenințare mai mare. Albul <strong>trebuie</strong> să răspundă la șah chiar acum, deci nu mai are timp să ia turnul din g8. <br><br>Când vine înapoi, legătura nu mai există: nebunul nu mai stă între turnuri. N-ai pierdut nimic. <br><br>💡 <strong>Cel mai puternic contraatac este cel cu șah</strong>, fiindcă adversarul nu are de ales. Și se poate da în două feluri: <strong>de piesa legată</strong>, ca aici, sau <strong>de piesa din spate</strong> — care pleacă ea cu șah, iar piesa din față rămâne liberă. <br><br>De-aia, când ești legat și pare că nu merge nimic, întreabă-te ultima întrebare: <em>pot da un șah?</em>'
+    },
+    arrows: {
+      0: [{from:'g4', to:'g8', color:'R'}, {from:'h6', to:'g7', color:'B'}],
+      1: [{from:'e5', to:'h2', color:'G'}]
+    },
+    hl: { 0: [{sq:'g7',cls:'hl-b'},{sq:'g8',cls:'hl-b'}], 1: [{sq:'h2',cls:'hl-b'}] }
+  }
 
 ];
 
@@ -449,9 +467,9 @@ const chapters = [
 const accData = [
   /* ═══ partea 1: când tu ai legat o piesă a adversarului ═══ */
   { parte: 1, chIdx: 0, kind: 't1', num: '1', title: 'Legătura absolută', practice: true,
-    desc: 'Un cal țintuit în fața regelui: zero mutări. Ataci cu pionul — o mutare, și calul cade.' },
+    desc: 'Un cal țintuit în fața regelui: zero mutări. Ataci cu pionul — o mutare și calul cade.' },
   { parte: 1, chIdx: 3, kind: 't1', num: '2', title: 'Aduc al doilea atacator', practice: true,
-    desc: 'Unu la unu pe câmpul unde stă piesa legată. O mutare, și socoteala se schimbă.' },
+    desc: 'Unu la unu pe câmpul unde stă piesa legată. O mutare și socoteala se schimbă.' },
 
   { parte: 1, chIdx: 1, kind: 't2', num: '🔗', title: 'Legătura relativă', practice: true,
     desc: 'Piesa legată <em>poate</em> pleca — dar dacă pleacă, cade regina din spatele ei. Trei mutări, până se vede.' },
@@ -466,7 +484,10 @@ const accData = [
     desc: 'Joci cu <strong>Albul</strong>. Cea mai curată soluție dintre toate — și rezolvă problema definitiv.' },
 
   { parte: 2, chIdx: 6, kind: 't2', num: '🛡️', title: 'Apărarea care nu desface legătura', practice: true,
-    desc: 'Joci cu <strong>Negrul</strong>. Îți aperi calul, urmărești schimbul până la capăt — și afli ce <em>nu</em> rezolvă apărarea.' }
+    desc: 'Joci cu <strong>Negrul</strong>. Îți aperi calul, urmărești schimbul până la capăt — și afli ce <em>nu</em> rezolvă apărarea.' },
+
+  { parte: 2, chIdx: 7, kind: 't3', num: '⚡', title: 'Contraatacul cu șah', practice: true,
+    desc: 'Joci cu <strong>Negrul</strong>. Nu merge nici să pui în cale, nici să capturezi, nici să aperi. A rămas una singură.' }
 ];
 
 let curChapterIdx = 0;
