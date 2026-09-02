@@ -227,6 +227,8 @@
             <p style="font-size:0.94em;">1. <strong>Care piesă e legată?</strong> &nbsp;·&nbsp; 2. <strong>O mai pot ataca încă o dată?</strong> &nbsp;·&nbsp; 3. <strong>După mutarea mea, mai are el vreo apărare?</strong> &nbsp;·&nbsp; 4. <strong>La sfârșitul schimburilor, ies în avantaj?</strong></p>
           </div>
 
+          <div class="acc-list" id="accList"></div>
+
           <div class="card">
             <span class="parte-cap"><span class="p-nr">2</span>Când piesa ta e legată: ai patru feluri de apărare</span>
             <p style="font-size:0.94em;">Primele trei le știi de la Nivelul I, de când o piesă de-a ta era atacată. A patra e cea mai frumoasă.</p>
@@ -255,7 +257,7 @@
           </div>
 
 
-          <div class="acc-list" id="accList"></div>
+          <div class="acc-list" id="accList2"></div>
 
           <div class="def-box" style="margin-top:14px;">
             <p class="def-title">Reține asta din lecție</p>
@@ -445,22 +447,26 @@ const chapters = [
 
 /* ─── Acordeon: fiecare item încarcă un capitol ─── */
 const accData = [
-  { chIdx: 0, kind: 't1', num: '1', title: 'Legătura absolută: mai atac-o o dată', practice: true,
-    desc: 'Partea întâi. Un cal țintuit în fața regelui: zero mutări. Ataci cu pionul — o mutare și calul cade.' },
-  { chIdx: 3, kind: 't1', num: '2', title: 'Aduc al doilea atacator', practice: true,
-    desc: 'Partea întâi. Unu la unu pe câmpul unde stă piesa legată. O mutare și socoteala se schimbă.' },
-  { chIdx: 4, kind: 't1', num: '3', title: 'Pun ceva în cale', practice: true,
-    desc: 'Partea a doua. Joci cu <strong>Negrul</strong>. Turnul tău e țintuit în fața regelui. Taie diagonala!' },
-  { chIdx: 5, kind: 't1', num: '4', title: 'Îl capturez pe cel care leagă', practice: true,
-    desc: 'Partea a doua. Joci cu <strong>Albul</strong>. Cea mai curată soluție dintre toate — și rezolvă problema definitiv.' },
+  /* ═══ partea 1: când tu ai legat o piesă a adversarului ═══ */
+  { parte: 1, chIdx: 0, kind: 't1', num: '1', title: 'Legătura absolută', practice: true,
+    desc: 'Un cal țintuit în fața regelui: zero mutări. Ataci cu pionul — o mutare, și calul cade.' },
+  { parte: 1, chIdx: 3, kind: 't1', num: '2', title: 'Aduc al doilea atacator', practice: true,
+    desc: 'Unu la unu pe câmpul unde stă piesa legată. O mutare, și socoteala se schimbă.' },
 
-  { chIdx: 1, kind: 't2', num: '🔗', title: 'Legătura relativă', practice: true,
+  { parte: 1, chIdx: 1, kind: 't2', num: '🔗', title: 'Legătura relativă', practice: true,
     desc: 'Piesa legată <em>poate</em> pleca — dar dacă pleacă, cade regina din spatele ei. Trei mutări, până se vede.' },
-  { chIdx: 6, kind: 't2', num: '🛡️', title: 'Apărarea care nu desface legătura', practice: true,
-    desc: 'Joci cu <strong>Negrul</strong>. Îți aperi calul, apoi urmărești schimbul până la capăt — și afli ce <em>nu</em> rezolvă apărarea.' },
 
-  { chIdx: 2, kind: 't3', num: '🧮', title: 'Când se adună schimburile', practice: true,
-    desc: 'Tu aduci un atacator, el aduce un apărător, tu mai aduci unul. Iar la sfârșit contează <em>ordinea</em> în care capturezi.' }
+  { parte: 1, chIdx: 2, kind: 't3', num: '🧮', title: 'Când se adună schimburile', practice: true,
+    desc: 'Tu aduci un atacator, el aduce un apărător, tu mai aduci unul. Iar la sfârșit contează <em>ordinea</em> în care capturezi.' },
+
+  /* ═══ partea 2: când piesa ta e legată ═══ */
+  { parte: 2, chIdx: 4, kind: 't1', num: '1', title: 'Pun ceva în cale', practice: true,
+    desc: 'Joci cu <strong>Negrul</strong>. Turnul tău e țintuit în fața regelui. Taie diagonala!' },
+  { parte: 2, chIdx: 5, kind: 't1', num: '2', title: 'Îl capturez pe cel care leagă', practice: true,
+    desc: 'Joci cu <strong>Albul</strong>. Cea mai curată soluție dintre toate — și rezolvă problema definitiv.' },
+
+  { parte: 2, chIdx: 6, kind: 't2', num: '🛡️', title: 'Apărarea care nu desface legătura', practice: true,
+    desc: 'Joci cu <strong>Negrul</strong>. Îți aperi calul, urmărești schimbul până la capăt — și afli ce <em>nu</em> rezolvă apărarea.' }
 ];
 
 let curChapterIdx = 0;
@@ -616,7 +622,7 @@ function playMoveSound(san, game) {
 
 /* ─── Șir de mutări clicabil din text: deschide capitolul și sare la mutare ─── */
 function goMove(chIdx, step) {
-  const item = document.querySelector('#accList .acc-item[data-ch="' + chIdx + '"]');
+  const item = document.querySelector('.acc-list .acc-item[data-ch="' + chIdx + '"]');
   if (!item) return;
   if (!item.classList.contains('open')) openAcc(item);
   goToStep(step);
@@ -918,7 +924,7 @@ function startPractice(idx) {
   clearStudyArrows(); clearSel(); clearPracHint(); clearCheckHL(); clearLastMove();
   document.getElementById('navControls').style.display = 'none';
   const panel = document.getElementById('practicePanel');
-  const openItem = document.querySelector('#accList .acc-item.open');
+  const openItem = document.querySelector('.acc-list .acc-item.open');
   if (openItem) openItem.parentNode.insertBefore(panel, openItem.nextElementSibling);
   panel.style.display = 'flex';
   document.getElementById('evalBar').style.display = ch.isOpening ? 'none' : 'block';
@@ -1154,12 +1160,20 @@ function addLabel(list, text) {
 }
 
 function buildAccordion() {
-  const list = document.getElementById('accList');
-  let openLbl = false, trapLbl = false, defLbl = false;
+  const liste = { 1: document.getElementById('accList'), 2: document.getElementById('accList2') };
+  const TREPTE = {
+    t1: '\ud83d\udc23 Înțeleg <span class="t-mic">o singură mutare</span>',
+    t2: '\ud83d\udc26 Mă pricep <span class="t-mic">o mică succesiune de schimburi</span>',
+    t3: '\ud83e\udd85 Sunt maestru <span class="t-mic">când se adună schimburile</span>'
+  };
+  let parteCurenta = null, puse = {};
   accData.forEach(function (d) {
-    if (d.kind === 't1' && !openLbl) { addLabel(list, '<span class="treapta-cap">🐣 Înțeleg <span class="t-mic">o singură mutare, în amândouă rolurile</span></span>'); openLbl = true; }
-    if (d.kind === 't2' && !trapLbl) { addLabel(list, '<span class="treapta-cap">🐦 Mă pricep <span class="t-mic">o mică succesiune de schimburi</span></span>'); trapLbl = true; }
-    if (d.kind === 't3' && !defLbl)  { addLabel(list, '<span class="treapta-cap">🦅 Sunt maestru <span class="t-mic">când se adună schimburile</span></span>'); defLbl = true; }
+    const list = liste[d.parte] || liste[1];
+    if (d.parte !== parteCurenta) { parteCurenta = d.parte; puse = {}; }
+    if (!puse[d.kind]) {
+      addLabel(list, '<span class="treapta-cap">' + TREPTE[d.kind] + '</span>');
+      puse[d.kind] = true;
+    }
     const item = document.createElement('div');
     item.className = 'acc-item';
     item.dataset.ch = d.chIdx;
@@ -1176,8 +1190,7 @@ function buildAccordion() {
     inner.className = 'acc-inner';
     let innerHtml = '<p class="acc-desc">' + d.desc + '</p>';
     if (d.practice) {
-      const exLbl = '🤖 Joacă tu mutările';
-      innerHtml += '<button class="ex-start" onclick="startPractice(' + d.chIdx + ')">' + exLbl + '</button>';
+      innerHtml += '<button class="ex-start" onclick="startPractice(' + d.chIdx + ')">🤖 Joacă tu mutările</button>';
     }
     inner.innerHTML = innerHtml;
     body.appendChild(inner);
@@ -1193,7 +1206,7 @@ function buildAccordion() {
 function openAcc(item) {
   if (item.classList.contains('open')) return;
   if (practiceMode) pracExit();
-  document.querySelectorAll('#accList .acc-item.open').forEach(function (o) {
+  document.querySelectorAll('.acc-list .acc-item.open').forEach(function (o) {
     if (o !== item) o.classList.remove('open');
   });
   item.classList.add('open');
