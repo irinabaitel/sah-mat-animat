@@ -260,6 +260,7 @@
           <div class="def-box" style="margin-top:14px;">
             <p class="def-title">Reține asta din lecție</p>
             <p><strong>După fiecare mutare a adversarului, întreabă-te de ce a mutat acolo. Amenințarea nu se vede pe tablă — o găsești uitându-te la ce ai tu slab: piese neapărate, apărători care pot fi luați și regele.</strong></p>
+            <p><strong>Iar dacă poți să înlături o amenințare fără să-ți creezi slăbiciuni, ești pe calea cea bună!</strong></p>
           </div>
 
           <div id="navControls">
@@ -373,13 +374,13 @@ const chapters = [
   {
     fen: '5rk1/2p2p1p/3b1Pp1/6Q1/8/8/8/K7 b - - 0 1', orient: 'black',
     winner: 'b', practiceFrom: 0, winEval: 0,
-    finishMsg: 'Câmpul g7 e păzit, iar piesele tale au rămas active.',
+    finishMsg: 'I-ai făcut loc nebunului — câmpul g7 va fi păzit.',
     san: ['Re8'],
-    accept: { 0: ['Re8', 'Kh8'] },
-    altMsg: 'Și …Rh8 apără. Dar citește mai jos de ce …Te8 e mult mai bună.',
+    accept: { 0: ['Re8','Rd8','Rc8','Rb8','Ra8+','Kh8'] },
+    altMsg: 'Și asta merge. Citește mai jos ce contează de fapt.',
     ann: {
-      0: '👑 <strong>Amenințarea care are nevoie de două mutări.</strong> Joci cu <strong>Negrul</strong> și stai mult mai bine la material: ai turn și nebun contra reginei. <br><br>Numai că regele tău are un câmp slab și acela e <strong>g7</strong>. Uită-te de ce: pionul alb din f6 îl păzește deja. <br><br>Regina albă vrea să ajungă pe <strong>h6</strong>, iar de acolo să intre pe <strong>g7</strong>. Acolo n-o poate captura nimeni, fiindcă o apără pionul din f6 — și e mat. <br><br>Deci amenințarea nu vine dintr-o mutare, ci din <strong>două</strong>. Ai timp exact cât să te pregătești. <br><br>Ce piesă poate păzi câmpul g7? Uită-te la nebunul din d6 — dar are nevoie de un drum.',
-      1: '<strong>…Te8!</strong> — turnul se dă la o parte de pe f8 și cu asta îi <strong>eliberează nebunului câmpul f8</strong>. <br><br>Acum, dacă vine <strong>Dh6</strong>, tu joci <strong>…Nf8</strong>: de pe f8 nebunul păzește g7, iar matul nu mai există. <br><br>Compară cu apărarea la care se gândesc cei mai mulți, <strong>…Rh8</strong>: și ea apără, pentru că după Dh6 turnul poate merge pe g8. Numai că atunci turnul tău ajunge într-un colț, ocupat doar cu apărarea, iar regele stă înghesuit. <br><br>💡 De-aici ideea cea mai valoroasă din lecție: <strong>dintre mai multe apărări bune, alege-o pe aceea care îți lasă piesele active.</strong> Amândouă opresc matul; numai una te lasă să joci mai departe.'
+      0: '👑 <strong>Amenințarea care are nevoie de două mutări.</strong> Joci cu <strong>Negrul</strong>. <br><br>Negrul are <strong>avantaj material</strong> — turn și nebun contra reginei — dar o poziție mult mai proastă. <br><br>Uită-te de ce: dacă regina albă pătrunde pe <strong>h6</strong> și apoi pe <strong>g7</strong>, este <strong>mat</strong>. Pe g7 n-o poate captura nimeni, fiindcă o apără pionul din f6. <br><br>Și tocmai pentru că Albul are nevoie de <strong>două mutări</strong> ca să dea mat, Negrul are timp să-și pregătească o apărare foarte bună — în cazul ăsta fericit. <br><br>Trebuie să mai aducă un apărător pentru câmpul g7. Care piesă poate ajunge să-l păzească?',
+      1: '<strong>…Te8!</strong> — și acum uită-te ce a făcut mutarea asta. <br><br>Nebunul din d6 poate păzi câmpul g7 de pe <strong>f8</strong>. Dar f8 era ocupat chiar de turn — așa că turnul trebuia <strong>să-i facă loc</strong>. <br><br>Dacă vine <strong>Dh6</strong>, urmează <strong>…Nf8</strong>, iar matul nu mai există. <br><br>De fapt turnul putea pleca oriunde pe linia a opta, chiar și cu <strong>…Ta8+</strong>, care e și șah. Important nu e unde se duce, ci că <strong>eliberează câmpul f8</strong>. <br><br>Merge și <strong>…Rh8</strong>, dar e o apărare mai searbădă: după Dh6 turnul trebuie oricum să vină pe g8, ocupat numai cu apărarea, iar regele stă înghesuit. <br><br>💡 Ține minte cum se apără o amenințare care vine în două mutări: <strong>ai o mutare de avans — folosește-o ca să pregătești apărarea, nu ca să fugi.</strong>'
     },
     arrows: { 0: [{from:'g5', to:'h6', color:'B'}, {from:'h6', to:'g7', color:'R'}, {from:'f6', to:'g7', color:'G'}],
               1: [{from:'d6', to:'f8', color:'G'}] },
@@ -392,11 +393,11 @@ const chapters = [
   {
     fen: '5rk1/5q1p/pp4p1/3R4/P3Q3/8/1P4PP/5BK1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: 3,
-    finishMsg: 'Singura mutare care ține — și Albul rămâne cu figura în plus.',
+    finishMsg: 'Singura mutare care ține — și Albul rămâne cu nebunul în plus.',
     san: ['Qf3'],
     ann: {
-      0: '⚠️ <strong>Aici sunt două amenințări, nu una.</strong> Joci cu <strong>Albul</strong>. Ai o figură în plus, deci ai partida câștigată — dacă treci de mutarea asta. <br><br>Prima amenințare se vede repede: <strong>…Dxf1</strong> este <strong>mat</strong>. Regina ia nebunul, iar regele tău nu o poate captura, fiindcă o apără turnul din f8: după ce regina pleacă de pe f7, turnul vede tot drumul până jos. <br><br>A doua amenințare o vede mai greu: <strong>…Df2+</strong>. Regele tău e împins în colț și matul vine imediat după. <br><br>Trebuie să le oprești pe amândouă cu o singură mutare. <strong>Este exact una singură care ține.</strong> Caut-o pe îndelete.',
-      1: '<strong>Df3!</strong> — singura. <br><br>Regina ta se așază pe <strong>f3</strong>, adică chiar pe coloana f, între regina neagră și tabăra ta. De acolo <strong>apără și f1 și f2</strong> — amândouă câmpurile de mat deodată. <br><br>Uită-te de ce nu merge nimic altceva: <br><br>· cu <strong>nebunul mutat</strong> de pe f1 urmează …Df2+ și matul; <br>· <strong>Dd3</strong> și <strong>Td1</strong> par că apără f1, dar tot …Df2+ dă mat; <br>· <strong>De2</strong> apără, numai că atunci pierzi turnul: …Dxd5. <br><br>Rămâne Df3. Dacă Negrul schimbă reginele, recapturezi cu pionul și rămâi cu figura în plus. <br><br>💡 Ține minte forma asta: <strong>când sunt două amenințări, nu căuta o apărare pentru fiecare — caută mutarea care le acoperă pe amândouă.</strong> De obicei e una singură și de obicei e o piesă care se așază chiar pe drumul lor comun.'
+      0: '⚠️ <strong>Un nebun în plus, dar mat într-o mutare.</strong> Joci cu <strong>Albul</strong>. <br><br>Albul are un nebun în plus, deci partida ar trebui să fie a lui. Numai că e amenințat cu <strong>mat într-o mutare</strong>: <button class="mv-link" onclick="varianta([&quot;Qxf1&quot;])">…Dxf1#</button>. Regele nu poate captura regina, fiindcă o apără turnul din f8. <br><br>Și mai e o cale, pe care o vede mai greu: <strong>…Df2+ Rh1</strong> și apoi <strong>…Dxf1</strong>. <br><br>Dacă Albul încearcă să apere ultima linie cu regina sau cu turnul — de pildă <button class="mv-link" onclick="varianta([&quot;Rd1&quot;,&quot;Qf2+&quot;,&quot;Kh1&quot;,&quot;Qxf1+&quot;,&quot;Rxf1&quot;,&quot;Rxf1&quot;])">Td1</button> — atunci după …Dxf1+ el recaptureaza, iar Negrul dă mat cu <strong>…Txf1#</strong>. <br><br>Există o singură mutare care scapă de toate complicațiile. Caut-o pe îndelete.',
+      1: '<strong>Df3!</strong> — mutarea bună. <br><br>Regina se așază pe coloana f și <strong>păstrează controlul asupra coloanei</strong>: apără și f1 și f2, adică amândouă câmpurile de mat. <br><br>Dar face și altceva, la fel de important: de pe f3 <strong>apără turnul din d5</strong>, pe diagonala a8–h1. De-aia nu merge De2, care apără câmpurile, dar lasă turnul: …Dxd5. <br><br>După schimbul de regine, Albul trebuie să câștige cu <strong>nebunul în plus</strong>. <br><br>💡 Ține minte forma asta: <strong>când sunt două amenințări, nu căuta o apărare pentru fiecare — caută mutarea care le acoperă pe amândouă.</strong> De obicei e una singură și de obicei e o piesă care se așază chiar pe drumul lor comun.'
     },
     arrows: { 0: [{from:'f7', to:'f1', color:'R'}, {from:'f8', to:'f7', color:'B'}],
               1: [{from:'f3', to:'f1', color:'G'}, {from:'f3', to:'f2', color:'G'}] },
@@ -586,6 +587,31 @@ function goMove(chIdx, step) {
     if (a.top < l.top) sc.scrollTop += a.top - l.top;
     else if (a.bottom > l.bottom) sc.scrollTop += a.bottom - l.bottom;
   }
+}
+
+/* O variantă care nu e linia lecției: se joacă de la poziția capitolului. */
+function varianta(sans) {
+  clearSel();
+  clearStudyArrows();
+  clearLastMove();
+  let g = new Chess(positions[0]);
+  const ro = [];
+  sans.forEach(function (m) {
+    if (g.move(m)) { ro.push(toRo(m)); return; }
+    /* varianta poate incepe cu mutarea celeilalte tabere */
+    const q = g.fen().split(' ');
+    q[1] = (q[1] === 'w') ? 'b' : 'w';
+    q[3] = '-';
+    const alt = new Chess(q.join(' '));
+    if (alt.move(m)) { g = alt; ro.push(toRo(m)); }
+  });
+  sGame = g;
+  board.position(g.fen(), true);
+  showCheckHL(g);
+  const pas = document.getElementById('moveCounter').dataset.step || 0;
+  document.getElementById('annotationBox').innerHTML =
+    '<strong>Pe tablă:</strong> ' + ro.join(' ') +
+    '<br><br><button class="mv-link" onclick="goToStep(' + pas + ')">&#9664; Înapoi la lecție</button>';
 }
 
 function goToStep(s) {
