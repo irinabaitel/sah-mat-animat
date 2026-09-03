@@ -589,6 +589,7 @@ $(document).on('click', '.square-55d63', function (e) {
   if (e.button !== 0) return;
   const sq  = $(this).data('square');
   if (practiceMode) { pracClick(sq); return; }
+  clearStudyArrows();   /* un clic pe tablă curăță săgețile, ca să vezi poziția goală */
   const pos = board.position();
   if (selSq) {
     const prevSq = selSq;
