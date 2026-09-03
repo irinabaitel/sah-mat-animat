@@ -403,11 +403,33 @@ const chapters = [
               1: [{from:'f3', to:'f1', color:'G'}, {from:'f3', to:'f2', color:'G'}] },
     hl: { 0: [{sq:'f1',cls:'hl-b'},{sq:'f2',cls:'hl-b'}], 1: [{sq:'f1',cls:'hl-a'},{sq:'f2',cls:'hl-a'}] }
   }
+,
+
+  /* 5 — cum creezi: dublezi atacul pe un camp slab */
+  {
+    fen: '6k1/4r3/1pb3p1/p1p2p2/P1R5/1P4BP/2P3PK/8 b - - 0 1', orient: 'black',
+    winner: 'b', practiceFrom: 0, winEval: 0,
+    finishMsg: 'Amenințarea e pe tablă — acum Albul trebuie să se ocupe de ea.',
+    san: ['Re2'],
+    ann: {
+      0: '⚡ <strong>Acum tu ești cel care amenință.</strong> Joci cu <strong>Negrul</strong>. <br><br>Materialul e egal, nimeni nu atacă nimic — genul de poziție în care copiii mută la întâmplare. <br><br>Caută în tabăra lui un punct slab. Uită-te la pionul din <strong>g2</strong>: el ține laolaltă adăpostul regelui, iar nebunul tău din <strong>c6</strong> îl privește deja, de departe, pe diagonala a8–h1. <br><br>E atacat o dată și apărat o dată, de regele din h2. Deci deocamdată nu poți lua nimic. <br><br>Ce piesă poți aduce ca să-l ataci a doua oară?',
+      1: '<strong>…Te2!</strong> — turnul coboară pe linia a doua și atacă și el pionul din g2. <br><br>Nu s-a întâmplat nimic pe tablă: nicio piesă n-a fost capturată. Dar acum <strong>amenințarea există</strong> — doi atacatori contra unui apărător — iar Albul trebuie să se ocupe de ea în loc să-și facă planurile lui. <br><br>Asta e tot ce înseamnă să creezi o amenințare: <strong>ai găsit un punct slab și ai adus a doua piesă asupra lui.</strong> <br><br>Uită-te și la ce nu te-a costat: turnul stă foarte bine pe linia a doua, iar nebunul era oricum acolo. Amenințarea a venit pe gratis. <br><br>💡 Albul are o singură apărare bună: <strong>Tf4</strong>, ca să poată răspunde cu Tf2. Dacă în loc de asta joacă Nf2, pierde pionul. Adică amenințarea ta i-a stricat o mutare întreagă — exact ca la telefon.'
+    },
+    arrows: {
+      0: [{from:'c6', to:'g2', color:'B'}],
+      1: [{from:'e2', to:'g2', color:'R'}, {from:'c6', to:'g2', color:'R'}]
+    },
+    hl: { 0: [{sq:'g2',cls:'hl-b'}], 1: [{sq:'g2',cls:'hl-b'}] }
+  }
 
 ];
 
 /* ─── Acordeon: fiecare item încarcă un capitol ─── */
 const accData = [
+  /* ═══ partea 1: cum creezi amenintari ═══ */
+  { parte: 1, chIdx: 5, kind: 't1', num: '1', title: 'Aduc a doua piesă pe un punct slab', practice: true,
+    desc: 'Joci cu <strong>Negrul</strong>. Nimeni nu atacă nimic. Găsește punctul slab din tabăra lui și adu încă o piesă asupra lui.' },
+
   /* ═══ partea 2: ce faci cand esti amenintat ═══ */
   { parte: 2, chIdx: 0, kind: 't1', num: '1', title: 'Piesa care stă singură', practice: true,
     desc: 'Joci cu <strong>Negrul</strong>. Nimeni nu te atacă acum — dar un turn neapărat este o invitație.' },
