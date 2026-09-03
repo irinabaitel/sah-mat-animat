@@ -32,7 +32,7 @@ window.TRASEU_N2 = [
   { t: 'Atacul laser (frigăruia)', h: 'pagina53.html' },
   { t: 'Atacul prin descoperire', h: 'pagina95.html' },
   { t: 'Amenințările', h: 'nivel2_amenintari.html' },
-  { t: 'Cooperarea în jocul de mijloc', h: null },
+  { t: 'Cooperarea în jocul de mijloc', h: 'nivel2_cooperarea_mijloc.html' },
   { t: 'Bateria', h: null },
   { t: 'Coloana deschisă și linia a 7-a', h: null },
   { t: 'Slăbiciunea ultimei linii', h: 'pagina65.html' },
