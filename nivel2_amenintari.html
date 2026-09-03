@@ -421,6 +421,30 @@ const chapters = [
     },
     hl: { 0: [{sq:'g2',cls:'hl-b'}], 1: [{sq:'g2',cls:'hl-b'}] }
   }
+,
+
+  /* 6 — cum creezi: ameninti ca sa castigi un tempo (Step 4, lectia 12) */
+  {
+    fen: '1r4k1/6pp/2p5/1p6/1P1Q4/8/2b5/6K1 w - - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: 3,
+    finishMsg: 'Un tempo câștigat — și nebunul cade.',
+    san: ['Qa7','Re8','Qa2+','Kh8','Qxc2'],
+    ann: {
+      0: '🎯 <strong>Amenințarea care îți cumpără o mutare.</strong> Joci cu <strong>Albul</strong>. <br><br>Uită-te la nebunul negru din <strong>c2</strong>: stă singur, nu-l apără nimeni. Iar regele negru e pe <strong>g8</strong>. <br><br>Cele două se află pe drumuri care se întâlnesc într-un singur loc: dacă regina ta ar ajunge pe <strong>a2</strong>, ar da <strong>șah</strong> pe diagonala a2–g8 și ar ataca în același timp nebunul. Atac dublu, nebun câștigat. <br><br>Necazul: regina e pe d4 și <strong>nu poate ajunge pe a2 dintr-o mutare</strong>. Iar dacă merge încet, de pildă Da1, Negrul are timp să-și pună nebunul la adăpost. <br><br>Deci îți trebuie o mutare care se apropie de a2 <em>și</em> îl ține ocupat. Ce are el neapărat aici?',
+      1: '<strong>Da7!</strong> — regina se așază pe coloana a, de unde ajunge la a2, dar în drum <strong>atacă turnul din b8</strong>. <br><br>Ăsta e miezul: Negrul trebuie să se ocupe de turn <em>chiar acum</em>. Nu mai are mutarea liberă cu care și-ar fi salvat nebunul.',
+      2: '<strong>…Te8</strong> — turnul fuge, cum era obligat.',
+      3: '<strong>Da2+!</strong> — acum vine lovitura pregătită: șah regelui de pe diagonala a2–g8 <strong>și</strong> atac asupra nebunului din c2.',
+      4: '<strong>…Rh8</strong> — regele trebuie să răspundă la șah, deci nebunul rămâne descoperit.',
+      5: '<strong>Dxc2</strong> — și nebunul e al Albului. <br><br>Uită-te înapoi la ce s-a întâmplat: lovitura era acolo de la început, dar regina avea nevoie de o mutare ca să ajungă. <strong>Amenințarea i-a cumpărat mutarea aceea.</strong> <br><br>💡 În șah asta se numește <strong>câștig de tempo</strong>: îl obligi pe adversar să facă ce vrei tu, în timp ce tu îți pregătești treaba. Iar când cauți așa ceva, întrebarea e simplă: <strong>pe drumul spre locul unde vreau să ajung, ce pot ataca?</strong>'
+    },
+    arrows: {
+      0: [{from:'d4', to:'a4', color:'B'}, {from:'a2', to:'g8', color:'B'}, {from:'a2', to:'c2', color:'B'}],
+      1: [{from:'a7', to:'b8', color:'R'}, {from:'a7', to:'a2', color:'B'}],
+      3: [{from:'a2', to:'g8', color:'R'}, {from:'a2', to:'c2', color:'R'}],
+      5: [{from:'a2', to:'c2', color:'G'}]
+    },
+    hl: { 0: [{sq:'c2',cls:'hl-b'},{sq:'a2',cls:'hl-a'}], 1: [{sq:'b8',cls:'hl-b'}], 3: [{sq:'c2',cls:'hl-b'}] }
+  }
 
 ];
 
@@ -429,6 +453,9 @@ const accData = [
   /* ═══ partea 1: cum creezi amenintari ═══ */
   { parte: 1, chIdx: 5, kind: 't1', num: '1', title: 'Aduc a doua piesă pe un punct slab', practice: true,
     desc: 'Joci cu <strong>Negrul</strong>. Nimeni nu atacă nimic. Găsește punctul slab din tabăra lui și adu încă o piesă asupra lui.' },
+
+  { parte: 1, chIdx: 6, kind: 't2', num: '2', title: 'Amenințarea care îți cumpără o mutare', practice: true,
+    desc: 'Joci cu <strong>Albul</strong>. Lovitura e gata, dar regina are nevoie de o mutare ca să ajungă. Cum o câștigi?' },
 
   /* ═══ partea 2: ce faci cand esti amenintat ═══ */
   { parte: 2, chIdx: 0, kind: 't1', num: '1', title: 'Piesa care stă singură', practice: true,
