@@ -35,7 +35,7 @@ window.TRASEU_N2 = [
   { t: 'Cooperarea în jocul de mijloc', h: null },
   { t: 'Bateria', h: null },
   { t: 'Coloana deschisă și linia a 7-a', h: null },
-  { t: 'Slăbiciunea ultimei linii', h: 'pagina65.html' },
+  { t: 'Slăbiciunea ultimei linii', h: 'nivel2_ultima_linie.html' },
   { t: 'Tabelul de analiză', h: null },
   { t: 'Cele trei întrebări', h: null },
   { t: 'Atragerea și devierea', h: 'pagina59.html' },
