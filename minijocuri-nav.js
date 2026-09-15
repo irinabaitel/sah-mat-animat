@@ -17,6 +17,7 @@
         ['nivel1_joc_dama_turn_nebun.html', 'Dama și turnul contra nebunului'],
         ['nivel1_joc_cai_lacomi.html', 'Care cal mănâncă mai repede?'],
         ['nivel1_joc_drumul_regelui.html', 'Drumul regelui spre castel'],
+        ['nivel1_joc_cursa_obstacole.html', 'Cursa cu obstacole'],
         ['nivel1_joc_piesa_contra_pionilor.html', 'Piesa contra pionilor'],
         ['joc_stockfish.html?v=2',   'Regi și Pioni 2']
     ];
