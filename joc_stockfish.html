@@ -148,7 +148,7 @@
 <body>
 <div class="page-wrapper">
   <header class="page-header" role="banner">
-    <span class="header-title">&#9812; Regi și Pioni</span>
+    <span class="header-title" id="headerTitle">&#9812; Regi și Pioni</span>
   </header>
   <main class="page-main" role="main">
     <div class="board-col">
@@ -156,9 +156,12 @@
     </div>
     <div class="panel-col">
       <div class="panel-scroll">
-        <p class="panel-heading">&#9823; Regi și Pioni</p>
-        <div class="hl-box" style="margin-bottom:10px">
-          Regii și cei 16 pioni, fiecare pe locul lui. Joci contra calculatorului sau în doi, pe aceeași tablă.
+        <p class="panel-heading" id="panelHeading">&#9823; Regi și Pioni</p>
+        <div class="hl-box" style="margin-bottom:10px" id="introV1">
+          Regii și cei 16 pioni, fiecare pe locul lui. Câștigă cine duce primul un pion pe ultima linie fără să îl piardă. Joci contra calculatorului sau în doi, pe aceeași tablă.
+        </div>
+        <div class="hl-box" style="margin-bottom:10px;display:none" id="introV2">
+          Regii și cei 16 pioni, fiecare pe locul lui. O partidă completă, cu promovare și mat. Joci contra calculatorului sau în doi, pe aceeași tablă.
         </div>
 
         <!-- SETUP (visible initially) -->
@@ -222,10 +225,15 @@
         <details class="howto" open>
           <summary>📖 Cum se joacă</summary>
 
-          <div class="hl-box">
+          <div class="hl-box" id="howIntroV1">
+            <h4>Ce e acest joc</h4>
+            <p>Este un joc pe tabla de șah cu puține piese: fiecare parte are doar <strong>regele</strong> și <strong>opt pioni</strong>. Piesele merg ca în șah, dar scopul este altul.</p>
+            <p><strong>Câștigă cine duce primul un pion pe ultima linie și îl păstrează acolo.</strong> Nu există mat și nici transformarea pionului în altă piesă. Citește cu atenție regulile de mai jos: contează nu doar să ajungi cu pionul la capăt, ci și ca pionul să nu fie capturat imediat.</p>
+          </div>
+          <div class="hl-box" id="howIntroV2" style="display:none">
             <h4>Ce e acest joc</h4>
             <p>Este o partidă de șah adevărată, dar cu puține piese: fiecare parte are doar <strong>regele</strong> și <strong>opt pioni</strong>. Regulile sunt cele ale șahului obișnuit.</p>
-            <p>Atenție: jocul <strong>nu se oprește</strong> când un pion ajunge pe ultimul rând și nici când o parte rămâne fără pioni. Partida continuă până la mat, pat sau remiză.</p>
+            <p>Pionul ajuns pe ultimul rând se transformă în altă piesă, iar partida o câștigă cine dă mat. Jocul nu se oprește când un pion ajunge pe ultimul rând și nici când o parte rămâne fără pioni.</p>
           </div>
 
           <div class="hl-box">
@@ -256,28 +264,73 @@
           </div>
 
           <div class="hl-box">
-            <h4>Promovarea</h4>
-            <p>Când un pion ajunge pe <strong>ultimul rând</strong> (albul pe rândul 8, negrul pe rândul 1), el se transformă. Alegi în ce piesă: <strong>damă, turn, nebun sau cal</strong>. Cel mai des se alege dama, pentru că este cea mai puternică.</p>
-            <p>Piesa nouă rămâne pe tablă și partida continuă. Promovarea singură nu câștigă jocul, dar îți dă de obicei un mare avantaj.</p>
+            <h4>Șahul</h4>
+            <p><strong>Șah</strong> înseamnă că regele este atacat de o piesă a adversarului. Pătratul regelui se colorează în roșu.</p>
+            <p>Cel care este în șah trebuie să scape imediat: mută regele pe un pătrat sigur sau capturează piesa care îi dă șah. Nu ai voie să faci o altă mutare cât timp regele rămâne atacat.</p>
+            <p>La fel, nu ai voie să faci o mutare după care regele tău ar ajunge atacat.</p>
+          </div>
+
+          <div id="howtoV1">
+          <div class="hl-box warn">
+            <h4>🏁 Cine câștigă</h4>
+            <p><strong>Scopul</strong> este să duci un pion până pe ultima linie: albul pe <strong>rândul 8</strong>, negrul pe <strong>rândul 1</strong>. Pionul ajuns acolo nu se transformă în altă piesă. Rămâne pion.</p>
+            <p>Dar nu este de ajuns să ajungi acolo. <strong>Pionul trebuie să rămână pe tablă.</strong> Când pionul tău ajunge pe ultima linie, jocul nu se oprește imediat: adversarul mai face <strong>o mutare</strong>.</p>
+            <p>Dacă adversarul <strong>capturează pionul cu regele</strong>, pionul iese de pe tablă și jocul continuă.</p>
+            <p>Dacă adversarul face <strong>orice altă mutare</strong> sau nu mai are nicio mutare, <strong>ai câștigat</strong>.</p>
+            <p>Pe scurt: degeaba ajungi pe ultima linie dacă pionul este capturat imediat.</p>
           </div>
 
           <div class="hl-box">
-            <h4>Șah, mat și pat</h4>
-            <p><strong>Șah</strong> înseamnă că regele este atacat. Pătratul regelui se colorează în roșu. Cel care este în șah trebuie să scape imediat: mută regele pe un pătrat sigur sau capturează piesa care dă șah.</p>
-            <p><strong>Mat</strong> înseamnă șah din care nu mai există scăpare. Cine dă mat câștigă partida.</p>
-            <p><strong>Pat</strong> înseamnă că jucătorul la mutare nu este în șah, dar nu are nicio mutare permisă. Patul este remiză.</p>
+            <h4>Cine poate captura pionul de pe ultima linie</h4>
+            <p><strong>Numai regele adversarului.</strong> Pionii merg și capturează doar înainte, deci nu se pot întoarce după el.</p>
+            <p>Regele îl poate captura numai dacă stă <strong>chiar lângă el</strong> și numai dacă pătratul pionului <strong>nu este apărat</strong> de regele tău sau de un pion de-al tău. Regele nu are voie să intre pe un pătrat atacat.</p>
+            <p>Pionul de pe ultima linie <strong>nu atacă nimic</strong>: nu dă șah, iar regele adversarului poate sta lângă el.</p>
           </div>
 
+          <div class="hl-box">
+            <h4>Un exemplu</h4>
+            <p>Un pion alb ajunge pe <strong>e8</strong>. Regele negru stă pe <strong>d7</strong>. Pătratele d7 și e8 sunt vecine, iar pe e8 nu îl apără nimeni. Regele negru merge pe e8 și capturează pionul. Jocul continuă.</p>
+            <p>Dacă regele negru stă pe <strong>f7</strong>, se întâmplă la fel: f7 și e8 sunt tot vecine.</p>
+            <p>Acum să spunem că regele negru stă pe d7, dar <strong>regele alb stă pe f7</strong>. Regele alb apără pătratul e8, deci regele negru nu are voie să intre acolo. Negrul trebuie să facă altă mutare, iar <strong>albul câștigă</strong>.</p>
+            <p>La fel se întâmplă dacă pe <strong>f7</strong> (sau pe d7, când regele negru stă în altă parte) se află <strong>un pion alb</strong>. Pionul alb capturează pe diagonală înainte, deci el apără pătratul e8.</p>
+            <p>Pentru negru este la fel, dar invers: pionul negru merge spre rândul 1, iar regele alb încearcă să îl captureze.</p>
+            <p><strong>Sfat:</strong> înainte să duci pionul pe ultima linie, uită-te unde este regele adversarului. Dacă stă lângă pătratul acela, adu întâi regele tău sau un pion ca să apere pătratul.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Alte reguli</h4>
+            <p><strong>Fără mutări.</strong> Dacă îți vine rândul și nu ai nicio mutare permisă, pierzi. Se poate întâmpla, de exemplu, când pionii tăi sunt blocați iar regele nu are niciun pătrat sigur.</p>
+            <p><strong>Egalitate (remiză)</strong> este când: pe tablă nu mai rămâne niciun pion; aceeași poziție se repetă de trei ori; sau trec 50 de mutări ale fiecărei părți fără nicio captură și fără nicio mutare de pion.</p>
+            <p>Mai câștigi dacă adversarul abandonează, dacă îi expiră timpul pe ceas sau, în doi, dacă adversarul încearcă de trei ori o mutare nepermisă.</p>
+            <p>Dacă poți captura pionul de pe ultima linie și nu o faci, mutarea ta nu este nepermisă, deci nu se numără ca încercare. Dar partida este pierdută.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Un sfat: regula pătratului</h4>
+            <p>Uneori un pion nu mai are în față și pe coloanele vecine niciun pion al adversarului. Singurul care îl mai poate opri este regele adversarului, dacă ajunge la timp lângă el.</p>
+            <p>Închipuie-ți un pătrat desenat pe tablă: o latură merge de la pion până la ultima linie, iar pătratul se întinde spre regele adversarului. Dacă regele poate intra în acest pătrat la mutarea lui, ajunge la timp să prindă pionul. Dacă nu, pionul câștigă cursa.</p>
+            <p>Când ambele părți au câte un astfel de pion, numără mutările: de obicei câștigă cel al cărui pion ajunge mai repede pe ultima linie.</p>
+          </div>
+          </div>
+
+          <div id="howtoV2" style="display:none">
           <div class="hl-box warn">
-            <h4>Cine câștigă?</h4>
-            <p><strong>Câștigă cine dă mat.</strong> Mai câștigi dacă adversarul abandonează, dacă îi expiră timpul pe ceas sau, în doi, dacă adversarul încearcă de trei ori o mutare nepermisă.</p>
+            <h4>👑 Cine câștigă</h4>
+            <p><strong>Promovarea.</strong> Când un pion ajunge pe ultimul rând (albul pe rândul 8, negrul pe rândul 1), el se transformă. Alegi în ce piesă: <strong>damă, turn, nebun sau cal</strong>. Cel mai des se alege dama, pentru că este cea mai puternică. Piesa nouă rămâne pe tablă și partida continuă. Promovarea singură nu câștigă jocul, dar îți dă de obicei un mare avantaj.</p>
+            <p><strong>Mat</strong> înseamnă șah din care nu mai există scăpare. <strong>Câștigă cine dă mat.</strong></p>
+            <p><strong>Pat</strong> înseamnă că jucătorul la mutare nu este în șah, dar nu are nicio mutare permisă. Patul este remiză.</p>
+            <p>Jocul <strong>nu se oprește</strong> când o parte rămâne fără pioni. Partida continuă până la mat, pat sau remiză.</p>
             <p><strong>Remiză</strong> (nimeni nu câștigă) este când: apare patul; pe tablă nu mai rămâne destul material ca să se poată da mat (de exemplu doar cei doi regi); aceeași poziție se repetă de trei ori; sau trec 50 de mutări ale fiecărei părți fără nicio captură și fără nicio mutare de pion.</p>
+            <p>Mai câștigi dacă adversarul abandonează, dacă îi expiră timpul pe ceas sau, în doi, dacă adversarul încearcă de trei ori o mutare nepermisă.</p>
+          </div>
           </div>
 
           <div class="hl-box">
             <h4>Cum muți pe tablă</h4>
             <p>Poți <strong>trage piesa</strong> cu mouse-ul sau cu degetul. Poți și să <strong>dai click</strong> pe piesă, apoi pe pătratul unde vrei să ajungă.</p>
             <p>După ce alegi o piesă, pe tablă apar pătratele unde are voie să meargă.</p>
+            <p id="howMoveV1">Când pionul ajunge pe ultima linie, rămâne pion. Nu apare nicio fereastră de alegere a piesei.</p>
+            <p id="howMoveV2" style="display:none">Când pionul ajunge pe ultimul rând, apare o fereastră în care alegi piesa.</p>
             <p>Butoane: <strong>Retrage</strong> anulează ultima mutare (contra calculatorului, ultimele două: a ta și a calculatorului). <strong>Nou</strong> începe o partidă nouă cu aceleași setări. <strong>Abandonez</strong> încheie partida, pe care o pierde cel care abandonează. <strong>Configurare</strong> te întoarce la alegerea setărilor.</p>
           </div>
 
@@ -358,6 +411,74 @@ var clockTick = null;
 var mode = 'robot';          // 'robot' = contra calculatorului, 'duo' = în doi
 var MAX_STRIKES = 3;
 var strikes = {w: 0, b: 0};  // încercări nepermise (doar în doi)
+/* două jocuri în aceeași pagină, alese din adresă:
+   joc_stockfish.html      = Regi și Pioni   (câștigă pionul care ajunge pe ultima linie și nu e capturat)
+   joc_stockfish.html?v=2  = Regi și Pioni 2 (partida completă contra Stockfish, cu promovare și mat) */
+var variant = 1;
+try { if (/[?&]v=2(&|$)/.test(window.location.search)) variant = 2; } catch (e) {}
+
+/* varianta 1: pionul ajuns pe ultima linie rămâne pion și așteaptă răspunsul adversarului */
+var v1Pending = null;   // { sq, color } — pionul de pe ultima linie, încă necapturat
+var v1Prev = null;      // v1Pending de dinaintea ultimei mutări
+var v1Note = '';        // mesaj despre pionul de pe ultima linie, afișat în status
+var lastMv = null;
+
+/* chess.js nu știe de pioni pe ultima linie: mutarea se face ca promovare în damă,
+   apoi dama e înlocuită cu un pion (care nu atacă nimic și deci nu dă șah) */
+function v1Refix() {
+    if (variant !== 1) return;
+    // în varianta 1 nu există dame: orice piesă (în afară de rege) de pe rândul 1 sau 8 este un pion ajuns acolo
+    var files = 'abcdefgh';
+    for (var f = 0; f < 8; f++) for (var r = 1; r <= 8; r += 7) {
+        var sq = files[f] + r, p = chess.get(sq);
+        if (p && p.type !== 'p' && p.type !== 'k') {
+            chess.remove(sq);
+            chess.put({ type: 'p', color: p.color }, sq);
+        }
+    }
+}
+/* history() și in_threefold_repetition() refac partida din mutări (pionul redevine damă): îl punem la loc */
+(function() {
+    var h = chess.history, rep = chess.in_threefold_repetition;
+    chess.history = function(o) { var r = h(o); v1Refix(); return r; };
+    chess.in_threefold_repetition = function() { var r = rep(); v1Refix(); return r; };
+})();
+function doMove(obj) {
+    var prev = v1Pending;
+    var mv = chess.move(obj);
+    if (!mv) return null;
+    lastMv = mv;
+    if (variant === 1) {
+        v1Prev = prev;
+        v1Pending = mv.flags.indexOf('p') !== -1 ? { sq: mv.to, color: mv.color } : null;
+        v1Refix();
+    }
+    return mv;
+}
+/* după Retrage: pionul de pe ultima linie există dacă ultima mutare rămasă a fost o promovare */
+function v1SyncPending() {
+    v1Pending = null; v1Prev = null; v1Note = '';
+    if (variant !== 1) return;
+    var h = chess.history({ verbose: true }), last = h[h.length - 1];
+    lastMv = last || null;
+    if (last && last.flags.indexOf('p') !== -1) {
+        v1Pending = { sq: last.to, color: last.color };
+        v1Refix();
+    }
+}
+
+function applyVariantUI() {
+    var v2 = variant === 2;
+    var title = v2 ? 'Regi și Pioni 2 — partida completă' : 'Regi și Pioni';
+    document.title = title;
+    var ht = document.getElementById('headerTitle'); if (ht) ht.innerHTML = '&#9812; ' + title;
+    var ph = document.getElementById('panelHeading'); if (ph) ph.innerHTML = '&#9823; ' + title;
+    [['introV1', !v2], ['introV2', v2], ['howIntroV1', !v2], ['howIntroV2', v2],
+     ['howtoV1', !v2], ['howtoV2', v2], ['howMoveV1', !v2], ['howMoveV2', v2]].forEach(function(x) {
+        var el = document.getElementById(x[0]); if (el) el.style.display = x[1] ? '' : 'none';
+    });
+}
+applyVariantUI();
 
 function pname(c) { return c === 'w' ? 'Jucătorul 1' : 'Jucătorul 2'; }
 function sideName(c) { return c === 'w' ? 'albele' : 'negrele'; }
@@ -475,20 +596,301 @@ function handleStockfishMsg(msg) {
         var from = move.substring(0,2);
         var to   = move.substring(2,4);
         var promo = move.length > 4 ? move[4] : undefined;
-        var mv = chess.move({ from: from, to: to, promotion: promo || 'q' });
-        if (!mv) return;
-        board.position(chess.fen());
-        updateCheckHL();
-        playSoundForMove(mv);
-        addMoveToList(mv);
-        updateClocks();
-        checkGameOver();
-        if (!gameOver) setStatus(turnStatus(), '');
+        applyComputerMove(from, to, promo);
     }
 }
 
+function applyComputerMove(from, to, promo) {
+    var mv = doMove({ from: from, to: to, promotion: promo || 'q' });
+    if (!mv) return;
+    showPos();
+    updateCheckHL();
+    playSoundForMove(mv);
+    addMoveToList(mv);
+    updateClocks();
+    checkGameOver();
+    if (!gameOver) setStatus(turnStatus(), '');
+}
+
+/* calculatorul la mutare: Stockfish în varianta 2, căutarea proprie în varianta 1 */
+function askComputer() {
+    if (variant === 2) { askStockfish(); return; }
+    if (gameOver || mode !== 'robot' || chess.turn() === playerColor) return;
+    setStatus((v1Note ? v1Note + '<br>' : '') + '&#129302; Calculatorul se gândește...', 'thinking');
+    setTimeout(runV1Ai, 40);
+}
+/* pozițiile (FEN) de până acum ale partidei, pentru a evita repetarea */
+function positionHistory() {
+    var moves = chess.history({ verbose: true }), c = new Chess(START_FEN), out = [c.fen()];
+    moves.forEach(function(m) { c.move({ from: m.from, to: m.to, promotion: 'q' }); out.push(c.fen()); });
+    return out;
+}
+function v1Level() { return selectedSkill >= 20 ? 'dragon' : selectedSkill >= 11 ? 'manz' : 'pui'; }
+function runV1Ai() {
+    if (variant !== 1 || gameOver || mode !== 'robot' || chess.turn() === playerColor || pendingPromoMove) return;
+    var m = V1AI.best(chess.fen(), v1Level(), 900, positionHistory());
+    if (!m) return;
+    applyComputerMove(m.from, m.to, 'q');
+}
+
+/* ====== VARIANTA 1: căutarea calculatorului ======
+   Tablă proprie (regi + pioni), alfa-beta cu adâncire iterativă.
+   Pion pe ultima linie = câștig, dacă regele advers nu îl capturează la mutarea următoare;
+   fără mutări = pierdere; niciun pion pe tablă = remiză. */
+var V1AI = (function() {
+    var WIN = 100000, STOP = {};
+    var b = new Int8Array(64);           // 1 pion alb, 2 rege alb, -1 pion negru, -2 rege negru
+    var side = 1, ep = -1, wk = 4, bk = 60, pc = [0, 0];   // pc[0] pioni albi, pc[1] pioni negri
+    var promo = -1;                      // pătratul pionului ajuns pe ultima linie (adversarul trebuie să îl captureze)
+    var uEp = new Int16Array(256), uCapSq = new Int16Array(256), uCap = new Int8Array(256), uPromo = new Int16Array(256);
+    var bufs = [], scoreBufs = [], hist = new Int32Array(4096);
+    var nodes = 0, deadline = 0, useDeadline = false;
+
+    function cheb(a, c) { var df = Math.abs((a & 7) - (c & 7)), dr = Math.abs((a >> 3) - (c >> 3)); return df > dr ? df : dr; }
+    function attackedBy(sq, a) {
+        var f = sq & 7, r = (sq >> 3) - a;
+        if (r >= 0 && r < 8) {
+            if (f > 0 && b[r * 8 + f - 1] === a) return true;
+            if (f < 7 && b[r * 8 + f + 1] === a) return true;
+        }
+        return cheb(sq, a === 1 ? wk : bk) === 1;
+    }
+    /* mutare = from | to<<6 | flag<<12 ; flag: 1 pas dublu, 2 en passant, 4 promovare, 8 captură */
+    function gen(out) {
+        var n = 0, s = side, en = -s, myK = s === 1 ? wk : bk;
+        var f = myK & 7, r = myK >> 3, pr = r + s, checker = -1, nChk = 0;
+        if (pr >= 0 && pr < 8) {
+            if (f > 0 && b[pr * 8 + f - 1] === en) { checker = pr * 8 + f - 1; nChk++; }
+            if (f < 7 && b[pr * 8 + f + 1] === en) { checker = pr * 8 + f + 1; nChk++; }
+        }
+        for (var dr = -1; dr <= 1; dr++) for (var df = -1; df <= 1; df++) {
+            if (!dr && !df) continue;
+            var nf = f + df, nr = r + dr;
+            if (nf < 0 || nf > 7 || nr < 0 || nr > 7) continue;
+            var t = nr * 8 + nf, v = b[t];
+            if (v === s || v === 2 * s || v === 2 * en) continue;
+            if (attackedBy(t, en)) continue;
+            out[n++] = myK | (t << 6) | ((v ? 8 : 0) << 12);
+        }
+        if (nChk > 1) return n;
+        var last = s === 1 ? 7 : 0, start = s === 1 ? 1 : 6;
+        for (var i = 0; i < 64; i++) {
+            if (b[i] !== s) continue;
+            var pf = i & 7, prk = i >> 3, nrk = prk + s;
+            if (nrk < 0 || nrk > 7) continue;
+            var promo = nrk === last ? 4 : 0, t1 = nrk * 8 + pf;
+            if (!nChk && b[t1] === 0) {
+                out[n++] = i | (t1 << 6) | (promo << 12);
+                if (prk === start) { var t2 = (prk + 2 * s) * 8 + pf; if (b[t2] === 0) out[n++] = i | (t2 << 6) | (1 << 12); }
+            }
+            for (var d = -1; d <= 1; d += 2) {
+                var cf = pf + d; if (cf < 0 || cf > 7) continue;
+                var ct = nrk * 8 + cf;
+                if (b[ct] === en) { if (nChk && ct !== checker) continue; out[n++] = i | (ct << 6) | ((promo | 8) << 12); }
+                else if (ct === ep && b[ct] === 0) { var cap = ct - 8 * s; if (nChk && cap !== checker) continue; out[n++] = i | (ct << 6) | (10 << 12); }
+            }
+        }
+        return n;
+    }
+    function make(m, ply) {
+        var fr = m & 63, to = (m >> 6) & 63, fl = m >> 12, p = b[fr], capSq = -1;
+        uEp[ply] = ep; uPromo[ply] = promo;
+        promo = (fl & 4) ? to : -1;
+        if (fl & 2) capSq = to - 8 * side; else if (b[to]) capSq = to;
+        uCapSq[ply] = capSq; uCap[ply] = capSq >= 0 ? b[capSq] : 0;
+        if (capSq >= 0) { b[capSq] = 0; pc[side === 1 ? 1 : 0]--; }
+        b[to] = p; b[fr] = 0;
+        if (p === 2) wk = to; else if (p === -2) bk = to;
+        ep = (fl & 1) ? (fr + to) >> 1 : -1;
+        side = -side;
+    }
+    function unmake(m, ply) {
+        side = -side;
+        var fr = m & 63, to = (m >> 6) & 63, p = b[to], cs = uCapSq[ply];
+        b[fr] = p; b[to] = 0;
+        if (p === 2) wk = fr; else if (p === -2) bk = fr;
+        if (cs >= 0) { b[cs] = uCap[ply]; pc[side === 1 ? 1 : 0]++; }
+        ep = uEp[ply]; promo = uPromo[ply];
+    }
+    /* mutarea care capturează pionul de pe ultima linie (sau 0 dacă nu există) */
+    function promoCapture(buf, n) {
+        for (var k = 0; k < n; k++) if (((buf[k] >> 6) & 63) === promo) return buf[k];
+        return 0;
+    }
+    /* promovarea e sigură dacă regele advers nu poate captura pionul: nu e lângă pătrat sau pătratul e apărat */
+    function safePromo(m) {
+        var to = (m >> 6) & 63, fr = m & 63, s = side, ek = s === 1 ? bk : wk;
+        if (cheb(ek, to) !== 1) return true;
+        b[fr] = 0;                                   // pionul pleacă; verificăm apărarea pătratului
+        var def = attackedBy(to, s);
+        b[fr] = s;
+        return def;
+    }
+    /* evaluare din perspectiva jucătorului la mutare */
+    function evaluate() {
+        var sc = 100 * (pc[0] - pc[1]), wBest = 99, bBest = 99, wKd = 16, bKd = 16;
+        for (var i = 0; i < 64; i++) {
+            var v = b[i]; if (v !== 1 && v !== -1) continue;
+            var f = i & 7, r = i >> 3, passed = true, g, h;
+            if (v === 1) {
+                var adv = r - 1, steps = r === 1 ? 5 : 7 - r;
+                for (g = r + 1; g < 7 && passed; g++) for (h = f - 1; h <= f + 1; h++) if (h >= 0 && h < 8 && b[g * 8 + h] === -1) { passed = false; break; }
+                sc += adv * adv * 3;
+                var d1 = cheb(bk, i); if (d1 < bKd) bKd = d1;
+                if (passed) {
+                    sc += 15 + adv * adv * 6;
+                    var blocked = false;
+                    for (g = r + 1; g < 8; g++) if (b[g * 8 + f] === 2) blocked = true;
+                    if (!blocked && cheb(bk, 56 + f) - (side === -1 ? 1 : 0) > steps) {
+                        var pl = 2 * steps - (side === 1 ? 1 : 0); if (pl < wBest) wBest = pl;
+                    }
+                }
+            } else {
+                var advb = 6 - r, stepsb = r === 6 ? 5 : r;
+                for (g = r - 1; g > 0 && passed; g--) for (h = f - 1; h <= f + 1; h++) if (h >= 0 && h < 8 && b[g * 8 + h] === 1) { passed = false; break; }
+                sc -= advb * advb * 3;
+                var d2 = cheb(wk, i); if (d2 < wKd) wKd = d2;
+                if (passed) {
+                    sc -= 15 + advb * advb * 6;
+                    var blockedb = false;
+                    for (g = r - 1; g >= 0; g--) if (b[g * 8 + f] === -2) blockedb = true;
+                    if (!blockedb && cheb(wk, f) - (side === 1 ? 1 : 0) > stepsb) {
+                        var plb = 2 * stepsb - (side === -1 ? 1 : 0); if (plb < bBest) bBest = plb;
+                    }
+                }
+            }
+        }
+        if (wBest < bBest) sc += 700 - wBest * 10;
+        else if (bBest < wBest) sc -= 700 - bBest * 10;
+        sc += 4 * (bKd - wKd);        // regele aproape de pionii adversarului
+        return side === 1 ? sc : -sc;
+    }
+    function orderMoves(buf, n, ply) {
+        var sc = scoreBufs[ply] || (scoreBufs[ply] = new Int32Array(64));
+        for (var k = 0; k < n; k++) {
+            var m = buf[k], fl = m >> 12, fr = m & 63, s = 0;
+            if (fl & 8) s += 100000;
+            if (fl & 4) s += 200000;
+            if (b[fr] === side) { var r = fr >> 3; s += 5000 + 100 * (side === 1 ? r : 7 - r); }
+            sc[k] = s + hist[m & 4095];
+        }
+        for (var i = 0; i < n; i++) {             // sortare prin selecție, descrescător
+            var bi = i;
+            for (var j = i + 1; j < n; j++) if (sc[j] > sc[bi]) bi = j;
+            if (bi !== i) { var t = buf[i]; buf[i] = buf[bi]; buf[bi] = t; var u = sc[i]; sc[i] = sc[bi]; sc[bi] = u; }
+        }
+    }
+    function search(depth, alpha, beta, ply) {
+        if ((++nodes & 1023) === 0 && useDeadline && Date.now() > deadline) throw STOP;
+        var buf = bufs[ply] || (bufs[ply] = new Int32Array(64));
+        var n = gen(buf), k;
+        if (n === 0) return -WIN + ply;
+        if (promo >= 0) {                          // adversarul a ajuns pe ultima linie: capturăm sau pierdem
+            var cm = promoCapture(buf, n);
+            if (!cm) return -WIN + ply;
+            make(cm, ply);
+            var cv = pc[0] + pc[1] === 0 ? 0 : -search(depth, -beta, -alpha, ply + 1);
+            unmake(cm, ply);
+            return cv;
+        }
+        for (k = 0; k < n; k++) if ((buf[k] >> 12) & 4 && safePromo(buf[k])) return WIN - ply - 2;
+        var quiet = depth <= 0;
+        if (quiet) {                               // la orizont: doar capturile
+            var stand = evaluate();
+            if (stand >= beta || ply > 60) return stand;
+            if (stand > alpha) alpha = stand;
+        }
+        orderMoves(buf, n, ply);
+        var best = quiet ? alpha : -WIN - 1;
+        for (k = 0; k < n; k++) {
+            var m = buf[k];
+            if (quiet && !((m >> 12) & 12)) continue;
+            make(m, ply);
+            var v = (pc[0] + pc[1] === 0) ? 0 : -search(depth - 1, -beta, -alpha, ply + 1);
+            unmake(m, ply);
+            if (v > best) best = v;
+            if (v > alpha) alpha = v;
+            if (alpha >= beta) { if (!quiet) hist[m & 4095] += depth * depth; break; }
+        }
+        return best;
+    }
+    function load(fen) {
+        var parts = fen.split(' '), rows = parts[0].split('/');
+        b.fill(0); pc[0] = pc[1] = 0; promo = -1;
+        for (var ri = 0; ri < 8; ri++) {
+            var f = 0, rank = 7 - ri;
+            for (var c = 0; c < rows[ri].length; c++) {
+                var ch = rows[ri][c];
+                if (ch >= '1' && ch <= '8') { f += +ch; continue; }
+                var sq = rank * 8 + f, v = 0;
+                if (ch === 'P') { v = 1; pc[0]++; if (rank === 7) promo = sq; }
+                else if (ch === 'p') { v = -1; pc[1]++; if (rank === 0) promo = sq; }
+                else if (ch === 'K') { v = 2; wk = sq; } else if (ch === 'k') { v = -2; bk = sq; }
+                b[sq] = v; f++;
+            }
+        }
+        side = parts[1] === 'b' ? -1 : 1;
+        ep = (parts[3] && parts[3] !== '-') ? (parts[3].charCodeAt(0) - 97) + (parseInt(parts[3][1]) - 1) * 8 : -1;
+    }
+    function alg(sq) { return 'abcdefgh'[sq & 7] + ((sq >> 3) + 1); }
+    function toObj(m) { return { from: alg(m & 63), to: alg((m >> 6) & 63) }; }
+
+    /* level: 'pui' | 'manz' | 'dragon' ; ms = timp maxim pentru dragon */
+    function key() { return Array.prototype.join.call(b, '') + side; }
+    function keyOf(f) { load(f); return key(); }
+    function best(fen, level, ms, history) {
+        var seen = null;
+        if (level === 'dragon' && history) { seen = {}; history.forEach(function(f) { seen[keyOf(f)] = true; }); }
+        load(fen);
+        var root = new Int32Array(64), n = gen(root), k;
+        if (!n) return null;
+        if (promo >= 0) {                  // pionul adversarului e pe ultima linie: îl capturăm dacă putem (orice nivel)
+            var cm = promoCapture(root, n);
+            return toObj(cm || root[Math.floor(Math.random() * n)]);
+        }
+        if (level === 'pui' && Math.random() < 0.6) return toObj(root[Math.floor(Math.random() * n)]);
+        for (k = 0; k < n; k++) if ((root[k] >> 12) & 4 && safePromo(root[k])) return toObj(root[k]);
+        if (n === 1) return toObj(root[0]);
+        for (k = n - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)), t = root[k]; root[k] = root[j]; root[j] = t; }
+        hist.fill(0); nodes = 0; useDeadline = false;
+        deadline = Date.now() + (ms || 900);
+        var maxDepth = level === 'dragon' ? 40 : level === 'manz' ? 2 : 1;
+        var bestM = root[0], lastScore = 0;
+        for (var depth = 1; depth <= maxDepth; depth++) {
+            var alpha = -WIN - 1, iterBest = bestM, iterScore = -WIN - 1;
+            try {
+                // mutarea cea mai bună de la iterația anterioară se caută prima
+                for (k = 0; k < n; k++) if (root[k] === bestM) { root[k] = root[0]; root[0] = bestM; break; }
+                for (k = 0; k < n; k++) {
+                    make(root[k], 0);
+                    var v = (pc[0] + pc[1] === 0) ? 0 : -search(depth - 1, -WIN - 1, -alpha, 1);
+                    // Dragonul evită să repete o poziție deja jucată (altfel s-ar ajunge la remiză)
+                    if (seen && v >= 0 && v < WIN - 200 && seen[key()]) v -= 15;
+                    unmake(root[k], 0);
+                    if (v > iterScore) { iterScore = v; iterBest = root[k]; }
+                    if (v > alpha) alpha = v;
+                }
+            } catch (e) {
+                if (e !== STOP) throw e;
+                load(fen);            // tabla se refăcea din mijlocul căutării
+                break;
+            }
+            bestM = iterBest; lastScore = iterScore;
+            if (level === 'dragon') useDeadline = true;
+            if (Math.abs(lastScore) > WIN - 200) break;       // câștig sau pierdere forțată găsită
+            if (useDeadline && Date.now() > deadline - (ms || 900) / 2) break;   // nu mai începe o iterație care nu se termină
+        }
+        var res = toObj(bestM);
+        res.score = lastScore; res.depth = depth; res.nodes = nodes;
+        return res;
+    }
+    return { best: best };
+})();
+
 /* ====== BOARD SETUP ====== */
 var START_FEN = '4k3/pppppppp/8/8/8/8/PPPPPPPP/4K3 w - - 0 1';
+
+function showPos() { board.position(chess.fen()); }
 
 /* ====== HIGHLIGHTS (click-to-move) ====== */
 var selSq = null;
@@ -549,7 +951,7 @@ $(function() {
         if (!sq || sq === selSq || chess.get(sq)) return;
         var from = selSq;
         selSq = null; clearHL();
-        if (tryMove(from, sq)) { board.position(chess.fen()); updateCheckHL(); }
+        if (tryMove(from, sq)) { showPos(); updateCheckHL(); }
     });
 
     window.addEventListener('resize', function() { if (board) board.resize(); });
@@ -557,6 +959,7 @@ $(function() {
 
 function startGame() {
     chess.load(START_FEN);
+    v1Pending = null; v1Prev = null; v1Note = ''; lastMv = null;
     gameOver = false;
     pendingPromoMove = null;
     document.getElementById('promo-overlay').classList.remove('visible');
@@ -582,13 +985,13 @@ function startGame() {
     stopClock();
     updateClocks();
     if (clockMax > 0) startClock();
-    if (mode === 'duo') {
+    if (mode === 'duo' || variant === 1) {
         if (stockfish) { stockfish.terminate(); stockfish = null; }
     } else {
         initStockfish();
     }
     setStatus(turnStatus(), '');
-    if (mode === 'robot' && playerColor === 'b') { setTimeout(askStockfish, 500); }
+    if (mode === 'robot' && playerColor === 'b') { setTimeout(askComputer, 500); }
 }
 
 function setMode(m) {
@@ -650,12 +1053,19 @@ function illegalAttempt(sq, reason) {
 function tryMove(from, to) {
     var legal = chess.moves({ square: from, verbose: true }).filter(function(m) { return m.to === to; });
     if (!legal.length) { illegalAttempt(to, illegalReason(from, to)); return false; }
+    if (legal[0].flags.indexOf('p') !== -1 && variant === 1) {
+        // varianta 1: pionul ajuns pe ultima linie rămâne pion, fără alegerea piesei
+        var pm = doMove({ from: from, to: to, promotion: 'q' });
+        if (!pm) return false;
+        afterMove(pm);
+        return true;
+    }
     if (legal[0].flags.indexOf('p') !== -1) {
         pendingPromoMove = { from: from, to: to };
         showPromoDialog(legal[0].color);
         return false;
     }
-    var mv = chess.move({ from: from, to: to });
+    var mv = doMove({ from: from, to: to });
     if (!mv) return false;
     afterMove(mv);
     return true;
@@ -668,7 +1078,7 @@ function afterMove(mv) {
     if (checkGameOver()) return;
     if (mode === 'duo') { setStatus(turnStatus(), ''); return; }
     setStatus('', 'thinking');
-    setTimeout(askStockfish, 150);
+    setTimeout(askComputer, 150);
 }
 
 /* ====== DRAG & DROP (și alegerea piesei prin click) ====== */
@@ -678,7 +1088,7 @@ function onDragStart(source, piece) {
         if (selSq && source !== selSq) {            // click pe piesa adversarului = încercare de captură
             var from = selSq;
             selSq = null; clearHL();
-            setTimeout(function() { if (tryMove(from, source)) { board.position(chess.fen()); updateCheckHL(); } }, 0);
+            setTimeout(function() { if (tryMove(from, source)) { showPos(); updateCheckHL(); } }, 0);
             return false;
         }
         if (mode === 'duo') illegalAttempt(source, 'Acum mută ' + pname(chess.turn()) + ', cu ' + sideName(chess.turn()) + '.');
@@ -696,7 +1106,7 @@ function onDrop(source, target) {
 }
 
 function onSnapEnd() {
-    board.position(chess.fen());
+    showPos();
     updateCheckHL();
 }
 
@@ -724,13 +1134,84 @@ function doPromotion(piece) {
     var mv = chess.move({ from: pendingPromoMove.from, to: pendingPromoMove.to, promotion: piece });
     pendingPromoMove = null;
     if (!mv) return;
-    board.position(chess.fen());
+    showPos();
     updateCheckHL();
     afterMove(mv);
 }
 
 /* ====== GAME STATE ====== */
+/* varianta 1: câștigă cine promovează primul sau capturează toți pionii; fără mutări = pierdere */
+function countPawns(c) {
+    var n = 0, files = 'abcdefgh';
+    for (var f = 0; f < 8; f++) for (var r = 1; r <= 8; r++) {
+        var p = chess.get(files[f] + r);
+        if (p && p.type === 'p' && p.color === c) n++;
+    }
+    return n;
+}
+function v1Finish(winner, reason) {
+    gameOver = true; stopClock(); clearHL(); selSq = null; updateClocks();
+    playSound(sndMate);
+    var text;
+    if (mode === 'duo') {
+        text = reason + '<br>&#127942; <strong>' + pname(winner) + ' (' + sideName(winner) + ') câștigă.</strong>';
+        setStatus(text, 'success');
+    } else {
+        var you = winner === playerColor;
+        text = reason + '<br>' + (you ? 'Ai câștigat! &#127942;' : 'Calculatorul a câștigat. &#129302;');
+        setStatus(text, you ? 'success' : 'danger');
+    }
+}
+function checkGameOverV1() {
+    var last = lastMv;
+    if (!last) return false;
+    var mover = last.color, other = mover === 'w' ? 'b' : 'w';
+    var Side = function(c) { return c === 'w' ? 'Albele' : 'Negrele'; };
+    var adj = function(c) { return c === 'w' ? 'alb' : 'negru'; };
+    var winnerName = function(c) { return mode === 'duo' ? pname(c) + ' (' + sideName(c) + ')' : (c === playerColor ? 'tu' : 'calculatorul'); };
+    v1Note = '';
+    var prev = v1Prev; v1Prev = null;
+    if (prev && prev.color !== mover) {
+        if (last.to === prev.sq) {
+            v1Note = 'Regele ' + adj(mover) + ' a capturat pionul de pe ' + prev.sq + '. Jocul continuă.';
+        } else {
+            v1Finish(prev.color, 'Pionul ' + adj(prev.color) + ' de pe ' + prev.sq + ' a rămas pe ultima linie: regele ' + adj(mover) + ' nu l-a capturat.');
+            return true;
+        }
+    }
+    if (v1Pending) {                       // pionul celui care a mutat tocmai a ajuns pe ultima linie
+        if (chess.moves().length === 0) {
+            v1Finish(mover, 'Pionul ' + adj(mover) + ' a ajuns pe ' + v1Pending.sq + ', iar ' + sideName(other) + ' nu mai au nicio mutare.');
+            return true;
+        }
+        v1Note = 'Pionul ' + adj(mover) + ' a ajuns pe ' + v1Pending.sq + '. Dacă regele ' + adj(other) +
+                 ' nu îl capturează acum, câștigă ' + winnerName(mover) + '.';
+        return false;
+    }
+    if (countPawns('w') + countPawns('b') === 0) {
+        setStatus('Nu mai este niciun pion pe tablă: egalitate. &#9878;', 'draw');
+        gameOver = true; stopClock(); updateClocks();
+        return true;
+    }
+    if (chess.moves().length === 0) {
+        v1Finish(mover, Side(other) + ' nu mai au nicio mutare permisă' + (chess.in_check() ? ' (regele este în șah)' : '') + ', deci pierd.');
+        return true;
+    }
+    if (chess.in_threefold_repetition()) {
+        setStatus('Remiză: aceeași poziție s-a repetat de trei ori. &#9878;', 'draw');
+        gameOver = true; stopClock(); updateClocks();
+        return true;
+    }
+    if (chess.in_draw()) {
+        setStatus('Remiză: 50 de mutări fără captură și fără mutare de pion. &#9878;', 'draw');
+        gameOver = true; stopClock(); updateClocks();
+        return true;
+    }
+    return false;
+}
+
 function checkGameOver() {
+    if (variant === 1) return checkGameOverV1();
     if (chess.in_checkmate() && mode === 'duo') {
         var loser = chess.turn(), won = loser === 'w' ? 'b' : 'w';
         setStatus('Mat. &#127942; ' + pname(won) + ' (' + sideName(won) + ') câștigă.', 'success');
@@ -760,6 +1241,10 @@ function checkGameOver() {
 }
 
 function turnStatus() {
+    var base = turnStatusBase();
+    return (variant === 1 && v1Note && !gameOver) ? v1Note + '<br>' + base : base;
+}
+function turnStatusBase() {
     var t = chess.turn() === 'w' ? 'Albele' : 'Negrele';
     if (mode === 'duo') {
         var who = pname(chess.turn()) + ' (' + sideName(chess.turn()) + ')';
@@ -772,7 +1257,7 @@ function turnStatus() {
 
 function setStatus(txt, cls) {
     var el = document.getElementById('status');
-    el.innerHTML = txt || turnStatus();
+    el.innerHTML = '<span>' + (txt || turnStatus()) + '</span>';   // un singur bloc: rândurile cu <br> rămân unele sub altele
     el.className = 'status-box' + (cls ? ' ' + cls : '');
 }
 
@@ -783,6 +1268,8 @@ var lastMoveEl = null;
 function addMoveToList(mv) {
     var list = document.getElementById('moveList');
     var moveNr = Math.ceil(chess.history().length / 2);
+    // varianta 1: pionul nu se transformă, deci nu scriem „=D" și nici șahul dat de damă
+    var san = (variant === 1 && mv.flags.indexOf('p') !== -1) ? mv.san.replace(/=[QRBN][+#]?/, '') : mv.san;
 
     if (chess.history().length % 2 === 1) {
         // white move — new pair
@@ -791,13 +1278,13 @@ function addMoveToList(mv) {
         pair.className = 'move-pair';
         pair.id = 'mp' + moveNr;
         pair.innerHTML = '<span class="move-nr">' + moveNr + '.</span>' +
-                         '<span class="mv-w" id="mw' + moveNr + '">' + mv.san + '</span>' +
+                         '<span class="mv-w" id="mw' + moveNr + '">' + san + '</span>' +
                          '<span class="mv-b" id="mb' + moveNr + '"></span>';
         list.appendChild(pair);
     } else {
         // black move
         var el = document.getElementById('mb' + lastMoveNr);
-        if (el) el.textContent = mv.san;
+        if (el) el.textContent = san;
     }
     list.scrollTop = list.scrollHeight;
 }
@@ -818,10 +1305,11 @@ function undoMove() {
         chess.undo(); chess.undo();
         if (wasOver && clockMax > 0) startClock();
     }
-    board.position(chess.fen());
+    v1SyncPending();
+    showPos();
     updateCheckHL();
     updateClocks();
-    if (mode === 'robot' && chess.turn() !== playerColor) setTimeout(askStockfish, 300);
+    if (mode === 'robot' && chess.turn() !== playerColor) setTimeout(askComputer, 300);
     // rebuild move list
     var list = document.getElementById('moveList');
     list.innerHTML = '';
