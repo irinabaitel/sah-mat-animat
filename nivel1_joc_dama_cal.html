@@ -23,11 +23,8 @@
   }
 
   /* HIGHLIGHTS */
-  .sq-selected { background: rgba(26,120,255,0.50) !important; }
-  .sq-valid    { background: rgba(40,200,80,0.45)  !important; }
-  .sq-capture  { background: rgba(255,160,20,0.70) !important; }
-  .sq-last     { background: rgba(160,60,200,0.35) !important; }
-  .sq-wrong    { background: rgba(220,40,40,0.55)  !important; }
+  .sq-last     { background-color: rgba(160,60,200,0.35) !important; }
+  .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
 
   .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
 
@@ -106,6 +103,7 @@
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+<script src="minijocuri-nav.js"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -182,20 +180,7 @@
 
   </main>
 
-  <footer class="page-footer" role="navigation">
-    <a href="nivel1_lectia5.html" class="nav-btn nav-btn--back">
-      <span class="icon">&#8592;</span>
-      <span class="label">Atacul, Captura și Apărarea</span>
-    </a>
-    <a href="hub.html" class="nav-btn nav-btn--contents">
-      <span class="icon">&#8862;</span>
-      <span class="label">Cuprins</span>
-    </a>
-    <a href="nivel1_joc_nasturi.html" class="nav-btn nav-btn--forward">
-      <span class="icon">&#8594;</span>
-      <span class="label">Vânătoarea de nasturi</span>
-    </a>
-  </footer>
+  <footer class="page-footer" role="navigation"></footer>
 
 </div>
 
@@ -298,13 +283,13 @@ function buildPos() {
     return pos;
 }
 function clearHL(keepLast) {
-    const cls = keepLast ? 'sq-selected sq-valid sq-capture sq-wrong' : 'sq-selected sq-valid sq-capture sq-wrong sq-last';
+    const cls = keepLast ? 'highlight-selected highlight-legal highlight-capture sq-wrong' : 'highlight-selected highlight-legal highlight-capture sq-wrong sq-last';
     $('#board [class*="square-"]').removeClass(cls);
 }
 function showSelection(sq) {
     clearHL(true);
-    $('.square-' + sq).addClass('sq-selected');
-    legalTargets(sq).forEach(t => $('.square-' + t).addClass(t === qSq || t === nSq ? 'sq-capture' : 'sq-valid'));
+    $('.square-' + sq).addClass('highlight-selected');
+    legalTargets(sq).forEach(t => $('.square-' + t).addClass(t === qSq || t === nSq ? 'highlight-capture' : 'highlight-legal'));
 }
 function flashWrong(sq) {
     const el = $('.square-' + sq);
@@ -516,7 +501,7 @@ function aiMove() {
         }
         from = nSq; to = name(chosen);
     }
-    $('.square-' + from).addClass('sq-selected');
+    $('.square-' + from).addClass('highlight-selected');
     aiTimer = setTimeout(() => { aiTimer = null; doMove(from, to); }, 400);
 }
 

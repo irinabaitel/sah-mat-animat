@@ -276,6 +276,9 @@ html, body {
   z-index:        50;
 }
 .highlight-last  { background-color: rgba(255, 210,  0, .40) !important; }
+/* Minijocuri, nivelul Dragon: nu arătăm unde poate muta piesa (body.no-hints, pus de minijocuri-nav.js) */
+body.no-hints .highlight-legal          { background-image: none !important; }
+body.no-hints .highlight-capture::before { display: none; }
 
 /*
  * Rege în șah: gradient radial identic cu Lichess.
