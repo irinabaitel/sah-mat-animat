@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMTZ9GGPMP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMTZ9GGPMP');
+</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Șahul pierzătorului — Joc</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="master-template.css">
+  <style>
+    .status-box {
+      background: rgba(255,255,255,0.65);
+      border: 2px solid rgba(255,255,255,0.85);
+      border-radius: 16px; padding: 14px 16px;
+      font-family: var(--font-display); font-size: 0.93em; font-weight: 700;
+      color: #1a3a6b; text-align: center; min-height: 56px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+    .status-box.danger   { background: rgba(255,200,200,0.8); color: #8b0000; border-color: rgba(192,57,43,0.4); }
+    .status-box.success  { background: rgba(200,255,220,0.8); color: #155724; border-color: rgba(39,174,96,0.4); }
+    .status-box.draw     { background: rgba(255,248,210,0.9); color: #7d6608; border-color: rgba(230,184,0,0.4); }
+    .status-box.thinking { background: rgba(230,240,255,0.8); color: #1a3a6b; border-color: rgba(26,58,107,0.25); }
+
+    .diff-display { font-family: var(--font-display); font-size: 0.78em; color: #1a3a6b; text-align: center; opacity: 0.75; margin: 4px 0 8px; }
+    .piece-count { font-family: var(--font-display); font-size: 0.8em; color: #1a3a6b; text-align: center; margin: 2px 0 6px; }
+
+    .move-list { font-size: 0.82em; line-height: 1.8; color: #2a2a3e; max-height: 200px; overflow-y: auto; margin: 8px 0; }
+    .move-pair { display: flex; gap: 4px; }
+    .move-nr   { color: rgba(26,58,107,0.5); font-weight: 700; min-width: 22px; }
+    .mv-w, .mv-b { flex: 1; }
+
+    .animal-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-bottom: 10px; }
+    .animal-btn {
+      background: rgba(255,255,255,0.5); border: 2px solid rgba(255,255,255,0.8);
+      border-radius: 14px; padding: 8px 6px; cursor: pointer;
+      font-family: 'Nunito', sans-serif; font-size: 0.78em; font-weight: 700;
+      color: #1a3a6b; text-align: center; transition: all 0.18s; line-height: 1.4;
+    }
+    .animal-btn:hover { background: rgba(255,255,255,0.82); transform: translateY(-2px); }
+    .animal-btn.active { background: #1a3a6b; color: white; border-color: #1a3a6b; box-shadow: 0 3px 12px rgba(26,58,107,0.4); }
+    .animal-btn .emoji { font-size: 1.5em; display: block; }
+    .animal-btn .name  { display: block; margin-top: 2px; }
+
+    .color-opts { display: flex; gap: 8px; margin-bottom: 12px; }
+    .color-opt {
+      flex: 1; padding: 8px 6px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.5); font-family: var(--font-display); font-size: 0.82em; font-weight: 700;
+      color: #1a3a6b; cursor: pointer; text-align: center; transition: all 0.18s;
+    }
+    .color-opt:hover  { background: rgba(255,255,255,0.82); }
+    .color-opt.active { background: #1a3a6b; color: white; border-color: #1a3a6b; }
+
+    #promo-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; align-items: center; justify-content: center; }
+    #promo-overlay.visible { display: flex; }
+    #promo-box { background: #fff; border-radius: 20px; padding: 24px 26px; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.3); max-width: 94vw; }
+    #promo-box p { font-family: var(--font-display); font-size: 1.1em; color: #1a3a6b; margin-bottom: 16px; font-weight: 900; }
+    .promo-pieces { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .promo-piece { width: 58px; height: 58px; cursor: pointer; border-radius: 12px; border: 2px solid rgba(26,58,107,0.2); padding: 4px; transition: all 0.15s; background: rgba(26,58,107,0.06); }
+    .promo-piece:hover { border-color: #1a3a6b; background: rgba(26,58,107,0.15); transform: scale(1.08); }
+
+    .ctrl-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .time-opts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .time-opt { background: rgba(255,255,255,0.5); border: 2px solid rgba(255,255,255,0.8); border-radius: 10px; padding: 6px 11px; cursor: pointer; font-family: 'Baloo 2',cursive; font-size: 0.8em; font-weight: 700; color: #1a3a6b; transition: all 0.18s; }
+    .time-opt:hover { background: rgba(255,255,255,0.82); }
+    .time-opt.active { background: #1a3a6b; color: white; border-color: #1a3a6b; }
+    .clocks { display: flex; gap: 8px; margin: 8px 0; }
+    .clock-box { flex: 1; background: rgba(255,255,255,0.5); border: 2px solid rgba(255,255,255,0.8); border-radius: 10px; padding: 8px; text-align: center; }
+    .clock-box.active { border-color: #1a3a6b; background: rgba(26,58,107,0.1); }
+    .clock-box.low { border-color: rgba(192,57,43,0.5); background: rgba(255,200,200,0.6); }
+    .clock-lbl { font-family: var(--font-display); font-size: 0.7em; color: rgba(26,58,107,0.6); margin-bottom: 2px; }
+    .clock-time { font-family: var(--font-display); font-size: 1.2em; font-weight: 900; color: var(--c-navy); }
+    .clock-strikes { font-size:0.78em; letter-spacing:1px; margin-top:2px; min-height:1.1em; }
+
+    .panel-heading { font-family: var(--font-display); font-size: clamp(1.15rem,2.5vw,1.4rem); font-weight: 900; color: var(--c-navy); line-height: 1.25; margin-bottom: 8px; }
+    .btn-arena { display: flex; align-items: center; justify-content: center; margin-top: 14px; padding: 11px 20px; border-radius: 50px; background: var(--c-navy); color: white; text-decoration: none; font-family: var(--font-display); font-size: 0.97rem; font-weight: 700; border: none; cursor: pointer; width: 100%; transition: opacity .18s; }
+    .btn-arena:hover { opacity: 0.86; }
+    .btn-sm { padding: 7px 15px; border-radius: 50px; font-family: var(--font-display); font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: background .15s, opacity .15s; border: 1.5px solid transparent; }
+    .btn-prev  { border-color: rgba(26,58,107,0.35); background: rgba(255,255,255,0.55); color: var(--c-navy); }
+    .btn-prev:hover  { background: rgba(26,58,107,0.10); }
+    .btn-reset { border-color: rgba(192,57,43,0.40); background: rgba(255,255,255,0.55); color: #8b1a00; }
+    .btn-reset:hover { background: rgba(192,57,43,0.10); }
+    .btn-vol { position: fixed; top: 10px; right: 12px; z-index: 1000; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.88); border: 1.5px solid rgba(26,58,107,0.18); font-size: 1.05rem; cursor: pointer; line-height: 1; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 6px rgba(0,0,0,0.14); padding: 0; }
+
+    .sq-wrong { background-color: rgba(220,40,40,0.55) !important; }
+    .sq-last  { background-color: rgba(160,60,200,0.30) !important; }
+    .sq-must  { box-shadow: inset 0 0 0 4px rgba(230,126,34,0.95); }
+
+    .howto { margin-top:12px; margin-bottom:10px; }
+    .howto > summary { cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900; color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px; background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8); }
+    .howto > summary::-webkit-details-marker { display:none; }
+    .howto > summary::after { content:' ▾'; }
+    .howto:not([open]) > summary::after { content:' ▸'; }
+    .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
+    .howto .hl-box p { margin:0 0 6px; }
+    .howto .hl-box p:last-child { margin-bottom:0; }
+    .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+
+    .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+    .tgl-btn { flex:1; padding:6px 10px; border-radius:50px; border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.5); font-family:var(--font-display); font-size:0.82em; color:var(--c-navy); cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+    .tgl-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
+  </style>
+<link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
+<link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+<script src="minijocuri-nav.js"></script>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="page-header" role="banner">
+    <span class="header-title">&#9818; Șahul pierzătorului</span>
+  </header>
+  <main class="page-main" role="main">
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper"><div id="board"></div></div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <p class="panel-heading">&#9818; Șahul pierzătorului (Loser's Chess)</p>
+        <div class="hl-box" style="margin-bottom:10px">
+          Piesele sunt cele obișnuite și merg ca în șah, dar scopul este invers: <strong>câștigă cine rămâne primul fără piese</strong>. Iar dacă poți captura, <strong>trebuie</strong> să capturezi. Joci contra calculatorului sau în doi, pe aceeași tablă.
+        </div>
+
+        <!-- SETUP -->
+        <div id="setupPanel">
+          <div class="toggle-row">
+            <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+            <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
+          </div>
+          <div id="levelBox">
+            <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:8px">Alege adversarul:</div>
+            <div class="animal-grid" id="animalGrid">
+              <button class="animal-btn active" data-level="pui" onclick="selectAnimal(this)"><span class="emoji">&#128035;</span><span class="name">Pui de găină</span></button>
+              <button class="animal-btn" data-level="manz" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
+              <button class="animal-btn" data-level="dragon" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
+            </div>
+          </div>
+          <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:6px">&#9203; Timp per jucător:</div>
+          <div class="time-opts">
+            <button class="time-opt active" data-secs="0"   onclick="selectTime(this)">&#8734; Liber</button>
+            <button class="time-opt" data-secs="60"  onclick="selectTime(this)">1 min</button>
+            <button class="time-opt" data-secs="120" onclick="selectTime(this)">2 min</button>
+            <button class="time-opt" data-secs="300" onclick="selectTime(this)">5 min</button>
+          </div>
+          <div id="colorBox">
+            <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:6px">Joc cu:</div>
+            <div class="color-opts">
+              <button class="color-opt active" data-color="white" onclick="selectColor(this)">&#9817; Albe</button>
+              <button class="color-opt" data-color="black" onclick="selectColor(this)">&#9823; Negre</button>
+              <button class="color-opt" data-color="random" onclick="selectColor(this)">&#127922; Aleator</button>
+            </div>
+          </div>
+          <div class="hl-box" id="duoInfo" style="display:none;margin-bottom:12px">
+            Jucătorul 1 joacă cu albele (jos), Jucătorul 2 cu negrele (sus). Mutați pe rând, pe aceeași tablă.
+          </div>
+          <button class="btn-arena" onclick="startGame()">&#9654; Pornește jocul</button>
+        </div>
+
+        <!-- GAME -->
+        <div id="gamePanel" style="display:none">
+          <div id="status" class="status-box">&#8987; Pornește un joc</div>
+          <div class="clocks">
+            <div class="clock-box" id="clockW"><div class="clock-lbl" id="cwLbl">&#9817; Albe</div><div class="clock-time" id="cwTime">&#8734;</div><div class="clock-strikes" id="cwStrikes"></div></div>
+            <div class="clock-box" id="clockB"><div class="clock-lbl" id="cbLbl">&#9823; Negre</div><div class="clock-time" id="cbTime">&#8734;</div><div class="clock-strikes" id="cbStrikes"></div></div>
+          </div>
+          <div class="piece-count" id="pieceCount"></div>
+          <div class="diff-display" id="diffDisplay"></div>
+          <div class="move-list" id="moveList"></div>
+          <div class="ctrl-row">
+            <button class="btn-sm btn-reset" onclick="undoMove()">&#8630; Retrage</button>
+            <button class="btn-sm btn-prev" onclick="startGame()">&#8635; Nou</button>
+            <button class="btn-sm btn-reset" onclick="resignGame()">&#9873; Abandonez</button>
+          </div>
+          <button class="btn-sm btn-prev" style="width:100%;margin-top:6px" onclick="backToSetup()">&#8592; Configurare</button>
+        </div>
+
+        <details class="howto" open>
+          <summary>📖 Cum se joacă</summary>
+
+          <div class="hl-box">
+            <h4>Ce e acest joc</h4>
+            <p>Șahul pierzătorului (în engleză <em>Loser's Chess</em>, numit și <em>Antichess</em>) se joacă pe tabla obișnuită, cu toate piesele puse ca la o partidă normală. <strong>Albul mută primul</strong>, apoi negrul, apoi iar albul și tot așa. Fiecare piesă merge exact cum ai învățat.</p>
+            <p>Diferența este scopul. În șahul obișnuit încerci să păstrezi piesele și să le capturezi pe ale adversarului. Aici este <strong>pe dos</strong>: vrei să scapi de piesele tale. Le „dăruiești” adversarului, iar el este obligat să le ia.</p>
+          </div>
+
+          <div class="hl-box warn">
+            <h4>🏁 Cine câștigă</h4>
+            <p><strong>Câștigi dacă rămâi fără nicio piesă pe tablă.</strong></p>
+            <p><strong>Mai câștigi dacă îți vine rândul și nu ai nicio mutare</strong>, adică toate piesele care ți-au rămas sunt blocate. În șahul obișnuit asta ar fi pat (egalitate), dar aici este victorie pentru cel blocat.</p>
+            <p>Câștigi și dacă adversarul abandonează, dacă îi expiră timpul pe ceas sau, în doi, dacă adversarul încearcă de trei ori o mutare nepermisă.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Captura este obligatorie</h4>
+            <p>Aceasta este regula cea mai importantă. <strong>Dacă poți captura o piesă a adversarului, trebuie să capturezi.</strong> Nu ai voie să faci o mutare fără captură cât timp există o captură.</p>
+            <p>Dacă ai mai multe capturi posibile, <strong>alegi tu</strong> pe care o faci. Poți captura cu orice piesă, chiar și cu regele.</p>
+            <p>Dacă încerci o mutare fără captură când ai o captură, jocul îți spune: „Poți captura, deci trebuie să capturezi.” și îți arată pe tablă capturile pe care le ai.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Un exemplu de captură obligatorie</h4>
+            <p>Albul începe cu <strong>1. e4</strong>. Negrul răspunde <strong>1... d5</strong> și își oferă pionul.</p>
+            <p>Acum pionul alb de pe e4 poate captura pe d5. Este singura captură a albului, deci albul <strong>trebuie</strong> să joace <strong>2. exd5</strong>. Nu are voie să mute altceva.</p>
+            <p>Imediat negrul are și el o captură: dama de pe d8 poate lua pionul de pe d5, pentru că pionul de pe d7 a plecat și între d8 și d5 nu mai stă nimic. Deci negrul <strong>trebuie</strong> să joace <strong>2... Dxd5</strong>.</p>
+            <p>Acum dama neagră stă în mijlocul tablei. Albul nu o poate captura, dar dama neagră atacă deja pionii albi de pe a2, d2 și g2. Dacă albul face acum o mutare care nu schimbă asta (de exemplu c3), negrul va fi obligat să captureze unul dintre acești pioni. Iată cum o singură mutare poate porni un lanț de capturi obligatorii.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Regele este o piesă obișnuită</h4>
+            <p>În acest joc <strong>nu există șah și nici mat</strong>. Regele merge tot un pătrat în orice direcție, dar nu mai trebuie apărat.</p>
+            <p>Regele <strong>poate intra pe pătrate atacate</strong>, poate sta lângă regele adversarului și <strong>poate fi capturat</strong> ca orice altă piesă. Pierderea regelui nu încheie jocul.</p>
+            <p><strong>Rocada nu există.</strong></p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Pionul ajuns pe ultima linie</h4>
+            <p>Pionul care ajunge pe ultima linie (albul pe rândul 8, negrul pe rândul 1) se transformă, ca în șahul obișnuit. Aici poți alege <strong>damă, turn, nebun, cal sau chiar rege</strong>. Da, poți avea doi regi.</p>
+            <p>Gândește-te bine ce alegi. O damă poate captura în multe direcții, deci va fi des obligată să captureze. Uneori e mai bine să alegi o piesă care se poate „dărui” ușor.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Capturarea din trecere (en passant)</h4>
+            <p>Dacă un pion al adversarului sare două pătrate de pe locul lui de start și ajunge chiar lângă pionul tău, îl poți captura ca și cum ar fi mers doar un pătrat. Ai voie să faci asta numai imediat, la mutarea următoare.</p>
+            <p>Pentru că este o captură, <strong>en passant este obligatoriu</strong> când este posibil (sau alegi altă captură, dacă mai ai).</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Egalitate (remiză)</h4>
+            <p>Partida se termină la egalitate dacă <strong>aceeași poziție se repetă de trei ori</strong> (aceleași piese pe aceleași pătrate și același jucător la mutare) sau dacă trec <strong>50 de mutări ale fiecărei părți fără nicio captură și fără nicio mutare de pion</strong>.</p>
+          </div>
+
+          <div class="hl-box ok">
+            <h4>Câteva sfaturi</h4>
+            <p><strong>Dăruiește la momentul potrivit.</strong> Nu e destul să oferi piese. Uită-te ce se întâmplă după ce adversarul ia piesa: poate chiar piesa lui care a capturat ajunge acum să fie capturată de tine, iar tu ești obligat să o iei.</p>
+            <p><strong>Forțează adversarul.</strong> Cea mai bună mutare este adesea cea care îl obligă pe adversar să captureze o piesă, apoi încă una și încă una, în timp ce tu nu ești obligat să iei nimic.</p>
+            <p><strong>Păstrează-ți mutări.</strong> Dacă toate piesele tale sunt legate prin capturi obligatorii, adversarul hotărăște pentru tine. Pionii care mai pot înainta liniștit îți lasă libertatea de a alege.</p>
+            <p><strong>Piesele lungi sunt greu de pierdut… dar ușor de forțat.</strong> Dama și turnul atacă multe pătrate, deci sunt des obligate să captureze. Pe ele încearcă să le dai cât mai repede.</p>
+            <p><strong>Spre final, numără.</strong> Când au rămas puține piese, fiecare mutare contează. Uneori câștigă cel care se blochează singur, pentru că nu mai are nicio mutare.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum muți pe tablă</h4>
+            <p>Poți <strong>trage piesa</strong> cu mouse-ul sau cu degetul. Poți și să <strong>dai click</strong> pe piesă, apoi pe pătratul unde vrei să ajungă. După ce alegi o piesă, pe tablă apar pătratele unde are voie să meargă.</p>
+            <p>Când pionul ajunge pe ultima linie, apare o fereastră în care alegi piesa.</p>
+            <p>Butoane: <strong>Retrage</strong> anulează ultima mutare (contra calculatorului, ultimele două: a ta și a calculatorului). <strong>Nou</strong> începe o partidă nouă cu aceleași setări. <strong>Abandonez</strong> încheie partida, pe care o pierde cel care abandonează. <strong>Configurare</strong> te întoarce la alegerea setărilor.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Contra calculatorului</h4>
+            <p>Alegi cât de puternic joacă adversarul: <strong>Pui de găină</strong> (mută la întâmplare, dar respectă regulile), <strong>Mânz</strong> (se uită puțin înainte) sau <strong>Dragon</strong> (cel mai puternic).</p>
+            <p>Alegi culoarea: <strong>Albe</strong>, <strong>Negre</strong> sau <strong>Aleator</strong>. Piesele tale stau mereu jos. Dacă joci cu negrele, calculatorul face prima mutare.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Ceasul</h4>
+            <p>Poți juca <strong>fără timp</strong> sau cu <strong>1, 2 ori 5 minute</strong> pentru fiecare jucător. Ceasul scade doar pentru cel care este la mutare. Când mai sunt 15 secunde, caseta ceasului se face roșie. Cui i se termină timpul pierde partida.</p>
+          </div>
+
+          <div class="hl-box ok">
+            <h4>În doi</h4>
+            <p>Doi jucători mută pe rând pe aceeași tablă. <strong>Jucătorul 1</strong> are albele (jos) și mută primul, <strong>Jucătorul 2</strong> are negrele (sus). Calculatorul nu joacă, iar alegerea nivelului și a culorii nu mai apare.</p>
+            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar <strong>se numără</strong>. Se numără și o mutare fără captură făcută când aveai o captură, precum și încercarea de a muta o piesă a adversarului. Dacă pui piesa înapoi pe pătratul ei, nu se numără.</p>
+            <p>Încercările se văd sub ceasul fiecărui jucător: ❌ pentru o încercare folosită, ▫️ pentru una rămasă. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător. Contra calculatorului, încercările nepermise nu se numără: primești doar mesajul.</p>
+          </div>
+        </details>
+      </div>
+      <div class="feedback-bar" id="feedbackBar"></div>
+    </div>
+  </main>
+  <footer class="page-footer" role="navigation"></footer>
+  <button class="btn-vol" id="muteBtn" onclick="toggleMute()">&#128266;</button>
+</div>
+
+<div id="promo-overlay">
+  <div id="promo-box">
+    <p>Alege piesa în care se transformă pionul:</p>
+    <div class="promo-pieces" id="promoPieces"></div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
+<script>
+/* ENGINE-START
+   Șahul pierzătorului (antichess): generator de mutări propriu și căutarea calculatorului.
+   Pătrate: 0 = a1 … 63 = h8 (rând*8 + coloană). Piese: 1 pion, 2 cal, 3 nebun, 4 turn, 5 damă, 6 rege; albe > 0, negre < 0.
+   Mutare = from | to<<6 | promo<<12 | flags<<15 ; flags: 1 pas dublu, 2 en passant, 4 captură.
+   Fără șah, fără rocadă; captura e obligatorie; cine rămâne fără piese sau fără mutări câștigă. */
+var AC = (function() {
+    var WIN = 1000000, STOP = {};
+    var KN = [], KG = [], RB = [], RR = [];
+    (function() {
+        var kn = [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]];
+        var kg = [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
+        for (var s = 0; s < 64; s++) {
+            var f = s & 7, r = s >> 3, a = [], g = [], rb = [], rr = [];
+            kn.forEach(function(d) { var nf = f + d[0], nr = r + d[1]; if (nf >= 0 && nf < 8 && nr >= 0 && nr < 8) a.push(nr * 8 + nf); });
+            kg.forEach(function(d, i) {
+                var nf = f + d[0], nr = r + d[1];
+                if (nf >= 0 && nf < 8 && nr >= 0 && nr < 8) g.push(nr * 8 + nf);
+                var ray = []; nf = f + d[0]; nr = r + d[1];
+                while (nf >= 0 && nf < 8 && nr >= 0 && nr < 8) { ray.push(nr * 8 + nf); nf += d[0]; nr += d[1]; }
+                if (ray.length) (i < 4 ? rr : rb).push(ray);
+            });
+            KN.push(a); KG.push(g); RB.push(rb); RR.push(rr);
+        }
+    })();
+
+    function newPos() { return { b: new Int8Array(64), side: 1, ep: -1, half: 0, full: 1, cnt: [0, 0] }; }
+    function clone(p) { return { b: new Int8Array(p.b), side: p.side, ep: p.ep, half: p.half, full: p.full, cnt: [p.cnt[0], p.cnt[1]] }; }
+    var FENP = { p: 1, n: 2, b: 3, r: 4, q: 5, k: 6 };
+    function fromFen(fen) {
+        var p = newPos(), parts = fen.trim().split(/\s+/), rows = parts[0].split('/');
+        for (var ri = 0; ri < 8; ri++) {
+            var f = 0, rank = 7 - ri;
+            for (var c = 0; c < rows[ri].length; c++) {
+                var ch = rows[ri][c];
+                if (ch >= '1' && ch <= '8') { f += +ch; continue; }
+                var t = FENP[ch.toLowerCase()], white = ch !== ch.toLowerCase();
+                p.b[rank * 8 + f] = white ? t : -t; p.cnt[white ? 0 : 1]++; f++;
+            }
+        }
+        p.side = parts[1] === 'b' ? -1 : 1;
+        p.ep = (parts[3] && parts[3] !== '-') ? sqIdx(parts[3]) : -1;
+        p.half = parts[4] ? +parts[4] : 0; p.full = parts[5] ? +parts[5] : 1;
+        return p;
+    }
+    function toFen(p) {
+        var s = '', L = ' pnbrqk';
+        for (var r = 7; r >= 0; r--) {
+            var e = 0;
+            for (var f = 0; f < 8; f++) {
+                var v = p.b[r * 8 + f];
+                if (!v) { e++; continue; }
+                if (e) { s += e; e = 0; }
+                s += v > 0 ? L[v].toUpperCase() : L[-v];
+            }
+            if (e) s += e;
+            if (r) s += '/';
+        }
+        return s + ' ' + (p.side === 1 ? 'w' : 'b') + ' - ' + (p.ep >= 0 ? sqName(p.ep) : '-') + ' ' + p.half + ' ' + p.full;
+    }
+    function sqName(i) { return 'abcdefgh'[i & 7] + ((i >> 3) + 1); }
+    function sqIdx(s) { return (s.charCodeAt(0) - 97) + (parseInt(s[1], 10) - 1) * 8; }
+
+    /* toate mutările pseudo-legale (fără regula capturii obligatorii); întoarce numărul; out.caps = câte sunt capturi */
+    function genAll(p, out) {
+        var n = 0, caps = 0, b = p.b, s = p.side, i, v, t, k, ray, j;
+        var start = s === 1 ? 1 : 6, last = s === 1 ? 7 : 0;
+        for (i = 0; i < 64; i++) {
+            v = b[i] * s;
+            if (v <= 0) continue;
+            if (v === 1) {
+                var f = i & 7, r = i >> 3, nr = r + s;
+                if (nr < 0 || nr > 7) continue;
+                t = nr * 8 + f;
+                if (b[t] === 0) {
+                    if (nr === last) { for (k = 2; k <= 6; k++) out[n++] = i | (t << 6) | (k << 12); }
+                    else {
+                        out[n++] = i | (t << 6);
+                        if (r === start) { var t2 = t + 8 * s; if (b[t2] === 0) out[n++] = i | (t2 << 6) | (1 << 15); }
+                    }
+                }
+                for (var d = -1; d <= 1; d += 2) {
+                    var cf = f + d; if (cf < 0 || cf > 7) continue;
+                    t = nr * 8 + cf;
+                    if (b[t] * s < 0) {
+                        if (nr === last) { for (k = 2; k <= 6; k++) { out[n++] = i | (t << 6) | (k << 12) | (4 << 15); caps++; } }
+                        else { out[n++] = i | (t << 6) | (4 << 15); caps++; }
+                    } else if (t === p.ep && b[t] === 0 && b[t - 8 * s] === -s) {
+                        out[n++] = i | (t << 6) | (6 << 15); caps++;
+                    }
+                }
+            } else if (v === 2 || v === 6) {
+                var tg = v === 2 ? KN[i] : KG[i];
+                for (j = 0; j < tg.length; j++) {
+                    t = tg[j]; var w = b[t] * s;
+                    if (w > 0) continue;
+                    if (w < 0) { out[n++] = i | (t << 6) | (4 << 15); caps++; } else out[n++] = i | (t << 6);
+                }
+            } else {
+                var rays = v === 3 ? RB[i] : v === 4 ? RR[i] : null;
+                for (var pass = 0; pass < (v === 5 ? 2 : 1); pass++) {
+                    if (v === 5) rays = pass === 0 ? RB[i] : RR[i];
+                    for (k = 0; k < rays.length; k++) {
+                        ray = rays[k];
+                        for (j = 0; j < ray.length; j++) {
+                            t = ray[j]; var x = b[t] * s;
+                            if (x > 0) break;
+                            if (x < 0) { out[n++] = i | (t << 6) | (4 << 15); caps++; break; }
+                            out[n++] = i | (t << 6);
+                        }
+                    }
+                }
+            }
+        }
+        out.caps = caps;
+        return n;
+    }
+    /* mutările permise: dacă există capturi, doar capturile */
+    function genLegal(p, out) {
+        var n = genAll(p, out);
+        if (!out.caps) return n;
+        var m = 0;
+        for (var i = 0; i < n; i++) if ((out[i] >> 15) & 4) out[m++] = out[i];
+        return m;
+    }
+
+    /* make / unmake cu stivă de anulare */
+    var U = [];
+    function make(p, m, ply) {
+        var fr = m & 63, to = (m >> 6) & 63, pr = (m >> 12) & 7, fl = m >> 15, s = p.side;
+        var u = U[ply] || (U[ply] = {});
+        var pc = p.b[fr], capSq = -1, cap = 0;
+        if (fl & 4) { capSq = (fl & 2) ? to - 8 * s : to; cap = p.b[capSq]; p.b[capSq] = 0; p.cnt[s === 1 ? 1 : 0]--; }
+        u.pc = pc; u.capSq = capSq; u.cap = cap; u.ep = p.ep; u.half = p.half; u.full = p.full;
+        p.b[fr] = 0; p.b[to] = pr ? pr * s : pc;
+        p.ep = (fl & 1) ? (fr + to) >> 1 : -1;
+        p.half = (pc * s === 1 || cap) ? 0 : p.half + 1;
+        if (s === -1) p.full++;
+        p.side = -s;
+    }
+    function unmake(p, m, ply) {
+        var u = U[ply], fr = m & 63, to = (m >> 6) & 63;
+        p.side = -p.side;
+        p.b[to] = 0; p.b[fr] = u.pc;
+        if (u.capSq >= 0) { p.b[u.capSq] = u.cap; p.cnt[p.side === 1 ? 1 : 0]++; }
+        p.ep = u.ep; p.half = u.half; p.full = u.full;
+    }
+    function key(p) { return Array.prototype.join.call(p.b, ',') + '|' + p.side + '|' + p.ep; }
+
+    /* ---- evaluare, din perspectiva jucătorului la mutare ----
+       Fiecare piesă proprie este o „datorie”: mai puține piese = mai bine.
+       Piesele lungi sunt ușor de forțat să captureze, deci cântăresc mai mult. */
+    var W = [0, 100, 130, 125, 150, 170, 110];
+    var tmpA = [], tmpB = [];
+    function evaluate(p, myMoves, full) {
+        var b = p.b, s = p.side, sc = 0;
+        for (var i = 0; i < 64; i++) { var v = b[i]; if (v) sc += v * s > 0 ? -W[v < 0 ? -v : v] : W[v < 0 ? -v : v]; }
+        if (!full) return sc;
+        // mobilitatea: câte mutări libere am eu față de adversar
+        var saveEp = p.ep; p.side = -s; p.ep = -1;
+        var oppN = genAll(p, tmpB), oppCaps = tmpB.caps;
+        p.side = s; p.ep = saveEp;
+        sc += 3 * (Math.min(myMoves, 30) - Math.min(oppCaps ? oppCaps : oppN, 30));
+        // adversarul are capturi (piesele mele sunt oferite): bine pentru mine, dacă nu am și eu capturi forțate
+        if (oppCaps && !tmpA.forced) sc += 12;
+        return sc;
+    }
+
+    var bufs = [], scs = [], hist = new Int32Array(1 << 15), nodes = 0, deadline = 0, useDeadline = false, fullEval = true, maxQ = 12;
+    function search(p, depth, alpha, beta, ply, qleft) {
+        if ((++nodes & 1023) === 0 && useDeadline && Date.now() > deadline) throw STOP;
+        var me = p.side === 1 ? 0 : 1;
+        if (p.cnt[me] === 0) return WIN - ply;                   // am rămas fără piese: câștig
+        var buf = bufs[ply] || (bufs[ply] = new Int32Array(256));
+        var n = genLegal(p, buf);
+        if (n === 0) return WIN - ply;                           // nu am mutări: câștig
+        if (p.half >= 100) return 0;
+        var forced = buf.caps > 0;
+        if (depth <= 0) {
+            if (!forced || qleft <= 0 || ply > 60) { tmpA.forced = forced; return evaluate(p, n, fullEval); }
+        }
+        // ordonare: istoric
+        var sc = scs[ply] || (scs[ply] = new Int32Array(256));
+        for (var k = 0; k < n; k++) sc[k] = hist[buf[k] & 32767];
+        var best = -WIN - 1;
+        for (var i = 0; i < n; i++) {
+            var bi = i;
+            for (var j = i + 1; j < n; j++) if (sc[j] > sc[bi]) bi = j;
+            if (bi !== i) { var t = buf[i]; buf[i] = buf[bi]; buf[bi] = t; var u = sc[i]; sc[i] = sc[bi]; sc[bi] = u; }
+            var m = buf[i];
+            make(p, m, ply);
+            var v = -search(p, depth - 1, -beta, -alpha, ply + 1, depth <= 0 ? qleft - 1 : qleft);
+            unmake(p, m, ply);
+            if (v > best) best = v;
+            if (v > alpha) alpha = v;
+            if (alpha >= beta) { if (depth > 0) hist[m & 32767] += depth * depth; break; }
+        }
+        return best;
+    }
+
+    /* level: 'pui' | 'manz' | 'dragon'; seenKeys: pozițiile de până acum (pentru a evita repetarea) */
+    function best(pos, level, ms, seenKeys) {
+        var p = clone(pos), root = new Int32Array(256), n = genLegal(p, root), k;
+        if (!n) return null;
+        var list = Array.prototype.slice.call(root, 0, n);
+        for (k = n - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)), t = list[k]; list[k] = list[j]; list[j] = t; }
+        if (level === 'pui' || n === 1) return { move: list[0], score: 0, depth: 0 };
+        hist.fill(0); nodes = 0;
+        var maxDepth, time = ms || 900;
+        if (level === 'manz') { maxDepth = 2; useDeadline = false; fullEval = false; maxQ = 2; }
+        else { maxDepth = 60; useDeadline = true; fullEval = true; maxQ = 12; }
+        deadline = Date.now() + time;
+        var seen = null;
+        if (level === 'dragon' && seenKeys) { seen = {}; seenKeys.forEach(function(x) { seen[x] = true; }); }
+        var bestM = list[0], bestScore = 0, depthDone = 0;
+        for (var depth = 1; depth <= maxDepth; depth++) {
+            var alpha = -WIN - 1, iterBest = bestM, iterScore = -WIN - 1;
+            var idx = list.indexOf(bestM); if (idx > 0) { list.splice(idx, 1); list.unshift(bestM); }
+            try {
+                for (k = 0; k < n; k++) {
+                    make(p, list[k], 0);
+                    var v = -search(p, depth - 1, -WIN - 1, -alpha, 1, maxQ);
+                    if (seen && v > -WIN + 1000 && v < WIN - 1000 && seen[key(p)]) v -= 20;
+                    unmake(p, list[k], 0);
+                    if (v > iterScore) { iterScore = v; iterBest = list[k]; }
+                    if (v > alpha) alpha = v;
+                }
+            } catch (e) {
+                if (e !== STOP) throw e;
+                break;
+            }
+            bestM = iterBest; bestScore = iterScore; depthDone = depth;
+            if (Math.abs(bestScore) > WIN - 1000) break;               // câștig sau pierdere forțată găsită
+            if (useDeadline && Date.now() > deadline - time * 0.55) break;  // nu mai începe o iterație care nu se termină
+        }
+        return { move: bestM, score: bestScore, depth: depthDone, nodes: nodes };
+    }
+
+    /* rezultatul poziției, pentru jucătorul la mutare: null = jocul continuă */
+    function outcome(p) {
+        var me = p.side === 1 ? 0 : 1, buf = new Int32Array(256);
+        if (p.cnt[me] === 0) return { winner: p.side, why: 'nopieces' };
+        if (genLegal(p, buf) === 0) return { winner: p.side, why: 'nomoves' };
+        if (p.half >= 100) return { draw: true, why: 'fifty' };
+        return null;
+    }
+
+    /* notația mutării (litere englezești, ca pe site) */
+    var SANL = ' NBRQK';
+    function san(p, m) {
+        var fr = m & 63, to = (m >> 6) & 63, pr = (m >> 12) & 7, fl = m >> 15, pc = Math.abs(p.b[fr]);
+        var capt = (fl & 4) ? 'x' : '', s;
+        if (pc === 1) {
+            s = (capt ? 'abcdefgh'[fr & 7] + 'x' : '') + sqName(to) + (pr ? '=' + SANL[pr - 1] : '');
+        } else {
+            var buf = new Int32Array(256), n = genLegal(p, buf), sameF = false, sameR = false, other = false;
+            for (var i = 0; i < n; i++) {
+                var o = buf[i], of = o & 63;
+                if (of !== fr && ((o >> 6) & 63) === to && Math.abs(p.b[of]) === pc) {
+                    other = true; if ((of & 7) === (fr & 7)) sameF = true; if ((of >> 3) === (fr >> 3)) sameR = true;
+                }
+            }
+            var dis = '';
+            if (other) dis = !sameF ? 'abcdefgh'[fr & 7] : !sameR ? String((fr >> 3) + 1) : sqName(fr);
+            s = SANL[pc - 1] + dis + capt + sqName(to);
+        }
+        return s;
+    }
+
+    return { newPos: newPos, clone: clone, fromFen: fromFen, toFen: toFen, sqName: sqName, sqIdx: sqIdx,
+             genAll: genAll, genLegal: genLegal, make: make, unmake: unmake, key: key, best: best,
+             outcome: outcome, san: san, START: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1' };
+})();
+/* ENGINE-END */
+</script>
+<script>
+/* ====== SUNETE ====== */
+var sndMove    = new Audio('Sounds/Move.mp3');
+var sndCapture = new Audio('Sounds/Capture.mp3');
+var sndMate    = new Audio('Sounds/Mate.mp3');
+var soundMuted = false;
+function playSound(snd) { if (soundMuted) return; try { snd.currentTime = 0; snd.play().catch(function(){}); } catch (e) {} }
+function toggleMute() { soundMuted = !soundMuted; document.getElementById('muteBtn').textContent = soundMuted ? '🔇' : '🔊'; }
+
+/* ====== STARE ====== */
+var pos = AC.fromFen(AC.START);
+var snaps = [];          // pozițiile de dinaintea fiecărei mutări (pentru Retrage)
+var moveRecs = [];       // { san, color, from, to }
+var keys = [AC.key(pos)];
+var board = null, playerColor = 'w', level = 'pui', gameOver = false, started = false;
+var mode = 'robot', MAX_STRIKES = 3, strikes = { w: 0, b: 0 };
+var pendingPromo = null, aiTimer = null, mustTimer = null, selSq = null;
+var clockMax = 0, clock = { w: 0, b: 0 }, clockTick = null;
+
+var PIECE_CDN = 'https://lichess1.org/assets/piece/caliente/';
+var PIECE_RO = [null, 'Pionul', 'Calul', 'Nebunul', 'Turnul', 'Dama', 'Regele'];
+var LET = ' PNBRQK';
+
+function turnC() { return pos.side === 1 ? 'w' : 'b'; }
+function pname(c) { return c === 'w' ? 'Jucătorul 1' : 'Jucătorul 2'; }
+function sideName(c) { return c === 'w' ? 'albele' : 'negrele'; }
+
+function boardObj() {
+    var o = {};
+    for (var i = 0; i < 64; i++) { var v = pos.b[i]; if (v) o[AC.sqName(i)] = (v > 0 ? 'w' : 'b') + LET[Math.abs(v)]; }
+    return o;
+}
+function legalList() {
+    var buf = new Int32Array(256), n = AC.genLegal(pos, buf), out = [];
+    for (var i = 0; i < n; i++) out.push(buf[i]);
+    out.forced = buf.caps > 0;
+    return out;
+}
+function allList() {
+    var buf = new Int32Array(256), n = AC.genAll(pos, buf), out = [];
+    for (var i = 0; i < n; i++) out.push(buf[i]);
+    return out;
+}
+var mFrom = function(m) { return AC.sqName(m & 63); }, mTo = function(m) { return AC.sqName((m >> 6) & 63); };
+
+/* ====== SETĂRI ====== */
+function selectTime(btn) { document.querySelectorAll('.time-opt').forEach(function(b){ b.classList.remove('active'); }); btn.classList.add('active'); }
+function selectAnimal(btn) { document.querySelectorAll('.animal-btn').forEach(function(b){ b.classList.remove('active'); }); btn.classList.add('active'); level = btn.dataset.level; }
+function selectColor(btn) { document.querySelectorAll('.color-opt').forEach(function(b){ b.classList.remove('active'); }); btn.classList.add('active'); }
+function getSelectedColor() {
+    var a = document.querySelector('.color-opt.active'), c = a ? a.dataset.color : 'white';
+    if (c === 'random') return Math.random() < 0.5 ? 'w' : 'b';
+    return c === 'black' ? 'b' : 'w';
+}
+function setMode(m) {
+    mode = m;
+    document.getElementById('modeRobot').className = 'tgl-btn' + (m === 'robot' ? ' active' : '');
+    document.getElementById('modeDuo').className   = 'tgl-btn' + (m === 'duo' ? ' active' : '');
+    document.getElementById('levelBox').style.display = m === 'robot' ? '' : 'none';
+    document.getElementById('colorBox').style.display = m === 'robot' ? '' : 'none';
+    document.getElementById('duoInfo').style.display  = m === 'duo' ? '' : 'none';
+    updateStrikes();
+}
+
+/* ====== CEAS ====== */
+function fmtClock(s) { var m = Math.floor(s / 60), ss = s % 60; return m + ':' + (ss < 10 ? '0' : '') + ss; }
+function updateClocks() {
+    var cw = document.getElementById('cwTime'), cb = document.getElementById('cbTime');
+    var wB = document.getElementById('clockW'), bB = document.getElementById('clockB');
+    var t = gameOver ? '' : turnC();
+    if (clockMax === 0) {
+        cw.textContent = '∞'; cb.textContent = '∞';
+        wB.className = 'clock-box' + (t === 'w' ? ' active' : ''); bB.className = 'clock-box' + (t === 'b' ? ' active' : '');
+        return;
+    }
+    cw.textContent = fmtClock(clock.w); cb.textContent = fmtClock(clock.b);
+    wB.className = 'clock-box' + (t === 'w' ? (clock.w <= 15 ? ' low' : ' active') : '');
+    bB.className = 'clock-box' + (t === 'b' ? (clock.b <= 15 ? ' low' : ' active') : '');
+}
+function stopClock() { if (clockTick) { clearInterval(clockTick); clockTick = null; } }
+function startClock() {
+    if (clockMax === 0) return;
+    stopClock();
+    clockTick = setInterval(function() {
+        if (gameOver) { stopClock(); return; }
+        var c = turnC();
+        clock[c]--;
+        updateClocks();
+        if (clock[c] <= 0) {
+            var o = c === 'w' ? 'b' : 'w';
+            finish(o, mode === 'duo' ? 'Timpul lui ' + pname(c) + ' a expirat.' : (c === playerColor ? 'Timpul tău a expirat.' : 'Timpul calculatorului a expirat.'));
+        }
+    }, 1000);
+}
+
+/* ====== EVIDENȚIERI ====== */
+function clearHL() {
+    $('#board .highlight-selected, #board .highlight-legal, #board .highlight-capture, #board .sq-must')
+        .removeClass('highlight-selected highlight-legal highlight-capture sq-must');
+}
+function showHL(sq) {
+    clearHL();
+    $('#board .square-' + sq).addClass('highlight-selected');
+    legalList().forEach(function(m) {
+        if (mFrom(m) !== sq) return;
+        $('#board .square-' + mTo(m)).addClass(((m >> 15) & 4) ? 'highlight-capture' : 'highlight-legal');
+    });
+}
+function showCaptures() {
+    clearHL();
+    legalList().forEach(function(m) {
+        $('#board .square-' + mFrom(m)).addClass('sq-must');
+        $('#board .square-' + mTo(m)).addClass('highlight-capture');
+    });
+    if (mustTimer) clearTimeout(mustTimer);
+    mustTimer = setTimeout(function() { mustTimer = null; $('#board .sq-must').removeClass('sq-must'); $('#board .highlight-capture').removeClass('highlight-capture'); }, 2500);
+}
+function markLast() {
+    $('#board .sq-last').removeClass('sq-last');
+    var r = moveRecs[moveRecs.length - 1];
+    if (r) { $('#board .square-' + r.from).addClass('sq-last'); $('#board .square-' + r.to).addClass('sq-last'); }
+}
+function flashWrong(sq) { var el = $('#board .square-' + sq); el.addClass('sq-wrong'); setTimeout(function() { el.removeClass('sq-wrong'); }, 600); }
+function showPos() { board.position(boardObj(), false); markLast(); updateCount(); }
+function updateCount() {
+    var el = document.getElementById('pieceCount');
+    el.textContent = 'Piese rămase: albe ' + pos.cnt[0] + ', negre ' + pos.cnt[1];
+}
+function updateStrikes() {
+    function row(c) { return '❌'.repeat(strikes[c]) + '▫️'.repeat(Math.max(0, MAX_STRIKES - strikes[c])); }
+    document.getElementById('cwStrikes').textContent = mode === 'duo' ? row('w') : '';
+    document.getElementById('cbStrikes').textContent = mode === 'duo' ? row('b') : '';
+    document.getElementById('cwLbl').innerHTML = mode === 'duo' ? '&#9817; Jucătorul 1 (albele)' : '&#9817; Albe';
+    document.getElementById('cbLbl').innerHTML = mode === 'duo' ? '&#9823; Jucătorul 2 (negrele)' : '&#9823; Negre';
+}
+
+/* ====== PORNIRE ====== */
+function canAct() {
+    if (!board || !started || gameOver || pendingPromo || aiTimer) return false;
+    return mode === 'duo' || turnC() === playerColor;
+}
+$(function() {
+    board = Chessboard('board', {
+        draggable: true,
+        position: boardObj(),
+        pieceTheme: function(piece) { return PIECE_CDN + piece + '.svg'; },
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onSnapEnd: function() { showPos(); }
+    });
+    $(document).on('click', '#board .square-55d63', function() {
+        if (!canAct() || !selSq) return;
+        var sq = $(this).data('square');
+        if (!sq || sq === selSq || pos.b[AC.sqIdx(sq)]) return;   // piesele sunt tratate în onDragStart
+        var from = selSq;
+        selSq = null; clearHL();
+        tryMove(from, sq);
+        showPos();
+    });
+    window.addEventListener('resize', function() { if (board) board.resize(); });
+    updateStrikes();
+});
+
+function startGame() {
+    if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
+    pos = AC.fromFen(AC.START); snaps = []; moveRecs = []; keys = [AC.key(pos)];
+    gameOver = false; started = true; pendingPromo = null; selSq = null;
+    document.getElementById('promo-overlay').classList.remove('visible');
+    playerColor = mode === 'duo' ? 'w' : getSelectedColor();
+    strikes = { w: 0, b: 0 }; updateStrikes();
+    clearHL();
+    document.getElementById('moveList').innerHTML = '';
+    board.orientation(playerColor === 'w' ? 'white' : 'black');
+    showPos();
+    document.getElementById('setupPanel').style.display = 'none';
+    document.getElementById('gamePanel').style.display = 'block';
+    var a = document.querySelector('.animal-btn.active');
+    document.getElementById('diffDisplay').textContent = mode === 'duo'
+        ? 'În doi: Jucătorul 1 (albele) contra Jucătorul 2 (negrele)'
+        : 'Adversar: ' + (a ? a.querySelector('.name').textContent : '');
+    var tb = document.querySelector('.time-opt.active');
+    clockMax = tb ? parseInt(tb.dataset.secs, 10) : 0;
+    clock = { w: clockMax, b: clockMax };
+    stopClock(); updateClocks();
+    if (clockMax > 0) startClock();
+    setStatus(turnStatus(), '');
+    if (mode === 'robot' && playerColor === 'b') askComputer();
+}
+function backToSetup() {
+    stopClock();
+    if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
+    started = false; gameOver = false; clearHL(); selSq = null; pendingPromo = null;
+    document.getElementById('promo-overlay').classList.remove('visible');
+    pos = AC.fromFen(AC.START); moveRecs = [];
+    board.orientation('white'); showPos();
+    document.getElementById('setupPanel').style.display = 'block';
+    document.getElementById('gamePanel').style.display = 'none';
+}
+
+/* ====== MUTĂRI ====== */
+function illegalAttempt(sq, reason, showCaps) {
+    if (sq) flashWrong(sq);
+    selSq = null; clearHL();
+    if (showCaps) showCaptures();
+    if (mode !== 'duo') { setStatus('&#9888; ' + reason + '<br>' + turnStatus(), 'danger'); return; }
+    var c = turnC(), o = c === 'w' ? 'b' : 'w';
+    strikes[c]++;
+    updateStrikes();
+    if (strikes[c] >= MAX_STRIKES) {
+        gameOver = true; stopClock(); updateClocks();
+        playSound(sndMate);
+        setStatus('&#10060; ' + reason + '<br>' + pname(c) + ' a încercat 3 mutări nepermise.<br>&#127942; <strong>' + pname(o) + ' câștigă.</strong>', 'danger');
+        return;
+    }
+    setStatus('&#10060; ' + reason + '<br>Încercări nepermise pentru ' + pname(c) + ': ' + strikes[c] + ' din ' + MAX_STRIKES + '.', 'danger');
+}
+
+/* returnează true dacă mutarea s-a făcut (sau așteaptă alegerea piesei) */
+function tryMove(from, to) {
+    var legal = legalList(), matches = legal.filter(function(m) { return mFrom(m) === from && mTo(m) === to; });
+    if (!matches.length) {
+        var pseudo = allList().some(function(m) { return mFrom(m) === from && mTo(m) === to; });
+        if (pseudo && legal.forced) { illegalAttempt(to, 'Poți captura, deci trebuie să capturezi.', true); return false; }
+        var v = pos.b[AC.sqIdx(from)];
+        illegalAttempt(to, (PIECE_RO[Math.abs(v)] || 'Piesa') + ' de pe ' + from + ' nu poate merge pe ' + to + '.', false);
+        return false;
+    }
+    if (matches.length > 1) {                      // promovare: alegem piesa
+        pendingPromo = matches;
+        showPromoDialog(turnC());
+        return true;
+    }
+    applyMove(matches[0]);
+    return true;
+}
+function applyMove(m) {
+    var color = turnC(), rec = { san: AC.san(pos, m), color: color, from: mFrom(m), to: mTo(m), cap: ((m >> 15) & 4) !== 0 };
+    snaps.push(AC.clone(pos));
+    AC.make(pos, m, 0);
+    moveRecs.push(rec);
+    keys.push(AC.key(pos));
+    clearHL(); selSq = null;
+    showPos();
+    renderMoveList();
+    updateClocks();
+    if (checkGameOver()) return;
+    playSound(rec.cap ? sndCapture : sndMove);
+    setStatus(turnStatus(), '');
+    if (mode === 'robot' && turnC() !== playerColor) askComputer();
+}
+
+function showPromoDialog(color) {
+    var c = document.getElementById('promoPieces');
+    c.innerHTML = '';
+    ['Q', 'R', 'B', 'N', 'K'].forEach(function(L) {
+        var img = document.createElement('img');
+        img.src = PIECE_CDN + color + L + '.svg';
+        img.className = 'promo-piece';
+        img.title = { Q: 'damă', R: 'turn', B: 'nebun', N: 'cal', K: 'rege' }[L];
+        img.onclick = function() { doPromotion(LET.indexOf(L)); };
+        c.appendChild(img);
+    });
+    document.getElementById('promo-overlay').classList.add('visible');
+}
+function doPromotion(pt) {
+    document.getElementById('promo-overlay').classList.remove('visible');
+    if (!pendingPromo) return;
+    var m = pendingPromo.filter(function(x) { return ((x >> 12) & 7) === pt; })[0];
+    pendingPromo = null;
+    if (m) applyMove(m); else showPos();
+}
+
+/* ====== TRAGE / CLICK ====== */
+function onDragStart(source, piece) {
+    if (!canAct()) return false;
+    if (piece[0] !== turnC()) {
+        if (selSq && source !== selSq) {                 // click pe piesa adversarului = încercare de captură
+            var from = selSq;
+            selSq = null; clearHL();
+            setTimeout(function() { tryMove(from, source); showPos(); }, 0);
+            return false;
+        }
+        if (mode === 'duo') illegalAttempt(source, 'Acum mută ' + pname(turnC()) + ', cu ' + sideName(turnC()) + '.', false);
+        return false;
+    }
+    selSq = source;
+    showHL(source);
+    return true;
+}
+function onDrop(source, target) {
+    if (target === 'offboard' || source === target) return 'snapback';   // pusă înapoi: nu se numără
+    selSq = null; clearHL();
+    if (!tryMove(source, target)) return 'snapback';
+}
+
+/* ====== CALCULATORUL ====== */
+function askComputer() {
+    if (gameOver || mode !== 'robot' || turnC() === playerColor) return;
+    setStatus('&#129302; Calculatorul se gândește...', 'thinking');
+    aiTimer = setTimeout(function() {
+        var t0 = Date.now();
+        var r = AC.best(pos, level, 900, keys);
+        var wait = Math.max(0, (level === 'dragon' ? 150 : 450) - (Date.now() - t0));
+        aiTimer = setTimeout(function() {
+            aiTimer = null;
+            if (gameOver || !r || mode !== 'robot' || turnC() === playerColor) return;
+            applyMove(r.move);
+        }, wait);
+    }, 60);
+}
+
+/* ====== SFÂRȘITUL PARTIDEI ====== */
+function finish(winnerC, reason) {
+    gameOver = true; stopClock(); updateClocks(); clearHL(); selSq = null;
+    playSound(sndMate);
+    if (mode === 'duo') { setStatus(reason + '<br>&#127942; <strong>' + pname(winnerC) + ' (' + sideName(winnerC) + ') câștigă.</strong>', 'success'); return; }
+    var you = winnerC === playerColor;
+    setStatus(reason + '<br>' + (you ? 'Ai câștigat! &#127942;' : 'Calculatorul a câștigat. &#129302;'), you ? 'success' : 'danger');
+}
+function drawGame(reason) {
+    gameOver = true; stopClock(); updateClocks(); clearHL();
+    playSound(sndMate);
+    setStatus('Remiză: ' + reason + ' &#9878;', 'draw');
+}
+function whoText(c) {
+    if (mode === 'duo') return pname(c) + ' (' + sideName(c) + ')';
+    return c === playerColor ? 'Tu' : 'Calculatorul';
+}
+function checkGameOver() {
+    var o = AC.outcome(pos), c = turnC();
+    if (o && o.winner) {
+        finish(c, o.why === 'nopieces'
+            ? (mode === 'robot' && c === playerColor ? 'Nu mai ai nicio piesă pe tablă.' : whoText(c) + ' nu mai are nicio piesă pe tablă.')
+            : (mode === 'robot' && c === playerColor ? 'Nu mai ai nicio mutare: piesele tale sunt blocate.' : whoText(c) + ' nu mai are nicio mutare: piesele sunt blocate.'));
+        return true;
+    }
+    if (o && o.draw) { drawGame('50 de mutări fără captură și fără mutare de pion.'); return true; }
+    var k = keys[keys.length - 1], rep = 0;
+    for (var i = 0; i < keys.length; i++) if (keys[i] === k) rep++;
+    if (rep >= 3) { drawGame('aceeași poziție s-a repetat de trei ori.'); return true; }
+    return false;
+}
+function turnStatus() {
+    var forced = legalList().forced;
+    var extra = forced ? '<br>Ai o captură, deci trebuie să capturezi.' : '';
+    if (mode === 'duo') return '&#9654; Mută ' + pname(turnC()) + ' (' + sideName(turnC()) + ').' + extra;
+    if (turnC() === playerColor) return '&#9654; Rândul tău!' + extra;
+    return '&#9832; Adversarul mută...';
+}
+function setStatus(txt, cls) {
+    var el = document.getElementById('status');
+    el.innerHTML = '<span>' + (txt || turnStatus()) + '</span>';
+    el.className = 'status-box' + (cls ? ' ' + cls : '');
+}
+
+/* ====== LISTA MUTĂRILOR ====== */
+function renderMoveList() {
+    var list = document.getElementById('moveList'), html = '';
+    for (var i = 0; i < moveRecs.length; i += 2) {
+        html += '<div class="move-pair"><span class="move-nr">' + (i / 2 + 1) + '.</span><span class="mv-w">' + moveRecs[i].san +
+                '</span><span class="mv-b">' + (moveRecs[i + 1] ? moveRecs[i + 1].san : '') + '</span></div>';
+    }
+    list.innerHTML = html;
+    list.scrollTop = list.scrollHeight;
+}
+
+/* ====== BUTOANE ====== */
+function undoOne() {
+    if (!snaps.length) return false;
+    pos = snaps.pop(); moveRecs.pop(); keys.pop();
+    return true;
+}
+function undoMove() {
+    if (!started || pendingPromo) return;
+    clearHL(); selSq = null;
+    if (mode === 'duo') {
+        if (gameOver) return;
+        undoOne();
+    } else {
+        if (aiTimer) return;                                   // calculatorul se gândește
+        var wasOver = gameOver;
+        if (!gameOver && turnC() !== playerColor) return;
+        gameOver = false;
+        undoOne();
+        if (turnC() !== playerColor) undoOne();
+        if (wasOver && clockMax > 0) startClock();
+    }
+    showPos(); renderMoveList(); updateClocks();
+    setStatus(turnStatus(), '');
+    if (mode === 'robot' && turnC() !== playerColor) askComputer();
+}
+function resignGame() {
+    if (!started || gameOver) return;
+    if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
+    gameOver = true; stopClock(); updateClocks(); clearHL(); selSq = null;
+    if (mode === 'duo') {
+        var c = turnC(), o = c === 'w' ? 'b' : 'w';
+        setStatus(pname(c) + ' a abandonat. &#9873;<br>&#127942; ' + pname(o) + ' câștigă.', 'success');
+        return;
+    }
+    setStatus('Ai abandonat. &#9873; Calculatorul câștigă.', 'danger');
+}
+</script>
+</body>
+</html>
