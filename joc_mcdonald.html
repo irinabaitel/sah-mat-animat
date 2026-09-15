@@ -331,11 +331,9 @@
             <ul>
               <li>când nu mai este niciun purcel pe tablă: toți au ajuns la hambar sau au fost prinși;</li>
               <li>când McDonald primește mat: purceii rămași se adaugă la hambar;</li>
-              <li>când partea care trebuie să mute nu mai are nicio mutare posibilă;</li>
-              <li>când expiră timpul unui jucător, dacă ați ales ceas;</li>
-              <li>când cineva apasă „Renunț".</li>
+              <li>când partea care trebuie să mute nu mai are nicio mutare posibilă.</li>
             </ul>
-            <p>La expirarea timpului și la „Renunț" se numără doar purceii ajunși deja la hambar, oricare jucător ar fi rămas fără timp sau ar fi renunțat. Purceii rămași pe tablă nu se mai numără.</p>
+            <p>Dacă cineva apasă „Renunț" sau îi expiră timpul (când ați ales ceas), nu se mai joacă nimic: <strong>jocul se oprește imediat și câștigă celălalt jucător</strong>.</p>
           </div>
 
           <div class="hl-box">
@@ -349,6 +347,7 @@
             <h4>Cine câștigă?</h4>
             <p>Fiecare jucător primește punctele din repriza în care a jucat cu purceii: câți purcei a dus la hambar.</p>
             <p><strong>Câștigă cine are mai multe puncte.</strong> Dacă punctele sunt egale, jocul se termină la egalitate.</p>
+            <p>Excepție: <strong>cine apasă „Renunț" sau rămâne fără timp pierde jocul</strong>, oricâte puncte ar avea. Contra calculatorului, dacă îi expiră timpul calculatorului, câștigi tu.</p>
           </div>
 
           <div class="hl-box">
@@ -365,6 +364,7 @@
             <p>În Repriza 1, <strong>Jucătorul 1</strong> mută purceii și <strong>Jucătorul 2</strong> mută echipa lui McDonald. În Repriza 2 rolurile se schimbă. Câștigă cine a dus mai mulți purcei la hambar.</p>
             <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar <strong>se numără</strong> pentru jucătorul care este la mutare. Se numără și dacă încerci să muți o piesă a adversarului. Dacă pui piesa înapoi pe pătratul ei, nu se numără.</p>
             <p>Încercările se adună pe tot jocul, în ambele reprize. La <strong>3 încercări nepermise</strong>, jocul se oprește și câștigă celălalt jucător.</p>
+            <p>În doi, „Renunț" se socotește pentru jucătorul care este la mutare în acel moment.</p>
           </div>
         </details>
 
@@ -691,7 +691,7 @@ function startClock(){
         if(G.over){ clearInterval(G.clockTick); G.clockTick=null; return; }
         G.clock[G.turn]--;
         updateClocks();
-        if(G.clock[G.turn]<=0){ clearInterval(G.clockTick); G.clockTick=null; endRound('timeout'); }
+        if(G.clock[G.turn]<=0){ clearInterval(G.clockTick); G.clockTick=null; forfeit('timeout'); }
     },1000);
 }
 function stopClock(){ if(G.clockTick){clearInterval(G.clockTick);G.clockTick=null;} }
@@ -997,7 +997,6 @@ function endRound(reason){
 function showBetween(reason){
     var why='';
     if(reason==='checkmate') why=' Mat! Purceii l-au depășit!';
-    else if(reason==='timeout') why=' Timp expirat!';
     else if(reason==='nomoves') why=' Nu mai era nicio mutare posibilă.';
     document.getElementById('game-section').style.display='none';
     document.getElementById('result-section').style.display='block';
@@ -1050,7 +1049,33 @@ function showFinal(reason){
     playSound(cls==='success'?sndMate:(cls==='danger'?sndCapture:sndMove));
 }
 
-function giveUp(){ if(!G.over) endRound('abandon'); }
+/* „Renunț" sau timp expirat: cine renunță / rămâne fără timp pierde jocul imediat.
+   Contra calculatorului „Renunț" e al omului; în doi e al jucătorului la mutare. */
+function forfeit(kind){
+    if(G.over) return;
+    var loserColor=(kind==='timeout'||G.mode==='duo')?G.turn:G.humanColor;
+    G.over=true; G.thinking=false; stopClock(); clearSel();
+    G.gen=(G.gen||0)+1;                          // o mutare programată a calculatorului nu mai rulează
+    var why,win,won;
+    if(G.mode==='duo'){
+        var lp=playerOf(loserColor), wp=(lp===1?2:1);
+        why=kind==='timeout'?'Jucătorului '+lp+' i-a expirat timpul':'Jucătorul '+lp+' a renunțat';
+        win='&#127942; Jucătorul '+wp+' câștigă jocul.'; won=true;
+    } else {
+        var humanLost=(loserColor===G.humanColor);
+        why=kind==='timeout'?(humanLost?'Ți-a expirat timpul':'Calculatorului i-a expirat timpul'):'Ai renunțat';
+        win=humanLost?'&#129302; Calculatorul câștigă jocul.':'&#127942; Ai câștigat jocul.'; won=!humanLost;
+    }
+    document.getElementById('game-section').style.display='none';
+    document.getElementById('result-section').style.display='block';
+    document.getElementById('resultCard').innerHTML=
+        '<div class="result-title">Joc terminat</div>'+
+        '<p class="result-sub">'+why+' în Repriza '+G.round+'. Cine renunță sau rămâne fără timp pierde jocul.</p>'+
+        '<div class="result-title" style="font-size:1.3em;margin:10px 0">'+win+'</div>'+
+        '<button class="btn-arena" style="margin-top:10px" onclick="restartAll()">&#8635; Joc nou</button>';
+    if(won){ spawnConfetti(2500); playSound(sndMate); } else playSound(sndCapture);
+}
+function giveUp(){ forfeit('abandon'); }
 
 function restartAll(){
     stopClock();
