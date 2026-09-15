@@ -19,6 +19,7 @@
         ['nivel1_joc_drumul_regelui.html', 'Drumul regelui spre castel'],
         ['nivel1_joc_cursa_obstacole.html', 'Cursa cu obstacole'],
         ['nivel1_joc_piesa_contra_pionilor.html', 'Piesa contra pionilor'],
+        ['nivel1_joc_vanatoarea_regelui.html', 'Vânătoarea regelui'],
         ['joc_stockfish.html?v=2',   'Regi și Pioni 2']
     ];
     var file = function (p) { return (p || '').split('?')[0].split('#')[0].split('/').pop(); };
