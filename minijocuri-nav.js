@@ -16,6 +16,7 @@
         ['nivel1_joc_nasturi.html',  'Vânătoarea de nasturi'],
         ['nivel1_joc_dama_turn_nebun.html', 'Dama și turnul contra nebunului'],
         ['nivel1_joc_cai_lacomi.html', 'Care cal mănâncă mai repede?'],
+        ['nivel1_joc_drumul_regelui.html', 'Drumul regelui spre castel'],
         ['joc_stockfish.html?v=2',   'Regi și Pioni 2']
     ];
     var file = function (p) { return (p || '').split('?')[0].split('#')[0].split('/').pop(); };
