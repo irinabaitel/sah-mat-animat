@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMTZ9GGPMP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMTZ9GGPMP');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Dama și turnul contra nebunului — Joc</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
+<style>
+  .game-badge {
+    background: var(--c-navy); color: white;
+    font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-bold);
+    padding: 3px 14px; border-radius: var(--radius-sm); white-space: nowrap;
+  }
+
+  /* HIGHLIGHTS (selectat / posibil / captură = clasele din master) */
+  .sq-last     { background-color: rgba(160,60,200,0.35) !important; }
+  .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
+
+  .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
+
+  /* CUM SE JOACĂ */
+  .howto { margin-bottom:10px; }
+  .howto > summary {
+    cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900;
+    color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px;
+    background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8);
+  }
+  .howto > summary::-webkit-details-marker { display:none; }
+  .howto > summary::after { content:' ▾'; }
+  .howto:not([open]) > summary::after { content:' ▸'; }
+  .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
+  .howto .hl-box p { margin:0 0 6px; }
+  .howto .hl-box p:last-child { margin-bottom:0; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+
+  /* TOGGLES */
+  .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+  .tgl-btn {
+    flex:1; padding:6px 10px; border-radius:50px;
+    border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.5);
+    font-family:var(--font-display); font-size:0.82em; color:var(--c-navy);
+    cursor:pointer; transition:all 0.2s; white-space:nowrap;
+  }
+  .tgl-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
+
+  .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; }
+  .animal-btn { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:12px; padding:7px 4px; cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.74em; font-weight:700; color:#1a3a6b; text-align:center; transition:all 0.18s; line-height:1.4; }
+  .animal-btn:hover { background:rgba(255,255,255,0.82); transform:translateY(-2px); }
+  .animal-btn.active { background:#1a3a6b; color:white; border-color:#1a3a6b; box-shadow:0 3px 10px rgba(26,58,107,0.4); }
+  .animal-btn .emoji { font-size:1.4em; display:block; }
+  .animal-btn .name  { display:block; margin-top:2px; }
+
+  /* COUNTER */
+  .counter-row { display:flex; gap:8px; margin-bottom:8px; }
+  .counter-box {
+    flex:1; background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8);
+    border-radius:12px; padding:6px 10px; text-align:center;
+  }
+  .counter-lbl { font-family:var(--font-display); font-size:0.72em; color:rgba(26,58,107,0.65); }
+  .counter-val { font-family:var(--font-display); font-size:1.35em; font-weight:900; color:var(--c-navy); line-height:1.3; }
+  .counter-box.low { border-color:rgba(192,57,43,0.5); background:rgba(255,200,200,0.6); }
+
+  /* PLAYER PANELS */
+  .player-panel {
+    background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8);
+    border-radius:12px; padding:8px 12px; margin-bottom:8px;
+  }
+  .player-panel.active { border-color:var(--c-navy); background:rgba(26,58,107,0.1); }
+  .player-panel.winner { border-color:rgba(40,180,80,0.6); background:rgba(40,180,80,0.1); }
+  .pp-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .pp-name { font-family:var(--font-display); font-size:0.88em; color:#1a1a2e; }
+  .pp-role { font-size:0.8em; color:rgba(26,26,46,0.65); }
+  .pp-strikes { font-size:0.82em; letter-spacing:1px; }
+  .pp-result { font-size:0.8em; color:#1a1a2e; margin-top:3px; min-height:1.2em; }
+
+  /* STATUS */
+  #status-box {
+    background:rgba(26,58,107,0.09); border:2px solid rgba(26,58,107,0.2);
+    border-radius:12px; padding:9px 12px;
+    font-size:0.86em; line-height:1.6; color:#1a1a2e;
+    min-height:46px; transition:all 0.3s; margin-bottom:8px;
+  }
+  #status-box.ok   { border-color:rgba(40,180,80,0.5);  background:rgba(40,180,80,0.15); }
+  #status-box.warn { border-color:rgba(192,57,43,0.45); background:rgba(255,210,200,0.6); }
+  #status-box.draw { border-color:rgba(200,150,10,0.5); background:rgba(200,150,10,0.12); }
+
+  /* BUTTONS */
+  .btn-game {
+    display:block; width:100%; padding:8px;
+    border-radius:10px; border:2px solid rgba(255,255,255,0.8);
+    background:rgba(255,255,255,0.55); font-family:var(--font-display);
+    font-size:0.85em; color:var(--c-navy); cursor:pointer;
+    transition:background 0.2s; margin-bottom:6px;
+  }
+  .btn-game:hover { background:rgba(255,255,255,0.85); }
+  #btn-round2 {
+    display:none; width:100%; padding:9px; border-radius:10px; border:none; margin-bottom:6px;
+    background:#1a6b4a; color:white; font-family:var(--font-display);
+    font-size:0.88em; font-weight:700; cursor:pointer;
+    box-shadow:0 2px 8px rgba(26,107,74,0.35); transition:background 0.2s;
+  }
+  #btn-round2:hover { background:#27ae60; }
+</style>
+<link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
+<link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+<script src="minijocuri-nav.js"></script>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">♕♖ Dama și turnul contra nebunului</span>
+    <div class="header-progress">
+      <span class="game-badge">Joc</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+
+
+        <div class="toggle-row">
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
+        </div>
+
+        <div id="levelBox">
+          <div class="sec-title">Alege adversarul:</div>
+          <div class="animal-grid">
+            <button class="animal-btn active" data-random="0.9" onclick="selectAnimal(this)"><span class="emoji">&#128035;</span><span class="name">Pui de găină</span></button>
+            <button class="animal-btn" data-random="0.2" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
+            <button class="animal-btn" data-random="0" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
+          </div>
+        </div>
+
+        <div class="toggle-row">
+          <button class="tgl-btn active" id="varBase" onclick="setVariant(false)">Dama + turn</button>
+          <button class="tgl-btn"        id="varRook" onclick="setVariant(true)">Mai ușor: + un turn</button>
+        </div>
+
+        <div class="counter-row">
+          <div class="counter-box"><div class="counter-lbl">Repriza</div><div class="counter-val" id="roundVal">1 / 2</div></div>
+          <div class="counter-box" id="movesBox"><div class="counter-lbl">Mutările albului</div><div class="counter-val" id="movesVal">0 / 15</div></div>
+        </div>
+
+        <div class="player-panel" id="pp1">
+          <div class="pp-row">
+            <span class="pp-name" id="pp1-name">👤 Tu</span>
+            <span class="pp-role" id="pp1-role"></span>
+            <span class="pp-strikes" id="pp1-strikes"></span>
+          </div>
+          <div class="pp-result" id="pp1-result"></div>
+        </div>
+        <div class="player-panel" id="pp2">
+          <div class="pp-row">
+            <span class="pp-name" id="pp2-name">🤖 Calculatorul</span>
+            <span class="pp-role" id="pp2-role"></span>
+            <span class="pp-strikes" id="pp2-strikes"></span>
+          </div>
+          <div class="pp-result" id="pp2-result"></div>
+        </div>
+
+        <div id="status-box">⏳ Pregătesc jocul…</div>
+
+        <button id="btn-round2" onclick="startRound(2)">▶ Repriza 2 — schimbăm rolurile</button>
+        <button class="btn-game" onclick="newMatch()">↺ Joacă din nou</button>
+
+        <details class="howto" open>
+          <summary>📖 Cum se joacă</summary>
+
+          <div class="hl-box">
+            <h4>Piesele</h4>
+            <p>Albul are două piese: <strong>dama</strong> (pe d1) și <strong>turnul</strong> (pe a1). Negrul are o singură piesă: <strong>nebunul</strong> (pe f8).</p>
+            <p><strong>Dama</strong> merge oricât de departe pe linii, pe coloane și pe diagonale. <strong>Turnul</strong> merge oricât de departe pe linii și pe coloane. <strong>Nebunul</strong> merge oricât de departe, dar numai pe diagonale. De aceea nebunul stă mereu pe pătrate de aceeași culoare.</p>
+            <p>Nicio piesă nu poate sări peste altă piesă.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum se mută</h4>
+            <p>Albul mută primul. Apoi mută negrul. Apoi iar albul, și tot așa, pe rând. La fiecare mutare muți o singură piesă.</p>
+            <p><strong>A captura</strong> înseamnă să muți piesa ta pe pătratul unde stă o piesă a adversarului. Piesa adversarului iese de pe tablă.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Scopul albului</h4>
+            <p>Albul vrea să <strong>captureze nebunul</strong>. Are pentru asta <strong>15 mutări</strong>.</p>
+            <p>Nu e ușor: nebunul fuge pe diagonale lungi și poate ajunge dintr-o singură mutare în celălalt capăt al tablei.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Scopul negrului</h4>
+            <p>Negrul vrea ca nebunul <strong>să nu fie capturat</strong> timp de 15 mutări ale albului.</p>
+            <p>Nebunul poate și el să captureze: dacă o piesă albă îi stă în cale, o poate lua de pe tablă.</p>
+          </div>
+
+          <div class="hl-box warn">
+            <h4>Cine câștigă?</h4>
+            <p><strong>Albul câștigă dacă capturează nebunul, chiar dacă a pierdut o piesă pe drum.</strong></p>
+            <p>Dacă nebunul capturează o piesă albă, piesa albă rămasă mai are <strong>o singură mutare</strong>. Dacă în acea mutare poate captura nebunul, câștigă albul. Dacă nu poate, câștigă negrul, pentru că o singură piesă nu mai reușește să prindă nebunul.</p>
+            <p><strong>Negrul câștigă</strong> și dacă nebunul rezistă 15 mutări ale albului.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Reprizele</h4>
+            <p>Jocul are două reprize. După prima repriză <strong>se schimbă rolurile</strong>: cine a jucat cu dama și turnul joacă acum cu nebunul.</p>
+            <p id="ruleDuo" style="display:none">În doi: dacă încerci o mutare care nu este permisă, ea nu se face, dar se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
+          </div>
+
+          <div class="hl-box ok">
+            <h4>E prea greu?</h4>
+            <p>Alege <strong>„+ un turn"</strong>. Albul primește încă un turn, pe h1. Așa albul poate pierde o piesă și continuă vânătoarea cu celelalte două.</p>
+          </div>
+        </details>
+
+      </div><!-- /.panel-scroll -->
+      <div class="feedback-bar" id="feedbackBar"></div>
+    </div><!-- /.panel-col -->
+
+  </main>
+
+  <footer class="page-footer" role="navigation"></footer>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
+<script>
+/* =====================================================
+   DAMA ȘI TURNUL CONTRA NEBUNULUI (Step 1, lecția 3)
+   Start: Dd1 Ta1 (varianta: + Th1) contra Nf8, începe albul.
+   Albul câștigă dacă ia nebunul. Dacă nebunul ia o piesă și albul rămâne
+   cu una singură, aceasta are o ultimă mutare ca să ia nebunul.
+   Dragon, varianta de bază: joc perfect (analiză retrogradă la încărcare).
+   Dragon, varianta cu două turnuri: tabelele exacte pe perechi + o mutare înainte.
+   ===================================================== */
+
+const COLS = 'abcdefgh';
+const MAX_W_MOVES = 15;
+const MAX_STRIKES = 3;
+const INF = 255;
+
+var sndMove    = new Audio('Sounds/Move.mp3');
+var sndCapture = new Audio('Sounds/Capture.mp3');
+var sndMate    = new Audio('Sounds/Mate.mp3');
+function play(s){ try { s.currentTime = 0; s.play().catch(function(){}); } catch(e) {} }
+
+/* ---------- geometrie ---------- */
+const idx  = s => COLS.indexOf(s[0]) * 8 + (parseInt(s[1]) - 1);
+const name = i => COLS[i >> 3] + ((i & 7) + 1);
+const DQ = [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
+function buildRays(dirs) {
+    const out = [];
+    for (let s = 0; s < 64; s++) {
+        const rs = [];
+        for (const [a, b] of dirs) {
+            const ray = []; let c = (s >> 3) + a, r = (s & 7) + b;
+            while (c >= 0 && c < 8 && r >= 0 && r < 8) { ray.push(c * 8 + r); c += a; r += b; }
+            if (ray.length) rs.push(ray);
+        }
+        out.push(rs);
+    }
+    return out;
+}
+const RAYS = { Q: buildRays(DQ), R: buildRays(DQ.slice(0, 4)), B: buildRays(DQ.slice(4)) };
+function attacks(type, from, to, blockers) {
+    for (const ray of RAYS[type][from]) for (const t of ray) { if (t === to) return true; if (blockers && blockers.includes(t)) break; }
+    return false;
+}
+
+/* ---------- rezolvarea exactă pentru 2 piese albe contra nebun ----------
+   VW[(a<<12)|(b<<6)|k] = câte mutări îi mai trebuie albului (albul la mutare), INF = nu reușește
+   VB[...]              = la fel, cu negrul la mutare */
+function solvePair(tA, tB) {
+    const VW = new Uint8Array(262144).fill(INF), VB = new Uint8Array(262144).fill(INF);
+    const RA = RAYS[tA], RB = RAYS[tB], RK = RAYS.B;
+    let ch = true;
+    while (ch) {
+        ch = false;
+        for (let a = 0; a < 64; a++) for (let b = 0; b < 64; b++) {
+            if (a === b) continue;
+            for (let k = 0; k < 64; k++) {
+                if (k === a || k === b) continue;
+                const i = (a << 12) | (b << 6) | k;
+                let best = VW[i];
+                if (best > 1) {
+                    outerA: for (const ray of RA[a]) for (const t of ray) { if (t === b) break; if (t === k) { best = 1; break outerA; } const v = VB[(t << 12) | (b << 6) | k] + 1; if (v < best) best = v; }
+                    if (best > 1) outerB: for (const ray of RB[b]) for (const t of ray) { if (t === a) break; if (t === k) { best = 1; break outerB; } const v = VB[(a << 12) | (t << 6) | k] + 1; if (v < best) best = v; }
+                    if (best < VW[i]) { VW[i] = best; ch = true; }
+                }
+                let w = 0;
+                for (const ray of RK[k]) {
+                    for (const t of ray) {
+                        if (t === a || t === b) {
+                            const rest = t === a ? b : a, rt = t === a ? tB : tA;
+                            const v = attacks(rt, rest, t) ? 1 : INF;
+                            if (v > w) w = v;
+                            break;
+                        }
+                        const v = VW[(a << 12) | (b << 6) | t]; if (v > w) w = v;
+                    }
+                    if (w === INF) break;
+                }
+                if (w < VB[i]) { VB[i] = w; ch = true; }
+            }
+        }
+    }
+    return { VW, VB };
+}
+let TAB = { QR: null, RR: null };
+
+/* ---------- stare ---------- */
+let board, ready = false;
+let mode = 'robot', aiRandomChance = 0.9, extraRook = false;
+let round, W, K, turn, wMoves, lastChance, roundOver, matchOver;   // W = [{t:'Q'|'R', s}], K = pătratul nebunului
+let selSq = null, aiTimer = null;
+let results = {}, strikes = {1:0, 2:0};
+let PERFECT = 6;
+
+/* repriza 1: jucătorul 1 (tu) = albul; repriza 2: jucătorul 1 = nebunul */
+const whitePlayer  = r => r === 1 ? 1 : 2;
+const blackPlayer  = r => r === 1 ? 2 : 1;
+const playerOnMove = () => turn === 'w' ? whitePlayer(round) : blackPlayer(round);
+const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Calculatorul');
+const pieceName = t => t === 'Q' ? 'Dama' : t === 'R' ? 'Turnul' : 'Nebunul';
+
+/* ---------- valori din tabele ---------- */
+function pairKey(P) {                 // P: două piese albe
+    if (P[0].t === 'Q') return { tab: TAB.QR, a: P[0].s, b: P[1].s };
+    if (P[1].t === 'Q') return { tab: TAB.QR, a: P[1].s, b: P[0].s };
+    return { tab: TAB.RR, a: P[0].s, b: P[1].s };
+}
+const pairVW = (P, k) => { const x = pairKey(P); return x.tab.VW[(x.a << 12) | (x.b << 6) | k]; };
+const pairVB = (P, k) => { const x = pairKey(P); return x.tab.VB[(x.a << 12) | (x.b << 6) | k]; };
+function whiteToMoveValue(P, k) {     // câte mutări îi mai trebuie albului
+    if (P.length === 1) return attacks(P[0].t, P[0].s, k) ? 1 : INF;
+    if (P.length === 2) return pairVW(P, k);
+    return Math.min(pairVW([P[0], P[1]], k), pairVW([P[0], P[2]], k), pairVW([P[1], P[2]], k));
+}
+
+/* ---------- mutări ---------- */
+function whiteTargets(from, P, k) {
+    const pc = P.find(p => p.s === from); if (!pc) return [];
+    const own = P.map(p => p.s), out = [];
+    for (const ray of RAYS[pc.t][from]) for (const t of ray) { if (own.includes(t)) break; out.push(t); if (t === k) break; }
+    return out;
+}
+function blackTargets(k, P) {
+    const own = P.map(p => p.s), out = [];
+    for (const ray of RAYS.B[k]) for (const t of ray) { out.push(t); if (own.includes(t)) break; }
+    return out;
+}
+function afterWhite(P, from, to) { return P.map(p => p.s === from ? { t: p.t, s: to } : p); }
+function afterBlack(P, to) { return P.filter(p => p.s !== to); }
+
+/* valoarea unei poziții cu negrul la mutare (cât îi mai trebuie albului) */
+function blackToMoveValue(P, k) {
+    if (P.length === 2) return pairVB(P, k);
+    let w = 0;
+    for (const t of blackTargets(k, P)) {
+        const v = whiteToMoveValue(afterBlack(P, t), t);
+        if (v > w) w = v;
+    }
+    return w;
+}
+
+/* ---------- afișare ---------- */
+function buildPos() {
+    const pos = {};
+    W.forEach(p => { pos[name(p.s)] = 'w' + p.t; });
+    if (K !== null) pos[name(K)] = 'bB';
+    return pos;
+}
+function clearHL(keepLast) {
+    const cls = keepLast ? 'highlight-selected highlight-legal highlight-capture sq-wrong' : 'highlight-selected highlight-legal highlight-capture sq-wrong sq-last';
+    $('#board [class*="square-"]').removeClass(cls);
+}
+function legalTargets(sq) {
+    const i = idx(sq);
+    if (turn === 'w') return whiteTargets(i, W, K).map(name);
+    if (i === K) return blackTargets(K, W).map(name);
+    return [];
+}
+function showSelection(sq) {
+    clearHL(true);
+    $('.square-' + sq).addClass('highlight-selected');
+    const occ = W.map(p => name(p.s)).concat(K !== null ? [name(K)] : []);
+    legalTargets(sq).forEach(t => $('.square-' + t).addClass(occ.includes(t) ? 'highlight-capture' : 'highlight-legal'));
+}
+function flashWrong(sq) {
+    const el = $('.square-' + sq);
+    el.addClass('sq-wrong');
+    setTimeout(() => el.removeClass('sq-wrong'), 600);
+}
+function setStatus(msg, cls) {
+    const el = document.getElementById('status-box');
+    el.innerHTML = msg; el.className = cls || '';
+}
+function stars(k) { return '⭐'.repeat(k) + '☆'.repeat(3 - k); }
+
+function updateUI() {
+    document.getElementById('roundVal').textContent = round + ' / 2';
+    document.getElementById('movesVal').textContent = wMoves + ' / ' + MAX_W_MOVES;
+    document.getElementById('movesBox').className = 'counter-box' + (wMoves >= MAX_W_MOVES - 3 && !roundOver ? ' low' : '');
+    [1, 2].forEach(p => {
+        document.getElementById('pp' + p + '-name').textContent = (mode === 'robot' && p === 2 ? '🤖 ' : '👤 ') + pname(p);
+        document.getElementById('pp' + p + '-role').textContent = whitePlayer(round) === p ? (extraRook ? '♕♖♖ Albul' : '♕♖ Albul') : '♝ Nebunul';
+        document.getElementById('pp' + p + '-strikes').textContent =
+            mode === 'duo' ? '❌'.repeat(strikes[p]) + '▫️'.repeat(MAX_STRIKES - strikes[p]) : '';
+        document.getElementById('pp' + p).className = 'player-panel' + (!roundOver && !matchOver && playerOnMove() === p ? ' active' : '');
+        document.getElementById('pp' + p + '-result').textContent = resultLine(p);
+    });
+}
+function resultLine(p) {
+    const parts = [];
+    [1, 2].forEach(r => {
+        const res = results[r]; if (!res) return;
+        if (whitePlayer(r) === p) parts.push(res.white ? 'cu albul: a prins nebunul în ' + res.moves + ' mutări' : 'cu albul: n-a prins nebunul');
+        else parts.push(res.white ? 'cu nebunul: prins la mutarea ' + res.moves : 'cu nebunul: a scăpat');
+    });
+    return parts.join(' · ');
+}
+
+/* stele (doar contra calculatorului) */
+function starsWhite(res) {
+    if (!res.white) return 0;
+    return res.moves <= PERFECT ? 3 : res.moves <= PERFECT + 4 ? 2 : 1;
+}
+function starsBishop(res) {
+    if (!res.white) return 3;
+    return res.moves >= PERFECT ? 3 : res.moves === PERFECT - 1 ? 2 : 1;
+}
+
+/* ---------- desfășurarea ---------- */
+function startPieces() {
+    const P = [{ t: 'Q', s: idx('d1') }, { t: 'R', s: idx('a1') }];
+    if (extraRook) P.push({ t: 'R', s: idx('h1') });
+    return P;
+}
+function newMatch() {
+    if (!ready) return;
+    results = {}; strikes = {1:0, 2:0}; matchOver = false;
+    PERFECT = dragonVsDragon();
+    startRound(1);
+}
+/* reperul pentru stele: câte mutări durează o partidă Dragon contra Dragon din start */
+function dragonVsDragon() {
+    let P = startPieces(), k = idx('f8');
+    for (let n = 1; n <= MAX_W_MOVES; n++) {
+        let best = Infinity, mv = null;
+        P.forEach(p => whiteTargets(p.s, P, k).forEach(t => {
+            const v = t === k ? 0 : blackToMoveValue(afterWhite(P, p.s, t), k);
+            if (v < best) { best = v; mv = [p.s, t]; }
+        }));
+        if (mv[1] === k) return n;
+        P = afterWhite(P, mv[0], mv[1]);
+        let w = -1, bt = null;
+        blackTargets(k, P).forEach(x => { const v = whiteToMoveValue(afterBlack(P, x), x); if (v > w) { w = v; bt = x; } });
+        P = afterBlack(P, bt); k = bt;
+        if (P.length === 1 && !attacks(P[0].t, P[0].s, k)) return MAX_W_MOVES;
+    }
+    return MAX_W_MOVES;
+}
+function startRound(r) {
+    if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
+    round = r; W = startPieces(); K = idx('f8');
+    turn = 'w'; wMoves = 0; lastChance = false; roundOver = false; selSq = null;
+    board.position(buildPos(), false);
+    clearHL();
+    document.getElementById('btn-round2').style.display = 'none';
+    updateUI();
+    promptTurn();
+}
+function promptTurn() {
+    if (roundOver || matchOver) return;
+    const p = playerOnMove();
+    let what = turn === 'w' ? 'cu albul (dama sau turnul)' : 'cu nebunul';
+    if (turn === 'w' && lastChance) what = 'ultima mutare a albului: poate ' + pieceName(W[0].t).toLowerCase() + ' să captureze nebunul?';
+    if (mode === 'robot' && p === 2) {
+        setStatus('🤖 Calculatorul mută ' + (turn === 'w' ? 'cu albul' : 'cu nebunul') + '…');
+        aiTimer = setTimeout(aiMove, 600);
+    } else {
+        setStatus((mode === 'duo' ? pname(p) + ' mută ' : 'Muți ') + what + '.', lastChance ? 'warn' : '');
+    }
+    updateUI();
+}
+function doMove(fromSq, toSq) {
+    selSq = null; clearHL();
+    const from = idx(fromSq), to = idx(toSq);
+    let captured = false;
+    if (turn === 'w') {
+        W = afterWhite(W, from, to); wMoves++;
+        if (to === K) { K = null; captured = true; }
+    } else {
+        if (W.some(p => p.s === to)) { W = afterBlack(W, to); captured = true; }
+        K = to;
+    }
+    board.position(buildPos(), false);
+    $('.square-' + fromSq).addClass('sq-last');
+    $('.square-' + toSq).addClass('sq-last');
+    play(captured ? sndCapture : sndMove);
+
+    if (turn === 'w') {
+        if (K === null) return endRound({ white: true, moves: wMoves });
+        if (lastChance) return endRound({ white: false, how: 'lastChance', moves: wMoves });
+        if (wMoves >= MAX_W_MOVES) return endRound({ white: false, how: 'survived', moves: wMoves });
+    } else if (captured && W.length === 1) {
+        if (!attacks(W[0].t, W[0].s, K)) return endRound({ white: false, how: 'onePiece', moves: wMoves });
+        lastChance = true;
+    }
+    turn = turn === 'w' ? 'b' : 'w';
+    promptTurn();
+}
+function endRound(res) {
+    roundOver = true;
+    results[round] = res;
+    setTimeout(() => play(sndMate), 250);
+    const wp = whitePlayer(round), bp = blackPlayer(round);
+    const you = (p) => mode === 'robot' && p === 1;
+    let msg;
+    if (res.white) msg = '♕♖ ' + (you(wp) ? 'Ai capturat' : pname(wp) + ' a capturat') + ' nebunul în ' + res.moves + ' mutări.';
+    else if (res.how === 'survived') msg = '♝ Nebunul a rezistat 15 mutări. Repriza e câștigată de ' + pname(bp) + '.';
+    else if (res.how === 'onePiece') msg = '♝ Nebunul a capturat o piesă, iar piesa albă rămasă nu îl mai poate captura. Repriza e câștigată de ' + pname(bp) + '.';
+    else msg = '♝ Piesa albă rămasă n-a capturat nebunul în ultima ei mutare. Repriza e câștigată de ' + pname(bp) + '.';
+
+    if (mode === 'robot') {
+        if (wp === 1) {
+            const k = starsWhite(res);
+            msg += '<br>' + stars(k);
+            if (k < 3 && !extraRook) msg += ' Cu joc perfect, albul prinde nebunul în ' + PERFECT + ' mutări. Gândește-te: ce se întâmplă dacă îi oferi nebunului o piesă apărată?';
+        } else {
+            const k = starsBishop(res);
+            msg += '<br>' + stars(k) + (k < 3 ? ' Un nebun jucat foarte bine rezistă până la mutarea ' + PERFECT + '. Nu intra pe pătrate unde te poate lua dama sau turnul.' : '');
+        }
+    }
+    if (round === 1) {
+        setStatus(msg, res.white ? 'ok' : 'draw');
+        document.getElementById('btn-round2').style.display = 'block';
+    } else {
+        matchOver = true;
+        setStatus(msg + '<br><br>' + matchSummary(), 'ok');
+    }
+    updateUI();
+}
+function matchSummary() {
+    if (mode === 'robot') {
+        const total = starsWhite(results[1]) + starsBishop(results[2]);
+        return '<strong>Meciul s-a terminat:</strong> ' + total + ' stele din 6.';
+    }
+    const c1 = results[1].white ? results[1].moves : null;   // repriza 1: albul = jucătorul 1
+    const c2 = results[2].white ? results[2].moves : null;   // repriza 2: albul = jucătorul 2
+    let w = 0;
+    if (c1 !== null && c2 !== null) w = c1 < c2 ? 1 : c2 < c1 ? 2 : 0;
+    else if (c1 !== null) w = 1;
+    else if (c2 !== null) w = 2;
+    if (w) {
+        document.getElementById('pp' + w).className = 'player-panel winner';
+        return '🏆 <strong>' + pname(w) + ' câștigă meciul</strong>: a capturat nebunul mai repede.';
+    }
+    return '🤝 <strong>Egalitate.</strong>';
+}
+
+/* ---------- încercări nepermise ---------- */
+function illegal(sq, reason) {
+    if (sq) flashWrong(sq);
+    selSq = null; clearHL(true);
+    if (mode !== 'duo') { setStatus('⚠️ ' + reason, 'warn'); return; }
+    const p = playerOnMove();
+    strikes[p]++;
+    updateUI();
+    if (strikes[p] >= MAX_STRIKES) {
+        roundOver = true; matchOver = true;
+        const other = p === 1 ? 2 : 1;
+        document.getElementById('btn-round2').style.display = 'none';
+        document.getElementById('pp' + other).className = 'player-panel winner';
+        setStatus('❌ ' + reason + '<br>' + pname(p) + ' a încercat 3 mutări nepermise.<br>🏆 <strong>' + pname(other) + ' câștigă meciul.</strong>', 'warn');
+        return;
+    }
+    setStatus('❌ ' + reason + ' Încercări nepermise pentru ' + pname(p) + ': ' + strikes[p] + ' din ' + MAX_STRIKES + '.', 'warn');
+}
+function pieceAt(sq) {
+    const i = idx(sq);
+    if (i === K) return 'B';
+    const p = W.find(x => x.s === i); return p ? p.t : null;
+}
+function tryMove(from, to) {
+    if (legalTargets(from).includes(to)) { doMove(from, to); return; }
+    illegal(to, pieceName(pieceAt(from)) + ' nu poate merge pe ' + to + '.');
+}
+
+/* ---------- robotul ---------- */
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function aiMove() {
+    aiTimer = null;
+    if (roundOver || matchOver) return;
+    const perfect = Math.random() >= aiRandomChance;
+    let from, to;
+    if (turn === 'w') {
+        const opts = [];
+        W.forEach(p => whiteTargets(p.s, W, K).forEach(t => opts.push([p.s, t])));
+        let mv;
+        if (!perfect) mv = pickRandom(opts);
+        else {
+            let best = Infinity, pool = [];
+            for (const [f, t] of opts) {
+                let v;
+                if (t === K) v = 0;
+                else if (lastChance) v = INF;
+                else v = blackToMoveValue(afterWhite(W, f, t), K);
+                if (v < best) { best = v; pool = [[f, t]]; } else if (v === best) pool.push([f, t]);
+            }
+            mv = pickRandom(pool);
+        }
+        [from, to] = mv;
+    } else {
+        const opts = blackTargets(K, W);
+        let t;
+        if (!perfect) t = pickRandom(opts);
+        else {
+            let best = -1, pool = [];
+            for (const x of opts) {
+                const v = whiteToMoveValue(afterBlack(W, x), x);
+                if (v > best) { best = v; pool = [x]; } else if (v === best) pool.push(x);
+            }
+            t = pickRandom(pool);
+        }
+        from = K; to = t;
+    }
+    $('.square-' + name(from)).addClass('highlight-selected');
+    aiTimer = setTimeout(() => { aiTimer = null; doMove(name(from), name(to)); }, 400);
+}
+
+/* ---------- setări ---------- */
+function selectAnimal(btn) {
+    document.querySelectorAll('.animal-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    aiRandomChance = parseFloat(btn.dataset.random);
+    newMatch();
+}
+function setMode(m) {
+    mode = m;
+    document.getElementById('modeRobot').className = 'tgl-btn' + (m === 'robot' ? ' active' : '');
+    document.getElementById('modeDuo').className   = 'tgl-btn' + (m === 'duo' ? ' active' : '');
+    document.getElementById('levelBox').style.display = m === 'robot' ? '' : 'none';
+    document.getElementById('ruleDuo').style.display  = m === 'duo' ? '' : 'none';
+    newMatch();
+}
+function setVariant(extra) {
+    extraRook = extra;
+    document.getElementById('varBase').className = 'tgl-btn' + (!extra ? ' active' : '');
+    document.getElementById('varRook').className = 'tgl-btn' + (extra ? ' active' : '');
+    if (extra && !TAB.RR) {
+        ready = false;
+        setStatus('⏳ Pregătesc varianta…');
+        setTimeout(() => { TAB.RR = solvePair('R', 'R'); ready = true; newMatch(); }, 30);
+        return;
+    }
+    newMatch();
+}
+
+/* ---------- input: click și drag ---------- */
+function canAct() { return ready && !roundOver && !matchOver && !aiTimer && (mode === 'duo' || playerOnMove() === 1); }
+
+board = Chessboard('board', {
+    position: { d1: 'wQ', a1: 'wR', f8: 'bB' },
+    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+    draggable: true,
+    showNotation: true,
+    onDragStart: function(source, piece) {
+        if (!canAct()) return false;
+        if (selSq && source !== selSq && piece[0] !== turn) {      // click pe piesa adversă = captură
+            const from = selSq;
+            setTimeout(() => tryMove(from, source), 0);
+            return false;
+        }
+        if (piece[0] !== turn) {
+            illegal(source, 'Acum e rândul ' + (turn === 'w' ? 'albului' : 'nebunului') + '.');
+            return false;
+        }
+        selSq = source;
+        showSelection(source);
+    },
+    onDrop: function(source, target) {
+        if (target === 'offboard' || target === source) return 'snapback';
+        selSq = null;
+        if (!legalTargets(source).includes(target)) {
+            illegal(target, pieceName(pieceAt(source)) + ' nu poate merge pe ' + target + '.');
+            return 'snapback';
+        }
+        doMove(source, target);
+    },
+    onSnapEnd: function() { board.position(buildPos(), false); }
+});
+
+/* click pe un pătrat gol, după selectare */
+$(document).on('click', '#board [class*="square-"]', function() {
+    if (!canAct() || !selSq) return;
+    const m = (this.className || '').match(/square-([a-h][1-8])/);
+    if (!m) return;
+    const sq = m[1];
+    if (sq === selSq || pieceAt(sq)) return;        // piesele sunt tratate în onDragStart
+    tryMove(selSq, sq);
+});
+
+$(window).resize(() => board.resize());
+
+/* calculul se face după ce pagina s-a afișat */
+setTimeout(() => {
+    TAB.QR = solvePair('Q', 'R');
+    ready = true;
+    newMatch();
+}, 30);
+</script>
+</body>
+</html>
