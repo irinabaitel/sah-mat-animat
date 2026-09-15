@@ -9,7 +9,7 @@
  *
  * Adnotări touch:
  *   ținut (450ms) + drag  → săgeată verde
- *   ținut (450ms) pe loc  → toggle pătrat verde
+ *   ținut (450ms) pe loc  → pătrat verde; din nou pe același pătrat → roșu → albastru → galben → șters
  *
  * Touch bridge:
  *   mișcare rapidă (< 450ms)  → drag piesă normal
@@ -34,6 +34,7 @@
   var annSquares = {};   /* {sq: ci (0-3)}    */
   var rmbFrom = null, rmbCi = 0, rmbMoved = false;
   var touchFrom = null, touchTimer = null;
+  var annBoardEl = null;  /* tabla găsită la inițializare */
 
   /* ── SVG helpers ── */
   function fileRank(sq) {
@@ -69,7 +70,9 @@
 
   /* ── Render SVG ── */
   function render() {
-    var bw = document.getElementById('boardWrapper');
+    /* containerul tablei: #boardWrapper sau, în paginile fără id, .board-wrapper din jurul tablei */
+    var bw = document.getElementById('boardWrapper') ||
+             (annBoardEl && annBoardEl.closest ? annBoardEl.closest('.board-wrapper') : null);
     if (!bw) return;
     var svg = bw.querySelector('.ann-svg');
     if (!svg) {
@@ -164,13 +167,17 @@
   function colorIdx(e) {
     return e.altKey ? 3 : e.ctrlKey ? 2 : e.shiftKey ? 1 : 0;
   }
+  var fromTouch = false;   /* true cât timp trimitem un eveniment de mouse creat dintr-o atingere */
   function toMouse(type, coords, target) {
+    fromTouch = true;
+    try {
     target.dispatchEvent(new MouseEvent(type, {
       bubbles: true, cancelable: true, view: window,
       button: 0, buttons: (type === 'mouseup' ? 0 : 1),
       clientX: coords.clientX, clientY: coords.clientY,
       screenX: coords.screenX, screenY: coords.screenY
     }));
+    } finally { fromTouch = false; }
   }
   function cancelBridgeDrag() {
     if (bridgeDragging) {
@@ -186,6 +193,7 @@
     /* tabla are de obicei id=board; unele jocuri (myBoard, mcBoard) o pun direct în #boardWrapper */
     var boardEl = document.getElementById('board') || document.querySelector('#boardWrapper > div');
     if (!boardEl) return;
+    annBoardEl = boardEl;
 
     /* ════ TOUCH BRIDGE ════ */
     boardEl.addEventListener('touchstart', function (e) {
@@ -249,7 +257,9 @@
       render();
     });
     boardEl.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-    boardEl.addEventListener('mousedown',   function (e) { if (e.button === 0) clearAll(); });
+    /* click stânga cu mouse-ul șterge adnotările; atingerile cu degetul NU le șterg
+       (pe ecran tactil se șterg apăsând lung pe pătrat până trece de galben, sau refăcând aceeași săgeată) */
+    boardEl.addEventListener('mousedown',   function (e) { if (e.button === 0 && !fromTouch) clearAll(); });
 
     /* ════ ADNOTĂRI TOUCH (long-press 450ms + drag) ════ */
     boardEl.addEventListener('touchstart', function (e) {
@@ -279,9 +289,11 @@
       var to = getSqFromPoint(t.clientX, t.clientY);
       if (touchFrom && to) {
         if (touchFrom === to) {
-          /* toggle pătrat verde */
-          if (annSquares[to] !== undefined) delete annSquares[to];
-          else annSquares[to] = 0;
+          /* apăsări lungi repetate pe același pătrat: verde → roșu → albastru → galben → șters */
+          var cur = annSquares[to];
+          if (cur === undefined) annSquares[to] = 0;
+          else if (cur < COLORS.length - 1) annSquares[to] = cur + 1;
+          else delete annSquares[to];
         } else {
           /* toggle săgeată verde */
           var idx = annArrows.findIndex(function (a) { return a.from === touchFrom && a.to === to; });
