@@ -24,7 +24,8 @@
         ['nivel1_joc_cine_pastreaza.html', 'Cine păstrează ceva?'],
         ['joc_sah_progresiv.html', 'Șahul progresiv'],
         ['joc_sah_pierzator.html', 'Șahul pierzătorului'],
-        ['joc_stockfish.html?v=2',   'Regi și Pioni 2']
+        ['joc_stockfish.html?v=2',   'Regi și Pioni 2'],
+        ['joc_klotz.html', 'Klotz']
     ];
     var file = function (p) { return (p || '').split('?')[0].split('#')[0].split('/').pop(); };
     var here = file(location.pathname);

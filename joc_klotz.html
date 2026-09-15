@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMTZ9GGPMP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMTZ9GGPMP');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Klotz — șah în tandem pe două table</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
+<style>
+  .game-badge {
+    background: var(--c-navy); color: white;
+    font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-bold);
+    padding: 3px 14px; border-radius: var(--radius-sm); white-space: nowrap;
+  }
+  :root { --team-a: #1a3a6b; --team-b: #b03a2e; --pbar-h: 50px; }
+
+  /* ---------- așezare: două table + panou ---------- */
+  .page-main.klotz { grid-template-columns: 1fr minmax(290px, 360px); padding-right: var(--gap); }
+  .kl-main { position: relative; min-height: 0; min-width: 0; overflow: auto; }
+  #gameView { display: flex; gap: var(--gap); justify-content: center; align-items: center; min-height: 100%; }
+  .bunit {
+    --bs: min(calc((100vw - 360px - 5 * var(--gap)) / 2),
+              calc(100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap) - 2 * var(--pbar-h) - 40px));
+    width: var(--bs); display: flex; flex-direction: column; gap: 3px;
+  }
+  .bunit .board-wrapper { width: var(--bs) !important; flex-shrink: 0; }
+  .bunit .pbar, .bunit .bmsg, .bunit .btitle { flex-shrink: 0; }
+  #board2 { width: 100% !important; height: 100% !important; }
+  .btitle { font-family: var(--font-display); font-size: 0.8em; color: var(--c-navy); text-align: center; line-height: 1.2; }
+
+  /* ---------- bara unui jucător ---------- */
+  .pbar {
+    height: var(--pbar-h); display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.85);
+    border-left: 7px solid var(--team-a); border-radius: 12px; padding: 2px 6px;
+    transition: box-shadow .2s, background .2s;
+  }
+  .pbar.team-b { border-left-color: var(--team-b); }
+  .pbar.active { background: rgba(255,255,255,0.92); box-shadow: 0 0 0 3px rgba(26,58,107,0.55); }
+  .pbar.team-b.active { box-shadow: 0 0 0 3px rgba(176,58,46,0.6); }
+  .pface { width: 40px; height: 40px; flex-shrink: 0; }
+  .pface svg { width: 100%; height: 100%; display: block; }
+  .pinfo { min-width: 0; flex-shrink: 1; }
+  .pname { font-family: var(--font-display); font-weight: 900; font-size: 0.9em; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; }
+  .pteam { font-size: 0.7em; font-weight: 700; color: var(--team-a); white-space: nowrap; line-height: 1.2; }
+  .team-b .pteam { color: var(--team-b); }
+  .pres { flex: 1; display: flex; gap: 2px; justify-content: flex-end; min-width: 0; }
+  .rpiece {
+    position: relative; width: 34px; height: 34px; border-radius: 8px; flex-shrink: 1;
+    background: rgba(26,58,107,0.07); touch-action: none; user-select: none; -webkit-user-select: none;
+  }
+  .rpiece img { width: 100%; height: 100%; pointer-events: none; -webkit-user-drag: none; }
+  .rpiece.zero { opacity: 0.18; }
+  .rpiece.can { cursor: grab; background: rgba(40,160,70,0.16); }
+  .rpiece.sel { background: rgba(20,110,40,0.45); }
+  .rpiece .cnt {
+    position: absolute; right: -2px; bottom: -3px; min-width: 15px; height: 15px; border-radius: 8px;
+    background: var(--c-navy); color: #fff; font-size: 10px; font-weight: 900; line-height: 15px; text-align: center; padding: 0 3px;
+  }
+  .rpiece.zero .cnt { display: none; }
+  .pclock {
+    font-family: var(--font-display); font-weight: 900; font-size: 0.95em; color: var(--c-navy);
+    background: rgba(255,255,255,0.7); border-radius: 8px; padding: 0 6px; min-width: 46px; text-align: center;
+  }
+  .pclock:empty { display: none; }
+  .pclock.low { background: rgba(255,200,200,0.9); color: #8b0000; }
+  .bmsg { min-height: 20px; font-size: 0.78em; font-weight: 700; color: #1a1a2e; text-align: center; line-height: 1.25; }
+  .bmsg.warn { color: #8b1a00; }
+  .sq-wrong { background-color: rgba(220,40,40,0.55) !important; }
+  .drop-ghost { position: fixed; width: 56px; height: 56px; pointer-events: none; z-index: 2000; transform: translate(-50%,-50%); }
+
+  /* ---------- finalul meciului ---------- */
+  #endBox {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 300;
+    background: rgba(255,255,255,0.96); border: 3px solid var(--c-navy); border-radius: 20px;
+    padding: 18px 24px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3); width: min(92%, 460px);
+  }
+  #endBox.team-b { border-color: var(--team-b); }
+  #endTitle { font-family: var(--font-display); font-weight: 900; font-size: 1.6em; color: var(--c-navy); line-height: 1.2; }
+  #endBox.team-b #endTitle { color: var(--team-b); }
+  #endBox.draw #endTitle { color: #7d6608; }
+  #endFaces { display: flex; justify-content: center; gap: 10px; margin: 8px 0; }
+  #endFaces svg { width: 64px; height: 64px; }
+  #endReason { font-size: 0.95em; margin-bottom: 12px; }
+
+  /* ---------- ecranul de alegere ---------- */
+  #setupView { padding: 4px 6px 16px; }
+  .setup-card { background: var(--c-surface); border: 2px solid var(--c-border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 10px; }
+  .setup-h { font-family: var(--font-display); font-weight: 900; color: var(--c-navy); font-size: 1.05em; margin-bottom: 8px; }
+  .setup-sub { font-size: 0.85em; margin: -4px 0 8px; color: var(--c-text-muted); }
+  .mode-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .mode-btn {
+    padding: 10px 8px; border-radius: 14px; border: 3px solid rgba(255,255,255,0.9); background: rgba(255,255,255,0.55);
+    font-family: var(--font-display); font-size: 0.95em; color: var(--c-navy); cursor: pointer; line-height: 1.25; min-height: 64px;
+  }
+  .mode-btn.active { background: var(--c-navy); color: #fff; border-color: var(--c-navy); }
+  .names-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .name-field { flex: 1 1 180px; display: flex; flex-direction: column; gap: 3px; font-size: 0.82em; font-weight: 700; }
+  .name-field span.tag { font-family: var(--font-display); }
+  .name-field input {
+    font-family: var(--font-body); font-size: 1.05em; padding: 8px 10px; border-radius: 10px;
+    border: 2px solid rgba(26,58,107,0.3); background: rgba(255,255,255,0.85);
+  }
+  .slot { margin-bottom: 10px; }
+  .slot-h { font-family: var(--font-display); font-size: 0.92em; color: #1a1a2e; margin-bottom: 5px; }
+  .slot-h .chip { display: inline-block; padding: 0 8px; border-radius: 10px; color: #fff; font-size: 0.85em; margin-right: 4px; }
+  .rgrid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px; }
+  .rcard {
+    background: rgba(255,255,255,0.6); border: 3px solid rgba(255,255,255,0.9); border-radius: 14px;
+    padding: 6px 4px; text-align: center; cursor: pointer; font-family: var(--font-body); color: #1a1a2e;
+    transition: transform .15s, background .15s;
+  }
+  .rcard:hover { transform: translateY(-2px); background: rgba(255,255,255,0.85); }
+  .rcard svg { width: 100%; max-width: 76px; height: auto; display: block; margin: 0 auto; }
+  .rcard .rn { font-family: var(--font-display); font-weight: 900; font-size: 1em; line-height: 1.1; }
+  .rcard .rl { font-size: 0.72em; font-weight: 700; color: var(--c-text-muted); }
+  .rcard.active { border-color: var(--c-navy); background: #fff; box-shadow: 0 3px 12px rgba(26,58,107,0.4); }
+  .rcard.taken { opacity: 0.3; cursor: not-allowed; transform: none; }
+  .time-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .time-opt { flex: 1; padding: 9px 10px; border-radius: 12px; border: 3px solid rgba(255,255,255,0.9); background: rgba(255,255,255,0.55); font-family: var(--font-display); font-size: 0.95em; color: var(--c-navy); cursor: pointer; }
+  .time-opt.active { background: var(--c-navy); color: #fff; border-color: var(--c-navy); }
+  .btn-start {
+    display: block; width: 100%; padding: 13px; border: none; border-radius: 50px; background: #1a6b4a; color: #fff;
+    font-family: var(--font-display); font-size: 1.15em; font-weight: 900; cursor: pointer; box-shadow: 0 3px 12px rgba(26,107,74,0.35);
+  }
+  .btn-start:hover { background: #27ae60; }
+
+  /* ---------- panou ---------- */
+  #status-box {
+    background: rgba(26,58,107,0.09); border: 2px solid rgba(26,58,107,0.2); border-radius: 12px; padding: 9px 12px;
+    font-size: 0.86em; line-height: 1.55; color: #1a1a2e; min-height: 46px; margin-bottom: 8px;
+  }
+  #status-box.ok   { border-color: rgba(40,180,80,0.5);  background: rgba(40,180,80,0.15); }
+  #status-box.warn { border-color: rgba(192,57,43,0.45); background: rgba(255,210,200,0.6); }
+  #status-box.draw { border-color: rgba(200,150,10,0.5); background: rgba(200,150,10,0.12); }
+  .btn-game {
+    display: block; width: 100%; padding: 8px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.55); font-family: var(--font-display); font-size: 0.85em; color: var(--c-navy);
+    cursor: pointer; transition: background 0.2s; margin-bottom: 6px;
+  }
+  .btn-game:hover { background: rgba(255,255,255,0.85); }
+  .howto { margin-bottom: 10px; }
+  .howto > summary {
+    cursor: pointer; list-style: none; font-family: var(--font-display); font-weight: 900;
+    color: var(--c-navy); font-size: 0.95em; padding: 6px 10px; border-radius: 10px;
+    background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8);
+  }
+  .howto > summary::-webkit-details-marker { display: none; }
+  .howto > summary::after { content: ' ▾'; }
+  .howto:not([open]) > summary::after { content: ' ▸'; }
+  .howto .hl-box { margin-top: 8px; font-size: 0.86em; line-height: 1.65; }
+  .howto .hl-box p { margin: 0 0 6px; }
+  .howto .hl-box p:last-child { margin-bottom: 0; }
+  .howto .hl-box ul { margin: 0 0 6px 18px; }
+  .howto h4 { font-family: var(--font-display); color: var(--c-navy); font-size: 0.95em; margin: 0 0 4px; }
+  .teams-pic { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 0; }
+  .teams-pic .tb { border: 2px solid rgba(26,58,107,0.25); border-radius: 10px; padding: 5px; text-align: center; background: rgba(255,255,255,0.6); font-size: 0.92em; }
+  .teams-pic .tb b { font-family: var(--font-display); }
+  .teams-pic .ta { color: var(--team-a); font-weight: 900; }
+  .teams-pic .tbb { color: var(--team-b); font-weight: 900; }
+  .robot-list { display: grid; grid-template-columns: 1fr; gap: 4px; }
+  .robot-list .ri { display: flex; align-items: center; gap: 8px; }
+  .robot-list svg { width: 36px; height: 36px; flex-shrink: 0; }
+  .btn-vol { position: fixed; top: 10px; right: 12px; z-index: 1000; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.88); border: 1.5px solid rgba(26,58,107,0.18); font-size: 1.05rem; cursor: pointer; line-height: 1; display: flex; align-items: center; justify-content: center; padding: 0; }
+
+  @media (max-width: 1100px) {
+    .rgrid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 900px), (max-aspect-ratio: 1/1) {
+    .page-main.klotz { grid-template-columns: 1fr; grid-template-rows: auto auto; overflow-y: auto; padding: 8px; gap: 8px; }
+    .kl-main { overflow: visible; min-height: auto; }
+    .panel-col { min-height: auto; }
+    #gameView { flex-direction: column; min-height: 0; }
+    .bunit { --bs: min(calc(100vw - 24px), calc(100dvh - var(--header-h) - var(--footer-h) - 2 * var(--pbar-h) - 70px)); }
+    .panel-col { overflow: visible; }
+    .panel-scroll { overflow: visible; flex: none; }
+    .mode-row { grid-template-columns: 1fr; }
+    .mode-btn { min-height: 0; }
+  }
+</style>
+<link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
+<link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+<script src="minijocuri-nav.js"></script>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">♔♚ Klotz — șah în tandem</span>
+    <div class="header-progress">
+      <span class="game-badge">Joc</span>
+    </div>
+  </header>
+
+  <main class="page-main klotz" role="main">
+
+    <div class="kl-main">
+
+      <!-- ALEGEREA JUCĂTORILOR -->
+      <div id="setupView">
+        <div class="setup-card">
+          <div class="setup-h">1. Cine joacă?</div>
+          <div class="mode-row">
+            <button class="mode-btn active" data-mode="2k" onclick="setMode('2k')">👧👦 2 copii<br>contra 2 roboți</button>
+            <button class="mode-btn" data-mode="1k" onclick="setMode('1k')">🧒 1 copil + 1 robot<br>contra 2 roboți</button>
+            <button class="mode-btn" data-mode="4k" onclick="setMode('4k')">👧👦👧👦 4 copii</button>
+          </div>
+        </div>
+
+        <div class="setup-card">
+          <div class="setup-h">2. Numele copiilor</div>
+          <div class="setup-sub">Nu e obligatoriu. Dacă nu scrieți nimic, rămân numele de mai jos.</div>
+          <div class="names-row" id="namesRow"></div>
+        </div>
+
+        <div class="setup-card" id="robotsCard">
+          <div class="setup-h" id="robotsH">3. Alegeți roboții</div>
+          <div class="setup-sub">Fiecare robot poate fi ales o singură dată. Roboții Pui de găină joacă ușor, Mânz joacă mediu, Dragon joacă greu.</div>
+          <div id="slots"></div>
+        </div>
+
+        <div class="setup-card">
+          <div class="setup-h" id="timeH">4. Ceas</div>
+          <div class="time-row">
+            <button class="time-opt active" data-secs="0" onclick="selectTime(this)">&#8734; Fără ceas</button>
+            <button class="time-opt" data-secs="180" onclick="selectTime(this)">3 minute</button>
+            <button class="time-opt" data-secs="300" onclick="selectTime(this)">5 minute</button>
+          </div>
+        </div>
+
+        <button class="btn-start" onclick="startMatch()">&#9654; Pornește meciul</button>
+      </div>
+
+      <!-- JOCUL -->
+      <div id="gameView" style="display:none">
+        <div class="bunit" id="bunit0">
+          <div class="btitle">Tabla 1</div>
+          <div class="pbar" id="pbar0t"></div>
+          <div class="board-wrapper" id="bw0">
+            <div id="board"></div>
+            <div class="promo-overlay" id="promo0"><div class="promo-title">Alege piesa:</div><div class="promo-btns"></div></div>
+          </div>
+          <div class="pbar" id="pbar0b"></div>
+          <div class="bmsg" id="bmsg0"></div>
+        </div>
+        <div class="bunit" id="bunit1">
+          <div class="btitle">Tabla 2</div>
+          <div class="pbar" id="pbar1t"></div>
+          <div class="board-wrapper" id="bw1">
+            <div id="board2"></div>
+            <div class="promo-overlay" id="promo1"><div class="promo-title">Alege piesa:</div><div class="promo-btns"></div></div>
+          </div>
+          <div class="pbar" id="pbar1b"></div>
+          <div class="bmsg" id="bmsg1"></div>
+        </div>
+      </div>
+
+      <div id="endBox" style="display:none">
+        <div id="endTitle"></div>
+        <div id="endFaces"></div>
+        <div id="endReason"></div>
+        <button class="btn-start" onclick="startMatch()">&#8635; Încă un meci cu aceiași jucători</button>
+        <button class="btn-game" style="margin-top:8px" onclick="backToSetup()">&#8592; Alege alți jucători</button>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+
+        <div id="status-box">Alegeți cine joacă, apoi apăsați „Pornește meciul".</div>
+        <div id="setupButtons">
+          <button class="btn-start" style="margin-bottom:8px" onclick="startMatch()">&#9654; Pornește meciul</button>
+        </div>
+        <div id="gameButtons" style="display:none">
+          <button class="btn-game" onclick="startMatch()">&#8635; Meci nou, aceiași jucători</button>
+          <button class="btn-game" onclick="backToSetup()">&#8592; Alege alți jucători</button>
+        </div>
+
+        <details class="howto" open>
+          <summary>📖 Cum se joacă</summary>
+
+          <div class="hl-box">
+            <h4>Ce este Klotz</h4>
+            <p>Klotz este un joc de șah pentru <strong>patru jucători</strong>, pe <strong>două table</strong> așezate una lângă alta. În alte țări i se spune <em>bughouse</em> sau șah în tandem.</p>
+            <p>Se joacă în <strong>două echipe de câte doi</strong>. Pe fiecare tablă se joacă o partidă de șah cu regulile obișnuite. Diferența este că piesele capturate nu dispar din joc: ele trec la partenerul celui care le-a capturat, iar partenerul le poate pune pe tabla lui.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Echipele</h4>
+            <p>Partenerul tău joacă pe <strong>cealaltă tablă</strong>, cu <strong>cealaltă culoare</strong>.</p>
+            <div class="teams-pic">
+              <div class="tb"><b>Tabla 1</b><br>♔ Albul: <span class="ta">Echipa A</span><br>♚ Negrul: <span class="tbb">Echipa B</span></div>
+              <div class="tb"><b>Tabla 2</b><br>♔ Albul: <span class="tbb">Echipa B</span><br>♚ Negrul: <span class="ta">Echipa A</span></div>
+            </div>
+            <p>Deci dacă tu ai albul pe tabla 1, partenerul tău are negrul pe tabla 2. Adversarul tău direct este negrul de pe tabla 1, iar adversarul partenerului tău este albul de pe tabla 2.</p>
+            <p>Echipa A are culoarea <span class="ta">albastră</span>, echipa B are culoarea <span class="tbb">roșie</span>. Culoarea echipei se vede în bara fiecărui jucător, lângă tablă.</p>
+            <p>Pe tabla inteligentă, partenerii din echipa A stau unul lângă altul: fiecare are piesele lui jos, pe tabla lui.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum se mută</h4>
+            <p>Pe fiecare tablă albul mută primul, apoi negrul, apoi iar albul și tot așa, pe rând. Toate regulile șahului rămân: șahul, rocada, capturarea din trecere (en passant), promovarea pionului.</p>
+            <p><strong>Cele două table merg în paralel.</strong> Nu aștepți după cealaltă tablă: când e rândul tău pe tabla ta, muți, chiar dacă pe cealaltă tablă cineva încă se gândește.</p>
+            <p>Poți <strong>trage piesa</strong> cu mouse-ul sau cu degetul ori poți <strong>da click</strong> pe piesă, apoi pe pătratul unde vrei să ajungă. Bara jucătorului care trebuie să mute se luminează.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Piesele capturate trec la partener</h4>
+            <p>Când capturezi o piesă, ea trece în <strong>rezerva partenerului tău</strong> și primește <strong>culoarea lui</strong>.</p>
+            <p>Un exemplu: Ana joacă albul pe tabla 1 și capturează un cal negru. Partenerul Anei, Volt, joacă negrul pe tabla 2. În rezerva lui Volt apare un cal negru, pe care Volt îl poate folosi.</p>
+            <p>Invers, piesele pe care le pierzi tu ajung la partenerul adversarului tău, care le poate folosi împotriva partenerului tău.</p>
+            <p>Rezerva fiecărui jucător se vede în bara lui, lângă tablă: piese mici, cu un număr care arată câte are.</p>
+            <p>Un pion care a fost promovat (de exemplu, a devenit damă) <strong>redevine pion</strong> când este capturat.</p>
+          </div>
+
+          <div class="hl-box warn">
+            <h4>Parașutarea</h4>
+            <p>Când e rândul tău, în loc de o mutare obișnuită poți <strong>parașuta</strong> o piesă din rezerva ta: o pui pe <strong>orice pătrat liber</strong> al tablei tale. Parașutarea ține locul mutării.</p>
+            <ul>
+              <li>Pionii nu se parașutează pe <strong>primul</strong> și nici pe <strong>ultimul rând</strong> (rândurile 1 și 8).</li>
+              <li>Poți parașuta o piesă ca să dai <strong>șah</strong> și chiar <strong>mat</strong>.</li>
+              <li>Poți parașuta o piesă ca să te aperi de șah, punând-o între regele tău și piesa care îl atacă.</li>
+              <li>Nu ai voie să parașutezi dacă după aceea regele tău rămâne în șah.</li>
+              <li>Un pion parașutat pe rândul 2 (albul) sau pe rândul 7 (negrul) poate merge două pătrate la prima lui mutare.</li>
+            </ul>
+            <p><strong>Cum parașutezi:</strong> dai click pe piesa din rezervă, apoi pe pătratul liber. Sau tragi piesa din rezervă direct pe tablă.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cine câștigă</h4>
+            <p><strong>Echipa câștigă</strong> când unul dintre cei doi jucători ai ei dă <strong>mat</strong> pe tabla lui. Atunci meciul se oprește pe ambele table.</p>
+            <p>Mat înseamnă șah din care nu există scăpare: nicio mutare și nicio parașutare cu piesele din rezervă nu salvează regele.</p>
+            <p><strong>Cu ceas:</strong> dacă timpul unui jucător se termină, echipa lui pierde.</p>
+            <p><strong>Pat:</strong> dacă jucătorul la mutare nu este în șah, dar nu are nicio mutare și nicio piesă de parașutat, tot meciul se termină <strong>remiză</strong>.</p>
+            <p>Remiza prin repetarea poziției sau prin material puțin nu există în Klotz, pentru că piese noi pot veni oricând. Ca meciul să nu țină la nesfârșit: dacă pe o tablă se fac 150 de mutări ale fiecărei părți fără final, meciul este remiză.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Modurile de joc</h4>
+            <p><strong>2 copii contra 2 roboți.</strong> Copilul 1 joacă albul pe tabla 1, copilul 2 joacă negrul pe tabla 2. Sunt parteneri (echipa A). Cei doi roboți aleși sunt echipa B. Copiii stau unul lângă altul și mută fiecare pe tabla lui.</p>
+            <p><strong>1 copil + 1 robot contra 2 roboți.</strong> Copilul joacă albul pe tabla 1. Partenerul lui este un robot ales de el, care joacă negrul pe tabla 2.</p>
+            <p><strong>4 copii.</strong> Toți jucătorii sunt copii: echipa A are albul pe tabla 1 și negrul pe tabla 2, echipa B are negrul pe tabla 1 și albul pe tabla 2. Pe fiecare tablă, cei doi adversari stau față în față.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Mutări nepermise și ceas</h4>
+            <p>Dacă încerci o mutare nepermisă, ea nu se face, iar sub tablă apare motivul. În Klotz ritmul este rapid, de aceea <strong>încercările nepermise nu se numără</strong>.</p>
+            <p><strong>Fără ceas</strong>, fiecare robot mută după o scurtă gândire. Cu <strong>3 sau 5 minute</strong>, fiecare jucător are ceasul lui, care merge doar când e rândul lui pe tabla lui. Timpul se vede în bara jucătorului.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Roboții</h4>
+            <div class="robot-list" id="robotList"></div>
+            <p style="margin-top:6px">Roboții Dragon se gândesc mai bine și mută mai repede. Roboții Pui de găină mută mai încet și greșesc des.</p>
+          </div>
+
+          <div class="hl-box ok">
+            <h4>Sfaturi</h4>
+            <ul>
+              <li><strong>Vorbiți cu partenerul.</strong> Spune-i ce îți trebuie: „am nevoie de un cal" sau „nu da dama acum".</li>
+              <li><strong>Nu da piese fără motiv.</strong> Orice piesă pe care o pierzi ajunge la adversarul partenerului tău.</li>
+              <li><strong>Parașutarea lângă regele advers</strong> este foarte puternică: un cal sau o damă puse lângă rege dau des mat.</li>
+              <li><strong>Păzește-ți regele.</strong> Pionii din fața regelui îl apără de parașutări. Uită-te ce piese are adversarul în rezervă.</li>
+              <li>Uneori e bine să capturezi, chiar dacă pe tabla ta pierzi puțin, pentru că partenerul tău primește piesa de care are nevoie.</li>
+            </ul>
+          </div>
+        </details>
+
+      </div><!-- /.panel-scroll -->
+      <div class="feedback-bar" id="feedbackBar"></div>
+    </div><!-- /.panel-col -->
+
+  </main>
+
+  <footer class="page-footer" role="navigation"></footer>
+  <button class="btn-vol" id="muteBtn" onclick="toggleMute()">&#128266;</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="board-utils.js"></script>
+<script>
+/* =====================================================
+   KLOTZ (bughouse) — două table, echipe de câte doi.
+   Tabla 0 (afișată „Tabla 1"): albul = echipa A, negrul = echipa B.
+   Tabla 1 (afișată „Tabla 2"): albul = echipa B, negrul = echipa A.
+   Captura trece în rezerva partenerului (cealaltă tablă, culoarea opusă).
+   Pozițiile de pe table sunt ținute în chess.js; parașutarea = put + load(FEN).
+   Robotul: motor propriu (0x88) cu parașutări, alfa-beta + capturi la orizont.
+   ===================================================== */
+
+var KE = (function () {
+    var MATE = 100000, STOP = {}, MAXPLY = 14;
+    var VAL = [0, 100, 310, 330, 490, 920, 0];         // 1 pion 2 cal 3 nebun 4 turn 5 damă 6 rege
+    var HANDVAL = [0, 110, 290, 300, 440, 850];
+    var N_D = [33, 31, 18, 14, -33, -31, -18, -14], K_D = [1, -1, 16, -16, 15, 17, -15, -17];
+    var B_D = [15, 17, -15, -17], R_D = [1, -1, 16, -16];
+    var B = new Int8Array(128), side = 1, castle = 0, ep = -1, kpos = [0, 0];
+    var hand = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]];   // [alb, negru][tip]
+    var CMASK = new Uint8Array(128).fill(15);
+    CMASK[4] = 12; CMASK[0] = 13; CMASK[7] = 14; CMASK[116] = 3; CMASK[112] = 7; CMASK[119] = 11;
+    var uCap = new Int8Array(64), uCastle = new Uint8Array(64), uEp = new Int16Array(64);
+    var bufs = [], sBufs = [], nodes = 0, deadline = 0;
+
+    function attacked(sq, by) {
+        var p, t, i, d;
+        if (by === 1) { t = sq - 15; if (!(t & 0x88) && B[t] === 1) return true; t = sq - 17; if (!(t & 0x88) && B[t] === 1) return true; }
+        else { t = sq + 15; if (!(t & 0x88) && B[t] === -1) return true; t = sq + 17; if (!(t & 0x88) && B[t] === -1) return true; }
+        for (i = 0; i < 8; i++) {
+            t = sq + N_D[i]; if (!(t & 0x88) && B[t] === 2 * by) return true;
+            t = sq + K_D[i]; if (!(t & 0x88) && B[t] === 6 * by) return true;
+        }
+        for (i = 0; i < 4; i++) {
+            d = B_D[i]; t = sq + d;
+            while (!(t & 0x88)) { p = B[t]; if (p) { if (p === 3 * by || p === 5 * by) return true; break; } t += d; }
+            d = R_D[i]; t = sq + d;
+            while (!(t & 0x88)) { p = B[t]; if (p) { if (p === 4 * by || p === 5 * by) return true; break; } t += d; }
+        }
+        return false;
+    }
+    /* mutare = from | to<<7 | promo<<14 | flag<<17 ; flag 1 en passant, 2 rocadă, 4 pas dublu, 8 parașutare (from = tipul piesei) */
+    function gen(buf, capsOnly, dropMode) {
+        var n = 0, s = side, sq, p, t, d, i, ty, r, dirs;
+        for (sq = 0; sq < 120; sq++) {
+            if (sq & 0x88) { sq += 7; continue; }
+            p = B[sq]; if (!p || (p > 0) !== (s > 0)) continue;
+            ty = p * s;
+            if (ty === 1) {
+                var fw = 16 * s, last = s === 1 ? 6 : 1, start = s === 1 ? 1 : 6;
+                r = sq >> 4; t = sq + fw;
+                if (!B[t] && (!capsOnly || r === last)) {
+                    if (r === last) {
+                        buf[n++] = sq | t << 7 | 5 << 14;
+                        if (!capsOnly) { buf[n++] = sq | t << 7 | 2 << 14; buf[n++] = sq | t << 7 | 4 << 14; buf[n++] = sq | t << 7 | 3 << 14; }
+                    } else {
+                        buf[n++] = sq | t << 7;
+                        if (r === start && !B[t + fw]) buf[n++] = sq | (t + fw) << 7 | 4 << 17;
+                    }
+                }
+                for (i = 0; i < 2; i++) {
+                    t = sq + fw + (i ? 1 : -1); if (t & 0x88) continue;
+                    if (B[t] && (B[t] > 0) !== (s > 0)) {
+                        if (r === last) { buf[n++] = sq | t << 7 | 5 << 14; buf[n++] = sq | t << 7 | 2 << 14; buf[n++] = sq | t << 7 | 4 << 14; buf[n++] = sq | t << 7 | 3 << 14; }
+                        else buf[n++] = sq | t << 7;
+                    } else if (t === ep && !B[t]) buf[n++] = sq | t << 7 | 1 << 17;
+                }
+            } else if (ty === 2 || ty === 6) {
+                dirs = ty === 2 ? N_D : K_D;
+                for (i = 0; i < 8; i++) {
+                    t = sq + dirs[i]; if (t & 0x88) continue;
+                    if (!B[t]) { if (!capsOnly) buf[n++] = sq | t << 7; }
+                    else if ((B[t] > 0) !== (s > 0)) buf[n++] = sq | t << 7;
+                }
+            } else {
+                dirs = ty === 3 ? B_D : ty === 4 ? R_D : K_D;
+                for (i = 0; i < dirs.length; i++) {
+                    d = dirs[i]; t = sq + d;
+                    while (!(t & 0x88)) {
+                        if (!B[t]) { if (!capsOnly) buf[n++] = sq | t << 7; }
+                        else { if ((B[t] > 0) !== (s > 0)) buf[n++] = sq | t << 7; break; }
+                        t += d;
+                    }
+                }
+            }
+        }
+        if (!capsOnly) {
+            var o = s === 1 ? 0 : 112, en = -s;
+            if (B[o + 4] === 6 * s) {
+                if ((castle & (s === 1 ? 1 : 4)) && B[o + 7] === 4 * s && !B[o + 5] && !B[o + 6] &&
+                    !attacked(o + 4, en) && !attacked(o + 5, en) && !attacked(o + 6, en)) buf[n++] = (o + 4) | (o + 6) << 7 | 2 << 17;
+                if ((castle & (s === 1 ? 2 : 8)) && B[o] === 4 * s && !B[o + 1] && !B[o + 2] && !B[o + 3] &&
+                    !attacked(o + 4, en) && !attacked(o + 3, en) && !attacked(o + 2, en)) buf[n++] = (o + 4) | (o + 2) << 7 | 2 << 17;
+            }
+            var h = hand[s > 0 ? 0 : 1];
+            if (dropMode && h[1] + h[2] + h[3] + h[4] + h[5]) {
+                var ek = kpos[s > 0 ? 1 : 0], ekr = ek >> 4, ekf = ek & 7;
+                for (sq = 0; sq < 120; sq++) {
+                    if (sq & 0x88) { sq += 7; continue; }
+                    if (B[sq]) continue;
+                    r = sq >> 4;
+                    if (dropMode === 1) { var dr = r - ekr, df = (sq & 7) - ekf; if (dr < -2 || dr > 2 || df < -2 || df > 2) continue; }
+                    for (ty = 5; ty >= 1; ty--) {
+                        if (!h[ty] || (ty === 1 && (r === 0 || r === 7))) continue;
+                        buf[n++] = ty | sq << 7 | 8 << 17;
+                    }
+                }
+            }
+        }
+        return n;
+    }
+    function make(m, ply) {
+        var fr = m & 127, to = (m >> 7) & 127, pr = (m >> 14) & 7, fl = m >> 17, s = side;
+        uCastle[ply] = castle; uEp[ply] = ep; uCap[ply] = 0; ep = -1;
+        if (fl & 8) { B[to] = fr * s; hand[s > 0 ? 0 : 1][fr]--; }
+        else {
+            var p = B[fr];
+            if (fl & 1) { var cs = to - 16 * s; uCap[ply] = B[cs]; B[cs] = 0; } else uCap[ply] = B[to];
+            B[to] = pr ? pr * s : p; B[fr] = 0;
+            if (p * s === 6) {
+                kpos[s > 0 ? 0 : 1] = to;
+                if (fl & 2) { if (to === fr + 2) { B[fr + 1] = B[fr + 3]; B[fr + 3] = 0; } else { B[fr - 1] = B[fr - 4]; B[fr - 4] = 0; } }
+            }
+            if (fl & 4) ep = (fr + to) >> 1;
+            castle &= CMASK[fr] & CMASK[to];
+        }
+        side = -s;
+    }
+    function unmake(m, ply) {
+        side = -side;
+        var s = side, fr = m & 127, to = (m >> 7) & 127, pr = (m >> 14) & 7, fl = m >> 17;
+        castle = uCastle[ply]; ep = uEp[ply];
+        if (fl & 8) { B[to] = 0; hand[s > 0 ? 0 : 1][fr]++; return; }
+        var p = pr ? s : B[to];
+        B[fr] = p;
+        if (fl & 1) { B[to] = 0; B[to - 16 * s] = uCap[ply]; } else B[to] = uCap[ply];
+        if (p * s === 6) {
+            kpos[s > 0 ? 0 : 1] = fr;
+            if (fl & 2) { if (to === fr + 2) { B[fr + 3] = B[fr + 1]; B[fr + 1] = 0; } else { B[fr - 4] = B[fr - 1]; B[fr - 1] = 0; } }
+        }
+    }
+    function kingDanger(s) {            // penalizare pentru partea s
+        var k = kpos[s > 0 ? 0 : 1], i, t, att = 0, open = 0, shield = 0;
+        var oh = hand[s > 0 ? 1 : 0], ohv = oh[1] + 3 * oh[2] + 3 * oh[3] + 5 * oh[4] + 9 * oh[5];
+        for (i = 0; i < 8; i++) {
+            t = k + K_D[i]; if (t & 0x88) continue;
+            if (attacked(t, -s)) att++;
+            if (!B[t]) open++; else if ((B[t] > 0) === (s > 0)) shield++;
+        }
+        var r = k >> 4, pen = att * 16 + open * (3 + ohv * 1.5) - shield * 6;
+        if ((s > 0 ? r : 7 - r) > 1) pen += 30;
+        return pen;
+    }
+    function evaluate() {
+        var sc = 0, sq, p, ty, sg, v, f, r;
+        for (sq = 0; sq < 120; sq++) {
+            if (sq & 0x88) { sq += 7; continue; }
+            p = B[sq]; if (!p) continue;
+            sg = p > 0 ? 1 : -1; ty = p * sg; v = VAL[ty]; f = sq & 7; r = sq >> 4;
+            if (ty === 2 || ty === 3) v += 14 - 4 * (Math.abs(3.5 - f) + Math.abs(3.5 - r));
+            else if (ty === 1) v += 5 * (sg > 0 ? r - 1 : 6 - r);
+            sc += sg * v;
+        }
+        for (ty = 1; ty <= 5; ty++) sc += HANDVAL[ty] * (hand[0][ty] - hand[1][ty]);
+        sc -= kingDanger(1); sc += kingDanger(-1);
+        return side * sc;
+    }
+    /* mutările legale la adâncimea ply, cu note pentru ordonare (mat/șah, capturi, promovări, parașutări lângă rege) */
+    function genLegal(ply, capsOnly, dropMode) {
+        var buf = bufs[ply] || (bufs[ply] = new Int32Array(1024)), sc = sBufs[ply] || (sBufs[ply] = new Int32Array(1024));
+        var n = gen(buf, capsOnly, dropMode), k = 0, s = side, mi = s > 0 ? 0 : 1, oi = 1 - mi;
+        for (var i = 0; i < n; i++) {
+            var m = buf[i];
+            make(m, ply);
+            if (attacked(kpos[mi], -s)) { unmake(m, ply); continue; }
+            var v = 0, fl = m >> 17, to = (m >> 7) & 127, ek = kpos[oi];
+            if (attacked(ek, s)) v += 6000;
+            if (fl & 8) {
+                var dd = Math.max(Math.abs((to >> 4) - (ek >> 4)), Math.abs((to & 7) - (ek & 7)));
+                v += 1500 - 250 * dd - (VAL[m & 7] >> 3);
+            } else {
+                var cap = uCap[ply];
+                if (cap) { var at = B[to] < 0 ? -B[to] : B[to]; v += 10000 + 10 * VAL[cap < 0 ? -cap : cap] - VAL[at] / 10; }
+                if ((m >> 14) & 7) v += 8000 + VAL[(m >> 14) & 7];
+            }
+            unmake(m, ply);
+            buf[k] = m; sc[k] = v; k++;
+        }
+        return k;
+    }
+    function pick(buf, sc, i, n) {
+        var bi = i;
+        for (var j = i + 1; j < n; j++) if (sc[j] > sc[bi]) bi = j;
+        if (bi !== i) { var t = buf[i]; buf[i] = buf[bi]; buf[bi] = t; var u = sc[i]; sc[i] = sc[bi]; sc[bi] = u; }
+    }
+    function handCount(s) { var h = hand[s > 0 ? 0 : 1]; return h[1] + h[2] + h[3] + h[4] + h[5]; }
+    function qsearch(alpha, beta, ply, qd) {
+        if ((++nodes & 1023) === 0 && Date.now() > deadline) throw STOP;
+        var stand = evaluate();
+        if (stand >= beta) return stand;
+        if (stand > alpha) alpha = stand;
+        if (qd >= 4 || ply >= MAXPLY) return stand;
+        var n = genLegal(ply, true, 0), buf = bufs[ply], sc = sBufs[ply];
+        for (var i = 0; i < n; i++) {
+            pick(buf, sc, i, n);
+            var m = buf[i];
+            make(m, ply);
+            var v = -qsearch(-beta, -alpha, ply + 1, qd + 1);
+            unmake(m, ply);
+            if (v > alpha) { alpha = v; if (alpha >= beta) return alpha; }
+        }
+        return alpha;
+    }
+    function search(depth, alpha, beta, ply) {
+        if ((++nodes & 1023) === 0 && Date.now() > deadline) throw STOP;
+        var s = side, chk = attacked(kpos[s > 0 ? 0 : 1], -s);
+        if (ply >= MAXPLY) return evaluate();
+        if (depth <= 0 && (!chk || depth < -2)) return qsearch(alpha, beta, ply, 0);
+        var n = genLegal(ply, false, chk ? 2 : 1);
+        if (n === 0 && !chk && handCount(s)) n = genLegal(ply, false, 2);
+        if (n === 0) return chk ? -MATE + ply : 0;
+        var buf = bufs[ply], sc = sBufs[ply], best = -MATE - 1;
+        for (var i = 0; i < n; i++) {
+            pick(buf, sc, i, n);
+            var m = buf[i];
+            make(m, ply);
+            var v = -search(depth - 1, -beta, -alpha, ply + 1);
+            unmake(m, ply);
+            if (v > best) best = v;
+            if (v > alpha) { alpha = v; if (alpha >= beta) break; }
+        }
+        return best;
+    }
+    var TYPES = 'pnbrq';
+    function load(fen, hands) {
+        var parts = fen.split(' '), rows = parts[0].split('/'), map = { p: 1, n: 2, b: 3, r: 4, q: 5, k: 6 };
+        B.fill(0);
+        for (var ri = 0; ri < 8; ri++) {
+            var f = 0, rank = 7 - ri;
+            for (var c = 0; c < rows[ri].length; c++) {
+                var ch = rows[ri][c];
+                if (ch >= '1' && ch <= '8') { f += +ch; continue; }
+                var lo = ch.toLowerCase(), sg = ch === lo ? -1 : 1, sq = rank * 16 + f;
+                B[sq] = map[lo] * sg;
+                if (lo === 'k') kpos[sg > 0 ? 0 : 1] = sq;
+                f++;
+            }
+        }
+        side = parts[1] === 'b' ? -1 : 1;
+        var cs = parts[2] || '-';
+        castle = (cs.indexOf('K') >= 0 ? 1 : 0) | (cs.indexOf('Q') >= 0 ? 2 : 0) | (cs.indexOf('k') >= 0 ? 4 : 0) | (cs.indexOf('q') >= 0 ? 8 : 0);
+        ep = (parts[3] && parts[3] !== '-') ? (parseInt(parts[3][1], 10) - 1) * 16 + (parts[3].charCodeAt(0) - 97) : -1;
+        for (var ci = 0; ci < 2; ci++) {
+            var hh = hands ? hands[ci ? 'b' : 'w'] : null;
+            for (var ty = 1; ty <= 5; ty++) hand[ci][ty] = hh ? (hh[TYPES[ty - 1]] || 0) : 0;
+        }
+    }
+    function alg(sq) { return 'abcdefgh'[sq & 7] + ((sq >> 4) + 1); }
+    function toObj(m) {
+        var fl = m >> 17, to = alg((m >> 7) & 127);
+        if (fl & 8) return { drop: TYPES[(m & 7) - 1], to: to };
+        var pr = (m >> 14) & 7, o = { from: alg(m & 127), to: to };
+        if (pr) o.promotion = TYPES[pr - 1];
+        return o;
+    }
+    /* nivel: 'pui' | 'manz' | 'dragon' ; ms = timpul maxim de gândire */
+    function best(fen, hands, level, ms) {
+        load(fen, hands);
+        var n = genLegal(0, false, 2);
+        if (!n) return null;
+        var root = Array.prototype.slice.call(bufs[0], 0, n), rootSc = Array.prototype.slice.call(sBufs[0], 0, n);
+        var t0 = Date.now();
+        if (level === 'pui' && Math.random() < 0.45) {
+            var rm = toObj(root[Math.floor(Math.random() * n)]); rm.depth = 0; rm.ms = 0; return rm;
+        }
+        // ordonare inițială după note
+        var idx = root.map(function (m, i) { return i; }).sort(function (a, b) { return rootSc[b] - rootSc[a]; });
+        root = idx.map(function (i) { return root[i]; });
+        var noise = level === 'pui' ? 90 : level === 'manz' ? 45 : 6, jit = {};
+        root.forEach(function (m) { jit[m] = Math.random() * noise; });
+        var maxD = level === 'dragon' ? 4 : level === 'manz' ? 2 : 1;
+        nodes = 0;
+        var bestM = root[0], bestScore = 0, depthDone = 0;
+        for (var d = 1; d <= maxD; d++) {
+            deadline = d === 1 ? t0 + 4 * ms : t0 + ms;
+            var alpha = -MATE - 1, ib = bestM, is = -Infinity, iv = 0;
+            try {
+                var bi = root.indexOf(bestM); if (bi > 0) { root.splice(bi, 1); root.unshift(bestM); }
+                for (var i = 0; i < root.length; i++) {
+                    make(root[i], 0);
+                    var v = -search(d - 1, -MATE - 1, -(alpha - noise), 1);
+                    unmake(root[i], 0);
+                    var sv = v + (Math.abs(v) > MATE - 100 ? 0 : jit[root[i]]);
+                    if (sv > is) { is = sv; ib = root[i]; iv = v; }
+                    if (v > alpha) alpha = v;
+                }
+            } catch (e) {
+                if (e !== STOP) throw e;
+                load(fen, hands);
+                break;
+            }
+            bestM = ib; bestScore = iv; depthDone = d;
+            if (bestScore > MATE - 100) break;
+            if (Date.now() - t0 > ms * 0.45) break;       // nu mai începe o iterație care nu se termină
+        }
+        var res = toObj(bestM);
+        res.score = bestScore; res.depth = depthDone; res.nodes = nodes; res.ms = Date.now() - t0;
+        return res;
+    }
+    /* pentru verificări: numărul de mutări legale obișnuite (fără parașutări) */
+    function countNormal(fen) { load(fen, null); return genLegal(0, false, 0); }
+    return { best: best, countNormal: countNormal };
+})();
+
+/* ====== ROBOȚII ====== */
+var ROBOTS = [
+    { id: 'bip',    name: 'Bip',    level: 'pui',    color: '#f4c430', shape: 34, eyes: 'dots',   mouth: 'smile', ant: 'ball',   cheeks: true },
+    { id: 'zuzu',   name: 'Zuzu',   level: 'pui',    color: '#f28bb3', shape: 34, eyes: 'big',    mouth: 'o',     ant: 'heart',  cheeks: true },
+    { id: 'rotita', name: 'Rotiță', level: 'manz',   color: '#5cb85c', shape: 18, eyes: 'gear',   mouth: 'grin',  ant: 'gear' },
+    { id: 'clant',  name: 'Clanț',  level: 'manz',   color: '#f08a24', shape: 6,  eyes: 'visor',  mouth: 'teeth', ant: 'spring' },
+    { id: 'volt',   name: 'Volt',   level: 'dragon', color: '#3a8ee6', shape: 18, eyes: 'narrow', mouth: 'flat',  ant: 'bolt' },
+    { id: 'titan',  name: 'Titan',  level: 'dragon', color: '#7a4fc4', shape: 6,  eyes: 'glow',   mouth: 'grill', ant: 'double' }
+];
+var LEVELS = {
+    pui:    { label: 'Pui de găină', play: 'joacă ușor',  ms: 150, delay: [2600, 3600] },
+    manz:   { label: 'Mânz',         play: 'joacă mediu', ms: 400, delay: [1700, 2500] },
+    dragon: { label: 'Dragon',       play: 'joacă greu',  ms: 800, delay: [900, 1400] }
+};
+function robotById(id) { for (var i = 0; i < ROBOTS.length; i++) if (ROBOTS[i].id === id) return ROBOTS[i]; return null; }
+
+var DK = '#2a2a3e';
+function robotFace(r) {
+    var s = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">';
+    // antena
+    if (r.ant === 'double') {
+        s += '<line x1="34" y1="24" x2="28" y2="8" stroke="' + DK + '" stroke-width="3"/><circle cx="28" cy="8" r="5" fill="#ff5a5a" stroke="' + DK + '" stroke-width="2"/>';
+        s += '<line x1="66" y1="24" x2="72" y2="8" stroke="' + DK + '" stroke-width="3"/><circle cx="72" cy="8" r="5" fill="#ff5a5a" stroke="' + DK + '" stroke-width="2"/>';
+    } else {
+        s += '<line x1="50" y1="24" x2="50" y2="10" stroke="' + DK + '" stroke-width="3"/>';
+        if (r.ant === 'ball') s += '<circle cx="50" cy="8" r="6" fill="#ff5a5a" stroke="' + DK + '" stroke-width="2"/>';
+        if (r.ant === 'heart') s += '<path d="M50 14 C40 6 40 -1 50 5 C60 -1 60 6 50 14 Z" fill="#e8315b" stroke="' + DK + '" stroke-width="2"/>';
+        if (r.ant === 'gear') s += '<circle cx="50" cy="8" r="6" fill="#ffd34d" stroke="' + DK + '" stroke-width="3" stroke-dasharray="3 2"/>';
+        if (r.ant === 'spring') s += '<path d="M44 12 L56 9 L44 6 L56 3" fill="none" stroke="' + DK + '" stroke-width="3"/>';
+        if (r.ant === 'bolt') s += '<path d="M53 0 L43 11 L50 11 L46 20 L58 7 L51 7 Z" fill="#ffd400" stroke="' + DK + '" stroke-width="1.5"/>';
+    }
+    // urechi, cap, placa feței
+    s += '<rect x="5" y="44" width="11" height="22" rx="4" fill="#9aa3b5" stroke="' + DK + '" stroke-width="2.5"/>';
+    s += '<rect x="84" y="44" width="11" height="22" rx="4" fill="#9aa3b5" stroke="' + DK + '" stroke-width="2.5"/>';
+    s += '<rect x="14" y="22" width="72" height="68" rx="' + r.shape + '" fill="' + r.color + '" stroke="' + DK + '" stroke-width="3"/>';
+    s += '<rect x="23" y="36" width="54" height="40" rx="11" fill="#fff" fill-opacity="0.88"/>';
+    // ochi
+    if (r.eyes === 'dots') s += '<circle cx="38" cy="51" r="5.5" fill="' + DK + '"/><circle cx="62" cy="51" r="5.5" fill="' + DK + '"/>';
+    if (r.eyes === 'big') s += '<circle cx="37" cy="50" r="9" fill="#fff" stroke="' + DK + '" stroke-width="2"/><circle cx="63" cy="50" r="9" fill="#fff" stroke="' + DK + '" stroke-width="2"/><circle cx="39" cy="51" r="4.5" fill="' + DK + '"/><circle cx="65" cy="51" r="4.5" fill="' + DK + '"/>';
+    if (r.eyes === 'gear') s += '<circle cx="37" cy="50" r="7" fill="none" stroke="' + DK + '" stroke-width="3.5" stroke-dasharray="3 2"/><circle cx="37" cy="50" r="2.5" fill="' + DK + '"/><circle cx="63" cy="50" r="7" fill="none" stroke="' + DK + '" stroke-width="3.5" stroke-dasharray="3 2"/><circle cx="63" cy="50" r="2.5" fill="' + DK + '"/>';
+    if (r.eyes === 'visor') s += '<rect x="28" y="43" width="44" height="13" rx="6" fill="' + DK + '"/><circle cx="39" cy="49.5" r="3.5" fill="#7ef9ff"/><circle cx="61" cy="49.5" r="3.5" fill="#7ef9ff"/>';
+    if (r.eyes === 'narrow') s += '<rect x="29" y="47" width="16" height="6" rx="3" fill="' + DK + '"/><rect x="55" y="47" width="16" height="6" rx="3" fill="' + DK + '"/><path d="M29 43 L45 45 M71 43 L55 45" stroke="' + DK + '" stroke-width="2.5"/>';
+    if (r.eyes === 'glow') s += '<circle cx="37" cy="50" r="7" fill="#7ef9ff" stroke="' + DK + '" stroke-width="2.5"/><circle cx="63" cy="50" r="7" fill="#7ef9ff" stroke="' + DK + '" stroke-width="2.5"/>';
+    // gura
+    if (r.mouth === 'smile') s += '<path d="M40 63 Q50 72 60 63" fill="none" stroke="' + DK + '" stroke-width="3" stroke-linecap="round"/>';
+    if (r.mouth === 'o') s += '<circle cx="50" cy="66" r="4" fill="' + DK + '"/>';
+    if (r.mouth === 'grin') s += '<path d="M37 61 Q50 74 63 61 Z" fill="' + DK + '"/>';
+    if (r.mouth === 'teeth') s += '<rect x="37" y="61" width="26" height="9" rx="2" fill="#fff" stroke="' + DK + '" stroke-width="2"/><path d="M45.5 61 V70 M54.5 61 V70" stroke="' + DK + '" stroke-width="2"/>';
+    if (r.mouth === 'flat') s += '<path d="M40 66 H60" stroke="' + DK + '" stroke-width="3" stroke-linecap="round"/>';
+    if (r.mouth === 'grill') s += '<rect x="36" y="61" width="28" height="9" rx="2" fill="' + DK + '"/><path d="M43 61 V70 M50 61 V70 M57 61 V70" stroke="#7ef9ff" stroke-width="1.5"/>';
+    if (r.cheeks) s += '<circle cx="29" cy="63" r="4" fill="#ff8fa3" opacity="0.7"/><circle cx="71" cy="63" r="4" fill="#ff8fa3" opacity="0.7"/>';
+    return s + '</svg>';
+}
+function kidFace(team, idx) {
+    var hair = ['#5a3825', '#e0b03a', '#2b2b2b', '#b5542a'][idx % 4], shirt = team === 'A' ? '#1a3a6b' : '#b03a2e';
+    return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+        '<path d="M16 100 Q16 74 50 74 Q84 74 84 100 Z" fill="' + shirt + '"/>' +
+        '<circle cx="50" cy="46" r="28" fill="#f6d2b0" stroke="' + DK + '" stroke-width="2.5"/>' +
+        '<path d="M22 44 Q22 14 50 16 Q78 14 78 44 Q66 30 50 30 Q34 30 22 44 Z" fill="' + hair + '"/>' +
+        '<circle cx="40" cy="48" r="3.5" fill="' + DK + '"/><circle cx="60" cy="48" r="3.5" fill="' + DK + '"/>' +
+        '<path d="M40 58 Q50 66 60 58" fill="none" stroke="' + DK + '" stroke-width="3" stroke-linecap="round"/>' +
+        '<circle cx="33" cy="57" r="3.5" fill="#ff8fa3" opacity="0.6"/><circle cx="67" cy="57" r="3.5" fill="#ff8fa3" opacity="0.6"/></svg>';
+}
+
+/* ====== SUNETE ====== */
+var UI = typeof document !== 'undefined' && typeof window !== 'undefined' && !!document.body;
+var soundMuted = false, sndMove = null, sndCapture = null, sndMate = null;
+if (UI) { sndMove = new Audio('Sounds/Move.mp3'); sndCapture = new Audio('Sounds/Capture.mp3'); sndMate = new Audio('Sounds/Mate.mp3'); }
+function playSound(s) { if (!s || soundMuted) return; try { s.currentTime = 0; s.play().catch(function () {}); } catch (e) {} }
+function toggleMute() { soundMuted = !soundMuted; document.getElementById('muteBtn').textContent = soundMuted ? '🔇' : '🔊'; }
+
+/* ====== STAREA ====== */
+var TYPES = ['p', 'n', 'b', 'r', 'q'];
+var PIECE_RO = { k: 'Regele', p: 'Pionul', q: 'Dama', r: 'Turnul', b: 'Nebunul', n: 'Calul' };
+var PIECE_ACC = { k: 'regele', p: 'pionul', q: 'dama', r: 'turnul', b: 'nebunul', n: 'calul' };
+var MAX_PLIES = 300;                 // 150 de mutări ale fiecărei părți pe o tablă = remiză
+var setup = { mode: '2k', names: ['', '', '', ''], partner: null, opp0: null, opp1: null, secs: 0 };
+var G = null;                        // meciul curent
+var boardsCB = [null, null];         // tablele chessboard.js
+var sel = [null, null];              // selecția pe fiecare tablă: {sq} sau {drop}
+var promoPending = [null, null];
+var clockTick = null;
+
+function teamOf(b, c) { return (b === 0) === (c === 'w') ? 'A' : 'B'; }
+function other(c) { return c === 'w' ? 'b' : 'w'; }
+function emptyHand() { return { p: 0, n: 0, b: 0, r: 0, q: 0 }; }
+
+/* jucătorii din setări: players[b][c] = {kind, name, robot, team, kid} */
+function buildPlayers(st) {
+    function kid(i, team) { return { kind: 'human', name: (st.names[i] || '').trim() || ('Copilul ' + (i + 1)), team: team, kid: i }; }
+    function bot(id, team) { var r = robotById(id); return { kind: 'robot', name: r.name, robot: r, team: team }; }
+    var P = [{}, {}];
+    if (st.mode === '4k') {
+        P[0].w = kid(0, 'A'); P[1].b = kid(1, 'A'); P[0].b = kid(2, 'B'); P[1].w = kid(3, 'B');
+    } else {
+        P[0].w = kid(0, 'A');
+        P[1].b = st.mode === '2k' ? kid(1, 'A') : bot(st.partner, 'A');
+        P[0].b = bot(st.opp0, 'B');
+        P[1].w = bot(st.opp1, 'B');
+    }
+    return P;
+}
+
+function newGameState(players, secs) {
+    return {
+        players: players,
+        boards: [0, 1].map(function () { return { chess: new Chess(), promoted: {}, last: null, plies: 0 }; }),
+        hands: [{ w: emptyHand(), b: emptyHand() }, { w: emptyHand(), b: emptyHand() }],
+        clocks: [{ w: secs, b: secs }, { w: secs, b: secs }],
+        secs: secs, running: true, over: false, result: null,
+        robotTimers: [null, null], log: []
+    };
+}
+
+/* ====== REGULILE ====== */
+function sqName(f, r) { return 'abcdefgh'[f] + (r + 1); }
+
+/* parașutare legală? întoarce null sau motivul */
+function dropProblem(b, type, sq) {
+    var bd = G.boards[b], ch = bd.chess, c = ch.turn();
+    if (!G.hands[b][c][type]) return 'Nu ai ' + PIECE_ACC[type] + ' în rezervă.';
+    if (ch.get(sq)) return 'Poți parașuta doar pe un pătrat liber.';
+    if (type === 'p' && (sq[1] === '1' || sq[1] === '8')) return 'Pionii nu se parașutează pe primul sau pe ultimul rând.';
+    ch.put({ type: type, color: c }, sq);
+    var chk = ch.in_check();
+    ch.remove(sq);
+    if (chk) return 'Regele tău ar rămâne în șah. Parașutarea trebuie să oprească șahul.';
+    return null;
+}
+function hasLegalDrop(b) {
+    var ch = G.boards[b].chess, c = ch.turn(), h = G.hands[b][c], chk = ch.in_check();
+    var types = TYPES.filter(function (t) { return h[t] > 0; });
+    if (!types.length) return false;
+    for (var f = 0; f < 8; f++) for (var r = 0; r < 8; r++) {
+        var sq = sqName(f, r);
+        if (ch.get(sq)) continue;
+        for (var i = 0; i < types.length; i++) {
+            if (types[i] === 'p' && (r === 0 || r === 7)) continue;
+            if (!chk) return true;
+            ch.put({ type: types[i], color: c }, sq);
+            var still = ch.in_check();
+            ch.remove(sq);
+            if (!still) return true;
+        }
+    }
+    return false;
+}
+
+/* aplică o mutare (obișnuită sau parașutare) pe tabla b; întoarce descrierea sau null */
+function applyMove(b, mv) {
+    var bd = G.boards[b], ch = bd.chess, c = ch.turn(), info;
+    if (mv.drop) {
+        if (dropProblem(b, mv.drop, mv.to)) return null;
+        ch.put({ type: mv.drop, color: c }, mv.to);
+        var parts = ch.fen().split(' ');
+        parts[1] = other(c); parts[3] = '-'; parts[4] = '0';
+        if (c === 'b') parts[5] = String(parseInt(parts[5], 10) + 1);
+        if (!ch.load(parts.join(' '))) { ch.remove(mv.to); return null; }
+        G.hands[b][c][mv.drop]--;
+        info = { b: b, color: c, drop: mv.drop, to: mv.to, captured: null };
+        bd.last = [mv.to];
+    } else {
+        var m = ch.move({ from: mv.from, to: mv.to, promotion: mv.promotion || 'q' });
+        if (!m) return null;
+        var pr = bd.promoted, capType = null;
+        if (m.captured) {
+            capType = (m.flags.indexOf('e') === -1 && pr[m.to]) ? 'p' : m.captured;
+            var partnerBoard = 1 - b, partnerColor = other(c);
+            G.hands[partnerBoard][partnerColor][capType]++;
+        }
+        delete pr[m.to];
+        if (pr[m.from]) { delete pr[m.from]; pr[m.to] = true; }
+        if (m.flags.indexOf('p') !== -1) pr[m.to] = true;
+        info = { b: b, color: c, from: m.from, to: m.to, san: m.san, captured: m.captured || null, capType: capType, promotion: m.promotion || null };
+        bd.last = [m.from, m.to];
+    }
+    bd.plies++;
+    G.log.push(info);
+    return info;
+}
+
+/* după o mutare pe tabla b: mat / pat / limită */
+function boardOutcome(b) {
+    var bd = G.boards[b], ch = bd.chess, c = ch.turn();
+    var hasMove = ch.moves().length > 0 || hasLegalDrop(b);
+    if (!hasMove) {
+        if (ch.in_check()) return { type: 'mate', board: b, winner: teamOf(b, other(c)), loserColor: c };
+        return { type: 'stalemate', board: b };
+    }
+    if (bd.plies >= MAX_PLIES) return { type: 'limit', board: b };
+    return null;
+}
+
+/* ====== ROBOTUL ====== */
+function robotChoose(b) {
+    var ch = G.boards[b].chess, c = ch.turn(), pl = G.players[b][c], lv = LEVELS[pl.robot.level];
+    var res = KE.best(ch.fen(), G.hands[b], pl.robot.level, lv.ms);
+    if (!res) return null;
+    return res;
+}
+function scheduleRobot(b) {
+    if (!G || G.over) return;
+    var c = G.boards[b].chess.turn(), pl = G.players[b][c];
+    if (pl.kind !== 'robot' || G.robotTimers[b]) return;
+    var d = LEVELS[pl.robot.level].delay, wait = d[0] + Math.random() * (d[1] - d[0]);
+    var g = G;
+    G.robotTimers[b] = setTimeout(function () {
+        if (g !== G) return;
+        G.robotTimers[b] = null;
+        robotPlay(b);
+    }, wait);
+}
+function robotPlay(b) {
+    if (!G || G.over) return;
+    var c = G.boards[b].chess.turn();
+    if (G.players[b][c].kind !== 'robot') return;
+    var res = robotChoose(b), info = res ? applyMove(b, res) : null;
+    if (!info) {
+        // rezervă de siguranță: o mutare legală oarecare
+        var ms = G.boards[b].chess.moves({ verbose: true });
+        G.engineMisses = (G.engineMisses || 0) + 1;
+        if (ms.length) info = applyMove(b, { from: ms[0].from, to: ms[0].to, promotion: 'q' });
+    }
+    if (info) afterMove(b, info);
+}
+
+/* ====== DESFĂȘURAREA ====== */
+function afterMove(b, info) {
+    var out = boardOutcome(b);
+    if (UI) {
+        renderBoard(b); renderBars(); updateCheckHL(b);
+        var mate = out && out.type === 'mate';
+        playSound(mate ? sndMate : info.captured ? sndCapture : sndMove);
+        if (info.captured) showCaptureNote(b, info);
+        else setBoardMsg(b, '');
+    }
+    if (out) { finishMatch(out); return; }
+    scheduleRobot(b);
+}
+
+function finishMatch(out) {
+    G.over = true; G.running = false; G.result = out;
+    [0, 1].forEach(function (b) { if (G.robotTimers[b]) { clearTimeout(G.robotTimers[b]); G.robotTimers[b] = null; } });
+    stopClock();
+    if (!UI) return;
+    sel = [null, null]; promoPending = [null, null];
+    [0, 1].forEach(function (b) { clearSelHL(b); hidePromo(b); });
+    renderBars();
+    var box = document.getElementById('endBox'), title, reason, faces = '';
+    box.className = '';
+    if (out.type === 'mate' || out.type === 'time') {
+        var t = out.winner, names = teamNames(t);
+        title = 'Echipa lui ' + names[0] + ' și ' + names[1] + ' câștigă.';
+        box.className = t === 'B' ? 'team-b' : '';
+        faces = teamFaces(t);
+        var loser = G.players[out.board][out.loserColor];
+        if (out.type === 'mate') {
+            reason = 'Mat pe tabla ' + (out.board + 1) + ': regele ' + (out.loserColor === 'w' ? 'alb' : 'negru') + ' al lui ' + loser.name + ' nu mai are scăpare.';
+            var k = findKing(out.board, out.loserColor);
+            if (k) $(boardSel(out.board) + ' .square-' + k).addClass('highlight-check');
+        } else {
+            reason = 'Timpul lui ' + loser.name + ' (tabla ' + (out.board + 1) + ') s-a terminat.';
+        }
+        setStatus(title + '<br>' + reason, 'ok');
+    } else {
+        box.className = 'draw';
+        title = 'Remiză.';
+        reason = out.type === 'stalemate'
+            ? 'Pat pe tabla ' + (out.board + 1) + ': jucătorul la mutare nu este în șah, dar nu are nicio mutare și nicio piesă de parașutat.'
+            : 'Pe tabla ' + (out.board + 1) + ' s-au făcut 150 de mutări ale fiecărei părți.';
+        setStatus(title + ' ' + reason, 'draw');
+    }
+    document.getElementById('endTitle').textContent = title;
+    document.getElementById('endFaces').innerHTML = faces;
+    document.getElementById('endReason').textContent = reason;
+    box.style.display = '';
+    setTimeout(function () { playSound(sndMate); }, 200);
+}
+function teamMembers(t) {
+    return t === 'A' ? [G.players[0].w, G.players[1].b] : [G.players[0].b, G.players[1].w];
+}
+function teamNames(t) { return teamMembers(t).map(function (p) { return p.name; }); }
+function faceOf(p) { return p.kind === 'robot' ? robotFace(p.robot) : kidFace(p.team, p.kid); }
+function teamFaces(t) { return teamMembers(t).map(faceOf).join(''); }
+function findKing(b, c) {
+    var ch = G.boards[b].chess;
+    for (var f = 0; f < 8; f++) for (var r = 0; r < 8; r++) {
+        var p = ch.get(sqName(f, r));
+        if (p && p.type === 'k' && p.color === c) return sqName(f, r);
+    }
+    return null;
+}
+
+/* ====== CEASUL ====== */
+function startClock() {
+    stopClock();
+    if (!G || !G.secs) return;
+    var lastT = Date.now(), acc = [{ w: 0, b: 0 }, { w: 0, b: 0 }];
+    clockTick = setInterval(function () {
+        if (!G || G.over) { stopClock(); return; }
+        var now = Date.now(), dt = now - lastT; lastT = now;
+        for (var b = 0; b < 2; b++) {
+            var c = G.boards[b].chess.turn();
+            if (promoPending[b]) continue;
+            acc[b][c] += dt;
+            while (acc[b][c] >= 1000) { acc[b][c] -= 1000; G.clocks[b][c]--; }
+            if (G.clocks[b][c] <= 0) {
+                G.clocks[b][c] = 0; renderBars();
+                finishMatch({ type: 'time', board: b, loserColor: c, winner: teamOf(b, other(c)) });
+                return;
+            }
+        }
+        renderBars();
+    }, 200);
+}
+function stopClock() { if (clockTick) { clearInterval(clockTick); clockTick = null; } }
+function fmtClock(s) { var m = Math.floor(s / 60), ss = s % 60; return m + ':' + (ss < 10 ? '0' : '') + ss; }
+
+/* ====== AFIȘAREA ====== */
+var PIECE_CDN = 'https://lichess1.org/assets/piece/caliente/';
+var board = null;                    // tabla 1 (folosită și de board-utils.js pentru adnotări)
+function boardSel(b) { return b === 0 ? '#board' : '#board2'; }
+function bottomColor(b) { return b === 0 ? 'w' : 'b'; }
+function colorWord(c) { return c === 'w' ? 'albul' : 'negrul'; }
+
+function setStatus(html, cls) {
+    var el = document.getElementById('status-box');
+    el.innerHTML = html; el.className = cls || '';
+}
+function setBoardMsg(b, msg, warn) {
+    var el = document.getElementById('bmsg' + b);
+    if (!el) return;
+    el.textContent = msg || ''; el.className = 'bmsg' + (warn ? ' warn' : '');
+}
+function renderBoard(b) {
+    if (!boardsCB[b] || !G) return;
+    var bd = G.boards[b];
+    boardsCB[b].position(bd.chess.fen(), false);
+    var $b = $(boardSel(b));
+    $b.find('.highlight-last').removeClass('highlight-last');
+    (bd.last || []).forEach(function (sq) { $b.find('.square-' + sq).addClass('highlight-last'); });
+    if (b === 0 && window._annRender) window._annRender();
+}
+function updateCheckHL(b) {
+    var $b = $(boardSel(b));
+    $b.find('.highlight-check').removeClass('highlight-check');
+    var ch = G.boards[b].chess;
+    if (!ch.in_check()) return;
+    var k = findKing(b, ch.turn());
+    if (k) $b.find('.square-' + k).addClass('highlight-check');
+}
+function clearSelHL(b) {
+    $(boardSel(b)).find('.highlight-selected, .highlight-legal, .highlight-capture')
+        .removeClass('highlight-selected highlight-legal highlight-capture');
+}
+function showMoveHL(b, sq) {
+    clearSelHL(b);
+    var $b = $(boardSel(b));
+    $b.find('.square-' + sq).addClass('highlight-selected');
+    G.boards[b].chess.moves({ square: sq, verbose: true }).forEach(function (m) {
+        var cap = m.flags.indexOf('c') !== -1 || m.flags.indexOf('e') !== -1;
+        $b.find('.square-' + m.to).addClass(cap ? 'highlight-capture' : 'highlight-legal');
+    });
+}
+function showDropHL(b, type) {
+    clearSelHL(b);
+    var $b = $(boardSel(b));
+    for (var f = 0; f < 8; f++) for (var r = 0; r < 8; r++) {
+        var sq = sqName(f, r);
+        if (!dropProblem(b, type, sq)) $b.find('.square-' + sq).addClass('highlight-legal');
+    }
+}
+function flashWrong(b, sq) {
+    if (!sq) return;
+    var el = $(boardSel(b)).find('.square-' + sq);
+    el.addClass('sq-wrong');
+    setTimeout(function () { el.removeClass('sq-wrong'); }, 600);
+}
+
+var barCache = {};
+function barHTML(b, c) {
+    var p = G.players[b][c], ch = G.boards[b].chess, turn = ch.turn(), active = !G.over && turn === c;
+    var h = G.hands[b][c], canDrop = active && p.kind === 'human' && !promoPending[b];
+    var html = '<div class="pface">' + faceOf(p) + '</div><div class="pinfo"><div class="pname">' + escapeHtml(p.name) + '</div>' +
+        '<div class="pteam">Echipa ' + p.team + ' · ' + colorWord(c) + (active && p.kind === 'robot' ? ' · se gândește' : active ? ' · mută' : '') + '</div></div><div class="pres">';
+    TYPES.forEach(function (t) {
+        var n = h[t], cls = 'rpiece' + (n ? '' : ' zero') + (n && canDrop ? ' can' : '') + (sel[b] && sel[b].drop === t && turn === c ? ' sel' : '');
+        html += '<div class="' + cls + '" data-b="' + b + '" data-c="' + c + '" data-t="' + t + '" title="' + PIECE_RO[t] + ' în rezervă: ' + n + '">' +
+            '<img src="' + PIECE_CDN + c + t.toUpperCase() + '.svg" alt=""><span class="cnt">' + n + '</span></div>';
+    });
+    html += '</div><div class="pclock' + (G.secs && G.clocks[b][c] <= 15 ? ' low' : '') + '">' + (G.secs ? fmtClock(G.clocks[b][c]) : '') + '</div>';
+    return { html: html, cls: 'pbar' + (p.team === 'B' ? ' team-b' : '') + (active ? ' active' : '') };
+}
+function renderBars() {
+    if (!G) return;
+    [0, 1].forEach(function (b) {
+        var bot = bottomColor(b);
+        [['t', other(bot)], ['b', bot]].forEach(function (x) {
+            var id = 'pbar' + b + x[0], el = document.getElementById(id), r = barHTML(b, x[1]);
+            if (barCache[id] !== r.html) { el.innerHTML = r.html; barCache[id] = r.html; }
+            if (el.className !== r.cls) el.className = r.cls;
+        });
+    });
+    if (!G.over) {
+        var lines = [0, 1].map(function (b) {
+            var c = G.boards[b].chess.turn(), p = G.players[b][c];
+            return 'Tabla ' + (b + 1) + ': mută <strong>' + escapeHtml(p.name) + '</strong> (' + colorWord(c) + ', echipa ' + p.team + ').';
+        });
+        setStatus(lines.join('<br>'), '');
+    }
+}
+function escapeHtml(s) { return String(s).replace(/[&<>"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }); }
+
+function showCaptureNote(b, info) {
+    var capP = G.players[b][info.color], partner = G.players[1 - b][other(info.color)];
+    var msg = capP.name + ' a capturat ' + PIECE_ACC[info.captured] + '. ';
+    msg += (info.capType === 'p' && info.captured !== 'p' ? 'Era un pion promovat, deci trece ca pion' : PIECE_RO[info.capType] + ' trece') + ' în rezerva lui ' + partner.name + '.';
+    setBoardMsg(b, msg);
+}
+
+/* ====== MUTĂRILE COPIILOR ====== */
+function illegal(b, sq, reason) {
+    flashWrong(b, sq);
+    sel[b] = null; clearSelHL(b); renderBars();
+    setBoardMsg(b, '⚠ ' + reason, true);
+}
+function illegalReason(b, from, to) {
+    var ch = G.boards[b].chess, piece = ch.get(from);
+    var who = PIECE_RO[piece ? piece.type : 'p'] || 'Piesa';
+    var pseudo = ch.moves({ square: from, verbose: true, legal: false }).some(function (m) { return m.to === to; });
+    if (!pseudo) return who + ' de pe ' + from + ' nu poate merge pe ' + to + '.';
+    if (piece && piece.type === 'k') return 'Regele nu poate merge pe ' + to + ': acolo ar fi atacat.';
+    if (ch.in_check()) return 'Regele este în șah, iar mutarea asta nu îl scapă.';
+    return 'Mutarea ar lăsa regele în șah.';
+}
+function humanToMove(b) {
+    return G && !G.over && G.players[b][G.boards[b].chess.turn()].kind === 'human' && !promoPending[b];
+}
+function tryMove(b, from, to) {
+    if (!humanToMove(b)) return false;
+    var ch = G.boards[b].chess;
+    var legal = ch.moves({ square: from, verbose: true }).filter(function (m) { return m.to === to; });
+    if (!legal.length) { illegal(b, to, illegalReason(b, from, to)); return false; }
+    if (legal[0].flags.indexOf('p') !== -1) { promoPending[b] = { from: from, to: to }; showPromo(b, legal[0].color); return false; }
+    var info = applyMove(b, { from: from, to: to });
+    if (!info) return false;
+    sel[b] = null; clearSelHL(b);
+    afterMoveUI(b, info);
+    return true;
+}
+function tryDrop(b, type, sq) {
+    if (!humanToMove(b)) return false;
+    var prob = dropProblem(b, type, sq);
+    if (prob) { illegal(b, sq, prob); return false; }
+    var info = applyMove(b, { drop: type, to: sq });
+    sel[b] = null; clearSelHL(b);
+    if (!info) return false;
+    afterMoveUI(b, info);
+    return true;
+}
+function afterMoveUI(b, info) {
+    afterMove(b, info);
+    setTimeout(function () { renderBoard(b); if (G && G.result && G.result.type === 'mate' && G.result.board === b) {
+        var k = findKing(b, G.result.loserColor); if (k) $(boardSel(b)).find('.square-' + k).addClass('highlight-check'); } }, 0);
+    if (G && !G.over && G.boards[b].chess.in_check()) {
+        var c = G.boards[b].chess.turn(), note = document.getElementById('bmsg' + b).textContent;
+        setBoardMsg(b, (note ? note + ' ' : '') + 'Șah la regele lui ' + G.players[b][c].name + '.');
+    }
+}
+/* robotul folosește aceeași afișare */
+var _robotPlay = robotPlay;
+robotPlay = function (b) {
+    if (!G || G.over) return;
+    var n = G.log.length;
+    _robotPlay(b);
+    if (UI && G && G.log.length > n && !G.over && G.boards[b].chess.in_check()) {
+        var c = G.boards[b].chess.turn(), note = document.getElementById('bmsg' + b).textContent;
+        setBoardMsg(b, (note ? note + ' ' : '') + 'Șah la regele lui ' + G.players[b][c].name + '.');
+    }
+};
+
+function showPromo(b, color) {
+    var box = document.getElementById('promo' + b), btns = box.querySelector('.promo-btns');
+    btns.innerHTML = '';
+    ['q', 'r', 'b', 'n'].forEach(function (p) {
+        var btn = document.createElement('button');
+        btn.className = 'promo-btn'; btn.title = PIECE_RO[p];
+        btn.innerHTML = '<img src="' + PIECE_CDN + color + p.toUpperCase() + '.svg" alt="">';
+        btn.onclick = function () { choosePromo(b, p); };
+        btns.appendChild(btn);
+    });
+    box.style.display = 'flex';
+}
+function hidePromo(b) { var box = document.getElementById('promo' + b); if (box) box.style.display = 'none'; }
+function choosePromo(b, p) {
+    hidePromo(b);
+    var pend = promoPending[b]; promoPending[b] = null;
+    if (!pend || !G || G.over) return;
+    var info = applyMove(b, { from: pend.from, to: pend.to, promotion: p });
+    sel[b] = null; clearSelHL(b);
+    if (info) afterMoveUI(b, info);
+}
+
+function onDragStart(b, source, piece) {
+    if (!G || G.over || promoPending[b]) return false;
+    var ch = G.boards[b].chess, turn = ch.turn(), pc = piece[0], mover = G.players[b][turn], s = sel[b];
+    if (s && s.drop) {
+        if (pc === turn && mover.kind === 'human') { sel[b] = null; clearSelHL(b); }
+        else { illegal(b, source, 'Poți parașuta doar pe un pătrat liber.'); return false; }
+    }
+    if (pc !== turn) {
+        if (s && s.sq && s.sq !== source) {                   // click pe piesa adversă = încercare de captură
+            var from = s.sq;
+            sel[b] = null; clearSelHL(b);
+            setTimeout(function () { tryMove(b, from, source); }, 0);
+            return false;
+        }
+        if (mover.kind === 'human') illegal(b, source, 'Acum mută ' + mover.name + ', cu ' + colorWord(turn) + '.');
+        else setBoardMsg(b, 'Acum mută ' + mover.name + '. Așteaptă puțin.');
+        return false;
+    }
+    if (mover.kind !== 'human') { setBoardMsg(b, 'Acum mută ' + mover.name + '.'); return false; }
+    sel[b] = { sq: source };
+    showMoveHL(b, source);
+    renderBars();
+    return true;
+}
+function onDrop(b, source, target) {
+    if (target === 'offboard' || target === source) return 'snapback';
+    sel[b] = null; clearSelHL(b);
+    if (!tryMove(b, source, target)) return 'snapback';
+}
+function onEmptySquare(b, sq) {
+    if (!G || G.over) return;
+    var s = sel[b];
+    if (!s || G.boards[b].chess.get(sq)) return;
+    if (s.drop) tryDrop(b, s.drop, sq);
+    else if (s.sq && s.sq !== sq) { var from = s.sq; sel[b] = null; clearSelHL(b); tryMove(b, from, sq); }
+}
+
+/* rezerva: click pe piesă apoi pe pătrat, sau tragere direct pe tablă */
+var rDrag = null;
+function reservePointerDown(e) {
+    var el = e.target.closest ? e.target.closest('.rpiece') : null;
+    if (!el || !G || G.over) return;
+    var b = +el.getAttribute('data-b'), c = el.getAttribute('data-c'), t = el.getAttribute('data-t');
+    var ch = G.boards[b].chess, turn = ch.turn(), pl = G.players[b][c];
+    e.preventDefault();
+    if (pl.kind !== 'human') { setBoardMsg(b, 'Aceasta este rezerva lui ' + pl.name + '.'); return; }
+    if (promoPending[b]) return;
+    if (c !== turn) { illegal(b, null, 'Acum mută ' + G.players[b][turn].name + '. Poți parașuta când e rândul tău.'); return; }
+    if (!G.hands[b][c][t]) { illegal(b, null, 'Nu ai ' + PIECE_ACC[t] + ' în rezervă.'); return; }
+    var already = sel[b] && sel[b].drop === t;
+    sel[b] = { drop: t };
+    showDropHL(b, t);
+    renderBars();
+    setBoardMsg(b, PIECE_RO[t] + ' din rezervă: alege un pătrat liber sau trage piesa pe tablă.');
+    rDrag = { b: b, c: c, t: t, x0: e.clientX, y0: e.clientY, ghost: null, already: already };
+}
+function reservePointerMove(e) {
+    if (!rDrag) return;
+    if (!rDrag.ghost && Math.abs(e.clientX - rDrag.x0) + Math.abs(e.clientY - rDrag.y0) > 6) {
+        var g = document.createElement('img');
+        g.src = PIECE_CDN + rDrag.c + rDrag.t.toUpperCase() + '.svg';
+        g.className = 'drop-ghost';
+        document.body.appendChild(g);
+        rDrag.ghost = g;
+    }
+    if (rDrag.ghost) { rDrag.ghost.style.left = e.clientX + 'px'; rDrag.ghost.style.top = e.clientY + 'px'; e.preventDefault(); }
+}
+function reservePointerUp(e) {
+    if (!rDrag) return;
+    var d = rDrag; rDrag = null;
+    if (!d.ghost) {                                   // click: selecția rămâne (a doua apăsare o anulează)
+        if (d.already) { sel[d.b] = null; clearSelHL(d.b); renderBars(); setBoardMsg(d.b, ''); }
+        return;
+    }
+    d.ghost.parentNode.removeChild(d.ghost);
+    var under = document.elementFromPoint(e.clientX, e.clientY);
+    var sqEl = under && under.closest ? under.closest('[data-square]') : null;
+    var boardEl = document.querySelector(boardSel(d.b));
+    if (sqEl && boardEl.contains(sqEl)) {
+        var sq = sqEl.getAttribute('data-square');
+        if (G.boards[d.b].chess.get(sq)) illegal(d.b, sq, 'Poți parașuta doar pe un pătrat liber.');
+        else tryDrop(d.b, d.t, sq);
+    } else { sel[d.b] = null; clearSelHL(d.b); renderBars(); setBoardMsg(d.b, ''); }
+}
+
+/* puntea de atingere pentru tabla 2 (board-utils.js o face doar pentru #board) */
+function touchBridge(el) {
+    var dragging = false;
+    function toMouse(type, t, target) {
+        target.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, view: window, button: 0,
+            buttons: type === 'mouseup' ? 0 : 1, clientX: t.clientX, clientY: t.clientY, screenX: t.screenX, screenY: t.screenY }));
+    }
+    el.addEventListener('touchstart', function (e) {
+        if (e.touches.length !== 1) return;
+        dragging = true;
+        var t = e.touches[0];
+        toMouse('mousedown', t, document.elementFromPoint(t.clientX, t.clientY) || e.target);
+        e.preventDefault();
+    }, { passive: false });
+    document.addEventListener('touchmove', function (e) {
+        if (!dragging || e.touches.length !== 1) return;
+        toMouse('mousemove', e.touches[0], document.body);
+        e.preventDefault();
+    }, { passive: false });
+    document.addEventListener('touchend', function (e) {
+        if (!dragging) return;
+        dragging = false;
+        var t = e.changedTouches[0];
+        toMouse('mousemove', t, document.body);
+        toMouse('mouseup', t, document.body);
+    });
+    el.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+}
+
+function makeBoard(b) {
+    var cb = Chessboard(b === 0 ? 'board' : 'board2', {
+        position: 'start',
+        orientation: b === 0 ? 'white' : 'black',
+        draggable: true,
+        showNotation: true,
+        pieceTheme: PIECE_CDN + '{piece}.svg',
+        onDragStart: function (s, p) { return onDragStart(b, s, p); },
+        onDrop: function (s, t) { return onDrop(b, s, t); },
+        onSnapEnd: function () { renderBoard(b); }
+    });
+    /* pătrat gol: reacționăm la apăsare (merge cu mouse-ul și cu degetul) */
+    $(boardSel(b)).on('mousedown', '.square-55d63', function (e) {
+        if (e.which && e.which !== 1) return;
+        var sq = this.getAttribute('data-square');
+        if (sq) onEmptySquare(b, sq);
+    });
+    return cb;
+}
+
+/* ====== ALEGEREA JUCĂTORILOR ====== */
+var SLOT_INFO = {
+    partner: { title: 'Partenerul tău', sub: 'negrul pe tabla 2', team: 'A' },
+    opp0:    { title: 'Adversarul de pe tabla 1', sub: 'negrul, joacă împotriva copilului 1', team: 'B' },
+    opp1:    { title: 'Adversarul de pe tabla 2', sub: 'albul', team: 'B' }
+};
+function slotsFor(mode) { return mode === '1k' ? ['partner', 'opp0', 'opp1'] : mode === '2k' ? ['opp0', 'opp1'] : []; }
+function setMode(m) {
+    setup.mode = m;
+    if (m === '1k' && !setup.partner) {
+        var used = [setup.opp0, setup.opp1];
+        setup.partner = ['volt', 'titan', 'rotita', 'clant', 'bip', 'zuzu'].filter(function (id) { return used.indexOf(id) < 0; })[0];
+    }
+    renderSetup();
+}
+function selectTime(btn) {
+    document.querySelectorAll('.time-opt').forEach(function (x) { x.classList.remove('active'); });
+    btn.classList.add('active');
+    setup.secs = parseInt(btn.getAttribute('data-secs'), 10) || 0;
+}
+function pickRobot(slot, id) {
+    var taken = slotsFor(setup.mode).some(function (s) { return s !== slot && setup[s] === id; });
+    if (taken) return;
+    setup[slot] = id;
+    renderSetup();
+}
+function renderSetup() {
+    document.querySelectorAll('.mode-btn').forEach(function (x) { x.classList.toggle('active', x.getAttribute('data-mode') === setup.mode); });
+    var labels = setup.mode === '4k'
+        ? ['Echipa A · albul pe tabla 1', 'Echipa A · negrul pe tabla 2', 'Echipa B · negrul pe tabla 1', 'Echipa B · albul pe tabla 2']
+        : setup.mode === '2k' ? ['Echipa A · albul pe tabla 1', 'Echipa A · negrul pe tabla 2'] : ['Echipa A · albul pe tabla 1'];
+    var nr = document.getElementById('namesRow'), html = '';
+    labels.forEach(function (lab, i) {
+        html += '<label class="name-field"><span class="tag" style="color:' + (i < 2 ? 'var(--team-a)' : 'var(--team-b)') + '">' + lab + '</span>' +
+            '<input type="text" maxlength="14" placeholder="Copilul ' + (i + 1) + '" value="' + escapeHtml(setup.names[i] || '') + '" oninput="setup.names[' + i + ']=this.value"></label>';
+    });
+    nr.innerHTML = html;
+    var slots = slotsFor(setup.mode);
+    document.getElementById('robotsCard').style.display = slots.length ? '' : 'none';
+    document.getElementById('timeH').textContent = (slots.length ? '4' : '3') + '. Ceas';
+    var sh = '';
+    slots.forEach(function (slot) {
+        var inf = SLOT_INFO[slot];
+        sh += '<div class="slot"><div class="slot-h"><span class="chip" style="background:' + (inf.team === 'A' ? 'var(--team-a)' : 'var(--team-b)') + '">Echipa ' + inf.team + '</span>' +
+            inf.title + ' <span style="font-family:var(--font-body);font-size:0.85em">(' + inf.sub + ')</span></div><div class="rgrid">';
+        ROBOTS.forEach(function (r) {
+            var taken = slots.some(function (s) { return s !== slot && setup[s] === r.id; });
+            sh += '<button class="rcard' + (setup[slot] === r.id ? ' active' : '') + (taken ? ' taken' : '') + '" onclick="pickRobot(\'' + slot + '\',\'' + r.id + '\')"' + (taken ? ' aria-disabled="true"' : '') + '>' +
+                robotFace(r) + '<div class="rn">' + r.name + '</div><div class="rl">' + LEVELS[r.level].label + '<br>' + LEVELS[r.level].play + '</div></button>';
+        });
+        sh += '</div></div>';
+    });
+    document.getElementById('slots').innerHTML = sh;
+}
+
+function stopMatch() {
+    if (G) {
+        G.over = true;
+        [0, 1].forEach(function (b) { if (G.robotTimers[b]) { clearTimeout(G.robotTimers[b]); G.robotTimers[b] = null; } });
+    }
+    stopClock();
+}
+function startMatch() {
+    var slots = slotsFor(setup.mode), ids = slots.map(function (s) { return setup[s]; });
+    if (ids.some(function (x) { return !x; })) { setStatus('Alegeți câte un robot pentru fiecare loc.', 'warn'); return; }
+    stopMatch();
+    G = newGameState(buildPlayers(setup), setup.secs);
+    sel = [null, null]; promoPending = [null, null]; barCache = {};
+    document.getElementById('setupView').style.display = 'none';
+    document.getElementById('gameView').style.display = '';
+    document.getElementById('endBox').style.display = 'none';
+    document.getElementById('gameButtons').style.display = '';
+    document.getElementById('setupButtons').style.display = 'none';
+    if (!boardsCB[0]) {
+        boardsCB[0] = makeBoard(0); boardsCB[1] = makeBoard(1);
+        board = boardsCB[0];
+        touchBridge(document.getElementById('board2'));
+    } else { boardsCB[0].resize(); boardsCB[1].resize(); }
+    [0, 1].forEach(function (b) {
+        hidePromo(b); clearSelHL(b);
+        $(boardSel(b)).find('.highlight-check, .highlight-last').removeClass('highlight-check highlight-last');
+        renderBoard(b);
+        setBoardMsg(b, '');
+    });
+    if (window._annClear) window._annClear();
+    renderBars();
+    startClock();
+    scheduleRobot(0); scheduleRobot(1);
+}
+function backToSetup() {
+    stopMatch();
+    document.getElementById('setupView').style.display = '';
+    document.getElementById('gameView').style.display = 'none';
+    document.getElementById('endBox').style.display = 'none';
+    document.getElementById('gameButtons').style.display = 'none';
+    document.getElementById('setupButtons').style.display = '';
+    setStatus('Alegeți cine joacă, apoi apăsați „Pornește meciul".', '');
+    renderSetup();
+}
+
+if (UI) {
+    setup.opp0 = 'bip'; setup.opp1 = 'zuzu';
+    renderSetup();
+    document.getElementById('robotList').innerHTML = ROBOTS.map(function (r) {
+        return '<div class="ri">' + robotFace(r) + '<div><strong>' + r.name + '</strong>: ' + LEVELS[r.level].label + ', ' + LEVELS[r.level].play + '.</div></div>';
+    }).join('');
+    document.addEventListener('pointerdown', reservePointerDown);
+    document.addEventListener('pointermove', reservePointerMove, { passive: false });
+    document.addEventListener('pointerup', reservePointerUp);
+    window.addEventListener('resize', function () {
+        if (boardsCB[0]) { boardsCB[0].resize(); boardsCB[1].resize(); renderBoard(0); renderBoard(1); }
+    });
+}
+</script>
+</body>
+</html>
