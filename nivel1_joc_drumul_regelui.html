@@ -25,7 +25,7 @@
   /* HIGHLIGHTS (selectat / posibil = clasele din master) */
   .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
 
-  /* pătratele tablei: suport pentru castele și frunze (pseudo-elemente sub piesă) */
+  /* pătratele tablei: suport pentru castele și gheață (pseudo-elemente sub piesă) */
   #board .square-55d63 { position: relative; }
   #board .square-55d63 img { position: relative; z-index: 3; }
 
@@ -45,14 +45,19 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M33 54 V46 H41 V54 H46 V46 H54 V54 H59 V46 H67 V54 V92 H33 Z' fill='%23d9383f' stroke='%235e0b10' stroke-width='3.5' stroke-linejoin='round'/%3E%3Crect x='9' y='40' width='24' height='52' fill='%23d9383f' stroke='%235e0b10' stroke-width='3.5'/%3E%3Crect x='67' y='40' width='24' height='52' fill='%23d9383f' stroke='%235e0b10' stroke-width='3.5'/%3E%3Cpath d='M5 41 L21 10 L37 41 Z' fill='%237a2cae' stroke='%234a1270' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M63 41 L79 10 L95 41 Z' fill='%237a2cae' stroke='%234a1270' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M41 92 V77 A9 9 0 0 1 59 77 V92 Z' fill='%235e0b10'/%3E%3Crect x='16' y='55' width='10' height='13' rx='5' fill='%23ffd9dc'/%3E%3Crect x='74' y='55' width='10' height='13' rx='5' fill='%23ffd9dc'/%3E%3C/svg%3E");
   }
 
-  /* pătrat folosit: frunze */
-  .sq-used::after {
-    content: '🍂'; position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: clamp(14px, 4.2vmin, 40px); line-height: 1;
-    pointer-events: none; z-index: 2;
+  /* LACUL ÎNGHEȚAT: pătrate de gheață deschise/închise, castelele pe mal */
+  #board .white-1e1d7 { background-color: #eaf3f8; }
+  #board .black-3c85d { background-color: #a9c4d8; }
+  #board .square-a1, #board .square-h8 { background-color: #d8c89a; }
+  #board .notation-322f9 { color: #2f5578; font-weight: 700; }
+
+  /* pătrat folosit: gheață crăpată (SVG inline) */
+  .sq-used {
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath id='c' stroke='%230d2a4f' stroke-width='3.6' d='M48 52 L30 38 L18 36 L2 28 M30 38 L26 20 L20 4 M48 52 L58 30 L55 16 L62 0 M58 30 L74 22 L90 24 M48 52 L78 50 L88 60 L100 62 M78 50 L86 40 M48 52 L60 74 L56 88 L62 100 M60 74 L78 84 M48 52 L34 68 L20 72 L0 80 M34 68 L30 88 L24 100 M42 47 L49 43 L56 49 L54 57 L45 58 Z'/%3E%3Cpath stroke='%23ffffff' stroke-width='1.4' d='M48 52 L30 38 L18 36 L2 28 M30 38 L26 20 L20 4 M48 52 L58 30 L55 16 L62 0 M58 30 L74 22 L90 24 M48 52 L78 50 L88 60 L100 62 M78 50 L86 40 M48 52 L60 74 L56 88 L62 100 M60 74 L78 84 M48 52 L34 68 L20 72 L0 80 M34 68 L30 88 L24 100 M42 47 L49 43 L56 49 L54 57 L45 58 Z'/%3E%3C/g%3E%3C/svg%3E"),
+      linear-gradient(rgba(70,130,190,0.45), rgba(70,130,190,0.45)) !important;
+    background-size: 100% 100% !important;
   }
-  .sq-used { background-color: rgba(120,80,30,0.28) !important; background-blend-mode: multiply; }
 
   /* pătratele de start (d4, d5, e4, e5) */
   .start-spot { box-shadow: inset 0 0 0 4px rgba(245,180,0,0.95); }
@@ -225,9 +230,9 @@
 
           <div class="hl-box">
             <h4>Povestea</h4>
-            <p>Regele a ieșit la plimbare și acum vrea să ajungă acasă, la castel. Doar că sunt două castele, câte unul pentru fiecare jucător, în colțurile tablei.</p>
+            <p>Regele se plimbă pe un lac înghețat și vrea să ajungă acasă, la castel. Pe malul lacului sunt două castele, câte unul pentru fiecare jucător, în colțurile tablei.</p>
             <p>Pe tablă este <strong>un singur rege</strong>. Amândoi jucătorii îl mută, pe rând. Fiecare încearcă să-l ducă la castelul lui.</p>
-            <p>Pe unde a trecut regele au căzut frunze 🍂. Pe un pătrat cu frunze regele nu mai poate călca.</p>
+            <p>Pe unde calcă regele, gheața crapă. Pe un pătrat cu gheață crăpată regele nu mai poate călca din nou.</p>
           </div>
 
           <div class="hl-box">
@@ -251,7 +256,7 @@
 
           <div class="hl-box warn">
             <h4>Ce nu este voie</h4>
-            <p>Regele nu poate călca pe un pătrat cu frunze. Nici pătratul de unde a pornit nu mai poate fi folosit.</p>
+            <p>Regele nu poate călca pe gheața crăpată. Nici pătratul de unde a pornit nu mai poate fi folosit, pentru că gheața de acolo a crăpat când regele a plecat.</p>
             <p>Regele nu poate intra în <strong>castelul adversarului</strong>.</p>
           </div>
 
@@ -601,7 +606,7 @@ function endRound(res) {
     if (res.how === 'castle')
         msg = '🏰 ' + (you(w) ? 'Ai dus regele acasă, în castelul tău.' : 'Regele a ajuns în castelul ' + (mode === 'duo' ? 'Jucătorului ' + w : 'calculatorului') + '.');
     else
-        msg = '🍂 ' + (you(l) ? 'Regele nu mai are niciun pătrat liber și e rândul tău.' : 'Regele nu mai are niciun pătrat liber și e rândul ' + (mode === 'duo' ? 'Jucătorului ' + l : 'calculatorului') + '.');
+        msg = '🧊 ' + (you(l) ? 'Regele nu mai are niciun pătrat liber și e rândul tău.' : 'Regele nu mai are niciun pătrat liber și e rândul ' + (mode === 'duo' ? 'Jucătorului ' + l : 'calculatorului') + '.');
     msg += ' ' + (you(w) ? 'Ai câștigat repriza.' : 'Repriza e câștigată de ' + pname(w) + '.');
     if (round === 1) {
         setStatus(msg, you(l) ? 'draw' : 'ok');
@@ -649,7 +654,7 @@ function whyIllegal(sq) {
     if (K < 0) return START_SQS.includes(t) ? null : 'La început regele se așază pe d4, d5, e4 sau e5.';
     if (!NB[K].includes(t)) return 'Regele merge doar un pas, pe un pătrat vecin.';
     if (t === castleOfSide(1 - side)) return 'Pe ' + sq + ' este castelul adversarului. Regele nu poate intra acolo.';
-    if (isUsed(LO, HI, t)) return 'Pe ' + sq + ' au căzut frunze: regele a mai trecut pe acolo.';
+    if (isUsed(LO, HI, t)) return 'Gheața de pe ' + sq + ' e crăpată: regele a mai trecut pe acolo.';
     return null;
 }
 function tryPlace(sq) {
