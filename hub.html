@@ -181,6 +181,16 @@ h1 {
 .topics::-webkit-scrollbar { width: 4px; }
 .topics::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
 .topics::-webkit-scrollbar-thumb { background: rgba(26,26,46,0.2); border-radius: 4px; }
+.topics { overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+
+/* Ecrane tactile: bară de derulare lată, ușor de prins cu degetul (se poate trage și direct de listă) */
+@media (any-pointer: coarse) {
+    .topics { scrollbar-width: auto; scrollbar-color: rgba(26,26,46,0.45) rgba(0,0,0,0.06); padding-right: 6px; }
+    .topics::-webkit-scrollbar       { width: 20px; }
+    .topics::-webkit-scrollbar-track { background: rgba(0,0,0,0.06); border-radius: 10px; }
+    .topics::-webkit-scrollbar-thumb { background: rgba(26,26,46,0.45); border-radius: 10px; min-height: 40px;
+                                       border: 4px solid transparent; background-clip: padding-box; }
+}
 
 .topic-link {
     color: #1a3a6b;
