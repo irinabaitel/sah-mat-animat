@@ -176,6 +176,14 @@
 .acc-body { max-height:0; overflow:hidden; transition:max-height .38s ease; }
 .acc-body.open { max-height:2400px; }
 .acc-inner { padding:14px 16px 18px; display:flex; flex-direction:column; gap:10px; }
+
+  /* ── PRACTICE BUTTONS (ca în nivel1_lectia2) ── */
+  .practice-btn { display:block; width:100%; padding:14px; border-radius:14px; border:none; text-align:center; cursor:pointer;
+    font-family:var(--font-display); font-size:0.92em; font-weight:700; margin-bottom:8px; transition:all 0.2s;
+    box-shadow:0 3px 12px rgba(0,0,0,0.18); color:white; text-decoration:none; }
+  .practice-btn:hover { transform:translateY(-2px); filter:brightness(1.1); }
+  .practice-btn small { display:block; font-family:var(--font-body); font-size:0.78em; opacity:0.85; font-weight:400; margin-top:2px; }
+  .pb-blue { background: var(--c-navy); }
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -306,6 +314,23 @@
               </div>
             </div>
           </div>
+
+          <!-- Acc 3: Exersează -->
+          <div class="acc-item">
+            <div class="acc-head" id="acc3" onclick="toggleAcc(3)">
+              <span>🎮 Exersează!</span>
+              <span class="acc-icon">▶</span>
+            </div>
+            <div class="acc-body" id="body3">
+              <div class="acc-inner">
+                <p style="font-size:1rem;line-height:1.7;">Promovarea și en passant se văd cel mai bine într-o partidă adevărată. Joacă o partidă cu regi și pioni, contra calculatorului sau în doi.</p>
+                <a href="joc_stockfish.html?v=2" class="practice-btn pb-blue">
+                  ♚ Regi și Pioni 2 — partida completă
+                  <small>Promovare, en passant și mat</small>
+                </a>
+              </div>
+            </div>
+          </div>
         </div><!-- /#acc-wrapper -->
 
         <!-- ── EXERCISES SECTION ── -->
@@ -428,7 +453,7 @@ var accOpen     = -1;
 
 function toggleAcc(idx) {
     var wasOpen = (accOpen === idx);
-    [0,1,2].forEach(function(i){
+    [0,1,2,3].forEach(function(i){
         document.getElementById('body'+i).classList.remove('open');
         document.getElementById('acc'+i).classList.remove('open');
     });
