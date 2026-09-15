@@ -21,6 +21,7 @@
         ['nivel1_joc_piesa_contra_pionilor.html', 'Piesa contra pionilor'],
         ['nivel1_joc_vanatoarea_regelui.html', 'Vânătoarea regelui'],
         ['nivel1_joc_regi_nasturi.html', 'Regii și nasturii'],
+        ['nivel1_joc_cine_pastreaza.html', 'Cine păstrează ceva?'],
         ['joc_stockfish.html?v=2',   'Regi și Pioni 2']
     ];
     var file = function (p) { return (p || '').split('?')[0].split('#')[0].split('/').pop(); };
