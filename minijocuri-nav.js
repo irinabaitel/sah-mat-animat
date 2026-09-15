@@ -13,7 +13,8 @@
         ['nivel1_joc_cursa.html',    'Cursa Perimeterului'],
         ['nivel1_joc_acasa.html',    'Întoarcerea Acasă'],
         ['nivel1_joc_dama_cal.html', 'Dama contra calului'],
-        ['nivel1_joc_nasturi.html',  'Vânătoarea de nasturi']
+        ['nivel1_joc_nasturi.html',  'Vânătoarea de nasturi'],
+        ['nivel1_joc_dama_turn_nebun.html', 'Dama și turnul contra nebunului']
     ];
     var file = function (p) { return (p || '').split('?')[0].split('#')[0].split('/').pop(); };
     var here = file(location.pathname);
