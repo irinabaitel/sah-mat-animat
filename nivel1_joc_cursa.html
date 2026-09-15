@@ -25,13 +25,32 @@
   /* HIGHLIGHTS — background-image se suprapune peste culoarea tablei, păstrând transparența */
   .sq-ai       { background-color: rgba(160,60,200,0.35) !important; }
 
-  /* RULES */
-  .rules-list { list-style: none; display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
-  .rules-list li {
-    font-size: 0.82em; color: var(--c-text); padding-left: 16px;
-    position: relative; line-height: 1.6;
+  .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
+
+  /* CUM SE JOACĂ */
+  .howto { margin-bottom:10px; }
+  .howto > summary {
+    cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900;
+    color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px;
+    background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8);
   }
-  .rules-list li::before { content: '→'; position: absolute; left: 0; color: var(--c-navy); font-weight: 700; }
+  .howto > summary::-webkit-details-marker { display:none; }
+  .howto > summary::after { content:' ▾'; }
+  .howto:not([open]) > summary::after { content:' ▸'; }
+  .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
+  .howto .hl-box p { margin:0 0 6px; }
+  .howto .hl-box p:last-child { margin-bottom:0; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+
+  /* TOGGLES */
+  .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+  .tgl-btn {
+    flex:1; padding:6px 10px; border-radius:50px;
+    border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.5);
+    font-family:var(--font-display); font-size:0.82em; color:var(--c-navy);
+    cursor:pointer; transition:all 0.2s; white-space:nowrap;
+  }
+  .tgl-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
 
   /* PLAYER PANELS */
   .player-panel {
@@ -40,8 +59,9 @@
   }
   .player-panel.active { border-color: var(--c-navy); background: rgba(26,58,107,0.1); }
   .player-panel.done   { border-color: rgba(40,180,80,0.6); background: rgba(40,180,80,0.1); }
-  .pp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
-  .pp-name   { font-family: var(--font-display); font-size: 0.88em; color: #1a1a2e; }
+  .pp-header { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 5px; }
+  .pp-name   { font-family: var(--font-display); font-size: 0.88em; color: #1a1a2e; flex: 1; }
+  .pp-strikes { font-size: 0.82em; letter-spacing: 1px; }
   .pp-trophy { font-size: 1.2em; display: none; }
   .pp-trophy.show { display: inline; }
   .progress-track { background: rgba(0,0,0,0.1); border-radius: 5px; height: 7px; overflow: hidden; }
@@ -70,11 +90,13 @@
     border-radius: 12px; padding: 9px 12px;
     font-size: 0.86em; line-height: 1.6; color: #1a1a2e;
     min-height: 46px; transition: all 0.3s; margin-bottom: 8px;
+    white-space: pre-line;
   }
   #status-box.white-turn { border-color: rgba(26,58,107,0.5);  background: rgba(26,58,107,0.1); }
   #status-box.black-turn { border-color: rgba(80,50,130,0.5);  background: rgba(80,50,130,0.1); }
   #status-box.win  { border-color: rgba(40,180,80,0.5);  background: rgba(40,180,80,0.15); }
   #status-box.draw { border-color: rgba(200,150,10,0.5); background: rgba(200,150,10,0.12); }
+  #status-box.warn { border-color: rgba(192,57,43,0.5);  background: rgba(255,200,200,0.45); }
 
   /* BUTTONS */
   .btn-game {
@@ -87,7 +109,7 @@
   #btn-finish {
     display: none; width: 100%; padding: 9px; border-radius: 10px; border: none;
     background: var(--c-navy); color: white; font-family: var(--font-display);
-    font-size: 0.88em; font-weight: 700; cursor: pointer;
+    font-size: 0.88em; font-weight: 700; cursor: pointer; margin-bottom: 10px;
     box-shadow: 0 2px 8px rgba(26,58,107,0.35); transition: background 0.2s;
   }
   #btn-finish:hover { background: #2a5aab; }
@@ -137,23 +159,24 @@
     <div class="panel-col">
       <div class="panel-scroll">
 
-        <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:6px">Alege adversarul:</div>
-        <div class="animal-grid">
-          <button class="animal-btn active" data-random="0.9" onclick="selectAnimal(this)"><span class="emoji">&#128423;</span><span class="name">Pui de găină</span></button>
-          <button class="animal-btn" data-random="0.2" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
-          <button class="animal-btn" data-random="0" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
+        <div class="toggle-row">
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
-        <ul class="rules-list">
-          <li>Tu joci <strong>Negru</strong>, 🤖 joacă <strong>Alb</strong>. Câte o mutare pe rând.</li>
-          <li>Turnul se mișcă <strong>clockwise</strong> pe orizontală/verticală.</li>
-          <li>Nebunul se mișcă pe <strong>diagonale</strong> (nu sare peste piese).</li>
-          <li>Câștigă primul cu <strong>ambele piese înapoi acasă</strong>.</li>
-        </ul>
+        <div id="levelBox">
+          <div class="sec-title">Alege adversarul:</div>
+          <div class="animal-grid">
+            <button class="animal-btn active" data-random="0.9" onclick="selectAnimal(this)"><span class="emoji">&#128035;</span><span class="name">Pui de găină</span></button>
+            <button class="animal-btn" data-random="0.2" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
+            <button class="animal-btn" data-random="0" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
+          </div>
+        </div>
 
         <div class="player-panel" id="panel-white">
           <div class="pp-header">
-            <span class="pp-name">♖♗ Alb — 🤖</span>
+            <span class="pp-name" id="name-white">♖♗ Alb — 🤖</span>
+            <span class="pp-strikes" id="strikes-white"></span>
             <span class="pp-trophy" id="trophy-white">🏆</span>
           </div>
           <div class="progress-track">
@@ -167,7 +190,8 @@
 
         <div class="player-panel" id="panel-black">
           <div class="pp-header">
-            <span class="pp-name">♜♝ Negru (Tu)</span>
+            <span class="pp-name" id="name-black">♜♝ Negru (Tu)</span>
+            <span class="pp-strikes" id="strikes-black"></span>
             <span class="pp-trophy" id="trophy-black">🏆</span>
           </div>
           <div class="progress-track">
@@ -182,7 +206,7 @@
         <div id="status-box" class="white-turn">🤖 Calculatorul gândește…</div>
         <div id="move-list"></div>
 
-        <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:6px">&#9203; Timp per juc&#259;tor:</div>
+        <div class="sec-title">&#9203; Timp per juc&#259;tor:</div>
         <div class="time-opts" id="timeOpts">
           <button class="time-opt active" data-secs="0"   onclick="selectTime(this)">&#8734; Liber</button>
           <button class="time-opt" data-secs="60"  onclick="selectTime(this)">1 min</button>
@@ -190,12 +214,83 @@
           <button class="time-opt" data-secs="300" onclick="selectTime(this)">5 min</button>
         </div>
         <div class="clocks" id="clocksDiv" style="display:none">
-          <div class="clock-box" id="clockW"><div class="clock-lbl">&#9823; 🤖 Alb</div><div class="clock-time" id="cwTime">&#8734;</div></div>
-          <div class="clock-box" id="clockB"><div class="clock-lbl">&#9819; Tu (Negru)</div><div class="clock-time" id="cbTime">&#8734;</div></div>
+          <div class="clock-box" id="clockW"><div class="clock-lbl" id="clockLblW">&#9823; 🤖 Alb</div><div class="clock-time" id="cwTime">&#8734;</div></div>
+          <div class="clock-box" id="clockB"><div class="clock-lbl" id="clockLblB">&#9819; Tu (Negru)</div><div class="clock-time" id="cbTime">&#8734;</div></div>
         </div>
 
         <button class="btn-game" onclick="restartGame()">↺ Restart</button>
         <button id="btn-finish" onclick="location.href='nivel1_joc_acasa.html'">🏠 Jocul următor ▶</button>
+
+        <details class="howto" open>
+          <summary>📖 Cum se joacă</summary>
+
+          <div class="hl-box">
+            <h4>Piesele și locul lor</h4>
+            <p>Fiecare jucător are două piese: un <strong>turn</strong> și un <strong>nebun</strong>.</p>
+            <p><strong>Albul</strong> are turnul pe a1 și nebunul pe b1, în colțul din stânga jos. <strong>Negrul</strong> are turnul pe h8 și nebunul pe g8, în colțul din dreapta sus. Aceste pătrate sunt <strong>„acasă"</strong> pentru fiecare piesă.</p>
+            <p><strong>Contra calculatorului</strong>: tu joci cu negrul, calculatorul joacă cu albul. <strong>În doi</strong>: Jucătorul 1 joacă cu albul, Jucătorul 2 joacă cu negrul.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum merg piesele</h4>
+            <p><strong>Turnul</strong> merge în linie dreaptă: în sus, în jos, la stânga sau la dreapta. Poate merge câte pătrate vrea, pe coloană sau pe rând.</p>
+            <p><strong>Nebunul</strong> merge doar pe diagonală, tot câte pătrate vrea. Ambii nebuni pornesc de pe pătrate albe (b1 și g8) și rămân mereu pe pătrate albe.</p>
+            <p>Nicio piesă nu poate sări peste altă piesă. Dacă ceva îi stă în cale, piesa se oprește înainte.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Bariera din mijloc</h4>
+            <p>În mijlocul tablei stau opt pioni negri, pe d3, e3, d4, e4, d5, e5, d6 și e6. Ei nu sunt ai nimănui și nu se mută niciodată. Ei formează un zid, „cercul interior", în jurul căruia se face cursa.</p>
+            <p>Pe barieră nu se poate pune nicio piesă și nicio piesă nu poate trece peste ea. De exemplu, nebunul de pe g8 nu poate merge pe diagonala g8–a2 mai departe de f7, pentru că pe e6 stă bariera. De aceea piesele trebuie să ocolească mijlocul pe marginea tablei.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>În sensul acelor de ceasornic</h4>
+            <p>Acele unui ceas se rotesc de la 12 la 3, apoi la 6, la 9 și iar la 12. Pe tablă, cu albul jos, asta înseamnă: <strong>în sus pe partea stângă, spre dreapta sus, în jos pe partea dreaptă, spre stânga jos</strong>.</p>
+            <p><strong>Turnul alb</strong> pleacă de pe a1, urcă pe coloana a spre a8, merge spre dreapta pe rândul 8, coboară pe partea dreaptă și se întoarce spre stânga pe rândul 1, până la a1. Calculatorul, când merge pe drumul lui, trece cu turnul pe a8, apoi pe f8, apoi pe f1 și revine pe a1.</p>
+            <p><strong>Turnul negru</strong> pleacă de pe h8, coboară pe coloana h spre h1, merge spre stânga pe rândul 1 spre a1, urcă pe coloana a spre a8 și se întoarce spre dreapta pe rândul 8, până la h8.</p>
+            <p>Atenție: jocul nu te oprește dacă muți turnul în altă direcție. Drumul în sensul acelor de ceasornic este drumul propus, dar la final jocul verifică doar ce scrie mai jos, la „Cine câștigă".</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Ordinea mutărilor</h4>
+            <p><strong>Albul mută primul.</strong> Apoi mută negrul, apoi iar albul, pe rând. La fiecare mutare muți o singură piesă: fie turnul, fie nebunul. Nu poți să sari peste rândul tău.</p>
+            <p>Ca să muți, dai click pe piesa ta, apoi pe pătratul unde vrei să ajungă. Pătratul piesei se colorează și se văd pătratele unde poate merge (la nivelul Dragon acestea nu se arată). Dacă dai din nou click pe piesa aleasă, alegerea se anulează. Poți și să tragi piesa cu mouse-ul sau cu degetul.</p>
+            <p>Dacă piesa aleasă nu are nicio mutare, jocul îți spune să muți cealaltă piesă. Dacă niciuna dintre piesele tale nu poate muta, sari rândul și mută adversarul.</p>
+            <p>În lista de mutări, <strong>T</strong> înseamnă turn și <strong>N</strong> înseamnă nebun.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Nu se capturează</h4>
+            <p>În acest joc piesele nu se iau una pe alta. Pe un pătrat poate sta o singură piesă. Nu poți muta pe un pătrat unde stă deja o piesă, fie a ta, fie a adversarului.</p>
+            <p>Piesele adversarului sunt obstacole, ca bariera. Poți să-i încurci drumul adversarului, dar nu îi poți scoate piesele de pe tablă.</p>
+          </div>
+
+          <div class="hl-box warn">
+            <h4>Cine câștigă?</h4>
+            <p><strong>Negrul</strong> a terminat cursa când turnul a plecat de acasă și stă din nou pe h8, iar nebunul a ajuns măcar o dată pe rândul 1 sau 2 (jos) și stă din nou pe g8.</p>
+            <p><strong>Albul, contra calculatorului</strong>, a terminat când turnul a trecut, în ordine, pe a8, f8 și f1 și stă din nou pe a1, iar nebunul a ajuns măcar o dată pe rândul 7 sau 8 (sus) și stă din nou pe b1.</p>
+            <p><strong>Albul, în doi</strong>, a terminat când turnul a plecat de acasă și stă din nou pe a1, iar nebunul a ajuns măcar o dată pe rândul 7 sau 8 și stă din nou pe b1.</p>
+            <p><strong>Câștigă cine termină primul.</strong> Pentru că albul mută primul, când albul termină, negrul mai primește <strong>o ultimă mutare</strong>. Dacă termină și negrul cu această mutare, este <strong>egalitate</strong>. Dacă nu, câștigă albul. Dacă negrul termină înaintea albului, câștigă negrul.</p>
+            <p>Dacă ai ales un timp, cine rămâne fără timp pierde. Timpul ales se aplică după ce apeși „Restart".</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Nivelurile (contra calculatorului)</h4>
+            <p><strong>Pui de găină</strong>: calculatorul mută la întâmplare la aproape fiecare mutare (cam 9 din 10), așa că se încurcă des.</p>
+            <p><strong>Mânz</strong>: calculatorul mută la întâmplare doar cam 2 mutări din 10. În rest merge pe drumul lui.</p>
+            <p><strong>Dragon</strong>: calculatorul nu mută niciodată la întâmplare. Merge direct pe drumul lui în jurul barierei.</p>
+            <p>Nivelul ales se aplică de la următoarea mutare a calculatorului.</p>
+          </div>
+
+          <div class="hl-box ok">
+            <h4>În doi</h4>
+            <p>Doi copii joacă pe aceeași tablă, fără calculator. <strong>Jucătorul 1</strong> are piesele albe și mută primul. <strong>Jucătorul 2</strong> are piesele negre. Mutați pe rând.</p>
+            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar <strong>se numără</strong>. Se numără dacă încerci să muți o piesă a adversarului, să pui piesa pe un pătrat ocupat sau pe barieră, să sari peste o piesă, să muți turnul pe diagonală sau nebunul în linie dreaptă.</p>
+            <p>Nu se numără dacă pui piesa înapoi pe pătratul ei sau dacă alegi o piesă care nu are mutări. Nici mutarea turnului în sens invers acelor de ceasornic nu se numără, pentru că jocul o permite.</p>
+            <p>La fiecare jucător vezi încercările: ❌ pentru fiecare încercare nepermisă, ▫️ pentru cele rămase. <strong>La 3 încercări nepermise câștigă celălalt jucător.</strong></p>
+          </div>
+        </details>
 
       </div><!-- /.panel-scroll -->
       <div class="feedback-bar" id="feedbackBar"></div>
@@ -213,7 +308,8 @@
 <script>
 /* =====================================================
    CURSA — Turn + Nebun
-   Alb = AI, Negru = Tu
+   Contra calculatorului: Alb = AI, Negru = Tu
+   În doi: Alb = Jucătorul 1, Negru = Jucătorul 2
    ===================================================== */
 
 const COL     = 'abcdefgh';
@@ -240,6 +336,13 @@ let wDone, bDone, turn, gameOver;
 let selPiece, selSq, validDests;
 let board;
 let moveHistory = [];
+
+/* modul de joc + încercări nepermise (doar în doi) */
+let mode = 'robot';
+const MAX_STRIKES = 3;
+let strikes = {w: 0, b: 0};
+let gameGen = 0;                       // invalidează timerele calculatorului la restart
+const PLAYER = {w: 'Jucătorul 1 (alb)', b: 'Jucătorul 2 (negru)'};
 
 function buildPos() {
     const p = {};
@@ -297,7 +400,12 @@ function bishMoves(sq) {
 }
 
 function checkDone() {
-    wDone = wRMoved && wRSq===WR_HOME && wRWpIdx>=WR_WAYPOINTS.length && wBMoved && wBSq===WB_HOME && wBAroundIsland;
+    if (mode === 'duo') {
+        /* în doi: albul are aceeași regulă ca negrul (oglindită) */
+        wDone = wRMoved && wRSq===WR_HOME && wBMoved && wBSq===WB_HOME && wBAroundIsland;
+    } else {
+        wDone = wRMoved && wRSq===WR_HOME && wRWpIdx>=WR_WAYPOINTS.length && wBMoved && wBSq===WB_HOME && wBAroundIsland;
+    }
     bDone = bRMoved && bRSq===BR_HOME && bBMoved && bBSq===BB_HOME && bBAroundIsland;
 }
 
@@ -345,7 +453,7 @@ function moveNotation(piece, sq) {
     return (piece==='rook' ? 'T' : 'N') + sq;
 }
 function recordMove(color, piece, sq) {
-    const note = moveNotation(piece, sq);
+    const note = piece ? moveNotation(piece, sq) : '—';
     if (color==='w') {
         moveHistory.push({w: note});
     } else {
@@ -370,6 +478,9 @@ function pieceSt(moved, sq, home, sym) {
     if (!moved) return `${sym} acasă`;
     return sq===home ? `${sym} 🏠` : `${sym} ${sq}`;
 }
+function strikeStr(c) {
+    return mode === 'duo' ? '❌'.repeat(strikes[c]) + '▫️'.repeat(MAX_STRIKES - strikes[c]) : '';
+}
 function updateUI() {
     const wProg = !wRMoved&&!wBMoved ? 0 : wDone ? 100 : 50;
     const bProg = !bRMoved&&!bBMoved ? 0 : bDone ? 100 : 50;
@@ -383,13 +494,41 @@ function updateUI() {
         'player-panel'+(wDone?' done':turn==='w'&&!gameOver?' active':'');
     document.getElementById('panel-black').className =
         'player-panel'+(bDone?' done':turn==='b'&&!gameOver?' active':'');
+    document.getElementById('name-white').textContent = mode==='duo' ? '♖♗ Jucătorul 1 (alb)' : '♖♗ Alb — 🤖';
+    document.getElementById('name-black').textContent = mode==='duo' ? '♜♝ Jucătorul 2 (negru)' : '♜♝ Negru (Tu)';
+    document.getElementById('strikes-white').textContent = strikeStr('w');
+    document.getElementById('strikes-black').textContent = strikeStr('b');
+    document.getElementById('clockLblW').textContent = mode==='duo' ? '♟ Jucătorul 1 (alb)' : '♟ 🤖 Alb';
+    document.getElementById('clockLblB').textContent = mode==='duo' ? '♛ Jucătorul 2 (negru)' : '♛ Tu (Negru)';
 }
 
-function endGame(result) {
+function endGame(result, why, reason) {
     stopClock();
     gameOver=true; clearHL();
     const rounds = moveHistory.filter(m => m.b).length;
-    if (result==='draw') {
+    if (mode === 'duo') {
+        const winner = result==='white' ? 'w' : 'b';
+        const loser  = winner==='w' ? 'b' : 'w';
+        if (why === 'strikes') {
+            setStatus(`❌ ${reason}\n${PLAYER[loser]} a încercat 3 mutări nepermise.\n🏆 ${PLAYER[winner]} câștigă.`,'win');
+        } else if (why === 'time') {
+            setStatus(`⏰ ${PLAYER[loser]} a rămas fără timp.\n🏆 ${PLAYER[winner]} câștigă.`,'win');
+        } else if (result==='draw') {
+            setStatus(`🤝 Egalitate. Amândoi jucătorii au terminat cursa în ${rounds} mutări.`,'draw');
+        } else {
+            setStatus(`🏆 ${PLAYER[winner]} câștigă în ${rounds} mutări.`,'win');
+        }
+        if (result==='draw') {
+            document.getElementById('trophy-white').classList.add('show');
+            document.getElementById('trophy-black').classList.add('show');
+        } else {
+            document.getElementById(winner==='w'?'trophy-white':'trophy-black').classList.add('show');
+        }
+    } else if (why === 'time') {
+        if (result==='black') setStatus('⏰ Calculatorului i-a expirat timpul.\n🏆 Ai câștigat!','win');
+        else                  setStatus('⏰ Ți-a expirat timpul.\n🏆 Calculatorul câștigă.','win');
+        document.getElementById(result==='black'?'trophy-black':'trophy-white').classList.add('show');
+    } else if (result==='draw') {
         setStatus(`🤝 Egalitate! Amândoi în ${rounds} mutări!`,'draw');
         document.getElementById('trophy-white').classList.add('show');
         document.getElementById('trophy-black').classList.add('show');
@@ -461,25 +600,39 @@ function aiWhitePickMove() {
     return {piece:'bishop', dest: best || bm[0]};
 }
 
-function aiWhiteTurn() {
-    setStatus('🤖 Calculatorul gândește…','white-turn');
+function aiWhiteTurn(note) {
+    const g = gameGen;
+    setStatus((note ? note + '\n' : '') + '🤖 Calculatorul gândește…','white-turn');
     document.getElementById('panel-white').className='player-panel active';
     setTimeout(() => {
+        if (g !== gameGen || gameOver || mode !== 'robot') return;
         const mv = aiWhitePickMove();
         if (mv) {
             const flashSq = mv.piece==='rook' ? wRSq : wBSq;
             $(`.square-${flashSq}`).addClass('sq-ai');
         }
         setTimeout(() => {
+            if (g !== gameGen || gameOver || mode !== 'robot') return;
             clearHL();
             if (mv) {
                 if (mv.piece==='rook') doRook('w', mv.dest);
                 else                   doBish('w', mv.dest);
                 board.position(buildPos(), false);
+            } else {
+                recordMove('w', null, null);   // calculatorul nu are mutare: sare rândul
             }
             checkDone(); updateUI();
             turn='b';
             updateClocks();
+            if (!hasAnyMove('b')) {
+                if (!hasAnyMove('w')) { gameOver=true; stopClock(); setStatus('Nicio piesă nu mai poate muta. Apasă „Restart".','draw'); updateUI(); return; }
+                recordMove('b', null, null);
+                checkDone(); updateUI();
+                if (wDone) { endGame('white'); return; }
+                turn='w'; updateClocks(); updateUI();
+                aiWhiteTurn('♜♝ Nicio piesă neagră nu poate muta, așa că sari rândul.');
+                return;
+            }
             if (wDone) {
                 setStatus('✅ Calculatorul a terminat! Ultima ta mutare…','black-turn');
             } else {
@@ -495,6 +648,14 @@ function selectAnimal(btn) {
     document.querySelectorAll('.animal-btn').forEach(function(b){b.classList.remove('active');});
     btn.classList.add('active');
     aiRandomChance = parseFloat(btn.dataset.random);
+}
+
+function setMode(m) {
+    mode = m;
+    document.getElementById('modeRobot').className = 'tgl-btn' + (m === 'robot' ? ' active' : '');
+    document.getElementById('modeDuo').className   = 'tgl-btn' + (m === 'duo' ? ' active' : '');
+    document.getElementById('levelBox').style.display = m === 'robot' ? '' : 'none';
+    restartGame();
 }
 
 var clockMax = 0;
@@ -529,60 +690,125 @@ function startClock(){
         var c=turn==='w'?'w':'b';
         clock[c]--;
         updateClocks();
-        if(clock[c]<=0){stopClock();endGame(turn==='w'?'black':'white');}
+        if(clock[c]<=0){stopClock();endGame(turn==='w'?'black':'white','time');}
     },1000);
 }
 function stopClock(){if(clockTick){clearInterval(clockTick);clockTick=null;}}
 
+/* ---------- ajutoare pentru jucătorul la mutare ---------- */
+function other(c) { return c==='w' ? 'b' : 'w'; }
+function rookOf(c) { return c==='w' ? wRSq : bRSq; }
+function bishOf(c) { return c==='w' ? wBSq : bBSq; }
+function isOwn(c, sq) { return sq===rookOf(c) || sq===bishOf(c); }
+function humanTurn() { return !gameOver && (mode==='duo' || turn==='b'); }
+function pieceSyms(c) { return c==='w' ? {R:'♖', B:'♗'} : {R:'♜', B:'♝'}; }
+
+function illegalReason(piece, from, to) {
+    if (BARRIER.includes(to)) return 'Pe barieră nu se poate pune nicio piesă.';
+    if (buildPos()[to])       return 'Pătratul este ocupat. În acest joc nu se capturează.';
+    const dc = Math.abs(COL.indexOf(to[0]) - COL.indexOf(from[0]));
+    const dr = Math.abs(parseInt(to[1]) - parseInt(from[1]));
+    if (piece === 'rook') {
+        return (dc===0 || dr===0) ? 'Turnul nu poate sări peste piese sau peste barieră.'
+                                  : 'Turnul merge doar în linie dreaptă, pe coloane și pe rânduri.';
+    }
+    return dc===dr ? 'Nebunul nu poate sări peste piese sau peste barieră.'
+                   : 'Nebunul merge doar pe diagonală.';
+}
+
+/* încercare nepermisă: nu se face, dar se numără (doar în doi) */
+function illegal(reason) {
+    selPiece=null; selSq=null; validDests=[]; clearHL();
+    const c = turn;
+    strikes[c]++;
+    updateUI();
+    if (strikes[c] >= MAX_STRIKES) {
+        endGame(other(c)==='w' ? 'white' : 'black', 'strikes', reason);
+        return;
+    }
+    setStatus(`❌ ${reason}\nÎncercări nepermise pentru ${PLAYER[c]}: ${strikes[c]} din ${MAX_STRIKES}.`, 'warn');
+}
+
+/* selectează piesa și arată pătratele unde poate merge; întoarce false dacă e blocată */
+function selectPiece(c, cs) {
+    const s = pieceSyms(c);
+    if (cs===rookOf(c)) {
+        const mv=rookMovesUser(cs);
+        if (!mv.length) { setStatus(`${s.R} Blocat! Mută Nebunul.`, c==='w'?'white-turn':'black-turn'); return false; }
+        selPiece='rook'; selSq=cs; validDests=mv;
+    } else {
+        const mv=bishMoves(cs);
+        if (!mv.length) { setStatus(`${s.B} Nebunul blocat! Mută Turnul.`, c==='w'?'white-turn':'black-turn'); return false; }
+        selPiece='bishop'; selSq=cs; validDests=mv;
+    }
+    showHL(cs, validDests);
+    return true;
+}
+function deselect() { selPiece=null; selSq=null; validDests=[]; clearHL(); }
+let pendingDeselect = false;   // mousedown pe piesa deja selectată: la ridicare pe loc se deselectează
+
+function hasAnyMove(c) { return rookMovesUser(rookOf(c)).length + bishMoves(bishOf(c)).length > 0; }
+
+function promptDuo() {
+    const c = turn, s = pieceSyms(c);
+    if (!hasAnyMove(c)) {
+        if (!hasAnyMove(other(c))) { gameOver=true; stopClock(); setStatus('Nicio piesă nu mai poate muta. Apasă „Restart".','draw'); updateUI(); return; }
+        recordMove(c, null, null);
+        setStatus(`${PLAYER[c]} nu are nicio mutare și sare rândul.`, c==='w'?'white-turn':'black-turn');
+        afterMove(c, true);
+        return;
+    }
+    if (c==='b' && wDone) {
+        setStatus(`✅ ${PLAYER.w} a terminat cursa.\n${PLAYER.b} are o ultimă mutare pentru egalitate.`,'black-turn');
+    } else {
+        setStatus(`${PLAYER[c]} mută: ${s.R} sau ${s.B}.`, c==='w'?'white-turn':'black-turn');
+    }
+}
+
+function afterMove(c, passed) {
+    checkDone(); updateUI();
+    if (c==='b') {
+        if (wDone || bDone) {
+            if (wDone && bDone) endGame('draw');
+            else if (wDone)     endGame('white');
+            else                endGame('black');
+            return;
+        }
+        turn='w'; updateClocks(); updateUI();
+        if (mode==='robot') aiWhiteTurn(); else if (!passed) promptDuo(); else setTimeout(promptDuo, 0);
+    } else {
+        turn='b'; updateClocks(); updateUI();
+        if (!passed) promptDuo(); else setTimeout(promptDuo, 0);
+    }
+}
+
+function makeMove(c, piece, sq) {
+    if (piece==='rook') doRook(c, sq);
+    else                doBish(c, sq);
+    clearHL(); selPiece=null; selSq=null; validDests=[];
+    afterMove(c);
+}
+
 $(document).on('click', function(e) {
-    if (gameOver || turn!=='b') return;
+    if (!humanTurn()) return;
     const el=$(e.target).closest('[class*="square-"]');
     if (!el.length) return;
     const match=(el.attr('class')||'').match(/square-([a-h][1-8])/);
     if (!match) return;
     const cs=match[1];
-    if (BARRIER.includes(cs)) return;
-    if (!selSq) {
-        if (cs===bRSq) {
-            const mv=rookMovesUser(bRSq);
-            if (!mv.length) { setStatus('♜ Blocat! Mută Nebunul.','black-turn'); return; }
-            selPiece='rook'; selSq=cs; validDests=mv;
-            clearHL(); $(`.square-${cs}`).addClass('highlight-selected');
-        } else if (cs===bBSq) {
-            const mv=bishMoves(bBSq);
-            if (!mv.length) { setStatus('♝ Nebunul blocat! Mută Turnul.','black-turn'); return; }
-            selPiece='bishop'; selSq=cs; validDests=mv;
-            clearHL(); $(`.square-${cs}`).addClass('highlight-selected');
-        }
-    } else {
-        if (validDests.includes(cs)) {
-            if (selPiece==='rook') doRook('b', cs);
-            else                   doBish('b', cs);
-            board.position(buildPos(), false);
-            clearHL(); selPiece=null; selSq=null; validDests=[];
-            checkDone(); updateUI();
-            if (wDone || bDone) {
-                if (wDone && bDone) endGame('draw');
-                else if (wDone)     endGame('white');
-                else                endGame('black');
-                return;
-            }
-            turn='w'; updateClocks(); aiWhiteTurn();
-        } else if (cs===selSq) {
-            selPiece=null; selSq=null; validDests=[]; clearHL();
-        } else {
-            if (cs===bRSq) {
-                const mv=rookMovesUser(bRSq);
-                if (mv.length) { selPiece='rook'; selSq=cs; validDests=mv; clearHL(); $(`.square-${cs}`).addClass('highlight-selected'); }
-            } else if (cs===bBSq) {
-                const mv=bishMoves(bBSq);
-                if (mv.length) { selPiece='bishop'; selSq=cs; validDests=mv; clearHL(); $(`.square-${cs}`).addClass('highlight-selected'); }
-            }
-        }
+    const c=turn;
+    /* pătratele cu piese (inclusiv bariera) sunt tratate în onDragStart/onDrop */
+    if (!selSq || buildPos()[cs]) return;
+    if (validDests.includes(cs)) {
+        makeMove(c, selPiece, cs);
+        board.position(buildPos(), false);
+    } else if (mode==='duo') {
+        illegal(illegalReason(selPiece, selSq, cs));
     }
 });
 
 function restartGame() {
+    gameGen++;
     wRSq=WR_HOME; bRSq=BR_HOME; wBSq=WB_HOME; bBSq=BB_HOME;
     wRPhase=0; bRPhase=2;
     wRMoved=false; bRMoved=false; wBMoved=false; bBMoved=false;
@@ -590,6 +816,7 @@ function restartGame() {
     wRWpIdx=0; wBWpIdx=0; moveHistory=[];
     wDone=false; bDone=false; gameOver=false;
     selPiece=null; selSq=null; validDests=[];
+    strikes={w:0, b:0};
     turn='w';
     board.position(buildPos(), false);
     clearHL();
@@ -603,8 +830,14 @@ function restartGame() {
     document.getElementById('detail-bR').textContent='♜ acasă';
     document.getElementById('detail-bB').textContent='♝ acasă';
     renderMoves();
-    setStatus('🤖 Calculatorul gândește…','white-turn');
-    setTimeout(() => aiWhiteTurn(), 900);
+    updateUI();
+    if (mode==='duo') {
+        setStatus(`${PLAYER.w} mută primul: ♖ sau ♗.`,'white-turn');
+    } else {
+        const g = gameGen;
+        setStatus('🤖 Calculatorul gândește…','white-turn');
+        setTimeout(() => { if (g === gameGen && mode === 'robot') aiWhiteTurn(); }, 900);
+    }
     var tb = document.querySelector('.time-opt.active');
     clockMax = tb ? parseInt(tb.dataset.secs) : 0;
     clock = {w: clockMax, b: clockMax};
@@ -620,31 +853,37 @@ board = Chessboard('board', {
     draggable: true,
     showNotation: true,
     onDragStart: function(source) {
-        if (gameOver || turn !== 'b') return false;
-        if (source !== bRSq && source !== bBSq) return false;
-        /* evidențiază destinațiile valide la începutul drag-ului */
-        clearHL(); $(`.square-${source}`).addClass('highlight-selected');
+        if (!humanTurn()) return false;
+        const c = turn;
+        if (isOwn(c, source)) {
+            /* click sau început de drag pe piesa proprie = selectare (cu destinațiile legale) */
+            if (source === selSq) { pendingDeselect = true; return; }
+            pendingDeselect = false;
+            return selectPiece(c, source) ? undefined : false;
+        }
+        if (mode === 'duo' && (selSq || isOwn(other(c), source))) {
+            illegal(selSq ? illegalReason(selPiece, selSq, source)
+                          : 'Aceasta este o piesă a adversarului. Mută doar piesele tale.');
+        }
+        return false;
     },
     onDrop: function(source, target) {
-        clearHL(); selPiece = null; selSq = null; validDests = [];
-        if (target === 'offboard') return 'snapback';
-        let dests, pieceType;
-        if (source === bRSq)      { dests = rookMovesUser(bRSq); pieceType = 'rook'; }
-        else if (source === bBSq) { dests = bishMoves(bBSq);     pieceType = 'bishop'; }
-        else return 'snapback';
-        if (!dests.includes(target)) return 'snapback';
-        if (pieceType === 'rook') doRook('b', target);
-        else                      doBish('b', target);
-        checkDone(); updateUI();
-        if (wDone || bDone) {
-            if (wDone && bDone) endGame('draw');
-            else if (wDone)     endGame('white');
-            else                endGame('black');
-            return;
+        const c = turn;
+        if (target === source) {           // ridicată și pusă la loc = click pe piesă
+            if (pendingDeselect) deselect();
+            pendingDeselect = false;
+            return 'snapback';
         }
-        turn = 'w';
-        updateClocks();
-        aiWhiteTurn();
+        pendingDeselect = false;
+        const pieceType = source===rookOf(c) ? 'rook' : source===bishOf(c) ? 'bishop' : null;
+        deselect();
+        if (target === 'offboard' || !pieceType) return 'snapback';
+        const dests = pieceType==='rook' ? rookMovesUser(source) : bishMoves(source);
+        if (!dests.includes(target)) {
+            if (mode === 'duo') illegal(illegalReason(pieceType, source, target));
+            return 'snapback';
+        }
+        makeMove(c, pieceType, target);
     },
     onSnapEnd: function() {
         board.position(buildPos(), false);

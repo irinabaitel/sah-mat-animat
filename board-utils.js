@@ -183,7 +183,8 @@
 
   /* ── Init (DOMContentLoaded) ── */
   document.addEventListener('DOMContentLoaded', function () {
-    var boardEl = document.getElementById('board');
+    /* tabla are de obicei id=board; unele jocuri (myBoard, mcBoard) o pun direct în #boardWrapper */
+    var boardEl = document.getElementById('board') || document.querySelector('#boardWrapper > div');
     if (!boardEl) return;
 
     /* ════ TOUCH BRIDGE ════ */

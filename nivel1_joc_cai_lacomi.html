@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMTZ9GGPMP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMTZ9GGPMP');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Care cal mănâncă mai repede? — Joc</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
+<style>
+  .game-badge {
+    background: var(--c-navy); color: white;
+    font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-bold);
+    padding: 3px 14px; border-radius: var(--radius-sm); white-space: nowrap;
+  }
+
+  /* HIGHLIGHTS (selectat / posibil / captură = clasele din master) */
+  .sq-last     { background-color: rgba(160,60,200,0.35) !important; }
+  .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
+
+  .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
+
+  /* CUM SE JOACĂ */
+  .howto { margin-bottom:10px; }
+  .howto > summary {
+    cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900;
+    color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px;
+    background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8);
+  }
+  .howto > summary::-webkit-details-marker { display:none; }
+  .howto > summary::after { content:' ▾'; }
+  .howto:not([open]) > summary::after { content:' ▸'; }
+  .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
+  .howto .hl-box p { margin:0 0 6px; }
+  .howto .hl-box p:last-child { margin-bottom:0; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+
+  /* TOGGLES */
+  .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+  .tgl-btn {
+    flex:1; padding:6px 10px; border-radius:50px;
+    border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.5);
+    font-family:var(--font-display); font-size:0.82em; color:var(--c-navy);
+    cursor:pointer; transition:all 0.2s; white-space:nowrap;
+  }
+  .tgl-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
+
+  .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; }
+  .animal-btn { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:12px; padding:7px 4px; cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.74em; font-weight:700; color:#1a3a6b; text-align:center; transition:all 0.18s; line-height:1.4; }
+  .animal-btn:hover { background:rgba(255,255,255,0.82); transform:translateY(-2px); }
+  .animal-btn.active { background:#1a3a6b; color:white; border-color:#1a3a6b; box-shadow:0 3px 10px rgba(26,58,107,0.4); }
+  .animal-btn .emoji { font-size:1.4em; display:block; }
+  .animal-btn .name  { display:block; margin-top:2px; }
+
+  /* COUNTER */
+  .counter-row { display:flex; gap:8px; margin-bottom:8px; }
+  .counter-box {
+    flex:1; background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8);
+    border-radius:12px; padding:6px 10px; text-align:center;
+  }
+  .counter-lbl { font-family:var(--font-display); font-size:0.72em; color:rgba(26,58,107,0.65); }
+  .counter-val { font-family:var(--font-display); font-size:1.35em; font-weight:900; color:var(--c-navy); line-height:1.3; }
+
+  /* PLAYER PANELS */
+  .player-panel {
+    background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8);
+    border-radius:12px; padding:8px 12px; margin-bottom:8px;
+  }
+  .player-panel.active { border-color:var(--c-navy); background:rgba(26,58,107,0.1); }
+  .player-panel.winner { border-color:rgba(40,180,80,0.6); background:rgba(40,180,80,0.1); }
+  .pp-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .pp-name { font-family:var(--font-display); font-size:0.88em; color:#1a1a2e; }
+  .pp-role { font-size:0.8em; color:rgba(26,26,46,0.65); }
+  .pp-strikes { font-size:0.82em; letter-spacing:1px; }
+  .pp-result { font-size:0.8em; color:#1a1a2e; margin-top:3px; min-height:1.2em; }
+
+  /* STATUS */
+  #status-box {
+    background:rgba(26,58,107,0.09); border:2px solid rgba(26,58,107,0.2);
+    border-radius:12px; padding:9px 12px;
+    font-size:0.86em; line-height:1.6; color:#1a1a2e;
+    min-height:46px; transition:all 0.3s; margin-bottom:8px;
+  }
+  #status-box.ok   { border-color:rgba(40,180,80,0.5);  background:rgba(40,180,80,0.15); }
+  #status-box.warn { border-color:rgba(192,57,43,0.45); background:rgba(255,210,200,0.6); }
+  #status-box.draw { border-color:rgba(200,150,10,0.5); background:rgba(200,150,10,0.12); }
+
+  /* BUTTONS */
+  .btn-game {
+    display:block; width:100%; padding:8px;
+    border-radius:10px; border:2px solid rgba(255,255,255,0.8);
+    background:rgba(255,255,255,0.55); font-family:var(--font-display);
+    font-size:0.85em; color:var(--c-navy); cursor:pointer;
+    transition:background 0.2s; margin-bottom:6px;
+  }
+  .btn-game:hover { background:rgba(255,255,255,0.85); }
+  #btn-round2 {
+    display:none; width:100%; padding:9px; border-radius:10px; border:none; margin-bottom:6px;
+    background:#1a6b4a; color:white; font-family:var(--font-display);
+    font-size:0.88em; font-weight:700; cursor:pointer;
+    box-shadow:0 2px 8px rgba(26,107,74,0.35); transition:background 0.2s;
+  }
+  #btn-round2:hover { background:#27ae60; }
+</style>
+<link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
+<link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+<script src="minijocuri-nav.js"></script>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">♘♞ Care cal mănâncă mai repede?</span>
+    <div class="header-progress">
+      <span class="game-badge">Joc</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+
+        <div class="toggle-row">
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
+        </div>
+
+        <div id="levelBox">
+          <div class="sec-title">Alege adversarul:</div>
+          <div class="animal-grid">
+            <button class="animal-btn active" data-random="0.9" onclick="selectAnimal(this)"><span class="emoji">&#128035;</span><span class="name">Pui de găină</span></button>
+            <button class="animal-btn" data-random="0.2" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
+            <button class="animal-btn" data-random="0" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
+          </div>
+        </div>
+
+        <div class="counter-row">
+          <div class="counter-box"><div class="counter-lbl">Repriza</div><div class="counter-val" id="roundVal">1 / 2</div></div>
+          <div class="counter-box"><div class="counter-lbl">Mutări: alb · negru</div><div class="counter-val" id="movesVal">0 · 0</div></div>
+        </div>
+        <div class="counter-row">
+          <div class="counter-box"><div class="counter-lbl">Mâncate de calul alb</div><div class="counter-val" id="eatWVal">0 / 14</div></div>
+          <div class="counter-box"><div class="counter-lbl">Mâncate de calul negru</div><div class="counter-val" id="eatBVal">0 / 14</div></div>
+        </div>
+
+        <div class="player-panel" id="pp1">
+          <div class="pp-row">
+            <span class="pp-name" id="pp1-name">👤 Tu</span>
+            <span class="pp-role" id="pp1-role"></span>
+            <span class="pp-strikes" id="pp1-strikes"></span>
+          </div>
+          <div class="pp-result" id="pp1-result"></div>
+        </div>
+        <div class="player-panel" id="pp2">
+          <div class="pp-row">
+            <span class="pp-name" id="pp2-name">🤖 Calculatorul</span>
+            <span class="pp-role" id="pp2-role"></span>
+            <span class="pp-strikes" id="pp2-strikes"></span>
+          </div>
+          <div class="pp-result" id="pp2-result"></div>
+        </div>
+
+        <div id="status-box">⏳ Pregătesc jocul…</div>
+
+        <button id="btn-round2" onclick="startRound(2)">▶ Repriza 2 — schimbăm culorile</button>
+        <button class="btn-game" onclick="newMatch()">↺ Joacă din nou</button>
+
+        <details class="howto" open>
+          <summary>📖 Cum se joacă</summary>
+
+          <div class="hl-box">
+            <h4>Cum arată tabla la început</h4>
+            <p>Piesele stau ca la începutul unei partide obișnuite, cu două schimbări. Fiecare <strong>rege</strong> a fost scos de pe tablă. Pe locul lui stă acum un <strong>cal al adversarului</strong>, luat de lângă turn.</p>
+            <p>De aceea pătratul b1 este gol, iar pe e1, în mijlocul pieselor albe, stă un <strong>cal negru</strong>. La fel, pătratul b8 este gol, iar pe e8, în mijlocul pieselor negre, stă un <strong>cal alb</strong>.</p>
+            <p>Acești doi cai au ajuns „în tabăra dușmanului” și sunt singurele piese care se mută în acest joc.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Care cal este al tău</h4>
+            <p>Cine joacă cu albul mută <strong>calul alb de pe e8</strong>. Cine joacă cu negrul mută <strong>calul negru de pe e1</strong>.</p>
+            <p>Toate celelalte piese (pionii, turnurile, nebunii, damele și ceilalți doi cai) <strong>stau pe loc</strong> tot jocul. Ele nu se apără și nu fug. Așteaptă doar să fie mâncate.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum sare calul</h4>
+            <p>Calul se mută în formă de <strong>„L”</strong>: două pătrate într-o direcție (înainte, înapoi, la stânga sau la dreapta) și apoi un pătrat într-o parte. Sau invers: un pătrat într-o direcție și apoi două într-o parte.</p>
+            <p>Un exemplu: calul alb de pe e8 coboară două pătrate (e7, e6) și apoi face un pas la stânga, pe <strong>d6</strong>. Tot de pe e8 poate ajunge pe <strong>f6</strong>, <strong>c7</strong> sau <strong>g7</strong>. Pe c7 și pe g7 stau pioni negri, deci acolo ar mânca un pion.</p>
+            <p>Calul este singura piesă care <strong>sare peste alte piese</strong>. Nu contează ce stă între pătratul de plecare și cel de sosire.</p>
+            <p>Un lucru ușor de observat: la fiecare săritură calul schimbă culoarea pătratului. Dacă stă pe un pătrat alb, sare pe unul negru. Dacă stă pe un pătrat negru, sare pe unul alb.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Ce înseamnă „a mânca”</h4>
+            <p><strong>A mânca</strong> (sau <strong>a captura</strong>) o piesă înseamnă să sari cu calul tău exact pe pătratul unde stă o piesă a adversarului. Piesa adversarului iese de pe tablă, iar calul tău rămâne în locul ei.</p>
+            <p>Calul alb mănâncă numai piese negre. Calul negru mănâncă numai piese albe. Fiecare are de mâncat <strong>14 piese</strong>: toate piesele adversarului, în afară de calul lui special, care nu poate fi mâncat.</p>
+            <p>Nu poți sări pe o piesă de culoarea ta. Cei doi cai nu se pot mânca unul pe altul și nu pot sta pe același pătrat.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Pe rând</h4>
+            <p>Albul mută primul. Apoi mută negrul, apoi iar albul și tot așa. La fiecare mutare calul face o singură săritură.</p>
+            <p>Dacă un cal nu are nicio săritură posibilă (toate pătratele în care ar putea sări sunt ocupate de piese de culoarea lui sau de celălalt cal), el <strong>pierde rândul</strong> și mută celălalt cal. Dacă niciunul nu poate sări, repriza se termină la egalitate. Se întâmplă foarte rar.</p>
+          </div>
+
+          <div class="hl-box warn">
+            <h4>Cine câștigă</h4>
+            <p>Câștigă <strong>calul care mănâncă primul toate cele 14 piese</strong> ale adversarului. Dacă albul mănâncă ultima piesă neagră, câștigă imediat, iar negrul nu mai mută.</p>
+            <p>Nu e ușor, dar e frumos și instructiv. Cartea spune că nici la jucătorii mai avansați cel care începe nu câștigă întotdeauna.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Reprizele</h4>
+            <p>Jocul are două reprize. În prima repriză, Jucătorul 1 (sau tu, contra calculatorului) are calul alb. În a doua repriză <strong>se schimbă culorile</strong>.</p>
+            <p>Câștigă meciul cine a câștigat mai multe reprize. Dacă fiecare a câștigat câte una, câștigă cel care și-a terminat cursa <strong>din mai puține mutări</strong>. Dacă și numărul de mutări este același, meciul se termină la egalitate.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Nivelurile calculatorului</h4>
+            <p><strong>Puiul de găină</strong> sare de cele mai multe ori la întâmplare. <strong>Mânzul</strong> alege de obicei o săritură bună, dar mai greșește. <strong>Dragonul</strong> își calculează drumul cel mai scurt prin toate piesele pe care le are de mâncat.</p>
+          </div>
+
+          <div class="hl-box" id="ruleDuo" style="display:none">
+            <h4>În doi</h4>
+            <p>Doi copii mută pe rând, fiecare cu calul lui. O mutare care nu este permisă nu se face, dar se numără pentru cel care o încearcă. Tot încercare nepermisă este și când apuci altă piesă decât calul tău.</p>
+            <p>Dacă ai ridicat calul și îl pui înapoi pe pătratul lui, nu se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
+          </div>
+
+          <div class="hl-box ok">
+            <h4>Un sfat</h4>
+            <p>Înainte să începi, uită-te la toate piesele pe care le ai de mâncat și gândește-te în ce <strong>ordine</strong> le iei. Dacă mănânci la întâmplare, rămân piese izolate, de exemplu în colțuri. Atunci calul trebuie să se întoarcă de departe după ele.</p>
+            <p>De multe ori ajută să mănânci piesele vecine una după alta și să lași la sfârșit piesele care sunt aproape una de alta.</p>
+          </div>
+        </details>
+
+      </div><!-- /.panel-scroll -->
+      <div class="feedback-bar" id="feedbackBar"></div>
+    </div><!-- /.panel-col -->
+
+  </main>
+
+  <footer class="page-footer" role="navigation"></footer>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
+<script>
+/* =====================================================
+   CARE CAL MĂNÂNCĂ MAI REPEDE? (Step 1, lecția 3)
+   Poziția inițială, dar fiecare rege e înlocuit cu un cal al adversarului
+   (luat de pe b1/b8). Se mută doar calul alb de pe e8 și calul negru de pe e1.
+   Câștigă cine mănâncă primul toate cele 14 piese ale adversarului (calul special advers nu se mănâncă).
+   Dragon: drumul cel mai scurt prin toate țintele (BFS + Held-Karp).
+   ===================================================== */
+
+const COLS = 'abcdefgh';
+const MAX_STRIKES = 3;
+const TOTAL = 14;
+const BIG = 999;
+
+var sndMove    = new Audio('Sounds/Move.mp3');
+var sndCapture = new Audio('Sounds/Capture.mp3');
+var sndMate    = new Audio('Sounds/Mate.mp3');
+function play(s){ try { s.currentTime = 0; s.play().catch(function(){}); } catch(e) {} }
+
+/* ---------- geometrie ---------- */
+const idx  = s => COLS.indexOf(s[0]) * 8 + (parseInt(s[1]) - 1);
+const name = i => COLS[i >> 3] + ((i & 7) + 1);
+const KN = [];
+for (let s = 0; s < 64; s++) {
+    const out = [];
+    for (const [a, b] of [[1,2],[2,1],[2,-1],[1,-2],[-1,-2],[-2,-1],[-2,1],[-1,2]]) {
+        const c = (s >> 3) + a, r = (s & 7) + b;
+        if (c >= 0 && c < 8 && r >= 0 && r < 8) out.push(c * 8 + r);
+    }
+    KN.push(out);
+}
+function bfs(from, blocked) {             // distanțe de cal; pe pătratele blocate nu se poate sări
+    const d = new Uint16Array(64).fill(BIG), q = [from];
+    d[from] = 0;
+    for (let h = 0; h < q.length; h++) {
+        const s = q[h];
+        for (const t of KN[s]) if (d[t] === BIG && !blocked[t]) { d[t] = d[s] + 1; q.push(t); }
+    }
+    return d;
+}
+
+/* ---------- poziția de start ---------- */
+function startPieces() {
+    const P = {};
+    const back = ['R', null, 'B', 'Q', null, 'B', 'N', 'R'];
+    for (let c = 0; c < 8; c++) {
+        if (back[c]) { P[c * 8 + 0] = 'w' + back[c]; P[c * 8 + 7] = 'b' + back[c]; }
+        P[c * 8 + 1] = 'wP'; P[c * 8 + 6] = 'bP';
+    }
+    return P;                              // piesele care stau pe loc
+}
+
+/* ---------- stare ---------- */
+let board, ready = false;
+let mode = 'robot', aiRandomChance = 0.9;
+let round, P, KW, KB, turn, moves, roundOver, matchOver;   // KW = calul alb, KB = calul negru
+let selSq = null, aiTimer = null;
+let results = {}, strikes = {1:0, 2:0};
+let shortest = { w: null, b: null };      // drumul cel mai scurt de la start (null = nu e sigur)
+
+const whitePlayer  = r => r === 1 ? 1 : 2;
+const blackPlayer  = r => r === 1 ? 2 : 1;
+const playerOf     = (c, r) => c === 'w' ? whitePlayer(r) : blackPlayer(r);
+const playerOnMove = () => playerOf(turn, round);
+const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Calculatorul');
+const knightName = c => c === 'w' ? 'calul alb' : 'calul negru';
+const other = c => c === 'w' ? 'b' : 'w';
+const knightSq = c => c === 'w' ? KW : KB;
+
+/* ---------- reguli ---------- */
+function targetsOf(c) {                   // piesele pe care le are de mâncat calul c
+    const out = [];
+    for (const k in P) if (P[k][0] !== c) out.push(+k);
+    return out;
+}
+function legalFrom(c) {
+    const from = knightSq(c), opp = knightSq(other(c));
+    return KN[from].filter(t => t !== opp && !(P[t] && P[t][0] === c));
+}
+const eaten = c => TOTAL - targetsOf(c).length;
+
+/* ---------- drumul cel mai scurt (Held-Karp) ----------
+   g[mask*n + i] = câte mutări mai trebuie, pornind de pe ținta i, ca să mănânci țintele din mask */
+function solveTour(c, noBlockers) {
+    const T = targetsOf(c), n = T.length;
+    const blocked = new Uint8Array(64);
+    if (!noBlockers) for (const k in P) if (P[k][0] === c) blocked[+k] = 1;
+    const D = T.map(t => { const d = bfs(t, blocked); return T.map(u => d[u]); });
+    const full = (1 << n) - 1;
+    const g = new Uint16Array((full + 1) * n);
+    for (let mask = 1; mask <= full; mask++) {
+        for (let i = 0; i < n; i++) {
+            if (mask & (1 << i)) continue;
+            let best = 65535;
+            const Di = D[i];
+            for (let j = 0; j < n; j++) {
+                if (!(mask & (1 << j))) continue;
+                const v = Di[j] + g[(mask ^ (1 << j)) * n + j];
+                if (v < best) best = v;
+            }
+            g[mask * n + i] = best;
+        }
+    }
+    return { T, n, full, g, blocked };
+}
+function tourFrom(sq, tour) {             // câte mutări de pe sq ca să mănânci tot
+    const { T, n, full, g, blocked } = tour;
+    if (n === 0) return 0;
+    const k = T.indexOf(sq);
+    if (k >= 0) return g[(full ^ (1 << k)) * n + k];
+    const d = bfs(sq, blocked);
+    let best = 65535;
+    for (let j = 0; j < n; j++) { const v = d[T[j]] + g[(full ^ (1 << j)) * n + j]; if (v < best) best = v; }
+    return best;
+}
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function chooseMove(c, randomChance) {
+    const opts = legalFrom(c);
+    if (!opts.length) return null;
+    if (Math.random() < randomChance) return pickRandom(opts);
+    const tour = solveTour(c);
+    let best = Infinity, pool = [];
+    for (const t of opts) {
+        const v = 1 + tourFrom(t, tour) - (P[t] ? 0.5 : 0);    // la egalitate, preferă să mănânce acum
+        if (v < best) { best = v; pool = [t]; } else if (v === best) pool.push(t);
+    }
+    return pickRandom(pool);
+}
+function exactShortest(c) {               // drumul cel mai scurt, doar dacă e sigur (nimic nu îl lungește)
+    const a = tourFrom(knightSq(c), solveTour(c, false));
+    const b = tourFrom(knightSq(c), solveTour(c, true));
+    return a === b && a < BIG ? a : null;
+}
+
+/* ---------- afișare ---------- */
+function buildPos() {
+    const pos = {};
+    for (const k in P) pos[name(+k)] = P[k];
+    pos[name(KW)] = 'wN'; pos[name(KB)] = 'bN';
+    return pos;
+}
+function clearHL(keepLast) {
+    const cls = keepLast ? 'highlight-selected highlight-legal highlight-capture sq-wrong' : 'highlight-selected highlight-legal highlight-capture sq-wrong sq-last';
+    $('#board [class*="square-"]').removeClass(cls);
+}
+function legalTargets(sq) {
+    if (idx(sq) !== knightSq(turn)) return [];
+    return legalFrom(turn).map(name);
+}
+function showSelection(sq) {
+    clearHL(true);
+    $('.square-' + sq).addClass('highlight-selected');
+    legalTargets(sq).forEach(t => $('.square-' + t).addClass(P[idx(t)] ? 'highlight-capture' : 'highlight-legal'));
+}
+function flashWrong(sq) {
+    const el = $('.square-' + sq);
+    el.addClass('sq-wrong');
+    setTimeout(() => el.removeClass('sq-wrong'), 600);
+}
+function setStatus(msg, cls) {
+    const el = document.getElementById('status-box');
+    el.innerHTML = msg; el.className = cls || '';
+}
+
+function updateUI() {
+    document.getElementById('roundVal').textContent = round + ' / 2';
+    document.getElementById('movesVal').textContent = moves.w + ' · ' + moves.b;
+    document.getElementById('eatWVal').textContent = eaten('w') + ' / ' + TOTAL;
+    document.getElementById('eatBVal').textContent = eaten('b') + ' / ' + TOTAL;
+    [1, 2].forEach(p => {
+        document.getElementById('pp' + p + '-name').textContent = (mode === 'robot' && p === 2 ? '🤖 ' : '👤 ') + pname(p);
+        document.getElementById('pp' + p + '-role').textContent = whitePlayer(round) === p ? '♘ Calul alb' : '♞ Calul negru';
+        document.getElementById('pp' + p + '-strikes').textContent =
+            mode === 'duo' ? '❌'.repeat(strikes[p]) + '▫️'.repeat(MAX_STRIKES - strikes[p]) : '';
+        document.getElementById('pp' + p).className = 'player-panel' + (!roundOver && !matchOver && playerOnMove() === p ? ' active' : '');
+        document.getElementById('pp' + p + '-result').textContent = resultLine(p);
+    });
+}
+function resultLine(p) {
+    const parts = [];
+    [1, 2].forEach(r => {
+        const res = results[r]; if (!res) return;
+        const col = whitePlayer(r) === p ? 'w' : 'b';
+        const label = 'repriza ' + r + ' (' + (col === 'w' ? 'alb' : 'negru') + '): ';
+        if (res.winner === null) parts.push(label + 'egal');
+        else if (res.winner === col) parts.push(label + 'câștigată în ' + res.moves + ' mutări');
+        else parts.push(label + 'pierdută');
+    });
+    return parts.join(' · ');
+}
+
+/* ---------- desfășurarea ---------- */
+function newMatch() {
+    if (!ready) return;
+    results = {}; strikes = {1:0, 2:0}; matchOver = false;
+    startRound(1);
+}
+function startRound(r) {
+    if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
+    round = r; P = startPieces(); KW = idx('e8'); KB = idx('e1');
+    turn = 'w'; moves = { w: 0, b: 0 }; roundOver = false; selSq = null;
+    if (shortest.w === null) { shortest.w = exactShortest('w'); shortest.b = exactShortest('b'); }
+    board.position(buildPos(), false);
+    clearHL();
+    document.getElementById('btn-round2').style.display = 'none';
+    updateUI();
+    const intro = shortest.w !== null
+        ? 'Repriza ' + r + '. Pe drumul cel mai scurt, fiecare cal poate mânca toate cele 14 piese în <strong>' + shortest.w + ' mutări</strong>.<br>'
+        : 'Repriza ' + r + '.<br>';
+    promptTurn(intro);
+}
+function promptTurn(note) {
+    if (roundOver || matchOver) return;
+    note = note || '';
+    if (!legalFrom(turn).length) {
+        if (!legalFrom(other(turn)).length) return endRound({ winner: null, how: 'stuck' });
+        note += 'Calul ' + (turn === 'w' ? 'alb' : 'negru') + ' nu are nicio săritură, așa că pierde rândul.<br>';
+        turn = other(turn);
+    }
+    const p = playerOnMove();
+    const sq = name(knightSq(turn));
+    if (mode === 'robot' && p === 2) {
+        setStatus(note + '🤖 Calculatorul mută ' + knightName(turn) + '…');
+        aiTimer = setTimeout(aiMove, 600);
+    } else {
+        setStatus(note + (mode === 'duo' ? pname(p) + ' mută ' : 'Muți ') + knightName(turn) + ' (acum pe ' + sq + ').');
+    }
+    updateUI();
+}
+function doMove(fromSq, toSq) {
+    selSq = null; clearHL();
+    const to = idx(toSq), c = turn;
+    const captured = !!P[to];
+    if (captured) delete P[to];
+    if (c === 'w') KW = to; else KB = to;
+    moves[c]++;
+    board.position(buildPos(), false);
+    $('.square-' + fromSq).addClass('sq-last');
+    $('.square-' + toSq).addClass('sq-last');
+    play(captured ? sndCapture : sndMove);
+    if (targetsOf(c).length === 0) return endRound({ winner: c, moves: moves[c] });
+    turn = other(c);
+    promptTurn();
+}
+function endRound(res) {
+    roundOver = true;
+    results[round] = res;
+    setTimeout(() => play(sndMate), 250);
+    let msg;
+    if (res.winner === null) {
+        msg = 'Niciun cal nu mai poate sări. Repriza se termină la egalitate.';
+    } else {
+        const wp = playerOf(res.winner, round);
+        const you = mode === 'robot' && wp === 1;
+        msg = (res.winner === 'w' ? '♘ ' : '♞ ') + (you ? 'Ai mâncat' : pname(wp) + ' a mâncat') +
+              ' toate cele 14 piese cu ' + knightName(res.winner) + ', în ' + res.moves + ' mutări. ' +
+              (you ? 'Ai câștigat repriza.' : 'Repriza e câștigată de ' + pname(wp) + '.');
+        if (shortest.w !== null) msg += '<br>Drumul cel mai scurt de la început avea ' + shortest.w + ' mutări.';
+    }
+    if (round === 1) {
+        setStatus(msg, res.winner === null ? 'draw' : 'ok');
+        document.getElementById('btn-round2').style.display = 'block';
+    } else {
+        matchOver = true;
+        setStatus(msg + '<br><br>' + matchSummary(), 'ok');
+    }
+    updateUI();
+}
+function matchWinner() {                  // 0 = egalitate
+    const wins = {1:0, 2:0}, mv = {1:null, 2:null};
+    [1, 2].forEach(r => {
+        const res = results[r]; if (!res || res.winner === null) return;
+        const p = playerOf(res.winner, r);
+        wins[p]++; mv[p] = res.moves;
+    });
+    if (wins[1] !== wins[2]) return { w: wins[1] > wins[2] ? 1 : 2, why: 'reprize' };
+    if (wins[1] === 1 && mv[1] !== mv[2]) return { w: mv[1] < mv[2] ? 1 : 2, why: 'mutari', mv };
+    return { w: 0, mv };
+}
+function matchSummary() {
+    const m = matchWinner();
+    if (m.w) {
+        document.getElementById('pp' + m.w).className = 'player-panel winner';
+        const who = mode === 'robot' && m.w === 1 ? 'Ai câștigat meciul' : pname(m.w) + ' câștigă meciul';
+        const why = m.why === 'reprize' ? 'a câștigat mai multe reprize.'
+                  : 'fiecare a câștigat o repriză, dar și-a terminat cursa din mai puține mutări (' + m.mv[m.w] + ' față de ' + m.mv[m.w === 1 ? 2 : 1] + ').';
+        return '🏆 <strong>' + who + '</strong>: ' + why;
+    }
+    return '🤝 <strong>Egalitate.</strong>';
+}
+
+/* ---------- încercări nepermise ---------- */
+function illegal(sq, reason) {
+    if (sq) flashWrong(sq);
+    selSq = null; clearHL(true);
+    if (mode !== 'duo') { setStatus('⚠️ ' + reason, 'warn'); return; }
+    const p = playerOnMove();
+    strikes[p]++;
+    updateUI();
+    if (strikes[p] >= MAX_STRIKES) {
+        roundOver = true; matchOver = true;
+        const o = p === 1 ? 2 : 1;
+        document.getElementById('btn-round2').style.display = 'none';
+        document.getElementById('pp' + o).className = 'player-panel winner';
+        setStatus('❌ ' + reason + '<br>' + pname(p) + ' a încercat 3 mutări nepermise.<br>🏆 <strong>' + pname(o) + ' câștigă meciul.</strong>', 'warn');
+        return;
+    }
+    setStatus('❌ ' + reason + ' Încercări nepermise pentru ' + pname(p) + ': ' + strikes[p] + ' din ' + MAX_STRIKES + '.', 'warn');
+}
+function whyIllegal(from, to) {
+    const t = idx(to);
+    if (t === knightSq(other(turn))) return 'Caii nu se pot mânca unul pe altul.';
+    if (P[t] && P[t][0] === turn) return 'Calul nu poate sări pe o piesă de culoarea lui.';
+    return 'Calul nu poate sări de pe ' + from + ' pe ' + to + '. El sare numai în formă de „L”.';
+}
+function tryMove(from, to) {
+    if (legalTargets(from).includes(to)) { doMove(from, to); return; }
+    illegal(to, whyIllegal(from, to));
+}
+function notYourPiece(sq) {
+    const i = idx(sq);
+    if (i === knightSq(other(turn))) return 'Acum e rândul calului ' + (turn === 'w' ? 'alb' : 'negru') + '.';
+    return 'În acest joc se mută doar ' + knightName(turn) + ' (pe ' + name(knightSq(turn)) + '). Celelalte piese stau pe loc.';
+}
+
+/* ---------- robotul ---------- */
+function aiMove() {
+    aiTimer = null;
+    if (roundOver || matchOver) return;
+    const from = knightSq(turn), to = chooseMove(turn, aiRandomChance);
+    if (to === null) { promptTurn(); return; }
+    $('.square-' + name(from)).addClass('highlight-selected');
+    aiTimer = setTimeout(() => { aiTimer = null; doMove(name(from), name(to)); }, 400);
+}
+
+/* ---------- setări ---------- */
+function selectAnimal(btn) {
+    document.querySelectorAll('.animal-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    aiRandomChance = parseFloat(btn.dataset.random);
+    newMatch();
+}
+function setMode(m) {
+    mode = m;
+    document.getElementById('modeRobot').className = 'tgl-btn' + (m === 'robot' ? ' active' : '');
+    document.getElementById('modeDuo').className   = 'tgl-btn' + (m === 'duo' ? ' active' : '');
+    document.getElementById('levelBox').style.display = m === 'robot' ? '' : 'none';
+    document.getElementById('ruleDuo').style.display  = m === 'duo' ? '' : 'none';
+    newMatch();
+}
+
+/* ---------- input: click și drag ---------- */
+function canAct() { return ready && !roundOver && !matchOver && !aiTimer && (mode === 'duo' || playerOnMove() === 1); }
+
+board = Chessboard('board', {
+    position: 'r1bqNbnr/pppppppp/8/8/8/8/PPPPPPPP/R1BQnBNR',
+    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+    draggable: true,
+    showNotation: true,
+    onDragStart: function(source) {
+        if (!canAct()) return false;
+        if (selSq && source !== selSq) {                         // click pe altă piesă după selectare
+            const from = selSq;
+            setTimeout(() => tryMove(from, source), 0);
+            return false;
+        }
+        if (idx(source) !== knightSq(turn)) {
+            illegal(source, notYourPiece(source));
+            return false;
+        }
+        selSq = source;
+        showSelection(source);
+    },
+    onDrop: function(source, target) {
+        if (!canAct() || target === 'offboard' || target === source) return 'snapback';
+        selSq = null;
+        if (!legalTargets(source).includes(target)) {
+            illegal(target, whyIllegal(source, target));
+            return 'snapback';
+        }
+        doMove(source, target);
+    },
+    onSnapEnd: function() { board.position(buildPos(), false); }
+});
+
+/* click pe un pătrat gol, după selectare */
+$(document).on('click', '#board [class*="square-"]', function() {
+    if (!canAct() || !selSq) return;
+    const m = (this.className || '').match(/square-([a-h][1-8])/);
+    if (!m) return;
+    const sq = m[1];
+    const i = idx(sq);
+    if (sq === selSq || P[i] || i === KW || i === KB) return;   // piesele sunt tratate în onDragStart
+    tryMove(selSq, sq);
+});
+
+$(window).resize(() => board.resize());
+
+setTimeout(() => { ready = true; newMatch(); }, 30);
+</script>
+</body>
+</html>

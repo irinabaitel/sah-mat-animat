@@ -11,7 +11,7 @@
   gtag('config', 'G-CMTZ9GGPMP');
 </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Regi și Pioni — Joc contra Calculatorului</title>
+  <title>Regi și Pioni — Joc</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -111,6 +111,35 @@
     .btn-reset:hover:not(:disabled) { background: rgba(192,57,43,0.10); }
     .btn-vol { position: fixed; top: 10px; right: 12px; z-index: 1000; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.88); border: 1.5px solid rgba(26,58,107,0.18); font-size: 1.05rem; cursor: pointer; line-height: 1; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 6px rgba(0,0,0,0.14); transition: background .15s; padding: 0; }
     .btn-vol:hover { background: rgba(26,58,107,0.10); }
+
+    .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
+    .sq-wrong  { background-color: rgba(220,40,40,0.55) !important; }
+    .clock-strikes { font-size:0.78em; letter-spacing:1px; margin-top:2px; min-height:1.1em; }
+
+    /* CUM SE JOACĂ */
+    .howto { margin-top:12px; margin-bottom:10px; }
+    .howto > summary {
+      cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900;
+      color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px;
+      background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8);
+    }
+    .howto > summary::-webkit-details-marker { display:none; }
+    .howto > summary::after { content:' ▾'; }
+    .howto:not([open]) > summary::after { content:' ▸'; }
+    .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
+    .howto .hl-box p { margin:0 0 6px; }
+    .howto .hl-box p:last-child { margin-bottom:0; }
+    .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+
+    /* TOGGLES */
+    .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+    .tgl-btn {
+      flex:1; padding:6px 10px; border-radius:50px;
+      border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.5);
+      font-family:var(--font-display); font-size:0.82em; color:var(--c-navy);
+      cursor:pointer; transition:all 0.2s; white-space:nowrap;
+    }
+    .tgl-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -129,15 +158,20 @@
       <div class="panel-scroll">
         <p class="panel-heading">&#9823; Regi și Pioni</p>
         <div class="hl-box" style="margin-bottom:10px">
-          Joc complet Regi și Pioni contra calculatorului (Stockfish). Alege dificultatea și pornește!
+          Regii și cei 16 pioni, fiecare pe locul lui. Joci contra calculatorului sau în doi, pe aceeași tablă.
         </div>
 
         <!-- SETUP (visible initially) -->
         <div id="setupPanel">
+          <div class="toggle-row">
+            <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+            <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
+          </div>
+          <div id="levelBox">
           <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:8px">Alege adversarul:</div>
           <div class="animal-grid" id="animalGrid">
             <button class="animal-btn active" data-skill="1" onclick="selectAnimal(this)">
-              <span class="emoji">&#128423;</span><span class="name">Pui de găină</span>
+              <span class="emoji">&#128035;</span><span class="name">Pui de găină</span>
             </button>
             <button class="animal-btn" data-skill="11" onclick="selectAnimal(this)">
               <span class="emoji">&#128014;</span><span class="name">Mânz</span>
@@ -146,6 +180,7 @@
               <span class="emoji">&#128009;</span><span class="name">Dragon</span>
             </button>
           </div>
+          </div>
           <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:6px">&#9203; Timp per juc&#259;tor:</div>
           <div class="time-opts">
             <button class="time-opt active" data-secs="0"   onclick="selectTime(this)">&#8734; Liber</button>
@@ -153,11 +188,16 @@
             <button class="time-opt" data-secs="120" onclick="selectTime(this)">2 min</button>
             <button class="time-opt" data-secs="300" onclick="selectTime(this)">5 min</button>
           </div>
+          <div id="colorBox">
           <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:6px">Joc cu:</div>
           <div class="color-opts">
-            <button class="color-opt active" data-color="white" onclick="selectColor(this)">&#9823; Albe</button>
-            <button class="color-opt" data-color="black" onclick="selectColor(this)">&#9819; Negre</button>
+            <button class="color-opt active" data-color="white" onclick="selectColor(this)">&#9817; Albe</button>
+            <button class="color-opt" data-color="black" onclick="selectColor(this)">&#9823; Negre</button>
             <button class="color-opt" data-color="random" onclick="selectColor(this)">&#127922; Aleator</button>
+          </div>
+          </div>
+          <div class="hl-box" id="duoInfo" style="display:none;margin-bottom:12px">
+            Jucătorul 1 joacă cu albele (jos), Jucătorul 2 cu negrele (sus). Mutați pe rând, pe aceeași tablă.
           </div>
           <button class="btn-arena" onclick="startGame()">&#9654; Pornește jocul</button>
         </div>
@@ -166,8 +206,8 @@
         <div id="gamePanel" style="display:none">
           <div id="status" class="status-box">&#8987; Porne&#351;te un joc</div>
           <div class="clocks" id="clocksDiv">
-            <div class="clock-box" id="clockW"><div class="clock-lbl">&#9823; Albe</div><div class="clock-time" id="cwTime">&#8734;</div></div>
-            <div class="clock-box" id="clockB"><div class="clock-lbl">&#9819; Negre</div><div class="clock-time" id="cbTime">&#8734;</div></div>
+            <div class="clock-box" id="clockW"><div class="clock-lbl" id="cwLbl">&#9817; Albe</div><div class="clock-time" id="cwTime">&#8734;</div><div class="clock-strikes" id="cwStrikes"></div></div>
+            <div class="clock-box" id="clockB"><div class="clock-lbl" id="cbLbl">&#9823; Negre</div><div class="clock-time" id="cbTime">&#8734;</div><div class="clock-strikes" id="cbStrikes"></div></div>
           </div>
           <div class="diff-display" id="diffDisplay"></div>
           <div class="move-list" id="moveList"></div>
@@ -178,6 +218,88 @@
           </div>
           <button class="btn-sm btn-prev" style="width:100%;margin-top:6px" onclick="backToSetup()">&#8592; Configurare</button>
         </div>
+
+        <details class="howto" open>
+          <summary>📖 Cum se joacă</summary>
+
+          <div class="hl-box">
+            <h4>Ce e acest joc</h4>
+            <p>Este o partidă de șah adevărată, dar cu puține piese: fiecare parte are doar <strong>regele</strong> și <strong>opt pioni</strong>. Regulile sunt cele ale șahului obișnuit.</p>
+            <p>Atenție: jocul <strong>nu se oprește</strong> când un pion ajunge pe ultimul rând și nici când o parte rămâne fără pioni. Partida continuă până la mat, pat sau remiză.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Poziția de start</h4>
+            <p><strong>Albul</strong> are regele pe <strong>e1</strong> și pionii pe al doilea rând, de la a2 la h2.</p>
+            <p><strong>Negrul</strong> are regele pe <strong>e8</strong> și pionii pe al șaptelea rând, de la a7 la h7.</p>
+            <p>Între pioni rămân patru rânduri goale. <strong>Albul mută primul</strong>, apoi negrul, apoi iar albul și tot așa, pe rând. La fiecare mutare muți o singură piesă.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum merge regele</h4>
+            <p>Regele face <strong>un singur pas</strong>, în orice direcție: înainte, înapoi, în lateral sau pe diagonală.</p>
+            <p>Regele <strong>nu are voie să intre pe un pătrat atacat</strong> de o piesă a adversarului. De aceea cei doi regi nu pot sta niciodată unul lângă altul.</p>
+            <p>Regele poate captura o piesă a adversarului aflată lângă el, dar numai dacă acea piesă nu este apărată.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum merge pionul</h4>
+            <p>Pionul merge <strong>numai înainte</strong>, câte un pătrat. Nu merge niciodată înapoi sau în lateral.</p>
+            <p>De pe pătratul lui de start, pionul poate merge, dacă vrei, <strong>două pătrate</strong> deodată. Pătratele din fața lui trebuie să fie libere.</p>
+            <p>Dacă în fața pionului stă o piesă, oricare ar fi ea, pionul este blocat și nu mai poate înainta.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum capturează pionul</h4>
+            <p>Pionul nu capturează drept înainte. El capturează <strong>pe diagonală, un pătrat înainte</strong>: piesa adversarului iese de pe tablă, iar pionul îi ia locul.</p>
+            <p><strong>Capturarea din trecere (en passant).</strong> Dacă un pion al adversarului sare două pătrate și ajunge chiar lângă pionul tău, îl poți captura ca și cum ar fi mers doar un pătrat. Ai voie să faci asta numai imediat, la mutarea următoare.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Promovarea</h4>
+            <p>Când un pion ajunge pe <strong>ultimul rând</strong> (albul pe rândul 8, negrul pe rândul 1), el se transformă. Alegi în ce piesă: <strong>damă, turn, nebun sau cal</strong>. Cel mai des se alege dama, pentru că este cea mai puternică.</p>
+            <p>Piesa nouă rămâne pe tablă și partida continuă. Promovarea singură nu câștigă jocul, dar îți dă de obicei un mare avantaj.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Șah, mat și pat</h4>
+            <p><strong>Șah</strong> înseamnă că regele este atacat. Pătratul regelui se colorează în roșu. Cel care este în șah trebuie să scape imediat: mută regele pe un pătrat sigur sau capturează piesa care dă șah.</p>
+            <p><strong>Mat</strong> înseamnă șah din care nu mai există scăpare. Cine dă mat câștigă partida.</p>
+            <p><strong>Pat</strong> înseamnă că jucătorul la mutare nu este în șah, dar nu are nicio mutare permisă. Patul este remiză.</p>
+          </div>
+
+          <div class="hl-box warn">
+            <h4>Cine câștigă?</h4>
+            <p><strong>Câștigă cine dă mat.</strong> Mai câștigi dacă adversarul abandonează, dacă îi expiră timpul pe ceas sau, în doi, dacă adversarul încearcă de trei ori o mutare nepermisă.</p>
+            <p><strong>Remiză</strong> (nimeni nu câștigă) este când: apare patul; pe tablă nu mai rămâne destul material ca să se poată da mat (de exemplu doar cei doi regi); aceeași poziție se repetă de trei ori; sau trec 50 de mutări ale fiecărei părți fără nicio captură și fără nicio mutare de pion.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum muți pe tablă</h4>
+            <p>Poți <strong>trage piesa</strong> cu mouse-ul sau cu degetul. Poți și să <strong>dai click</strong> pe piesă, apoi pe pătratul unde vrei să ajungă.</p>
+            <p>După ce alegi o piesă, pe tablă apar pătratele unde are voie să meargă.</p>
+            <p>Butoane: <strong>Retrage</strong> anulează ultima mutare (contra calculatorului, ultimele două: a ta și a calculatorului). <strong>Nou</strong> începe o partidă nouă cu aceleași setări. <strong>Abandonez</strong> încheie partida, pe care o pierde cel care abandonează. <strong>Configurare</strong> te întoarce la alegerea setărilor.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Contra calculatorului</h4>
+            <p>Alegi cât de puternic joacă adversarul: <strong>Pui de găină</strong> (începător, face des greșeli), <strong>Mânz</strong> (mediu) sau <strong>Dragon</strong> (cel mai puternic).</p>
+            <p>Alegi culoarea: <strong>Albe</strong>, <strong>Negre</strong> sau <strong>Aleator</strong> (hotărăște întâmplarea). Piesele tale stau mereu jos. Dacă joci cu negrele, calculatorul face prima mutare.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Ceasul</h4>
+            <p>Poți juca <strong>fără timp</strong> sau cu <strong>1, 2 ori 5 minute</strong> pentru fiecare jucător. Ceasul scade doar pentru cel care este la mutare. Când mai sunt 15 secunde, caseta ceasului se face roșie.</p>
+            <p>Cui i se termină timpul pierde partida.</p>
+          </div>
+
+          <div class="hl-box ok">
+            <h4>În doi</h4>
+            <p>Doi jucători mută pe rând pe aceeași tablă. <strong>Jucătorul 1</strong> are albele (jos) și mută primul, <strong>Jucătorul 2</strong> are negrele (sus). Calculatorul nu joacă, iar alegerea nivelului și a culorii nu mai apare.</p>
+            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar <strong>se numără</strong>. Se numără și încercarea de a muta o piesă a adversarului. Dacă pui piesa înapoi pe pătratul ei, nu se numără.</p>
+            <p>Încercările se văd sub ceasul fiecărui jucător: ❌ pentru o încercare folosită, ▫️ pentru una rămasă. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
+          </div>
+        </details>
       </div>
       <div class="feedback-bar" id="feedbackBar"></div>
     </div>
@@ -233,6 +355,12 @@ var pendingPromoMove = null;
 var clockMax = 0;
 var clock = {w: 0, b: 0};
 var clockTick = null;
+var mode = 'robot';          // 'robot' = contra calculatorului, 'duo' = în doi
+var MAX_STRIKES = 3;
+var strikes = {w: 0, b: 0};  // încercări nepermise (doar în doi)
+
+function pname(c) { return c === 'w' ? 'Jucătorul 1' : 'Jucătorul 2'; }
+function sideName(c) { return c === 'w' ? 'albele' : 'negrele'; }
 
 function selectTime(btn) {
     document.querySelectorAll('.time-opt').forEach(function(b){ b.classList.remove('active'); });
@@ -266,6 +394,11 @@ function startClock() {
         if (clock[c]<=0){
             stopClock();
             gameOver=true;
+            if (mode==='duo') {
+                var o=c==='w'?'b':'w';
+                setStatus('Timpul lui '+pname(c)+' a expirat.<br>&#127942; '+pname(o)+' câștigă.','success');
+                return;
+            }
             var lost=(c===playerColor);
             setStatus(lost?'Timp expirat! Calculatorul c&#226;&#351;tig&#259;! &#129302;':'Timp expirat! Ai c&#226;&#351;tigat! &#127942;', lost?'danger':'success');
         }
@@ -335,6 +468,7 @@ function askStockfish() {
 function handleStockfishMsg(msg) {
     if (typeof msg !== 'string') return;
     if (msg.indexOf('bestmove') === 0) {
+        if (gameOver || mode !== 'robot' || chess.turn() === playerColor) return;
         var parts = msg.split(' ');
         var move  = parts[1];
         if (!move || move === '(none)') return;
@@ -344,6 +478,7 @@ function handleStockfishMsg(msg) {
         var mv = chess.move({ from: from, to: to, promotion: promo || 'q' });
         if (!mv) return;
         board.position(chess.fen());
+        updateCheckHL();
         playSoundForMove(mv);
         addMoveToList(mv);
         updateClocks();
@@ -357,13 +492,43 @@ var START_FEN = '4k3/pppppppp/8/8/8/8/PPPPPPPP/4K3 w - - 0 1';
 
 /* ====== HIGHLIGHTS (click-to-move) ====== */
 var selSq = null;
-function clearHL() { $('#board .highlight-selected, #board .highlight-legal').removeClass('highlight-selected highlight-legal'); }
+function clearHL() { $('#board .highlight-selected, #board .highlight-legal, #board .highlight-capture').removeClass('highlight-selected highlight-legal highlight-capture'); }
 function showHL(sq) {
     clearHL();
     $('#board .square-' + sq).addClass('highlight-selected');
     chess.moves({ square: sq, verbose: true }).forEach(function(m) {
-        $('#board .square-' + m.to).addClass('highlight-legal');
+        var cap = m.flags.indexOf('c') !== -1 || m.flags.indexOf('e') !== -1;
+        $('#board .square-' + m.to).addClass(cap ? 'highlight-capture' : 'highlight-legal');
     });
+}
+/* șah: pătratul regelui aflat în șah devine roșu */
+function updateCheckHL() {
+    $('#board .highlight-check').removeClass('highlight-check');
+    if (!chess.in_check()) return;
+    var t = chess.turn(), files = 'abcdefgh';
+    for (var f = 0; f < 8; f++) for (var r = 1; r <= 8; r++) {
+        var sq = files[f] + r, p = chess.get(sq);
+        if (p && p.type === 'k' && p.color === t) $('#board .square-' + sq).addClass('highlight-check');
+    }
+}
+function flashWrong(sq) {
+    var el = $('#board .square-' + sq);
+    el.addClass('sq-wrong');
+    setTimeout(function() { el.removeClass('sq-wrong'); }, 600);
+}
+function updateStrikes() {
+    var w = document.getElementById('cwStrikes'), b = document.getElementById('cbStrikes');
+    if (!w) return;
+    function row(c) { return '❌'.repeat(strikes[c]) + '▫️'.repeat(Math.max(0, MAX_STRIKES - strikes[c])); }
+    w.textContent = mode === 'duo' ? row('w') : '';
+    b.textContent = mode === 'duo' ? row('b') : '';
+    document.getElementById('cwLbl').innerHTML = mode === 'duo' ? '&#9817; Jucătorul 1 (albele)' : '&#9817; Albe';
+    document.getElementById('cbLbl').innerHTML = mode === 'duo' ? '&#9823; Jucătorul 2 (negrele)' : '&#9823; Negre';
+}
+/* poate mișca jucătorul acum? (în doi: oricine e la mutare) */
+function canAct() {
+    if (!board || gameOver || pendingPromoMove) return false;
+    return mode === 'duo' || chess.turn() === playerColor;
 }
 
 /* ====== DOM READY ====== */
@@ -377,20 +542,14 @@ $(function() {
         onSnapEnd: onSnapEnd
     });
 
+    /* click pe un pătrat gol, după ce ai ales o piesă (piesele sunt tratate în onDragStart) */
     $(document).on('click', '#board .square-55d63', function() {
-        if (!board || gameOver || chess.turn() !== playerColor) return;
+        if (!canAct() || !selSq) return;
         var sq = $(this).data('square');
-        if (!sq) return;
-        var piece = chess.get(sq);
-        if (selSq) {
-            var prev = selSq;
-            clearHL(); selSq = null;
-            if (sq === prev) return;
-            if (piece && piece.color === playerColor) { selSq = sq; showHL(sq); return; }
-            if (tryMove(prev, sq)) board.position(chess.fen());
-        } else {
-            if (piece && piece.color === playerColor) { selSq = sq; showHL(sq); }
-        }
+        if (!sq || sq === selSq || chess.get(sq)) return;
+        var from = selSq;
+        selSq = null; clearHL();
+        if (tryMove(from, sq)) { board.position(chess.fen()); updateCheckHL(); }
     });
 
     window.addEventListener('resize', function() { if (board) board.resize(); });
@@ -399,8 +558,13 @@ $(function() {
 function startGame() {
     chess.load(START_FEN);
     gameOver = false;
-    playerColor = getSelectedColor();
+    pendingPromoMove = null;
+    document.getElementById('promo-overlay').classList.remove('visible');
+    playerColor = mode === 'duo' ? 'w' : getSelectedColor();
+    strikes = {w: 0, b: 0};
+    updateStrikes();
     clearHL(); selSq = null;
+    $('#board .highlight-check').removeClass('highlight-check');
     document.getElementById('moveList').innerHTML = '';
     var orientation = playerColor === 'w' ? 'white' : 'black';
     board.orientation(orientation);
@@ -409,22 +573,41 @@ function startGame() {
     document.getElementById('gamePanel').style.display = 'block';
     var activeAnimal = document.querySelector('.animal-btn.active');
     var animalName = activeAnimal ? activeAnimal.querySelector('.name').textContent : '';
-    document.getElementById('diffDisplay').textContent = 'Adversar: ' + animalName;
+    document.getElementById('diffDisplay').textContent = mode === 'duo'
+        ? 'În doi: Jucătorul 1 (albele) contra Jucătorul 2 (negrele)'
+        : 'Adversar: ' + animalName;
     var tb = document.querySelector('.time-opt.active');
     clockMax = tb ? parseInt(tb.dataset.secs) : 0;
     clock = {w: clockMax, b: clockMax};
     stopClock();
     updateClocks();
     if (clockMax > 0) startClock();
-    initStockfish();
+    if (mode === 'duo') {
+        if (stockfish) { stockfish.terminate(); stockfish = null; }
+    } else {
+        initStockfish();
+    }
     setStatus(turnStatus(), '');
-    if (playerColor === 'b') { setTimeout(askStockfish, 500); }
+    if (mode === 'robot' && playerColor === 'b') { setTimeout(askStockfish, 500); }
+}
+
+function setMode(m) {
+    mode = m;
+    document.getElementById('modeRobot').className = 'tgl-btn' + (m === 'robot' ? ' active' : '');
+    document.getElementById('modeDuo').className   = 'tgl-btn' + (m === 'duo' ? ' active' : '');
+    document.getElementById('levelBox').style.display = m === 'robot' ? '' : 'none';
+    document.getElementById('colorBox').style.display = m === 'robot' ? '' : 'none';
+    document.getElementById('duoInfo').style.display  = m === 'duo' ? '' : 'none';
+    updateStrikes();
 }
 
 function backToSetup() {
     stopClock();
     if (stockfish) { stockfish.terminate(); stockfish = null; }
     gameOver = false; clearHL(); selSq = null;
+    pendingPromoMove = null;
+    document.getElementById('promo-overlay').classList.remove('visible');
+    $('#board .highlight-check').removeClass('highlight-check');
     chess.reset();
     board.position(START_FEN, false);
     board.orientation('white');
@@ -433,44 +616,88 @@ function backToSetup() {
 }
 
 /* ====== MOVE EXECUTION (shared by drag & click) ====== */
-function tryMove(from, to) {
+var PIECE_RO = { k: 'Regele', p: 'Pionul', q: 'Dama', r: 'Turnul', b: 'Nebunul', n: 'Calul' };
+
+/* de ce nu e permisă mutarea from → to (pentru mesaj) */
+function illegalReason(from, to) {
     var piece = chess.get(from);
-    if (piece && piece.type === 'p') {
-        var rank = to[1];
-        if ((piece.color === 'w' && rank === '8') || (piece.color === 'b' && rank === '1')) {
-            pendingPromoMove = { from: from, to: to };
-            showPromoDialog(piece.color);
-            return false;
-        }
+    var who = PIECE_RO[piece ? piece.type : 'p'] || 'Piesa';
+    var pseudo = chess.moves({ square: from, verbose: true, legal: false })
+        .some(function(m) { return m.to === to; });
+    if (!pseudo) return who + ' de pe ' + from + ' nu poate merge pe ' + to + '.';
+    if (piece && piece.type === 'k') return 'Regele nu poate merge pe ' + to + ': acolo ar fi atacat.';
+    if (chess.in_check()) return 'Regele este în șah, iar mutarea asta nu îl scapă.';
+    return 'Mutarea ar lăsa regele în șah.';
+}
+
+/* încercare nepermisă: nu se face; în doi se numără pentru jucătorul la mutare */
+function illegalAttempt(sq, reason) {
+    if (sq) flashWrong(sq);
+    selSq = null; clearHL();
+    if (mode !== 'duo') return;
+    var c = chess.turn(), o = c === 'w' ? 'b' : 'w';
+    strikes[c]++;
+    updateStrikes();
+    if (strikes[c] >= MAX_STRIKES) {
+        gameOver = true; stopClock(); updateClocks();
+        setStatus('&#10060; ' + reason + '<br>' + pname(c) + ' a încercat 3 mutări nepermise.<br>&#127942; <strong>' + pname(o) + ' câștigă.</strong>', 'danger');
+        return;
+    }
+    setStatus('&#10060; ' + reason + '<br>Încercări nepermise pentru ' + pname(c) + ': ' + strikes[c] + ' din ' + MAX_STRIKES + '.', 'danger');
+}
+
+/* returnează true dacă mutarea s-a făcut */
+function tryMove(from, to) {
+    var legal = chess.moves({ square: from, verbose: true }).filter(function(m) { return m.to === to; });
+    if (!legal.length) { illegalAttempt(to, illegalReason(from, to)); return false; }
+    if (legal[0].flags.indexOf('p') !== -1) {
+        pendingPromoMove = { from: from, to: to };
+        showPromoDialog(legal[0].color);
+        return false;
     }
     var mv = chess.move({ from: from, to: to });
     if (!mv) return false;
-    playSoundForMove(mv);
-    addMoveToList(mv);
-    updateClocks();
-    if (checkGameOver()) return true;
-    setStatus('', 'thinking');
-    setTimeout(askStockfish, 150);
+    afterMove(mv);
     return true;
 }
 
-/* ====== DRAG & DROP ====== */
+function afterMove(mv) {
+    playSoundForMove(mv);
+    addMoveToList(mv);
+    updateClocks();
+    if (checkGameOver()) return;
+    if (mode === 'duo') { setStatus(turnStatus(), ''); return; }
+    setStatus('', 'thinking');
+    setTimeout(askStockfish, 150);
+}
+
+/* ====== DRAG & DROP (și alegerea piesei prin click) ====== */
 function onDragStart(source, piece) {
-    clearHL(); selSq = null;
-    if (gameOver) return false;
-    if (chess.turn() !== playerColor) return false;
-    if (playerColor === 'w' && piece[0] === 'b') return false;
-    if (playerColor === 'b' && piece[0] === 'w') return false;
+    if (!canAct()) return false;
+    if (piece[0] !== chess.turn()) {
+        if (selSq && source !== selSq) {            // click pe piesa adversarului = încercare de captură
+            var from = selSq;
+            selSq = null; clearHL();
+            setTimeout(function() { if (tryMove(from, source)) { board.position(chess.fen()); updateCheckHL(); } }, 0);
+            return false;
+        }
+        if (mode === 'duo') illegalAttempt(source, 'Acum mută ' + pname(chess.turn()) + ', cu ' + sideName(chess.turn()) + '.');
+        return false;
+    }
+    selSq = source;
+    showHL(source);
     return true;
 }
 
 function onDrop(source, target) {
-    if (source === target) return 'snapback';
+    if (target === 'offboard' || source === target) return 'snapback';   // pusă înapoi: nu se numără
+    selSq = null; clearHL();
     if (!tryMove(source, target)) return 'snapback';
 }
 
 function onSnapEnd() {
     board.position(chess.fen());
+    updateCheckHL();
 }
 
 /* ====== PROMOTION ====== */
@@ -498,16 +725,18 @@ function doPromotion(piece) {
     pendingPromoMove = null;
     if (!mv) return;
     board.position(chess.fen());
-    playSoundForMove(mv);
-    addMoveToList(mv);
-    updateClocks();
-    if (checkGameOver()) return;
-    setStatus('', 'thinking');
-    setTimeout(askStockfish, 150);
+    updateCheckHL();
+    afterMove(mv);
 }
 
 /* ====== GAME STATE ====== */
 function checkGameOver() {
+    if (chess.in_checkmate() && mode === 'duo') {
+        var loser = chess.turn(), won = loser === 'w' ? 'b' : 'w';
+        setStatus('Mat. &#127942; ' + pname(won) + ' (' + sideName(won) + ') câștigă.', 'success');
+        gameOver = true; stopClock(); updateClocks();
+        return true;
+    }
     if (chess.in_checkmate()) {
         var winner = chess.turn() !== playerColor ? 'Tu ai câștigat! &#127942;' : 'Calculatorul a câștigat! &#129302;';
         setStatus(winner, chess.turn() !== playerColor ? 'success' : 'danger');
@@ -532,6 +761,10 @@ function checkGameOver() {
 
 function turnStatus() {
     var t = chess.turn() === 'w' ? 'Albele' : 'Negrele';
+    if (mode === 'duo') {
+        var who = pname(chess.turn()) + ' (' + sideName(chess.turn()) + ')';
+        return chess.in_check() ? '&#9888; ' + who + ' este în șah. Mută!' : '&#9654; Mută ' + who + '.';
+    }
     var you = chess.turn() === playerColor;
     if (chess.in_check()) return (you ? '&#9888; Ești în șah! ' : '&#9888; ' + t + ' în șah! ') + 'Mută!';
     return you ? '&#9654; Rândul tău!' : '&#9832; Adversarul mută...';
@@ -571,10 +804,24 @@ function addMoveToList(mv) {
 
 /* ====== ACTIONS ====== */
 function undoMove() {
-    if (gameOver) { gameOver = false; }
-    // undo both computer and player moves
-    chess.undo(); chess.undo();
+    clearHL(); selSq = null;
+    if (mode === 'duo') {
+        if (gameOver || pendingPromoMove) return;   // în doi: doar în timpul partidei, o singură mutare
+        chess.undo();
+    } else {
+        // cât timp e rândul calculatorului (Stockfish gândește), Retrage nu funcționează
+        if (!gameOver && chess.turn() !== playerColor) return;
+        if (pendingPromoMove) return;
+        var wasOver = gameOver;
+        gameOver = false;
+        // undo both computer and player moves
+        chess.undo(); chess.undo();
+        if (wasOver && clockMax > 0) startClock();
+    }
     board.position(chess.fen());
+    updateCheckHL();
+    updateClocks();
+    if (mode === 'robot' && chess.turn() !== playerColor) setTimeout(askStockfish, 300);
     // rebuild move list
     var list = document.getElementById('moveList');
     list.innerHTML = '';
@@ -585,6 +832,13 @@ function undoMove() {
 function resignGame() {
     if (gameOver) return;
     gameOver = true;
+    clearHL(); selSq = null;
+    if (mode === 'duo') {
+        stopClock(); updateClocks();
+        var c = chess.turn(), o = c === 'w' ? 'b' : 'w';
+        setStatus(pname(c) + ' a abandonat. &#9873;<br>&#127942; ' + pname(o) + ' câștigă.', 'success');
+        return;
+    }
     setStatus('Ai abandonat. &#9873; Calculator câștigă!', 'danger');
 }
 

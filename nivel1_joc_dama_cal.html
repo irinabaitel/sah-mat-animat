@@ -45,10 +45,20 @@
   .animal-btn .emoji { font-size:1.4em; display:block; }
   .animal-btn .name  { display:block; margin-top:2px; }
 
-  /* RULES */
-  .rules-list { list-style:none; display:flex; flex-direction:column; gap:3px; margin-bottom:10px; }
-  .rules-list li { font-size:0.84em; color:var(--c-text); padding-left:16px; position:relative; line-height:1.6; }
-  .rules-list li::before { content:'→'; position:absolute; left:0; color:var(--c-navy); font-weight:700; }
+  /* CUM SE JOACĂ */
+  .howto { margin-bottom:10px; }
+  .howto > summary {
+    cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900;
+    color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px;
+    background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8);
+  }
+  .howto > summary::-webkit-details-marker { display:none; }
+  .howto > summary::after { content:' ▾'; }
+  .howto:not([open]) > summary::after { content:' ▸'; }
+  .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
+  .howto .hl-box p { margin:0 0 6px; }
+  .howto .hl-box p:last-child { margin-bottom:0; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
 
   /* COUNTER */
   .counter-row { display:flex; gap:8px; margin-bottom:8px; }
@@ -140,13 +150,6 @@
           </div>
         </div>
 
-        <ul class="rules-list">
-          <li>Începe dama. Dama are <strong>15 mutări</strong> ca să prindă calul.</li>
-          <li>Dama câștigă dacă <strong>prinde calul</strong>. Calul câștigă dacă <strong>rezistă 15 mutări</strong> sau dacă mănâncă dama.</li>
-          <li>După prima repriză <strong>se schimbă rolurile</strong>.</li>
-          <li id="ruleDuo" style="display:none">Mutările nepermise nu se fac, dar se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</li>
-        </ul>
-
         <div class="counter-row">
           <div class="counter-box"><div class="counter-lbl">Repriza</div><div class="counter-val" id="roundVal">1 / 2</div></div>
           <div class="counter-box" id="movesBox"><div class="counter-lbl">Mutările damei</div><div class="counter-val" id="movesVal">0 / 15</div></div>
@@ -173,6 +176,67 @@
 
         <button id="btn-round2" onclick="startRound(2)">▶ Repriza 2 — schimbăm rolurile</button>
         <button class="btn-game" onclick="newMatch()">↺ Joacă din nou</button>
+
+        <details class="howto" open>
+          <summary>📖 Cum se joacă</summary>
+
+          <div class="hl-box">
+            <h4>Piesele</h4>
+            <p>Pe tablă sunt doar două piese. Albul are <strong>dama</strong>, care pornește de pe d1. Negrul are <strong>calul</strong>, care pornește de pe e5.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum merge dama</h4>
+            <p>Dama merge în linie dreaptă, în orice direcție: înainte și înapoi pe <strong>coloane</strong>, la stânga și la dreapta pe <strong>linii</strong> și în cele patru direcții ale <strong>diagonalelor</strong>.</p>
+            <p>Poate merge oricât de departe, câte pătrate vrea, dar nu poate sări peste o piesă. Dacă îi stă calul în cale, se poate opri pe pătratul lui și îl capturează, dar nu poate trece mai departe.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum sare calul</h4>
+            <p>Calul nu merge în linie dreaptă. El sare în forma literei <strong>„L"</strong>: două pătrate într-o direcție și apoi un pătrat într-o parte.</p>
+            <p>De exemplu, calul de pe e5 poate sări pe <strong>d7, f7, c6, g6, c4, g4, d3</strong> și <strong>f3</strong>. Din e5 până pe f7 înseamnă două pătrate în sus (e6, e7) și unul la dreapta (f7).</p>
+            <p>Calul este singura piesă care poate sări peste alte piese. Când ajunge pe un pătrat nou, se schimbă mereu culoarea pătratului: de pe un pătrat alb sare pe unul negru și invers.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Captura și ordinea mutărilor</h4>
+            <p><strong>A captura</strong> înseamnă să muți piesa ta pe pătratul unde stă piesa adversarului. Piesa adversarului iese de pe tablă.</p>
+            <p><strong>Începe dama.</strong> Apoi mută calul, apoi iar dama și tot așa, pe rând. La fiecare rând se face o singură mutare.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Scopul fiecăruia</h4>
+            <p><strong>Dama</strong> vrea să captureze calul. Pentru asta are <strong>15 mutări</strong>. Numărul mutărilor ei îl vezi sus, la „Mutările damei".</p>
+            <p><strong>Calul</strong> vrea să scape. El fuge de damă și are grijă să nu se oprească pe un pătrat unde dama îl poate lua.</p>
+          </div>
+
+          <div class="hl-box warn">
+            <h4>Cine câștigă?</h4>
+            <p><strong>Dama câștigă</strong> dacă prinde calul în cel mult 15 mutări.</p>
+            <p><strong>Calul câștigă</strong> dacă rezistă 15 mutări ale damei. Calul câștigă și dacă dama se oprește pe un pătrat unde calul poate sări: atunci calul <strong>mănâncă dama</strong>.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Reprizele</h4>
+            <p>Jocul are două reprize. După prima repriză <strong>se schimbă rolurile</strong>: cine a jucat cu dama joacă acum cu calul.</p>
+            <p><strong>Contra calculatorului</strong> joci cu dama în prima repriză și cu calul în a doua. Poți alege adversarul: puiul de găină mută aproape mereu la întâmplare, mânzul greșește din când în când, iar dragonul nu greșește niciodată.</p>
+            <p id="ruleDuo" style="display:none"><strong>În doi</strong> câștigă meciul cine a prins calul mai repede când a jucat cu dama. Dacă amândoi l-au prins în același număr de mutări sau niciunul nu l-a prins, e egalitate. Dacă încerci o mutare care nu este permisă, ea nu se face, dar se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Stelele</h4>
+            <p>Contra calculatorului primești stele în fiecare repriză, cel mult 3. Cu joc perfect, dama prinde calul din poziția de start în <strong>4 mutări</strong>.</p>
+            <p><strong>Cu dama:</strong> 3 stele dacă prinzi calul în cel mult 4 mutări, 2 stele dacă îl prinzi în 5–8 mutări, 1 stea dacă îl prinzi mai târziu. Dacă nu îl prinzi, nu primești nicio stea.</p>
+            <p><strong>Cu calul:</strong> 3 stele dacă reziști 15 mutări, dacă mănânci dama sau dacă ești prins abia la mutarea 4 sau mai târziu. 2 stele dacă ești prins la mutarea 3 și 1 stea dacă ești prins mai devreme.</p>
+            <p>La sfârșit se adună stelele din ambele reprize: cel mult 6.</p>
+          </div>
+
+          <div class="hl-box ok">
+            <h4>Un sfat</h4>
+            <p>Dama singură poate prinde calul doar când acesta este <strong>pe marginea tablei sau aproape de ea</strong>. Acolo calul are mai puține pătrate pe care poate sări.</p>
+            <p>De aceea calul încearcă să stea <strong>în centru</strong>, iar dama încearcă să-l împingă spre margine.</p>
+          </div>
+        </details>
 
       </div><!-- /.panel-scroll -->
       <div class="feedback-bar" id="feedbackBar"></div>

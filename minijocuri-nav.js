@@ -14,7 +14,8 @@
         ['nivel1_joc_acasa.html',    'Întoarcerea Acasă'],
         ['nivel1_joc_dama_cal.html', 'Dama contra calului'],
         ['nivel1_joc_nasturi.html',  'Vânătoarea de nasturi'],
-        ['nivel1_joc_dama_turn_nebun.html', 'Dama și turnul contra nebunului']
+        ['nivel1_joc_dama_turn_nebun.html', 'Dama și turnul contra nebunului'],
+        ['nivel1_joc_cai_lacomi.html', 'Care cal mănâncă mai repede?']
     ];
     var file = function (p) { return (p || '').split('?')[0].split('#')[0].split('/').pop(); };
     var here = file(location.pathname);
@@ -43,7 +44,12 @@
 
     window.minigameHideHints = function () {
         var b = document.querySelector('.animal-btn.active');
-        return !!(b && b.offsetParent !== null && /Dragon/.test(b.textContent));
+        if (!b || !/Dragon/.test(b.textContent)) return false;
+        /* caseta de niveluri ascunsă explicit (modul „În doi") = indiciile rămân;
+           altfel contează doar nivelul ales, chiar dacă panoul de setări nu se vede în timpul partidei */
+        var box = document.getElementById('levelBox');
+        if (box && box.contains(b)) return box.style.display !== 'none';
+        return b.offsetParent !== null;
     };
 
     /* body.no-hints pornit/oprit după nivel și mod (CSS-ul e în master-template.css) */
