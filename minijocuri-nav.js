@@ -15,12 +15,21 @@
         ['nivel1_joc_dama_cal.html', 'Dama contra calului'],
         ['nivel1_joc_nasturi.html',  'Vânătoarea de nasturi'],
         ['nivel1_joc_dama_turn_nebun.html', 'Dama și turnul contra nebunului'],
-        ['nivel1_joc_cai_lacomi.html', 'Care cal mănâncă mai repede?']
+        ['nivel1_joc_cai_lacomi.html', 'Care cal mănâncă mai repede?'],
+        ['joc_stockfish.html?v=2',   'Regi și Pioni 2']
     ];
     var file = function (p) { return (p || '').split('?')[0].split('#')[0].split('/').pop(); };
     var here = file(location.pathname);
-    var i = -1;
-    for (var k = 0; k < GAMES.length; k++) if (GAMES[k][0] === here) i = k;
+    /* un joc poate fi aceeași pagină cu alt parametru (ex. joc_stockfish.html?v=2): alegem potrivirea cea mai precisă */
+    var i = -1, best = -1;
+    for (var k = 0; k < GAMES.length; k++) {
+        var parts = GAMES[k][0].split('?');
+        if (parts[0] !== here) continue;
+        var q = parts[1] || '';
+        if (q && location.search.indexOf(q) < 0) continue;
+        if (!q && /[?&]v=2/.test(location.search)) continue;
+        if (q.length > best) { best = q.length; i = k; }
+    }
 
     /* lecția de unde ai venit: aceeași origine, nu hub/index, nu alt minijoc */
     var lessonUrl = null, lessonKey = 'minijoc-from-lesson';
@@ -28,7 +37,7 @@
         if (document.referrer) {
             var ref = new URL(document.referrer);
             var rf = file(ref.pathname);
-            var isGame = GAMES.some(function (g) { return g[0] === rf; });
+            var isGame = GAMES.some(function (g) { return g[0].split('?')[0] === rf; });
             if (ref.origin === location.origin && rf && !isGame && !/^(hub|index)\.html$/.test(rf) && /\.html$/.test(rf)) {
                 lessonUrl = ref.pathname + ref.search;
                 sessionStorage.setItem(lessonKey, lessonUrl);
