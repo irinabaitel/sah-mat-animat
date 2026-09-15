@@ -22,27 +22,37 @@
     padding: 3px 14px; border-radius: var(--radius-sm); white-space: nowrap;
   }
 
-  /* HIGHLIGHTS */
+  /* HIGHLIGHTS (selectat / posibil / captură = clasele din master) */
   .sq-ai       { background-color: rgba(160,60,200,0.40) !important; }
+  .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
 
-  /* LEVEL TOGGLE */
-  .level-toggle { display: flex; gap: 8px; margin-bottom: 10px; }
-  .lvl-btn {
-    padding: 5px 14px; border-radius: 50px;
-    border: 2px solid rgba(26,58,107,0.3);
-    background: rgba(255,255,255,0.5);
-    font-family: var(--font-display); font-size: 0.82em; color: var(--c-navy);
-    cursor: pointer; transition: all 0.2s;
-  }
-  .lvl-btn.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
+  .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
 
-  /* RULES */
-  .rules-list { list-style: none; display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
-  .rules-list li {
-    font-size: 0.84em; color: var(--c-text); padding-left: 16px;
-    position: relative; line-height: 1.6;
+  /* CUM SE JOACĂ */
+  .howto { margin-bottom:10px; }
+  .howto > summary {
+    cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900;
+    color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px;
+    background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8);
   }
-  .rules-list li::before { content: '→'; position: absolute; left: 0; color: var(--c-navy); font-weight: 700; }
+  .howto > summary::-webkit-details-marker { display:none; }
+  .howto > summary::after { content:' ▾'; }
+  .howto:not([open]) > summary::after { content:' ▸'; }
+  .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
+  .howto .hl-box p { margin:0 0 6px; }
+  .howto .hl-box p:last-child { margin-bottom:0; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+
+  /* TOGGLES */
+  .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+  .tgl-btn {
+    flex:1; padding:6px 10px; border-radius:50px;
+    border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.5);
+    font-family:var(--font-display); font-size:0.82em; color:var(--c-navy);
+    cursor:pointer; transition:all 0.2s; white-space:nowrap;
+  }
+  .tgl-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
+  .lvl-row .tgl-btn { flex:1 1 auto; white-space:normal; }
 
   /* PLAYER PANELS */
   .player-panel {
@@ -51,8 +61,9 @@
   }
   .player-panel.active { border-color: var(--c-navy); background: rgba(26,58,107,0.1); }
   .player-panel.winner { border-color: rgba(40,180,80,0.6); background: rgba(40,180,80,0.1); }
-  .pp-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+  .pp-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 5px; }
   .pp-name { font-family: var(--font-display); font-size: 0.88em; color: #1a1a2e; }
+  .pp-strikes { font-size:0.82em; letter-spacing:1px; }
   .pp-score {
     font-family: var(--font-display); font-size: 1.3em; color: var(--c-navy);
     background: rgba(255,255,255,0.7); border-radius: 8px; padding: 0 8px; line-height: 1.5;
@@ -73,6 +84,7 @@
     min-height: 46px; transition: all 0.3s; margin-bottom: 8px;
   }
   #status-box.ok   { border-color: rgba(40,180,80,0.5);  background: rgba(40,180,80,0.15); }
+  #status-box.warn { border-color: rgba(192,57,43,0.45); background: rgba(255,210,200,0.6); }
   #status-box.draw { border-color: rgba(200,150,10,0.5); background: rgba(200,150,10,0.12); }
 
   /* BUTTONS */
@@ -85,14 +97,14 @@
   }
   .btn-game:hover { background: rgba(255,255,255,0.85); }
   #btn-next {
-    display: none; width: 100%; padding: 9px; border-radius: 10px; border: none;
+    display: none; width: 100%; padding: 9px; border-radius: 10px; border: none; margin-bottom: 6px;
     background: #1a6b4a; color: white; font-family: var(--font-display);
     font-size: 0.88em; font-weight: 700; cursor: pointer;
     box-shadow: 0 2px 8px rgba(26,107,74,0.35); transition: background 0.2s;
   }
   #btn-next:hover { background: #27ae60; }
 
-  .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; }
   .animal-btn { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:12px; padding:7px 4px; cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.74em; font-weight:700; color:#1a3a6b; text-align:center; transition:all 0.18s; line-height:1.4; }
   .animal-btn:hover { background:rgba(255,255,255,0.82); transform:translateY(-2px); }
   .animal-btn.active { background:#1a3a6b; color:white; border-color:#1a3a6b; box-shadow:0 3px 10px rgba(26,58,107,0.4); }
@@ -135,47 +147,51 @@
     <div class="panel-col">
       <div class="panel-scroll">
 
-        <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:6px">Alege adversarul:</div>
-        <div class="animal-grid" style="margin-bottom:10px">
-          <button class="animal-btn active" data-random="0.9" onclick="selectAnimal(this)"><span class="emoji">&#128423;</span><span class="name">Pui de găină</span></button>
-          <button class="animal-btn" data-random="0.2" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
-          <button class="animal-btn" data-random="0" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
+        <div class="toggle-row">
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
-        <div class="level-toggle">
-          <button class="lvl-btn active" id="lvl1" onclick="setLevel(1)">Nivel 1 — Un Cal</button>
-          <button class="lvl-btn"        id="lvl2" onclick="setLevel(2)">Doi Cai</button>
+        <div id="levelBox">
+          <div class="sec-title">Alege adversarul:</div>
+          <div class="animal-grid">
+            <button class="animal-btn active" data-random="0.9" onclick="selectAnimal(this)"><span class="emoji">&#128035;</span><span class="name">Pui de găină</span></button>
+            <button class="animal-btn" data-random="0.2" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
+            <button class="animal-btn" data-random="0" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
+          </div>
         </div>
 
-        <ul class="rules-list">
-          <li>Fiecare cal capturează <strong>pionii adversarului</strong>.</li>
-          <li>Caii <strong>nu se pot captura între ei</strong>.</li>
-          <li>Câștigă cel cu <strong>mai mulți pioni</strong> capturați!</li>
-        </ul>
+        <div class="toggle-row lvl-row">
+          <button class="tgl-btn active" id="lvl1" onclick="setLevel(1)">Nivel 1 — Un Cal</button>
+          <button class="tgl-btn"        id="lvl2" onclick="setLevel(2)">Doi Cai</button>
+          <button class="tgl-btn"        id="lvl3" onclick="setLevel(3)">Doi cai (se pot captura)</button>
+        </div>
 
         <div class="player-panel active" id="pp-w">
           <div class="pp-row">
-            <span class="pp-name">♘ Alb (Tu)</span>
+            <span class="pp-name" id="name-w">♘ Alb (Tu)</span>
+            <span class="pp-strikes" id="strikes-w"></span>
             <span class="pp-score" id="score-w">0</span>
             <span class="pp-trophy" id="trophy-w">🏆</span>
           </div>
           <div class="pp-bar-wrap"><div class="pp-bar bar-w" id="bar-w"></div></div>
-          <div class="pp-label">pioni capturați / 8</div>
+          <div class="pp-label" id="label-w">pioni capturați / 8</div>
         </div>
 
         <div class="player-panel" id="pp-b">
           <div class="pp-row">
-            <span class="pp-name">♞ Negru — 🤖</span>
+            <span class="pp-name" id="name-b">♞ Negru — 🤖</span>
+            <span class="pp-strikes" id="strikes-b"></span>
             <span class="pp-score" id="score-b">0</span>
             <span class="pp-trophy" id="trophy-b">🏆</span>
           </div>
           <div class="pp-bar-wrap"><div class="pp-bar bar-b" id="bar-b"></div></div>
-          <div class="pp-label">pioni capturați / 8</div>
+          <div class="pp-label" id="label-b">pioni capturați / 8</div>
         </div>
 
         <div id="status-box">♘ Mută Albul — apasă pe Cal!</div>
 
-        <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:6px">&#9203; Timp per juc&#259;tor:</div>
+        <div class="sec-title">&#9203; Timp per juc&#259;tor:</div>
         <div class="time-opts" id="timeOpts">
           <button class="time-opt active" data-secs="0"   onclick="selectTime(this)">&#8734; Liber</button>
           <button class="time-opt" data-secs="60"  onclick="selectTime(this)">1 min</button>
@@ -183,12 +199,92 @@
           <button class="time-opt" data-secs="300" onclick="selectTime(this)">5 min</button>
         </div>
         <div class="clocks" id="clocksDiv" style="display:none">
-          <div class="clock-box" id="clockW"><div class="clock-lbl">&#9823; Tu (Alb)</div><div class="clock-time" id="cwTime">&#8734;</div></div>
-          <div class="clock-box" id="clockB"><div class="clock-lbl">&#129302; Robot</div><div class="clock-time" id="cbTime">&#8734;</div></div>
+          <div class="clock-box" id="clockW"><div class="clock-lbl" id="clockLblW">&#9823; Tu (Alb)</div><div class="clock-time" id="cwTime">&#8734;</div></div>
+          <div class="clock-box" id="clockB"><div class="clock-lbl" id="clockLblB">&#129302; Robot</div><div class="clock-time" id="cbTime">&#8734;</div></div>
         </div>
 
         <button class="btn-game" onclick="restartGame()">↺ Restart</button>
         <button id="btn-next" onclick="location.href='nivel1_joc_cursa.html'">♖ Jocul următor ▶</button>
+
+        <details class="howto" open>
+          <summary>📖 Cum se joacă</summary>
+
+          <div class="hl-box">
+            <h4>Piesele de pe tablă</h4>
+            <p>În mijlocul tablei, pe rândurile 4 și 5, stau <strong>16 pioni</strong>, câte 8 de fiecare culoare, așezați pe sărite, unul alb, unul negru.</p>
+            <p>Pionii albi sunt pe b5, d5, f5, h5, a4, c4, e4 și g4. Pionii negri sunt pe a5, c5, e5, g5, b4, d4, f4 și h4.</p>
+            <p><strong>În acest joc pionii nu se mută.</strong> Stau pe loc și așteaptă să fie capturați.</p>
+            <p>Singurele piese care se mută sunt <strong>caii</strong>. Albul are un cal pe g1, iar negrul are un cal pe g8. În variantele cu doi cai, albul mai are un cal pe b1, iar negrul mai are un cal pe b8.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum sare calul</h4>
+            <p>Calul nu merge în linie dreaptă ca celelalte piese. El <strong>sare în formă de L</strong>: două pătrate într-o direcție (înainte, înapoi, la stânga sau la dreapta), apoi un pătrat într-o parte.</p>
+            <p>De exemplu, calul de pe g1 poate sări pe <strong>e2</strong>, pe <strong>f3</strong> sau pe <strong>h3</strong>. Din mijlocul tablei un cal are până la 8 sărituri posibile, iar din colț are doar 2.</p>
+            <p>Calul <strong>sare peste piese</strong>, așa că nimic nu îl poate bloca pe drum. Contează doar pătratul pe care aterizează: acolo nu are voie să stea o piesă de aceeași culoare cu el.</p>
+            <p>Când apeși pe un cal, tabla îți arată pătratele pe care poate sări. La nivelul Dragon aceste semne nu se mai arată.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Pe rând</h4>
+            <p><strong>Albul mută primul.</strong> Apoi mută negrul, apoi iar albul și tot așa, pe rând. La fiecare mutare sare <strong>un singur cal</strong>.</p>
+            <p>Poți muta în două feluri: apeși pe cal și apoi pe pătratul unde vrei să ajungă sau tragi calul cu mouse-ul (ori cu degetul) până acolo.</p>
+            <p>Dacă un jucător nu are nicio săritură posibilă, el nu mută, iar rândul trece la celălalt jucător.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Ce înseamnă „a captura"</h4>
+            <p><strong>A captura</strong> înseamnă să sari cu calul pe pătratul unde stă o piesă a adversarului. Piesa capturată iese de pe tablă, iar calul tău rămâne în locul ei.</p>
+            <p>Calul alb capturează pioni negri. Calul negru capturează pioni albi. Pe pionii de culoarea ta nu poți ateriza.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Scopul jocului</h4>
+            <p>Fiecare jucător vrea să captureze <strong>cât mai mulți pioni ai adversarului</strong>. Fiecare pion capturat înseamnă un punct. Punctele se văd în casetele de mai sus, lângă numele fiecărui jucător.</p>
+            <p>Merită să alegi un drum scurt: un cal care sare de la un pion la altul fără ocolișuri strânge pionii mai repede.</p>
+          </div>
+
+          <div class="hl-box warn">
+            <h4>Cum se termină și cine câștigă</h4>
+            <p>Jocul se termină când <strong>unul dintre jucători a capturat toți cei 8 pioni</strong> ai adversarului. Dacă albul termină primul, negrul mai are dreptul la o ultimă mutare, pentru că albul a început primul. Dacă negrul termină primul, jocul se oprește imediat.</p>
+            <p>Jocul se termină și atunci când <strong>niciun jucător nu mai are vreo săritură posibilă</strong>.</p>
+            <p><strong>Câștigă cel care a capturat mai mulți pioni.</strong> Dacă amândoi au capturat la fel de mulți, este egalitate.</p>
+            <p>Dacă jucați cu ceas și unui jucător i se termină timpul, câștigă celălalt, oricâți pioni ar fi capturat fiecare.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Variantele</h4>
+            <p><strong>Un cal.</strong> Fiecare jucător are un singur cal. Caii nu se pot captura între ei: un cal nu poate sări pe pătratul unde stă calul adversarului.</p>
+            <p><strong>Doi cai.</strong> Fiecare jucător are doi cai și poate alege la fiecare mutare cu care dintre ei sare. Nici aici caii nu se pot captura: un cal nu poate sări pe pătratul unde stă alt cal, fie al lui, fie al adversarului.</p>
+            <p><strong>Doi cai (se pot captura).</strong> Fiecare jucător are doi cai, dar acum un cal <strong>poate captura un cal al adversarului</strong>, sărind pe pătratul lui. Pe propriul cal tot nu poți sări.</p>
+          </div>
+
+          <div class="hl-box warn">
+            <h4>Când caii se pot captura</h4>
+            <p>Un cal capturat <strong>nu aduce puncte</strong>. Punctele sunt numai pionii capturați.</p>
+            <p>Totuși merită: adversarul rămâne cu mai puțini cai și strânge pionii mai încet. Un jucător care a rămas <strong>fără niciun cal nu mai poate muta</strong>, iar rândul trece de fiecare dată la celălalt jucător, care poate continua să captureze pioni.</p>
+            <p>Ai grijă să nu îți lași calul pe un pătrat unde îl poate captura un cal al adversarului. Câți cai mai are fiecare jucător se vede sub bara lui.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Adversarul: Pui de găină, Mânz, Dragon</h4>
+            <p><strong>Pui de găină.</strong> Calculatorul mută aproape mereu la întâmplare (cam 9 mutări din 10).</p>
+            <p><strong>Mânz.</strong> Calculatorul caută de obicei drumul cel mai scurt spre pionii tăi, dar cam o mutare din 5 o face la întâmplare.</p>
+            <p><strong>Dragon.</strong> Calculatorul caută la fiecare mutare drumul cel mai scurt spre pionii tăi. În varianta în care caii se pot captura, se ferește să își lase caii acolo unde îi poate captura un cal de-al tău și îți capturează un cal atunci când o poate face fără să piardă calul lui. La Dragon nu se mai arată pătratele pe care poate sări calul.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Ceasul</h4>
+            <p>Poți alege un timp pentru fiecare jucător: 1, 2 sau 5 minute. Timpul ales pornește după ce apeși <strong>↺ Restart</strong>. Ceasul merge numai pentru jucătorul care este la mutare.</p>
+          </div>
+
+          <div class="hl-box ok">
+            <h4>Modul „În doi"</h4>
+            <p>Alege <strong>👫 În doi</strong> ca să jucați doi copii pe aceeași tablă, fără calculator. <strong>Jucătorul 1</strong> mută caii albi, <strong>Jucătorul 2</strong> mută caii negri, pe rând. Albul începe.</p>
+            <p>Dacă un jucător încearcă o mutare care nu este permisă, mutarea nu se face, dar <strong>se numără ca încercare nepermisă</strong>. Se numără și încercarea de a muta o piesă a adversarului sau un pion. Dacă ridici calul și îl pui înapoi pe pătratul lui, nu se numără.</p>
+            <p>Încercările se văd lângă numele fiecărui jucător: ❌ pentru fiecare încercare nepermisă și ▫️ pentru cele rămase. <strong>La 3 încercări nepermise jocul se oprește și câștigă celălalt jucător.</strong></p>
+          </div>
+        </details>
 
       </div><!-- /.panel-scroll -->
       <div class="feedback-bar" id="feedbackBar"></div>
@@ -205,61 +301,84 @@
 <script src="board-utils.js"></script>
 <script>
 /* =====================================================
-   JOCUL CAILOR — Negru = AI, Alb = Tu
+   JOCUL CAILOR (Step 1, lecția 3)
+   Contra calculatorului: Alb = Tu, Negru = robot. În doi: Jucătorul 1 = alb, Jucătorul 2 = negru.
+   Nivel 1: un cal fiecare. Nivel 2: doi cai, caii nu se capturează.
+   Nivel 3: doi cai, caii se pot captura (calul capturat nu aduce puncte).
+   Cine nu are mutări pasează. Final: toți pionii unei culori capturați
+   (albul termină primul → negrul mai are o mutare) sau nimeni nu mai poate muta.
+   Câștigă cine are mai mulți pioni capturați.
    ===================================================== */
 
 const COLS = 'abcdefgh';
 const KM = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+const MAX_STRIKES = 3;
 
 const BLACK_PAWNS_INIT = ['a5','c5','e5','g5','b4','d4','f4','h4'];
 const WHITE_PAWNS_INIT = ['b5','d5','f5','h5','a4','c4','e4','g4'];
 
 const START = {
     1: { w: ['g1'], b: ['g8'] },
-    2: { w: ['b1','g1'], b: ['b8','g8'] }
+    2: { w: ['b1','g1'], b: ['b8','g8'] },
+    3: { w: ['b1','g1'], b: ['b8','g8'] }
 };
 
-let level = 1;
-let wKnights, bKnights, wPawns, bPawns;
-let wCaptured, bCaptured;
-let wFinished, bFinished;
-let turn, selSq, validMvs, gameOver;
-let moveCount;
+let level = 1, mode = 'robot';
+let N, P, cap, finished, moves, strikes;   // N[c] = caii culorii c, P[c] = pionii culorii c
+let turn, selSq, gameOver;
+let aiBusy = false, aiTimers = [];
 let board;
 
+const opp = c => c === 'w' ? 'b' : 'w';
+const knightsCapture = () => level === 3;
+
+/* ---------- geometrie și mutări ---------- */
+function jumps(sq) {
+    const c = COLS.indexOf(sq[0]), r = parseInt(sq[1]), out = [];
+    for (const [dc, dr] of KM) {
+        const nc = c + dc, nr = r + dr;
+        if (nc < 0 || nc > 7 || nr < 1 || nr > 8) continue;
+        out.push(COLS[nc] + nr);
+    }
+    return out;
+}
+function isJump(a, b) {
+    const dc = Math.abs(COLS.indexOf(a[0]) - COLS.indexOf(b[0])), dr = Math.abs(parseInt(a[1]) - parseInt(b[1]));
+    return (dc === 1 && dr === 2) || (dc === 2 && dr === 1);
+}
+/* destinațiile unui cal al culorii c: {sq, capture: 'pawn' | 'knight' | null} */
+function knightDests(c, sq) {
+    const o = opp(c), res = [];
+    for (const nsq of jumps(sq)) {
+        if (N[c].includes(nsq) || P[c].has(nsq)) continue;
+        if (N[o].includes(nsq)) {
+            if (knightsCapture()) res.push({ sq: nsq, capture: 'knight' });
+            continue;
+        }
+        res.push({ sq: nsq, capture: P[o].has(nsq) ? 'pawn' : null });
+    }
+    return res;
+}
+function allMoves(c) {
+    const out = [];
+    N[c].forEach(from => knightDests(c, from).forEach(m => out.push({ from, dest: m.sq, capture: m.capture })));
+    return out;
+}
+const hasMoves = c => allMoves(c).length > 0;
+
+/* ---------- robotul ---------- */
 function knightBFS(from, obstacles) {
     const dist = {[from]: 0};
-    const step = {};
     const q = [from];
     while (q.length) {
         const cur = q.shift();
-        const c = COLS.indexOf(cur[0]), r = parseInt(cur[1]);
-        for (const [dc,dr] of KM) {
-            const nc=c+dc, nr=r+dr;
-            if (nc<0||nc>7||nr<1||nr>8) continue;
-            const nsq = COLS[nc]+nr;
+        for (const nsq of jumps(cur)) {
             if (nsq in dist || obstacles.has(nsq)) continue;
-            dist[nsq] = dist[cur]+1;
-            step[nsq] = step[cur] || nsq;
+            dist[nsq] = dist[cur] + 1;
             q.push(nsq);
         }
     }
-    return {dist, step};
-}
-
-function knightDestsWhite(sq) {
-    const c=COLS.indexOf(sq[0]), r=parseInt(sq[1]);
-    const res=[];
-    for (const [dc,dr] of KM) {
-        const nc=c+dc, nr=r+dr;
-        if (nc<0||nc>7||nr<1||nr>8) continue;
-        const nsq=COLS[nc]+nr;
-        if (wKnights.includes(nsq)) continue;
-        if (wPawns.has(nsq)) continue;
-        if (bKnights.includes(nsq)) continue;
-        res.push({sq:nsq, capture:bPawns.has(nsq)});
-    }
-    return res;
+    return {dist};
 }
 
 function heldKarpCost(startSq, pawns, obs) {
@@ -288,100 +407,44 @@ function heldKarpCost(startSq, pawns, obs) {
     return Math.min(...dp[full]);
 }
 
-function aiPickMove() {
-    const targets = [...wPawns];
-    if (!targets.length) return null;
-    let bestMove = null, bestScore = Infinity;
-    bKnights.forEach((knight, idx) => {
-        const others = bKnights.filter((_, j) => j !== idx);
-        const moveObs = new Set([...bPawns, ...others]);
-        const c = COLS.indexOf(knight[0]), r = parseInt(knight[1]);
-        for (const [dc, dr] of KM) {
-            const nc = c + dc, nr = r + dr;
-            if (nc < 0 || nc > 7 || nr < 1 || nr > 8) continue;
-            const dest = COLS[nc] + nr;
-            if (moveObs.has(dest) || wKnights.includes(dest)) continue;
-            const newKnights = [...bKnights]; newKnights[idx] = dest;
-            const captured = wPawns.has(dest);
-            const newTargets = captured ? targets.filter(t => t !== dest) : targets;
-            const hkObs = new Set([...bPawns, ...others]);
-            let score;
-            if (newKnights.length === 1) {
-                score = heldKarpCost(dest, newTargets, hkObs);
-            } else {
-                const nt = newTargets.length;
-                let partCost = Infinity;
-                for (let m = 0; m < (1 << nt); m++) {
-                    const t0 = newTargets.filter((_, i) => m & (1 << i));
-                    const t1 = newTargets.filter((_, i) => !(m & (1 << i)));
-                    const obs0 = new Set([...bPawns, newKnights[1]]);
-                    const obs1 = new Set([...bPawns, newKnights[0]]);
-                    const c2 = heldKarpCost(newKnights[0], t0, obs0) + heldKarpCost(newKnights[1], t1, obs1);
-                    if (c2 < partCost) partCost = c2;
-                }
-                score = partCost;
-            }
-            if (score < bestScore) { bestScore = score; bestMove = {knightIdx: idx, dest}; }
-        }
-    });
-    return bestMove;
-}
-
-function buildPos() {
-    const pos={};
-    wKnights.forEach(s => { pos[s]='wN'; });
-    bKnights.forEach(s => { pos[s]='bN'; });
-    wPawns.forEach(s => { pos[s]='wP'; });
-    bPawns.forEach(s => { pos[s]='bP'; });
-    return pos;
-}
-
-function clearHL() {
-    COLS.split('').forEach(c => {
-        for (let r=1;r<=8;r++) $(`.square-${c}${r}`).removeClass('highlight-selected highlight-legal highlight-capture sq-ai');
-    });
-}
-function highlight(sq, mvs) {
-    clearHL();
-    $(`.square-${sq}`).addClass('highlight-selected');
-    mvs.forEach(m => $(`.square-${m.sq}`).addClass(m.capture?'highlight-capture':'highlight-legal'));
-}
-
-function setStatus(msg, cls) {
-    const el=document.getElementById('status-box');
-    el.textContent=msg; el.className=cls||'';
-}
-function updateUI() {
-    document.getElementById('score-w').textContent=wCaptured;
-    document.getElementById('score-b').textContent=bCaptured;
-    document.getElementById('bar-w').style.width=Math.round(wCaptured/8*100)+'%';
-    document.getElementById('bar-b').style.width=Math.round(bCaptured/8*100)+'%';
-    document.getElementById('pp-w').className='player-panel'+(turn==='w'&&!gameOver?' active':'');
-    document.getElementById('pp-b').className='player-panel'+(turn==='b'&&!gameOver?' active':'');
-}
-
-function endGame(result) {
-    stopClock();
-    gameOver=true; clearHL();
-    let msg, cls;
-    if (result==='draw') {
-        msg=`🤝 Egalitate! Amândoi în ${moveCount} mutări!`; cls='draw';
-        document.getElementById('trophy-w').classList.add('show');
-        document.getElementById('trophy-b').classList.add('show');
-        document.getElementById('pp-w').className='player-panel winner';
-        document.getElementById('pp-b').className='player-panel winner';
-    } else if (result==='white') {
-        msg=`🏆 Ai câștigat în ${moveCount} mutări!`; cls='ok';
-        document.getElementById('trophy-w').classList.add('show');
-        document.getElementById('pp-w').className='player-panel winner';
-    } else {
-        msg=`🏆 Calculatorul câștigă în ${moveCount} mutări!`; cls='ok';
-        document.getElementById('trophy-b').classList.add('show');
-        document.getElementById('pp-b').className='player-panel winner';
+/* câte sărituri le trebuie cailor negri K ca să strângă pionii albi rămași */
+function tourCost(K, targets) {
+    if (K.length === 1) return heldKarpCost(K[0], targets, new Set(P.b));
+    const nt = targets.length;
+    let best = Infinity;
+    for (let m = 0; m < (1 << nt); m++) {
+        const t0 = targets.filter((_, i) => m & (1 << i));
+        const t1 = targets.filter((_, i) => !(m & (1 << i)));
+        const c2 = heldKarpCost(K[0], t0, new Set([...P.b, K[1]])) + heldKarpCost(K[1], t1, new Set([...P.b, K[0]]));
+        if (c2 < best) best = c2;
     }
-    setStatus(msg, cls);
-    document.getElementById('btn-next').style.display='block';
-    updateUI();
+    return best;
+}
+
+function aiPickMove() {
+    const opts = allMoves('b');
+    if (!opts.length) return null;
+    let bestMove = null, bestScore = Infinity;
+    for (const mv of opts) {
+        const K = N.b.map(s => s === mv.from ? mv.dest : s);
+        const Wk = mv.capture === 'knight' ? N.w.filter(s => s !== mv.dest) : N.w;
+        const targets = [...P.w].filter(t => t !== mv.dest);
+        let score = tourCost(K, targets);
+        if (knightsCapture()) {
+            /* siguranța cailor: un cal atacat de un cal alb costă mult (mai puțin dacă e apărat de celălalt cal negru) */
+            let danger = 0;
+            K.forEach((k, i) => {
+                if (Wk.some(w => isJump(w, k))) {
+                    const defended = K.some((o, j) => j !== i && isJump(o, k));
+                    danger += defended ? 0.6 : 1;
+                }
+            });
+            score += 100 * danger;
+            if (mv.capture === 'knight') score -= 50;
+        }
+        if (score < bestScore) { bestScore = score; bestMove = mv; }
+    }
+    return bestMove;
 }
 
 var aiRandomChance = 0.9;
@@ -392,22 +455,191 @@ function selectAnimal(btn) {
 }
 
 function getRandomMove() {
-    var allMoves = [];
-    bKnights.forEach(function(knight, idx) {
-        var c = COLS.indexOf(knight[0]), r = parseInt(knight[1]);
-        for (var i = 0; i < KM.length; i++) {
-            var nc = c + KM[i][0], nr = r + KM[i][1];
-            if (nc < 0 || nc > 7 || nr < 1 || nr > 8) continue;
-            var dest = COLS[nc] + nr;
-            var others = bKnights.filter(function(_, j){ return j !== idx; });
-            var obs = new Set([...bPawns, ...others]);
-            if (obs.has(dest) || wKnights.includes(dest)) continue;
-            allMoves.push({knightIdx: idx, dest: dest});
-        }
-    });
-    return allMoves.length ? allMoves[Math.floor(Math.random() * allMoves.length)] : null;
+    const opts = allMoves('b');
+    return opts.length ? opts[Math.floor(Math.random() * opts.length)] : null;
 }
 
+/* ---------- afișare ---------- */
+function buildPos() {
+    const pos = {};
+    N.w.forEach(s => { pos[s] = 'wN'; });
+    N.b.forEach(s => { pos[s] = 'bN'; });
+    P.w.forEach(s => { pos[s] = 'wP'; });
+    P.b.forEach(s => { pos[s] = 'bP'; });
+    return pos;
+}
+function pieceAt(sq) { return buildPos()[sq] || null; }
+
+function clearHL() {
+    $('#board [class*="square-"]').removeClass('highlight-selected highlight-legal highlight-capture sq-ai sq-wrong');
+}
+function flashWrong(sq) {
+    const el = $('.square-' + sq);
+    el.addClass('sq-wrong');
+    setTimeout(() => el.removeClass('sq-wrong'), 600);
+}
+function setStatus(msg, cls) {
+    const el = document.getElementById('status-box');
+    el.innerHTML = msg; el.className = cls || '';
+}
+
+const pname = c => mode === 'duo' ? (c === 'w' ? 'Jucătorul 1' : 'Jucătorul 2') : (c === 'w' ? 'Tu' : 'Calculatorul');
+const colorName = c => c === 'w' ? 'albul' : 'negrul';
+
+function updateUI() {
+    ['w', 'b'].forEach(c => {
+        document.getElementById('score-' + c).textContent = cap[c];
+        document.getElementById('bar-' + c).style.width = Math.round(cap[c] / 8 * 100) + '%';
+        if (!gameOver) document.getElementById('pp-' + c).className = 'player-panel' + (turn === c ? ' active' : '');
+        document.getElementById('strikes-' + c).textContent =
+            mode === 'duo' ? '❌'.repeat(strikes[c]) + '▫️'.repeat(MAX_STRIKES - strikes[c]) : '';
+        document.getElementById('label-' + c).textContent =
+            'pioni capturați / 8' + (knightsCapture() ? ' · cai pe tablă: ' + N[c].length : '');
+    });
+    document.getElementById('name-w').textContent = mode === 'duo' ? '♘ Jucătorul 1 (alb)' : '♘ Alb (Tu)';
+    document.getElementById('name-b').textContent = mode === 'duo' ? '♞ Jucătorul 2 (negru)' : '♞ Negru — 🤖';
+    document.getElementById('clockLblW').textContent = mode === 'duo' ? '♘ Jucătorul 1' : '♘ Tu (Alb)';
+    document.getElementById('clockLblB').textContent = mode === 'duo' ? '♞ Jucătorul 2' : '🤖 Robot';
+}
+
+function turnMessage() {
+    if (mode === 'duo') return turn === 'w' ? '♘ Mută Jucătorul 1, cu un cal alb.' : '♞ Mută Jucătorul 2, cu un cal negru.';
+    return '♘ Mută Albul — apasă pe Cal!';
+}
+
+/* ---------- desfășurarea ---------- */
+function cancelAi() {
+    aiTimers.forEach(t => clearTimeout(t)); aiTimers = []; aiBusy = false;
+}
+
+function endGame(reason, loser) {
+    stopClock(); cancelAi();
+    gameOver = true; selSq = null; clearHL();
+    let winner;
+    if (reason === 'time' || reason === 'strikes') winner = opp(loser);
+    else winner = cap.w > cap.b ? 'w' : cap.b > cap.w ? 'b' : null;
+
+    let head;
+    if (reason === 'finish') {
+        head = (P.w.size === 0 && P.b.size === 0) ? 'Toți pionii au fost capturați.'
+             : 'Toți pionii ' + (P.b.size === 0 ? 'negri' : 'albi') + ' au fost capturați.';
+    } else if (reason === 'nomoves') {
+        head = 'Niciun jucător nu mai are vreo mutare posibilă.';
+    } else if (reason === 'time') {
+        head = '⏰ ' + (mode === 'robot' && loser === 'w' ? 'Ți s-a terminat timpul.' : 'S-a terminat timpul pentru ' + pname(loser) + '.');
+    } else {
+        head = '❌ ' + pname(loser) + ' a încercat 3 mutări nepermise.';
+    }
+    const score = 'Pioni capturați: albul ' + cap.w + ', negrul ' + cap.b + '.';
+    let res;
+    if (!winner) res = '🤝 <strong>Egalitate.</strong>';
+    else if (mode === 'robot') res = winner === 'w' ? '🏆 <strong>Ai câștigat!</strong>' : '🏆 <strong>Calculatorul câștigă.</strong>';
+    else res = '🏆 <strong>' + pname(winner) + ' câștigă.</strong>';
+
+    ['w', 'b'].forEach(c => {
+        const won = winner === null || winner === c;
+        document.getElementById('trophy-' + c).classList.toggle('show', won);
+        document.getElementById('pp-' + c).className = 'player-panel' + (won ? ' winner' : '');
+    });
+    setStatus(head + '<br>' + score + '<br>' + res, reason === 'strikes' ? 'warn' : winner ? 'ok' : 'draw');
+    document.getElementById('btn-next').style.display = 'block';
+    updateUI();
+    updateClocks();
+}
+
+/* aplică mutarea culorii c; întoarce ce s-a capturat */
+function applyMove(c, from, dest) {
+    const o = opp(c);
+    let what = null;
+    if (P[o].has(dest)) { P[o].delete(dest); cap[c]++; what = 'pawn'; }
+    else if (N[o].includes(dest)) { N[o] = N[o].filter(s => s !== dest); what = 'knight'; }
+    N[c] = N[c].map(s => s === from ? dest : s);
+    moves[c]++;
+    return what;
+}
+
+/* după mutarea culorii c: final, pas sau rândul celuilalt */
+function finishTurn(c, what) {
+    selSq = null; clearHL();
+    const o = opp(c);
+    if (P[o].size === 0) finished[c] = true;
+    updateUI();
+    if (finished.b || (finished.w && (c === 'b' || !hasMoves('b')))) return endGame('finish');
+
+    let note = '';
+    if (what === 'knight') {
+        note = mode === 'robot'
+            ? (c === 'w' ? 'Ai capturat un cal negru. ' : 'Calculatorul ți-a capturat un cal. ')
+            : pname(c) + ' a capturat un cal al adversarului. ';
+    }
+    let next = o;
+    if (!hasMoves(o)) {
+        if (!hasMoves(c)) return endGame('nomoves');
+        next = c;
+        if (mode === 'robot') note += o === 'b' ? 'Calculatorul nu are nicio mutare posibilă, așa că muți din nou. '
+                                                : 'Nu ai nicio mutare posibilă, așa că mută din nou calculatorul. ';
+        else note += pname(o) + ' nu are nicio mutare posibilă, așa că mută din nou ' + pname(c) + '. ';
+    }
+    turn = next;
+    updateUI();
+    updateClocks();
+    if (mode === 'robot' && turn === 'b') aiBlackTurn(note);
+    else setStatus(note + turnMessage());
+}
+
+function aiBlackTurn(note) {
+    aiBusy = true;
+    setStatus((note || '') + '🤖 Calculatorul gândește…', '');
+    aiTimers.push(setTimeout(() => {
+        const mv = (Math.random() < aiRandomChance) ? getRandomMove() : aiPickMove();
+        if (!mv) { aiBusy = false; return; }
+        $(`.square-${mv.from}`).addClass('sq-ai');
+        aiTimers.push(setTimeout(() => {
+            aiTimers = []; aiBusy = false;
+            if (gameOver) return;
+            const what = applyMove('b', mv.from, mv.dest);
+            board.position(buildPos(), false);
+            finishTurn('b', what);
+        }, 400));
+    }, 650));
+}
+
+function humanMove(from, dest) {
+    const c = turn;
+    const what = applyMove(c, from, dest);
+    board.position(buildPos(), false);
+    finishTurn(c, what);
+}
+
+/* ---------- încercări nepermise ---------- */
+function illegal(sq, reason) {
+    selSq = null; clearHL();
+    if (sq) flashWrong(sq);
+    if (mode !== 'duo') { setStatus('⚠️ ' + reason, 'warn'); return; }
+    const c = turn;
+    strikes[c]++;
+    updateUI();
+    if (strikes[c] >= MAX_STRIKES) { endGame('strikes', c); return; }
+    setStatus('❌ ' + reason + ' Încercări nepermise pentru ' + pname(c) + ': ' + strikes[c] + ' din ' + MAX_STRIKES + '.', 'warn');
+}
+function whyIllegal(from, to) {
+    const p = pieceAt(to);
+    if (!isJump(from, to)) return 'Calul nu poate ajunge pe ' + to + ': sare numai în formă de L.';
+    if (p && p[0] === turn) return 'Calul nu poate sări pe ' + to + ': acolo stă o piesă de aceeași culoare.';
+    if (p === opp(turn) + 'N') return 'Calul nu poate sări pe ' + to + ': în această variantă caii nu se capturează între ei.';
+    return 'Calul nu poate sări pe ' + to + '.';
+}
+function tryMove(from, to) {
+    if (knightDests(turn, from).some(m => m.sq === to)) { humanMove(from, to); return; }
+    illegal(to, whyIllegal(from, to));
+}
+function showSelection(sq) {
+    clearHL();
+    $(`.square-${sq}`).addClass('highlight-selected');
+    knightDests(turn, sq).forEach(m => $(`.square-${m.sq}`).addClass(m.capture ? 'highlight-capture' : 'highlight-legal'));
+}
+
+/* ---------- ceas ---------- */
 var clockMax = 0;
 var clock = {w: 0, b: 0};
 var clockTick = null;
@@ -440,110 +672,40 @@ function startClock(){
         var c=turn==='w'?'w':'b';
         clock[c]--;
         updateClocks();
-        if(clock[c]<=0){stopClock();endGame(turn==='w'?'black':'white');}
+        if(clock[c]<=0){stopClock();endGame('time', c);}
     },1000);
 }
 function stopClock(){if(clockTick){clearInterval(clockTick);clockTick=null;}}
 
-function aiBlackTurn() {
-    setStatus('🤖 Calculatorul gândește…','');
-    document.getElementById('pp-b').className='player-panel active';
-    document.getElementById('pp-w').className='player-panel';
-    setTimeout(() => {
-        const mv = (Math.random() < aiRandomChance) ? getRandomMove() : aiPickMove();
-        if (mv) {
-            const {knightIdx, dest} = mv;
-            $(`.square-${bKnights[knightIdx]}`).addClass('sq-ai');
-            setTimeout(() => {
-                clearHL();
-                bKnights[knightIdx] = dest;
-                if (wPawns.has(dest)) { wPawns.delete(dest); bCaptured++; }
-                board.position(buildPos(), false);
-                if (wPawns.size===0) bFinished=true;
-                moveCount++;
-                updateUI();
-                if (wFinished || bFinished) {
-                    if (wFinished && bFinished) endGame('draw');
-                    else if (wFinished)         endGame('white');
-                    else                        endGame('black');
-                } else {
-                    turn='w';
-                    updateClocks();
-                    setStatus('♘ Mută Albul!','');
-                    document.getElementById('pp-w').className='player-panel active';
-                    document.getElementById('pp-b').className='player-panel';
-                }
-            }, 400);
-        }
-    }, 650);
-}
-
-$(document).on('click', function(e) {
-    if (gameOver || turn !== 'w') return;
-    const el=$(e.target).closest('[class*="square-"]');
-    if (!el.length) return;
-    const match=(el.attr('class')||'').match(/square-([a-h][1-8])/);
-    if (!match) return;
-    const sq=match[1];
-    if (!selSq) {
-        if (wKnights.includes(sq)) {
-            selSq=sq;
-            validMvs=knightDestsWhite(sq);
-            clearHL(); $(`.square-${sq}`).addClass('highlight-selected');
-            if (!validMvs.length) {
-                setStatus('⚠️ Calul nu are unde merge! Selectează altul.','');
-                selSq=null;
-            }
-        }
-    } else {
-        const mv=validMvs.find(m=>m.sq===sq);
-        if (mv) {
-            wKnights=wKnights.map(s=>s===selSq?sq:s);
-            if (mv.capture) { bPawns.delete(sq); wCaptured++; }
-            board.position(buildPos(),false);
-            clearHL(); selSq=null; validMvs=[];
-            if (bPawns.size===0) wFinished=true;
-            updateUI();
-            turn='b';
-            updateClocks();
-            aiBlackTurn();
-        } else if (wKnights.includes(sq)) {
-            selSq=sq;
-            validMvs=knightDestsWhite(sq);
-            clearHL(); $(`.square-${sq}`).addClass('highlight-selected');
-        } else {
-            selSq=null; validMvs=[]; clearHL();
-        }
-    }
-});
-
+/* ---------- setări ---------- */
 function setLevel(lvl) {
-    level=lvl;
-    document.getElementById('lvl1').className='lvl-btn'+(lvl===1?' active':'');
-    document.getElementById('lvl2').className='lvl-btn'+(lvl===2?' active':'');
+    level = lvl;
+    [1, 2, 3].forEach(i => { document.getElementById('lvl' + i).className = 'tgl-btn' + (lvl === i ? ' active' : ''); });
+    restartGame();
+}
+function setMode(m) {
+    mode = m;
+    document.getElementById('modeRobot').className = 'tgl-btn' + (m === 'robot' ? ' active' : '');
+    document.getElementById('modeDuo').className   = 'tgl-btn' + (m === 'duo' ? ' active' : '');
+    document.getElementById('levelBox').style.display = m === 'robot' ? '' : 'none';
     restartGame();
 }
 
 function restartGame() {
-    wKnights=[...START[level].w];
-    bKnights=[...START[level].b];
-    wPawns=new Set(WHITE_PAWNS_INIT);
-    bPawns=new Set(BLACK_PAWNS_INIT);
-    wCaptured=0; bCaptured=0;
-    wFinished=false; bFinished=false;
-    moveCount=0;
-    turn='w'; selSq=null; validMvs=[]; gameOver=false;
-    board.position(buildPos(),false);
+    cancelAi();
+    N = { w: [...START[level].w], b: [...START[level].b] };
+    P = { w: new Set(WHITE_PAWNS_INIT), b: new Set(BLACK_PAWNS_INIT) };
+    cap = { w: 0, b: 0 };
+    finished = { w: false, b: false };
+    moves = { w: 0, b: 0 };
+    strikes = { w: 0, b: 0 };
+    turn = 'w'; selSq = null; gameOver = false;
+    board.position(buildPos(), false);
     clearHL();
-    ['trophy-w','trophy-b'].forEach(id=>document.getElementById(id).classList.remove('show'));
-    setStatus('♘ Mută Albul — apasă pe Cal!','');
-    document.getElementById('score-w').textContent='0';
-    document.getElementById('score-b').textContent='0';
-    document.getElementById('bar-w').style.width='0%';
-    document.getElementById('bar-b').style.width='0%';
-    document.getElementById('pp-w').className='player-panel active';
-    document.getElementById('pp-b').className='player-panel';
-    document.getElementById('btn-next').style.display='none';
+    ['trophy-w','trophy-b'].forEach(id => document.getElementById(id).classList.remove('show'));
+    setStatus(turnMessage(), '');
+    updateUI();
+    document.getElementById('btn-next').style.display = 'none';
     var tb = document.querySelector('.time-opt.active');
     clockMax = tb ? parseInt(tb.dataset.secs) : 0;
     clock = {w: clockMax, b: clockMax};
@@ -553,37 +715,58 @@ function restartGame() {
     if (clockMax > 0) startClock();
 }
 
+/* ---------- input: click și drag ---------- */
+function canAct() { return !gameOver && !aiBusy && (mode === 'duo' || turn === 'w'); }
+
 board = Chessboard('board', {
     position: 'empty',
     pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
     draggable: true,
     showNotation: true,
-    onDragStart: function(source) {
-        if (gameOver || turn !== 'w') return false;
-        if (!wKnights.includes(source)) return false;
-        /* evidențiază mutările posibile la începutul drag-ului */
-        selSq = source;
-        validMvs = knightDestsWhite(source);
-        clearHL(); $(`.square-${source}`).addClass('highlight-selected');
+    onDragStart: function(source, piece) {
+        if (!canAct()) return false;
+        if (piece === turn + 'N') {                       // calul propriu: îl selectăm
+            if (!knightDests(turn, source).length) {
+                selSq = null; clearHL();
+                setStatus('⚠️ Calul de pe ' + source + ' nu are unde sări acum. Alege alt cal.', 'warn');
+                return false;
+            }
+            selSq = source;
+            showSelection(source);
+            return;
+        }
+        if (selSq && source !== selSq) {                  // click pe o piesă, după selectare = încercare de săritură
+            const from = selSq;
+            setTimeout(() => tryMove(from, source), 0);
+            return false;
+        }
+        if (piece[0] === turn) illegal(source, 'Pionii nu se mută în acest joc: muți numai caii.');
+        else illegal(source, 'Acum e rândul ' + (turn === 'w' ? 'albului' : 'negrului') + ': nu poți muta piesele adversarului.');
+        return false;
     },
     onDrop: function(source, target) {
-        if (target === 'offboard') { clearHL(); selSq = null; validMvs = []; return 'snapback'; }
-        const mvs = knightDestsWhite(source);
-        const mv  = mvs.find(m => m.sq === target);
-        if (!mv) { clearHL(); selSq = null; validMvs = []; return 'snapback'; }
-        wKnights = wKnights.map(s => s === source ? target : s);
-        if (mv.capture) { bPawns.delete(target); wCaptured++; }
-        clearHL(); selSq = null; validMvs = [];
-        if (bPawns.size === 0) wFinished = true;
-        updateUI();
-        turn = 'b';
-        updateClocks();
-        aiBlackTurn();
+        if (target === 'offboard' || target === source) return 'snapback';   // pus înapoi: nu se numără
+        if (!knightDests(turn, source).some(m => m.sq === target)) {
+            illegal(target, whyIllegal(source, target));
+            return 'snapback';
+        }
+        humanMove(source, target);
     },
     onSnapEnd: function() {
         board.position(buildPos(), false);
     },
 });
+
+/* click pe un pătrat gol, după selectare */
+$(document).on('click', '#board [class*="square-"]', function() {
+    if (!canAct() || !selSq) return;
+    const m = (this.className || '').match(/square-([a-h][1-8])/);
+    if (!m) return;
+    const sq = m[1];
+    if (sq === selSq || pieceAt(sq)) return;        // piesele sunt tratate în onDragStart
+    tryMove(selSq, sq);
+});
+
 $(window).resize(() => board.resize());
 restartGame();
 </script>

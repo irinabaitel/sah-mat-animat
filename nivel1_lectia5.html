@@ -105,6 +105,24 @@
       from { stroke-dashoffset:var(--arrow-len,300); }
       to   { stroke-dashoffset:0; }
     }
+
+  /* ── PRACTICE BUTTONS (ca în nivel1_lectia2) ── */
+  .practice-btn {
+    display: block; width: 100%; padding: 14px; border-radius: 14px;
+    border: none; text-align: center; cursor: pointer;
+    font-family: var(--font-display); font-size: 0.92em; font-weight: 700;
+    margin-bottom: 8px; transition: all 0.2s;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.18); color: white; text-decoration: none;
+  }
+  .practice-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+  .practice-btn small {
+    display: block; font-family: var(--font-body);
+    font-size: 0.78em; opacity: 0.85; font-weight: 400; margin-top: 2px;
+  }
+  .pb-blue   { background: var(--c-navy); }
+  .pb-green  { background: #1a6b4a; }
+  .pb-purple { background: #7d3c98; }
+  .pb-brown  { background: #8a5a1a; }
   </style>
   <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
   <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -227,6 +245,35 @@
                   </div>
                 </div>
 
+              </div>
+            </div>
+          </div>
+
+          <!-- ── ACC 2: EXERSEAZĂ ── -->
+          <div class="acc-item">
+            <div class="acc-head" id="mAcc2" onclick="toggleAcc(2)">
+              <span>🎮 Exersează!</span>
+              <span class="acc-icon">▶</span>
+            </div>
+            <div class="acc-body" id="body2">
+              <div class="acc-inner">
+                <p>Atacul, captura și apărarea se învață cel mai bine jucând. Alege un joc: îl poți juca împotriva calculatorului sau în doi, cu un coleg.</p>
+                <a href="nivel1_joc_dama_cal.html" class="practice-btn pb-blue">
+                  ♕ Dama contra calului
+                  <small>Dama vânează calul, calul fuge</small>
+                </a>
+                <a href="nivel1_joc_nasturi.html" class="practice-btn pb-green">
+                  🔘 Vânătoarea de nasturi
+                  <small>Aduni nasturi fără să fii capturat</small>
+                </a>
+                <a href="nivel1_joc_dama_turn_nebun.html" class="practice-btn pb-purple">
+                  ♕♖ Dama și turnul contra nebunului
+                  <small>O vânătoare grea, pentru cei mai atenți</small>
+                </a>
+                <a href="nivel1_joc_cai_lacomi.html" class="practice-btn pb-brown">
+                  ♞ Care cal mănâncă mai repede?
+                  <small>Doi cai, o cursă prin piesele adversarului</small>
+                </a>
               </div>
             </div>
           </div>
@@ -471,7 +518,7 @@ function onDrop(src, tgt) {
 ═══════════════════════════════════════════════════ */
 function toggleAcc(idx) {
   var wasOpen = (accOpen === idx);
-  [0,1].forEach(function(i) {
+  [0,1,2].forEach(function(i) {
     document.getElementById('body'+i).classList.remove('open');
     document.getElementById('mAcc'+i).classList.remove('open');
   });
@@ -481,8 +528,9 @@ function toggleAcc(idx) {
     document.getElementById('mAcc'+idx).classList.add('open');
     setTimeout(function() {
       board.resize();
-      if (idx === 0) renderAtacBoard();
-      else           renderAparareBoard();
+      if (idx === 0)      renderAtacBoard();
+      else if (idx === 1) renderAparareBoard();
+      else { board.position('start', false); clearArrows(); }
     }, 30);
   } else {
     accOpen = -1;

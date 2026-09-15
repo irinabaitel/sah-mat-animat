@@ -111,6 +111,42 @@
         100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot));} }
     .confetti-p { position:fixed; pointer-events:none; z-index:9999; border-radius:3px;
         animation:confetti-fall var(--dur,2s) ease-in forwards; }
+
+    /* încercare nepermisă */
+    .sq-wrong { background-color: rgba(220,40,40,0.55) !important; }
+
+    /* toggles (mod de joc) */
+    .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+    .tgl-btn {
+      flex:1; padding:6px 10px; border-radius:50px;
+      border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.5);
+      font-family:var(--font-display); font-size:0.82em; color:var(--c-navy);
+      cursor:pointer; transition:all 0.2s; white-space:nowrap;
+    }
+    .tgl-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
+
+    /* încercări nepermise (În doi) */
+    .strike-row { display:flex; gap:6px; margin-bottom:8px; }
+    .strike-box { flex:1; background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8);
+        border-radius:8px; padding:5px 8px; font-family:var(--font-display);
+        font-size:0.78em; color:#1a3a6b; text-align:center; line-height:1.4; }
+    .strike-box.active { border-color:var(--c-navy); background:rgba(26,58,107,0.1); }
+
+    /* CUM SE JOACĂ */
+    .howto { margin:12px 0 10px; }
+    .howto > summary {
+      cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900;
+      color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px;
+      background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8);
+    }
+    .howto > summary::-webkit-details-marker { display:none; }
+    .howto > summary::after { content:' ▾'; }
+    .howto:not([open]) > summary::after { content:' ▸'; }
+    .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
+    .howto .hl-box p { margin:0 0 6px; }
+    .howto .hl-box p:last-child { margin-bottom:0; }
+    .howto .hl-box ul { margin:0 0 6px; padding-left:18px; }
+    .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -119,7 +155,7 @@
 <body>
 <div class="page-wrapper">
   <header class="page-header" role="banner">
-    <span class="header-title">&#127823; Old McDonald Has a Farm</span>
+    <span class="header-title">&#128055; Old McDonald Has a Farm</span>
   </header>
 
   <main class="page-main" role="main">
@@ -130,20 +166,31 @@
     <div class="panel-col">
       <div class="panel-scroll" id="panelScroll">
 
-        <p class="panel-heading">&#127823; Old McDonald Has a Farm</p>
+        <p class="panel-heading">&#128055; Old McDonald Has a Farm</p>
 
         <!-- ══════════ SETUP ══════════ -->
         <div id="setup-section">
-          <div class="hl-box" style="margin-bottom:10px">
+          <div class="toggle-row">
+            <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+            <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
+          </div>
+
+          <div class="hl-box" style="margin-bottom:10px" id="introRobot">
             Tu ești <strong>Purceii albi</strong> &mdash; trimite-i la hambar (ultima linie)!
             În Repriza 2 joci cu <strong>Bătrânul McDonald</strong> &mdash; prinde purceii înainte să ajungă.
           </div>
+          <div class="hl-box" style="margin-bottom:10px;display:none" id="introDuo">
+            În Repriza 1, <strong>Jucătorul 1</strong> mută purceii albi și <strong>Jucătorul 2</strong> mută Bătrânul McDonald.
+            În Repriza 2 schimbați rolurile.
+          </div>
 
-          <div class="setup-label">&#128048; Dificultatea Bătrânului McDonald:</div>
-          <div class="animal-grid">
-            <button class="animal-btn active" data-depth="0" onclick="selectAnimal(this)"><span class="emoji">&#128423;</span><span class="name">Pui de găină</span></button>
-            <button class="animal-btn" data-depth="4" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
-            <button class="animal-btn" data-depth="7" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
+          <div id="levelBox">
+            <div class="setup-label">&#128048; Dificultatea Bătrânului McDonald:</div>
+            <div class="animal-grid">
+              <button class="animal-btn active" data-depth="0" onclick="selectAnimal(this)"><span class="emoji">&#128035;</span><span class="name">Pui de găină</span></button>
+              <button class="animal-btn" data-depth="4" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
+              <button class="animal-btn" data-depth="7" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
+            </div>
           </div>
 
           <div class="setup-label">&#9203; Timp per jucător:</div>
@@ -181,6 +228,10 @@
           </div>
           <div style="font-family:var(--font-display);font-size:0.82em;color:rgba(26,58,107,0.7);margin-bottom:8px" id="roundNum">Repriza 1</div>
           <div id="roundRole" style="font-family:var(--font-display);font-size:0.75em;color:rgba(26,58,107,0.55)"> &mdash; Tu: purceii &#9817;</div>
+          <div class="strike-row" id="strikeRow" style="display:none;margin-top:6px">
+            <div class="strike-box" id="strike1"></div>
+            <div class="strike-box" id="strike2"></div>
+          </div>
           <div class="status-box" id="statusBox">&#8987;</div>
           <div class="clocks">
             <div class="clock-box" id="clockW"><div class="clock-lbl">&#127823; Purcei</div><div class="clock-time" id="cwTime">&#8734;</div></div>
@@ -201,6 +252,121 @@
         <div id="result-section" style="display:none">
           <div id="resultCard"></div>
         </div>
+
+        <!-- ══════════ CUM SE JOACĂ ══════════ -->
+        <details class="howto" open>
+          <summary>📖 Cum se joacă</summary>
+
+          <div class="hl-box">
+            <h4>Povestea</h4>
+            <p>Bătrânul McDonald are o fermă. Purceii au ieșit din țarc și vor să ajungă la hambar, în capătul celălalt al fermei. McDonald încearcă să îi prindă înainte să ajungă acolo.</p>
+            <p>Pe tablă, <strong>purceii sunt pionii albi</strong>, iar <strong>Bătrânul McDonald este regele negru</strong>. McDonald poate primi și ajutoare: piese negre pe care le alegi înainte de joc.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Poziția de start</h4>
+            <p>Cei <strong>8 purcei</strong> stau pe linia a doua, de la a2 la h2.</p>
+            <p><strong>McDonald</strong> stă în mijlocul tablei, pe <strong>e5</strong>.</p>
+            <p><strong>Hambarul</strong> este linia a opta, ultima linie, de partea negrului.</p>
+            <p>Poți alege <strong>niciun ajutor, unul sau două</strong>, dintre cal, nebun, turn și regină. Primul ajutor stă pe <strong>c8</strong>, al doilea pe <strong>f8</strong>. Ordinea este mereu cal, nebun, turn, regină. De exemplu, dacă alegi calul și turnul, calul stă pe c8 și turnul pe f8.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum muți piesele</h4>
+            <p>Poți trage piesa cu mouse-ul (sau cu degetul) pe pătratul dorit. Poți și să dai click pe piesă și apoi click pe pătratul unde vrei să meargă.</p>
+            <p>Când alegi o piesă, pătratele unde poate merge se colorează.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum merg purceii</h4>
+            <p>Un purcel merge <strong>numai înainte</strong>, spre hambar, câte un pătrat. Nu merge înapoi și nici în lateral.</p>
+            <p>Din poziția de start, de pe linia a doua, un purcel poate merge și <strong>două pătrate deodată</strong>, dacă amândouă sunt libere.</p>
+            <p>Dacă pătratul din fața lui este ocupat de orice piesă, purcelul nu poate înainta. Rămâne blocat până se eliberează pătratul.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum capturează purceii</h4>
+            <p>Purcelul capturează altfel decât merge: <strong>pe diagonală, un pătrat înainte</strong>, la stânga sau la dreapta. De exemplu, un purcel de pe d4 poate captura pe c5 sau pe e5.</p>
+            <p>A captura înseamnă să muți piesa pe pătratul unde stă o piesă a adversarului. Piesa adversarului iese de pe tablă.</p>
+            <p>Purceii pot captura <strong>ajutoarele</strong> lui McDonald. Pe McDonald însă <strong>nu îl pot captura</strong>.</p>
+            <p>Cele două pătrate de pe diagonală din fața unui purcel sunt <strong>păzite</strong> de el.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum merge McDonald</h4>
+            <p>McDonald (regele) merge <strong>câte un singur pătrat, în orice direcție</strong>: înainte, înapoi, lateral sau pe diagonală.</p>
+            <p>Capturează așa cum merge: dacă pe un pătrat vecin stă un purcel, McDonald îl poate lua de pe tablă.</p>
+            <p>Regula cea mai importantă: <strong>McDonald nu are voie să intre pe un pătrat păzit de un purcel</strong>. De aceea nu poate captura un purcel apărat de alt purcel.</p>
+          </div>
+
+          <div class="hl-box warn">
+            <h4>Șah și mat</h4>
+            <p>Dacă un purcel înaintează și îl atacă pe McDonald, McDonald este <strong>în șah</strong>. La mutarea următoare, echipa lui McDonald trebuie să scape din șah: McDonald se mută pe un pătrat nepăzit sau capturează purcelul care îl atacă. Purcelul care dă șah poate fi capturat și de un ajutor.</p>
+            <p>Dacă McDonald nu poate scăpa din șah, este <strong>mat</strong>. Atunci toți purceii rămași pe tablă ajung la hambar și repriza se termină.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Ajutoarele lui McDonald</h4>
+            <p><strong>Calul</strong> sare în formă de L: două pătrate într-o direcție și apoi un pătrat într-o parte. De pe c8 poate sări pe a7, b6, d6 sau e7. Calul este singura piesă care sare peste alte piese.</p>
+            <p><strong>Nebunul</strong> merge oricât de departe, dar numai pe diagonale. De pe f8 poate merge pe diagonala f8–a3 sau pe diagonala f8–h6.</p>
+            <p><strong>Turnul</strong> merge oricât de departe pe linii și pe coloane.</p>
+            <p><strong>Regina</strong> merge oricât de departe pe linii, pe coloane și pe diagonale, adică și ca turnul și ca nebunul.</p>
+            <p>Nebunul, turnul și regina nu pot sări peste alte piese. Toate ajutoarele capturează purcei așa cum merg. Spre deosebire de McDonald, ajutoarele <strong>pot fi capturate</strong> de purcei și pot intra pe pătrate păzite.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Ordinea mutărilor</h4>
+            <p><strong>Purceii mută primii.</strong> Apoi mută echipa lui McDonald, apoi iar purceii și tot așa, pe rând.</p>
+            <p>La o mutare, purceii mută un singur purcel. Echipa lui McDonald mută o singură piesă: fie pe McDonald, fie un ajutor.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Hambarul și punctele</h4>
+            <p>Când un purcel ajunge pe linia a opta, a intrat în hambar. <strong>Iese de pe tablă și aduce 1 punct.</strong> Nu se transformă în altă piesă.</p>
+            <p>Un purcel capturat nu mai aduce niciun punct. În timpul jocului vezi câți purcei au ajuns la hambar, câți au fost prinși și câți mai sunt pe tablă.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Când se termină o repriză</h4>
+            <ul>
+              <li>când nu mai este niciun purcel pe tablă: toți au ajuns la hambar sau au fost prinși;</li>
+              <li>când McDonald primește mat: purceii rămași se adaugă la hambar;</li>
+              <li>când partea care trebuie să mute nu mai are nicio mutare posibilă;</li>
+              <li>când expiră timpul unui jucător, dacă ați ales ceas;</li>
+              <li>când cineva apasă „Renunț".</li>
+            </ul>
+            <p>La expirarea timpului și la „Renunț" se numără doar purceii ajunși deja la hambar, oricare jucător ar fi rămas fără timp sau ar fi renunțat. Purceii rămași pe tablă nu se mai numără.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Reprizele</h4>
+            <p>Jocul are <strong>două reprize</strong>. În Repriza 1 muți purceii, iar calculatorul mută echipa lui McDonald.</p>
+            <p>În Repriza 2 <strong>se schimbă rolurile</strong>: muți echipa lui McDonald, iar calculatorul mută purceii și începe el. Tabla se întoarce, ca piesele tale să fie în partea de jos.</p>
+            <p>Ajutoarele și timpul rămân aceleași în ambele reprize.</p>
+          </div>
+
+          <div class="hl-box ok">
+            <h4>Cine câștigă?</h4>
+            <p>Fiecare jucător primește punctele din repriza în care a jucat cu purceii: câți purcei a dus la hambar.</p>
+            <p><strong>Câștigă cine are mai multe puncte.</strong> Dacă punctele sunt egale, jocul se termină la egalitate.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Nivelurile (contra calculatorului)</h4>
+            <p><strong>Pui de găină</strong>: calculatorul mută la întâmplare, fără să se gândească.</p>
+            <p><strong>Mânz</strong>: calculatorul se gândește 4 mutări înainte, numărând și mutările tale.</p>
+            <p><strong>Dragon</strong>: calculatorul se gândește cam o secundă la fiecare mutare și în acest timp privește cât mai multe mutări înainte, de obicei mult mai departe decât Mânzul. Este cel mai greu de învins.</p>
+            <p>Cu purceii, calculatorul încearcă să îi ducă la hambar. Cu McDonald, încearcă să îi prindă.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>În doi</h4>
+            <p>Doi copii joacă pe aceeași tablă, pe rând, fără calculator. Nivelurile nu se mai aleg.</p>
+            <p>În Repriza 1, <strong>Jucătorul 1</strong> mută purceii și <strong>Jucătorul 2</strong> mută echipa lui McDonald. În Repriza 2 rolurile se schimbă. Câștigă cine a dus mai mulți purcei la hambar.</p>
+            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar <strong>se numără</strong> pentru jucătorul care este la mutare. Se numără și dacă încerci să muți o piesă a adversarului. Dacă pui piesa înapoi pe pătratul ei, nu se numără.</p>
+            <p>Încercările se adună pe tot jocul, în ambele reprize. La <strong>3 încercări nepermise</strong>, jocul se oprește și câștigă celălalt jucător.</p>
+          </div>
+        </details>
 
       </div>
       <div class="feedback-bar" id="feedbackBar" role="alert" aria-live="polite"></div>
@@ -383,11 +549,27 @@ function evaluate(b,barned){
     return s;
 }
 
+/* limită de timp (Dragon): căutarea se oprește cu AI_ABORT când trece termenul */
+var AI_DEADLINE=0, AI_NODES=0, AI_ABORT={abort:true};
+
+/* ordonare: întâi capturile, apoi purceii cei mai avansați */
+function orderMoves(mv){
+    var sc=function(m){
+        var s=0;
+        if(m.capture) s+=1000;
+        if(m.piece==='wp') s+=100+(7-m.to[0])*10;
+        return s;
+    };
+    for(var i=0;i<mv.length;i++) mv[i]._o=sc(mv[i]);
+    return mv.sort(function(a,b){return b._o-a._o;});   // sort stabil: păstrează amestecarea la egalitate
+}
+
 function minimax(b,depth,alpha,beta,maxing,barned){
+    if(AI_DEADLINE&&((++AI_NODES)&1023)===0&&Date.now()>AI_DEADLINE) throw AI_ABORT;
     if(countPawns(b)===0) return barned*1000;
     if(depth===0) return evaluate(b,barned);
     var color=maxing?'w':'b';
-    var mv=allMoves(b,color);
+    var mv=orderMoves(allMoves(b,color));
     if(!mv.length) return maxing?(barned*1000-400):(barned*1000+400);
     var best=maxing?-Infinity:Infinity;
     for(var i=0;i<mv.length;i++){
@@ -400,20 +582,42 @@ function minimax(b,depth,alpha,beta,maxing,barned){
     return best;
 }
 
-function getBest(b,color,depth,barned){
+/* căutare la rădăcină cu alpha-beta; mv = lista ordonată (cea mai bună mutare anterioară prima) */
+function searchRoot(b,color,depth,barned,mv){
+    var max=(color==='w');
+    var best=mv[0],bv=max?-Infinity:Infinity,alpha=-Infinity,beta=Infinity;
+    for(var i=0;i<mv.length;i++){
+        var res=applyMove(b,mv[i]);
+        var val=minimax(res.board,depth-1,alpha,beta,!max,barned+res.barned);
+        if(max?(val>bv):(val<bv)){bv=val;best=mv[i];}
+        if(max){ if(val>alpha) alpha=val; } else { if(val<beta) beta=val; }
+    }
+    return {best:best,val:bv};
+}
+
+/* timeMs=0: adâncime fixă (Mânz); timeMs>0: adâncire iterativă până la termen (Dragon),
+   se păstrează mutarea celei mai adânci iterații terminate */
+function getBest(b,color,depth,barned,timeMs){
     var mv=allMoves(b,color);
     if(!mv.length) return null;
     mv.sort(function(){return Math.random()-0.5;});
     if(depth===0) return mv[0];
-    var max=(color==='w');
-    var best=null,bv=max?-Infinity:Infinity;
-    for(var i=0;i<mv.length;i++){
-        var res=applyMove(b,mv[i]);
-        var val=minimax(res.board,depth-1,-Infinity,Infinity,!max,barned+res.barned);
-        if(max?(val>bv):(val<bv)){bv=val;best=mv[i];}
-    }
+    orderMoves(mv);
+    if(!timeMs){ AI_DEADLINE=0; return searchRoot(b,color,depth,barned,mv).best; }
+    var best=mv[0];
+    AI_DEADLINE=Date.now()+timeMs; AI_NODES=0; G.aiDepthDone=0;
+    try{
+        for(var d=1;d<=depth;d++){
+            var r=searchRoot(b,color,d,barned,mv);
+            best=r.best; G.aiDepthDone=d;
+            mv.splice(mv.indexOf(best),1); mv.unshift(best);
+            if(Date.now()>AI_DEADLINE) break;
+        }
+    }catch(e){ if(e!==AI_ABORT){ AI_DEADLINE=0; throw e; } }
+    AI_DEADLINE=0;
     return best;
 }
+var DRAGON_MS=1000, DRAGON_MAX_DEPTH=30;
 
 /* ═══════════════════════════════════════════════════
    GAME STATE
@@ -422,9 +626,26 @@ var G={
     board:null, barned:0, turn:'w', over:false, thinking:false,
     round:1, scores:[0,0], humanColor:'w', helpers:[], depth:0,
     clockMax:0, clock:{w:0,b:0}, clockTick:null,
-    selRC:null, validMv:[]
+    selRC:null, validMv:[],
+    mode:'robot', strikes:{1:0,2:0}
 };
 var cbBoard=null;
+var MAX_STRIKES=3;
+var PIECE_NAME={wp:'Purcelul',bk:'McDonald',bn:'Calul',bb:'Nebunul',br:'Turnul',bq:'Regina'};
+
+/* În doi: repriza 1 → Jucătorul 1 = purceii (alb); repriza 2 → Jucătorul 1 = McDonald (negru) */
+function playerOf(color){ return (G.round===1) === (color==='w') ? 1 : 2; }
+function playerOnMove(){ return playerOf(G.turn); }
+function roleName(color){ return color==='w' ? 'purceii ♙' : 'McDonald ♔'; }
+
+function setMode(m){
+    G.mode=m;
+    document.getElementById('modeRobot').className='tgl-btn'+(m==='robot'?' active':'');
+    document.getElementById('modeDuo').className  ='tgl-btn'+(m==='duo'?' active':'');
+    document.getElementById('levelBox').style.display=(m==='robot'?'':'none');
+    document.getElementById('introRobot').style.display=(m==='robot'?'':'none');
+    document.getElementById('introDuo').style.display=(m==='duo'?'':'none');
+}
 
 /* ═══════════════════════════════════════════════════
    SETUP HANDLERS
@@ -486,6 +707,8 @@ function startGame(){
     G.helpers=[];
     document.querySelectorAll('.helper-piece.selected').forEach(function(el){G.helpers.push(el.dataset.piece);});
     G.scores=[0,0]; G.round=1; G.humanColor='w';
+    G.strikes={1:0,2:0};
+    document.getElementById('strikeRow').style.display=(G.mode==='duo'?'flex':'none');
     document.getElementById('setup-section').style.display='none';
     document.getElementById('result-section').style.display='none';
     document.getElementById('game-section').style.display='block';
@@ -501,9 +724,17 @@ function initBoard(orientation){
         pieceTheme:'https://lichess1.org/assets/piece/caliente/{piece}.svg',
         onDragStart:onDragStart, onDrop:onDrop, onSnapEnd:onSnapEnd
     });
+    window.board=cbBoard;   // board-utils.js citește orientarea din `board` (adnotări pe tabla întoarsă)
+}
+
+/* contor de joc: un timer al calculatorului pornit într-un joc vechi nu mai mută */
+function scheduleAI(ms){
+    var g=G.gen;
+    setTimeout(function(){ if(g===G.gen) aiMove(); },ms);
 }
 
 function startRound(){
+    G.gen=(G.gen||0)+1;
     G.board=freshBoard(G.helpers);
     G.barned=0; G.over=false; G.thinking=false; G.selRC=null; G.validMv=[];
     G.turn='w';
@@ -511,10 +742,13 @@ function startRound(){
     stopClock();
     updateRoundUI(); updateStats(); renderBoard(); clearHL();
     if(G.clockMax>0) startClock();
+    if(G.mode==='duo'){
+        setStatus('&#9654; Jucătorul '+playerOnMove()+' mută purceii. Mișcă un pion.','');
+    }
     // Round 2: robot plays piglets (white) and goes first
-    if(G.humanColor==='b'){
+    else if(G.humanColor==='b'){
         setStatus('Robotul pornește cu purceii<span class="dots"></span>','thinking');
-        G.thinking=true; setTimeout(aiMove,600);
+        G.thinking=true; scheduleAI(600);
     } else {
         setStatus('&#9654; Mutarea ta! Mișcă un pion.','');
     }
@@ -533,6 +767,22 @@ function startRound2(){
 ═══════════════════════════════════════════════════ */
 function updateRoundUI(){
     document.getElementById('roundNum').textContent='Repriza '+G.round;
+    if(G.mode==='duo'){
+        var c1=(G.round===1?'w':'b'), c2=(G.round===1?'b':'w');
+        document.getElementById('roundRole').textContent=
+            'Jucătorul 1: '+roleName(c1)+' · Jucătorul 2: '+roleName(c2);
+        document.getElementById('badge1').textContent='Jucătorul 1: '+G.scores[0]+' 🐷';
+        document.getElementById('badge2').textContent='Jucătorul 2: '+G.scores[1]+' 🐷';
+        [1,2].forEach(function(p){
+            var el=document.getElementById('strike'+p);
+            el.textContent='Jucătorul '+p+' ('+roleName(p===1?c1:c2)+') '+
+                '❌'.repeat(G.strikes[p])+'▫️'.repeat(Math.max(0,MAX_STRIKES-G.strikes[p]));
+            el.className='strike-box'+(!G.over&&playerOnMove()===p?' active':'');
+        });
+        document.getElementById('badge1').className='score-badge'+(G.round===1?' active':'');
+        document.getElementById('badge2').className='score-badge'+(G.round===2?' active':'');
+        return;
+    }
     document.getElementById('roundRole').textContent=
         ' — Tu: '+(G.humanColor==='w'?'purceii ♙':'McDonald ♔');
     document.getElementById('badge1').textContent='Tu: '+G.scores[0]+' 🐷';
@@ -592,10 +842,26 @@ function afterMove(){
         }
     }
 
+    if(!allMoves(G.board,G.turn).length){
+        // partea la mutare nu mai are nicio mutare: repriza se termină (în doi și contra calculatorului)
+        endRound('nomoves'); return;
+    }
+
+    if(G.mode==='duo'){
+        var pl=playerOnMove();
+        updateRoundUI();
+        if(inChk&&G.turn==='b')
+            setStatus('&#9888; McDonald e în șah! Jucătorul '+pl+' trebuie să îl scoată din șah.','check');
+        else
+            setStatus(G.turn==='w'?'&#9654; Jucătorul '+pl+' mută purceii. Mișcă un pion.'
+                                  :'&#9654; Jucătorul '+pl+' mută McDonald sau un ajutor.','');
+        return;
+    }
+
     if(G.turn!==G.humanColor){
         var msg=G.turn==='w'?'Robotul mută purceii':'Robotul mută McDonald';
         setStatus(msg+'<span class="dots"></span>','thinking');
-        G.thinking=true; setTimeout(aiMove,400);
+        G.thinking=true; scheduleAI(400);
     } else {
         if(inChk&&G.turn==='b')
             setStatus('&#9888; Regele e în șah! Trebuie să îl muți!','check');
@@ -605,8 +871,10 @@ function afterMove(){
 }
 
 function aiMove(){
+    if(G.over||G.mode==='duo') return;
     var aiColor=(G.humanColor==='w'?'b':'w');
-    var m=getBest(G.board,aiColor,G.depth,G.barned);
+    var dragon=G.depth>=7;
+    var m=getBest(G.board,aiColor,dragon?DRAGON_MAX_DEPTH:G.depth,G.barned,dragon?DRAGON_MS:0);
     if(!m){endRound('normal');return;}
     execMove(m); G.thinking=false; clearHL();
     afterMove();
@@ -619,42 +887,98 @@ function playerMove(m){ execMove(m); clearSel(); afterMove(); }
 ═══════════════════════════════════════════════════ */
 function clearSel(){ G.selRC=null; G.validMv=[]; clearHL(); }
 
-function handleClick(sq){
-    if(G.over||G.thinking||G.turn!==G.humanColor) return;
-    var rc=sqToRC(sq),r=rc[0],c=rc[1];
-    if(G.selRC){
-        var mv=null;
-        for(var i=0;i<G.validMv.length;i++){
-            if(G.validMv[i].to[0]===r&&G.validMv[i].to[1]===c){mv=G.validMv[i];break;}
-        }
-        if(mv){playerMove(mv);return;}
-    }
-    var p=G.board[r][c];
-    if(!p||p[0]!==G.humanColor){clearSel();return;}
-    G.selRC=[r,c];
-    G.validMv=allMoves(G.board,G.humanColor).filter(function(m){return m.from[0]===r&&m.from[1]===c;});
+/* poate muta un om acum? (în doi: oricine e la rând) */
+function canAct(){
+    return !!G.board && !G.over && !G.thinking && (G.mode==='duo' || G.turn===G.humanColor);
+}
+function selectSq(sq){
+    var rc=sqToRC(sq); G.selRC=rc;
+    G.validMv=allMoves(G.board,G.turn).filter(function(m){return m.from[0]===rc[0]&&m.from[1]===rc[1];});
     showHL(sq,G.validMv);
+}
+function findMv(sq){
+    var t=sqToRC(sq);
+    for(var i=0;i<G.validMv.length;i++)
+        if(G.validMv[i].to[0]===t[0]&&G.validMv[i].to[1]===t[1]) return G.validMv[i];
+    return null;
+}
+function flashWrong(sq){
+    var el=$('#mcBoard .square-'+sq);
+    el.addClass('sq-wrong');
+    setTimeout(function(){ el.removeClass('sq-wrong'); },600);
+}
+function illegalReason(fromSq,toSq){
+    var f=sqToRC(fromSq), t=sqToRC(toSq);
+    var p=G.board[f[0]][f[1]], tp=G.board[t[0]][t[1]];
+    var nm=PIECE_NAME[p]||'Piesa';
+    if(tp&&p&&tp[0]===p[0]) return nm+' nu poate merge pe un pătrat ocupat de o piesă din aceeași echipă.';
+    if(p==='wp'&&tp==='bk') return 'Purceii nu îl pot captura pe McDonald.';
+    if(p&&p[0]==='b'&&isInCheck(G.board)) return nm+' nu poate merge pe '+toSq+'. McDonald e în șah: mutarea trebuie să îl scoată din șah.';
+    if(p==='bk'&&Math.abs(t[0]-f[0])<=1&&Math.abs(t[1]-f[1])<=1&&pawnAttacked(G.board)[t[0]+','+t[1]])
+        return 'McDonald nu poate merge pe '+toSq+': pătratul e păzit de un purcel.';
+    return nm+' nu poate merge pe '+toSq+'.';
+}
+
+/* încercare nepermisă: nu se face; în doi se numără pentru jucătorul la mutare */
+function illegal(sq,reason){
+    if(sq) flashWrong(sq);
+    clearSel();
+    if(G.mode!=='duo'){ setStatus('&#9888; '+reason,'check'); return; }
+    var p=playerOnMove();
+    G.strikes[p]++;
+    updateRoundUI();
+    if(G.strikes[p]>=MAX_STRIKES){ strikeOut(p,reason); return; }
+    setStatus('&#10060; '+reason+' Încercări nepermise pentru Jucătorul '+p+': '+G.strikes[p]+' din '+MAX_STRIKES+'.','check');
+}
+function strikeOut(p,reason){
+    var other=(p===1?2:1);
+    G.over=true; G.thinking=false; stopClock(); clearHL();
+    document.getElementById('game-section').style.display='none';
+    document.getElementById('result-section').style.display='block';
+    document.getElementById('resultCard').innerHTML=
+        '<div class="result-title">Joc terminat!</div>'+
+        '<p class="result-sub">&#10060; '+reason+'<br>Jucătorul '+p+' a încercat <strong>3 mutări nepermise</strong>.</p>'+
+        '<div class="result-title" style="font-size:1.3em;margin:10px 0">&#127942; Jucătorul '+other+' câștigă jocul.</div>'+
+        '<button class="btn-arena" style="margin-top:10px" onclick="restartAll()">&#8635; Joc nou</button>';
+    playSound(sndMate); spawnConfetti(2500);
+}
+function tryTarget(fromSq,toSq){
+    if(!canAct()) return;
+    var mv=findMv(toSq);
+    if(mv){ playerMove(mv); return; }
+    illegal(toSq,illegalReason(fromSq,toSq));
+}
+
+/* click pe un pătrat gol, după ce ai ales o piesă (piesele sunt tratate în onDragStart) */
+function handleClick(sq){
+    if(!canAct()||!G.selRC) return;
+    var rc=sqToRC(sq);
+    if(G.board[rc[0]][rc[1]]) return;
+    tryTarget(rcToSq(G.selRC[0],G.selRC[1]),sq);
 }
 
 function onDragStart(source,piece){
-    if(G.over||G.thinking||G.turn!==G.humanColor) return false;
-    if(piece[0]==='w'&&G.humanColor!=='w') return false;
-    if(piece[0]==='b'&&G.humanColor!=='b') return false;
-    var rc=sqToRC(source); G.selRC=rc;
-    G.validMv=allMoves(G.board,G.humanColor).filter(function(m){return m.from[0]===rc[0]&&m.from[1]===rc[1];});
-    showHL(source,G.validMv);
+    if(!canAct()) return false;
+    if(piece[0]!==G.turn){
+        if(G.selRC){                        // piesă aleasă + click pe piesa adversă = captură
+            var from=rcToSq(G.selRC[0],G.selRC[1]);
+            setTimeout(function(){ tryTarget(from,source); },0);
+            return false;
+        }
+        illegal(source,'Acum e rândul '+(G.turn==='w'?'purceilor':'lui McDonald')+'.');
+        return false;
+    }
+    selectSq(source);
     return true;
 }
 
 function onDrop(source,target){
-    clearHL();
-    if(source===target){clearSel();return 'snapback';}
-    var trc=sqToRC(target),mv=null;
-    for(var i=0;i<G.validMv.length;i++){
-        if(G.validMv[i].to[0]===trc[0]&&G.validMv[i].to[1]===trc[1]){mv=G.validMv[i];break;}
+    if(target==='offboard'||source===target) return 'snapback';   // piesa pusă înapoi: nu se numără
+    if(!findMv(target)){
+        illegal(target,illegalReason(source,target));
+        return 'snapback';
     }
-    if(!mv){clearSel();return 'snapback';}
-    playerMove(mv);
+    playerMove(findMv(target));
 }
 
 function onSnapEnd(){ renderBoard(); }
@@ -674,8 +998,17 @@ function showBetween(reason){
     var why='';
     if(reason==='checkmate') why=' Mat! Purceii l-au depășit!';
     else if(reason==='timeout') why=' Timp expirat!';
+    else if(reason==='nomoves') why=' Nu mai era nicio mutare posibilă.';
     document.getElementById('game-section').style.display='none';
     document.getElementById('result-section').style.display='block';
+    if(G.mode==='duo'){
+        document.getElementById('resultCard').innerHTML=
+            '<div class="result-title">Repriza 1 terminată!'+why+'</div>'+
+            '<div class="result-big"><span>Purceii Jucătorului 1 ajunși la hambar:</span>'+G.scores[0]+' / 8 &#128055;</div>'+
+            '<p class="result-sub">Acum schimbați rolurile: <strong>Jucătorul 1</strong> mută Bătrânul McDonald &#9812;, iar <strong>Jucătorul 2</strong> mută purceii.</p>'+
+            '<button class="btn-arena" style="margin-top:10px" onclick="startRound2()">&#9654; Pornește Repriza 2</button>';
+        return;
+    }
     document.getElementById('resultCard').innerHTML=
         '<div class="result-title">Repriza 1 terminată!'+why+'</div>'+
         '<div class="result-big"><span>Purceii tăi ajunși la hambar:</span>'+G.scores[0]+' / 8 &#127823;</div>'+
@@ -699,6 +1032,21 @@ function showFinal(reason){
         '</div>'+
         '<div class="result-title" style="font-size:1.3em;margin:10px 0">'+msg+'</div>'+
         '<button class="btn-arena" style="margin-top:10px" onclick="restartAll()">&#8635; Joc nou</button>';
+    if(G.mode==='duo'){
+        var w=p>r?1:(r>p?2:0);
+        document.getElementById('resultCard').innerHTML=
+            '<div class="result-title">Joc terminat!</div>'+
+            '<div class="result-big">'+
+                '<span>Purceii Jucătorului 1 (Repriza 1):</span>'+p+' / 8 &#128055;<br>'+
+                '<span style="margin-top:6px;display:block">Purceii Jucătorului 2 (Repriza 2):</span>'+r+' / 8 &#128055;'+
+            '</div>'+
+            '<div class="result-title" style="font-size:1.3em;margin:10px 0">'+
+                (w?'&#127942; Jucătorul '+w+' câștigă jocul.':'&#9878; Egalitate.')+'</div>'+
+            '<button class="btn-arena" style="margin-top:10px" onclick="restartAll()">&#8635; Joc nou</button>';
+        if(w===2) spawnConfetti(3500);
+        playSound(w?sndMate:sndMove);
+        return;
+    }
     playSound(cls==='success'?sndMate:(cls==='danger'?sndCapture:sndMove));
 }
 
@@ -706,6 +1054,8 @@ function giveUp(){ if(!G.over) endRound('abandon'); }
 
 function restartAll(){
     stopClock();
+    G.gen=(G.gen||0)+1;
+    G.over=true; G.thinking=false; clearSel();
     document.getElementById('game-section').style.display='none';
     document.getElementById('result-section').style.display='none';
     document.getElementById('setup-section').style.display='block';
@@ -745,6 +1095,7 @@ $(function(){
         pieceTheme:'https://lichess1.org/assets/piece/caliente/{piece}.svg',
         onDragStart:onDragStart, onDrop:onDrop, onSnapEnd:onSnapEnd
     });
+    window.board=cbBoard;
     $(document).on('click','#mcBoard [data-square]',function(){
         handleClick($(this).data('square'));
     });

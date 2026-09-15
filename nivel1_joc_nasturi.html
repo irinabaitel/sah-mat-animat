@@ -60,10 +60,20 @@
   .animal-btn .emoji { font-size:1.4em; display:block; }
   .animal-btn .name  { display:block; margin-top:2px; }
 
-  /* RULES */
-  .rules-list { list-style:none; display:flex; flex-direction:column; gap:3px; margin-bottom:10px; }
-  .rules-list li { font-size:0.84em; color:var(--c-text); padding-left:16px; position:relative; line-height:1.6; }
-  .rules-list li::before { content:'→'; position:absolute; left:0; color:var(--c-navy); font-weight:700; }
+  /* CUM SE JOACĂ */
+  .howto { margin-bottom:10px; }
+  .howto > summary {
+    cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900;
+    color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px;
+    background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8);
+  }
+  .howto > summary::-webkit-details-marker { display:none; }
+  .howto > summary::after { content:' ▾'; }
+  .howto:not([open]) > summary::after { content:' ▸'; }
+  .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
+  .howto .hl-box p { margin:0 0 6px; }
+  .howto .hl-box p:last-child { margin-bottom:0; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
 
   /* COUNTER */
   .counter-row { display:flex; gap:8px; margin-bottom:8px; }
@@ -164,14 +174,6 @@
           <button class="tgl-btn"        id="varRook"  onclick="setVariant(true)">Varianta: + încă un turn</button>
         </div>
 
-        <ul class="rules-list">
-          <li>Începe albul. Fiecare adună cât mai mulți <strong>nasturi</strong>: pe un nasture intri ca atunci când capturezi.</li>
-          <li>Piesele <strong>nu sar peste nasturi</strong>. Poți captura piesele adversarului, dar ai grijă să nu fii capturat tu.</li>
-          <li>Runda se termină când nu mai sunt nasturi sau după <strong>15 mutări</strong> ale fiecăruia. Dacă un jucător rămâne fără piese, nasturii rămași îi ia celălalt.</li>
-          <li>După prima repriză <strong>se schimbă culorile</strong>. Câștigă cine are mai mulți nasturi din ambele reprize.</li>
-          <li id="ruleDuo" style="display:none">Mutările nepermise nu se fac, dar se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</li>
-        </ul>
-
         <div class="counter-row">
           <div class="counter-box"><div class="counter-lbl">Repriza</div><div class="counter-val" id="roundVal">1 / 2</div></div>
           <div class="counter-box"><div class="counter-lbl">Nasturi rămași</div><div class="counter-val" id="coinsVal">8</div></div>
@@ -201,6 +203,62 @@
 
         <button id="btn-round2" onclick="startRound(2)">▶ Repriza 2 — schimbăm culorile</button>
         <button class="btn-game" onclick="newMatch()">↺ Joacă din nou</button>
+
+        <details class="howto" open>
+          <summary>📖 Cum se joacă</summary>
+
+          <div class="hl-box">
+            <h4>Piesele și nasturii</h4>
+            <p>Albul are un <strong>turn</strong> pe b1 și o <strong>damă</strong> pe d1. Negrul are o <strong>damă</strong> pe d8 și un <strong>turn</strong> pe g8.</p>
+            <p>Pe tablă sunt și <strong>8 nasturi</strong> aurii, pe pătratele a4, d4, e4, h4, a5, d5, e5 și h5. Nasturii nu sunt piese și nu se mută. Ei doar așteaptă să fie adunați.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum merg piesele</h4>
+            <p><strong>Turnul</strong> merge în linie dreaptă pe <strong>linii</strong> și pe <strong>coloane</strong>: înainte, înapoi, la stânga și la dreapta, oricât de departe.</p>
+            <p><strong>Dama</strong> merge ca turnul, dar poate merge și pe <strong>diagonale</strong>. Așa are opt direcții în loc de patru.</p>
+            <p>Nicio piesă nu poate sări peste altă piesă, fie a ta, fie a adversarului.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum aduni nasturi</h4>
+            <p>Ca să aduni un nasture, muți o piesă pe pătratul lui, la fel cum ai face o captură. Nasturele dispare de pe tablă și primești un punct. Punctele tale le vezi în dreptul numelui.</p>
+            <p>Piesele <strong>nu sar peste nasturi</strong>. Dacă un nasture îți stă în cale, te poți opri pe el și îl iei, dar nu poți trece mai departe în aceeași mutare.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Capturile și ordinea mutărilor</h4>
+            <p><strong>Începe albul.</strong> Apoi mută negrul, apoi iar albul și tot așa, pe rând. La fiecare mutare muți o singură piesă.</p>
+            <p>Poți <strong>captura</strong> o piesă a adversarului: muți piesa ta pe pătratul ei și ea iese de pe tablă. O captură nu îți aduce puncte, dar adversarul rămâne cu mai puține piese pentru nasturi.</p>
+            <p>Adversarul te poate captura și el pe tine. Înainte să iei un nasture, uită-te dacă piesa ta nu ajunge pe un pătrat unde o poate lua adversarul.</p>
+          </div>
+
+          <div class="hl-box warn">
+            <h4>Când se termină o repriză</h4>
+            <p>Repriza se termină când se întâmplă unul dintre aceste lucruri:</p>
+            <p>1) nu mai sunt nasturi pe tablă;<br>2) fiecare jucător a făcut <strong>15 mutări</strong>;<br>3) un jucător a rămas fără piese. Atunci <strong>nasturii rămași îi ia celălalt jucător</strong>.</p>
+            <p>Dacă la sfârșitul celor 15 mutări mai sunt nasturi pe tablă, ei nu mai sunt ai nimănui.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Reprizele și cine câștigă</h4>
+            <p>Jocul are două reprize. După prima repriză <strong>se schimbă culorile</strong>: cine a jucat cu albul joacă acum cu negrul.</p>
+            <p>Nasturii din cele două reprize se adună. <strong>Câștigă cine are mai mulți nasturi în total.</strong> Dacă au amândoi la fel, e egalitate.</p>
+            <p><strong>Contra calculatorului</strong> joci cu albul în prima repriză și cu negrul în a doua. Poți alege adversarul: puiul de găină mută aproape mereu la întâmplare, mânzul greșește din când în când, iar dragonul se gândește la fiecare mutare.</p>
+            <p id="ruleDuo" style="display:none"><strong>În doi:</strong> dacă încerci o mutare care nu este permisă, ea nu se face, dar se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Varianta cu încă un turn</h4>
+            <p>Alege <strong>„Varianta: + încă un turn"</strong>. Fiecare jucător primește încă un turn: albul pe g1, negrul pe b8. Cu trei piese poți aduna nasturi din mai multe părți, dar trebuie să ai grijă la mai multe piese deodată.</p>
+          </div>
+
+          <div class="hl-box ok">
+            <h4>Un sfat</h4>
+            <p>Patru dintre nasturi stau <strong>în centrul tablei</strong>, pe d4, d5, e4 și e5. O piesă ajunsă în centru poate merge în multe direcții și ajunge repede la ceilalți nasturi.</p>
+            <p>În jocul acesta se vede cât de important este centrul. Și în partidele adevărate de șah piesele din centru sunt, de obicei, mai puternice decât cele de pe margine.</p>
+          </div>
+        </details>
 
       </div><!-- /.panel-scroll -->
       <div class="feedback-bar" id="feedbackBar"></div>
