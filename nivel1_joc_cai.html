@@ -23,10 +23,7 @@
   }
 
   /* HIGHLIGHTS */
-  .sq-selected { background: rgba(26,120,255,0.50) !important; }
-  .sq-valid    { background: rgba(40,200,80,0.45)  !important; }
-  .sq-capture  { background: rgba(255,160,20,0.70) !important; }
-  .sq-ai       { background: rgba(160,60,200,0.40) !important; }
+  .sq-ai       { background-color: rgba(160,60,200,0.40) !important; }
 
   /* LEVEL TOGGLE */
   .level-toggle { display: flex; gap: 8px; margin-bottom: 10px; }
@@ -95,7 +92,7 @@
   }
   #btn-next:hover { background: #27ae60; }
 
-  .animal-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
   .animal-btn { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:12px; padding:7px 4px; cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.74em; font-weight:700; color:#1a3a6b; text-align:center; transition:all 0.18s; line-height:1.4; }
   .animal-btn:hover { background:rgba(255,255,255,0.82); transform:translateY(-2px); }
   .animal-btn.active { background:#1a3a6b; color:white; border-color:#1a3a6b; box-shadow:0 3px 10px rgba(26,58,107,0.4); }
@@ -115,6 +112,7 @@
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+<script src="minijocuri-nav.js"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -140,12 +138,7 @@
         <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:6px">Alege adversarul:</div>
         <div class="animal-grid" style="margin-bottom:10px">
           <button class="animal-btn active" data-random="0.9" onclick="selectAnimal(this)"><span class="emoji">&#128423;</span><span class="name">Pui de găină</span></button>
-          <button class="animal-btn" data-random="0.7" onclick="selectAnimal(this)"><span class="emoji">&#128037;</span><span class="name">Boboc</span></button>
-          <button class="animal-btn" data-random="0.5" onclick="selectAnimal(this)"><span class="emoji">&#128049;</span><span class="name">Pisoi</span></button>
-          <button class="animal-btn" data-random="0.35" onclick="selectAnimal(this)"><span class="emoji">&#128054;</span><span class="name">Cățel</span></button>
           <button class="animal-btn" data-random="0.2" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
-          <button class="animal-btn" data-random="0.1" onclick="selectAnimal(this)"><span class="emoji">&#128021;</span><span class="name">Dulău</span></button>
-          <button class="animal-btn" data-random="0.05" onclick="selectAnimal(this)"><span class="emoji">&#128047;</span><span class="name">Tigru</span></button>
           <button class="animal-btn" data-random="0" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
         </div>
 
@@ -203,20 +196,7 @@
 
   </main>
 
-  <footer class="page-footer" role="navigation">
-    <a href="nivel1_lectia2.html" class="nav-btn nav-btn--back">
-      <span class="icon">&#8592;</span>
-      <span class="label">Cum se mișcă piesele</span>
-    </a>
-    <a href="hub.html" class="nav-btn nav-btn--contents">
-      <span class="icon">&#8862;</span>
-      <span class="label">Cuprins</span>
-    </a>
-    <a href="nivel1_joc_cursa.html" class="nav-btn nav-btn--forward">
-      <span class="icon">&#8594;</span>
-      <span class="label">Cursa</span>
-    </a>
-  </footer>
+  <footer class="page-footer" role="navigation"></footer>
 
 </div>
 
@@ -358,13 +338,13 @@ function buildPos() {
 
 function clearHL() {
     COLS.split('').forEach(c => {
-        for (let r=1;r<=8;r++) $(`.square-${c}${r}`).removeClass('sq-selected sq-valid sq-capture sq-ai');
+        for (let r=1;r<=8;r++) $(`.square-${c}${r}`).removeClass('highlight-selected highlight-legal highlight-capture sq-ai');
     });
 }
 function highlight(sq, mvs) {
     clearHL();
-    $(`.square-${sq}`).addClass('sq-selected');
-    mvs.forEach(m => $(`.square-${m.sq}`).addClass(m.capture?'sq-capture':'sq-valid'));
+    $(`.square-${sq}`).addClass('highlight-selected');
+    mvs.forEach(m => $(`.square-${m.sq}`).addClass(m.capture?'highlight-capture':'highlight-legal'));
 }
 
 function setStatus(msg, cls) {
@@ -509,7 +489,7 @@ $(document).on('click', function(e) {
         if (wKnights.includes(sq)) {
             selSq=sq;
             validMvs=knightDestsWhite(sq);
-            clearHL(); $(`.square-${sq}`).addClass('sq-selected');
+            clearHL(); $(`.square-${sq}`).addClass('highlight-selected');
             if (!validMvs.length) {
                 setStatus('⚠️ Calul nu are unde merge! Selectează altul.','');
                 selSq=null;
@@ -530,7 +510,7 @@ $(document).on('click', function(e) {
         } else if (wKnights.includes(sq)) {
             selSq=sq;
             validMvs=knightDestsWhite(sq);
-            clearHL(); $(`.square-${sq}`).addClass('sq-selected');
+            clearHL(); $(`.square-${sq}`).addClass('highlight-selected');
         } else {
             selSq=null; validMvs=[]; clearHL();
         }
@@ -584,7 +564,7 @@ board = Chessboard('board', {
         /* evidențiază mutările posibile la începutul drag-ului */
         selSq = source;
         validMvs = knightDestsWhite(source);
-        clearHL(); $(`.square-${source}`).addClass('sq-selected');
+        clearHL(); $(`.square-${source}`).addClass('highlight-selected');
     },
     onDrop: function(source, target) {
         if (target === 'offboard') { clearHL(); selSq = null; validMvs = []; return 'snapback'; }

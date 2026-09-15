@@ -23,9 +23,7 @@
   }
 
   /* HIGHLIGHTS — background-image se suprapune peste culoarea tablei, păstrând transparența */
-  .sq-selected { background-image: linear-gradient(rgba(26,120,255,0.38), rgba(26,120,255,0.38)) !important; }
-  .sq-valid    { background-image: linear-gradient(rgba(40,200,80,0.40),  rgba(40,200,80,0.40))  !important; }
-  .sq-ai       { background-image: linear-gradient(rgba(160,60,200,0.35), rgba(160,60,200,0.35)) !important; }
+  .sq-ai       { background-color: rgba(160,60,200,0.35) !important; }
 
   /* RULES */
   .rules-list { list-style: none; display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
@@ -95,7 +93,7 @@
   #btn-finish:hover { background: #2a5aab; }
 
   /* ANIMAL DIFFICULTY BUTTONS */
-  .animal-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:10px; }
+  .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; }
   .animal-btn { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:12px; padding:7px 4px; cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.74em; font-weight:700; color:#1a3a6b; text-align:center; transition:all 0.18s; line-height:1.4; }
   .animal-btn:hover { background:rgba(255,255,255,0.82); transform:translateY(-2px); }
   .animal-btn.active { background:#1a3a6b; color:white; border-color:#1a3a6b; box-shadow:0 3px 10px rgba(26,58,107,0.4); }
@@ -116,6 +114,7 @@
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+<script src="minijocuri-nav.js"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -141,12 +140,7 @@
         <div style="font-family:var(--font-display);font-size:0.85em;font-weight:900;color:var(--c-navy);margin-bottom:6px">Alege adversarul:</div>
         <div class="animal-grid">
           <button class="animal-btn active" data-random="0.9" onclick="selectAnimal(this)"><span class="emoji">&#128423;</span><span class="name">Pui de găină</span></button>
-          <button class="animal-btn" data-random="0.7" onclick="selectAnimal(this)"><span class="emoji">&#128037;</span><span class="name">Boboc</span></button>
-          <button class="animal-btn" data-random="0.5" onclick="selectAnimal(this)"><span class="emoji">&#128049;</span><span class="name">Pisoi</span></button>
-          <button class="animal-btn" data-random="0.35" onclick="selectAnimal(this)"><span class="emoji">&#128054;</span><span class="name">Cățel</span></button>
           <button class="animal-btn" data-random="0.2" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
-          <button class="animal-btn" data-random="0.1" onclick="selectAnimal(this)"><span class="emoji">&#128021;</span><span class="name">Dulău</span></button>
-          <button class="animal-btn" data-random="0.05" onclick="selectAnimal(this)"><span class="emoji">&#128047;</span><span class="name">Tigru</span></button>
           <button class="animal-btn" data-random="0" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
         </div>
 
@@ -209,20 +203,7 @@
 
   </main>
 
-  <footer class="page-footer" role="navigation">
-    <a href="nivel1_joc_cai.html" class="nav-btn nav-btn--back">
-      <span class="icon">&#8592;</span>
-      <span class="label">Caii</span>
-    </a>
-    <a href="hub.html" class="nav-btn nav-btn--contents">
-      <span class="icon">&#8862;</span>
-      <span class="label">Cuprins</span>
-    </a>
-    <a href="nivel1_joc_acasa.html" class="nav-btn nav-btn--forward">
-      <span class="icon">&#8594;</span>
-      <span class="label">Acasă</span>
-    </a>
-  </footer>
+  <footer class="page-footer" role="navigation"></footer>
 
 </div>
 
@@ -351,13 +332,13 @@ function doBish(color, sq) {
 function clearHL() {
     COL.split('').forEach(c => {
         for (let r=1; r<=8; r++)
-            $(`.square-${c}${r}`).removeClass('sq-selected sq-valid sq-ai');
+            $(`.square-${c}${r}`).removeClass('highlight-selected highlight-legal sq-ai');
     });
 }
 function showHL(sel, dests) {
     clearHL();
-    $(`.square-${sel}`).addClass('sq-selected');
-    dests.forEach(s => $(`.square-${s}`).addClass('sq-valid'));
+    $(`.square-${sel}`).addClass('highlight-selected');
+    dests.forEach(s => $(`.square-${s}`).addClass('highlight-legal'));
 }
 
 function moveNotation(piece, sq) {
@@ -566,12 +547,12 @@ $(document).on('click', function(e) {
             const mv=rookMovesUser(bRSq);
             if (!mv.length) { setStatus('♜ Blocat! Mută Nebunul.','black-turn'); return; }
             selPiece='rook'; selSq=cs; validDests=mv;
-            clearHL(); $(`.square-${cs}`).addClass('sq-selected');
+            clearHL(); $(`.square-${cs}`).addClass('highlight-selected');
         } else if (cs===bBSq) {
             const mv=bishMoves(bBSq);
             if (!mv.length) { setStatus('♝ Nebunul blocat! Mută Turnul.','black-turn'); return; }
             selPiece='bishop'; selSq=cs; validDests=mv;
-            clearHL(); $(`.square-${cs}`).addClass('sq-selected');
+            clearHL(); $(`.square-${cs}`).addClass('highlight-selected');
         }
     } else {
         if (validDests.includes(cs)) {
@@ -592,10 +573,10 @@ $(document).on('click', function(e) {
         } else {
             if (cs===bRSq) {
                 const mv=rookMovesUser(bRSq);
-                if (mv.length) { selPiece='rook'; selSq=cs; validDests=mv; clearHL(); $(`.square-${cs}`).addClass('sq-selected'); }
+                if (mv.length) { selPiece='rook'; selSq=cs; validDests=mv; clearHL(); $(`.square-${cs}`).addClass('highlight-selected'); }
             } else if (cs===bBSq) {
                 const mv=bishMoves(bBSq);
-                if (mv.length) { selPiece='bishop'; selSq=cs; validDests=mv; clearHL(); $(`.square-${cs}`).addClass('sq-selected'); }
+                if (mv.length) { selPiece='bishop'; selSq=cs; validDests=mv; clearHL(); $(`.square-${cs}`).addClass('highlight-selected'); }
             }
         }
     }
@@ -642,7 +623,7 @@ board = Chessboard('board', {
         if (gameOver || turn !== 'b') return false;
         if (source !== bRSq && source !== bBSq) return false;
         /* evidențiază destinațiile valide la începutul drag-ului */
-        clearHL(); $(`.square-${source}`).addClass('sq-selected');
+        clearHL(); $(`.square-${source}`).addClass('highlight-selected');
     },
     onDrop: function(source, target) {
         clearHL(); selPiece = null; selSq = null; validDests = [];

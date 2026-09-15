@@ -18,9 +18,6 @@
   <style>
     /* board */
     .board-wrapper #mcBoard { width:100%!important; height:100%!important; }
-    #mcBoard .sq-sel { box-shadow:inset 0 0 0 5px rgba(255,200,0,0.9)  !important; }
-    #mcBoard .sq-mv  { box-shadow:inset 0 0 0 5px rgba(40,180,40,0.85) !important; }
-    #mcBoard .sq-cap { box-shadow:inset 0 0 0 5px rgba(220,40,40,0.85) !important; }
 
     /* panel heading */
     .panel-heading { font-family:var(--font-display); font-size:clamp(1.05rem,2.5vw,1.3rem); font-weight:900; color:var(--c-navy); line-height:1.25; margin-bottom:8px; }
@@ -38,7 +35,7 @@
     .btn-reset:hover:not(:disabled) { background:rgba(192,57,43,0.10); }
 
     /* animal grid */
-    .animal-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; margin-bottom:10px; }
+    .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-bottom:10px; }
     .animal-btn { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8);
         border-radius:12px; padding:7px 4px; cursor:pointer; font-family:'Nunito',sans-serif;
         font-size:0.74em; font-weight:700; color:#1a3a6b; text-align:center;
@@ -117,6 +114,7 @@
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+<script src="minijocuri-nav.js"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -144,12 +142,7 @@
           <div class="setup-label">&#128048; Dificultatea Bătrânului McDonald:</div>
           <div class="animal-grid">
             <button class="animal-btn active" data-depth="0" onclick="selectAnimal(this)"><span class="emoji">&#128423;</span><span class="name">Pui de găină</span></button>
-            <button class="animal-btn" data-depth="1" onclick="selectAnimal(this)"><span class="emoji">&#128037;</span><span class="name">Boboc</span></button>
-            <button class="animal-btn" data-depth="2" onclick="selectAnimal(this)"><span class="emoji">&#128049;</span><span class="name">Pisoi</span></button>
-            <button class="animal-btn" data-depth="3" onclick="selectAnimal(this)"><span class="emoji">&#128054;</span><span class="name">Cățel</span></button>
             <button class="animal-btn" data-depth="4" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
-            <button class="animal-btn" data-depth="5" onclick="selectAnimal(this)"><span class="emoji">&#128021;</span><span class="name">Dulău</span></button>
-            <button class="animal-btn" data-depth="6" onclick="selectAnimal(this)"><span class="emoji">&#128047;</span><span class="name">Tigru</span></button>
             <button class="animal-btn" data-depth="7" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
           </div>
 
@@ -214,11 +207,7 @@
     </div>
   </main>
 
-  <footer class="page-footer" role="navigation">
-    <a href="joc_stockfish.html" class="nav-btn nav-btn--back"><span class="icon">&#8592;</span><span class="label">Regi și Pioni</span></a>
-    <a href="hub.html"           class="nav-btn nav-btn--contents"><span class="icon">&#8862;</span><span class="label">Cuprins</span></a>
-    <a href="nivel1_joc_cai.html" class="nav-btn nav-btn--forward"><span class="icon">&#8594;</span><span class="label">Jocul Cailor</span></a>
-  </footer>
+  <footer class="page-footer" role="navigation"></footer>
 
   <button class="btn-vol" id="muteBtn" onclick="toggleMute()" title="Sunet on/off">&#128266;</button>
 </div>
@@ -565,12 +554,12 @@ function setStatus(html,cls){
 }
 
 function renderBoard(){ if(cbBoard) cbBoard.position(boardToPos(G.board),false); }
-function clearHL(){ $('#mcBoard .sq-sel,#mcBoard .sq-mv,#mcBoard .sq-cap').removeClass('sq-sel sq-mv sq-cap'); }
+function clearHL(){ $('#mcBoard .highlight-selected,#mcBoard .highlight-legal,#mcBoard .highlight-capture').removeClass('highlight-selected highlight-legal highlight-capture'); }
 function showHL(selSq,moves){
     clearHL();
-    $('#mcBoard .square-'+selSq).addClass('sq-sel');
+    $('#mcBoard .square-'+selSq).addClass('highlight-selected');
     moves.forEach(function(m){
-        $('#mcBoard .square-'+rcToSq(m.to[0],m.to[1])).addClass(m.capture?'sq-cap':'sq-mv');
+        $('#mcBoard .square-'+rcToSq(m.to[0],m.to[1])).addClass(m.capture?'highlight-capture':'highlight-legal');
     });
 }
 

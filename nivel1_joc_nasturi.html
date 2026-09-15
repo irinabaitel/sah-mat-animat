@@ -23,11 +23,8 @@
   }
 
   /* HIGHLIGHTS */
-  .sq-selected { background: rgba(26,120,255,0.50) !important; }
-  .sq-valid    { background: rgba(40,200,80,0.45)  !important; }
-  .sq-capture  { background: rgba(255,160,20,0.70) !important; }
-  .sq-last     { background: rgba(160,60,200,0.35) !important; }
-  .sq-wrong    { background: rgba(220,40,40,0.55)  !important; }
+  .sq-last     { background-color: rgba(160,60,200,0.35) !important; }
+  .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
 
   /* NASTURI — clasă pe pătratul existent */
   .sq-coin { position: relative; }
@@ -35,17 +32,13 @@
     content: ''; position: absolute; left: 50%; top: 50%;
     width: 42%; height: 42%; transform: translate(-50%,-50%);
     border-radius: 50%; pointer-events: none;
-    background: radial-gradient(circle at 35% 30%, #f7d774 0%, #d9a520 55%, #9c6d0a 100%);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.35), inset 0 0 0 2px rgba(120,80,0,0.35);
-  }
-  .sq-coin::before {
-    content: ''; position: absolute; left: 50%; top: 50%; z-index: 1;
-    width: 14%; height: 14%; transform: translate(-50%,-50%); pointer-events: none;
     background:
-      radial-gradient(circle at 30% 30%, rgba(90,55,0,0.8) 28%, transparent 30%),
-      radial-gradient(circle at 70% 30%, rgba(90,55,0,0.8) 28%, transparent 30%),
-      radial-gradient(circle at 30% 70%, rgba(90,55,0,0.8) 28%, transparent 30%),
-      radial-gradient(circle at 70% 70%, rgba(90,55,0,0.8) 28%, transparent 30%);
+      radial-gradient(circle at 43% 43%, rgba(90,55,0,0.85) 5%, transparent 6.5%),
+      radial-gradient(circle at 57% 43%, rgba(90,55,0,0.85) 5%, transparent 6.5%),
+      radial-gradient(circle at 43% 57%, rgba(90,55,0,0.85) 5%, transparent 6.5%),
+      radial-gradient(circle at 57% 57%, rgba(90,55,0,0.85) 5%, transparent 6.5%),
+      radial-gradient(circle at 35% 30%, #f7d774 0%, #d9a520 55%, #9c6d0a 100%);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.35), inset 0 0 0 2px rgba(120,80,0,0.35);
   }
 
   .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
@@ -129,6 +122,7 @@
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+<script src="minijocuri-nav.js"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -173,7 +167,7 @@
         <ul class="rules-list">
           <li>Începe albul. Fiecare adună cât mai mulți <strong>nasturi</strong>: pe un nasture intri ca atunci când capturezi.</li>
           <li>Piesele <strong>nu sar peste nasturi</strong>. Poți captura piesele adversarului, dar ai grijă să nu fii capturat tu.</li>
-          <li>Runda se termină când nu mai sunt nasturi sau după <strong>30 de mutări</strong> ale fiecăruia. Dacă un jucător rămâne fără piese, nasturii rămași îi ia celălalt.</li>
+          <li>Runda se termină când nu mai sunt nasturi sau după <strong>15 mutări</strong> ale fiecăruia. Dacă un jucător rămâne fără piese, nasturii rămași îi ia celălalt.</li>
           <li>După prima repriză <strong>se schimbă culorile</strong>. Câștigă cine are mai mulți nasturi din ambele reprize.</li>
           <li id="ruleDuo" style="display:none">Mutările nepermise nu se fac, dar se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</li>
         </ul>
@@ -181,7 +175,7 @@
         <div class="counter-row">
           <div class="counter-box"><div class="counter-lbl">Repriza</div><div class="counter-val" id="roundVal">1 / 2</div></div>
           <div class="counter-box"><div class="counter-lbl">Nasturi rămași</div><div class="counter-val" id="coinsVal">8</div></div>
-          <div class="counter-box" id="movesBox"><div class="counter-lbl">Mutarea</div><div class="counter-val" id="movesVal">1 / 30</div></div>
+          <div class="counter-box" id="movesBox"><div class="counter-lbl">Mutarea</div><div class="counter-val" id="movesVal">1 / 15</div></div>
         </div>
 
         <div class="player-panel" id="pp1">
@@ -214,16 +208,7 @@
 
   </main>
 
-  <footer class="page-footer" role="navigation">
-    <a href="nivel1_joc_dama_cal.html" class="nav-btn nav-btn--back">
-      <span class="icon">&#8592;</span>
-      <span class="label">Dama contra calului</span>
-    </a>
-    <a href="hub.html" class="nav-btn nav-btn--contents">
-      <span class="icon">&#8862;</span>
-      <span class="label">Cuprins</span>
-    </a>
-  </footer>
+  <footer class="page-footer" role="navigation"></footer>
 
 </div>
 
@@ -241,7 +226,7 @@ const COLS = 'abcdefgh';
 const COINS_START = ['a4','d4','e4','h4','a5','d5','e5','h5'];
 const START_BASE  = { b1:'wR', d1:'wQ', d8:'bQ', g8:'bR' };
 const START_EXTRA = { g1:'wR', b8:'bR' };
-const MAX_MOVES = 30;               // mutări pentru fiecare jucător, pe repriză
+const MAX_MOVES = 15;               // mutări pentru fiecare jucător, pe repriză
 const MAX_STRIKES = 3;
 const DIRS = { Q:[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]], R:[[1,0],[-1,0],[0,1],[0,-1]] };
 
@@ -356,13 +341,13 @@ function drawCoins() {
     coins.forEach(s => $('.square-' + s).addClass('sq-coin'));
 }
 function clearHL(keepLast) {
-    const cls = keepLast ? 'sq-selected sq-valid sq-capture sq-wrong' : 'sq-selected sq-valid sq-capture sq-wrong sq-last';
+    const cls = keepLast ? 'highlight-selected highlight-legal highlight-capture sq-wrong' : 'highlight-selected highlight-legal highlight-capture sq-wrong sq-last';
     $('#board [class*="square-"]').removeClass(cls);
 }
 function showSelection(sq) {
     clearHL(true);
-    $('.square-' + sq).addClass('sq-selected');
-    targetsFrom(sq, pos, coins).forEach(t => $('.square-' + t).addClass(pos[t] || coins.has(t) ? 'sq-capture' : 'sq-valid'));
+    $('.square-' + sq).addClass('highlight-selected');
+    targetsFrom(sq, pos, coins).forEach(t => $('.square-' + t).addClass(pos[t] || coins.has(t) ? 'highlight-capture' : 'highlight-legal'));
 }
 function flashWrong(sq) {
     const el = $('.square-' + sq);
@@ -447,7 +432,7 @@ function endRound() {
     if (coins.size) {
         if (piecesOf('w', pos) === 0) { note = 'Albul a rămas fără piese: negrul ia nasturii rămași (' + coins.size + ').'; score.b += coins.size; }
         else if (piecesOf('b', pos) === 0) { note = 'Negrul a rămas fără piese: albul ia nasturii rămași (' + coins.size + ').'; score.w += coins.size; }
-        else note = 'S-au terminat cele 30 de mutări.';
+        else note = 'S-au terminat cele 15 mutări.';
         coins.clear(); drawCoins();
     }
     const pw = whitePlayer(round), pb = pw === 1 ? 2 : 1;
@@ -506,7 +491,7 @@ function aiMove() {
         const all = allMoves(turn, pos, coins);
         mv = all[Math.floor(Math.random() * all.length)];
     } else mv = bestMove(turn);
-    $('.square-' + mv[0]).addClass('sq-selected');
+    $('.square-' + mv[0]).addClass('highlight-selected');
     aiTimer = setTimeout(() => { aiTimer = null; doMove(mv[0], mv[1]); }, 350);
 }
 
