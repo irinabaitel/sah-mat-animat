@@ -197,26 +197,23 @@
     var st = document.createElement('style');
     st.id = 'ann-bar-css';
     st.textContent =
-      '.board-stack{display:flex;flex-direction:column;align-items:center;justify-content:center;' +
-      'width:100%;min-width:0;min-height:0;}' +
-      '.board-stack .board-wrapper{width:min(100%,calc(100dvh - var(--header-h) - var(--footer-h) - 2*var(--gap) - 62px));}' +
-      '.ann-bar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;' +
-      'margin:0 0 8px;width:100%;box-sizing:border-box;}' +
-      '.ann-dot{width:44px;height:44px;border-radius:50%;border:3px solid rgba(255,255,255,.85);cursor:pointer;' +
-      'padding:0;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .15s,box-shadow .15s;}' +
-      '.ann-dot:hover{transform:translateY(-2px);}' +
-      '.ann-dot.on{border-color:#1a3a6b;box-shadow:0 0 0 3px rgba(26,58,107,.35),0 2px 6px rgba(0,0,0,.25);transform:translateY(-2px);}' +
-      '.ann-erase{min-width:44px;height:44px;border-radius:22px;padding:0 14px;cursor:pointer;' +
-      'border:3px solid rgba(255,255,255,.85);background:rgba(255,255,255,.65);' +
-      'font-family:"Baloo 2",cursive;font-size:.9rem;font-weight:700;color:#8b1a00;' +
-      'box-shadow:0 2px 6px rgba(0,0,0,.2);}' +
-      '.ann-erase:hover{background:rgba(255,255,255,.9);}';
+      /* bara stă în antet, ca să NU ia din înălțimea tablei */
+      '.ann-bar{display:flex;gap:6px;align-items:center;grid-column:1;justify-self:start;}' +
+      '.ann-bar.ann-fixed{position:fixed;left:8px;bottom:8px;z-index:60;padding:6px 8px;' +
+      'border-radius:24px;background:rgba(255,255,255,.75);box-shadow:0 2px 8px rgba(0,0,0,.25);}' +
+      '.ann-dot{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.9);cursor:pointer;' +
+      'padding:0;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .15s,box-shadow .15s;}' +
+      '.ann-dot:hover{transform:translateY(-1px);}' +
+      '.ann-dot.on{border-color:#1a3a6b;box-shadow:0 0 0 3px rgba(26,58,107,.40);transform:translateY(-1px);}' +
+      '.ann-erase{width:32px;height:30px;border-radius:15px;padding:0;cursor:pointer;line-height:1;' +
+      'border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.7);font-size:.95rem;' +
+      'box-shadow:0 1px 4px rgba(0,0,0,.2);}' +
+      '.ann-erase:hover{background:rgba(255,255,255,.95);}' +
+      '@media (max-width:560px){.ann-dot{width:26px;height:26px;}.ann-erase{width:28px;height:26px;}}';
     document.head.appendChild(st);
   }
   function buildAnnBar(boardEl) {
-    var wrap = boardEl.closest ? boardEl.closest('.board-wrapper') : null;
-    var host = wrap && wrap.parentElement ? wrap.parentElement : null;
-    if (!wrap || !host || document.querySelector('.ann-bar')) return;
+    if (document.querySelector('.ann-bar')) return;
     annBarCss();
     var bar = document.createElement('div');
     bar.className = 'ann-bar';
@@ -240,16 +237,14 @@
     var er = document.createElement('button');
     er.type = 'button';
     er.className = 'ann-erase';
-    er.textContent = '🧽 Șterge tot';
+    er.textContent = '🧽';
+    er.setAttribute('aria-label', 'Șterge toate pătratele și săgețile');
     er.title = 'Șterge toate pătratele și săgețile';
     er.addEventListener('click', function () { clearAll(); });
     bar.appendChild(er);
-    /* bara + tabla, una sub alta, în locul tablei (coloana tablei e flex pe rând) */
-    var stack = document.createElement('div');
-    stack.className = 'board-stack';
-    host.insertBefore(stack, wrap);
-    stack.appendChild(bar);
-    stack.appendChild(wrap);
+    var header = document.querySelector('.page-header') || document.querySelector('#nav') || document.querySelector('header');
+    if (header) header.insertBefore(bar, header.firstChild);
+    else { bar.classList.add('ann-fixed'); document.body.appendChild(bar); }
   }
 
   /* ── Init (DOMContentLoaded) ── */
