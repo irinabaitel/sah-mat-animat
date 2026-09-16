@@ -8,8 +8,9 @@
  *   stânga  → șterge tot
  *
  * Adnotări touch:
- *   ținut (450ms) + drag  → săgeată verde
- *   ținut (450ms) pe loc  → pătrat verde; din nou pe același pătrat → roșu → albastru → galben → șters
+ *   ținut (450ms) + drag  → săgeată în culoarea aleasă
+ *   ținut (450ms) pe loc  → pătrat în culoarea aleasă; din nou cu aceeași culoare → șters
+ *   bara de bulinuțe deasupra tablei alege culoarea pentru deget; 🧽 șterge tot
  *
  * Touch bridge:
  *   mișcare rapidă (< 450ms)  → drag piesă normal
@@ -33,6 +34,7 @@
   var annArrows  = [];   /* [{from, to, ci}]  */
   var annSquares = {};   /* {sq: ci (0-3)}    */
   var rmbFrom = null, rmbCi = 0, rmbMoved = false;
+  var activeCi = 0;   /* culoarea aleasă din bara de bulinuțe (verde implicit) */
   var touchFrom = null, touchTimer = null;
   var annBoardEl = null;  /* tabla găsită la inițializare */
 
@@ -165,7 +167,7 @@
 
   /* ── Helpers bridge ── */
   function colorIdx(e) {
-    return e.altKey ? 3 : e.ctrlKey ? 2 : e.shiftKey ? 1 : 0;
+    return e.altKey ? 3 : e.ctrlKey ? 2 : e.shiftKey ? 1 : activeCi;
   }
   var fromTouch = false;   /* true cât timp trimitem un eveniment de mouse creat dintr-o atingere */
   function toMouse(type, coords, target) {
@@ -188,12 +190,75 @@
     }
   }
 
+  /* ── Bara de culori: bulinuțe + gumă (pentru desenat cu degetul) ── */
+  var NAMES = ['verde', 'roșu', 'albastru', 'galben'];
+  function annBarCss() {
+    if (document.getElementById('ann-bar-css')) return;
+    var st = document.createElement('style');
+    st.id = 'ann-bar-css';
+    st.textContent =
+      '.board-stack{display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+      'width:100%;min-width:0;min-height:0;}' +
+      '.board-stack .board-wrapper{width:min(100%,calc(100dvh - var(--header-h) - var(--footer-h) - 2*var(--gap) - 62px));}' +
+      '.ann-bar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;' +
+      'margin:0 0 8px;width:100%;box-sizing:border-box;}' +
+      '.ann-dot{width:44px;height:44px;border-radius:50%;border:3px solid rgba(255,255,255,.85);cursor:pointer;' +
+      'padding:0;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .15s,box-shadow .15s;}' +
+      '.ann-dot:hover{transform:translateY(-2px);}' +
+      '.ann-dot.on{border-color:#1a3a6b;box-shadow:0 0 0 3px rgba(26,58,107,.35),0 2px 6px rgba(0,0,0,.25);transform:translateY(-2px);}' +
+      '.ann-erase{min-width:44px;height:44px;border-radius:22px;padding:0 14px;cursor:pointer;' +
+      'border:3px solid rgba(255,255,255,.85);background:rgba(255,255,255,.65);' +
+      'font-family:"Baloo 2",cursive;font-size:.9rem;font-weight:700;color:#8b1a00;' +
+      'box-shadow:0 2px 6px rgba(0,0,0,.2);}' +
+      '.ann-erase:hover{background:rgba(255,255,255,.9);}';
+    document.head.appendChild(st);
+  }
+  function buildAnnBar(boardEl) {
+    var wrap = boardEl.closest ? boardEl.closest('.board-wrapper') : null;
+    var host = wrap && wrap.parentElement ? wrap.parentElement : null;
+    if (!wrap || !host || document.querySelector('.ann-bar')) return;
+    annBarCss();
+    var bar = document.createElement('div');
+    bar.className = 'ann-bar';
+    bar.setAttribute('role', 'toolbar');
+    bar.setAttribute('aria-label', 'Culori pentru evidențiere');
+    COLORS.forEach(function (c, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ann-dot' + (i === activeCi ? ' on' : '');
+      b.style.background = c.arrow;
+      b.title = 'Desenează cu ' + NAMES[i];
+      b.setAttribute('aria-label', 'Desenează cu ' + NAMES[i]);
+      b.addEventListener('click', function () {
+        activeCi = i;
+        bar.querySelectorAll('.ann-dot').forEach(function (d, j) {
+          d.classList.toggle('on', j === i);
+        });
+      });
+      bar.appendChild(b);
+    });
+    var er = document.createElement('button');
+    er.type = 'button';
+    er.className = 'ann-erase';
+    er.textContent = '🧽 Șterge tot';
+    er.title = 'Șterge toate pătratele și săgețile';
+    er.addEventListener('click', function () { clearAll(); });
+    bar.appendChild(er);
+    /* bara + tabla, una sub alta, în locul tablei (coloana tablei e flex pe rând) */
+    var stack = document.createElement('div');
+    stack.className = 'board-stack';
+    host.insertBefore(stack, wrap);
+    stack.appendChild(bar);
+    stack.appendChild(wrap);
+  }
+
   /* ── Init (DOMContentLoaded) ── */
   document.addEventListener('DOMContentLoaded', function () {
     /* tabla are de obicei id=board; unele jocuri (myBoard, mcBoard) o pun direct în #boardWrapper */
     var boardEl = document.getElementById('board') || document.querySelector('#boardWrapper > div');
     if (!boardEl) return;
     annBoardEl = boardEl;
+    buildAnnBar(boardEl);
 
     /* ════ TOUCH BRIDGE ════ */
     boardEl.addEventListener('touchstart', function (e) {
@@ -286,19 +351,19 @@
       if (!annMode) { touchFrom = null; return; }
       annMode = false;
       var t  = e.changedTouches[0];
-      var to = getSqFromPoint(t.clientX, t.clientY);
+      /* pe unele ecrane elementFromPoint nu dă pătratul (piesă, overlay, tabla redimensionată):
+         cădem pe elementul atins, iar la urmă pe pătratul de pornire */
+      var to = getSqFromPoint(t.clientX, t.clientY) || getSq(e.target) || getSq(t.target) || touchFrom;
       if (touchFrom && to) {
         if (touchFrom === to) {
-          /* apăsări lungi repetate pe același pătrat: verde → roșu → albastru → galben → șters */
-          var cur = annSquares[to];
-          if (cur === undefined) annSquares[to] = 0;
-          else if (cur < COLORS.length - 1) annSquares[to] = cur + 1;
-          else delete annSquares[to];
+          /* pătrat: apasă lung o dată = colorează, încă o dată cu aceeași culoare = șterge */
+          if (annSquares[to] === activeCi) delete annSquares[to];
+          else annSquares[to] = activeCi;
         } else {
           /* toggle săgeată verde */
           var idx = annArrows.findIndex(function (a) { return a.from === touchFrom && a.to === to; });
           if (idx >= 0) annArrows.splice(idx, 1);
-          else annArrows.push({ from: touchFrom, to: to, ci: 0 });
+          else annArrows.push({ from: touchFrom, to: to, ci: activeCi });
         }
         render();
       }
