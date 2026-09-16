@@ -25,6 +25,13 @@
   /* HIGHLIGHTS (selectat / posibil / captură = clasele din master) */
   #board .square-55d63 { position: relative; }
   .sq-last     { background-color: rgba(160,60,200,0.35) !important; }
+
+  /* confetti */
+  @keyframes confetti-fall { 0%{opacity:1;transform:translate(0,0) rotate(0deg);} 80%{opacity:1;}
+      100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot));} }
+  .confetti-p { position:fixed; pointer-events:none; z-index:9999; border-radius:3px;
+      animation:confetti-fall var(--dur,2s) ease-in forwards; }
+
   .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
 
   /* GRĂDINA CU MORCOVI: rândul 8 */
@@ -228,14 +235,20 @@
           <div class="hl-box">
             <h4>Grădina</h4>
             <p>Iepurașul care ajunge pe rândul 8 intră în grădină. Iese de pe tablă și aduce <strong>un punct</strong>.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Când se termină o repriză</h4>
             <p>Repriza se termină când pe tablă nu mai este niciun iepuraș: au intrat în grădină sau au fost prinși.</p>
-            <p>Dacă iepurașii sunt blocați și nu pot face niciun pas de trei ori la rând, repriza se termină. Iepurașii rămași pe tablă nu aduc puncte.</p>
+            <p>Se termină și atunci când <strong>amândoi căluții au fost prinși</strong>. Nu mai are cine să oprească iepurașii, așa că toți cei rămași pe tablă intră în grădină și aduc puncte.</p>
+            <p>Dacă mai sunt căluți pe tablă, dar iepurașii sunt blocați și nu pot face niciun pas de trei ori la rând, repriza se termină. Iepurașii rămași pe tablă nu aduc puncte.</p>
           </div>
 
           <div class="hl-box warn">
             <h4>Reprizele și cine câștigă</h4>
             <p>Jocul are două reprize. În prima repriză tu ești iepurașii, iar calculatorul este căluții. În a doua repriză <strong>vă schimbați rolurile</strong>. Tabla rămâne la fel, cu iepurașii jos.</p>
             <p><strong>Câștigă cine a dus mai mulți iepurași în grădină</strong> atunci când a jucat cu iepurașii. Dacă amândoi au dus tot atâția, este egalitate.</p>
+            <p>Cine prinde amândoi căluții duce în grădină <strong>toți iepurașii rămași</strong>, deci ia punctele lor.</p>
           </div>
 
           <div class="hl-box">
@@ -320,6 +333,11 @@ function newState() {
 }
 function cloneState(S) { return { occ: S.occ.slice(), kn: S.kn.slice(), pc: S.pc, g: S.g, caught: S.caught }; }
 const other = side => side === 'w' ? 'b' : 'w';
+const noKnights = S => S.kn[0] < 0 && S.kn[1] < 0;
+/* repriza s-a terminat: fără pioni sau fără cai */
+const gameOver = S => S.pc === 0 || noKnights(S);
+/* punctele finale: pionii din grădină, plus cei rămași dacă nu mai sunt cai */
+const finalPoints = S => S.g + (noKnights(S) ? S.pc : 0);
 
 /* mutare = from*64 + to; capsOnly = doar capturi și intrări în grădină */
 function genMoves(S, side, capsOnly) {
@@ -380,6 +398,7 @@ function unmakeMove(S, m, u) {
 function nextTurn(S, mover, skips) {
     if (mover === 'w') skips = 0;
     if (S.pc === 0) return { end: 'empty', turn: null, skips };
+    if (noKnights(S)) return { end: 'nokn', turn: null, skips };   // fără cai, pionii rămași ajung toți în grădină
     const nx = other(mover);
     if (hasMoves(S, nx)) return { end: null, turn: nx, skips, skipped: false };
     if (nx === 'w') { skips++; if (skips >= MAX_SKIPS) return { end: 'blocked', turn: null, skips }; }
@@ -390,6 +409,7 @@ function nextTurn(S, mover, skips) {
 /* ---------- robotul: evaluare (din partea pionilor) ---------- */
 const KNIGHT_VAL = 260;
 function evaluate(S, side) {
+    if (gameOver(S)) return terminal(S, side);
     const occ = S.occ, kn = S.kn, knToMove = side === 'b';
     let s = S.g * 1000;
     for (const k of kn) if (k >= 0) s -= KNIGHT_VAL;
@@ -439,7 +459,7 @@ function evaluate(S, side) {
 /* ---------- robotul: căutare ---------- */
 const TIMEOUT = { t: 1 };
 let srch = { nodes: 0, deadline: 0 };
-function terminal(S, side) { return side === 'w' ? S.g * 1000 : -S.g * 1000; }
+function terminal(S, side) { const v = finalPoints(S) * 1000; return side === 'w' ? v : -v; }
 function orderMoves(S, side, moves) {
     const sc = moves.map(m => {
         const t = m & 63, cap = S.occ[t];
@@ -453,7 +473,7 @@ function orderMoves(S, side, moves) {
 }
 function qsearch(S, side, alpha, beta, qd) {
     if ((++srch.nodes & 1023) === 0 && Date.now() > srch.deadline) throw TIMEOUT;
-    if (S.pc === 0) return terminal(S, side);
+    if (gameOver(S)) return terminal(S, side);
     const stand = evaluate(S, side);
     if (qd <= 0 || stand >= beta) return stand;
     if (stand > alpha) alpha = stand;
@@ -469,7 +489,7 @@ function qsearch(S, side, alpha, beta, qd) {
 }
 function negamax(S, side, depth, alpha, beta, skips) {
     if ((++srch.nodes & 1023) === 0 && Date.now() > srch.deadline) throw TIMEOUT;
-    if (S.pc === 0) return terminal(S, side);
+    if (gameOver(S)) return terminal(S, side);
     if (depth <= 0) return qsearch(S, side, alpha, beta, 4);
     const moves = genMoves(S, side, false);
     const op = other(side);
@@ -650,23 +670,31 @@ function doMove(fromSq, toSq) {
     if (nx.end) return endRound(nx.end);
     turn = nx.turn;
     if (nx.skipped) {
-        if (turn === 'w') note += (note ? ' ' : '') + (S.kn[0] < 0 && S.kn[1] < 0 ? 'Nu mai sunt căluți pe tablă, așa că iepurașii mută mai departe.' : 'Căluții nu pot muta, așa că mută din nou iepurașii.');
+        if (turn === 'w') note += (note ? ' ' : '') + 'Căluții nu pot muta, așa că mută din nou iepurașii.';
         else note += (note ? ' ' : '') + 'Iepurașii nu pot face niciun pas (' + skips + ' din ' + MAX_SKIPS + '), așa că mută din nou căluții.';
     }
     promptTurn(note);
 }
 function endRound(how) {
     roundOver = true;
-    results[round] = { g: S.g, caught: S.caught, left: S.pc, how };
-    setTimeout(() => play(sndMate), 250);
     const pp = pawnPlayer(round);
     const you = mode === 'robot' && pp === 1;
     let msg;
-    if (how === 'empty') msg = 'Nu mai este niciun iepuraș pe tablă.';
+    if (how === 'nokn') {
+        const left = S.pc;
+        for (let s = 0; s < 64; s++) if (S.occ[s] === 1) S.occ[s] = 0;   // toți ajung în grădină
+        S.g += left; S.pc = 0;
+        board.position(buildPos(), false);
+        msg = (you ? 'Ai capturat' : pname(pp) + ' a capturat') + ' amândoi căluții. Nimeni nu-i mai poate opri pe iepurași: toți ajung în grădină.';
+    }
+    else if (how === 'empty') msg = 'Nu mai este niciun iepuraș pe tablă.';
     else {
         msg = how === 'blocked' ? 'Iepurașii nu au putut face niciun pas de trei ori la rând. ' : 'Nimeni nu mai poate muta. ';
         msg += S.pc === 1 ? 'Iepurașul rămas pe tablă nu aduce puncte.' : 'Cei ' + bunnies(S.pc) + ' rămași pe tablă nu aduc puncte.';
     }
+    results[round] = { g: S.g, caught: S.caught, left: S.pc, how };
+    setTimeout(() => play(sndMate), 250);
+    if (S.g > 0 && (mode === 'duo' || pp === 1)) spawnConfetti(2500);
     msg += '<br>🥕 ' + (S.g === 0
         ? (you ? 'Nu ai dus' : pname(pp) + ' nu a dus') + ' niciun iepuraș în grădină.'
         : (you ? 'Ai dus ' : pname(pp) + ' a dus ') + bunnies(S.g) + ' în grădină.');
@@ -686,8 +714,32 @@ function matchSummary() {
     const score = ' (' + g1 + ' la ' + g2 + ')';
     if (!w) return '🤝 <strong>Egalitate' + score + '.</strong> Amândoi ați dus tot atâția iepurași în grădină.';
     setTimeout(() => { document.getElementById('pp' + w).className = 'player-panel winner'; }, 0);
+    if (mode === 'duo' || w === 1) spawnConfetti(3500);
     if (mode === 'robot') return w === 1 ? '🏆 <strong>Ai câștigat meciul' + score + '.</strong>' : '<strong>Calculatorul a câștigat meciul' + score + '.</strong> Mai încearcă.';
     return '🏆 <strong>' + pname(w) + ' câștigă meciul' + score + '.</strong>';
+}
+
+/* ---------- confetti ---------- */
+function spawnConfetti(dur){
+    var cols=['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#fff'];
+    var end=Date.now()+dur;
+    function batch(){
+        if(Date.now()>=end) return;
+        for(var i=0;i<12;i++){
+            var p=document.createElement('div'); p.className='confetti-p';
+            var w=7+Math.random()*7,h=w*(0.35+Math.random()*0.7);
+            p.style.cssText='width:'+w+'px;height:'+h+'px;background:'+cols[Math.floor(Math.random()*cols.length)]+
+                ';left:'+(Math.random()*100)+'vw;top:-14px;';
+            var fd=window.innerHeight*(0.65+Math.random()*0.45);
+            p.style.setProperty('--dx',((Math.random()-0.5)*180)+'px');
+            p.style.setProperty('--dy',fd+'px');
+            p.style.setProperty('--rot',(Math.random()*900-450)+'deg');
+            var d=1.8+Math.random()*2.4; p.style.setProperty('--dur',d+'s');
+            document.body.appendChild(p); setTimeout(function(){p.remove();},d*1000+200);
+        }
+        setTimeout(batch,110);
+    }
+    batch();
 }
 
 /* ---------- încercări nepermise ---------- */
