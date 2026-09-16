@@ -348,13 +348,14 @@ body.no-hints .highlight-capture::before { display: none; }
   border-radius:var(--radius);
   padding:      var(--gap) calc(var(--gap) + 4px);
 
-  /* Scrollbar discret */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(26,58,107,.3) transparent;
+  /* Bară de derulare lată, ca să poată fi prinsă cu degetul (tabla inteligentă, tabletă, telefon) */
+  scrollbar-width: auto;
+  scrollbar-color: rgba(26,58,107,.55) rgba(26,58,107,.10);
 }
-.panel-scroll::-webkit-scrollbar       { width: 5px; }
-.panel-scroll::-webkit-scrollbar-track { background: transparent; }
-.panel-scroll::-webkit-scrollbar-thumb { background: rgba(26,58,107,.35); border-radius: 4px; }
+.panel-scroll::-webkit-scrollbar       { width: 20px; }
+.panel-scroll::-webkit-scrollbar-track { background: rgba(26,58,107,.10); border-radius: 10px; }
+.panel-scroll::-webkit-scrollbar-thumb { background: rgba(26,58,107,.55); border-radius: 10px; min-height: 50px;
+                                         border: 4px solid transparent; background-clip: padding-box; }
 .panel-scroll { overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
 
 /* Ecrane tactile (tabla inteligentă, tabletă, telefon): bară de derulare lată, ușor de prins cu degetul.
@@ -832,11 +833,13 @@ body.no-hints .highlight-capture::before { display: none; }
   display:        flex;
   flex-direction: column;
   gap:            1px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(26,58,107,.25) transparent;
+  scrollbar-width: auto;
+  scrollbar-color: rgba(26,58,107,.5) rgba(26,58,107,.10);
 }
-.moves-log::-webkit-scrollbar       { width: 3px; }
-.moves-log::-webkit-scrollbar-thumb { background: rgba(26,58,107,.3); border-radius: 3px; }
+.moves-log::-webkit-scrollbar       { width: 16px; }
+.moves-log::-webkit-scrollbar-track { background: rgba(26,58,107,.08); border-radius: 8px; }
+.moves-log::-webkit-scrollbar-thumb { background: rgba(26,58,107,.5); border-radius: 8px; min-height: 40px;
+                                      border: 3px solid transparent; background-clip: padding-box; }
 
 .mlog-row {
   display:     flex;
