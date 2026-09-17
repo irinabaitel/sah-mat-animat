@@ -1,4 +1,7 @@
 /* board-utils.js
+ * Mod desen (fără mouse): ✋ = muți piesele; bulina colorată = desenezi.
+ * În modul desen, o atingere scurtă colorează pătratul, iar tragerea face săgeată.
+ * În modul ✋, prima atingere pe tablă șterge tot desenul.
  * Touch bridge + adnotări interactive pentru orice pagină cu chessboard.js.
  * Include după jQuery + chessboard.js: <script src="board-utils.js"></script>
  *
@@ -35,6 +38,8 @@
   var annSquares = {};   /* {sq: ci (0-3)}    */
   var rmbFrom = null, rmbCi = 0, rmbMoved = false;
   var activeCi = 0;   /* culoarea aleasă din bara de bulinuțe (verde implicit) */
+  var drawMode = false;   /* true = atingerile desenează, nu mută piese */
+  var drawFrom = null;
   var touchFrom = null, touchTimer = null;
   var annBoardEl = null;  /* tabla găsită la inițializare */
 
@@ -209,6 +214,10 @@
       'border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.7);font-size:.95rem;' +
       'box-shadow:0 1px 4px rgba(0,0,0,.2);}' +
       '.ann-erase:hover{background:rgba(255,255,255,.95);}' +
+      '.ann-hand{width:34px;height:30px;border-radius:15px;padding:0;cursor:pointer;line-height:1;' +
+      'border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.7);font-size:.95rem;' +
+      'box-shadow:0 1px 4px rgba(0,0,0,.2);margin-right:2px;}' +
+      '.ann-hand.on{background:#1a3a6b;border-color:#1a3a6b;}' +
       '@media (max-width:560px){.ann-dot{width:26px;height:26px;}.ann-erase{width:28px;height:26px;}}';
     document.head.appendChild(st);
   }
@@ -219,18 +228,35 @@
     bar.className = 'ann-bar';
     bar.setAttribute('role', 'toolbar');
     bar.setAttribute('aria-label', 'Culori pentru evidențiere');
+    var hand = document.createElement('button');
+    hand.type = 'button';
+    hand.className = 'ann-hand on';
+    hand.textContent = '✋';
+    hand.title = 'Mută piesele';
+    hand.setAttribute('aria-label', 'Mută piesele');
+    bar.appendChild(hand);
+
+    function refresh() {
+      hand.classList.toggle('on', !drawMode);
+      bar.querySelectorAll('.ann-dot').forEach(function (d, j) {
+        d.classList.toggle('on', drawMode && j === activeCi);
+      });
+    }
+    hand.addEventListener('click', function () { drawMode = false; drawFrom = null; refresh(); });
+
     COLORS.forEach(function (c, i) {
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'ann-dot' + (i === activeCi ? ' on' : '');
+      b.className = 'ann-dot';
       b.style.background = c.arrow;
       b.title = 'Desenează cu ' + NAMES[i];
       b.setAttribute('aria-label', 'Desenează cu ' + NAMES[i]);
       b.addEventListener('click', function () {
-        activeCi = i;
-        bar.querySelectorAll('.ann-dot').forEach(function (d, j) {
-          d.classList.toggle('on', j === i);
-        });
+        /* aceeași culoare apăsată din nou = ieși din modul desen */
+        if (drawMode && activeCi === i) drawMode = false;
+        else { drawMode = true; activeCi = i; }
+        drawFrom = null;
+        refresh();
       });
       bar.appendChild(b);
     });
@@ -257,7 +283,7 @@
 
     /* ════ TOUCH BRIDGE ════ */
     boardEl.addEventListener('touchstart', function (e) {
-      if (e.touches.length !== 1 || annMode) return;
+      if (e.touches.length !== 1 || annMode || drawMode) { if (drawMode) e.preventDefault(); return; }
       bridgeDragging = true;
       var t = e.touches[0];
       var el = document.elementFromPoint(t.clientX, t.clientY) || e.target;
@@ -266,6 +292,7 @@
     }, { passive: false });
 
     document.addEventListener('touchmove', function (e) {
+      if (drawMode) return;
       if (!bridgeDragging || annMode || e.touches.length !== 1) return;
       var t = e.touches[0];
       toMouse('mousemove', t, document.body);
@@ -285,6 +312,40 @@
       bridgeDragging = false;
       document.body.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
     });
+
+    /* ════ MOD DESEN (deget, creion sau mouse) ════
+       O atingere scurtă colorează pătratul; tragerea desenează săgeată.
+       Merge la fel pe Android, pe tabla interactivă și cu mouse-ul. */
+    boardEl.addEventListener('pointerdown', function (e) {
+      if (!drawMode) {
+        /* modul ✋: o atingere pe tablă șterge desenul, ca un click stânga cu mouse-ul */
+        if (annArrows.length || Object.keys(annSquares).length) clearAll();
+        return;
+      }
+      e.preventDefault(); e.stopPropagation();
+      drawFrom = getSqFromPoint(e.clientX, e.clientY) || getSq(e.target);
+    }, true);
+    boardEl.addEventListener('pointermove', function (e) {
+      if (drawMode) e.preventDefault();
+    }, { capture: true, passive: false });
+    boardEl.addEventListener('pointerup', function (e) {
+      if (!drawMode) return;
+      e.preventDefault(); e.stopPropagation();
+      var to = getSqFromPoint(e.clientX, e.clientY) || getSq(e.target) || drawFrom;
+      if (drawFrom && to) {
+        if (drawFrom === to) {
+          if (annSquares[to] === activeCi) delete annSquares[to];
+          else annSquares[to] = activeCi;
+        } else {
+          var k = annArrows.findIndex(function (a) { return a.from === drawFrom && a.to === to; });
+          if (k >= 0) annArrows.splice(k, 1);
+          else annArrows.push({ from: drawFrom, to: to, ci: activeCi });
+        }
+        render();
+      }
+      drawFrom = null;
+    }, true);
+    boardEl.addEventListener('pointercancel', function () { drawFrom = null; }, true);
 
     /* ════ ADNOTĂRI MOUSE (click-dreapta) ════
        Capture phase la nivel document: rulăm ÎNAINTE de orice listener chessboard.js */
@@ -319,11 +380,11 @@
     boardEl.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     /* click stânga cu mouse-ul șterge adnotările; atingerile cu degetul NU le șterg
        (pe ecran tactil se șterg apăsând lung pe pătrat până trece de galben, sau refăcând aceeași săgeată) */
-    boardEl.addEventListener('mousedown',   function (e) { if (e.button === 0 && !fromTouch) clearAll(); });
+    boardEl.addEventListener('mousedown',   function (e) { if (e.button === 0 && !drawMode) clearAll(); });
 
     /* ════ ADNOTĂRI TOUCH (long-press 450ms + drag) ════ */
     boardEl.addEventListener('touchstart', function (e) {
-      if (e.touches.length !== 1) return;
+      if (e.touches.length !== 1 || drawMode) return;
       var t = e.touches[0];
       touchFrom = getSq(e.target) || getSqFromPoint(t.clientX, t.clientY);
       touchTimer = setTimeout(function () {
