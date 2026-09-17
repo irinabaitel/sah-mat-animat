@@ -43,13 +43,23 @@
   var touchFrom = null, touchTimer = null;
   var annBoardEl = null;  /* tabla găsită la inițializare */
 
+  /* orientarea tablei; `board` global poate lipsi sau poate fi altceva (pagini vechi) */
+  function boardOrientation() {
+    try {
+      if (typeof board !== 'undefined' && board && typeof board.orientation === 'function') {
+        return board.orientation();
+      }
+    } catch (e) {}
+    return 'white';
+  }
+
   /* ── SVG helpers ── */
   function fileRank(sq) {
     return { c: 'abcdefgh'.indexOf(sq[0]), r: parseInt(sq[1]) - 1 };
   }
   function sqCenter(sq, sz) {
     var fr = fileRank(sq), c = fr.c, r = fr.r;
-    var ori = (typeof board !== 'undefined' && board) ? board.orientation() : 'white';
+    var ori = boardOrientation();
     if (ori === 'black') { c = 7 - c; r = 7 - r; }
     var s = sz / 8;
     return { x: c * s + s / 2, y: (7 - r) * s + s / 2 };
@@ -77,10 +87,16 @@
 
   /* ── Render SVG ── */
   function render() {
-    /* containerul tablei: #boardWrapper sau, în paginile fără id, .board-wrapper din jurul tablei */
-    var bw = document.getElementById('boardWrapper') ||
-             (annBoardEl && annBoardEl.closest ? annBoardEl.closest('.board-wrapper') : null);
+    /* containerul desenului: îl căutăm în jurul tablei, în mai multe feluri,
+       pentru că paginile vechi nu au toate .board-wrapper */
+    var bw = annBoardEl && annBoardEl.closest
+           ? (annBoardEl.closest('.board-wrapper') || annBoardEl.closest('#boardWrapper') ||
+              annBoardEl.closest('#board-wrap')   || annBoardEl.closest('.board-section'))
+           : null;
+    if (!bw) bw = document.getElementById('boardWrapper');
+    if (!bw && annBoardEl) bw = annBoardEl.parentElement;   /* ultima soluție: părintele tablei */
     if (!bw) return;
+    if (getComputedStyle(bw).position === 'static') bw.style.position = 'relative';
     var svg = bw.querySelector('.ann-svg');
     if (!svg) {
       svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -91,7 +107,7 @@
     while (svg.firstChild) svg.removeChild(svg.firstChild);
 
     /* Aliniază SVG citind direct din DOM poziția pătrățelului din colțul stânga-sus */
-    var ori = (typeof board !== 'undefined' && board) ? board.orientation() : 'white';
+    var ori = boardOrientation();
     var tlName = ori === 'white' ? 'a8' : 'h1';
     var tlSq   = bw.querySelector('[data-square="' + tlName + '"]');
     var sqSz, svgX = 0, svgY = 0;
@@ -118,7 +134,7 @@
     Object.keys(annSquares).forEach(function (sq) {
       var ci = annSquares[sq];
       var fr = fileRank(sq), c = fr.c, r = fr.r;
-      var ori = (typeof board !== 'undefined' && board) ? board.orientation() : 'white';
+      var ori = boardOrientation();
       if (ori === 'black') { c = 7 - c; r = 7 - r; }
       var rect = document.createElementNS(NS, 'rect');
       rect.setAttribute('x', c * sqSz);
