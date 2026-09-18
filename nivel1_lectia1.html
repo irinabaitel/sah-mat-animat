@@ -99,6 +99,8 @@
 .exp-cat.diagdn.on, .exp-cat.diagdn:hover { background: rgba(20,160,180,0.34); }
 .exp-cat.sq     { border-color: rgba(255,80,50,0.55);  background: rgba(255,80,50,0.09);  color: #7a1a00; }
 .exp-cat.sq.on,     .exp-cat.sq:hover     { background: rgba(255,80,50,0.34); }
+.exp-cat.zone   { border-color: rgba(46,160,96,0.6);   background: rgba(46,160,96,0.10); color: #145c37; }
+.exp-cat.zone.on,   .exp-cat.zone:hover   { background: rgba(46,160,96,0.34); }
 
 .exp-nav {
   display: flex; align-items: center; justify-content: flex-start; gap: 8px; margin-bottom: 8px;
@@ -132,6 +134,8 @@
 .sq-diag   { background-image: linear-gradient(rgba(180,80,220,0.42), rgba(180,80,220,0.42)) !important; }
 .sq-diagdn { background-image: linear-gradient(rgba(20,160,180,0.48), rgba(20,160,180,0.48)) !important; }
 .sq-sq     { background-image: linear-gradient(rgba(255,80,50,0.58),  rgba(255,80,50,0.58))  !important; }
+.sq-zone   { background-image: linear-gradient(rgba(46,160,96,0.48),  rgba(46,160,96,0.48))  !important; }
+.sq-zone2  { background-image: linear-gradient(rgba(60,116,200,0.42), rgba(60,116,200,0.42)) !important; }
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -220,6 +224,7 @@
                 <button class="exp-cat diagup" onclick="setExpCat('diagup')">&#8725; Diag /</button>
                 <button class="exp-cat diagdn" onclick="setExpCat('diagdn')">&#8726; Diag \</button>
                 <button class="exp-cat sq"     onclick="setExpCat('sq')">&#9633; Pătrățel</button>
+                <button class="exp-cat zone"   onclick="setExpCat('zone')">&#128506; Zone</button>
               </div>
               <div class="exp-nav">
                 <button class="exp-nav-btn" id="expPrev" onclick="expNav(-1)" disabled>&#9664;</button>
@@ -295,6 +300,20 @@ var EXP = {
     { label: 'Diagonala a6–f1', desc: 'Diagonală \\ de 6 câmpuri albe, pornind din a6',                    sqs: ['a6','b5','c4','d3','e2','f1'],          cls: 'sq-diagdn' },
     { label: 'Diagonala c8–h3', desc: 'Diagonală \\ de 6 câmpuri negre, pornind din c8',                   sqs: ['c8','d7','e6','f5','g4','h3'],          cls: 'sq-diagdn' },
   ],
+  zone: [
+    { label: 'Centrul', desc: 'Cele patru câmpuri din inima tablei: d4, d5, e4 și e5. Cine le ține, ține jocul.',
+      sqs: ['d4','d5','e4','e5'], cls: 'sq-zone' },
+    { label: 'Centrul extins', desc: 'Cele douăsprezece câmpuri din jurul centrului: de la c3 până la f6. Împreună cu centrul, ele formează inima tablei.',
+      sqs: ['c3','d3','e3','f3','c4','f4','c5','f5','c6','d6','e6','f6'], cls: 'sq-zone2' },
+    { label: 'Flancul damei', desc: 'Coloanele a, b, c și d — partea tablei unde stă dama la începutul partidei.',
+      sqs: ['a1','a2','a3','a4','a5','a6','a7','a8','b1','b2','b3','b4','b5','b6','b7','b8','c1','c2','c3','c4','c5','c6','c7','c8','d1','d2','d3','d4','d5','d6','d7','d8'], cls: 'sq-zone' },
+    { label: 'Flancul regelui', desc: 'Coloanele e, f, g și h — partea tablei unde stă regele la începutul partidei.',
+      sqs: ['e1','e2','e3','e4','e5','e6','e7','e8','f1','f2','f3','f4','f5','f6','f7','f8','g1','g2','g3','g4','g5','g6','g7','g8','h1','h2','h3','h4','h5','h6','h7','h8'], cls: 'sq-zone2' },
+    { label: 'Jumătatea albului', desc: 'Liniile 1, 2, 3 și 4 — teritoriul alb. Dacă piesele negre trec de linia 4, au intrat în ograda albului.',
+      sqs: ['a1','b1','c1','d1','e1','f1','g1','h1','a2','b2','c2','d2','e2','f2','g2','h2','a3','b3','c3','d3','e3','f3','g3','h3','a4','b4','c4','d4','e4','f4','g4','h4'], cls: 'sq-zone' },
+    { label: 'Jumătatea negrului', desc: 'Liniile 5, 6, 7 și 8 — teritoriul negru. Dacă piesele albe trec de linia 4, au intrat în ograda negrului.',
+      sqs: ['a5','b5','c5','d5','e5','f5','g5','h5','a6','b6','c6','d6','e6','f6','g6','h6','a7','b7','c7','d7','e7','f7','g7','h7','a8','b8','c8','d8','e8','f8','g8','h8'], cls: 'sq-zone2' },
+  ],
   sq: [
     { label: 'e4',  desc: 'Cel mai celebru pătrățel — centrul mic al tablei',                         sqs: ['e4'], cls: 'sq-sq' },
     { label: 'd5',  desc: 'Partenerul lui e4 — tot în centrul mic, câmp cheie pentru cal și nebun',   sqs: ['d5'], cls: 'sq-sq' },
@@ -304,7 +323,7 @@ var EXP = {
   ],
 };
 
-var ALL_HL = ['sq-col','sq-row','sq-diag','sq-diagdn','sq-sq'];
+var ALL_HL = ['sq-col','sq-row','sq-diag','sq-diagdn','sq-sq','sq-zone','sq-zone2'];
 var FILES  = ['a','b','c','d','e','f','g','h'];
 var RANKS  = ['1','2','3','4','5','6','7','8'];
 var expCat = null;
