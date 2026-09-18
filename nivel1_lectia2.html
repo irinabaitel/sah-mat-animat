@@ -106,6 +106,16 @@
   .sq-piece   { background-image: linear-gradient(rgba(26,120,255,0.35), rgba(26,120,255,0.35)) !important; }
   .sq-capture { background-image: linear-gradient(rgba(230,60,50,0.45),  rgba(230,60,50,0.45))  !important; }
   .sq-ask     { background-image: linear-gradient(rgba(255,200,0,0.60),  rgba(255,200,0,0.60))  !important; }
+  .sq-rect1   { background-image: linear-gradient(rgba(46,160,96,0.38),  rgba(46,160,96,0.38))  !important; }
+  .sq-rect2   { background-image: linear-gradient(rgba(60,116,200,0.35), rgba(60,116,200,0.35)) !important; }
+  .sq-dest    { background-image: linear-gradient(rgba(255,140,0,0.62),  rgba(255,140,0,0.62))  !important; }
+  .rect-btn {
+    display:block; width:100%; margin-top:10px; padding:10px;
+    border-radius:12px; border:2px solid rgba(46,160,96,0.55);
+    background:rgba(46,160,96,0.12); color:#145c37;
+    font-family:var(--font-display); font-size:0.9em; font-weight:700; cursor:pointer;
+  }
+  .rect-btn:hover { background:rgba(46,160,96,0.26); }
 
   /* ── QUIZ ──────────────────────────────────── */
   .quiz-box {
@@ -292,6 +302,7 @@
               <div class="piece-desc-box">
                 <div class="pd-name" id="pd-name">Pionul</div>
                 <div id="pd-text">Selectează o piesă!</div>
+                <button class="rect-btn" id="rectBtn" style="display:none" onclick="toggleRects()">🔲 Arată cele 8 dreptunghiuri</button>
               </div>
               <div class="legend">
                 <div class="leg-item"><div class="leg-dot dot-move"></div> <span id="legend-move-text">Poate merge aici</span></div>
@@ -459,7 +470,7 @@ const PIECES = {
   },
   N: {
     name:'Calul', symbol:'♞', fen:'wN', pos:'e4',
-    text:'Calul e singurul care poate <strong>sări peste alte piese</strong>! Se mișcă în forma literei <strong>L</strong>: două căsuțe într-o direcție, apoi una în unghi drept. Mereu aterizează pe culoarea opusă.',
+    text:'Calul e singurul care poate <strong>sări peste alte piese</strong>. Sare așa: <strong>două pătrățele pe coloană</strong> (în sus sau în jos), apoi <strong>schimbă direcția</strong> și mai merge <strong>unul pe linie</strong>, la stânga sau la dreapta. Sau invers: <strong>două pătrățele pe linie</strong>, apoi <strong>unul pe coloană</strong>, în sus sau în jos.<br><br>Cel mai ușor: imaginează-ți un <strong>dreptunghi din 6 pătrățele</strong> (2 pe o parte, 3 pe cealaltă). Calul stă într-un colț și sare în <strong>colțul opus</strong>. Apasă butonul de mai jos ca să vezi toate cele <strong>8 dreptunghiuri</strong>.<br><br>Calul ajunge mereu pe un pătrățel de <strong>cealaltă culoare</strong>.',
     getMoves(sq) {
       const col=sq[0], row=parseInt(sq[1]), ci='abcdefgh'.indexOf(col), moves=[], captures=[];
       [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(([dc,dr]) => {
@@ -511,7 +522,7 @@ const PIECES = {
 };
 
 /* ── BOARD HIGHLIGHTS ───────────────────────────────────── */
-const ALL_HL = 'sq-move sq-piece sq-capture sq-ask';
+const ALL_HL = 'sq-move sq-piece sq-capture sq-ask sq-rect1 sq-rect2 sq-dest';
 function clearHL() {
   'abcdefgh'.split('').forEach(c => { for(let r=1;r<=8;r++) $(`.square-${c}${r}`).removeClass(ALL_HL); });
 }
@@ -535,6 +546,56 @@ function showMoves(code) {
   }, 50);
 }
 
+/* ── CELE 8 DREPTUNGHIURI ALE CALULUI ───────────────────── */
+/* 8 dreptunghiuri de 2x3 care NU se suprapun: 4 culcate, 4 în picioare.
+   În fiecare, calul stă într-un colț și sare în colțul opus (portocaliu). */
+const RECTS = [
+  { cols:['a','b','c'], rows:[1,2], knight:'a1', dest:'c2' },   /* culcat */
+  { cols:['d','e','f'], rows:[1,2], knight:'d1', dest:'f2' },   /* culcat */
+  { cols:['a','b','c'], rows:[3,4], knight:'a4', dest:'c3' },   /* culcat */
+  { cols:['d','e','f'], rows:[3,4], knight:'f4', dest:'d3' },   /* culcat */
+  { cols:['g','h'], rows:[1,2,3],   knight:'g1', dest:'h3' },   /* în picioare */
+  { cols:['g','h'], rows:[4,5,6],   knight:'h4', dest:'g6' },   /* în picioare */
+  { cols:['a','b'], rows:[5,6,7],   knight:'a5', dest:'b7' },   /* în picioare */
+  { cols:['c','d'], rows:[5,6,7],   knight:'d5', dest:'c7' },   /* în picioare */
+];
+let rectsOn = false;
+
+function showRects() {
+  const pos = {};
+  RECTS.forEach(r => { pos[r.knight] = 'wN'; });
+  board.position(pos, false);
+  setTimeout(() => {
+    clearHL();
+    RECTS.forEach((r, i) => {
+      const cls = (i % 2 === 0) ? 'sq-rect1' : 'sq-rect2';
+      r.cols.forEach(c => r.rows.forEach(row => $(`.square-${c}${row}`).addClass(cls)));
+      $(`.square-${r.dest}`).removeClass('sq-rect1 sq-rect2').addClass('sq-dest');
+      $(`.square-${r.knight}`).removeClass('sq-rect1 sq-rect2').addClass('sq-piece');
+    });
+  }, 60);
+}
+
+function toggleRects() {
+  rectsOn = !rectsOn;
+  const btn = document.getElementById('rectBtn');
+  if (rectsOn) {
+    btn.textContent = '↩ Înapoi la săriturile calului';
+    showRects();
+  } else {
+    btn.textContent = '🔲 Arată cele 8 dreptunghiuri';
+    /* punem înapoi doar calul de pe e4 și curățăm dreptunghiurile */
+    const p = PIECES.N, pos = {}; pos[p.pos] = p.fen;
+    board.position(pos, false);
+    setTimeout(() => {
+      clearHL();
+      const r = p.getMoves(p.pos);
+      r.moves.forEach(sq => $(`.square-${sq}`).addClass('sq-move'));
+      $(`.square-${p.pos}`).addClass('sq-piece');
+    }, 60);
+  }
+}
+
 /* ── PIECE SELECTOR ─────────────────────────────────────── */
 function selectPiece(code) {
   if(current !== 1) return;
@@ -546,6 +607,10 @@ function selectPiece(code) {
     `<img src="https://lichess1.org/assets/piece/caliente/${p.fen}.svg" ` +
     `style="width:32px;height:32px;vertical-align:middle;margin-right:6px;" alt="">${p.name}`;
   document.getElementById('pd-text').innerHTML = p.text;
+  const rectBtn = document.getElementById('rectBtn');
+  rectsOn = false;
+  rectBtn.textContent = '🔲 Arată cele 8 dreptunghiuri';
+  rectBtn.style.display = (code === 'N') ? '' : 'none';
   document.getElementById('legend-capture-row').style.display = (code==='P') ? '' : 'none';
   document.getElementById('legend-move-text').textContent = (code==='P')
     ? 'Poate merge aici' : 'Poate merge / captura aici';
