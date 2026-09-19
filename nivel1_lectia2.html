@@ -315,7 +315,7 @@
               <div class="piece-desc-box">
                 <div class="pd-name" id="pd-name">Pionul</div>
                 <div id="pd-text">Selectează o piesă!</div>
-                <button class="rect-btn" id="rectBtn" style="display:none" onclick="toggleRects()">🔲 Arată cele 8 dreptunghiuri</button>
+                <button class="rect-btn" id="rectBtn" style="display:none" onclick="toggleRects()">🔲 Arată dreptunghiurile calului</button>
                 <button class="rect-btn" id="rectStepBtn" style="display:none" onclick="stepRect()">▶ Ia-le pe rând, cu săgeată</button>
                 <div id="rectInfo" style="display:none; margin-top:6px; font-size:0.88em; color:#145c37; font-weight:700; line-height:1.5;"></div>
               </div>
@@ -485,7 +485,7 @@ const PIECES = {
   },
   N: {
     name:'Calul', symbol:'♞', fen:'wN', pos:'e4',
-    text:'Calul e singurul care poate <strong>sări peste alte piese</strong>. Sare așa: <strong>două pătrățele pe coloană</strong> (în sus sau în jos), apoi <strong>schimbă direcția</strong> și mai merge <strong>unul pe linie</strong>, la stânga sau la dreapta. Sau invers: <strong>două pătrățele pe linie</strong>, apoi <strong>unul pe coloană</strong>, în sus sau în jos.<br><br>Cel mai ușor: imaginează-ți un <strong>dreptunghi din 6 pătrățele</strong> (2 pe o parte, 3 pe cealaltă). Calul stă într-un colț și sare în <strong>colțul opus</strong>. Apasă butonul de mai jos ca să vezi toate cele <strong>8 dreptunghiuri</strong>.<br><br>Calul ajunge mereu pe un pătrățel de <strong>cealaltă culoare</strong>.',
+    text:'Calul e singurul care poate <strong>sări peste alte piese</strong>. Sare așa: <strong>două pătrățele pe coloană</strong> (în sus sau în jos), apoi <strong>schimbă direcția</strong> și mai merge <strong>unul pe linie</strong>, la stânga sau la dreapta. Sau invers: <strong>două pătrățele pe linie</strong>, apoi <strong>unul pe coloană</strong>, în sus sau în jos.<br><br>Cel mai ușor: imaginează-ți un <strong>dreptunghi din 6 pătrățele</strong> (2 pe o parte, 3 pe cealaltă). Calul stă într-un colț și sare în <strong>colțul opus</strong>. Apasă butonul de mai jos ca să vezi câteva astfel de <strong>dreptunghiuri</strong>, fiecare cu altă culoare.<br><br>Calul ajunge mereu pe un pătrățel de <strong>cealaltă culoare</strong>.',
     getMoves(sq) {
       const col=sq[0], row=parseInt(sq[1]), ci='abcdefgh'.indexOf(col), moves=[], captures=[];
       [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(([dc,dr]) => {
@@ -565,7 +565,18 @@ function showMoves(code) {
 /* ── CELE 8 DREPTUNGHIURI ALE CALULUI ───────────────────── */
 /* 8 dreptunghiuri de 2x3 care NU se suprapun: 4 culcate, 4 în picioare.
    În fiecare, calul stă într-un colț și sare în colțul opus (portocaliu). */
+/* 5 dreptunghiuri de 2x3, desenate DOAR CA CONTUR, cu cel puțin un pătrat liber între ele
+   (nicio linie nu se atinge): 3 culcate + 2 în picioare. Calul stă într-un colț
+   și sare în colțul opus. */
 const RECTS = [
+  { c0:'a', c1:'c', r0:1, r1:2, knight:'a1', dest:'c2', fel:'culcat',      color:'#d62828' },
+  { c0:'a', c1:'c', r0:4, r1:5, knight:'a5', dest:'c4', fel:'culcat',      color:'#1d4ed8' },
+  { c0:'a', c1:'c', r0:7, r1:8, knight:'c8', dest:'a7', fel:'culcat',      color:'#15803d' },
+  { c0:'e', c1:'f', r0:1, r1:3, knight:'e1', dest:'f3', fel:'în picioare', color:'#9333ea' },
+  { c0:'e', c1:'f', r0:5, r1:7, knight:'f7', dest:'e5', fel:'în picioare', color:'#ea7a00' },
+];
+/* pentru „Ia-le pe rând": cele 8 dreptunghiuri de dinainte, colorate pe pătrate, câte unul */
+const STEP_RECTS = [
   { cols:['a','b','c'], rows:[1,2], knight:'a1', dest:'c2', fel:'culcat' },
   { cols:['d','e','f'], rows:[1,2], knight:'d1', dest:'f2', fel:'culcat' },
   { cols:['a','b','c'], rows:[3,4], knight:'a4', dest:'c3', fel:'culcat' },
@@ -576,16 +587,88 @@ const RECTS = [
   { cols:['c','d'], rows:[5,6,7],   knight:'d5', dest:'c7', fel:'în picioare' },
 ];
 const RECT_CLS = ['sq-r0','sq-r1','sq-r2','sq-r3','sq-r4','sq-r5','sq-r6','sq-r7'];
-const TXT_ALL  = 'Opt dreptunghiuri, fiecare cu culoarea lui: patru culcate și patru în picioare. Calul stă într-un colț, iar colțul opus e colorat mai tare.';
-const TXT_SHOW = '\u{1F532} Arată cele 8 dreptunghiuri';
+const NR_STEP = STEP_RECTS.length;
+const NR_RECTS = RECTS.length;
+const TXT_ALL  = 'Cinci dreptunghiuri, fiecare cu altă culoare: trei culcate și două în picioare. În fiecare, calul stă într-un colț și sare în colțul opus.';
+const TXT_SHOW = '\u{1F532} Arată dreptunghiurile calului';
 const TXT_BACK = '↩ Înapoi la săriturile calului';
 const TXT_STEP = '▶ Ia-le pe rând, cu săgeată';
 let rectsOn = false;
 let rectStep = -1;
+let rectShown = [];   /* ce e desenat acum: indici în RECTS */
+let rectArrow = false;
 
 function rectArrowsOff() { if (window._annClear) window._annClear(); }
 
-/* toate cele opt deodată, fără săgeți */
+/* stratul SVG cu contururile, deasupra tablei, care nu primește atingeri */
+function rectSvgOff() {
+  const old = document.getElementById('rectSvg');
+  if (old) old.remove();
+}
+function drawRectSvg() {
+  rectSvgOff();
+  if (!rectShown.length) return;
+  const bw = document.querySelector('.board-wrapper');
+  const a8 = document.querySelector('.square-a8');
+  if (!bw || !a8) return;
+  const h1 = document.querySelector('.square-h1');
+  if (!h1) return;
+  const bwR = bw.getBoundingClientRect(), a8R = a8.getBoundingClientRect(), h1R = h1.getBoundingClientRect();
+  /* mărimea pătratului din colțurile tablei (a8 sus-stânga, h1 jos-dreapta) */
+  const sz = (h1R.right - a8R.left) / 8, ox = a8R.left - bwR.left, oy = a8R.top - bwR.top;
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('id', 'rectSvg');
+  svg.style.cssText = 'position:absolute;left:' + ox + 'px;top:' + oy + 'px;width:' + (sz * 8) + 'px;height:' + (sz * 8) +
+    'px;pointer-events:none;z-index:24;overflow:visible;';
+  const F = 'abcdefgh';
+  const col = ch => F.indexOf(ch);
+  const ctr = sq => ({ x: col(sq[0]) * sz + sz / 2, y: (8 - parseInt(sq[1])) * sz + sz / 2 });
+  const sw = Math.max(3, sz * 0.07), inset = sw * 0.9;
+  const defs = document.createElementNS(NS, 'defs'); svg.appendChild(defs);
+  rectShown.forEach(i => {
+    const r = RECTS[i];
+    const x = col(r.c0) * sz + inset, y = (8 - r.r1) * sz + inset;
+    const w = (col(r.c1) - col(r.c0) + 1) * sz - 2 * inset, h = (r.r1 - r.r0 + 1) * sz - 2 * inset;
+    const rect = document.createElementNS(NS, 'rect');
+    rect.setAttribute('x', x); rect.setAttribute('y', y);
+    rect.setAttribute('width', w); rect.setAttribute('height', h);
+    rect.setAttribute('fill', 'none'); rect.setAttribute('stroke', r.color);
+    rect.setAttribute('stroke-width', sw); rect.setAttribute('stroke-linejoin', 'miter');
+    svg.appendChild(rect);
+    if (rectArrow) {
+      const id = 'rh' + i;
+      const mk = document.createElementNS(NS, 'marker');
+      mk.setAttribute('id', id); mk.setAttribute('markerWidth', '4'); mk.setAttribute('markerHeight', '4');
+      mk.setAttribute('refX', '2.2'); mk.setAttribute('refY', '2'); mk.setAttribute('orient', 'auto');
+      mk.setAttribute('markerUnits', 'strokeWidth');
+      const mp = document.createElementNS(NS, 'path');
+      mp.setAttribute('d', 'M0,0 L4,2 L0,4 Z'); mp.setAttribute('fill', r.color);
+      mk.appendChild(mp); defs.appendChild(mk);
+      const a = ctr(r.knight), b = ctr(r.dest);
+      const dx = b.x - a.x, dy = b.y - a.y, len = Math.sqrt(dx * dx + dy * dy);
+      const back = sz * 0.28;
+      const line = document.createElementNS(NS, 'line');
+      line.setAttribute('x1', a.x + dx / len * sz * 0.22); line.setAttribute('y1', a.y + dy / len * sz * 0.22);
+      line.setAttribute('x2', b.x - dx / len * back);      line.setAttribute('y2', b.y - dy / len * back);
+      line.setAttribute('stroke', r.color); line.setAttribute('stroke-width', sw * 1.3);
+      line.setAttribute('stroke-linecap', 'round'); line.setAttribute('marker-end', 'url(#' + id + ')');
+      svg.appendChild(line);
+    }
+  });
+  bw.appendChild(svg);
+}
+$(window).resize(() => { if (rectShown.length) setTimeout(drawRectSvg, 80); });
+/* tabla își schimbă mărimea și când se deschide un sertar: redesenăm conturul odată cu ea */
+if (window.ResizeObserver) {
+  const ro = new ResizeObserver(() => { if (rectShown.length) drawRectSvg(); });
+  document.addEventListener('DOMContentLoaded', () => {
+    const b = document.getElementById('board'); if (b) ro.observe(b);
+  });
+  const b0 = document.getElementById('board'); if (b0) ro.observe(b0);
+}
+
+/* toate deodată, fără săgeți */
 function showRects() {
   rectStep = -1;
   rectArrowsOff();
@@ -594,29 +677,30 @@ function showRects() {
   board.position(pos, false);
   setTimeout(() => {
     clearHL();
-    RECTS.forEach((r, i) => {
-      r.cols.forEach(c => r.rows.forEach(row => $('.square-' + c + row).addClass(RECT_CLS[i])));
-      $('.square-' + r.dest).removeClass(RECT_CLS[i]).addClass(RECT_CLS[i] + 'd');
-    });
+    rectShown = RECTS.map((r, i) => i);
+    rectArrow = false;
+    drawRectSvg();
+    setTimeout(drawRectSvg, 350);
     const info = document.getElementById('rectInfo');
     info.style.display = '';
     info.textContent = TXT_ALL;
   }, 60);
 }
 
-/* unul singur, cu săgeata de la cal spre colțul opus */
+/* unul singur: dreptunghiul colorat pe pătrate, cu săgeata de la cal spre colțul opus */
 function showOneRect(i) {
-  const r = RECTS[i];
+  const r = STEP_RECTS[i];
   const pos = {}; pos[r.knight] = 'wN';
   board.position(pos, false);
   setTimeout(() => {
     clearHL();
+    rectShown = []; rectSvgOff();
     r.cols.forEach(c => r.rows.forEach(row => $('.square-' + c + row).addClass(RECT_CLS[i])));
     $('.square-' + r.dest).removeClass(RECT_CLS[i]).addClass(RECT_CLS[i] + 'd');
     if (window._annSet) window._annSet([{ from: r.knight, to: r.dest, ci: 0 }]);
     const info = document.getElementById('rectInfo');
     info.style.display = '';
-    info.textContent = 'Dreptunghiul ' + (i + 1) + ' din 8 (' + r.fel + '): calul de pe ' + r.knight +
+    info.textContent = 'Dreptunghiul ' + (i + 1) + ' din ' + NR_STEP + ' (' + r.fel + '): calul de pe ' + r.knight +
       ' sare în colțul opus, pe ' + r.dest + '.';
   }, 60);
 }
@@ -624,7 +708,7 @@ function showOneRect(i) {
 function stepRect() {
   const btn = document.getElementById('rectStepBtn');
   rectStep++;
-  if (rectStep > 7) {
+  if (rectStep > NR_STEP - 1) {
     rectStep = -1;
     btn.textContent = TXT_STEP;
     showRects();
@@ -632,14 +716,15 @@ function stepRect() {
   }
   rectsOn = true;
   document.getElementById('rectBtn').textContent = TXT_BACK;
-  btn.textContent = (rectStep === 7)
+  btn.textContent = (rectStep === NR_STEP - 1)
     ? '↩ Gata, arată-le pe toate'
-    : '▶ Următorul dreptunghi (' + (rectStep + 2) + ' din 8)';
+    : '▶ Următorul dreptunghi (' + (rectStep + 2) + ' din ' + NR_STEP + ')';
   showOneRect(rectStep);
 }
 
 function backToKnight() {
   rectsOn = false; rectStep = -1;
+  rectShown = []; rectSvgOff();
   rectArrowsOff();
   document.getElementById('rectBtn').textContent = TXT_SHOW;
   document.getElementById('rectStepBtn').textContent = TXT_STEP;
@@ -680,6 +765,7 @@ function selectPiece(code) {
   const stepBtn = document.getElementById('rectStepBtn');
   rectsOn = false; rectStep = -1;
   if (window._annClear) window._annClear();
+  rectShown = []; rectSvgOff();
   rectBtn.textContent = TXT_SHOW;
   stepBtn.textContent = TXT_STEP;
   rectBtn.style.display = (code === 'N') ? '' : 'none';
