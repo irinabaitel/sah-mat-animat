@@ -71,6 +71,8 @@
     cursor:pointer; transition:all 0.2s; white-space:nowrap;
   }
   .tgl-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
+  .var-row .tgl-btn { white-space:normal; padding:6px 6px; line-height:1.25; }
+  .var-note { font-size:0.78em; color:rgba(26,26,46,0.75); margin:-4px 0 10px; line-height:1.5; }
 
   .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; }
   .animal-btn { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:12px; padding:7px 4px; cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.74em; font-weight:700; color:#1a3a6b; text-align:center; transition:all 0.18s; line-height:1.4; }
@@ -168,6 +170,13 @@
           </div>
         </div>
 
+        <div class="sec-title">Alege varianta:</div>
+        <div class="toggle-row var-row">
+          <button class="tgl-btn active" id="varTwo" onclick="setVariant('two')">🐴🐴 Doi căluți</button>
+          <button class="tgl-btn"        id="varOne" onclick="setVariant('one')">🐴 Un singur căluț</button>
+        </div>
+        <div class="var-note" id="variantNote"></div>
+
         <div class="counter-row">
           <div class="counter-box"><div class="counter-lbl">Repriza</div><div class="counter-val" id="roundVal">1 / 2</div></div>
           <div class="counter-box"><div class="counter-lbl">Mutări</div><div class="counter-val" id="movesVal">0</div></div>
@@ -176,6 +185,7 @@
           <div class="counter-box"><div class="counter-lbl">🐰 În grădină</div><div class="counter-val" id="gardenVal">0</div></div>
           <div class="counter-box"><div class="counter-lbl">🐰 Prinși</div><div class="counter-val" id="caughtVal">0</div></div>
           <div class="counter-box"><div class="counter-lbl">🐰 Pe tablă</div><div class="counter-val" id="leftVal">8</div></div>
+          <div class="counter-box"><div class="counter-lbl">🐴 Căluți</div><div class="counter-val" id="knightsVal">2</div></div>
         </div>
 
         <div class="player-panel" id="pp1">
@@ -206,7 +216,7 @@
           <div class="hl-box">
             <h4>Povestea</h4>
             <p>Opt iepurași albi vor să ajungă în <strong>grădina cu morcovi</strong>. Grădina este ultimul rând al tablei, rândul 8, cel cu morcovi desenați.</p>
-            <p>Doi căluți negri păzesc grădina. Ei încearcă să prindă iepurașii înainte să ajungă acolo.</p>
+            <p>Căluții negri păzesc grădina. Ei încearcă să prindă iepurașii înainte să ajungă acolo.</p>
             <p>Iepurașii sunt <strong>pionii albi</strong>. Căluții sunt <strong>caii negri</strong>.</p>
           </div>
 
@@ -240,7 +250,7 @@
           <div class="hl-box">
             <h4>Când se termină o repriză</h4>
             <p>Repriza se termină când pe tablă nu mai este niciun iepuraș: au intrat în grădină sau au fost prinși.</p>
-            <p>Se termină și atunci când <strong>amândoi căluții au fost prinși</strong>. Nu mai are cine să oprească iepurașii, așa că toți cei rămași pe tablă intră în grădină și aduc puncte.</p>
+            <p>Se termină și atunci când <strong>nu mai este niciun căluț pe tablă</strong>. Nu mai are cine să oprească iepurașii, așa că toți cei rămași pe tablă intră în grădină și aduc puncte.</p>
             <p>Dacă mai sunt căluți pe tablă, dar iepurașii sunt blocați și nu pot face niciun pas de trei ori la rând, repriza se termină. Iepurașii rămași pe tablă nu aduc puncte.</p>
           </div>
 
@@ -248,7 +258,15 @@
             <h4>Reprizele și cine câștigă</h4>
             <p>Jocul are două reprize. În prima repriză tu ești iepurașii, iar calculatorul este căluții. În a doua repriză <strong>vă schimbați rolurile</strong>. Tabla rămâne la fel, cu iepurașii jos.</p>
             <p><strong>Câștigă cine a dus mai mulți iepurași în grădină</strong> atunci când a jucat cu iepurașii. Dacă amândoi au dus tot atâția, este egalitate.</p>
-            <p>Cine prinde amândoi căluții duce în grădină <strong>toți iepurașii rămași</strong>, deci ia punctele lor.</p>
+            <p>Cine prinde toți căluții duce în grădină <strong>toți iepurașii rămași</strong>, deci ia punctele lor.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cele două variante</h4>
+            <p>Cu <strong>doi căluți</strong>, pe b8 și pe g8, iepurașii au mai mult de furcă: grădina este păzită din două părți.</p>
+            <p>Cu <strong>un singur căluț</strong>, pe b8, este mai ușor pentru iepurași. Aceasta este varianta bună la început.</p>
+            <p>Regulile rămân aceleași în ambele variante. Cine rămâne fără căluț pierde repriza pe loc, iar iepurașii rămași intră toți în grădină. Cu un singur căluț, asta cântărește și mai mult: dacă iepurașii îl prind, iau toate punctele.</p>
+            <p>Varianta cu un singur căluț se numește „Promotion game" și vine din cartea <em>Manual for Chess Trainers, Pasul 1</em>, lecția 4.</p>
           </div>
 
           <div class="hl-box">
@@ -325,15 +343,20 @@ const KD = [];               // distanța calului între două pătrate (tablă 
 })();
 
 /* ---------- starea: occ 0 gol / 1 pion / 2 cal; kn = pătratele cailor (-1 = prins) ---------- */
+/* varianta: 'two' = doi căluți (b8 și g8), 'one' = un singur căluț (b8, „Promotion game", Pasul 1) */
+var variant = 'two';
+const startKnights = () => variant === 'one' ? [sqIdx('b8')] : [sqIdx('b8'), sqIdx('g8')];
+
 function newState() {
-    const S = { occ: new Int8Array(64), kn: [sqIdx('b8'), sqIdx('g8')], pc: 8, g: 0, caught: 0 };
+    const S = { occ: new Int8Array(64), kn: startKnights(), pc: 8, g: 0, caught: 0 };
     for (let s = 8; s < 16; s++) S.occ[s] = 1;
     S.kn.forEach(k => { S.occ[k] = 2; });
     return S;
 }
 function cloneState(S) { return { occ: S.occ.slice(), kn: S.kn.slice(), pc: S.pc, g: S.g, caught: S.caught }; }
 const other = side => side === 'w' ? 'b' : 'w';
-const noKnights = S => S.kn[0] < 0 && S.kn[1] < 0;
+const noKnights = S => S.kn.every(k => k < 0);
+const knightsLeft = S => S.kn.filter(k => k >= 0).length;
 /* repriza s-a terminat: fără pioni sau fără cai */
 const gameOver = S => S.pc === 0 || noKnights(S);
 /* punctele finale: pionii din grădină, plus cei rămași dacă nu mai sunt cai */
@@ -372,12 +395,12 @@ function makeMove(S, m) {
     let u = cap | (pc << 4);
     S.occ[f] = 0;
     if (pc === 1) {
-        if (cap === 2) { const i = S.kn[0] === t ? 0 : 1; S.kn[i] = -1; u |= i << 2; }
+        if (cap === 2) { const i = S.kn.indexOf(t); S.kn[i] = -1; u |= i << 2; }
         if (t >= 56) { S.g++; S.pc--; S.occ[t] = 0; u |= 8; }
         else S.occ[t] = 1;
     } else {
         if (cap === 1) { S.pc--; S.caught++; }
-        const i = S.kn[0] === f ? 0 : 1; S.kn[i] = t; u |= i << 2;
+        const i = S.kn.indexOf(f); S.kn[i] = t; u |= i << 2;
         S.occ[t] = 2;
     }
     return u;
@@ -593,6 +616,10 @@ function setStatus(msg, cls) {
     el.innerHTML = msg; el.className = cls || '';
 }
 const bunnies = n => n === 1 ? 'un iepuraș' : n + (n >= 20 ? ' de' : '') + ' iepurași';
+/* texte care depind de variantă */
+const variantName  = () => variant === 'one' ? 'un singur căluț' : 'doi căluți';
+const allKnights   = () => variant === 'one' ? 'călutul' : 'amândoi căluții';
+const allKnightsCaught = () => variant === 'one' ? 'călutul a fost prins' : 'amândoi căluții au fost prinși';
 
 function updateUI() {
     document.getElementById('roundVal').textContent = round + ' / 2';
@@ -600,9 +627,10 @@ function updateUI() {
     document.getElementById('gardenVal').textContent = S.g;
     document.getElementById('caughtVal').textContent = S.caught;
     document.getElementById('leftVal').textContent = S.pc;
+    document.getElementById('knightsVal').textContent = knightsLeft(S);
     [1, 2].forEach(p => {
         document.getElementById('pp' + p + '-name').textContent = (mode === 'robot' && p === 2 ? '🤖 ' : '👤 ') + pname(p);
-        document.getElementById('pp' + p + '-role').textContent = pawnPlayer(round) === p ? '🐰 Iepurașii' : '🐴 Căluții';
+        document.getElementById('pp' + p + '-role').textContent = pawnPlayer(round) === p ? '🐰 Iepurașii' : (variant === 'one' ? '🐴 Călutul' : '🐴 Căluții');
         document.getElementById('pp' + p + '-strikes').textContent =
             mode === 'duo' ? '❌'.repeat(strikes[p]) + '▫️'.repeat(MAX_STRIKES - strikes[p]) : '';
         document.getElementById('pp' + p).className = 'player-panel' + (!roundOver && !matchOver && playerOnMove() === p ? ' active' : '');
@@ -614,7 +642,7 @@ function resultLine(p) {
     [1, 2].forEach(r => {
         const res = results[r]; if (!res) return;
         if (pawnPlayer(r) === p) parts.push('cu iepurașii: ' + res.g + ' în grădină');
-        else parts.push('cu căluții: ' + res.caught + ' prinși');
+        else parts.push((variant === 'one' ? 'cu călutul: ' : 'cu căluții: ') + res.caught + ' prinși');
     });
     return parts.join(' · ');
 }
@@ -630,6 +658,7 @@ function startRound(r) {
     turn = 'w'; skips = 0; moveCount = 0; roundOver = false; selSq = null;
     board.position(buildPos(), false);
     clearHL();
+    showVariantNote();
     document.getElementById('btn-round2').style.display = 'none';
     updateUI();
     promptTurn('');
@@ -670,8 +699,8 @@ function doMove(fromSq, toSq) {
     if (nx.end) return endRound(nx.end);
     turn = nx.turn;
     if (nx.skipped) {
-        if (turn === 'w') note += (note ? ' ' : '') + 'Căluții nu pot muta, așa că mută din nou iepurașii.';
-        else note += (note ? ' ' : '') + 'Iepurașii nu pot face niciun pas (' + skips + ' din ' + MAX_SKIPS + '), așa că mută din nou căluții.';
+        if (turn === 'w') note += (note ? ' ' : '') + (variant === 'one' ? 'Călutul nu poate muta, așa că mută din nou iepurașii.' : 'Căluții nu pot muta, așa că mută din nou iepurașii.');
+        else note += (note ? ' ' : '') + 'Iepurașii nu pot face niciun pas (' + skips + ' din ' + MAX_SKIPS + '), așa că mută din nou ' + (variant === 'one' ? 'călutul.' : 'căluții.');
     }
     promptTurn(note);
 }
@@ -685,7 +714,7 @@ function endRound(how) {
         for (let s = 0; s < 64; s++) if (S.occ[s] === 1) S.occ[s] = 0;   // toți ajung în grădină
         S.g += left; S.pc = 0;
         board.position(buildPos(), false);
-        msg = (you ? 'Ai capturat' : pname(pp) + ' a capturat') + ' amândoi căluții. Nimeni nu-i mai poate opri pe iepurași: toți ajung în grădină.';
+        msg = (you ? 'Ai capturat ' : pname(pp) + ' a capturat ') + allKnights() + '. Nimeni nu-i mai poate opri pe iepurași: toți ajung în grădină.';
     }
     else if (how === 'empty') msg = 'Nu mai este niciun iepuraș pe tablă.';
     else {
@@ -794,6 +823,17 @@ function setMode(m) {
     document.getElementById('levelBox').style.display = m === 'robot' ? '' : 'none';
     newMatch();
 }
+function setVariant(v) {
+    variant = v;
+    document.getElementById('varTwo').className = 'tgl-btn' + (v === 'two' ? ' active' : '');
+    document.getElementById('varOne').className = 'tgl-btn' + (v === 'one' ? ' active' : '');
+    newMatch();
+}
+function showVariantNote() {
+    document.getElementById('variantNote').innerHTML = variant === 'one'
+        ? '🐴 Varianta cu <strong>un singur căluț</strong>, pe b8. Este mai ușoară pentru iepurași.'
+        : '🐴🐴 Varianta cu <strong>doi căluți</strong>, pe b8 și pe g8.';
+}
 
 /* ---------- input: click și drag ---------- */
 function canAct() { return !roundOver && !matchOver && !aiTimer && (mode === 'duo' || playerOnMove() === 1); }
@@ -811,7 +851,7 @@ board = Chessboard('board', {
             return false;
         }
         if (piece[0] !== turn) {
-            illegal(source, 'Acum e rândul ' + (turn === 'w' ? 'iepurașilor' : 'căluților') + '.');
+            illegal(source, 'Acum e rândul ' + (turn === 'w' ? 'iepurașilor' : (variant === 'one' ? 'călutului' : 'căluților')) + '.');
             return false;
         }
         selSq = source;
