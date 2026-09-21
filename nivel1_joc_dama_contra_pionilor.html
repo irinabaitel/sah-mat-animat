@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMTZ9GGPMP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMTZ9GGPMP');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Dama contra pionilor — Joc</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<link rel="stylesheet" href="master-template.css">
+<style>
+  .game-badge {
+    background: var(--c-navy); color: white;
+    font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-bold);
+    padding: 3px 14px; border-radius: var(--radius-sm); white-space: nowrap;
+  }
+
+  /* HIGHLIGHTS (selectat / posibil / captură = clasele din master) */
+  .sq-last     { background-color: rgba(160,60,200,0.35) !important; }
+  .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
+  .sq-promo    { background-color: rgba(230,160,20,0.55) !important; }
+
+  .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
+
+  /* CUM SE JOACĂ */
+  .howto { margin-bottom:10px; }
+  .howto > summary {
+    cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900;
+    color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px;
+    background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8);
+  }
+  .howto > summary::-webkit-details-marker { display:none; }
+  .howto > summary::after { content:' ▾'; }
+  .howto:not([open]) > summary::after { content:' ▸'; }
+  .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
+  .howto .hl-box p { margin:0 0 6px; }
+  .howto .hl-box p:last-child { margin-bottom:0; }
+  .howto .hl-box ul { margin:0 0 6px; padding-left:20px; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+
+  /* TOGGLES */
+  .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+  .tgl-btn {
+    flex:1; padding:6px 10px; border-radius:50px;
+    border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.5);
+    font-family:var(--font-display); font-size:0.82em; color:var(--c-navy);
+    cursor:pointer; transition:all 0.2s; white-space:nowrap;
+  }
+  .tgl-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
+
+  .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; }
+  .animal-btn { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:12px; padding:7px 4px; cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.74em; font-weight:700; color:#1a3a6b; text-align:center; transition:all 0.18s; line-height:1.4; }
+  .animal-btn:hover { background:rgba(255,255,255,0.82); transform:translateY(-2px); }
+  .animal-btn.active { background:#1a3a6b; color:white; border-color:#1a3a6b; box-shadow:0 3px 10px rgba(26,58,107,0.4); }
+  .animal-btn .emoji { font-size:1.4em; display:block; }
+  .animal-btn .name  { display:block; margin-top:2px; }
+
+  /* COUNTER */
+  .counter-row { display:flex; gap:8px; margin-bottom:8px; }
+  .counter-box {
+    flex:1; background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8);
+    border-radius:12px; padding:6px 10px; text-align:center;
+  }
+  .counter-lbl { font-family:var(--font-display); font-size:0.72em; color:rgba(26,58,107,0.65); }
+  .counter-val { font-family:var(--font-display); font-size:1.35em; font-weight:900; color:var(--c-navy); line-height:1.3; }
+
+  /* PLAYER PANELS */
+  .player-panel {
+    background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8);
+    border-radius:12px; padding:8px 12px; margin-bottom:8px;
+  }
+  .player-panel.active { border-color:var(--c-navy); background:rgba(26,58,107,0.1); }
+  .player-panel.winner { border-color:rgba(40,180,80,0.6); background:rgba(40,180,80,0.1); }
+  .pp-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .pp-name { font-family:var(--font-display); font-size:0.88em; color:#1a1a2e; }
+  .pp-role { font-size:0.8em; color:rgba(26,26,46,0.65); }
+  .pp-strikes { font-size:0.82em; letter-spacing:1px; }
+  .pp-result { font-size:0.8em; color:#1a1a2e; margin-top:3px; min-height:1.2em; }
+
+  /* STATUS */
+  #status-box {
+    background:rgba(26,58,107,0.09); border:2px solid rgba(26,58,107,0.2);
+    border-radius:12px; padding:9px 12px;
+    font-size:0.86em; line-height:1.6; color:#1a1a2e;
+    min-height:46px; transition:all 0.3s; margin-bottom:8px;
+  }
+  #status-box.ok   { border-color:rgba(40,180,80,0.5);  background:rgba(40,180,80,0.15); }
+  #status-box.warn { border-color:rgba(192,57,43,0.45); background:rgba(255,210,200,0.6); }
+  #status-box.draw { border-color:rgba(200,150,10,0.5); background:rgba(200,150,10,0.12); }
+
+  /* BUTTONS */
+  .btn-game {
+    display:block; width:100%; padding:8px;
+    border-radius:10px; border:2px solid rgba(255,255,255,0.8);
+    background:rgba(255,255,255,0.55); font-family:var(--font-display);
+    font-size:0.85em; color:var(--c-navy); cursor:pointer;
+    transition:background 0.2s; margin-bottom:6px;
+  }
+  .btn-game:hover { background:rgba(255,255,255,0.85); }
+  #btn-round2 {
+    display:none; width:100%; padding:9px; border-radius:10px; border:none; margin-bottom:6px;
+    background:#1a6b4a; color:white; font-family:var(--font-display);
+    font-size:0.88em; font-weight:700; cursor:pointer;
+    box-shadow:0 2px 8px rgba(26,107,74,0.35); transition:background 0.2s;
+  }
+  #btn-round2:hover { background:#27ae60; }
+</style>
+<link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
+<link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
+<script src="minijocuri-nav.js"></script>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header" role="banner">
+    <span class="header-title">♛♟ Dama contra pionilor</span>
+    <div class="header-progress">
+      <span class="game-badge">Joc</span>
+    </div>
+  </header>
+
+  <main class="page-main" role="main">
+
+    <div class="board-col">
+      <div class="board-wrapper" id="boardWrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+
+    <div class="panel-col">
+      <div class="panel-scroll">
+
+        <div class="toggle-row">
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
+        </div>
+
+        <div id="levelBox">
+          <div class="sec-title">Alege adversarul:</div>
+          <div class="animal-grid">
+            <button class="animal-btn active" data-random="0.9" onclick="selectAnimal(this)"><span class="emoji">&#128035;</span><span class="name">Pui de găină</span></button>
+            <button class="animal-btn" data-random="0.2" onclick="selectAnimal(this)"><span class="emoji">&#128014;</span><span class="name">Mânz</span></button>
+            <button class="animal-btn" data-random="0" onclick="selectAnimal(this)"><span class="emoji">&#128009;</span><span class="name">Dragon</span></button>
+          </div>
+        </div>
+
+        <div class="counter-row">
+          <div class="counter-box"><div class="counter-lbl">Repriza</div><div class="counter-val" id="roundVal">1 / 2</div></div>
+          <div class="counter-box"><div class="counter-lbl">Pioni rămași</div><div class="counter-val" id="pawnsVal">8</div></div>
+        </div>
+
+        <div class="player-panel" id="pp1">
+          <div class="pp-row">
+            <span class="pp-name" id="pp1-name">👤 Tu</span>
+            <span class="pp-role" id="pp1-role"></span>
+            <span class="pp-strikes" id="pp1-strikes"></span>
+          </div>
+          <div class="pp-result" id="pp1-result"></div>
+        </div>
+        <div class="player-panel" id="pp2">
+          <div class="pp-row">
+            <span class="pp-name" id="pp2-name">🤖 Calculatorul</span>
+            <span class="pp-role" id="pp2-role"></span>
+            <span class="pp-strikes" id="pp2-strikes"></span>
+          </div>
+          <div class="pp-result" id="pp2-result"></div>
+        </div>
+
+        <div id="status-box">⏳ Pregătesc jocul…</div>
+
+        <button id="btn-round2" onclick="startRound(2)">▶ Repriza 2 — schimbăm rolurile</button>
+        <button class="btn-game" onclick="newMatch()">↺ Joacă din nou</button>
+
+        <details class="howto" open>
+          <summary>📖 Cum se joacă</summary>
+
+          <div class="hl-box">
+            <h4>Despre ce este jocul</h4>
+            <p>Pe tablă sunt opt pioni albi și o singură damă neagră. Nu există regi și nu există alte piese. Pionii vor să ajungă pe ultima linie, dama vrea să-i captureze pe toți înainte de asta.</p>
+            <p>La prima vedere opt pioni par foarte mulți, iar dama pare singură și pierdută. Cartea spune însă altceva: un elev isteț capturează repede toți pionii. Joacă o repriză și vezi singur cum se întâmplă.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Poziția de start</h4>
+            <ul>
+              <li><strong>Dama neagră</strong> stă pe <strong>d8</strong>, sus, în mijlocul tablei.</li>
+              <li><strong>Cei opt pioni albi</strong> stau pe linia a doua: a2, b2, c2, d2, e2, f2, g2, h2. Este linia lor de plecare, exact ca într-o partidă adevărată.</li>
+            </ul>
+            <p>Ca în orice partidă de șah, <strong>albul mută primul</strong>, deci încep pionii. Apoi mută dama și tot așa, pe rând. Când e rândul pionilor, muți <strong>un singur pion</strong>, cel pe care îl alegi tu.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum merge pionul</h4>
+            <p>Pionul merge <strong>numai înainte</strong>, câte un pătrat. Pionii albi urcă spre linia 8. Pionul nu se întoarce niciodată înapoi.</p>
+            <p>De pe pătratul lui de plecare, adică de pe linia 2, pionul poate merge, dacă vrei, <strong>două pătrate</strong> deodată. De exemplu, pionul de pe e2 poate merge pe e3 sau pe e4. Pasul dublu se poate face o singură dată, chiar la prima mutare a acelui pion, iar amândouă pătratele din față trebuie să fie libere.</p>
+            <p><strong>Pionul blocat:</strong> dacă dama se așază chiar în fața lui, pionul nu mai poate merge înainte. Pionul nu poate captura drept înainte, deci nu are ce să-i facă damei din față.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum capturează pionul</h4>
+            <p>Pionul capturează <strong>pe diagonală, un pătrat înainte</strong>. Pionul alb de pe c4 poate captura o piesă de pe b5 sau de pe d5. Dacă dama se oprește pe un asemenea pătrat, pionul o capturează și jocul se termină pe loc.</p>
+            <p>De aceea pionii <strong>se apără între ei</strong>. Pionul de pe c2 apără pătratele b3 și d3. Dacă dama ar captura un pion aflat pe d3, pionul de pe c2 ar lua imediat dama.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Cum merge dama</h4>
+            <p>Dama este cea mai puternică piesă. Ea merge <strong>oricât de departe</strong>, în opt direcții: pe linie (stânga și dreapta), pe coloană (în sus și în jos) și pe cele două diagonale. Într-o singură mutare poate traversa toată tabla.</p>
+            <p>Dama de pe d8 poate merge, de exemplu, pe toată linia 8 (c8, b8, a8, e8, f8, g8, h8), pe toată coloana d (d7, d6, d5, d4, d3) sau pe diagonalele a5–d8 și d8–h4.</p>
+            <p><strong>Dama nu sare peste piese.</strong> Dacă un pion îi stă în cale, ea îl poate captura, dar nu poate trece mai departe de el. Ca să capturezi cu dama, o pui exact pe pătratul pionului, iar pionul iese de pe tablă.</p>
+          </div>
+
+          <div class="hl-box warn">
+            <h4>Regula ultimei linii</h4>
+            <p>Când un pion ajunge pe <strong>linia 8</strong>, jocul nu se oprește imediat: <strong>dama mai are o singură mutare</strong>. Dacă în această mutare capturează pionul de pe linia 8, jocul continuă normal. Dacă face orice altceva, sau dacă nu poate ajunge la el, <strong>câștigă pionii</strong>.</p>
+            <p>În jocul nostru pionul rămâne pion. Nu se transformă în damă.</p>
+            <p><strong>Exemplu:</strong> un pion alb ajunge pe <strong>b8</strong>, iar dama neagră stă pe <strong>d8</strong>. Între ele, pătratul <strong>c8</strong> este liber, așa că dama merge pe linia 8 și capturează pionul: jocul continuă. Dacă pe c8 ar fi stat un alt pion alb, dama nu ar mai fi putut trece peste el și ar fi câștigat pionii.</p>
+            <p><strong>Alt exemplu:</strong> pion alb pe b8, dama pe <strong>d7</strong>. De pe d7 dama nu ajunge pe b8 dintr-o singură mutare: b8 nu este nici pe linia, nici pe coloana, nici pe diagonalele lui d7. Câștigă pionii.</p>
+            <p>Pătratul pionului ajuns pe linia 8 este colorat cu portocaliu, ca să-l vezi ușor.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Pioni apărați și pioni neapărați</h4>
+            <p>Acesta este lucrul cel mai important din joc. Un pion este <strong>apărat</strong> dacă, în spatele lui, pe diagonală, stă un alt pion al lui.</p>
+            <p><strong>Exemplu:</strong> pionii albi stau pe a2, b3 și c2. Pionul de pe <strong>b3</strong> este apărat de doi pioni deodată, cel de pe a2 și cel de pe c2. Dacă dama îl capturează pe b3, albul răspunde axb3 sau cxb3 și <strong>dama iese de pe tablă</strong>. Pionii câștigă imediat.</p>
+            <p>Un pion este <strong>neapărat</strong> dacă în spatele lui, pe diagonală, nu mai stă niciun pion. Un pion rămas singur, departe de ceilalți, este neapărat și cade ușor.</p>
+            <p>Regula damei este scurtă: <strong>capturează numai pioni neapărați</strong>. Înainte de fiecare captură, uită-te la cele două pătrate din spatele pionului, pe diagonală. Dacă acolo stă un pion alb, nu lua.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Pioni fără mutări</h4>
+            <p>Pionii sunt obligați să mute, ca orice jucător la rând. Dacă e rândul pionilor și <strong>niciun pion nu mai poate muta</strong>, câștigă dama.</p>
+            <p><strong>Exemplu:</strong> a mai rămas un singur pion alb, pe a5, iar dama neagră stă chiar în fața lui, pe a6. Pionul nu poate merge înainte, pentru că a6 este ocupat. Nu poate nici captura, pentru că pe b6 nu stă nimeni. Pionii nu au nicio mutare, deci câștigă dama.</p>
+            <p>Dacă dama este la mutare și nu are nicio mutare (aproape imposibil, fiindcă ea merge în opt direcții), atunci sare rândul.</p>
+          </div>
+
+          <div class="hl-box ok">
+            <h4>Cine câștigă?</h4>
+            <p><strong>Pionii câștigă</strong> dacă un pion ajunge pe linia 8 și dama nu îl capturează la mutarea imediat următoare, sau dacă un pion capturează dama.</p>
+            <p><strong>Dama câștigă</strong> dacă a capturat toți cei opt pioni, sau dacă pionii sunt la mutare și nu mai au nicio mutare.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Reprizele</h4>
+            <p>Jocul are două reprize. În prima repriză tu (sau Jucătorul 1) joci cu <strong>pionii</strong>. În a doua repriză <strong>se schimbă rolurile</strong> și joci cu <strong>dama</strong>. Așa înveți amândouă părțile.</p>
+            <p>Câștigă meciul cine a câștigat mai multe reprize. La 1–1 este egalitate.</p>
+            <p><strong>Adversarii:</strong> puiul de găină mută de cele mai multe ori la întâmplare. Mânzul joacă de obicei bine, dar mai greșește. Dragonul se gândește la fiecare mutare cât de bine poate și nu capturează niciodată un pion apărat.</p>
+            <p id="ruleDuo" style="display:none">În doi: dacă încerci o mutare care nu este permisă, ea nu se face, dar se numără. Se numără și încercarea de a muta o piesă a adversarului. Dacă pui piesa înapoi pe locul ei, nu se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
+          </div>
+
+          <div class="hl-box">
+            <h4>Sfaturi</h4>
+            <p><strong>Cu pionii:</strong> mergeți înainte în grup, nu unul singur. Un pion apărat de vecinul lui este ca un scut: dama nu îndrăznește să-l ia. Dacă împingi un pion prea departe de ceilalți, el rămâne neapărat și dispare de pe tablă.</p>
+            <p><strong>Cu dama:</strong> nu te grăbi să capturezi. Caută pionul neapărat, așază-te în fața lui ca să-l blochezi, apoi ia-l. Un singur pion apărat capturat din greșeală și pierzi tot jocul.</p>
+            <p>Sfatul cărții: masa de opt pioni pare uriașă, dar se topește repede dacă dama alege bine ce capturează.</p>
+          </div>
+        </details>
+
+      </div><!-- /.panel-scroll -->
+      <div class="feedback-bar" id="feedbackBar"></div>
+    </div><!-- /.panel-col -->
+
+  </main>
+
+  <footer class="page-footer" role="navigation"></footer>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="board-utils.js"></script>
+<script>
+/* =====================================================
+   DAMA CONTRA PIONILOR (Manual Step 1, lecția 4)
+   Dama neagră pe d8 contra celor opt pioni albi de pe a2–h2. Încep pionii.
+   Pionii câștigă: un pion ajuns pe linia 8 și necapturat la mutarea imediat
+   următoare a damei, sau captura damei. Dama câștigă: toți pionii capturați
+   sau pionii la mutare fără nicio mutare. Dama fără mutări sare rândul.
+   Fără promovare, fără en passant, fără regi.
+   Dragon: alfa-beta cu adâncire iterativă, tabelă de transpoziție
+   și căutare de liniștire pe capturi.
+   ===================================================== */
+
+const COLS = 'abcdefgh';
+const MAX_STRIKES = 3;
+const THINK_MS = 900;
+
+var sndMove    = new Audio('Sounds/Move.mp3');
+var sndCapture = new Audio('Sounds/Capture.mp3');
+var sndMate    = new Audio('Sounds/Mate.mp3');
+function play(s){ try { s.currentTime = 0; s.play().catch(function(){}); } catch(e) {} }
+
+/* ---------- geometrie: pătratul = linie*8 + coloană ---------- */
+const sqIdx  = s => (parseInt(s[1]) - 1) * 8 + COLS.indexOf(s[0]);
+const sqName = i => COLS[i & 7] + ((i >> 3) + 1);
+
+const V = { type: 'Q', pieceColor: 'b', pawnColor: 'w', pieceSq: 'd8',
+            pawns: ['a2','b2','c2','d2','e2','f2','g2','h2'] };
+const PIECE_NAME = 'Dama';
+const PIECE_ICON = '♛';
+
+/* raze ale damei (8 direcții) */
+const RAYS = [];
+(function () {
+    const dirs = [[1,1],[1,-1],[-1,1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];
+    for (let s = 0; s < 64; s++) {
+        const f = s & 7, r = s >> 3, rs = [];
+        for (const d of dirs) {
+            const ray = []; let x = f + d[0], y = r + d[1];
+            while (x >= 0 && x < 8 && y >= 0 && y < 8) { ray.push(y * 8 + x); x += d[0]; y += d[1]; }
+            if (ray.length) rs.push(ray);
+        }
+        RAYS.push(rs);
+    }
+})();
+
+/* distanțe pe tabla goală: MD[from*64+to] = mutări până pe pătrat;
+   AD[target*64+from] = mutări până ce dama atacă pătratul țintă */
+const MD = new Uint8Array(4096).fill(99), AD = new Uint8Array(4096).fill(99);
+(function () {
+    const nbr = s => [].concat.apply([], RAYS[s]);
+    for (let s = 0; s < 64; s++) {
+        MD[s * 64 + s] = 0; let q = [s];
+        while (q.length) { const nq = []; for (const u of q) for (const v of nbr(u)) if (MD[s * 64 + v] === 99) { MD[s * 64 + v] = MD[s * 64 + u] + 1; nq.push(v); } q = nq; }
+    }
+    for (let target = 0; target < 64; target++) for (let from = 0; from < 64; from++) {
+        let best = 99;
+        for (const a of nbr(target)) { const d = MD[from * 64 + a]; if (d < best) best = d; }
+        AD[target * 64 + from] = best;
+    }
+})();
+
+/* ---------- motorul (stare compactă) ---------- */
+const eDir = 1, eLast = 7, eStart = 1;   // pionii sunt albi: urcă spre linia 8
+const occ = new Int8Array(64);           // 0 gol, 1 pion, 2 dama
+const pawnsA = new Int8Array(8);
+let pcnt = 0, psq = -1, side = 0;        // side 0 = pionii la mutare, 1 = dama
+let h1 = 0, h2 = 0;
+
+let seed = 0x9e3779b9;
+function rnd32() { seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5; return seed | 0; }
+const ZP1 = new Int32Array(64), ZP2 = new Int32Array(64), ZX1 = new Int32Array(64), ZX2 = new Int32Array(64);
+for (let i = 0; i < 64; i++) { ZP1[i] = rnd32(); ZP2[i] = rnd32(); ZX1[i] = rnd32(); ZX2[i] = rnd32(); }
+const ZS1 = rnd32(), ZS2 = rnd32();
+
+function loadState(P, X, s) {
+    occ.fill(0); pcnt = 0; h1 = 0; h2 = 0;
+    for (const p of P) { occ[p] = 1; pawnsA[pcnt++] = p; h1 ^= ZP1[p]; h2 ^= ZP2[p]; }
+    psq = X; if (X >= 0) { occ[X] = 2; h1 ^= ZX1[X]; h2 ^= ZX2[X]; }
+    side = s; if (s) { h1 ^= ZS1; h2 ^= ZS2; }
+}
+/* mutări codate from*64+to */
+function genMoves(buf) {
+    let n = 0;
+    if (side === 0) {
+        for (let i = 0; i < pcnt; i++) {
+            const p = pawnsA[i], f = p & 7, r = p >> 3;
+            if (r === eLast) continue;               // pionul de pe linia 8 nu mai mută
+            const fw = p + 8;
+            if (f > 0 && fw - 1 === psq) buf[n++] = p * 64 + fw - 1;
+            if (f < 7 && fw + 1 === psq) buf[n++] = p * 64 + fw + 1;
+            if (occ[fw] === 0) {
+                buf[n++] = p * 64 + fw;
+                if (r === eStart && occ[fw + 8] === 0) buf[n++] = p * 64 + fw + 8;
+            }
+        }
+    } else if (psq >= 0) {
+        for (const ray of RAYS[psq]) for (const t of ray) { buf[n++] = psq * 64 + t; if (occ[t]) break; }
+    }
+    return n;
+}
+const uCapIdx = new Int8Array(200), uCapSq = new Int8Array(200), uPawnIdx = new Int8Array(200);
+function makeMove(m, ply) {
+    const from = m >> 6, to = m & 63;
+    if (side === 0) {
+        let i = 0; while (pawnsA[i] !== from) i++;
+        pawnsA[i] = to; occ[from] = 0; uPawnIdx[ply] = i;
+        h1 ^= ZP1[from] ^ ZP1[to]; h2 ^= ZP2[from] ^ ZP2[to];
+        if (to === psq) { uCapSq[ply] = psq; h1 ^= ZX1[psq]; h2 ^= ZX2[psq]; psq = -1; } else uCapSq[ply] = -1;
+        occ[to] = 1;
+    } else {
+        occ[from] = 0;
+        if (occ[to] === 1) {
+            let i = 0; while (pawnsA[i] !== to) i++;
+            uCapIdx[ply] = i; pawnsA[i] = pawnsA[pcnt - 1]; pcnt--;
+            h1 ^= ZP1[to]; h2 ^= ZP2[to];
+        } else uCapIdx[ply] = -1;
+        occ[to] = 2; psq = to;
+        h1 ^= ZX1[from] ^ ZX1[to]; h2 ^= ZX2[from] ^ ZX2[to];
+    }
+    side ^= 1; h1 ^= ZS1; h2 ^= ZS2;
+}
+function unmakeMove(m, ply) {
+    const from = m >> 6, to = m & 63;
+    side ^= 1; h1 ^= ZS1; h2 ^= ZS2;
+    if (side === 0) {
+        pawnsA[uPawnIdx[ply]] = from; occ[to] = 0; occ[from] = 1;
+        h1 ^= ZP1[from] ^ ZP1[to]; h2 ^= ZP2[from] ^ ZP2[to];
+        if (uCapSq[ply] >= 0) { psq = uCapSq[ply]; occ[psq] = 2; h1 ^= ZX1[psq]; h2 ^= ZX2[psq]; }
+    } else {
+        occ[to] = 0; occ[from] = 2; psq = from;
+        h1 ^= ZX1[from] ^ ZX1[to]; h2 ^= ZX2[from] ^ ZX2[to];
+        const ci = uCapIdx[ply];
+        if (ci >= 0) { pawnsA[pcnt] = pawnsA[ci]; pawnsA[ci] = to; pcnt++; occ[to] = 1; h1 ^= ZP1[to]; h2 ^= ZP2[to]; }
+    }
+}
+function passMove() { side ^= 1; h1 ^= ZS1; h2 ^= ZS2; }
+function promoSquare() {
+    for (let i = 0; i < pcnt; i++) if ((pawnsA[i] >> 3) === eLast) return pawnsA[i];
+    return -1;
+}
+
+/* evaluare din punctul de vedere al pionilor */
+function evalPawns() {
+    let s = 0;
+    const tempo = side === 1 ? 1 : 0;
+    for (let i = 0; i < pcnt; i++) {
+        const p = pawnsA[i], f = p & 7, r = p >> 3;
+        const d = 7 - r;                              // linii până pe linia 8
+        s += 100 + (6 - d) * (6 - d) * 6;             // pion rămas + cât e de avansat
+        const back = p - 8;
+        const defended = (f > 0 && occ[back - 1] === 1) || (f < 7 && occ[back + 1] === 1);
+        if (defended) s += 30; else s -= 12;          // apărat / neapărat
+        const fw = p + 8;
+        if (d > 0 && occ[fw] === 2) s -= 20;          // pion blocat de damă
+        if (psq >= 0) {
+            let stop = false;
+            for (let k = 0; k <= d && !stop; k++) {
+                const t = p + 8 * k;
+                if (AD[t * 64 + psq] + 1 <= k + tempo) stop = true;        // îl poate captura pe drum
+                else if (k > 0 && MD[psq * 64 + t] <= k - 1 + tempo) stop = true;  // ajunge în fața lui
+            }
+            if (!stop) s += 250 + (6 - d) * 30;       // pion liber care nu mai poate fi oprit
+            const dx = Math.abs((psq & 7) - f), dy = Math.abs((psq >> 3) - r);
+            s += 3 * Math.max(dx, dy);                // dama departe de pioni = bine pentru pioni
+        }
+    }
+    return s;
+}
+
+const WIN = 100000, MATE_BOUND = WIN - 1000;
+const TT_BITS = 20, TT_SIZE = 1 << TT_BITS, TT_MASK = TT_SIZE - 1;
+const ttKey = new Int32Array(TT_SIZE), ttScore = new Int32Array(TT_SIZE);
+const ttDepth = new Int8Array(TT_SIZE), ttFlag = new Int8Array(TT_SIZE), ttMove = new Int16Array(TT_SIZE);
+function ttClear() { ttFlag.fill(0); }
+const MOVEBUF = [], KEYBUF = []; for (let i = 0; i < 200; i++) { MOVEBUF.push(new Int16Array(64)); KEYBUF.push(new Int16Array(64)); }
+const STOP = { stop: true };
+let nodes = 0, deadline = 0;
+const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+
+function negamax(depth, alpha, beta, ply) {
+    if ((++nodes & 1023) === 0 && now() > deadline) throw STOP;
+    if (psq < 0)   return side === 0 ? WIN - ply : -(WIN - ply);      // pionii au luat dama
+    if (pcnt === 0) return side === 1 ? WIN - ply : -(WIN - ply);     // dama a luat tot
+    const promo = promoSquare();
+    if (side === 0 && promo >= 0) return WIN - ply;                   // pionul a rămas pe linia 8
+    if (ply > 180) { const e = evalPawns(); return side === 0 ? e : -e; }
+    const buf = MOVEBUF[ply];
+    let n = genMoves(buf);
+    if (side === 0 && n === 0) return -(WIN - ply);                   // pionii nu mai au mutări
+    let best = -Infinity;
+    if (depth <= 0) {
+        if (side === 1 && promo >= 0) {
+            /* dama are o singură mutare: trebuie să captureze pionul de pe linia 8 */
+            let k = 0; for (let i = 0; i < n; i++) if ((buf[i] & 63) === promo) buf[k++] = buf[i];
+            n = k;
+            if (n === 0) return -(WIN - ply);
+        } else {
+            /* căutare de liniștire: stăm pe loc sau continuăm doar cu capturi */
+            const e = evalPawns();
+            const stand = side === 0 ? e : -e;
+            if (stand >= beta) return stand;
+            if (stand > alpha) alpha = stand;
+            let k = 0; for (let i = 0; i < n; i++) if (occ[buf[i] & 63]) buf[k++] = buf[i];
+            n = k;
+            if (n === 0) return stand;
+            best = stand;
+        }
+    }
+    const alpha0 = alpha;
+    const ti = h1 & TT_MASK;
+    let ttm = -1;
+    if (ttFlag[ti] && ttKey[ti] === h2) {
+        ttm = ttMove[ti];
+        if (ttDepth[ti] >= depth) {
+            let sc = ttScore[ti];
+            if (sc > MATE_BOUND) sc -= ply; else if (sc < -MATE_BOUND) sc += ply;
+            const fl = ttFlag[ti];
+            if (fl === 1) return sc;
+            if (fl === 2 && sc >= beta) return sc;
+            if (fl === 3 && sc <= alpha) return sc;
+        }
+    }
+    if (n === 0) {                                                     // dama sare rândul
+        passMove();
+        const sc = -negamax(depth - 1, -beta, -alpha, ply + 1);
+        passMove();
+        return sc;
+    }
+    /* ordonare: mutarea din tabelă, capturi, avansare */
+    const keys = KEYBUF[ply];
+    for (let i = 0; i < n; i++) {
+        const m = buf[i], to = m & 63;
+        let k = 0;
+        if (m === ttm) k = 1000;
+        else if (occ[to]) k = 500;
+        else if (side === 0) k = (to >> 3) * 10;
+        keys[i] = k;
+    }
+    let bestM = buf[0];
+    for (let i = 0; i < n; i++) {
+        let bi = i; for (let j = i + 1; j < n; j++) if (keys[j] > keys[bi]) bi = j;
+        if (bi !== i) { const tm = buf[i]; buf[i] = buf[bi]; buf[bi] = tm; const tk = keys[i]; keys[i] = keys[bi]; keys[bi] = tk; }
+        const m = buf[i];
+        makeMove(m, ply);
+        const sc = -negamax(depth - 1, -beta, -alpha, ply + 1);
+        unmakeMove(m, ply);
+        if (sc > best) { best = sc; bestM = m; }
+        if (sc > alpha) alpha = sc;
+        if (alpha >= beta) break;
+    }
+    if (depth > 0) {
+        let st = best;
+        if (st > MATE_BOUND) st += ply; else if (st < -MATE_BOUND) st -= ply;
+        ttKey[ti] = h2; ttScore[ti] = st; ttDepth[ti] = Math.min(depth, 127); ttMove[ti] = bestM;
+        ttFlag[ti] = best <= alpha0 ? 3 : best >= beta ? 2 : 1;
+    }
+    return best;
+}
+
+/* caută cea mai bună mutare din starea încărcată; întoarce {move, score, depth} */
+function think(timeMs) {
+    deadline = now() + timeMs; nodes = 0;
+    const P = Array.from(pawnsA.slice(0, pcnt)), X = psq, S = side;
+    const root = new Int16Array(64); let n = genMoves(root);
+    if (n === 0) return { move: -1, score: 0, depth: 0 };
+    let moves = Array.from(root.slice(0, n));
+    if (n === 1) return { move: moves[0], score: 0, depth: 0 };
+    let bestMove = moves[0], bestScore = 0, done = 0;
+    const maxPly = 2 * (P.reduce((a, p) => a + (7 - (p >> 3)), 0) + 2);
+    for (let d = 1; d <= Math.min(maxPly, 80); d++) {
+        let alpha = -Infinity, curBest = moves[0];
+        try {
+            for (const m of moves) {
+                makeMove(m, 0);
+                const sc = -negamax(d - 1, -Infinity, -alpha, 1);
+                unmakeMove(m, 0);
+                if (sc > alpha) { alpha = sc; curBest = m; }
+            }
+        } catch (e) {
+            if (e !== STOP) throw e;
+            loadState(P, X, S);
+            break;
+        }
+        bestMove = curBest; bestScore = alpha; done = d;
+        moves = [curBest].concat(moves.filter(m => m !== curBest));
+        if (Math.abs(alpha) > MATE_BOUND) break;
+    }
+    return { move: bestMove, score: bestScore, depth: done };
+}
+
+/* ---------- stare joc ---------- */
+let board;
+let mode = 'robot', aiRandomChance = 0.9;
+let round, P, X, turnSide, roundOver, matchOver, passNote;
+let selSq = null, aiTimer = null;
+let results = {}, strikes = {1:0, 2:0};
+
+const pawnsPlayer  = r => r === 1 ? 1 : 2;
+const piecePlayer  = r => r === 1 ? 2 : 1;
+const playerOnMove = () => turnSide === 0 ? pawnsPlayer(round) : piecePlayer(round);
+const turnColor    = () => turnSide === 0 ? V.pawnColor : V.pieceColor;
+const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Calculatorul');
+
+function legalMovesAll() {
+    loadState(P, X, turnSide);
+    const buf = new Int16Array(64), n = genMoves(buf);
+    return Array.from(buf.slice(0, n)).map(m => [m >> 6, m & 63]);
+}
+function promoPawn() { return P.find(p => (p >> 3) === eLast); }
+
+/* ---------- afișare ---------- */
+function buildPos() {
+    const pos = {};
+    P.forEach(p => { pos[sqName(p)] = V.pawnColor + 'P'; });
+    if (X >= 0) pos[sqName(X)] = V.pieceColor + V.type;
+    return pos;
+}
+function clearHL(keepLast) {
+    const cls = 'highlight-selected highlight-legal highlight-capture sq-wrong sq-promo' + (keepLast ? '' : ' sq-last');
+    $('#board [class*="square-"]').removeClass(cls);
+}
+function legalTargets(sq) {
+    const i = sqIdx(sq);
+    return legalMovesAll().filter(m => m[0] === i).map(m => sqName(m[1]));
+}
+function showSelection(sq) {
+    clearHL(true);
+    $('.square-' + sq).addClass('highlight-selected');
+    legalTargets(sq).forEach(t => $('.square-' + t).addClass(pieceAt(t) ? 'highlight-capture' : 'highlight-legal'));
+    markPromo();
+}
+function markPromo() {
+    const pp = promoPawn();
+    if (pp !== undefined && !roundOver) $('.square-' + sqName(pp)).addClass('sq-promo');
+}
+function flashWrong(sq) {
+    const el = $('.square-' + sq);
+    el.addClass('sq-wrong');
+    setTimeout(() => el.removeClass('sq-wrong'), 600);
+}
+function setStatus(msg, cls) {
+    const el = document.getElementById('status-box');
+    el.innerHTML = msg; el.className = cls || '';
+}
+function roleText(side0) {
+    return side0 ? '♟ pionii albi' : PIECE_ICON + ' ' + PIECE_NAME;
+}
+function updateUI() {
+    document.getElementById('roundVal').textContent = round + ' / 2';
+    document.getElementById('pawnsVal').textContent = P.length;
+    [1, 2].forEach(p => {
+        document.getElementById('pp' + p + '-name').textContent = (mode === 'robot' && p === 2 ? '🤖 ' : '👤 ') + pname(p);
+        document.getElementById('pp' + p + '-role').textContent = roleText(pawnsPlayer(round) === p);
+        document.getElementById('pp' + p + '-strikes').textContent =
+            mode === 'duo' ? '❌'.repeat(strikes[p]) + '▫️'.repeat(Math.max(0, MAX_STRIKES - strikes[p])) : '';
+        document.getElementById('pp' + p).className = 'player-panel' + (!roundOver && !matchOver && playerOnMove() === p ? ' active' : '');
+        document.getElementById('pp' + p + '-result').textContent = resultLine(p);
+    });
+}
+function resultLine(p) {
+    const parts = [];
+    [1, 2].forEach(r => {
+        const res = results[r]; if (!res) return;
+        const withPawns = pawnsPlayer(r) === p;
+        parts.push('repriza ' + r + (withPawns ? ' (pionii): ' : ' (dama): ') + (res.winner === p ? 'câștigată' : 'pierdută'));
+    });
+    return parts.join(' · ');
+}
+
+/* ---------- desfășurarea ---------- */
+function newMatch() {
+    results = {}; strikes = {1:0, 2:0}; matchOver = false;
+    startRound(1);
+}
+function startRound(r) {
+    if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
+    round = r;
+    P = V.pawns.map(sqIdx); X = sqIdx(V.pieceSq);
+    turnSide = 0;                               // albul (pionii) mută primul
+    roundOver = false; selSq = null; passNote = '';
+    board.position(buildPos(), false);
+    clearHL();
+    document.getElementById('btn-round2').style.display = 'none';
+    updateUI();
+    promptTurn();
+}
+function promptTurn() {
+    if (roundOver || matchOver) return;
+    const p = playerOnMove();
+    const pp = promoPawn();
+    const what = turnSide === 0 ? 'cu pionii' : 'cu dama';
+    let msg = '', cls = '';
+    if (turnSide === 1 && pp !== undefined) {
+        cls = 'warn';
+        msg = '♟ Pionul a ajuns pe ' + sqName(pp) + ', pe linia 8. Dama are o singură mutare: dacă nu capturează acum pionul, câștigă pionii.';
+    }
+    if (passNote) { msg = passNote + (msg ? '<br>' + msg : ''); passNote = ''; }
+    if (mode === 'robot' && p === 2) {
+        setStatus((msg ? msg + '<br>' : '') + '🤖 Calculatorul mută ' + what + '…', cls);
+        aiTimer = setTimeout(aiMove, 500);
+    } else {
+        setStatus((msg ? msg + '<br>' : '') + (mode === 'duo' ? pname(p) + ' mută ' : 'Muți ') + what + '.', cls);
+    }
+    markPromo();
+    updateUI();
+}
+function doMove(fromSq, toSq) {
+    selSq = null; clearHL();
+    const from = sqIdx(fromSq), to = sqIdx(toSq);
+    let captured = false;
+    if (turnSide === 0) {
+        P = P.map(p => p === from ? to : p);
+        if (to === X) { X = -1; captured = true; }
+    } else {
+        if (P.includes(to)) { P = P.filter(p => p !== to); captured = true; }
+        X = to;
+    }
+    board.position(buildPos(), false);
+    $('.square-' + fromSq).addClass('sq-last');
+    $('.square-' + toSq).addClass('sq-last');
+    play(captured ? sndCapture : sndMove);
+    afterMove();
+}
+function afterMove() {
+    if (turnSide === 0) {
+        if (X < 0) return endRound(0, 'capturePiece');
+        turnSide = 1;
+        if (legalMovesAll().length === 0) {
+            if (promoPawn() !== undefined) return endRound(0, 'promo');
+            passNote = 'Dama nu are nicio mutare și sare rândul.';
+            turnSide = 0;
+            if (legalMovesAll().length === 0) return endRound(1, 'blocked');
+        }
+    } else {
+        if (P.length === 0) return endRound(1, 'captureAll');
+        if (promoPawn() !== undefined) return endRound(0, 'promo');
+        turnSide = 0;
+        if (legalMovesAll().length === 0) return endRound(1, 'blocked');
+    }
+    promptTurn();
+}
+function endRound(winnerSide, how) {
+    roundOver = true;
+    if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
+    const winner = winnerSide === 0 ? pawnsPlayer(round) : piecePlayer(round);
+    results[round] = { winner, winnerSide, how };
+    setTimeout(() => play(sndMate), 250);
+    let msg;
+    if (how === 'capturePiece') msg = '♟ Un pion a capturat dama. Câștigă pionii.';
+    else if (how === 'promo') { const pp = promoPawn(); msg = '♟ Pionul de pe ' + sqName(pp) + ' a ajuns pe linia 8 și nu a fost capturat. Câștigă pionii.'; $('.square-' + sqName(pp)).addClass('sq-promo'); }
+    else if (how === 'captureAll') msg = PIECE_ICON + ' Dama a capturat toți pionii. Câștigă dama.';
+    else msg = PIECE_ICON + ' Pionii sunt la mutare, dar nu mai au nicio mutare. Câștigă dama.';
+    const you = mode === 'robot' && winner === 1;
+    msg += '<br>' + (mode === 'robot' ? (you ? '🎉 Ai câștigat repriza ' + round + '.' : 'Calculatorul a câștigat repriza ' + round + '.') : '🏅 ' + pname(winner) + ' câștigă repriza ' + round + '.');
+    if (round === 1) {
+        setStatus(msg, winner === 1 || mode === 'duo' ? 'ok' : 'draw');
+        document.getElementById('btn-round2').style.display = 'block';
+    } else {
+        matchOver = true;
+        setStatus(msg + '<br><br>' + matchSummary(), 'ok');
+    }
+    updateUI();
+}
+function matchSummary() {
+    const w = {1: 0, 2: 0};
+    [1, 2].forEach(r => { if (results[r]) w[results[r].winner]++; });
+    if (w[1] === w[2]) return '🤝 <strong>Egalitate: 1–1.</strong>';
+    const win = w[1] > w[2] ? 1 : 2;
+    document.getElementById('pp' + win).className = 'player-panel winner';
+    const score = Math.max(w[1], w[2]) + '–' + Math.min(w[1], w[2]);
+    if (mode === 'robot') return win === 1 ? '🏆 <strong>Ai câștigat meciul, ' + score + '.</strong>' : '<strong>Calculatorul câștigă meciul, ' + score + '.</strong> Mai încearcă.';
+    return '🏆 <strong>' + pname(win) + ' câștigă meciul, ' + score + '.</strong>';
+}
+
+/* ---------- încercări nepermise ---------- */
+function illegal(sq, reason) {
+    if (sq) flashWrong(sq);
+    selSq = null; clearHL(true); markPromo();
+    if (mode !== 'duo') { setStatus('⚠️ ' + reason, 'warn'); return; }
+    const p = playerOnMove();
+    strikes[p]++;
+    updateUI();
+    if (strikes[p] >= MAX_STRIKES) {
+        roundOver = true; matchOver = true;
+        const other = p === 1 ? 2 : 1;
+        document.getElementById('btn-round2').style.display = 'none';
+        document.getElementById('pp' + other).className = 'player-panel winner';
+        setStatus('❌ ' + reason + '<br>' + pname(p) + ' a încercat 3 mutări nepermise.<br>🏆 <strong>' + pname(other) + ' câștigă meciul.</strong>', 'warn');
+        return;
+    }
+    setStatus('❌ ' + reason + ' Încercări nepermise pentru ' + pname(p) + ': ' + strikes[p] + ' din ' + MAX_STRIKES + '.', 'warn');
+}
+function pieceAt(sq) {
+    const i = sqIdx(sq);
+    if (i === X) return V.type;
+    return P.includes(i) ? 'P' : null;
+}
+function moveName(sq) { return pieceAt(sq) === 'P' ? 'Pionul' : PIECE_NAME; }
+function tryMove(from, to) {
+    if (legalTargets(from).includes(to)) { doMove(from, to); return; }
+    illegal(to, moveName(from) + ' de pe ' + from + ' nu poate merge pe ' + to + '.');
+}
+
+/* ---------- robotul ---------- */
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function chooseMove() {
+    const opts = legalMovesAll();
+    if (!opts.length) return null;
+    if (Math.random() < aiRandomChance) return pickRandom(opts);
+    loadState(P, X, turnSide);
+    const r = think(THINK_MS);
+    return r.move < 0 ? null : [r.move >> 6, r.move & 63];
+}
+function aiMove() {
+    aiTimer = null;
+    if (roundOver || matchOver) return;
+    const mv = chooseMove();
+    if (!mv) return;
+    $('.square-' + sqName(mv[0])).addClass('highlight-selected');
+    aiTimer = setTimeout(() => { aiTimer = null; doMove(sqName(mv[0]), sqName(mv[1])); }, 400);
+}
+
+/* ---------- setări ---------- */
+function selectAnimal(btn) {
+    document.querySelectorAll('.animal-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    aiRandomChance = parseFloat(btn.dataset.random);
+    newMatch();
+}
+function setMode(m) {
+    mode = m;
+    document.getElementById('modeRobot').className = 'tgl-btn' + (m === 'robot' ? ' active' : '');
+    document.getElementById('modeDuo').className   = 'tgl-btn' + (m === 'duo' ? ' active' : '');
+    document.getElementById('levelBox').style.display = m === 'robot' ? '' : 'none';
+    document.getElementById('ruleDuo').style.display  = m === 'duo' ? '' : 'none';
+    newMatch();
+}
+
+/* ---------- input: click și drag ---------- */
+function canAct() { return !roundOver && !matchOver && !aiTimer && (mode === 'duo' || playerOnMove() === 1); }
+
+board = Chessboard('board', {
+    position: buildStartPos(),
+    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+    draggable: true,
+    showNotation: true,
+    onDragStart: function(source, piece) {
+        if (!canAct()) return false;
+        if (selSq && source !== selSq && piece[0] !== turnColor()) {   // click pe piesa adversă = captură
+            const from = selSq;
+            setTimeout(() => tryMove(from, source), 0);
+            return false;
+        }
+        if (piece[0] !== turnColor()) {
+            illegal(source, 'Acum e rândul ' + (turnSide === 0 ? 'pionilor' : 'damei') + '.');
+            return false;
+        }
+        selSq = source;
+        showSelection(source);
+    },
+    onDrop: function(source, target) {
+        if (target === 'offboard' || target === source) return 'snapback';
+        selSq = null;
+        if (!legalTargets(source).includes(target)) {
+            illegal(target, moveName(source) + ' de pe ' + source + ' nu poate merge pe ' + target + '.');
+            return 'snapback';
+        }
+        doMove(source, target);
+    },
+    onSnapEnd: function() { board.position(buildPos(), false); }
+});
+function buildStartPos() {
+    const pos = {};
+    V.pawns.forEach(s => { pos[s] = V.pawnColor + 'P'; });
+    pos[V.pieceSq] = V.pieceColor + V.type;
+    return pos;
+}
+
+/* click pe un pătrat gol, după selectare */
+$(document).on('click', '#board [class*="square-"]', function() {
+    if (!canAct() || !selSq) return;
+    const m = (this.className || '').match(/square-([a-h][1-8])/);
+    if (!m) return;
+    const sq = m[1];
+    if (sq === selSq || pieceAt(sq)) return;        // piesele sunt tratate în onDragStart
+    tryMove(selSq, sq);
+});
+
+$(window).resize(() => board.resize());
+
+newMatch();
+</script>
+</body>
+</html>
