@@ -31,6 +31,7 @@
 
   /* ── Stare partajată bridge + adnotări ── */
   var bridgeDragging = false;   /* bridge drag piese activ */
+  var tapX = 0, tapY = 0, tapT = 0;   /* pentru a recunoaște o atingere scurtă = click */
   var annMode        = false;   /* true = long-press annotation în desfășurare */
 
   /* ── Stare adnotări ── */
@@ -300,6 +301,7 @@
     /* ════ TOUCH BRIDGE ════ */
     boardEl.addEventListener('touchstart', function (e) {
       if (e.touches.length !== 1 || annMode || drawMode) { if (drawMode) e.preventDefault(); return; }
+      tapX = e.touches[0].clientX; tapY = e.touches[0].clientY; tapT = Date.now();
       bridgeDragging = true;
       var t = e.touches[0];
       var el = document.elementFromPoint(t.clientX, t.clientY) || e.target;
@@ -321,6 +323,22 @@
       var t = e.changedTouches[0];
       toMouse('mousemove', t, document.body);
       toMouse('mouseup',   t, document.body);
+      /* atingere scurtă, pe loc = click. preventDefault din touchstart oprește click-ul
+         pe care l-ar fi trimis browserul, iar paginile care așteaptă click (de ex. așezarea
+         regelui în „Drumul regelui") nu ar mai primi nimic pe ecran tactil. */
+      var dx = Math.abs(t.clientX - tapX), dy = Math.abs(t.clientY - tapY);
+      if (dx < 12 && dy < 12 && Date.now() - tapT < 700) {
+        var el = document.elementFromPoint(t.clientX, t.clientY);
+        if (el) {
+          fromTouch = true;
+          try {
+            el.dispatchEvent(new MouseEvent('click', {
+              bubbles: true, cancelable: true, view: window, button: 0,
+              clientX: t.clientX, clientY: t.clientY
+            }));
+          } finally { fromTouch = false; }
+        }
+      }
     });
 
     document.addEventListener('touchcancel', function () {
