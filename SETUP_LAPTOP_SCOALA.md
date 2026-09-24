@@ -43,7 +43,7 @@ Alegi pe rând: `GitHub.com` → `HTTPS` → `Yes` (să folosească datele pentr
 `Login with a web browser`. Îți arată un cod de opt caractere, îl copiezi, se deschide
 browserul, îl lipești acolo și confirmi.
 
-Contul cu care te loghezi: **irinabaitel-jpg**
+Contul cu care te loghezi: **irinabaitel** (proprietarul repo-ului)
 
 ### Claude Code
 
