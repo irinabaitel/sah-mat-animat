@@ -37,20 +37,18 @@
   --c-warning-bg:  rgba(230, 126, 34,  .15);
 
   /* Layout — dimensiuni fixe */
-  --header-h:  50px;
-  --footer-h:  58px;
+  --header-h:  42px;
+  --footer-h:  42px;
   --gap:       12px;
   /*
-   * --extra-pad: spațiul de centrare al tablei în coloana 55fr.
-   * Tabla e mai mică decât coloana când e constrânsă de înălțime.
-   * Offsetul = (lățime_coloana_55fr - tablă) / 2 — aplicat și pe dreapta
-   * pentru simetrie: spațiu_stânga_tablei = spațiu_dreapta_panou.
+   * --board-size: latura tablei pe desktop = înălțimea disponibilă.
+   * Coloana tablei are exact mărimea tablei; panoul ia tot restul lățimii.
    */
-  --extra-pad: max(0px, calc(
-    (0.55 * (100vw - 3 * var(--gap))
-     - (100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap))
-    ) / 2.55
-  ));
+  --board-size: calc(100dvh - var(--header-h) - var(--footer-h) - 2 * var(--gap));
+  /* --sq: latura unui pătrățel de șah; panoul are o bandă de această lățime în stânga și în dreapta */
+  --sq: calc(min(var(--board-size), 0.5 * (100vw - 2 * var(--gap))) / 8);
+  /* --board-w: latura reală a tablei pe desktop (coloana are cel mult 55% din lățimea utilă) */
+  --board-w: min(var(--board-size), 0.55 * (100vw - 2 * max(var(--gap), var(--sq))));
   --radius:    16px;        /* card-uri rotunjite — stil existent             */
   --radius-sm: 50px;        /* butoane pill — stil existent                   */
 
@@ -183,11 +181,13 @@ html, body {
 .page-main {
   flex:       1;
   display:    grid;
-  grid-template-columns: 55fr 45fr;
+  /* tabla: cel mult 55% din lățime și cel mult cât permite înălțimea; panoul: restul */
+  grid-template-columns: minmax(0, min(55%, var(--board-size))) minmax(0, 1fr);
   gap:        var(--gap);
+  column-gap: max(var(--gap), var(--sq));
   padding:    var(--gap);
-  /* Padding-right oglindește spațiul de centrare al tablei → simetrie */
-  padding-right: calc(var(--gap) + var(--extra-pad));
+  padding-right: max(var(--gap), var(--sq));
+  padding-left:  max(var(--gap), var(--sq));
   /* CRITIC: fără min-height:0 grid-ul ignoră flex și depășește 100vh */
   min-height: 0;
   overflow:   hidden;
@@ -331,11 +331,26 @@ body.no-hints .highlight-capture::before { display: none; }
 
 /* ── 7. Panel Column ──────────────────────────────────────── */
 .panel-col {
+  /* panoul are exact înălțimea tablei */
+  height:         var(--board-w);
+  align-self:     center;
   display:        flex;
   flex-direction: column;
   min-height:     0;
   min-width:      0;
   gap:            8px;
+}
+
+/*
+ * Browsere moderne: tabla și panoul se măsoară din spațiul real dintre header și footer
+ * (container .page-main), nu din formula cu 100dvh — așa nu mai contează bordurile
+ * sau barele în plus de pe unele pagini. Tabla: cel mult 55% din lățime.
+ * Browserele vechi rămân pe regulile de mai sus.
+ */
+@supports (width: 1cqw) {
+  .page-main     { container-type: size; grid-template-columns: auto minmax(0, 1fr); }
+  .board-wrapper { width:  min(55cqw, 100cqh); }
+  .panel-col     { height: min(55cqw, 100cqh); }
 }
 
 /* Zona de text — scroll intern, NU scroll pe pagină */
@@ -439,7 +454,7 @@ body.no-hints .highlight-capture::before { display: none; }
   display:         flex;
   align-items:     center;
   gap:             6px;
-  padding:         8px 18px;
+  padding:         5px 18px;
   background:      rgba(255,255,255,0.55);
   border:          2px solid rgba(255,255,255,0.8);
   border-radius:   var(--radius-sm);
@@ -615,21 +630,23 @@ body.no-hints .highlight-capture::before { display: none; }
 
   /* Panoul scroll intern — permite text oricât de lung fără a lungi pagina */
   .panel-col {
+    height:    auto;
+    align-self:stretch;
     overflow:  hidden;
     min-height:0;
   }
 
   /* Footer: ascunde label text pe ecrane mici, lasă doar iconițe */
   .nav-btn .label { display: none; }
-  .nav-btn { min-width: 48px; padding: 8px 12px; }
+  .nav-btn { min-width: 48px; padding: 5px 12px; }
 }
 
 /* Desktop mare: mărește gap-ul și padding-ul */
 @media (min-width: 1200px) {
   :root {
     --gap:      16px;
-    --header-h: 54px;
-    --footer-h: 62px;
+    --header-h: 46px;
+    --footer-h: 46px;
   }
 }
 

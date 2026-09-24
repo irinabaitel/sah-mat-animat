@@ -248,9 +248,10 @@
             <h4>Toți merg în sensul acelor de ceasornic</h4>
             <p>Acele unui ceas se rotesc de la 12 la 3, apoi la 6, la 9 și iar la 12. Pe tablă, cu albul jos, asta înseamnă: <strong>în sus pe partea stângă, spre dreapta pe partea de sus, în jos pe partea dreaptă, spre stânga pe partea de jos</strong>. Toate piesele, albe și negre, merg în acest sens atât contra calculatorului, cât și în doi.</p>
             <p>Jocul privește fiecare mutare din centrul tablei, ca și cum piesa ar fi vârful acului unui ceas. Dacă mutarea duce piesa înainte, în sensul acelor, ea este permisă. Dacă o duce înapoi, <strong>nu este permisă</strong>. Pătratele colorate când alegi o piesă sunt doar mutările permise.</p>
+            <p><strong>Excepție: pasul mic spre centru.</strong> O mutare care merge doar foarte puțin înapoi, dar duce piesa mai aproape de centru, este permisă, pentru că piesa tot înaintează pe drumul ei. De exemplu, nebunul negru poate începe cu g8→f7, iar nebunul alb cu b1→c2. Un astfel de pas scade puțin din ocol (procentul poate scădea cu 1%).</p>
             <p><strong>Turnul alb</strong>: a1→a8 este permis (urcă pe partea stângă), dar a8→a1 nu este. Apoi a8→f8 (spre dreapta sus), f8→f1 (coboară pe partea dreaptă) și f1→a1 (spre stânga jos). Ultima mutare se poate face doar dacă b1 este liber, adică dacă nebunul alb nu este acasă.</p>
             <p><strong>Turnul negru</strong>: h8→h1 este permis (coboară pe partea dreaptă), dar h1→h8 nu este. Apoi h1→c1 (spre stânga jos), c1→c8 (urcă pe partea stângă) și c8→h8 (spre dreapta sus). Ultima mutare se poate face doar dacă g8 este liber.</p>
-            <p><strong>Nebunul alb</strong> poate pleca de pe b1 doar spre a2, pentru că b1→c2 l-ar duce înapoi. Acasă se poate întoarce doar de pe c2. <strong>Nebunul negru</strong> poate pleca de pe g8 doar spre h7 și se poate întoarce acasă doar de pe f7.</p>
+            <p><strong>Nebunul alb</strong> poate pleca de pe b1 spre a2 sau, cu un pas mic spre centru, spre c2. <strong>Nebunul negru</strong> poate pleca de pe g8 spre h7 sau spre f7. Acasă, nebunul alb se întoarce de pe c2, iar cel negru de pe f7.</p>
             <p>Unele mutări nu duc piesa nici înainte, nici înapoi, pentru că merg drept spre centru sau dinspre centru. Asta se întâmplă doar pe diagonala a8–h1, de exemplu a8→b7, b7→c6 sau h1→g2. Aceste mutări <strong>sunt permise, dar nu te apropie de final</strong>.</p>
           </div>
 
@@ -290,7 +291,7 @@
           <div class="hl-box">
             <h4>În doi</h4>
             <p>Doi copii joacă pe aceeași tablă, fără calculator. <strong>Jucătorul 1</strong> are piesele albe și mută primul. <strong>Jucătorul 2</strong> are piesele negre. Mutați pe rând.</p>
-            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar <strong>se numără</strong>. Se numără dacă încerci să muți o piesă înapoi, în sens invers acelor de ceasornic, să muți o piesă a adversarului, să pui piesa pe un pătrat ocupat sau pe barieră, să sari peste o piesă, să muți turnul pe diagonală sau nebunul în linie dreaptă.</p>
+            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar <strong>se numără</strong>. Se numără dacă încerci să muți o piesă înapoi, în sens invers acelor de ceasornic (în afară de pasul mic spre centru), să muți o piesă a adversarului, să pui piesa pe un pătrat ocupat sau pe barieră, să sari peste o piesă, să muți turnul pe diagonală sau nebunul în linie dreaptă.</p>
             <p>Nu se numără dacă pui piesa înapoi pe pătratul ei sau dacă alegi o piesă care nu are mutări.</p>
             <p>La fiecare jucător vezi încercările: ❌ pentru fiecare încercare nepermisă, ▫️ pentru cele rămase. <strong>La 3 încercări nepermise câștigă celălalt jucător.</strong></p>
             <p>Contra calculatorului încercările nu se numără. Dacă încerci o mutare înapoi, jocul doar te atenționează.</p>
@@ -325,6 +326,7 @@ const SYM     = {wR:'♖', wB:'♗', bR:'♜', bB:'♝'};
 const ROOK_DIRS = [[0,1],[1,0],[0,-1],[-1,0]];
 const BISH_DIRS = [[1,1],[1,-1],[-1,1],[-1,-1]];
 const EPS = 1e-6;          // toleranță pentru mutările fără schimbare de unghi
+const SMALL_BACK = 5;      // pas mic înapoi (sub 5°), permis dacă duce piesa spre centru (ex. g8→f7, b1→c2)
 const LAP = 359.5;         // un ocol complet (grade în sensul acelor)
 const MAX_IDLE = 20;       // mutări la rând fără înaintare -> egalitate
 const MAX_ROUNDS = 150;    // runde maxime -> egalitate
@@ -347,6 +349,7 @@ const PLAYER = {w: 'Jucătorul 1 (alb)', b: 'Jucătorul 2 (negru)'};
 
 /* ---------- geometrie ---------- */
 function sqXY(sq) { return [COL.indexOf(sq[0]), parseInt(sq[1]) - 1]; }
+function r2(sq)   { const [f, r] = sqXY(sq); return (f - 3.5) ** 2 + (r - 3.5) ** 2; }
 function ang(sq)  { const [f, r] = sqXY(sq); return Math.atan2(r - 3.5, f - 3.5) * 180 / Math.PI; }
 /* grade în sensul acelor de ceasornic de la „from" la „to" (negativ = sens invers) */
 function cwDeg(from, to) {
@@ -354,6 +357,11 @@ function cwDeg(from, to) {
     while (d > 180) d -= 360;
     while (d <= -180) d += 360;
     return d;
+}
+/* permis: înainte în sensul acelor, sau un pas mic înapoi care duce piesa spre centru */
+function allowed(from, to) {
+    const d = cwDeg(from, to);
+    return d > -EPS || (d > -SMALL_BACK && r2(to) < r2(from));
 }
 
 function buildPos() {
@@ -378,7 +386,7 @@ function rayMoves(sq, dirs, occ) {
     return res;
 }
 function rawMoves(key)  { return rayMoves(pcs[key].sq, dirsOf(key), occWithout(key)); }
-function permMoves(key) { const from = pcs[key].sq; return rawMoves(key).filter(t => cwDeg(from, t) > -EPS); }
+function permMoves(key) { const from = pcs[key].sq; return rawMoves(key).filter(t => allowed(from, t)); }
 function allPermitted(c) {
     const res = [];
     ['R', 'B'].forEach(t => permMoves(c + t).forEach(to => res.push({key: c + t, to})));
@@ -400,7 +408,7 @@ function checkDone() {
 function doMove(key, to) {
     const from = pcs[key].sq, d = cwDeg(from, to);
     pcs[key].sq = to;
-    pcs[key].wind += Math.max(0, d);
+    pcs[key].wind += d;                    // pasul mic înapoi scade puțin din ocol
     if (d > 0.01) idleMoves = 0; else idleMoves++;
     recordMove(key[0], key[1], to);
 }
@@ -416,9 +424,8 @@ function distToFinish(key) {
         const next = [];
         for (const [s, w] of front) {
             for (const t of rayMoves(s, dirs, occ)) {
-                const c = cwDeg(s, t);
-                if (c <= -EPS) continue;
-                const nw = w + Math.max(0, c);
+                if (!allowed(s, t)) continue;
+                const nw = w + cwDeg(s, t);
                 if (nw > maxW) continue;
                 if (t === home && nw >= LAP) return d;
                 const k = t + '|' + Math.round(nw);
@@ -436,7 +443,7 @@ function pickAIMove(c, randomChance) {
     if (Math.random() < randomChance) return all[Math.floor(Math.random() * all.length)];
     let best = null, bestScore = Infinity;
     for (const mv of all) {
-        const p = pcs[mv.key], saveSq = p.sq, saveW = p.wind, d = Math.max(0, cwDeg(saveSq, mv.to));
+        const p = pcs[mv.key], saveSq = p.sq, saveW = p.wind, d = cwDeg(saveSq, mv.to);
         p.sq = mv.to; p.wind += d;
         let score = 0;
         for (const t of ['R', 'B']) { const dist = distToFinish(c + t); score += dist === Infinity ? 40 : dist; }
@@ -480,7 +487,7 @@ function setStatus(msg, cls) {
     el.textContent=msg; el.className=cls||'';
 }
 function turnCls(c) { return (c || turn) === 'w' ? 'white-turn' : 'black-turn'; }
-function piecePct(key) { return pieceDone(key) ? 100 : Math.min(99, Math.round(pcs[key].wind / 3.6)); }
+function piecePct(key) { return pieceDone(key) ? 100 : Math.max(0, Math.min(99, Math.round(pcs[key].wind / 3.6))); }
 function pieceSt(key) {
     const p = pcs[key];
     if (pieceDone(key)) return `${SYM[key]} 🏠`;
