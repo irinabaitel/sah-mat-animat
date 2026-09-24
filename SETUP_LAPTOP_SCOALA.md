@@ -111,6 +111,19 @@ se deschide browserul, confirmi, gata.
 Extensia Claude Code pentru VS Code se instalează singură când pornești `claude`
 din terminalul VS Code. Nu trebuie căutată în magazinul de extensii.
 
+### Automatizarea: pull la pornire și amintirea de push
+
+Pe fiecare dispozitiv, Claude poate face singur `git pull` când pornește și îți poate
+aminti de push când ai modificări netrimise. Setările astea **nu vin de pe GitHub**,
+fiindcă folderul `.claude` e exclus din repo, deci trebuie refăcute pe fiecare dispozitiv nou.
+
+După prima pornire a lui `claude` în folderul proiectului, îi spui:
+
+> Refă automatizarea: git pull automat la pornire și amintirea de push
+> când am modificări netrimise.
+
+Intră în funcțiune de la următoarea pornire a lui `claude`.
+
 ### La final
 
 Îi spui lui Claude să dea push, sau scrii tu în terminal:
