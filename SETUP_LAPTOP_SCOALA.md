@@ -152,14 +152,24 @@ Programul s-a instalat, dar terminalul a fost deschis înainte. Închide PowerSh
 Rețeaua școlii poate bloca unele adrese. Încearcă de pe hotspotul telefonului.
 
 **Clona se oprește la jumătate**
-Ștergi folderul pe jumătate descărcat și reiei comanda cu `--depth 1`.
+Ștergi folderul pe jumătate descărcat și reiei comanda de clonare.
 Dacă tot pică, încearcă de pe hotspot.
 
 ---
 
-## 7. De făcut cândva, nu acum
+## 7. Unde sunt materialele de lucru
 
-Repo-ul are 991 MB de istorie pentru un site de fișiere HTML. Înseamnă că au intrat
-în istoric fișiere mari — probabil imagini sau video care nu mai sunt folosite.
-Se poate curăța, dar e o operație care rescrie istoria și se face o singură dată,
-cu atenție, de pe un singur laptop.
+Nu mai sunt în repo. Pe 24.09.2026 au fost mutate pe laptopul de acasă, în
+`C:\Users\irina\Sah - materiale`, păstrând aceeași structură de foldere:
+
+- manualele Stappen (`Metoda step - manualul profesorului`)
+- planificările școlare (`planificari educatie prin sah`)
+- modulele de curs (`chess coach ready`)
+- seturile de piese generate, nefolosite pe site (`piese_sah`)
+- fișierele intermediare de la filtrarea puzzle-urilor (`data/*_candidates.json`)
+
+Dacă ai nevoie de vreunul la școală, se copiază pe stick sau prin OneDrive —
+nu se pun înapoi în repo, fiindcă `.gitignore` le ține deoparte intenționat.
+
+Copia repo-ului de dinainte de curățare, cu toată istoria veche, e la
+`C:\Users\irina\Sah - BACKUP repo 2026-09-24`.
