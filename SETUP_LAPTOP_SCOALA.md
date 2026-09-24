@@ -10,7 +10,14 @@ De citit de pe GitHub, direct pe laptopul de la școală, înainte de instalare:
 
 ## 1. Ce se instalează
 
-Patru lucruri, în ordinea asta. Toate se instalează o singură dată.
+Cinci lucruri, în ordinea asta. Toate se instalează o singură dată.
+
+### VS Code
+De pe `code.visualstudio.com`, butonul mare de Download for Windows.
+La instalare, pe ecranul cu opțiuni suplimentare, bifează **„Add to PATH"** —
+altfel comanda `code` nu merge din terminal. Restul, implicit.
+
+Acasă e versiunea 1.139.0, instalată pe contul tău (nu pentru tot calculatorul).
 
 ### Node.js
 De pe `nodejs.org`, versiunea **LTS** (cea din stânga, nu cea „Current").
@@ -72,20 +79,47 @@ Trebuie să vezi `index.html`, `hub.html`, `master-template.css`, `board-utils.j
 
 ---
 
-## 3. Cum se repară ceva
+## 3. Cum lucrezi, zi de zi
 
 Site-ul e pe GitHub Pages. Nu există panou de administrare și nu există FTP.
 **A repara site-ul înseamnă commit și push.** După push, în una-două minute
 modificarea e live pe `laboratoruldesah.ro`.
 
-Pornești Claude Code din folderul repo-ului:
+### Pornirea
+
+1. Deschizi **VS Code**.
+2. **File → Open Folder**, alegi `C:\Users\irina\SahMatAnimat`.
+   (A doua oară îl găsești direct în File → Open Recent.)
+3. Deschizi terminalul: meniul **Terminal → New Terminal**.
+   Scurtătura e `Ctrl` + tasta de deasupra lui `Tab`, dar pe tastatura românească
+   e mai simplu prin meniu.
+4. În terminal scrii:
 
 ```
-cd C:\Users\irina\SahMatAnimat
 claude
 ```
 
-Și îi spui ce e de reparat. La final, commit și push.
+De aici încolo totul se întâmplă în discuția cu Claude: îi spui ce e de reparat,
+el caută prin fișiere, modifică și dă push. Fișierele se văd în stânga, deci poți
+urmări ce se schimbă.
+
+### Prima dată, o singură dată
+
+La prima pornire a lui `claude` ți se cere să te loghezi cu contul Claude —
+se deschide browserul, confirmi, gata.
+
+Extensia Claude Code pentru VS Code se instalează singură când pornești `claude`
+din terminalul VS Code. Nu trebuie căutată în magazinul de extensii.
+
+### La final
+
+Îi spui lui Claude să dea push, sau scrii tu în terminal:
+
+```
+git add -A
+git commit -m "ce am schimbat"
+git push
+```
 
 ---
 
