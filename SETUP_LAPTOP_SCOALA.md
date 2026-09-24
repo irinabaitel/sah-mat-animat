@@ -50,17 +50,15 @@ Apoi îl pornești cu comanda `claude` și te loghezi cu contul Claude.
 
 ## 2. Aducerea site-ului pe laptop
 
-Atenție: repo-ul are aproape 1 GB de istorie. Nu-l clona normal, că stai mult
-pe internetul școlii. Iei doar ultima versiune:
+Pe 24.09.2026 repo-ul a fost curățat: de la 991 MB la 166 MB. Materialele de lucru
+(manualele Stappen, planificările, seturile de piese nefolosite, fișierele de filtrare
+a puzzle-urilor) au fost mutate pe discul de acasă, în folderul `Sah - materiale`.
+Deci clonarea normală durează acum două-trei minute.
 
 ```
 cd C:\Users\irina
-git clone --depth 1 https://github.com/irinabaitel/sah-mat-animat.git SahMatAnimat
+git clone https://github.com/irinabaitel/sah-mat-animat.git SahMatAnimat
 ```
-
-Asta aduce câteva zeci de MB în loc de 991. Poți edita și poți da push normal.
-Singurul lucru care nu merge e căutatul prin commit-uri vechi, de care n-ai nevoie
-ca să repari un buton.
 
 Verifici că a mers:
 
