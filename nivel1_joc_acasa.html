@@ -318,7 +318,7 @@
             <ul>
               <li><strong>Pui de găină</strong>: la început mută aproape mereu la întâmplare (9 mutări din 10). Cu cât jocul durează mai mult, cu atât mută mai rar la întâmplare, iar după 40 de mutări își caută doar drumul spre casă.</li>
               <li><strong>Mânz</strong>: la început face o mutare din 5 la întâmplare, iar în rest își caută drumul spre casă. Și el mută tot mai rar la întâmplare, până la 40 de mutări.</li>
-              <li><strong>Dragon</strong>: urmează mereu drumul pregătit. Are nevoie de 18 mutări în varianta 1, 21 în varianta 2, 25 în varianta 3 și 13 în varianta 4. La Dragon punctele verzi care arată unde poate merge piesa nu mai apar.</li>
+              <li><strong>Dragon</strong>: urmează mereu drumul cel mai scurt posibil. Are nevoie de 18 mutări în varianta 1, 14 în varianta 2, 16 în varianta 3 și 12 în varianta 4 — nimeni nu poate face mai puțin. La Dragon punctele verzi care arată unde poate merge piesa nu mai apar.</li>
             </ul>
           </div>
 
@@ -347,6 +347,7 @@
 /* =====================================================
    ÎNTOARCEREA ACASĂ
    White: human, Black: fixed optimal AI sequence
+   (Dragon: numărul minim de mutări la fiecare variantă, verificat prin căutare A* exactă)
    ===================================================== */
 
 const C = 'abcdefgh';
@@ -371,14 +372,9 @@ const VARIANTS = [
     startW: { a1:'wN',b1:'wR',c1:'wQ',d1:'wB',e1:'wB',f1:'wK',g1:'wR',h1:'wN' },
     startB: { a8:'bN',b8:'bR',c8:'bQ',d8:'bB',e8:'bB',f8:'bK',g8:'bR',h8:'bN' },
     blackMoves: [
-      ['h8','f7'],['g8','h8'],
-      ['a8','c7'],['c7','d5'],['d5','f6'],['f6','g8'],
-      ['c8','c5'],['e8','d7'],['d7','c8'],
-      ['f8','g7'],['d8','e7'],['e7','f8'],
-      ['g7','f6'],['f6','e7'],['e7','e8'],
-      ['c5','d5'],['d5','d8'],
-      ['b8','a8'],
-      ['f7','e5'],['e5','c6'],['c6','b8'],
+      ['a8','b6'],['b8','a8'],['d8','e7'],['c8','d8'],['e8','d7'],['f8','e8'],
+      ['h8','f7'],['g8','h8'],['e7','f8'],['d7','c8'],['b6','d7'],['f7','h6'],
+      ['d7','b8'],['h6','g8'],
     ]
   },
   /* Varianta 3 — toate piesele pe linia 8 la start */
@@ -386,14 +382,9 @@ const VARIANTS = [
     startW: { a1:'wK',b1:'wB',c1:'wN',d1:'wR',e1:'wR',f1:'wN',g1:'wB',h1:'wQ' },
     startB: { a8:'bK',b8:'bB',c8:'bN',d8:'bR',e8:'bR',f8:'bN',g8:'bB',h8:'bQ' },
     blackMoves: [
-      ['h8','h5'],['f8','g6'],['g8','f7'],['e8','h8'],
-      ['g6','e7'],['e7','g8'],
-      ['b8','c7'],['c7','d6'],['d6','e7'],['e7','f8'],
-      ['a8','b7'],['b7','c6'],['c6','d7'],['d7','e8'],
-      ['c8','e7'],['e7','c6'],['c6','b8'],
-      ['f7','e6'],['e6','d7'],['d7','c8'],
-      ['d8','d5'],['d5','a5'],['a5','a8'],
-      ['h5','d5'],['d5','d8'],
+      ['a8','b7'],['b8','d6'],['c8','e7'],['d8','a8'],['f8','d7'],['g8','e6'],
+      ['b7','c7'],['c7','d8'],['d7','b8'],['e6','c8'],['h8','f6'],['e8','h8'],
+      ['e7','g8'],['d6','f8'],['d8','e8'],['f6','d8'],
     ]
   },
   /* Varianta 4 */
@@ -401,13 +392,8 @@ const VARIANTS = [
     startW: { g2:'wK',a3:'wQ',c4:'wR',e4:'wR',c3:'wN',f3:'wN',b2:'wB',d3:'wB' },
     startB: { g7:'bK',a6:'bQ',c5:'bR',e5:'bR',c6:'bN',f6:'bN',b7:'bB',d6:'bB' },
     blackMoves: [
-      ['c6','b8'],['f6','g8'],
-      ['b7','c8'],['d6','e7'],
-      ['a6','d6'],['d6','d8'],
-      ['c5','a5'],['a5','a8'],
-      ['e7','f8'],
-      ['e5','h5'],['h5','h8'],
-      ['g7','f7'],['f7','e8'],
+      ['g7','f7'],['a6','b6'],['c5','a5'],['e5','h5'],['c6','b8'],['f6','g8'],
+      ['b7','c8'],['d6','f8'],['f7','e8'],['b6','d8'],['a5','a8'],['h5','h8'],
     ]
   },
 ];
