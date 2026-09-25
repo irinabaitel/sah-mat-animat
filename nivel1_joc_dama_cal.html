@@ -213,7 +213,7 @@
           <div class="hl-box warn">
             <h4>Cine câștigă?</h4>
             <p><strong>Dama câștigă</strong> dacă prinde calul în cel mult 15 mutări.</p>
-            <p><strong>Calul câștigă</strong> dacă rezistă 15 mutări ale damei. Calul câștigă și dacă dama se oprește pe un pătrat unde calul poate sări: atunci calul <strong>mănâncă dama</strong>.</p>
+            <p><strong>Calul câștigă</strong> dacă rezistă 15 mutări ale damei. Calul câștigă și dacă dama se oprește pe un pătrat unde calul poate sări: atunci calul <strong>capturează dama</strong>.</p>
           </div>
 
           <div class="hl-box">
@@ -227,7 +227,7 @@
             <h4>Stelele</h4>
             <p>Contra calculatorului primești stele în fiecare repriză, cel mult 3. Cu joc perfect, dama prinde calul din poziția de start în <strong>4 mutări</strong>.</p>
             <p><strong>Cu dama:</strong> 3 stele dacă prinzi calul în cel mult 4 mutări, 2 stele dacă îl prinzi în 5–8 mutări, 1 stea dacă îl prinzi mai târziu. Dacă nu îl prinzi, nu primești nicio stea.</p>
-            <p><strong>Cu calul:</strong> 3 stele dacă reziști 15 mutări, dacă mănânci dama sau dacă ești prins abia la mutarea 4 sau mai târziu. 2 stele dacă ești prins la mutarea 3 și 1 stea dacă ești prins mai devreme.</p>
+            <p><strong>Cu calul:</strong> 3 stele dacă reziști 15 mutări, dacă capturezi dama sau dacă ești prins abia la mutarea 4 sau mai târziu. 2 stele dacă ești prins la mutarea 3 și 1 stea dacă ești prins mai devreme.</p>
             <p>La sfârșit se adună stelele din ambele reprize: cel mult 6.</p>
           </div>
 
@@ -291,7 +291,7 @@ function queenTargets(q, n) {        // dama nu sare peste cal
 
 /* ---------- rezolvarea exactă ----------
    VQ[q*64+n] = câte mutări îi mai trebuie damei (dama la mutare)
-   VN[q*64+n] = la fel, cu calul la mutare; INF = calul mănâncă dama */
+   VN[q*64+n] = la fel, cu calul la mutare; INF = calul capturează dama */
 const INF = 1e9;
 const VQ = new Float64Array(4096).fill(INF), VN = new Float64Array(4096).fill(INF);
 (function solve() {
@@ -392,7 +392,7 @@ function resultLine(p) {
             parts.push(res.by === 'queen' ? '♕ a prins calul în ' + res.moves + ' mutări' : '♕ n-a prins calul');
         } else {
             if (res.by === 'queen') parts.push('♞ prins la mutarea ' + res.moves);
-            else parts.push(res.how === 'ate' ? '♞ a mâncat dama' : '♞ a rezistat 15 mutări');
+            else parts.push(res.how === 'ate' ? '♞ a capturat dama' : '♞ a rezistat 15 mutări');
         }
     });
     return parts.join(' · ');
@@ -464,7 +464,7 @@ function endRound(res) {
     const qp = queenPlayer(round), np = knightPlayer(round);
     let msg;
     if (res.by === 'queen') msg = '♕ ' + pname(qp) + (mode === 'robot' && qp === 1 ? ' ai' : ' a') + ' prins calul în ' + res.moves + ' mutări.';
-    else if (res.how === 'ate') msg = '♞ Calul a mâncat dama. Repriza e câștigată de ' + pname(np) + '.';
+    else if (res.how === 'ate') msg = '♞ Calul a capturat dama. Repriza e câștigată de ' + pname(np) + '.';
     else msg = '♞ Calul a rezistat 15 mutări. Repriza e câștigată de ' + pname(np) + '.';
 
     if (mode === 'robot') {
@@ -553,7 +553,7 @@ function aiMove() {
     } else {
         const opts = knightTargets(n);
         let chosen;
-        if (opts.includes(q)) chosen = q;               // dama atârnă: calul o mănâncă
+        if (opts.includes(q)) chosen = q;               // dama atârnă: calul o capturează
         else if (!perfect) chosen = pickRandom(opts);
         else {
             let best = -1, pool = [];

@@ -5,6 +5,9 @@
 Nu citi fișiere, nu explora, nu schița planuri — pune întrebarea și așteaptă confirmarea.
 Fă asta inclusiv dacă cererea pare clară. Cheltuirea de tokeni fără țintă este costisitoare.
 
+## Limbaj: piesele capturează, nu „mănâncă"
+În toate textele (explicații, mesaje, comentarii) o piesă **capturează** altă piesă („capturează", „a capturat", „capturate"). Nu folosi „mănâncă" / „a mâncat" pentru piese de șah.
+
 ## Piese aprobate
 Set: `caliente` de pe lichess CDN — `https://lichess1.org/assets/piece/caliente/{piece}.svg`
 

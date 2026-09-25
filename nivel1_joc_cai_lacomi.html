@@ -11,7 +11,7 @@
   gtag('config', 'G-CMTZ9GGPMP');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Care cal mănâncă mai repede? — Joc</title>
+<title>Cursa cailor — Joc</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
 <link rel="stylesheet" href="master-template.css">
@@ -118,7 +118,7 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">♘♞ Care cal mănâncă mai repede?</span>
+    <span class="header-title">♘♞ Cursa cailor</span>
     <div class="header-progress">
       <span class="game-badge">Joc</span>
     </div>
@@ -154,8 +154,8 @@
           <div class="counter-box"><div class="counter-lbl">Mutări: alb · negru</div><div class="counter-val" id="movesVal">0 · 0</div></div>
         </div>
         <div class="counter-row">
-          <div class="counter-box"><div class="counter-lbl">Mâncate de calul alb</div><div class="counter-val" id="eatWVal">0 / 14</div></div>
-          <div class="counter-box"><div class="counter-lbl">Mâncate de calul negru</div><div class="counter-val" id="eatBVal">0 / 14</div></div>
+          <div class="counter-box"><div class="counter-lbl">Capturate de calul alb</div><div class="counter-val" id="eatWVal">0 / 14</div></div>
+          <div class="counter-box"><div class="counter-lbl">Capturate de calul negru</div><div class="counter-val" id="eatBVal">0 / 14</div></div>
         </div>
 
         <div class="player-panel" id="pp1">
@@ -193,22 +193,22 @@
           <div class="hl-box">
             <h4>Care cal este al tău</h4>
             <p>Cine joacă cu albul mută <strong>calul alb de pe e8</strong>. Cine joacă cu negrul mută <strong>calul negru de pe e1</strong>.</p>
-            <p>Toate celelalte piese (pionii, turnurile, nebunii, damele și ceilalți doi cai) <strong>stau pe loc</strong> tot jocul. Ele nu se apără și nu fug. Așteaptă doar să fie mâncate.</p>
+            <p>Toate celelalte piese (pionii, turnurile, nebunii, damele și ceilalți doi cai) <strong>stau pe loc</strong> tot jocul. Ele nu se apără și nu fug. Așteaptă doar să fie capturate.</p>
           </div>
 
           <div class="hl-box">
             <h4>Cum sare calul</h4>
             <p>Calul se mută în formă de <strong>„L”</strong>: două pătrate într-o direcție (înainte, înapoi, la stânga sau la dreapta) și apoi un pătrat într-o parte. Sau invers: un pătrat într-o direcție și apoi două într-o parte.</p>
-            <p>Un exemplu: calul alb de pe e8 coboară două pătrate (e7, e6) și apoi face un pas la stânga, pe <strong>d6</strong>. Tot de pe e8 poate ajunge pe <strong>f6</strong>, <strong>c7</strong> sau <strong>g7</strong>. Pe c7 și pe g7 stau pioni negri, deci acolo ar mânca un pion.</p>
+            <p>Un exemplu: calul alb de pe e8 coboară două pătrate (e7, e6) și apoi face un pas la stânga, pe <strong>d6</strong>. Tot de pe e8 poate ajunge pe <strong>f6</strong>, <strong>c7</strong> sau <strong>g7</strong>. Pe c7 și pe g7 stau pioni negri, deci acolo ar captura un pion.</p>
             <p>Calul este singura piesă care <strong>sare peste alte piese</strong>. Nu contează ce stă între pătratul de plecare și cel de sosire.</p>
             <p>Un lucru ușor de observat: la fiecare săritură calul schimbă culoarea pătratului. Dacă stă pe un pătrat alb, sare pe unul negru. Dacă stă pe un pătrat negru, sare pe unul alb.</p>
           </div>
 
           <div class="hl-box">
-            <h4>Ce înseamnă „a mânca”</h4>
-            <p><strong>A mânca</strong> (sau <strong>a captura</strong>) o piesă înseamnă să sari cu calul tău exact pe pătratul unde stă o piesă a adversarului. Piesa adversarului iese de pe tablă, iar calul tău rămâne în locul ei.</p>
-            <p>Calul alb mănâncă numai piese negre. Calul negru mănâncă numai piese albe. Fiecare are de mâncat <strong>14 piese</strong>: toate piesele adversarului, în afară de calul lui special, care nu poate fi mâncat.</p>
-            <p>Nu poți sări pe o piesă de culoarea ta. Cei doi cai nu se pot mânca unul pe altul și nu pot sta pe același pătrat.</p>
+            <h4>Ce înseamnă „a captura”</h4>
+            <p><strong>A captura</strong> o piesă înseamnă să sari cu calul tău exact pe pătratul unde stă o piesă a adversarului. Piesa adversarului iese de pe tablă, iar calul tău rămâne în locul ei.</p>
+            <p>Calul alb capturează numai piese negre. Calul negru capturează numai piese albe. Fiecare are de capturat <strong>14 piese</strong>: toate piesele adversarului, în afară de calul lui special, care nu poate fi capturat.</p>
+            <p>Nu poți sări pe o piesă de culoarea ta. Cei doi cai nu se pot captura unul pe altul și nu pot sta pe același pătrat.</p>
           </div>
 
           <div class="hl-box">
@@ -219,7 +219,7 @@
 
           <div class="hl-box warn">
             <h4>Cine câștigă</h4>
-            <p>Câștigă <strong>calul care mănâncă primul toate cele 14 piese</strong> ale adversarului. Dacă albul mănâncă ultima piesă neagră, câștigă imediat, iar negrul nu mai mută.</p>
+            <p>Câștigă <strong>calul care capturează primul toate cele 14 piese</strong> ale adversarului. Pentru că albul mută primul, când albul capturează ultima piesă neagră, negrul mai primește <strong>o ultimă mutare</strong>, ca amândoi să fi făcut același număr de mutări. Dacă negrul capturează și el ultima piesă albă cu această mutare, repriza se termină la <strong>egalitate</strong>. Dacă nu, câștigă albul. Dacă negrul termină primul, câștigă negrul.</p>
             <p>Nu e ușor, dar e frumos și instructiv. Cartea spune că nici la jucătorii mai avansați cel care începe nu câștigă întotdeauna.</p>
           </div>
 
@@ -231,7 +231,7 @@
 
           <div class="hl-box">
             <h4>Nivelurile calculatorului</h4>
-            <p><strong>Puiul de găină</strong> sare de cele mai multe ori la întâmplare. <strong>Mânzul</strong> alege de obicei o săritură bună, dar mai greșește. <strong>Dragonul</strong> își calculează drumul cel mai scurt prin toate piesele pe care le are de mâncat.</p>
+            <p><strong>Puiul de găină</strong> sare de cele mai multe ori la întâmplare. <strong>Mânzul</strong> alege de obicei o săritură bună, dar mai greșește. <strong>Dragonul</strong> își calculează drumul cel mai scurt prin toate piesele pe care le are de capturat.</p>
           </div>
 
           <div class="hl-box" id="ruleDuo" style="display:none">
@@ -242,8 +242,8 @@
 
           <div class="hl-box ok">
             <h4>Un sfat</h4>
-            <p>Înainte să începi, uită-te la toate piesele pe care le ai de mâncat și gândește-te în ce <strong>ordine</strong> le iei. Dacă mănânci la întâmplare, rămân piese izolate, de exemplu în colțuri. Atunci calul trebuie să se întoarcă de departe după ele.</p>
-            <p>De multe ori ajută să mănânci piesele vecine una după alta și să lași la sfârșit piesele care sunt aproape una de alta.</p>
+            <p>Înainte să începi, uită-te la toate piesele pe care le ai de capturat și gândește-te în ce <strong>ordine</strong> le iei. Dacă capturezi la întâmplare, rămân piese izolate, de exemplu în colțuri. Atunci calul trebuie să se întoarcă de departe după ele.</p>
+            <p>De multe ori ajută să capturezi piesele vecine una după alta și să lași la sfârșit piesele care sunt aproape una de alta.</p>
           </div>
         </details>
 
@@ -262,10 +262,10 @@
 <script src="board-utils.js"></script>
 <script>
 /* =====================================================
-   CARE CAL MĂNÂNCĂ MAI REPEDE? (Step 1, lecția 3)
+   CURSA CAILOR (Step 1, lecția 3)
    Poziția inițială, dar fiecare rege e înlocuit cu un cal al adversarului
    (luat de pe b1/b8). Se mută doar calul alb de pe e8 și calul negru de pe e1.
-   Câștigă cine mănâncă primul toate cele 14 piese ale adversarului (calul special advers nu se mănâncă).
+   Câștigă cine capturează primul toate cele 14 piese ale adversarului (calul special advers nu se capturează).
    Dragon: drumul cel mai scurt prin toate țintele (BFS + Held-Karp).
    ===================================================== */
 
@@ -330,7 +330,7 @@ const other = c => c === 'w' ? 'b' : 'w';
 const knightSq = c => c === 'w' ? KW : KB;
 
 /* ---------- reguli ---------- */
-function targetsOf(c) {                   // piesele pe care le are de mâncat calul c
+function targetsOf(c) {                   // piesele pe care le are de capturat calul c
     const out = [];
     for (const k in P) if (P[k][0] !== c) out.push(+k);
     return out;
@@ -342,7 +342,7 @@ function legalFrom(c) {
 const eaten = c => TOTAL - targetsOf(c).length;
 
 /* ---------- drumul cel mai scurt (Held-Karp) ----------
-   g[mask*n + i] = câte mutări mai trebuie, pornind de pe ținta i, ca să mănânci țintele din mask */
+   g[mask*n + i] = câte mutări mai trebuie, pornind de pe ținta i, ca să capturezi țintele din mask */
 function solveTour(c, noBlockers) {
     const T = targetsOf(c), n = T.length;
     const blocked = new Uint8Array(64);
@@ -365,7 +365,7 @@ function solveTour(c, noBlockers) {
     }
     return { T, n, full, g, blocked };
 }
-function tourFrom(sq, tour) {             // câte mutări de pe sq ca să mănânci tot
+function tourFrom(sq, tour) {             // câte mutări de pe sq ca să capturezi tot
     const { T, n, full, g, blocked } = tour;
     if (n === 0) return 0;
     const k = T.indexOf(sq);
@@ -383,7 +383,7 @@ function chooseMove(c, randomChance) {
     const tour = solveTour(c);
     let best = Infinity, pool = [];
     for (const t of opts) {
-        const v = 1 + tourFrom(t, tour) - (P[t] ? 0.5 : 0);    // la egalitate, preferă să mănânce acum
+        const v = 1 + tourFrom(t, tour) - (P[t] ? 0.5 : 0);    // la egalitate, preferă să captureze acum
         if (v < best) { best = v; pool = [t]; } else if (v === best) pool.push(t);
     }
     return pickRandom(pool);
@@ -452,6 +452,7 @@ function resultLine(p) {
 }
 
 /* ---------- desfășurarea ---------- */
+let whiteDone = false;                    // albul a capturat tot; negrul mai are o ultimă mutare
 function newMatch() {
     if (!ready) return;
     results = {}; strikes = {1:0, 2:0}; matchOver = false;
@@ -460,14 +461,14 @@ function newMatch() {
 function startRound(r) {
     if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
     round = r; P = startPieces(); KW = idx('e8'); KB = idx('e1');
-    turn = 'w'; moves = { w: 0, b: 0 }; roundOver = false; selSq = null;
+    turn = 'w'; moves = { w: 0, b: 0 }; roundOver = false; selSq = null; whiteDone = false;
     if (shortest.w === null) { shortest.w = exactShortest('w'); shortest.b = exactShortest('b'); }
     board.position(buildPos(), false);
     clearHL();
     document.getElementById('btn-round2').style.display = 'none';
     updateUI();
     const intro = shortest.w !== null
-        ? 'Repriza ' + r + '. Pe drumul cel mai scurt, fiecare cal poate mânca toate cele 14 piese în <strong>' + shortest.w + ' mutări</strong>.<br>'
+        ? 'Repriza ' + r + '. Pe drumul cel mai scurt, fiecare cal poate captura toate cele 14 piese în <strong>' + shortest.w + ' mutări</strong>.<br>'
         : 'Repriza ' + r + '.<br>';
     promptTurn(intro);
 }
@@ -500,7 +501,19 @@ function doMove(fromSq, toSq) {
     $('.square-' + fromSq).addClass('sq-last');
     $('.square-' + toSq).addClass('sq-last');
     play(captured ? sndCapture : sndMove);
-    if (targetsOf(c).length === 0) return endRound({ winner: c, moves: moves[c] });
+    /* Albul mută primul: când termină albul, negrul mai primește o mutare, ca să aibă amândoi
+       același număr de mutări. Dacă negrul termină și el cu această mutare, e egalitate. */
+    const done = targetsOf(c).length === 0;
+    if (c === 'b') {
+        if (done) return endRound(whiteDone ? { winner: null, how: 'tie', moves: moves.b } : { winner: 'b', moves: moves.b });
+        if (whiteDone) return endRound({ winner: 'w', moves: moves.w });
+    } else if (done) {
+        whiteDone = true;
+        turn = 'b';
+        if (!legalFrom('b').length) return endRound({ winner: 'w', moves: moves.w });
+        return promptTurn('♘ Calul alb a capturat toate cele 14 piese în ' + moves.w + ' mutări. ' +
+                          'Calul negru mai are <strong>o ultimă mutare</strong>: dacă o capturează și el pe ultima, e egalitate.<br>');
+    }
     turn = other(c);
     promptTurn();
 }
@@ -510,11 +523,13 @@ function endRound(res) {
     setTimeout(() => play(sndMate), 250);
     let msg;
     if (res.winner === null) {
-        msg = 'Niciun cal nu mai poate sări. Repriza se termină la egalitate.';
+        msg = res.how === 'tie'
+            ? '🤝 Amândoi caii au capturat toate cele 14 piese în ' + res.moves + ' mutări. Repriza se termină la egalitate.'
+            : 'Niciun cal nu mai poate sări. Repriza se termină la egalitate.';
     } else {
         const wp = playerOf(res.winner, round);
         const you = mode === 'robot' && wp === 1;
-        msg = (res.winner === 'w' ? '♘ ' : '♞ ') + (you ? 'Ai mâncat' : pname(wp) + ' a mâncat') +
+        msg = (res.winner === 'w' ? '♘ ' : '♞ ') + (you ? 'Ai capturat' : pname(wp) + ' a capturat') +
               ' toate cele 14 piese cu ' + knightName(res.winner) + ', în ' + res.moves + ' mutări. ' +
               (you ? 'Ai câștigat repriza.' : 'Repriza e câștigată de ' + pname(wp) + '.');
         if (shortest.w !== null) msg += '<br>Drumul cel mai scurt de la început avea ' + shortest.w + ' mutări.';
@@ -571,7 +586,7 @@ function illegal(sq, reason) {
 }
 function whyIllegal(from, to) {
     const t = idx(to);
-    if (t === knightSq(other(turn))) return 'Caii nu se pot mânca unul pe altul.';
+    if (t === knightSq(other(turn))) return 'Caii nu se pot captura unul pe altul.';
     if (P[t] && P[t][0] === turn) return 'Calul nu poate sări pe o piesă de culoarea lui.';
     return 'Calul nu poate sări de pe ' + from + ' pe ' + to + '. El sare numai în formă de „L”.';
 }
