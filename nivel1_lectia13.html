@@ -239,7 +239,7 @@
             <p class="def-title">Reține asta din lecție</p>
             <p><strong>Când muți, ai grijă ca piesa ta să fie în siguranță. Și numără atacatorii și apărătorii.</strong></p>
             <p>🔢 <strong>Mai mulți atacatori</strong> decât apărători: poți câștiga piesa. <strong>La fel de mulți:</strong> cel mult un schimb, oprește-te la timp.</p>
-            <p>⚖️ <strong>Iei întâi cu piesa cea mai ieftină.</strong> Și înainte de fiecare captură te întrebi: <strong>ce iau și ce pot pierde?</strong> Un apărător ieftin oprește oricâți atacatori scumpi.</p>
+            <p>⚖️ <strong>Capturezi întâi cu piesa care valorează cel mai puțin.</strong> Și înainte de fiecare captură te întrebi: <strong>ce capturez și ce pot pierde?</strong> Un apărător care valorează puțin poate opri atacatori care valorează mult.</p>
           </div>
 
           <div id="navControls">
@@ -396,15 +396,12 @@ const chapters = [
   {
     fen: 'k5r1/8/8/6b1/8/5N2/8/K5R1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: 3,
-    finishMsg: 'Ai câștigat nebunul!',
-    san: ['Rxg5','Rxg5','Nxg5'],
-    accept: { 0: ['Nxg5'] },
-    altMsg: 'Merge și cu calul întâi: după Cxg5 Negrul nu mai recapturează, pentru că ar da turnul pe cal.',
+    finishMsg: 'Ai câștigat nebunul și ți-au rămas turnul și calul!',
+    san: ['Nxg5'],
+    wrong: { 0: { 'Rxg5': '❌ Câștigi nebunul, dar după …Txg5 Cxg5 îți rămâne doar calul. Cu un cal singur nu poți da mat, deci partida e <strong>remiză</strong>. Încearcă să iei cu altă piesă.' } },
     ann: {
-      0: '🔢 <strong>Doi contra unu.</strong> Până acum ai văzut <strong>unu contra zero</strong> (piesa atârnată, o iei pe gratis) și <strong>unu contra unu</strong> (un schimb). Acum numărăm mai departe. <br><br>Joci cu <strong>Albul</strong>. Uită-te la <strong>nebunul negru din g5</strong> și numără. <br><br>Îl atacă: <strong>calul din f3</strong> și <strong>turnul din g1</strong> — adică <strong>doi</strong>. <br>Îl apără: <strong>turnul din g8</strong> — adică <strong>unu</strong>. <br><br>Doi atacatori, un singur apărător. Ia nebunul.',
-      1: '<strong>Txg5</strong> — primul atacator ia nebunul.',
-      2: '<strong>…Txg5</strong> — apărătorul recapturează. Acum Negrul nu mai are niciun apărător.',
-      3: '<strong>Cxg5</strong> — al doilea atacator ia ultimul. <br><br>Socoteala: ai luat un nebun și un turn (3 + 5 = 8), ai dat un turn (5). <strong>Ai câștigat 3 — un nebun întreg.</strong> <br><br>Așa merge numărătoarea: fiecare atacator face o captură, fiecare apărător face o recaptură. <strong>Cine are mai mulți, ia ultimul.</strong>'
+      0: '🔢 <strong>Doi contra unu.</strong> Până acum ai văzut <strong>unu contra zero</strong> (piesa atârnată, o capturezi pe gratis) și <strong>unu contra unu</strong> (un schimb). Acum numărăm mai departe. <br><br>Joci cu <strong>Albul</strong>. Uită-te la <strong>nebunul negru din g5</strong> și numără. <br><br>Îl atacă: <strong>calul din f3</strong> și <strong>turnul din g1</strong> — adică <strong>doi</strong>. <br>Îl apără: <strong>turnul din g8</strong> — adică <strong>unu</strong>. <br><br>Doi atacatori, un singur apărător: nebunul poate fi câștigat. Dar cu care piesă îl capturezi?',
+      1: '<strong>Cxg5!</strong> — calul capturează nebunul. <br><br>Dacă Negrul recapturează, …Txg5, turnul alb capturează și turnul lui: Txg5. Negrul ar pierde și turnul, deci nu recapturează. Albul a câștigat un nebun și i-au rămas <strong>turnul și calul</strong>. <br><br>❌ Dacă luai întâi cu turnul: <strong>Txg5? Txg5 Cxg5</strong> — ai câștigat tot nebunul, dar pe tablă îți rămâne <strong>doar calul</strong>. Cu un cal singur nu poți da mat, deci partida e <strong>remiză</strong>. <br><br>Așa merge numărătoarea: fiecare atacator face o captură, fiecare apărător face o recaptură. <strong>Cine are mai mulți capturează ultimul.</strong> Dar gândește-te și ce rămâne pe tablă după schimburi.'
     },
     arrows: { 0: [{from:'f3', to:'g5', color:'G'}, {from:'g1', to:'g5', color:'G'}, {from:'g8', to:'g5', color:'B'}] }
   },
@@ -426,37 +423,36 @@ const chapters = [
 
   /* 8 — cu cine iei întâi */
   {
-    fen: '7k/1p6/b7/8/2r5/1Q6/8/2R4K w - - 0 1', orient: 'white',
+    fen: '7k/1p4pp/b7/8/2r5/1Q6/5PPP/2R3K1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: 3,
-    finishMsg: 'Ai luat întâi cu piesa mai ieftină!',
+    finishMsg: 'Ai capturat întâi cu piesa care valorează mai puțin!',
     san: ['Rxc4','Bxc4','Qxc4'],
-    wrong: { 0: { 'Qxc4': '❌ Numărătoarea e bună, doi contra unu, dar ai luat cu piesa cea mai scumpă. După …Nxc4 Txc4 ai dat dama (9) pe turn și nebun (8): <strong>ai pierdut un punct</strong>. Încearcă altă ordine.' } },
+    wrong: { 0: { 'Qxc4': '❌ Numărătoarea e bună, doi contra unu, dar ai capturat cu piesa care valorează cel mai mult. După …Nxc4 Txc4 ai dat dama (9) pe turn și nebun (8): <strong>ai pierdut un punct</strong>. Încearcă altă ordine.' } },
     ann: {
       0: '⚖️ <strong>Cu cine iei întâi?</strong> Joci cu <strong>Albul</strong>. Turnul negru din <strong>c4</strong> e atacat de <strong>dama din b3</strong> și de <strong>turnul din c1</strong> — doi. Îl apără doar <strong>nebunul din a6</strong> — unu. <br><br>Doi contra unu, deci îl poți câștiga. Dar acum contează și cu cine iei primul. Gândește-te la cine rămâne în bătaia nebunului după captură.',
-      1: '<strong>Txc4</strong> — iei cu turnul, piesa mai ieftină dintre cele două.',
+      1: '<strong>Txc4</strong> — capturezi cu turnul, care valorează mai puțin decât dama.',
       2: '<strong>…Nxc4</strong> — nebunul recapturează.',
-      3: '<strong>Dxc4</strong> — dama ia ultimul. <br><br>Socoteala: ai luat turn și nebun (5 + 3 = 8), ai dat turn (5). <strong>Ai câștigat 3.</strong> <br><br>❌ Dacă luai întâi cu dama: <strong>Dxc4? Nxc4 Txc4</strong> — ai luat tot turn și nebun (8), dar ai dat dama (9). <strong>Ai pierdut un punct</strong>, deși numărătoarea era aceeași. <br><br>Regula: <strong>iei întâi cu piesa cea mai ieftină.</strong> Piesa scumpă vine ultima, când nu mai are cine s-o ia.'
+      3: '<strong>Dxc4</strong> — dama ia ultimul. <br><br>Socoteala: ai luat turn și nebun (5 + 3 = 8), ai dat turn (5). <strong>Ai câștigat 3.</strong> <br><br>❌ Dacă luai întâi cu dama: <strong>Dxc4? Nxc4 Txc4</strong> — ai luat tot turn și nebun (8), dar ai dat dama (9). <strong>Ai pierdut un punct</strong>, deși numărătoarea era aceeași. <br><br>Regula: <strong>capturezi întâi cu piesa care valorează cel mai puțin.</strong> Piesa care valorează cel mai mult vine ultima, când nu mai are cine s-o captureze.'
     },
     arrows: { 0: [{from:'b3', to:'c4', color:'G'}, {from:'c1', to:'c4', color:'G'}, {from:'a6', to:'c4', color:'B'}] }
   },
 
-  /* 9 — atacatori scumpi, apărători ieftini */
+  /* 9 — trei contra trei: contează cine sunt */
   {
-    fen: '6k1/5ppp/2p1pn2/3p4/8/1Q6/3R1PPP/3R2K1 w - - 0 1', orient: 'white',
+    fen: '4r1k1/2q2pp1/2p1pn1p/3p4/8/1Q2P3/3R1PPP/3R2K1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: null,
     san: ['Rxd5','cxd5','Rxd5','exd5','Qxd5','Nxd5'],
     ann: {
-      0: '⚖️ <strong>Când numărătoarea nu mai ajunge.</strong> Uită-te la <strong>pionul negru din d5</strong>. <br><br>Îl atacă: <strong>turnul din d2</strong>, <strong>turnul din d1</strong> (din spatele lui) și <strong>dama din b3</strong> — trei. <br>Îl apără: <strong>pionul din c6</strong>, <strong>pionul din e6</strong> și <strong>calul din f6</strong> — tot trei. <br><br>Trei contra trei. Dar uită-te <em>cine</em> sunt: de o parte două turnuri și o damă, de cealaltă doi pioni și un cal. Urmărește ce se întâmplă dacă Albul ia totuși, cu ►.',
-      1: '<strong>Txd5??</strong> — turnul ia un pion (+1).',
-      2: '<strong>…cxd5</strong> — și un pion ia turnul (−5). <br><br>Deja după prima captură Albul a pierdut 4. De aici încolo nu mai are ce repara.',
-      3: '<strong>Txd5??</strong> — al doilea turn ia încă un pion (+1).',
-      4: '<strong>…exd5</strong> — alt pion ia turnul (−5).',
-      5: '<strong>Dxd5??</strong> — dama ia și ultimul pion (+1).',
-      6: '<strong>…Cxd5</strong> — calul ia dama (−9). <br><br>Socoteala: Albul a luat trei pioni (3), a dat două turnuri și dama (5 + 5 + 9 = 19). <br><br>Numărătoarea arăta „la egalitate", dar schimbul a fost un dezastru. Aici fiecare captură a Albului a fost <strong>piesă scumpă pe pion ieftin</strong>. Chiar dacă Albul ar fi avut un atacator în plus, tot n-ar fi meritat: <strong>un apărător ieftin oprește oricâți atacatori scumpi.</strong> <br><br>De aceea, înainte de fiecare captură, te întrebi: <strong>ce iau și ce pot pierde?</strong>'
+      0: '⚖️ <strong>Trei contra trei: contează cine sunt.</strong> Uită-te la <strong>pionul negru din d5</strong>. <br><br>Îl atacă: <strong>turnul din d2</strong>, <strong>turnul din d1</strong> (din spatele lui) și <strong>dama din b3</strong> — trei. <br>Îl apără: <strong>pionul din c6</strong>, <strong>pionul din e6</strong> și <strong>calul din f6</strong> — tot trei. <br><br>Trei contra trei. Dar uită-te <em>cine</em> sunt: de o parte două turnuri și o damă, de cealaltă doi pioni și un cal. Urmărește ce se întâmplă dacă Albul capturează totuși, cu ►.',
+      1: '<strong>Txd5??</strong> — turnul capturează un pion (+1).',
+      2: '<strong>…cxd5</strong> — pionul recapturează turnul (−5). <br><br>Deja după prima captură Albul a pierdut 4. De aici încolo nu mai are ce repara.',
+      3: '<strong>Txd5??</strong> — al doilea turn capturează încă un pion (+1).',
+      4: '<strong>…exd5</strong> — alt pion recapturează turnul (−5).',
+      5: '<strong>Dxd5??</strong> — dama capturează și ultimul pion (+1).',
+      6: '<strong>…Cxd5</strong> — calul recapturează dama (−9). <br><br>Socoteala: Albul a capturat trei pioni (3), a dat două turnuri și dama (5 + 5 + 9 = 19). <br><br>Numărătoarea arăta „la egalitate", dar schimbul a fost un dezastru, pentru că de fiecare dată Albul a dat o piesă care valorează mult pe un pion. Chiar dacă Albul ar fi avut un atacator în plus, tot n-ar fi meritat: <strong>un apărător care valorează puțin poate opri atacatori care valorează mult.</strong> <br><br>De aceea, înainte de fiecare captură, te întrebi: <strong>ce capturez și ce pot pierde?</strong>'
     },
     arrows: { 0: [{from:'d2', to:'d5', color:'G'}, {from:'b3', to:'d5', color:'G'}, {from:'c6', to:'d5', color:'B'}, {from:'e6', to:'d5', color:'B'}, {from:'f6', to:'d5', color:'B'}] }
   }
-
 ];
 
 /* ─── Acordeon: fiecare item încarcă un capitol ─── */
@@ -470,13 +466,13 @@ const accData = [
   { chIdx: 3, kind: 't1', num: '🧱', title: 'Fac un scut', practice: true,
     desc: 'Un nebun se uită drept la damă. Nu fugi neapărat — taie-i diagonala.' },
   { chIdx: 6, kind: 't1', num: '2:1', title: 'Doi contra unu', practice: true,
-    desc: 'Doi atacatori, un apărător. Cine are mai mulți, ia ultimul.' },
+    desc: 'Doi atacatori, un apărător. Cine are mai mulți capturează ultimul. Dar cu care piesă începi?' },
   { chIdx: 7, kind: 't1', num: '2:2', title: 'Doi contra doi', practice: false,
     desc: 'Un apărător în plus schimbă tot. Poți face un schimb, dar trebuie să te oprești la timp.' },
   { chIdx: 8, kind: 't1', num: '⚖️', title: 'Cu cine iei întâi?', practice: true,
-    desc: 'Doi contra unu, dar una dintre ordini câștigă și cealaltă pierde. Contează cât valorează piesele.' },
-  { chIdx: 9, kind: 't1', num: '⚖️', title: 'Când numărătoarea nu mai ajunge', practice: false,
-    desc: 'Trei contra trei: două turnuri și o damă contra doi pioni și un cal. Merită să iei?' },
+    desc: 'Doi contra unu, dar o ordine a capturilor câștigă și cealaltă pierde. Contează cât valorează piesele.' },
+  { chIdx: 9, kind: 't1', num: '⚖️', title: 'Trei contra trei: contează cine sunt', practice: false,
+    desc: 'Trei contra trei: două turnuri și o damă contra doi pioni și un cal. Merită să capturezi?' },
 
   { chIdx: 4, kind: 't2', num: '1', title: 'Două soluții, nu una', practice: true,
     desc: 'Joci cu <strong>Albul</strong>. Calul e atârnat, dar sunt <strong>două</strong> mutări care îl salvează. Găsește-le.' },
