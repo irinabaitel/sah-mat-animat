@@ -77,6 +77,7 @@
     /* de unde a plecat si unde a ajuns ultima piesa mutata */
     .last-move { box-shadow: inset 0 0 0 100px rgba(155,199,0,0.42); }
     .hint-square { background: rgba(60,190,80,0.60) !important; }
+    .safe-square { background: rgba(60,190,80,0.42) !important; }
 
     .section-label {
       font-family: var(--font-display); font-weight: 900; color: var(--c-navy);
@@ -265,11 +266,12 @@ const chapters = [
     winner: 'b', practiceFrom: 0, winEval: 0,
     finishMsg: 'Ai scos nebunul din bătaie!',
     san: ['Ba4'],
+    safeSquares: ['a6','c4','e2','a4','c6','e8'],   /* la ► se colorează, nu se mută */
     accept: { 0: ['Ba4','Ba6','Bc6','Bc4','Be8','Be2'] },
     altMsg: 'Bun — nebunul a plecat pe un câmp unde nu-l ajunge nimeni.',
     ann: {
       0: '🏃 <strong>Fugi.</strong> Uită-te la <strong>nebunul negru din b5</strong>. Turnul alb din d5 se uită drept la el, pe rândul 5 și între ei nu e nimeni. <br><br>Nebunul e atacat. Și mai e ceva: nu-l apără nimeni. <strong>E o piesă atârnată</strong> — dacă Negrul nu face nimic, turnul o ia pe gratis. <br><br>Cel mai simplu răspuns: pleacă de acolo. Mută nebunul.',
-      1: '<strong>…Na4</strong> — nebunul a ieșit de pe rândul 5 și turnul nu mai are ce lua. <br><br>Mergeau și <strong>…Na6, …Nc6, …Nc4, …Ne8, …Ne2</strong>. <br><br>⚠️ Dar atenție unde fugi: pe <strong>d7</strong> și pe <strong>d3</strong> nebunul rămâne tot în bătaia turnului, doar că pe coloană în loc de rând. Iar pe <strong>f1</strong> îl ia regele alb. <strong>Nu e destul să fugi — trebuie să fugi undeva în siguranță.</strong>'
+      1: 'Câmpurile verzi sunt sigure pentru nebun: <strong>a6, c4, e2, a4, c6, e8</strong>. Pe oricare dintre ele turnul nu-l mai ajunge. <br><br>⚠️ Dar atenție unde fugi: pe <strong>d7</strong> și pe <strong>d3</strong> nebunul rămâne tot în bătaia turnului, doar că pe coloană în loc de rând. Iar pe <strong>f1</strong> îl ia regele alb. <strong>Nu e destul să fugi — trebuie să fugi undeva în siguranță.</strong>'
     },
     arrows: {}
   },
@@ -629,7 +631,8 @@ function currentStep() {
 function loadChapter(idx) {
   curChapterIdx = idx;
   const ch = chapters[idx];
-  positions = computePositions(ch);
+  if (ch.safeSquares) { positions = [ch.fen, ch.fen]; moveSquares = []; }
+  else positions = computePositions(ch);
   board.orientation(ch.orient || 'white');
   buildMovesList();
   goToStep(0);
@@ -656,7 +659,14 @@ function goToStep(s) {
   if (s > 0 && moveSquares[s - 1]) showLastMove(moveSquares[s - 1].from, moveSquares[s - 1].to);
   else clearLastMove();
   showCheckHL(sGame);
-  if (s > 0 && s === prevStep + 1) playMoveSound(chapters[curChapterIdx].san[s - 1], sGame);
+  clearSafeSquares();
+  const chS = chapters[curChapterIdx];
+  if (chS.safeSquares) {
+    if (s === 1) chS.safeSquares.forEach(function (q) {
+      const el = document.querySelector('.square-' + q);
+      if (el) el.classList.add('safe-square');
+    });
+  } else if (s > 0 && s === prevStep + 1) playMoveSound(chS.san[s - 1], sGame);
   redrawStudyArrows(s);
   updateUI(s);
 }
@@ -666,8 +676,13 @@ function goLast()  { goToStep(positions.length - 1); }
 function goPrev()  { const s = currentStep(); if (s > 0) goToStep(s - 1); }
 function goNext()  { const s = currentStep(); if (s < positions.length - 1) goToStep(s + 1); }
 
+function clearSafeSquares() {
+  document.querySelectorAll('.safe-square').forEach(function (el) { el.classList.remove('safe-square'); });
+}
+
 function getMoveLabel(s) {
   if (s === 0) return 'Start';
+  if (chapters[curChapterIdx].safeSquares) return 'Câmpuri sigure';
   const parts   = positions[s - 1].split(' ');
   const turn    = parts[1];
   const moveNum = parts[5];
@@ -717,6 +732,7 @@ function buildMovesList() {
   const ch  = chapters[curChapterIdx];
   const log = document.getElementById('movesLog');
   log.innerHTML = '';
+  if (ch.safeSquares) return;
   const total = ch.san.length;
   if (total === 0) return;
   let i = 0;
@@ -933,7 +949,7 @@ function startPractice(idx) {
   for (let i = ch.practiceFrom; i < ch.san.length; i++) if ((i - ch.practiceFrom) % 2 === 0) pracKeyTotal++;
   pracFirstTryCount = 0; pracKeyDone = 0; pracErrThisMove = false; pracUserTurn = false;
   pracHintStage = 0;
-  clearStudyArrows(); clearSel(); clearPracHint(); clearCheckHL(); clearLastMove();
+  clearStudyArrows(); clearSel(); clearPracHint(); clearCheckHL(); clearLastMove(); clearSafeSquares();
   document.getElementById('navControls').style.display = 'none';
   const panel = document.getElementById('practicePanel');
   const openItem = document.querySelector('#accList .acc-item.open');
