@@ -238,7 +238,7 @@
           <div class="hl-box">
             <h4>Castelele</h4>
             <p>În repriza 1, <span class="castle-ico blue"></span><span class="c-blue">castelul tău albastru</span> este în colțul <strong>a1</strong>, iar <span class="castle-ico red"></span><span class="c-red">castelul roșu</span> al celuilalt jucător este în colțul <strong>h8</strong>.</p>
-            <p>În repriza 2 castelele își schimbă locul: castelul tău albastru ajunge în h8.</p>
+            <p>În repriza 2 castelele își schimbă locul: castelul tău albastru ajunge în h8. Contra calculatorului, tabla se întoarce, ca să ai castelul tot jos.</p>
           </div>
 
           <div class="hl-box">
@@ -554,6 +554,7 @@ function startRound(r) {
     if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
     round = r; K = -1; LO = 0; HI = 0; side = 0; nMoves = 0; roundOver = false; selSq = null;
     ttClear();
+    board.orientation(mode === 'robot' && playerOfSide(1, r) === 1 ? 'black' : 'white');   // castelul tău jos
     board.position({}, false);
     clearHL();
     renderMarks();

@@ -256,7 +256,7 @@
 
           <div class="hl-box warn">
             <h4>Reprizele și cine câștigă</h4>
-            <p>Jocul are două reprize. În prima repriză tu ești iepurașii, iar calculatorul este căluții. În a doua repriză <strong>vă schimbați rolurile</strong>. Tabla rămâne la fel, cu iepurașii jos.</p>
+            <p>Jocul are două reprize. În prima repriză tu ești iepurașii, iar calculatorul este căluții. În a doua repriză <strong>vă schimbați rolurile</strong>. Contra calculatorului, tabla se întoarce, ca să ai căluții jos. În doi, tabla rămâne la fel, cu iepurașii jos.</p>
             <p><strong>Câștigă cine a dus mai mulți iepurași în grădină</strong> atunci când a jucat cu iepurașii. Dacă amândoi au dus tot atâția, este egalitate.</p>
             <p>Cine prinde toți căluții duce în grădină <strong>toți iepurașii rămași</strong>, deci ia punctele lor.</p>
           </div>
@@ -656,6 +656,7 @@ function startRound(r) {
     if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
     round = r; S = newState();
     turn = 'w'; skips = 0; moveCount = 0; roundOver = false; selSq = null;
+    board.orientation(mode === 'robot' && pawnPlayer(r) !== 1 ? 'black' : 'white');   // căluții tăi jos
     board.position(buildPos(), false);
     clearHL();
     showVariantNote();

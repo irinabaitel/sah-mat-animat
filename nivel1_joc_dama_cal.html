@@ -417,6 +417,7 @@ function newMatch() {
 function startRound(r) {
     if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
     round = r; qSq = START_Q; nSq = START_N; turn = 'q'; qMoves = 0; roundOver = false; selSq = null;
+    board.orientation(mode === 'robot' && queenPlayer(r) !== 1 ? 'black' : 'white');   // dama = albul
     board.position(buildPos(), false);
     clearHL();
     document.getElementById('btn-round2').style.display = 'none';

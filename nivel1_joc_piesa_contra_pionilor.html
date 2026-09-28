@@ -663,6 +663,8 @@ function startRound(r) {
     P = V.pawns.map(sqIdx); X = sqIdx(V.pieceSq);
     turnSide = V.pawnColor === 'w' ? 0 : 1;     // albul mută primul
     roundOver = false; selSq = null; passNote = '';
+    const humanColor = pawnsPlayer(r) === 1 ? V.pawnColor : V.pieceColor;   // culoarea ta în repriza asta
+    board.orientation(mode === 'robot' && humanColor === 'b' ? 'black' : 'white');
     board.position(buildPos(), false);
     clearHL();
     document.getElementById('btn-round2').style.display = 'none';

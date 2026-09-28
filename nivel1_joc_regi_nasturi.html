@@ -229,7 +229,6 @@
           <div class="hl-box">
             <h4>Cine începe și cum se mută</h4>
             <p><strong>Începe albul.</strong> Apoi mută negrul, apoi iar albul și tot așa, pe rând. Nu poți sări peste rândul tău: la fiecare mutare regele trebuie să facă un pas.</p>
-            <p>Dacă regele tău nu are niciun pătrat permis, rândul trece la adversar. Pe o tablă cu doar doi regi asta aproape nu se întâmplă.</p>
           </div>
 
           <div class="hl-box warn">
@@ -474,6 +473,7 @@ function startRound(r) {
     round = r;
     wk = W_START; bk = B_START; coins = ALL_COINS;
     score = { w:0, b:0 }; turn = 'w'; plies = 0; roundOver = false; selSq = null;
+    board.orientation(mode === 'robot' && whitePlayer(r) !== 1 ? 'black' : 'white');
     board.position(posObj(), false);
     clearHL(); drawCoins();
     document.getElementById('btn-round2').style.display = 'none';

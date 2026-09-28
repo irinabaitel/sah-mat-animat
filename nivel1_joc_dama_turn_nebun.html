@@ -483,6 +483,7 @@ function startRound(r) {
     if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
     round = r; W = startPieces(); K = idx('f8');
     turn = 'w'; wMoves = 0; lastChance = false; roundOver = false; selSq = null;
+    board.orientation(mode === 'robot' && whitePlayer(r) !== 1 ? 'black' : 'white');
     board.position(buildPos(), false);
     clearHL();
     document.getElementById('btn-round2').style.display = 'none';

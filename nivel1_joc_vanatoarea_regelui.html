@@ -598,6 +598,7 @@ function startRound(r) {
     round = r; chess.load(START_FEN);
     wMoves = 0; roundOver = false; selSq = null; pendingPromo = null; lastFrom = lastTo = null; lastInfo = null;
     document.getElementById('promo-overlay').classList.remove('visible');
+    if (board) board.orientation(mode === 'robot' && whitePlayer(r) !== 1 ? 'black' : 'white');
     showPos();
     clearHL(); updateMarks();
     document.getElementById('btn-round2').style.display = 'none';
