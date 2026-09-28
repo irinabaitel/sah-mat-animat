@@ -41,6 +41,8 @@
     }
     .def-box p { font-size: var(--fs-md); line-height: 1.7; color: var(--c-text); margin: 0; }
     .def-box p strong { color: var(--c-navy); }
+    .mark-att { background: rgba(60,190,80,0.45) !important; }
+    .mark-def { background: rgba(220,60,50,0.40) !important; }
     .def-title { font-family: var(--font-display); font-weight: 900; color: var(--c-navy); margin-bottom: 6px !important; }
     .quote-box {
       background: rgba(26,58,107,0.05); border-left: 4px solid var(--c-navy);
@@ -190,8 +192,7 @@
 
           <div class="def-box">
             <p class="def-title">Numărătoarea</p>
-            <p>Ca să știi dacă o piesă e în siguranță, numeri: <strong>câți o atacă</strong> și <strong>câți o apără</strong>. Fiecare atacator face o captură, fiecare apărător face o recaptură.</p>
-            <p>Dacă atacatorii sunt mai mulți, piesa e în pericol. Dacă sunt la fel de mulți, cel mult e un schimb. Și mereu mai contează ceva: <strong>cât valorează piesele</strong>.</p>
+            <p>Trebuie să reușim să ne dăm seama când o piesă este atacată, dar este și apărată, dacă este în pericol cu adevărat.</p>
           </div>
 
           <div class="acc-list" id="accList"></div>
@@ -202,6 +203,7 @@
             <p>🔢 <strong>Mai mulți atacatori</strong> decât apărători: poți câștiga piesa. <strong>La fel de mulți:</strong> cel mult un schimb, oprește-te la timp.</p>
             <p>⚖️ <strong>Capturezi întâi cu piesa care valorează cel mai puțin.</strong> Și înainte de fiecare captură te întrebi: <strong>ce capturez și ce pot pierde?</strong> Un apărător care valorează puțin poate opri atacatori care valorează mult.</p>
           </div>
+          <p style="font-size:var(--fs-sm); color:var(--c-text-muted); margin:8px 2px 0;"><em>Exemplele „Doi contra unu”, „Doi contra doi” și „Cu cine iei întâi?” sunt după metoda Step by Step (Brunia, van Wijgerden), Pasul 1.</em></p>
 
           <div id="navControls">
             <div class="step-controls">
@@ -321,17 +323,69 @@ const chapters = [
     },
     arrows: {}
   }
+,
 
+  /* ══ NUMĂRĂTOAREA — exemplele autoarei ══ */
+
+  /* 4 — calul din d4: câți atacă, câți apără */
+  {
+    fen: 'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1B6/PPP2PPP/R1BQ1RK1 b kq - 0 1', orient: 'black',
+    winner: 'b', practiceFrom: 0, winEval: 3,
+    finishMsg: 'Ai capturat calul!',
+    san: ['Bxd4'],
+    ann: {
+      0: '🔢 Câte piese negre ar putea captura <strong>calul din d4</strong>? Câte piese îl apără?',
+      1: '<strong>…Nxd4</strong> <br><br>Câte piese negre ar putea captura calul din d4? <strong>Două</strong>, nebunul din c5 și regina. Câte piese îl apără? <strong>Una</strong>, doar regina; 2 la 1 pentru atacatori, deci calul nu este în siguranță. <br><br><strong>Regula: dacă ai mai mulți atacatori decât apărători, de obicei ar trebui să capturezi.</strong> <br><br>În exemplul nostru, negrul ar trebui să captureze cu nebunul, Nxd4.'
+    },
+    arrows: {}
+  },
+
+  /* 5 — albul aduce încă un apărător */
+  {
+    fen: 'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1B6/PPP2PPP/R1BQ1RK1 b kq - 0 1', orient: 'black',
+    winner: 'b', practiceFrom: 0, winEval: null,
+    san: ['O-O','c3','Bxd4','cxd4'],
+    marks: { 2: { att: ['c5','f6'], def: ['d1','c3'] } },
+    ann: {
+      0: 'Dacă, să zicem, negrul nu observă și face altă mutare, cum ar fi 0-0… Urmărește cu ►.',
+      1: '<strong>…0-0</strong> <br><br>Albul observă că are calul în primejdie și nu vrea să plece cu el de acolo pentru că îi place să aibă un cal în centru și atunci mai aduce un apărător (tu câte posibilități găsești?).',
+      2: '<strong>c3</strong> <br><br>Să zicem că alege c3. Acum sunt <strong>doi atacatori</strong> (pătrățelele verzi) și <strong>2 apărători</strong> (pătrățelele roșii). Dacă scorul este egal, partea care se apără este în regulă (dacă sunt mai mulți atacatori, de regulă se capturează piesa).',
+      3: '<strong>…Nxd4</strong> <br><br>De exemplu, dacă …Nxd4, cxd4…',
+      4: '<strong>cxd4</strong> <br><br>…iar negrul sigur nu trebuie să captureze cu Dxd4 pentru că ar pierde regina. <br><br>Când am căutat cum se poate aduce încă un apărător pentru calul din d4, probabil că ai găsit și Ne3; Cf5 nu este o mutare bună pentru că pe f5 calul alb are doar un apărător, în timp ce este atacat de 3 piese: N din d7, C din e7 și D din f6.'
+    },
+    arrows: {}
+  },
+
+  /* 6 — …g4: șase atacatori, cinci apărători (studiul Lichess al autoarei) */
+  {
+    fen: '3r2r1/3q2bk/1p2bn1n/pPp1p1pp/P1PpPp2/3P1P1P/1R2BNPN/2BQKR2 b - - 0 1', orient: 'black',
+    winner: 'b', practiceFrom: 0, winEval: null,
+    finishMsg: 'Ai numărat bine: ultimul care capturează pe g4 ești tu!',
+    san: ['Bf8','Kd2','g4','hxg4','hxg4','Nhxg4','Nfxg4','fxg4','Nxg4','Nxg4','Bxg4','Bxg4','Qxg4','Qxg4','Rxg4'],
+    marks: { 1: { att: ['h3','f3','f2','h2','e2','d1'], def: ['h5','f6','h6','e6','d7','g8'] } },
+    ann: {
+      0: '🔢 Negrul ar vrea să mute <strong>…g4</strong>, dar înainte să o facă ar trebui să numere foarte atent atacatorii și apărătorii. <strong>Numără-i și tu!</strong>',
+      1: '<strong>…Nf8</strong> <br><br>Sunt <strong>6 atacatori</strong> albi (pătrățelele verzi) și <strong>5 apărători</strong> negri. De aceea, înainte de a muta pionul, negrul trebuie să mai aducă un apărător pentru g4 și face asta mutând nebunul din g7 (…Nf8) pentru a deschide calea turnului din g8, care devine al șaselea apărător (pătrățelele roșii).'
+    },
+    arrows: {}
+  }
 ];
 
 /* ─── Acordeon: fiecare item încarcă un capitol ─── */
 const accData = [
+  { chIdx: 4, kind: 't1', num: '1', title: 'Calul din d4: e în pericol?', practice: true,
+    label: '<span class="treapta-cap">🔢 Câți atacă, câți apără?</span>',
+    desc: 'Joci cu <strong>Negrul</strong>. Numără atacatorii și apărătorii calului alb din d4.' },
+  { chIdx: 5, kind: 't1', num: '2', title: 'Albul mai aduce un apărător', practice: false,
+    desc: 'Aceeași poziție. Dacă Negrul nu capturează imediat, Albul își apără calul încă o dată.' },
+  { chIdx: 6, kind: 't1', num: '3', title: 'Înainte de …g4, numără!', practice: true,
+    desc: 'Joci cu <strong>Negrul</strong>. Câți atacă pătrățelul g4 și câți îl apără?' },
   { chIdx: 0, kind: 't1', num: '2:1', title: 'Doi contra unu', practice: true,
-    label: '<span class="treapta-cap">🔢 Câți atacă, câți apără <span class="t-mic">și cât valorează</span></span>',
     desc: 'Doi atacatori, un apărător. Cine are mai mulți capturează ultimul. Dar cu care piesă începi?' },
   { chIdx: 1, kind: 't1', num: '2:2', title: 'Doi contra doi', practice: false,
     desc: 'Un apărător în plus schimbă tot. Poți face un schimb, dar trebuie să te oprești la timp.' },
   { chIdx: 2, kind: 't1', num: '⚖️', title: 'Cu cine iei întâi?', practice: true,
+    label: '<span class="treapta-cap">⚖️ Cine are piese mai bune?</span><div class="note-box" style="margin:6px 0 4px;">Când vorbim despre atacatori și apărători, trebuie să ne dăm seama cine are piese mai bune. Știm deja despre valoarea pieselor. Totuși, aceste valori mai depind și de poziția pieselor pe tablă în timpul partidei; totuși trebuie să ținem seama de valoarea pieselor pentru a decide dacă un schimb este bun pentru noi sau pentru adversar.</div>',
     desc: 'Doi contra unu, dar o ordine a capturilor câștigă și cealaltă pierde. Contează cât valorează piesele.' },
   { chIdx: 3, kind: 't1', num: '⚖️', title: 'Trei contra trei: contează cine sunt', practice: false,
     desc: 'Trei contra trei: două turnuri și o damă contra doi pioni și un cal. Merită să capturezi?' }
@@ -499,6 +553,12 @@ function goToStep(s) {
   else clearLastMove();
   showCheckHL(sGame);
   if (s > 0 && s === prevStep + 1) playMoveSound(chapters[curChapterIdx].san[s - 1], sGame);
+  clearMarks();
+  const mk = chapters[curChapterIdx].marks && chapters[curChapterIdx].marks[s];
+  if (mk) {
+    (mk.att || []).forEach(function (q) { const el = document.querySelector('.square-' + q); if (el) el.classList.add('mark-att'); });
+    (mk.def || []).forEach(function (q) { const el = document.querySelector('.square-' + q); if (el) el.classList.add('mark-def'); });
+  }
   redrawStudyArrows(s);
   updateUI(s);
 }
@@ -507,6 +567,10 @@ function goFirst() { goToStep(0); }
 function goLast()  { goToStep(positions.length - 1); }
 function goPrev()  { const s = currentStep(); if (s > 0) goToStep(s - 1); }
 function goNext()  { const s = currentStep(); if (s < positions.length - 1) goToStep(s + 1); }
+
+function clearMarks() {
+  document.querySelectorAll('.mark-att, .mark-def').forEach(function (el) { el.classList.remove('mark-att', 'mark-def'); });
+}
 
 function getMoveLabel(s) {
   if (s === 0) return 'Start';
@@ -775,7 +839,7 @@ function startPractice(idx) {
   for (let i = ch.practiceFrom; i < ch.san.length; i++) if ((i - ch.practiceFrom) % 2 === 0) pracKeyTotal++;
   pracFirstTryCount = 0; pracKeyDone = 0; pracErrThisMove = false; pracUserTurn = false;
   pracHintStage = 0;
-  clearStudyArrows(); clearSel(); clearPracHint(); clearCheckHL(); clearLastMove();
+  clearStudyArrows(); clearSel(); clearPracHint(); clearCheckHL(); clearLastMove(); clearMarks();
   document.getElementById('navControls').style.display = 'none';
   const panel = document.getElementById('practicePanel');
   const openItem = document.querySelector('#accList .acc-item.open');
