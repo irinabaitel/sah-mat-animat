@@ -455,6 +455,69 @@ const chapters = [
       2: '<strong>…Nxb8</strong> — însă Negrul capturează regina care atârnă în b8.'
     },
     arrows: { 1: [{from:'g3', to:'b8', color:'R'}] }
+  },
+
+  /* ══ CAPTUREAZĂ PIESA ATÂRNATĂ ══ */
+
+  /* 13 — capturează piesa atârnată (1) */
+  {
+    fen: '7r/pk5p/1pp3p1/2b2p2/P1PB4/2P4P/5PP1/R5K1 w - - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: null,
+    finishMsg: 'Ai capturat piesa atârnată!',
+    san: ['Bxh8'],
+    ann: {
+      0: '🎯 Joci cu <strong>Albul</strong>. Una dintre piesele Negrului e atârnată. Găsește-o și captureaz-o.',
+      1: '<strong>Nxh8</strong> — turnul din h8 era atacat de nebunul din d4, pe diagonala a1–h8 și nu îl apăra nimeni.'
+    },
+    arrows: { 1: [{from:'d4', to:'h8', color:'R'}] }
+  },
+  /* 14 — capturează piesa atârnată (2) */
+  {
+    fen: '2k5/ppp4p/8/1BP3p1/PQ5n/2P4P/6P1/5q1K w - - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: null,
+    finishMsg: 'Ai capturat piesa atârnată!',
+    san: ['Bxf1'],
+    ann: {
+      0: '🎯 Joci cu <strong>Albul</strong>. Regina neagră ți-a dat șah din f1. Ce faci?',
+      1: '<strong>Nxf1</strong> — regina a dat șah, dar pe f1 nu o apăra nimeni. Nebunul din b5 o capturează pe diagonala a6–f1.'
+    },
+    arrows: { 1: [{from:'b5', to:'f1', color:'R'}] }
+  },
+  /* 15 — capturează piesa atârnată (3) */
+  {
+    fen: 'r1bqk1nr/pppp1ppp/2n5/2b1p1N1/2B1P3/8/PPPP1PPP/RNBQK2R b KQkq - 5 4', orient: 'black',
+    winner: 'b', practiceFrom: 0, winEval: null,
+    finishMsg: 'Ai capturat piesa atârnată!',
+    san: ['Qxg5'],
+    ann: {
+      0: '🎯 Joci cu <strong>Negrul</strong>. Calul alb a sărit pe g5 ca să atace f7. Ce observi?',
+      1: '<strong>…Dxg5</strong> — calul din g5 era atacat de dama din d8, pe diagonala d8–h4 și nu îl apăra nimeni.'
+    },
+    arrows: { 1: [{from:'d8', to:'g5', color:'R'}] }
+  },
+  /* 16 — capturează piesa atârnată (4) */
+  {
+    fen: 'r4rk1/2pn1ppp/1p2n3/8/2N5/6BP/PPP3P1/1K1RR3 w - - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: null,
+    finishMsg: 'Ai capturat piesa atârnată!',
+    san: ['Rxd7'],
+    ann: {
+      0: '🎯 Joci cu <strong>Albul</strong>. Una dintre piesele Negrului e atârnată. Găsește-o și captureaz-o.',
+      1: '<strong>Txd7</strong> — calul din d7 era atacat de turnul din d1, pe coloana d și nu îl apăra nimeni.'
+    },
+    arrows: { 1: [{from:'d1', to:'d7', color:'R'}] }
+  },
+  /* 17 — capturează piesa atârnată (5) */
+  {
+    fen: 'r2qk2r/ppp2ppp/2n1p3/2bn4/Q5b1/2NP1NP1/PP2PPBP/R1B1K2R w KQkq - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: null,
+    finishMsg: 'Ai capturat piesa atârnată!',
+    san: ['Qxg4'],
+    ann: {
+      0: '🎯 Joci cu <strong>Albul</strong>. Una dintre piesele Negrului e atârnată. Găsește-o și captureaz-o.',
+      1: '<strong>Dxg4</strong> — nebunul din g4 era atacat de regina din a4, pe rândul 4 și nu îl apăra nimeni.'
+    },
+    arrows: { 1: [{from:'a4', to:'g4', color:'R'}] }
   }
 ];
 
@@ -479,6 +542,18 @@ const accData = [
     desc: 'Negrul vrea să atace două piese deodată. Dar pe ce câmp își pune regina?' },
   { chIdx: 12, kind: 't1', num: '🎯', title: 'Regina care atârnă în b8', practice: false,
     desc: 'Albul promovează și visează la un mat pe ultima linie.' },
+
+  { chIdx: 13, kind: 't1', num: '1', title: 'Capturează piesa atârnată!', practice: true,
+    label: '<span class="treapta-cap">🎯 Capturează piesa atârnată! <span class="t-mic">cinci poziții</span></span>',
+    desc: 'Joci cu <strong>Albul</strong>. Găsește piesa pe care nu o apără nimeni.' },
+  { chIdx: 14, kind: 't1', num: '2', title: 'Capturează piesa atârnată!', practice: true,
+    desc: 'Joci cu <strong>Albul</strong>. Găsește piesa pe care nu o apără nimeni.' },
+  { chIdx: 15, kind: 't1', num: '3', title: 'Capturează piesa atârnată!', practice: true,
+    desc: 'Joci cu <strong>Negrul</strong>. Găsește piesa pe care nu o apără nimeni.' },
+  { chIdx: 16, kind: 't1', num: '4', title: 'Capturează piesa atârnată!', practice: true,
+    desc: 'Joci cu <strong>Albul</strong>. Găsește piesa pe care nu o apără nimeni.' },
+  { chIdx: 17, kind: 't1', num: '5', title: 'Capturează piesa atârnată!', practice: true,
+    desc: 'Joci cu <strong>Albul</strong>. Găsește piesa pe care nu o apără nimeni.' },
 
   { chIdx: 6, kind: 't1', num: '2:1', title: 'Doi contra unu', practice: true,
     label: '<span class="treapta-cap">🔢 Numărătoarea <span class="t-mic">câți atacă, câți apără și cât valorează</span></span>',
