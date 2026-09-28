@@ -196,23 +196,27 @@
           </div>
 
           <div class="card">
-            <p><strong>Când o piesă de-a ta e atacată, ai patru răspunsuri.</strong> Nu unul — patru. Le vezi pe rând în lecție:</p>
+            <p><strong>Când o piesă de-a ta e atacată, poți răspunde în cinci feluri.</strong></p>
             <div class="tacam">
               <div class="tac"><span class="t-ico">🏃</span><div>
-                <div class="t-nume">Fug</div>
-                <div class="t-txt">O mut de acolo. Cel mai simplu — dar ai grijă <em>unde</em> o muți.</div>
+                <div class="t-nume">1. Fug</div>
+                <div class="t-txt">Fugi cu piesa pe un câmp sigur, unde nu e în pericol.</div>
               </div></div>
               <div class="tac"><span class="t-ico">🛡️</span><div>
-                <div class="t-nume">O apăr</div>
-                <div class="t-txt">Aduc un coleg care s-o răzbune. Nu împiedic captura — dar el plătește pentru ea.</div>
+                <div class="t-nume">2. O apăr</div>
+                <div class="t-txt">O aperi cu o altă piesă. <strong>Atenție!</strong> Dacă aperi o piesă, nu înseamnă neapărat că adversarul nu o va captura. Dacă aperi o damă cu un pion, fii sigur că dama va fi capturată imediat. Chiar dacă o aperi cu un turn, atunci când o atacă un nebun, să zicem, tot va fi capturată.</div>
               </div></div>
               <div class="tac"><span class="t-ico">⚔️</span><div>
-                <div class="t-nume">Îl capturez pe atacator</div>
-                <div class="t-txt">Nu mai e cine să atace. Ori cu piesa atacată, ori cu alta.</div>
+                <div class="t-nume">3. Capturez atacatorul</div>
+                <div class="t-txt">Dacă poți și merită, capturezi atacatorul.</div>
               </div></div>
               <div class="tac"><span class="t-ico">🧱</span><div>
-                <div class="t-nume">Pun ceva în cale</div>
-                <div class="t-txt">Doar împotriva pieselor care merg în linie: dama, turnul, nebunul. Împotriva calului nu ai ce pune în cale.</div>
+                <div class="t-nume">4. Fac un scut</div>
+                <div class="t-txt">Pui în calea atacatorului o piesă mai puțin valoroasă, dar care e apărată de o altă piesă de-a ta.</div>
+              </div></div>
+              <div class="tac"><span class="t-ico">💥</span><div>
+                <div class="t-nume">5. Contraatac</div>
+                <div class="t-txt">Poți neglija atacul asupra piesei tale și să declanșezi un atac mai puternic, asupra unei piese mai valoroase a adversarului sau chiar asupra regelui.</div>
               </div></div>
             </div>
           </div>
@@ -293,7 +297,7 @@ const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 const chapters = [
 
-  /* ══ ÎNȚELEG — cele patru răspunsuri ══ */
+  /* ══ ÎNȚELEG — răspunsurile, apoi numărătoarea ══ */
 
   /* 0 — fug */
   {
@@ -314,7 +318,7 @@ const chapters = [
   {
     fen: '6k1/8/8/1b1R4/8/8/2n5/6K1 b - - 0 1', orient: 'black',
     winner: 'b', practiceFrom: 0, winEval: 0,
-    finishMsg: 'Nebunul are acum cine să-l răzbune.',
+    finishMsg: 'Nebunul e acum apărat.',
     san: ['Na3'],
     ann: {
       0: '🛡️ <strong>O apăr.</strong> Aceeași poziție. De data asta nu mai fugim — îi aducem nebunului un apărător. <br><br>Cine poate? <strong>Calul din c2.</strong> Găsește câmpul de unde calul ajunge la b5.',
@@ -399,7 +403,7 @@ const chapters = [
     ann: {
       0: '🔢 <strong>Doi contra unu.</strong> Până acum ai văzut <strong>unu contra zero</strong> (piesa atârnată, o iei pe gratis) și <strong>unu contra unu</strong> (un schimb). Acum numărăm mai departe. <br><br>Joci cu <strong>Albul</strong>. Uită-te la <strong>nebunul negru din g5</strong> și numără. <br><br>Îl atacă: <strong>calul din f3</strong> și <strong>turnul din g1</strong> — adică <strong>doi</strong>. <br>Îl apără: <strong>turnul din g8</strong> — adică <strong>unu</strong>. <br><br>Doi atacatori, un singur apărător. Ia nebunul.',
       1: '<strong>Txg5</strong> — primul atacator ia nebunul.',
-      2: '<strong>…Txg5</strong> — apărătorul răzbună. Acum Negrul nu mai are niciun apărător.',
+      2: '<strong>…Txg5</strong> — apărătorul recapturează. Acum Negrul nu mai are niciun apărător.',
       3: '<strong>Cxg5</strong> — al doilea atacator ia ultimul. <br><br>Socoteala: ai luat un nebun și un turn (3 + 5 = 8), ai dat un turn (5). <strong>Ai câștigat 3 — un nebun întreg.</strong> <br><br>Așa merge numărătoarea: fiecare atacator face o captură, fiecare apărător face o recaptură. <strong>Cine are mai mulți, ia ultimul.</strong>'
     },
     arrows: { 0: [{from:'f3', to:'g5', color:'G'}, {from:'g1', to:'g5', color:'G'}, {from:'g8', to:'g5', color:'B'}] }
@@ -430,7 +434,7 @@ const chapters = [
     ann: {
       0: '⚖️ <strong>Cu cine iei întâi?</strong> Joci cu <strong>Albul</strong>. Turnul negru din <strong>c4</strong> e atacat de <strong>dama din b3</strong> și de <strong>turnul din c1</strong> — doi. Îl apără doar <strong>nebunul din a6</strong> — unu. <br><br>Doi contra unu, deci îl poți câștiga. Dar acum contează și cu cine iei primul. Gândește-te la cine rămâne în bătaia nebunului după captură.',
       1: '<strong>Txc4</strong> — iei cu turnul, piesa mai ieftină dintre cele două.',
-      2: '<strong>…Nxc4</strong> — nebunul răzbună turnul.',
+      2: '<strong>…Nxc4</strong> — nebunul recapturează.',
       3: '<strong>Dxc4</strong> — dama ia ultimul. <br><br>Socoteala: ai luat turn și nebun (5 + 3 = 8), ai dat turn (5). <strong>Ai câștigat 3.</strong> <br><br>❌ Dacă luai întâi cu dama: <strong>Dxc4? Nxc4 Txc4</strong> — ai luat tot turn și nebun (8), dar ai dat dama (9). <strong>Ai pierdut un punct</strong>, deși numărătoarea era aceeași. <br><br>Regula: <strong>iei întâi cu piesa cea mai ieftină.</strong> Piesa scumpă vine ultima, când nu mai are cine s-o ia.'
     },
     arrows: { 0: [{from:'b3', to:'c4', color:'G'}, {from:'c1', to:'c4', color:'G'}, {from:'a6', to:'c4', color:'B'}] }
@@ -461,9 +465,9 @@ const accData = [
     desc: 'Nebunul negru e atacat de turn și nu-l apără nimeni. E o piesă <strong>atârnată</strong>. Cel mai simplu: pleacă.' },
   { chIdx: 1, kind: 't1', num: '🛡️', title: 'Apăr piesa atacată', practice: true,
     desc: 'Aceeași poziție, alt răspuns: aduci un apărător. Dar ai grijă — un câmp e bun, altul pierde calul.' },
-  { chIdx: 2, kind: 't1', num: '⚔️', title: 'Îl capturez pe atacator', practice: true,
+  { chIdx: 2, kind: 't1', num: '⚔️', title: 'Capturez atacatorul', practice: true,
     desc: 'Doi cai care se atacă unul pe altul. Unul e apărat, celălalt e atârnat. E rândul celui atârnat.' },
-  { chIdx: 3, kind: 't1', num: '🧱', title: 'Pun ceva în calea atacatorului', practice: true,
+  { chIdx: 3, kind: 't1', num: '🧱', title: 'Fac un scut', practice: true,
     desc: 'Un nebun se uită drept la damă. Nu fugi neapărat — taie-i diagonala.' },
   { chIdx: 6, kind: 't1', num: '2:1', title: 'Doi contra unu', practice: true,
     desc: 'Doi atacatori, un apărător. Cine are mai mulți, ia ultimul.' },
@@ -1162,7 +1166,7 @@ function buildAccordion() {
   const list = document.getElementById('accList');
   let openLbl = false, trapLbl = false, defLbl = false;
   accData.forEach(function (d) {
-    if (d.kind === 't1' && !openLbl) { addLabel(list, '<span class="treapta-cap">🐣 Înțeleg <span class="t-mic">cele patru răspunsuri, apoi numărătoarea</span></span>'); openLbl = true; }
+    if (d.kind === 't1' && !openLbl) { addLabel(list, '<span class="treapta-cap">🐣 Înțeleg <span class="t-mic">răspunsurile, apoi numărătoarea</span></span>'); openLbl = true; }
     if (d.kind === 't2' && !trapLbl) { addLabel(list, '<span class="treapta-cap">🐦 Mă pricep <span class="t-mic">alegi tu răspunsul, pe tablă</span></span>'); trapLbl = true; }
     if (d.kind === 't3' && !defLbl)  { addLabel(list, '<span class="treapta-cap">🦅 Sunt maestru <span class="t-mic">mai multe lucruri deodată, într-o singură poziție</span></span>'); defLbl = true; }
     const item = document.createElement('div');
