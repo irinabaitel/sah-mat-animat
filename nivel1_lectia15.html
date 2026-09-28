@@ -164,18 +164,14 @@
       background: rgba(46, 160, 96, 0.14);
       border-left-color: #2ea060;
     }
-    /* ── o tablă pentru fiecare exemplu ── */
-    .study-main { flex: 1; min-height: 0; overflow-y: auto; padding: 14px max(var(--gap), var(--sq)); }
-    .study-inner { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
-    .ex-card {
+    /* ── exemplele din panou: fiecare cu mutările și comentariile lui ── */
+    .ex-block {
       background: var(--c-surface); border: 2px solid var(--c-border); border-radius: var(--radius);
-      padding: 14px; display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 18px; align-items: start;
+      padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.15s;
     }
-    .ex-card .ex-title { grid-column: 1 / -1; font-family: var(--font-display); font-weight: 900; color: var(--c-navy); font-size: var(--fs-lg, 1.2rem); }
-    .ex-card .board-wrapper { width: 100%; position: relative; touch-action: none; }
-    .ex-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-    .ex-side .moves-log { height: auto; max-height: calc(4 * 2rem + 12px); }
-    @media (max-width: 760px) { .ex-card { grid-template-columns: 1fr; } }
+    .ex-block.active { border-color: var(--c-navy); box-shadow: 0 0 0 2px rgba(26,58,107,0.15); }
+    .ex-title { font-family: var(--font-display); font-weight: 900; color: var(--c-navy); font-size: var(--fs-md); }
+    .ex-block .moves-log { height: auto; max-height: calc(4 * 2rem + 12px); }
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -189,8 +185,18 @@
     </div>
   </header>
 
-  <main class="study-main" role="main">
-    <div class="study-inner">
+  <main class="page-main" role="main">
+    <div class="board-col">
+      <div class="board-stage">
+        <div class="board-wrapper" id="boardWrapper">
+          <div id="board"></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel-col">
+      <div class="panel-scroll">
+        <div class="info-content">
+
 
           <div class="def-box">
             <p class="def-title">Numărătoarea</p>
@@ -207,6 +213,9 @@
           </div>
           <p style="font-size:var(--fs-sm); color:var(--c-text-muted); margin:8px 2px 0;"><em>Exemplele „Doi contra unu”, „Doi contra doi” și „Cu cine iei întâi?” sunt după metoda Step by Step (Brunia, van Wijgerden), Pasul 1. Celelalte poziții sunt preluate din lecțiile ChessKid.</em></p>
 
+    
+        </div>
+      </div>
     </div>
   </main>
 
@@ -348,28 +357,122 @@ function kingInCheck(game) {
   return null;
 }
 
-/* O tablă de studiu: poziția, mutările ei și comentariile, cu ◄ ► */
-function makeStudy(ex, idx, host) {
-  const card = document.createElement('div');
-  card.className = 'ex-card';
-  const bid = 'board' + idx;
-  card.innerHTML =
-    '<div class="ex-title">' + (idx + 1) + '. ' + ex.title + '</div>' +
-    '<div class="board-wrapper"><div id="' + bid + '"></div></div>' +
-    '<div class="ex-side">' +
-      '<div class="step-controls">' +
-        '<button class="ctrl-btn" data-a="first" title="Prima poziție">&#9198;</button>' +
-        '<button class="ctrl-btn" data-a="prev" title="Înapoi">&#9664;</button>' +
-        '<div class="move-counter">Start</div>' +
-        '<button class="ctrl-btn" data-a="next" title="Înainte">&#9654;</button>' +
-        '<button class="ctrl-btn" data-a="last" title="Ultima poziție">&#9197;</button>' +
-      '</div>' +
-      '<div class="annotation-box"></div>' +
-      '<div class="moves-log"></div>' +
-    '</div>';
-  host.appendChild(card);
+let game = null, sel = null, activeIdx = -1;
+const studies = [];   /* pentru fiecare exemplu: pozițiile, mutările și pasul curent */
 
-  /* pozițiile după fiecare semimutare */
+const q = function (sq) { return document.querySelector('#boardWrapper .square-' + sq); };
+const clearCls = function (cls) { document.querySelectorAll('#boardWrapper .' + cls).forEach(function (el) { el.classList.remove(cls); }); };
+
+/* mutare liberă, dar legală; pe tabla de studiu poate muta oricare tabără */
+function mutaLiber(from, to) {
+  let mv = game.move({ from: from, to: to, promotion: 'q' });
+  if (mv) return mv;
+  const f = game.fen().split(' ');
+  f[1] = (f[1] === 'w') ? 'b' : 'w'; f[3] = '-';
+  const alt = new Chess(f.join(' '));
+  mv = alt.move({ from: from, to: to, promotion: 'q' });
+  if (mv) { game = alt; return mv; }
+  return null;
+}
+
+function decorate() {
+  ['last-move', 'mark-att', 'mark-def', 'highlight-check', 'square-selected'].forEach(clearCls);
+  sel = null;
+  const st = studies[activeIdx];
+  if (st && st.step > 0 && st.fens[st.step] === game.fen()) {
+    const mv = st.moves[st.step - 1];
+    [mv.from, mv.to].forEach(function (sq) { const el = q(sq); if (el) el.classList.add('last-move'); });
+    const mk = st.ex.marks && st.ex.marks[st.step];
+    if (mk) {
+      (mk.att || []).forEach(function (sq) { const el = q(sq); if (el) el.classList.add('mark-att'); });
+      (mk.def || []).forEach(function (sq) { const el = q(sq); if (el) el.classList.add('mark-def'); });
+    }
+  }
+  const k = kingInCheck(game);
+  if (k) { const el = q(k); if (el) el.classList.add('highlight-check'); }
+}
+
+const board = Chessboard('board', {
+  draggable: true,
+  position: 'start',
+  pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+  onDragStart: function () { return !rmbDown && game !== null; },
+  onDrop: function (from, to) {
+    if (to === 'offboard' || from === to) return 'snapback';
+    if (!mutaLiber(from, to)) return 'snapback';
+    if (window._annClear) window._annClear();
+    setTimeout(function () { board.position(game.fen(), false); decorate(); }, 0);
+  }
+});
+
+$(document).on('click', '#boardWrapper .square-55d63', function (e) {
+  if (e.button !== 0 || !game) return;
+  const sq = $(this).data('square');
+  if (sel) {
+    const from = sel;
+    clearCls('square-selected'); sel = null;
+    if (sq !== from && mutaLiber(from, sq)) { board.position(game.fen(), false); decorate(); }
+  } else if (board.position()[sq]) {
+    sel = sq;
+    const el = q(sq); if (el) el.classList.add('square-selected');
+  }
+});
+
+function label(st, s) {
+  if (s === 0) return 'Start';
+  const f = st.fens[s - 1].split(' ');
+  return f[1] === 'w' ? f[5] + '. ' + toRo(st.ex.san[s - 1]) : f[5] + '… ' + toRo(st.ex.san[s - 1]);
+}
+
+/* pune exemplul idx pe tablă, la pasul s */
+function go(idx, s) {
+  const st = studies[idx];
+  const prev = (activeIdx === idx) ? st.step : -1;
+  if (activeIdx !== idx) {
+    studies.forEach(function (o, i) { o.el.classList.toggle('active', i === idx); });
+    activeIdx = idx;
+    board.orientation(st.ex.orient || 'white');
+  }
+  st.step = Math.max(0, Math.min(st.fens.length - 1, s));
+  game = new Chess(st.fens[st.step]);
+  board.position(st.fens[st.step], false);
+  decorate();
+  if (st.step > 0 && st.step === prev + 1) playMoveSound(st.ex.san[st.step - 1], game);
+  const el = st.el;
+  el.querySelector('.move-counter').textContent = label(st, st.step);
+  el.querySelector('.annotation-box').innerHTML = (st.ex.ann && st.ex.ann[st.step]) ||
+    (st.step === 0 ? '<em style="opacity:.55">Apasă &#9654; pentru a avansa prin mutări.</em>' : '');
+  el.querySelector('[data-a="first"]').disabled = st.step === 0;
+  el.querySelector('[data-a="prev"]').disabled  = st.step === 0;
+  el.querySelector('[data-a="next"]').disabled  = st.step === st.fens.length - 1;
+  el.querySelector('[data-a="last"]').disabled  = st.step === st.fens.length - 1;
+  const log = el.querySelector('.moves-log');
+  log.querySelectorAll('.mlog-token').forEach(function (b) { b.classList.toggle('active', +b.dataset.step === st.step); });
+  const active = log.querySelector('.mlog-token.active');
+  if (active) {
+    const a = active.getBoundingClientRect(), l = log.getBoundingClientRect();
+    if (a.top < l.top)            log.scrollTop += a.top - l.top;
+    else if (a.bottom > l.bottom) log.scrollTop += a.bottom - l.bottom;
+  }
+  if (window._annClear) window._annClear();
+}
+
+function makeBlock(ex, idx, host) {
+  const el = document.createElement('div');
+  el.className = 'ex-block';
+  el.innerHTML =
+    '<div class="ex-title">' + (idx + 1) + '. ' + ex.title + '</div>' +
+    '<div class="step-controls">' +
+      '<button class="ctrl-btn" data-a="first" title="Prima poziție">&#9198;</button>' +
+      '<button class="ctrl-btn" data-a="prev" title="Înapoi">&#9664;</button>' +
+      '<div class="move-counter">Start</div>' +
+      '<button class="ctrl-btn" data-a="next" title="Înainte">&#9654;</button>' +
+      '<button class="ctrl-btn" data-a="last" title="Ultima poziție">&#9197;</button>' +
+    '</div>' +
+    '<div class="annotation-box"></div>' +
+    '<div class="moves-log"></div>';
+  host.appendChild(el);
+
   const c = new Chess(ex.fen);
   const fens = [c.fen()], moves = [];
   ex.san.forEach(function (m) {
@@ -377,101 +480,10 @@ function makeStudy(ex, idx, host) {
     if (!r) { console.error('Mutare invalidă:', m, 'în', c.fen()); return; }
     moves.push(r); fens.push(c.fen());
   });
+  const st = { ex: ex, el: el, fens: fens, moves: moves, step: 0 };
+  studies.push(st);
 
-  let step = 0, game = new Chess(ex.fen), sel = null;
-  const q = function (sq) { return card.querySelector('.square-' + sq); };
-  const clearCls = function (cls) { card.querySelectorAll('.' + cls).forEach(function (el) { el.classList.remove(cls); }); };
-
-  function decorate() {
-    ['last-move', 'mark-att', 'mark-def', 'highlight-check', 'square-selected'].forEach(clearCls);
-    sel = null;
-    if (step > 0 && fens[step] === game.fen()) {
-      const mv = moves[step - 1];
-      [mv.from, mv.to].forEach(function (sq) { const el = q(sq); if (el) el.classList.add('last-move'); });
-      const mk = ex.marks && ex.marks[step];
-      if (mk) {
-        (mk.att || []).forEach(function (sq) { const el = q(sq); if (el) el.classList.add('mark-att'); });
-        (mk.def || []).forEach(function (sq) { const el = q(sq); if (el) el.classList.add('mark-def'); });
-      }
-    }
-    const k = kingInCheck(game);
-    if (k) { const el = q(k); if (el) el.classList.add('highlight-check'); }
-  }
-
-  /* mutare liberă, dar legală; pe tabla de studiu poate muta oricare tabără */
-  function mutaLiber(from, to) {
-    let mv = game.move({ from: from, to: to, promotion: 'q' });
-    if (mv) return mv;
-    const f = game.fen().split(' ');
-    f[1] = (f[1] === 'w') ? 'b' : 'w'; f[3] = '-';
-    const alt = new Chess(f.join(' '));
-    mv = alt.move({ from: from, to: to, promotion: 'q' });
-    if (mv) { game = alt; return mv; }
-    return null;
-  }
-
-  const board = Chessboard(bid, {
-    draggable: true,
-    position: ex.fen,
-    orientation: ex.orient || 'white',
-    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
-    onDragStart: function () { return !rmbDown; },
-    onDrop: function (from, to) {
-      if (to === 'offboard' || from === to) return 'snapback';
-      const mv = mutaLiber(from, to);
-      if (!mv) return 'snapback';
-      if (window._annClear) window._annClear();
-      setTimeout(function () { board.position(game.fen(), false); decorate(); }, 0);
-    }
-  });
-
-  $(card).on('click', '.square-55d63', function (e) {
-    if (e.button !== 0) return;
-    const sq = $(this).data('square');
-    if (sel) {
-      const from = sel;
-      clearCls('square-selected'); sel = null;
-      if (sq !== from && mutaLiber(from, sq)) { board.position(game.fen(), false); decorate(); }
-    } else if (board.position()[sq]) {
-      sel = sq;
-      const el = q(sq); if (el) el.classList.add('square-selected');
-    }
-  });
-
-  const counter = card.querySelector('.move-counter');
-  const annBox  = card.querySelector('.annotation-box');
-  const log     = card.querySelector('.moves-log');
-
-  function label(s) {
-    if (s === 0) return 'Start';
-    const f = fens[s - 1].split(' ');
-    return f[1] === 'w' ? f[5] + '. ' + toRo(ex.san[s - 1]) : f[5] + '… ' + toRo(ex.san[s - 1]);
-  }
-
-  function go(s) {
-    const prev = step;
-    step = Math.max(0, Math.min(fens.length - 1, s));
-    game = new Chess(fens[step]);
-    board.position(fens[step], false);
-    decorate();
-    if (step > 0 && step === prev + 1) playMoveSound(ex.san[step - 1], game);
-    counter.textContent = label(step);
-    annBox.innerHTML = (ex.ann && ex.ann[step]) || (step === 0 ? '<em style="opacity:.55">Apasă &#9654; pentru a avansa prin mutări.</em>' : '');
-    card.querySelector('[data-a="first"]').disabled = step === 0;
-    card.querySelector('[data-a="prev"]').disabled  = step === 0;
-    card.querySelector('[data-a="next"]').disabled  = step === fens.length - 1;
-    card.querySelector('[data-a="last"]').disabled  = step === fens.length - 1;
-    log.querySelectorAll('.mlog-token').forEach(function (b) { b.classList.toggle('active', +b.dataset.step === step); });
-    const active = log.querySelector('.mlog-token.active');
-    if (active) {
-      const a = active.getBoundingClientRect(), l = log.getBoundingClientRect();
-      if (a.top < l.top)            log.scrollTop += a.top - l.top;
-      else if (a.bottom > l.bottom) log.scrollTop += a.bottom - l.bottom;
-    }
-    if (window._annClear) window._annClear();
-  }
-
-  /* lista de mutări */
+  const log = el.querySelector('.moves-log');
   let row = null;
   ex.san.forEach(function (m, i) {
     const f = fens[i].split(' ');
@@ -484,22 +496,24 @@ function makeStudy(ex, idx, host) {
     const b = document.createElement('button');
     b.className = 'mlog-token ' + (f[1] === 'w' ? 'mlog-w' : 'mlog-b');
     b.textContent = toRo(m); b.dataset.step = i + 1;
-    b.onclick = function () { go(i + 1); };
+    b.onclick = function () { go(idx, i + 1); };
     row.appendChild(b);
   });
 
-  card.querySelector('[data-a="first"]').onclick = function () { go(0); };
-  card.querySelector('[data-a="prev"]').onclick  = function () { go(step - 1); };
-  card.querySelector('[data-a="next"]').onclick  = function () { go(step + 1); };
-  card.querySelector('[data-a="last"]').onclick  = function () { go(fens.length - 1); };
-
-  window.addEventListener('resize', function () { board.resize(); decorate(); });
-  go(0);
+  el.querySelector('[data-a="first"]').onclick = function () { go(idx, 0); };
+  el.querySelector('[data-a="prev"]').onclick  = function () { go(idx, st.step - 1); };
+  el.querySelector('[data-a="next"]').onclick  = function () { go(idx, activeIdx === idx ? st.step + 1 : st.step); };
+  el.querySelector('[data-a="last"]').onclick  = function () { go(idx, fens.length - 1); };
+  el.querySelector('.ex-title').onclick = function () { go(idx, st.step); };
+  el.querySelector('.ex-title').style.cursor = 'pointer';
+  el.querySelector('.annotation-box').innerHTML = (ex.ann && ex.ann[0]) || '';
+  el.querySelector('[data-a="first"]').disabled = true;
+  el.querySelector('[data-a="prev"]').disabled  = true;
 }
 
 const host = document.getElementById('studii');
 examples.forEach(function (ex, i) {
-  makeStudy(ex, i, host);
+  makeBlock(ex, i, host);
   if (i === 1) {
     const n = document.createElement('div');
     n.className = 'note-box';
@@ -507,6 +521,19 @@ examples.forEach(function (ex, i) {
     n.innerHTML = '⚖️ ' + VALOARE;
     host.appendChild(n);
   }
+});
+go(0, 0);
+
+document.addEventListener('keydown', function (e) {
+  if (activeIdx < 0) return;
+  const st = studies[activeIdx];
+  if (e.key === 'ArrowRight') go(activeIdx, st.step + 1);
+  if (e.key === 'ArrowLeft')  go(activeIdx, st.step - 1);
+});
+
+window.addEventListener('resize', function () {
+  board.resize(); decorate();
+  if (window._annRender) window._annRender();
 });
 </script>
 
