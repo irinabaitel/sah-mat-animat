@@ -23,9 +23,7 @@
   }
 
   /* HIGHLIGHTS (selectat / posibil / captură / șah = clasele din master) */
-  .sq-last     { background-color: rgba(160,60,200,0.35) !important; }
-  .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
-
+  .sq-wrong    { box-shadow: inset 0 0 0 100vmax rgba(220,40,40,0.55) !important; }
   .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
 
   /* CUM SE JOACĂ */
@@ -515,7 +513,7 @@ const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Calcu
 /* ---------- afișare ---------- */
 function showPos() { if (board) board.position(chess.fen(), false); }
 function clearHL(keepLast) {
-    const cls = keepLast ? 'highlight-selected highlight-legal highlight-capture sq-wrong' : 'highlight-selected highlight-legal highlight-capture sq-wrong sq-last';
+    const cls = keepLast ? 'highlight-selected highlight-legal highlight-capture sq-wrong' : 'highlight-selected highlight-legal highlight-capture sq-wrong highlight-last';
     $('#board [class*="square-"]').removeClass(cls);
 }
 function applyHL(sq, cls) {
@@ -529,8 +527,8 @@ function kingSquare(color) {
 }
 function updateMarks() {
     $('#board .highlight-check').removeClass('highlight-check');
-    $('#board .sq-last').removeClass('sq-last');
-    if (lastFrom) { applyHL(lastFrom, 'sq-last'); applyHL(lastTo, 'sq-last'); }
+    $('#board .highlight-last').removeClass('highlight-last');
+    if (lastFrom) { applyHL(lastFrom, 'highlight-last'); applyHL(lastTo, 'highlight-last'); }
     if (chess.in_check()) applyHL(kingSquare(chess.turn()), 'highlight-check');
 }
 function showSelection(sq) {

@@ -23,7 +23,6 @@
   }
 
   /* HIGHLIGHTS — background-image se suprapune peste culoarea tablei, păstrând transparența */
-  .sq-ai       { background-color: rgba(160,60,200,0.35) !important; }
 
   .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
 
@@ -458,7 +457,7 @@ function pickAIMove(c, randomChance) {
 function clearHL() {
     COL.split('').forEach(c => {
         for (let r=1; r<=8; r++)
-            $(`.square-${c}${r}`).removeClass('highlight-selected highlight-legal sq-ai');
+            $(`.square-${c}${r}`).removeClass('highlight-selected highlight-legal highlight-last');
     });
 }
 function showHL(sel, dests) {
@@ -599,7 +598,7 @@ function aiWhiteTurn(note) {
         if (g !== gameGen || gameOver || mode !== 'robot') return;
         const mv = pickAIMove('w', aiRandomChance);
         if (!mv) { startTurn(); return; }
-        $(`.square-${pcs[mv.key].sq}`).addClass('sq-ai');
+        $(`.square-${pcs[mv.key].sq}`).addClass('highlight-last');
         setTimeout(() => {
             if (g !== gameGen || gameOver || mode !== 'robot') return;
             clearHL();

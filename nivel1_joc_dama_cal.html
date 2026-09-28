@@ -23,9 +23,7 @@
   }
 
   /* HIGHLIGHTS */
-  .sq-last     { background-color: rgba(160,60,200,0.35) !important; }
-  .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
-
+  .sq-wrong    { box-shadow: inset 0 0 0 100vmax rgba(220,40,40,0.55) !important; }
   .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
 
   /* TOGGLES */
@@ -347,7 +345,7 @@ function buildPos() {
     return pos;
 }
 function clearHL(keepLast) {
-    const cls = keepLast ? 'highlight-selected highlight-legal highlight-capture sq-wrong' : 'highlight-selected highlight-legal highlight-capture sq-wrong sq-last';
+    const cls = keepLast ? 'highlight-selected highlight-legal highlight-capture sq-wrong' : 'highlight-selected highlight-legal highlight-capture sq-wrong highlight-last';
     $('#board [class*="square-"]').removeClass(cls);
 }
 function showSelection(sq) {
@@ -446,8 +444,8 @@ function doMove(from, to) {
     if (from === qSq) { qSq = to; qMoves++; if (capture) nSq = null; }
     else              { nSq = to;          if (capture) qSq = null; }
     board.position(buildPos(), false);
-    $('.square-' + from).addClass('sq-last');
-    $('.square-' + to).addClass('sq-last');
+    $('.square-' + from).addClass('highlight-last');
+    $('.square-' + to).addClass('highlight-last');
     play(capture ? sndCapture : sndMove);
 
     if (capture && turn === 'q') return endRound({by:'queen', how:'caught', moves:qMoves});

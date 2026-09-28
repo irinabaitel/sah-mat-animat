@@ -23,9 +23,7 @@
   }
 
   /* HIGHLIGHTS (selectat / posibil / captură = clasele din master) */
-  .sq-ai       { background-color: rgba(160,60,200,0.40) !important; }
-  .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
-
+  .sq-wrong    { box-shadow: inset 0 0 0 100vmax rgba(220,40,40,0.55) !important; }
   .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
 
   /* CUM SE JOACĂ */
@@ -471,7 +469,7 @@ function buildPos() {
 function pieceAt(sq) { return buildPos()[sq] || null; }
 
 function clearHL() {
-    $('#board [class*="square-"]').removeClass('highlight-selected highlight-legal highlight-capture sq-ai sq-wrong');
+    $('#board [class*="square-"]').removeClass('highlight-selected highlight-legal highlight-capture highlight-last sq-wrong');
 }
 function flashWrong(sq) {
     const el = $('.square-' + sq);
@@ -593,7 +591,7 @@ function aiBlackTurn(note) {
     aiTimers.push(setTimeout(() => {
         const mv = (Math.random() < aiRandomChance) ? getRandomMove() : aiPickMove();
         if (!mv) { aiBusy = false; return; }
-        $(`.square-${mv.from}`).addClass('sq-ai');
+        $(`.square-${mv.from}`).addClass('highlight-last');
         aiTimers.push(setTimeout(() => {
             aiTimers = []; aiBusy = false;
             if (gameOver) return;

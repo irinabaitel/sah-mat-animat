@@ -51,10 +51,9 @@
   /* Highlights */
   .sq-move    { background-image: radial-gradient(rgba(80,200,100,0.55) 22%, transparent 23%) !important; }
   .sq-capture { background-image: radial-gradient(transparent 73%, rgba(230,60,50,0.7) 87%) !important; }
-  .sq-piece   { background-color: rgba(26,120,255,0.35) !important; }
+  .sq-piece   { box-shadow: inset 0 0 0 100vmax rgba(26,120,255,0.35) !important; }
   /* Marcaj „ultima mutare" — pe fundal (background-image), ca să NU fie
      acoperit de culoarea monocromă a tablei. Vizibil pe orice căsuță. */
-  .sq-last    { background-image: linear-gradient(rgba(20,110,40,0.35), rgba(20,110,40,0.35)) !important; }
 
   /* ── Panel arena ── */
   .arena-info { display: flex; flex-direction: column; gap: 10px; }
@@ -475,11 +474,11 @@ function gameStatus() {
 /* ── HIGHLIGHTS ── */
 function clearHL() {
   COLS.forEach(c => { for (let r=1; r<=8; r++)
-    $('.square-'+c+r).removeClass('sq-move sq-piece sq-capture sq-last'); });
+    $('.square-'+c+r).removeClass('sq-move sq-piece sq-capture highlight-last'); });
 }
 function showLast() {
-  if (lastFrom) $('.square-'+lastFrom).addClass('sq-last');
-  if (lastTo)   $('.square-'+lastTo).addClass('sq-last');
+  if (lastFrom) $('.square-'+lastFrom).addClass('highlight-last');
+  if (lastTo)   $('.square-'+lastTo).addClass('highlight-last');
 }
 function showMovesFor(sq) {
   clearHL();
@@ -556,8 +555,8 @@ function handleSquareClick(sq) {
       selectedSq = null;
       board.position(pos, false);
       clearHL();
-      $('.square-'+lastFrom).addClass('sq-last');
-      $('.square-'+lastTo).addClass('sq-last');
+      $('.square-'+lastFrom).addClass('highlight-last');
+      $('.square-'+lastTo).addClass('highlight-last');
       startTimer();
       notifyMove(res, true);
       refreshUI();
@@ -746,8 +745,8 @@ function botMove() {
   clearHL();
   // FĂRĂ animație — pe tabletă animația poate fi suspendată
   board.position(pos, false);
-  $('.square-'+lastFrom).addClass('sq-last');
-  $('.square-'+lastTo).addClass('sq-last');
+  $('.square-'+lastFrom).addClass('highlight-last');
+  $('.square-'+lastTo).addClass('highlight-last');
   notifyMove(res, false);
   refreshUI();
 }

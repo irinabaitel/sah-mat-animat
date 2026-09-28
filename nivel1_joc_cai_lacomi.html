@@ -23,9 +23,7 @@
   }
 
   /* HIGHLIGHTS (selectat / posibil / captură = clasele din master) */
-  .sq-last     { background-color: rgba(160,60,200,0.35) !important; }
-  .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
-
+  .sq-wrong    { box-shadow: inset 0 0 0 100vmax rgba(220,40,40,0.55) !important; }
   .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
 
   /* CUM SE JOACĂ */
@@ -402,7 +400,7 @@ function buildPos() {
     return pos;
 }
 function clearHL(keepLast) {
-    const cls = keepLast ? 'highlight-selected highlight-legal highlight-capture sq-wrong' : 'highlight-selected highlight-legal highlight-capture sq-wrong sq-last';
+    const cls = keepLast ? 'highlight-selected highlight-legal highlight-capture sq-wrong' : 'highlight-selected highlight-legal highlight-capture sq-wrong highlight-last';
     $('#board [class*="square-"]').removeClass(cls);
 }
 function legalTargets(sq) {
@@ -499,8 +497,8 @@ function doMove(fromSq, toSq) {
     if (c === 'w') KW = to; else KB = to;
     moves[c]++;
     board.position(buildPos(), false);
-    $('.square-' + fromSq).addClass('sq-last');
-    $('.square-' + toSq).addClass('sq-last');
+    $('.square-' + fromSq).addClass('highlight-last');
+    $('.square-' + toSq).addClass('highlight-last');
     play(captured ? sndCapture : sndMove);
     /* Albul mută primul: când termină albul, negrul mai primește o mutare, ca să aibă amândoi
        același număr de mutări. Dacă negrul termină și el cu această mutare, e egalitate. */
