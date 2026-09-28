@@ -23,7 +23,6 @@
   }
 
   /* HIGHLIGHTS */
-  .sq-last     { background-color: rgba(160,60,200,0.35) !important; }
   .sq-wrong    { background-color: rgba(220,40,40,0.55)  !important; }
 
   /* NASTURI — clasă pe pătratul existent */
@@ -428,7 +427,7 @@ function drawCoins() {
     COIN_SQ.forEach((q, i) => { if ((coins >> i) & 1) $('.square-' + idxSq(q)).addClass('sq-coin'); });
 }
 function clearHL(keepLast) {
-    const cls = keepLast ? 'highlight-selected highlight-legal highlight-capture sq-wrong' : 'highlight-selected highlight-legal highlight-capture sq-wrong sq-last';
+    const cls = keepLast ? 'highlight-selected highlight-legal highlight-capture sq-wrong' : 'highlight-selected highlight-legal highlight-capture sq-wrong highlight-last';
     $('#board [class*="square-"]').removeClass(cls);
 }
 function showSelection(sq) {
@@ -507,8 +506,8 @@ function doMove(fromSq, toSq) {
     if (coin) { coins &= ~(1 << COIN_BIT[to]); score[turn]++; }
     board.position(posObj(), false);
     drawCoins();
-    $('.square-' + fromSq).addClass('sq-last');
-    $('.square-' + toSq).addClass('sq-last');
+    $('.square-' + fromSq).addClass('highlight-last');
+    $('.square-' + toSq).addClass('highlight-last');
     play(coin ? sndCapture : sndMove);
     plies++;
     if (coins === 0) return endRound('coins');
