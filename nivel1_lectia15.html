@@ -164,6 +164,18 @@
       background: rgba(46, 160, 96, 0.14);
       border-left-color: #2ea060;
     }
+    /* ── o tablă pentru fiecare exemplu ── */
+    .study-main { flex: 1; min-height: 0; overflow-y: auto; padding: 14px max(var(--gap), var(--sq)); }
+    .study-inner { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+    .ex-card {
+      background: var(--c-surface); border: 2px solid var(--c-border); border-radius: var(--radius);
+      padding: 14px; display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 18px; align-items: start;
+    }
+    .ex-card .ex-title { grid-column: 1 / -1; font-family: var(--font-display); font-weight: 900; color: var(--c-navy); font-size: var(--fs-lg, 1.2rem); }
+    .ex-card .board-wrapper { width: 100%; position: relative; touch-action: none; }
+    .ex-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+    .ex-side .moves-log { height: auto; max-height: calc(4 * 2rem + 12px); }
+    @media (max-width: 760px) { .ex-card { grid-template-columns: 1fr; } }
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -177,25 +189,15 @@
     </div>
   </header>
 
-  <main class="page-main" role="main">
-    <div class="board-col">
-      <div class="board-stage">
-        <div class="eval-bar" id="evalBar"><div class="eval-fill" id="evalFill"></div></div>
-        <div class="board-wrapper" id="boardWrapper">
-          <div id="board"></div>
-        </div>
-      </div>
-    </div>
-    <div class="panel-col">
-      <div class="panel-scroll">
-        <div class="info-content">
+  <main class="study-main" role="main">
+    <div class="study-inner">
 
           <div class="def-box">
             <p class="def-title">Numărătoarea</p>
             <p>Trebuie să reușim să ne dăm seama când o piesă este atacată, dar este și apărată, dacă este în pericol cu adevărat.</p>
           </div>
 
-          <div class="acc-list" id="accList"></div>
+          <div id="studii" style="display:flex; flex-direction:column; gap:14px;"></div>
 
           <div class="def-box" style="margin-top:14px;">
             <p class="def-title">Reține asta din lecție</p>
@@ -205,31 +207,6 @@
           </div>
           <p style="font-size:var(--fs-sm); color:var(--c-text-muted); margin:8px 2px 0;"><em>Exemplele „Doi contra unu”, „Doi contra doi” și „Cu cine iei întâi?” sunt după metoda Step by Step (Brunia, van Wijgerden), Pasul 1. Celelalte poziții sunt preluate din lecțiile ChessKid.</em></p>
 
-          <div id="navControls">
-            <div class="step-controls">
-              <button class="ctrl-btn" id="btnFirst" onclick="goFirst()" title="Prima poziție">&#9198;</button>
-              <button class="ctrl-btn" id="btnPrev"  onclick="goPrev()"  title="Înapoi">&#9664;</button>
-              <div class="move-counter" id="moveCounter">Start</div>
-              <button class="ctrl-btn" id="btnNext"  onclick="goNext()"  title="Înainte">&#9654;</button>
-              <button class="ctrl-btn" id="btnLast"  onclick="goLast()"  title="Ultima poziție">&#9197;</button>
-            </div>
-            <div class="annotation-box" id="annotationBox"></div>
-            <div class="moves-log" id="movesLog"></div>
-          </div>
-
-          <div id="practicePanel">
-            <div class="prac-status" id="pracStatus"></div>
-            <div class="prac-stats"><span id="pracProgress">0/0</span><span id="pracPrecision">Precizie: 100%</span></div>
-            <div class="prac-controls">
-              <button class="prac-btn" id="pracSkip" onclick="pracSkip()">⏩ Sari</button>
-              <button class="prac-btn" id="pracHintBtn" onclick="pracHint()">💡 Indiciu</button>
-              <button class="prac-btn" id="pracRestart" onclick="pracRestart()">↺ De la capăt</button>
-              <button class="prac-btn ghost" id="pracExit" onclick="pracExit()">✕ Ieși</button>
-            </div>
-          </div>
-
-        </div>
-      </div>
     </div>
   </main>
 
@@ -256,14 +233,35 @@ function toRo(san) {
   return san.replace(/[KQRBN]/g, m => map[m]);
 }
 
-const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-
-const chapters = [
-
-  /* ══ NUMĂRĂTOAREA, MAI DEPARTE (după metoda Step by Step, Pasul 1) ══ */
-
-  /* 0 — doi contra unu */
+const examples = [
   {
+    title: 'Calul din d4',
+    fen: 'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1B6/PPP2PPP/R1BQ1RK1 b kq - 0 1', orient: 'black',
+    san: ['O-O','c3','Bxd4','cxd4'],
+    marks: { 2: { att: ['c5','f6'], def: ['d1','c3'] } },
+    ann: {
+      0: 'Câte piese negre ar putea captura <strong>calul din d4</strong>? <strong>Două</strong>, nebunul din c5 și regina. Câte piese îl apără? <strong>Una</strong>, doar regina; 2 la 1 pentru atacatori, deci calul nu este în siguranță. <br><br><strong>Regula: dacă ai mai mulți atacatori decât apărători, de obicei ar trebui să capturezi.</strong> <br><br>În exemplul nostru, negrul ar trebui să captureze cu nebunul, Nxd4. Dacă, să zicem, nu observă și face altă mutare, cum ar fi 0-0…',
+      1: '<strong>…0-0</strong> <br><br>Albul observă că are calul în primejdie și nu vrea să plece cu el de acolo pentru că îi place să aibă un cal în centru și atunci mai aduce un apărător (tu câte posibilități găsești?).',
+      2: '<strong>c3</strong> <br><br>Să zicem că alege c3. Acum sunt <strong>doi atacatori</strong> (pătrățelele verzi) și <strong>2 apărători</strong> (pătrățelele roșii). Dacă scorul este egal, partea care se apără este în regulă (dacă sunt mai mulți atacatori, de regulă se capturează piesa).',
+      3: '<strong>…Nxd4</strong> <br><br>De exemplu, dacă …Nxd4, cxd4…',
+      4: '<strong>cxd4</strong> <br><br>…iar negrul sigur nu trebuie să captureze cu Dxd4 pentru că ar pierde regina. <br><br>Când am căutat cum se poate aduce încă un apărător pentru calul din d4, probabil că ai găsit și Ne3; Cf5 nu este o mutare bună pentru că pe f5 calul alb are doar un apărător, în timp ce este atacat de 3 piese: N din d7, C din e7 și D din f6.'
+    }
+  },
+  {
+    title: 'Înainte de …g4, numără!',
+    fen: '3r2r1/3q2bk/1p2bn1n/pPp1p1pp/P1PpPp2/3P1P1P/1R2BNPN/2BQKR2 b - - 0 1', orient: 'black',
+    winner: 'b', practiceFrom: 0, winEval: null,
+    finishMsg: 'Ai numărat bine: ultimul care capturează pe g4 ești tu!',
+    san: ['Bf8','Kd2','g4','hxg4','hxg4','Nhxg4','Nfxg4','fxg4','Nxg4','Nxg4','Bxg4','Bxg4','Qxg4','Qxg4','Rxg4'],
+    marks: { 1: { att: ['h3','f3','f2','h2','e2','d1'], def: ['h5','f6','h6','e6','d7','g8'] } },
+    ann: {
+      0: '🔢 Negrul ar vrea să mute <strong>…g4</strong>, dar înainte să o facă ar trebui să numere foarte atent atacatorii și apărătorii. <strong>Numără-i și tu!</strong>',
+      1: '<strong>…Nf8</strong> <br><br>Sunt <strong>6 atacatori</strong> albi (pătrățelele verzi) și <strong>5 apărători</strong> negri. De aceea, înainte de a muta pionul, negrul trebuie să mai aducă un apărător pentru g4 și face asta mutând nebunul din g7 (…Nf8) pentru a deschide calea turnului din g8, care devine al șaselea apărător (pătrățelele roșii).'
+    },
+    arrows: {}
+  },
+  {
+    title: 'Doi contra unu',
     fen: 'k5r1/8/8/6b1/8/5N2/8/K5R1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: 3,
     finishMsg: 'Ai câștigat nebunul și ți-au rămas turnul și calul!',
@@ -275,9 +273,8 @@ const chapters = [
     },
     arrows: {}
   },
-
-  /* 1 — doi contra doi */
   {
+    title: 'Doi contra doi',
     fen: 'k5r1/8/7p/6b1/8/5N2/8/K5R1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: 0,
     san: ['Nxg5','hxg5','Rxg5','Rxg5'],
@@ -290,9 +287,8 @@ const chapters = [
     },
     arrows: {}
   },
-
-  /* 2 — cu cine iei întâi */
   {
+    title: 'Cu cine iei întâi?',
     fen: '7k/1p4pp/b7/8/2r5/1Q6/5PPP/2R3K1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: 3,
     finishMsg: 'Ai capturat întâi cu piesa care valorează mai puțin!',
@@ -306,9 +302,8 @@ const chapters = [
     },
     arrows: {}
   },
-
-  /* 3 — trei contra trei: contează cine sunt */
   {
+    title: 'Trei contra trei: contează cine sunt',
     fen: '4r1k1/2q2pp1/2p1pn1p/3p4/8/1Q2P3/3R1PPP/3R2K1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: null,
     san: ['Rxd5','cxd5','Rxd5','exd5','Qxd5','Nxd5'],
@@ -323,213 +318,10 @@ const chapters = [
     },
     arrows: {}
   }
-,
 
-  /* ══ NUMĂRĂTOAREA — exemplele autoarei ══ */
-
-  /* 4 — calul din d4: câți atacă, câți apără */
-  {
-    fen: 'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1B6/PPP2PPP/R1BQ1RK1 b kq - 0 1', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: 3,
-    finishMsg: 'Ai capturat calul!',
-    san: ['Bxd4'],
-    ann: {
-      0: '🔢 Câte piese negre ar putea captura <strong>calul din d4</strong>? Câte piese îl apără?',
-      1: '<strong>…Nxd4</strong> <br><br>Câte piese negre ar putea captura calul din d4? <strong>Două</strong>, nebunul din c5 și regina. Câte piese îl apără? <strong>Una</strong>, doar regina; 2 la 1 pentru atacatori, deci calul nu este în siguranță. <br><br><strong>Regula: dacă ai mai mulți atacatori decât apărători, de obicei ar trebui să capturezi.</strong> <br><br>În exemplul nostru, negrul ar trebui să captureze cu nebunul, Nxd4.'
-    },
-    arrows: {}
-  },
-
-  /* 5 — albul aduce încă un apărător */
-  {
-    fen: 'r3k2r/pppbnppp/3p1q2/2b5/3NP3/1B6/PPP2PPP/R1BQ1RK1 b kq - 0 1', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: null,
-    san: ['O-O','c3','Bxd4','cxd4'],
-    marks: { 2: { att: ['c5','f6'], def: ['d1','c3'] } },
-    ann: {
-      0: 'Dacă, să zicem, negrul nu observă și face altă mutare, cum ar fi 0-0… Urmărește cu ►.',
-      1: '<strong>…0-0</strong> <br><br>Albul observă că are calul în primejdie și nu vrea să plece cu el de acolo pentru că îi place să aibă un cal în centru și atunci mai aduce un apărător (tu câte posibilități găsești?).',
-      2: '<strong>c3</strong> <br><br>Să zicem că alege c3. Acum sunt <strong>doi atacatori</strong> (pătrățelele verzi) și <strong>2 apărători</strong> (pătrățelele roșii). Dacă scorul este egal, partea care se apără este în regulă (dacă sunt mai mulți atacatori, de regulă se capturează piesa).',
-      3: '<strong>…Nxd4</strong> <br><br>De exemplu, dacă …Nxd4, cxd4…',
-      4: '<strong>cxd4</strong> <br><br>…iar negrul sigur nu trebuie să captureze cu Dxd4 pentru că ar pierde regina. <br><br>Când am căutat cum se poate aduce încă un apărător pentru calul din d4, probabil că ai găsit și Ne3; Cf5 nu este o mutare bună pentru că pe f5 calul alb are doar un apărător, în timp ce este atacat de 3 piese: N din d7, C din e7 și D din f6.'
-    },
-    arrows: {}
-  },
-
-  /* 6 — …g4: șase atacatori, cinci apărători (studiul Lichess al autoarei) */
-  {
-    fen: '3r2r1/3q2bk/1p2bn1n/pPp1p1pp/P1PpPp2/3P1P1P/1R2BNPN/2BQKR2 b - - 0 1', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: null,
-    finishMsg: 'Ai numărat bine: ultimul care capturează pe g4 ești tu!',
-    san: ['Bf8','Kd2','g4','hxg4','hxg4','Nhxg4','Nfxg4','fxg4','Nxg4','Nxg4','Bxg4','Bxg4','Qxg4','Qxg4','Rxg4'],
-    marks: { 1: { att: ['h3','f3','f2','h2','e2','d1'], def: ['h5','f6','h6','e6','d7','g8'] } },
-    ann: {
-      0: '🔢 Negrul ar vrea să mute <strong>…g4</strong>, dar înainte să o facă ar trebui să numere foarte atent atacatorii și apărătorii. <strong>Numără-i și tu!</strong>',
-      1: '<strong>…Nf8</strong> <br><br>Sunt <strong>6 atacatori</strong> albi (pătrățelele verzi) și <strong>5 apărători</strong> negri. De aceea, înainte de a muta pionul, negrul trebuie să mai aducă un apărător pentru g4 și face asta mutând nebunul din g7 (…Nf8) pentru a deschide calea turnului din g8, care devine al șaselea apărător (pătrățelele roșii).'
-    },
-    arrows: {}
-  }
 ];
 
-/* ─── Acordeon: fiecare item încarcă un capitol ─── */
-const accData = [
-  { chIdx: 4, kind: 't1', num: '1', title: 'Calul din d4: e în pericol?', practice: true,
-    label: '<span class="treapta-cap">🔢 Câți atacă, câți apără?</span>',
-    desc: 'Joci cu <strong>Negrul</strong>. Numără atacatorii și apărătorii calului alb din d4.' },
-  { chIdx: 5, kind: 't1', num: '2', title: 'Albul mai aduce un apărător', practice: false,
-    desc: 'Aceeași poziție. Dacă Negrul nu capturează imediat, Albul își apără calul încă o dată.' },
-  { chIdx: 6, kind: 't1', num: '3', title: 'Înainte de …g4, numără!', practice: true,
-    desc: 'Joci cu <strong>Negrul</strong>. Câți atacă pătrățelul g4 și câți îl apără?' },
-  { chIdx: 0, kind: 't1', num: '2:1', title: 'Doi contra unu', practice: true,
-    desc: 'Doi atacatori, un apărător. Cine are mai mulți capturează ultimul. Dar cu care piesă începi?' },
-  { chIdx: 1, kind: 't1', num: '2:2', title: 'Doi contra doi', practice: false,
-    desc: 'Un apărător în plus schimbă tot. Poți face un schimb, dar trebuie să te oprești la timp.' },
-  { chIdx: 2, kind: 't1', num: '⚖️', title: 'Cu cine iei întâi?', practice: true,
-    label: '<span class="treapta-cap">⚖️ Cine are piese mai bune?</span><div class="note-box" style="margin:6px 0 4px;">Când vorbim despre atacatori și apărători, trebuie să ne dăm seama cine are piese mai bune. Știm deja despre valoarea pieselor. Totuși, aceste valori mai depind și de poziția pieselor pe tablă în timpul partidei; totuși trebuie să ținem seama de valoarea pieselor pentru a decide dacă un schimb este bun pentru noi sau pentru adversar.</div>',
-    desc: 'Doi contra unu, dar o ordine a capturilor câștigă și cealaltă pierde. Contează cât valorează piesele.' },
-  { chIdx: 3, kind: 't1', num: '⚖️', title: 'Trei contra trei: contează cine sunt', practice: false,
-    desc: 'Trei contra trei: două turnuri și o damă contra doi pioni și un cal. Merită să capturezi?' }
-];
-
-let curChapterIdx = 0;
-let positions     = [];
-
-let moveSquares = [];      /* pentru fiecare semimutare: {from, to} */
-
-function computePositions(ch) {
-  const c = new Chess(ch.fen);
-  const fens = [c.fen()];
-  moveSquares = [];
-  for (const mv of ch.san) {
-    const result = c.move(mv);
-    if (!result) { console.error('Mutare invalida:', mv, 'in', c.fen()); break; }
-    moveSquares.push({ from: result.from, to: result.to });
-    fens.push(c.fen());
-  }
-  return fens;
-}
-
-let selSq   = null;
-let sGame   = null;
-let rmbDown = false;
-
-/* ── stare Exersează ── */
-let practiceMode = false;
-let pGame = null;
-let pracSel = null;
-let pracUserTurn = false;
-let pracErrThisMove = false;
-let pracFirstTryCount = 0;
-let pracKeyTotal = 0;
-let pracKeyDone = 0;
-let pracRecapTimer = null;
-let pracHintStage = 0;
-
-document.addEventListener('mousedown', function (e) { if (e.button === 2) rmbDown = true;  }, true);
-document.addEventListener('mouseup',   function (e) { if (e.button === 2) rmbDown = false; }, true);
-
-function clearSel() {
-  document.querySelectorAll('.square-selected').forEach(function (el) { el.classList.remove('square-selected'); });
-  selSq = null;
-  pracSel = null;
-}
-
-/* Pe tablele de studiu poți muta cu oricare tabără, nu doar cu cea la rând —
-   sunt table de încercat idei, nu partide. Mutarea rămâne legală. */
-function mutaLiber(from, to) {
-  let mv = sGame.move({ from: from, to: to, promotion: 'q' });
-  if (mv) return mv;
-  const p = sGame.fen().split(' ');
-  p[1] = (p[1] === 'w') ? 'b' : 'w';
-  p[3] = '-';
-  const alt = new Chess(p.join(' '));
-  mv = alt.move({ from: from, to: to, promotion: 'q' });
-  if (mv) { sGame = alt; return mv; }
-  return null;
-}
-
-function onDragStart(source, piece) {
-  if (rmbDown) return false;
-  clearSel();
-  if (practiceMode) {
-    if (!pracUserTurn) return false;
-    const w = chapters[curChapterIdx].winner;
-    if (w === 'w' && piece.charAt(0) === 'b') return false;
-    if (w === 'b' && piece.charAt(0) === 'w') return false;
-    return true;
-  }
-  return true;
-}
-function onDrop(source, target) {
-  if (practiceMode) {
-    if (target === 'offboard') return 'snapback';
-    return pracAttemptMove(source, target) ? undefined : 'snapback';
-  }
-  if (target === 'offboard') return 'snapback';
-  /* studiu: mutare liberă DAR legală (respectă regulile șahului) */
-  if (sGame) {
-    const mv = mutaLiber(source, target);
-    if (!mv) return 'snapback';
-    clearStudyArrows();
-    board.position(sGame.fen(), false);
-    showCheckHL(sGame);          /* sahul se recalculeaza si dupa mutarile libere */
-    return;
-  }
-}
-function onSnapEnd() {}
-
-const board = Chessboard('board', {
-  position:   START,
-  pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
-  draggable:  true,
-  onDragStart, onDrop, onSnapEnd
-});
-
-$(document).on('click', '.square-55d63', function (e) {
-  if (e.button !== 0) return;
-  const sq  = $(this).data('square');
-  if (practiceMode) { pracClick(sq); return; }
-  const pos = board.position();
-  if (selSq) {
-    const prevSq = selSq;
-    clearSel();
-    if (sq !== prevSq && sGame) {
-      if (mutaLiber(prevSq, sq)) { clearStudyArrows(); board.position(sGame.fen(), false); showCheckHL(sGame); }
-    }
-  } else {
-    if (pos[sq]) {
-      selSq = sq;
-      const el = document.querySelector('.square-' + sq);
-      if (el) el.classList.add('square-selected');
-    }
-  }
-});
-
-function sizeEvalBar() {
-  const bw = document.getElementById('boardWrapper');
-  const eb = document.getElementById('evalBar');
-  if (bw && eb) eb.style.height = bw.offsetHeight + 'px';
-}
-
-window.addEventListener('resize', function () {
-  board.resize();
-  if (practiceMode) { sizeEvalBar(); updateEval(); }
-  else redrawStudyArrows(currentStep());
-  if (window._annRender) window._annRender();
-});
-
-function currentStep() {
-  return parseInt(document.getElementById('moveCounter').dataset.step || '0');
-}
-
-function loadChapter(idx) {
-  curChapterIdx = idx;
-  const ch = chapters[idx];
-  positions = computePositions(ch);
-  board.orientation(ch.orient || 'white');
-  buildMovesList();
-  goToStep(0);
-}
+const VALOARE = 'Când vorbim despre atacatori și apărători, trebuie să ne dăm seama cine are piese mai bune. Știm deja despre valoarea pieselor. Totuși, aceste valori mai depind și de poziția pieselor pe tablă în timpul partidei; totuși trebuie să ținem seama de valoarea pieselor pentru a decide dacă un schimb este bun pentru noi sau pentru adversar.';
 
 /* ─── Sunete (Sounds/) — la mutare, captură, mat ─── */
 var sndMove    = new Audio('Sounds/Move.mp3');
@@ -542,602 +334,180 @@ function playMoveSound(san, game) {
   else playSnd(sndMove);
 }
 
-function goToStep(s) {
-  const prevStep = parseInt(document.getElementById('moveCounter').dataset.step, 10);
-  clearSel();
-  if (window._annClear) window._annClear();
-  document.getElementById('moveCounter').dataset.step = s;
-  board.position(positions[s], false);
-  sGame = new Chess(positions[s]);
-  if (s > 0 && moveSquares[s - 1]) showLastMove(moveSquares[s - 1].from, moveSquares[s - 1].to);
-  else clearLastMove();
-  showCheckHL(sGame);
-  if (s > 0 && s === prevStep + 1) playMoveSound(chapters[curChapterIdx].san[s - 1], sGame);
-  clearMarks();
-  const mk = chapters[curChapterIdx].marks && chapters[curChapterIdx].marks[s];
-  if (mk) {
-    (mk.att || []).forEach(function (q) { const el = document.querySelector('.square-' + q); if (el) el.classList.add('mark-att'); });
-    (mk.def || []).forEach(function (q) { const el = document.querySelector('.square-' + q); if (el) el.classList.add('mark-def'); });
-  }
-  redrawStudyArrows(s);
-  updateUI(s);
-}
+let rmbDown = false;
+document.addEventListener('mousedown', function (e) { if (e.button === 2) rmbDown = true;  }, true);
+document.addEventListener('mouseup',   function (e) { if (e.button === 2) rmbDown = false; }, true);
 
-function goFirst() { goToStep(0); }
-function goLast()  { goToStep(positions.length - 1); }
-function goPrev()  { const s = currentStep(); if (s > 0) goToStep(s - 1); }
-function goNext()  { const s = currentStep(); if (s < positions.length - 1) goToStep(s + 1); }
-
-function clearMarks() {
-  document.querySelectorAll('.mark-att, .mark-def').forEach(function (el) { el.classList.remove('mark-att', 'mark-def'); });
-}
-
-function getMoveLabel(s) {
-  if (s === 0) return 'Start';
-  const parts   = positions[s - 1].split(' ');
-  const turn    = parts[1];
-  const moveNum = parts[5];
-  const san     = chapters[curChapterIdx].san[s - 1];
-  return turn === 'w' ? moveNum + '. ' + toRo(san) : moveNum + '… ' + toRo(san);
-}
-
-function updateUI(s) {
-  const total = positions.length - 1;
-  const mc = document.getElementById('moveCounter');
-  mc.textContent = getMoveLabel(s);
-  mc.dataset.step = s;
-  document.getElementById('btnFirst').disabled = s === 0;
-  document.getElementById('btnPrev').disabled  = s === 0;
-  document.getElementById('btnNext').disabled  = s === total;
-  document.getElementById('btnLast').disabled  = s === total;
-  document.querySelectorAll('.mlog-token').forEach(function (b) {
-    b.classList.toggle('active', parseInt(b.dataset.step) === s);
-  });
-  const active = document.querySelector('.mlog-token.active');
-  if (active) {
-    const log = document.getElementById('movesLog');
-    const a = active.getBoundingClientRect();
-    const l = log.getBoundingClientRect();
-    if (a.top < l.top)            log.scrollTop += a.top - l.top;
-    else if (a.bottom > l.bottom) log.scrollTop += a.bottom - l.bottom;
-  }
-  const ch  = chapters[curChapterIdx];
-  const box = document.getElementById('annotationBox');
-  const txt = (ch.ann && ch.ann[s] !== undefined) ? ch.ann[s] : '';
-  box.className = 'annotation-box';
-  box.innerHTML = txt || (s === 0
-    ? '<em style="opacity:.55">Apasă &#9654; pentru a avansa prin mutări.</em>'
-    : '');
-}
-
-function createMoveBtn(san, step, cls) {
-  const btn = document.createElement('button');
-  btn.className = 'mlog-token ' + cls;
-  btn.textContent = toRo(san);
-  btn.dataset.step = step;
-  btn.onclick = function () { goToStep(step); };
-  return btn;
-}
-
-function buildMovesList() {
-  const ch  = chapters[curChapterIdx];
-  const log = document.getElementById('movesLog');
-  log.innerHTML = '';
-  const total = ch.san.length;
-  if (total === 0) return;
-  let i = 0;
-  while (i < total) {
-    const parts   = positions[i].split(' ');
-    const turn    = parts[1];
-    const moveNum = parts[5];
-    const row = document.createElement('div');
-    row.className = 'mlog-row';
-    const numSpan = document.createElement('span');
-    numSpan.className = 'mlog-num';
-    numSpan.textContent = moveNum + '.';
-    row.appendChild(numSpan);
-    if (turn === 'b') {
-      const plh = document.createElement('span');
-      plh.className = 'mlog-token mlog-w';
-      plh.textContent = '…';
-      plh.style.cssText = 'opacity:0.28;cursor:default;pointer-events:none;';
-      row.appendChild(plh);
-      row.appendChild(createMoveBtn(ch.san[i], i + 1, 'mlog-b'));
-      i++;
-    } else {
-      row.appendChild(createMoveBtn(ch.san[i], i + 1, 'mlog-w'));
-      i++;
-      if (i < total) {
-        row.appendChild(createMoveBtn(ch.san[i], i + 1, 'mlog-b'));
-        i++;
-      }
-    }
-    log.appendChild(row);
-  }
-}
-
-/* ─── Ultima mutare: colorăm câmpul de plecare și cel de sosire ─── */
-function clearLastMove() {
-  document.querySelectorAll('.last-move').forEach(function (el) { el.classList.remove('last-move'); });
-}
-function showLastMove(from, to) {
-  clearLastMove();
-  if (!from || !to) return;
-  [from, to].forEach(function (sq) {
-    const el = document.querySelector('.square-' + sq);
-    if (el) el.classList.add('last-move');
-  });
-}
-
-function clearCheckHL() {
-  document.querySelectorAll('.highlight-check').forEach(function (el) { el.classList.remove('highlight-check'); });
-}
-function checkedKingSquare(game) {
-  if (!game || !game.in_check()) return null;   // acoperă și șahul și matul
-  const turn = game.turn();
-  const bd = game.board();
+function kingInCheck(game) {
+  if (!game || !game.in_check()) return null;
+  const turn = game.turn(), bd = game.board();
   for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
     const pc = bd[r][c];
     if (pc && pc.type === 'k' && pc.color === turn) return 'abcdefgh'[c] + (8 - r);
   }
   return null;
 }
-function showCheckHL(game) {
-  clearCheckHL();
-  const sq = checkedKingSquare(game);
-  if (sq) { const el = document.querySelector('.square-' + sq); if (el) el.classList.add('highlight-check'); }
-}
 
-function clearStudyArrows() {
-  const ex = document.getElementById('study-arrows-svg');
-  if (ex) ex.remove();
-  document.querySelectorAll('.study-hl').forEach(function (el) {
-    el.classList.remove('study-hl', 'hint-square');
+/* O tablă de studiu: poziția, mutările ei și comentariile, cu ◄ ► */
+function makeStudy(ex, idx, host) {
+  const card = document.createElement('div');
+  card.className = 'ex-card';
+  const bid = 'board' + idx;
+  card.innerHTML =
+    '<div class="ex-title">' + (idx + 1) + '. ' + ex.title + '</div>' +
+    '<div class="board-wrapper"><div id="' + bid + '"></div></div>' +
+    '<div class="ex-side">' +
+      '<div class="step-controls">' +
+        '<button class="ctrl-btn" data-a="first" title="Prima poziție">&#9198;</button>' +
+        '<button class="ctrl-btn" data-a="prev" title="Înapoi">&#9664;</button>' +
+        '<div class="move-counter">Start</div>' +
+        '<button class="ctrl-btn" data-a="next" title="Înainte">&#9654;</button>' +
+        '<button class="ctrl-btn" data-a="last" title="Ultima poziție">&#9197;</button>' +
+      '</div>' +
+      '<div class="annotation-box"></div>' +
+      '<div class="moves-log"></div>' +
+    '</div>';
+  host.appendChild(card);
+
+  /* pozițiile după fiecare semimutare */
+  const c = new Chess(ex.fen);
+  const fens = [c.fen()], moves = [];
+  ex.san.forEach(function (m) {
+    const r = c.move(m);
+    if (!r) { console.error('Mutare invalidă:', m, 'în', c.fen()); return; }
+    moves.push(r); fens.push(c.fen());
   });
-}
 
-/* câmpuri colorate declarate în capitol prin  hl: { pas: [{sq, cls}] } */
-function drawStudyHL(step) {
-  const ch = chapters[curChapterIdx];
-  const list = ch.hl && ch.hl[step];
-  if (!list) return;
-  list.forEach(function (h) {
-    const el = document.querySelector('.square-' + h.sq);
-    if (el) el.classList.add('study-hl', h.cls || 'hint-square');
-  });
-}
+  let step = 0, game = new Chess(ex.fen), sel = null;
+  const q = function (sq) { return card.querySelector('.square-' + sq); };
+  const clearCls = function (cls) { card.querySelectorAll('.' + cls).forEach(function (el) { el.classList.remove(cls); }); };
 
-function redrawStudyArrows(step) {
-  clearStudyArrows();
-  drawStudyHL(step);
-  const ch = chapters[curChapterIdx];
-  const arrows = ch.arrows && ch.arrows[step];
-  if (!arrows || arrows.length === 0) return;
-  const NS  = 'http://www.w3.org/2000/svg';
-  const bw  = document.getElementById('boardWrapper');
-  if (!bw) return;
-  const ori    = board.orientation();
-  const tlName = ori === 'white' ? 'a8' : 'h1';
-  const tlSq   = bw.querySelector('[data-square="' + tlName + '"]');
-  let sqSz, svgX = 0, svgY = 0;
-  if (tlSq) {
-    sqSz = tlSq.offsetWidth;
-    const bwRect = bw.getBoundingClientRect();
-    const tlRect = tlSq.getBoundingClientRect();
-    svgX = Math.round(tlRect.left - bwRect.left);
-    svgY = Math.round(tlRect.top  - bwRect.top);
-  } else {
-    sqSz = bw.offsetWidth / 8;
+  function decorate() {
+    ['last-move', 'mark-att', 'mark-def', 'highlight-check', 'square-selected'].forEach(clearCls);
+    sel = null;
+    if (step > 0 && fens[step] === game.fen()) {
+      const mv = moves[step - 1];
+      [mv.from, mv.to].forEach(function (sq) { const el = q(sq); if (el) el.classList.add('last-move'); });
+      const mk = ex.marks && ex.marks[step];
+      if (mk) {
+        (mk.att || []).forEach(function (sq) { const el = q(sq); if (el) el.classList.add('mark-att'); });
+        (mk.def || []).forEach(function (sq) { const el = q(sq); if (el) el.classList.add('mark-def'); });
+      }
+    }
+    const k = kingInCheck(game);
+    if (k) { const el = q(k); if (el) el.classList.add('highlight-check'); }
   }
-  const sz = sqSz * 8;
-  const svg = document.createElementNS(NS, 'svg');
-  svg.id = 'study-arrows-svg';
-  svg.style.cssText = 'position:absolute;pointer-events:none;z-index:20;';
-  svg.style.left   = svgX + 'px';
-  svg.style.top    = svgY + 'px';
-  svg.style.width  = sz + 'px';
-  svg.style.height = sz + 'px';
-  const defs = document.createElementNS(NS, 'defs');
-  svg.appendChild(defs);
-  const COL = {
-    G: 'rgba(60,190,80,0.85)',
-    R: 'rgba(220,55,55,0.85)',
-    B: 'rgba(50,130,210,0.85)',
-    Y: 'rgba(215,165,20,0.85)'
-  };
-  function sqCenter(sq) {
-    let c = sq.charCodeAt(0) - 97, r = parseInt(sq[1]) - 1;
-    if (ori === 'black') { c = 7 - c; r = 7 - r; }
-    const s = sz / 8;
-    return { x: c * s + s / 2, y: (7 - r) * s + s / 2 };
+
+  /* mutare liberă, dar legală; pe tabla de studiu poate muta oricare tabără */
+  function mutaLiber(from, to) {
+    let mv = game.move({ from: from, to: to, promotion: 'q' });
+    if (mv) return mv;
+    const f = game.fen().split(' ');
+    f[1] = (f[1] === 'w') ? 'b' : 'w'; f[3] = '-';
+    const alt = new Chess(f.join(' '));
+    mv = alt.move({ from: from, to: to, promotion: 'q' });
+    if (mv) { game = alt; return mv; }
+    return null;
   }
-  const SW = Math.max(3, sqSz * 0.09);
-  arrows.forEach(function (arr, i) {
-    if (arr.from === arr.to) return;
-    const col = COL[arr.color] || COL.G;
-    const mid = 'sarr' + i;
-    const mk  = document.createElementNS(NS, 'marker');
-    mk.setAttribute('id', mid); mk.setAttribute('markerWidth', '4');
-    mk.setAttribute('markerHeight', '4'); mk.setAttribute('refX', '3.5');
-    mk.setAttribute('refY', '2');          mk.setAttribute('orient', 'auto');
-    const mp = document.createElementNS(NS, 'path');
-    mp.setAttribute('d', 'M0,0 L4,2 L0,4 L1,2 Z');
-    mp.setAttribute('fill', col);
-    mk.appendChild(mp); defs.appendChild(mk);
-    const f  = sqCenter(arr.from), t = sqCenter(arr.to);
-    const dx = t.x - f.x, dy = t.y - f.y;
-    const len = Math.sqrt(dx * dx + dy * dy);
-    if (len < 1) return;
-    const ux = dx / len, uy = dy / len;
-    const ln = document.createElementNS(NS, 'line');
-    ln.setAttribute('x1', f.x);           ln.setAttribute('y1', f.y);
-    ln.setAttribute('x2', t.x - ux * SW); ln.setAttribute('y2', t.y - uy * SW);
-    ln.setAttribute('stroke', col);
-    ln.setAttribute('stroke-width', String(SW));
-    ln.setAttribute('stroke-linecap', 'round');
-    ln.setAttribute('marker-end', 'url(#' + mid + ')');
-    svg.appendChild(ln);
+
+  const board = Chessboard(bid, {
+    draggable: true,
+    position: ex.fen,
+    orientation: ex.orient || 'white',
+    pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+    onDragStart: function () { return !rmbDown; },
+    onDrop: function (from, to) {
+      if (to === 'offboard' || from === to) return 'snapback';
+      const mv = mutaLiber(from, to);
+      if (!mv) return 'snapback';
+      if (window._annClear) window._annClear();
+      setTimeout(function () { board.position(game.fen(), false); decorate(); }, 0);
+    }
   });
-  bw.appendChild(svg);
+
+  $(card).on('click', '.square-55d63', function (e) {
+    if (e.button !== 0) return;
+    const sq = $(this).data('square');
+    if (sel) {
+      const from = sel;
+      clearCls('square-selected'); sel = null;
+      if (sq !== from && mutaLiber(from, sq)) { board.position(game.fen(), false); decorate(); }
+    } else if (board.position()[sq]) {
+      sel = sq;
+      const el = q(sq); if (el) el.classList.add('square-selected');
+    }
+  });
+
+  const counter = card.querySelector('.move-counter');
+  const annBox  = card.querySelector('.annotation-box');
+  const log     = card.querySelector('.moves-log');
+
+  function label(s) {
+    if (s === 0) return 'Start';
+    const f = fens[s - 1].split(' ');
+    return f[1] === 'w' ? f[5] + '. ' + toRo(ex.san[s - 1]) : f[5] + '… ' + toRo(ex.san[s - 1]);
+  }
+
+  function go(s) {
+    const prev = step;
+    step = Math.max(0, Math.min(fens.length - 1, s));
+    game = new Chess(fens[step]);
+    board.position(fens[step], false);
+    decorate();
+    if (step > 0 && step === prev + 1) playMoveSound(ex.san[step - 1], game);
+    counter.textContent = label(step);
+    annBox.innerHTML = (ex.ann && ex.ann[step]) || (step === 0 ? '<em style="opacity:.55">Apasă &#9654; pentru a avansa prin mutări.</em>' : '');
+    card.querySelector('[data-a="first"]').disabled = step === 0;
+    card.querySelector('[data-a="prev"]').disabled  = step === 0;
+    card.querySelector('[data-a="next"]').disabled  = step === fens.length - 1;
+    card.querySelector('[data-a="last"]').disabled  = step === fens.length - 1;
+    log.querySelectorAll('.mlog-token').forEach(function (b) { b.classList.toggle('active', +b.dataset.step === step); });
+    const active = log.querySelector('.mlog-token.active');
+    if (active) {
+      const a = active.getBoundingClientRect(), l = log.getBoundingClientRect();
+      if (a.top < l.top)            log.scrollTop += a.top - l.top;
+      else if (a.bottom > l.bottom) log.scrollTop += a.bottom - l.bottom;
+    }
+    if (window._annClear) window._annClear();
+  }
+
+  /* lista de mutări */
+  let row = null;
+  ex.san.forEach(function (m, i) {
+    const f = fens[i].split(' ');
+    if (f[1] === 'w' || i === 0) {
+      row = document.createElement('div'); row.className = 'mlog-row';
+      row.innerHTML = '<span class="mlog-num">' + f[5] + '.</span>';
+      if (f[1] === 'b') row.innerHTML += '<span class="mlog-token mlog-w" style="opacity:.28;pointer-events:none;">…</span>';
+      log.appendChild(row);
+    }
+    const b = document.createElement('button');
+    b.className = 'mlog-token ' + (f[1] === 'w' ? 'mlog-w' : 'mlog-b');
+    b.textContent = toRo(m); b.dataset.step = i + 1;
+    b.onclick = function () { go(i + 1); };
+    row.appendChild(b);
+  });
+
+  card.querySelector('[data-a="first"]').onclick = function () { go(0); };
+  card.querySelector('[data-a="prev"]').onclick  = function () { go(step - 1); };
+  card.querySelector('[data-a="next"]').onclick  = function () { go(step + 1); };
+  card.querySelector('[data-a="last"]').onclick  = function () { go(fens.length - 1); };
+
+  window.addEventListener('resize', function () { board.resize(); decorate(); });
+  go(0);
 }
 
-document.addEventListener('keydown', function (e) {
-  if (practiceMode) return;
-  if (e.key === 'ArrowRight') goNext();
-  if (e.key === 'ArrowLeft')  goPrev();
-  if (e.key === 'Home')       goFirst();
-  if (e.key === 'End')        goLast();
+const host = document.getElementById('studii');
+examples.forEach(function (ex, i) {
+  makeStudy(ex, i, host);
+  if (i === 1) {
+    const n = document.createElement('div');
+    n.className = 'note-box';
+    n.style.fontSize = 'var(--fs-md)';
+    n.innerHTML = '⚖️ ' + VALOARE;
+    host.appendChild(n);
+  }
 });
-
-/* ═══════════ Exersează (robot vs. user pe partea câștigătoare) ═══════════ */
-function setPStatus(t) { document.getElementById('pracStatus').innerHTML = t; }
-
-function winnerName(w) { return w === 'w' ? 'Albului' : 'Negrului'; }
-
-function turnPrompt() {
-  const ch = chapters[curChapterIdx];
-  if (ch.isOpening) return 'E rândul tău! Joacă mutarea din deschidere a ' + winnerName(ch.winner) + '.';
-  return 'E rândul tău! Găsește mutarea câștigătoare a ' + winnerName(ch.winner) + '.';
-}
-
-function syncBoard(animate) { board.position(pGame.fen(), !!animate); }
-
-function materialEval(game) {
-  const val = { p:1, n:3, b:3, r:5, q:9 };
-  const b = game.board();
-  let s = 0;
-  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
-    const pc = b[r][c];
-    if (pc) s += (pc.color === 'w' ? 1 : -1) * (val[pc.type] || 0);
-  }
-  return s;
-}
-
-function updateEval() {
-  if (!pGame) return;
-  let e = materialEval(pGame);            // + = alb mai bine
-  const ch = chapters[curChapterIdx];
-  if (ch && ch.winEval != null && pGame.history().length >= ch.san.length) e = ch.winEval;
-  if (pGame.in_checkmate()) e = (pGame.turn() === 'w') ? -100 : 100;
-  const adv = (board.orientation() === 'white') ? e : -e;   // avantajul părții de JOS
-  const p = Math.max(4, Math.min(96, 50 + adv * 4));         // bara se umple spre partea de jos
-  document.getElementById('evalFill').style.height = p + '%';
-}
-
-function updatePracStats() {
-  const pct = pracKeyDone ? Math.round(pracFirstTryCount / pracKeyDone * 100) : 100;
-  document.getElementById('pracPrecision').textContent = 'Precizie: ' + pct + '%';
-  document.getElementById('pracProgress').textContent = pracKeyDone + '/' + pracKeyTotal;
-}
-
-function startPractice(idx) {
-  practiceMode = true;
-  curChapterIdx = idx;
-  const ch = chapters[idx];
-  pGame = new Chess(ch.fen);
-  pracKeyTotal = 0;
-  for (let i = ch.practiceFrom; i < ch.san.length; i++) if ((i - ch.practiceFrom) % 2 === 0) pracKeyTotal++;
-  pracFirstTryCount = 0; pracKeyDone = 0; pracErrThisMove = false; pracUserTurn = false;
-  pracHintStage = 0;
-  clearStudyArrows(); clearSel(); clearPracHint(); clearCheckHL(); clearLastMove(); clearMarks();
-  document.getElementById('navControls').style.display = 'none';
-  const panel = document.getElementById('practicePanel');
-  const openItem = document.querySelector('#accList .acc-item.open');
-  if (openItem) openItem.parentNode.insertBefore(panel, openItem.nextElementSibling);
-  panel.style.display = 'flex';
-  document.getElementById('evalBar').style.display = ch.isOpening ? 'none' : 'block';
-  document.getElementById('pracSkip').style.display = ch.practiceFrom > 2 ? '' : 'none';
-  document.querySelector('.board-stage').classList.add('practicing');
-  board.orientation(ch.winner === 'w' ? 'white' : 'black');
-  board.position(ch.fen, false);
-  setTimeout(function () { board.resize(); sizeEvalBar(); updateEval(); }, 40);
-  updatePracStats();
-  setPStatus('🔁 Recapitulăm deschiderea… (poți sări peste)');
-  pracRecap(function () {
-    pracUserTurn = true; pracErrThisMove = false;
-    document.getElementById('pracSkip').style.display = 'none';
-    setPStatus(turnPrompt());
-    updatePracStats();
-  });
-}
-
-function pracRecap(done) {
-  const ch = chapters[curChapterIdx];
-  function step() {
-    if (pGame.history().length >= ch.practiceFrom) { done(); return; }
-    var sanR = ch.san[pGame.history().length];
-    pGame.move(sanR);
-    syncBoard(true); updateEval(); showCheckHL(pGame); playMoveSound(sanR, pGame);
-    pracRecapTimer = setTimeout(step, 480);
-  }
-  step();
-}
-
-function pracSkip() {
-  if (pracRecapTimer) { clearTimeout(pracRecapTimer); pracRecapTimer = null; }
-  const ch = chapters[curChapterIdx];
-  while (pGame.history().length < ch.practiceFrom) pGame.move(ch.san[pGame.history().length]);
-  syncBoard(false); updateEval();
-  document.getElementById('pracSkip').style.display = 'none';
-  pracUserTurn = true; pracErrThisMove = false;
-  setPStatus(turnPrompt());
-  updatePracStats();
-}
-
-function pracAttemptMove(source, target) {
-  if (!pracUserTurn) return false;
-  const ch = chapters[curChapterIdx];
-  const expected = ch.san[pGame.history().length];
-  const mv = pGame.move({ from: source, to: target, promotion: 'q' });
-  if (!mv) return false;                       // ilegal → snapback fără mesaj
-  const clean = function (s) { return s.replace(/[+#]/g, ''); };
-  /* unele exerciții au mai multe răspunsuri bune, nu doar unul */
-  const alt = (ch.accept && ch.accept[pGame.history().length - 1]) || null;
-  const potrivitAlt = alt && alt.some(function (a) { return clean(a) === clean(mv.san); });
-  if (potrivitAlt && clean(mv.san) !== clean(expected)) {
-    if (!pracErrThisMove) pracFirstTryCount++;
-    pracKeyDone++;
-    pracUserTurn = false;
-    pracHintStage = 0;
-    clearSel(); clearPracHint(); syncBoard(false); updateEval();
-    showLastMove(mv.from, mv.to); showCheckHL(pGame); playMoveSound(mv.san, pGame);
-    setPStatus('✔ Corect! <strong>' + toRo(mv.san) + '</strong> e una dintre mutările bune. ' +
-               (ch.altMsg || ''));
-    updatePracStats();
-    setTimeout(pracFinish, 700);
-    return true;
-  }
-  if (clean(mv.san) !== clean(expected)) {
-    /* mutarea e legală, dar nu e cea din lecție — spunem CE a fost bine la ea */
-    const eraSah = pGame.in_check();
-    const eraMat = pGame.in_checkmate();
-    const eraCaptura = mv.san.indexOf('x') !== -1;
-    pGame.undo();
-    pracErrThisMove = true;
-    let msg;
-    if (eraMat)          msg = '😮 E chiar mat! Dar lecția merge pe altă mutare — încearc-o și pe aceea.';
-    else if (eraSah)     msg = '✔ Da, e șah! Dar nu ăsta e cel căutat aici. Mai uită-te.';
-    else if (eraCaptura) msg = '✔ E o captură bună de văzut — dar lecția are altceva în vedere. Mai încearcă.';
-    else                 msg = '❌ Nu chiar aceasta — mai încearcă. (Poți cere un 💡 Indiciu.)';
-    const gresit = ch.wrong && ch.wrong[pGame.history().length];
-    if (gresit && gresit[clean(mv.san)]) msg = gresit[clean(mv.san)];
-    setPStatus(msg);
-    updatePracStats();
-    return false;
-  }
-  if (!pracErrThisMove) pracFirstTryCount++;
-  pracKeyDone++;
-  pracUserTurn = false;
-  pracHintStage = 0;
-  clearSel(); clearPracHint(); syncBoard(false); updateEval(); showLastMove(mv.from, mv.to); showCheckHL(pGame); playMoveSound(mv.san, pGame);
-  setPStatus('✔ Corect!');
-  updatePracStats();
-  setTimeout(pracAfterUser, 560);
-  return true;
-}
-
-function pracAfterUser() {
-  const ch = chapters[curChapterIdx];
-  if (pGame.history().length >= ch.san.length) { pracFinish(); return; }
-  var sanRobot = ch.san[pGame.history().length];   // mutarea robotului (adversarul)
-  var mvRobot = pGame.move(sanRobot);
-  syncBoard(true); updateEval(); if (mvRobot) showLastMove(mvRobot.from, mvRobot.to); showCheckHL(pGame); playMoveSound(sanRobot, pGame);
-  if (pGame.history().length >= ch.san.length) { pracFinish(); return; }
-  pracUserTurn = true; pracErrThisMove = false;
-  setPStatus(turnPrompt());
-}
-
-function pracFinish() {
-  pracUserTurn = false;
-  updateEval();
-  showCheckHL(pGame);
-  const ch = chapters[curChapterIdx];
-  const pct = pracKeyTotal ? Math.round(pracFirstTryCount / pracKeyTotal * 100) : 100;
-  document.getElementById('pracPrecision').textContent = 'Precizie: ' + pct + '%';
-  document.getElementById('pracProgress').textContent = pracKeyTotal + '/' + pracKeyTotal + ' ✓';
-  const msg = pGame.in_checkmate() ? 'Mat!' : (ch.finishMsg || 'Ai jucat toată linia corect!');
-  setPStatus(pct === 100
-    ? '🎉 Perfect! ' + msg + ' Fără nicio greșeală!'
-    : '🎉 Bravo! ' + msg + ' Precizie: ' + pct + '%. Poți încerca „↺ De la capăt".');
-  document.getElementById('pracSkip').style.display = 'none';
-}
-
-function pracClick(sq) {
-  if (!pracUserTurn) return;
-  const ch = chapters[curChapterIdx];
-  const pos = board.position();
-  if (pracSel) {
-    const from = pracSel;
-    clearSel();
-    pracAttemptMove(from, sq);
-  } else {
-    const pc = pos[sq];
-    if (pc && pc.charAt(0) === ch.winner) {
-      pracSel = sq;
-      const el = document.querySelector('.square-' + sq);
-      if (el) el.classList.add('square-selected');
-    }
-  }
-}
-
-function clearPracHint() {
-  document.querySelectorAll('.hint-square').forEach(function (el) { el.classList.remove('hint-square'); });
-  const s = document.getElementById('prac-hint-svg');
-  if (s) s.remove();
-}
-
-function drawPracHintArrow(from, to) {
-  clearStudyArrows();
-  const old = document.getElementById('prac-hint-svg'); if (old) old.remove();
-  const NS = 'http://www.w3.org/2000/svg';
-  const bw = document.getElementById('boardWrapper'); if (!bw) return;
-  const ori = board.orientation();
-  const tlName = ori === 'white' ? 'a8' : 'h1';
-  const tlSq = bw.querySelector('[data-square="' + tlName + '"]');
-  let sqSz, svgX = 0, svgY = 0;
-  if (tlSq) {
-    sqSz = tlSq.offsetWidth;
-    const bwRect = bw.getBoundingClientRect(), tlRect = tlSq.getBoundingClientRect();
-    svgX = Math.round(tlRect.left - bwRect.left); svgY = Math.round(tlRect.top - bwRect.top);
-  } else { sqSz = bw.offsetWidth / 8; }
-  const sz = sqSz * 8;
-  const svg = document.createElementNS(NS, 'svg');
-  svg.id = 'prac-hint-svg';
-  svg.style.cssText = 'position:absolute;pointer-events:none;z-index:20;';
-  svg.style.left = svgX + 'px'; svg.style.top = svgY + 'px';
-  svg.style.width = sz + 'px'; svg.style.height = sz + 'px';
-  const defs = document.createElementNS(NS, 'defs'); svg.appendChild(defs);
-  const col = 'rgba(60,190,80,0.92)';
-  const mk = document.createElementNS(NS, 'marker');
-  mk.setAttribute('id', 'phintarr'); mk.setAttribute('markerWidth', '4'); mk.setAttribute('markerHeight', '4');
-  mk.setAttribute('refX', '3.5'); mk.setAttribute('refY', '2'); mk.setAttribute('orient', 'auto');
-  const mp = document.createElementNS(NS, 'path'); mp.setAttribute('d', 'M0,0 L4,2 L0,4 L1,2 Z'); mp.setAttribute('fill', col);
-  mk.appendChild(mp); defs.appendChild(mk);
-  function sqCenter(sq) { let c = sq.charCodeAt(0) - 97, r = parseInt(sq[1]) - 1; if (ori === 'black') { c = 7 - c; r = 7 - r; } const s = sz / 8; return { x: c * s + s / 2, y: (7 - r) * s + s / 2 }; }
-  const f = sqCenter(from), t = sqCenter(to), dx = t.x - f.x, dy = t.y - f.y, len = Math.sqrt(dx * dx + dy * dy);
-  if (len < 1) return;
-  const ux = dx / len, uy = dy / len, SW = Math.max(3, sqSz * 0.09);
-  const ln = document.createElementNS(NS, 'line');
-  ln.setAttribute('x1', f.x); ln.setAttribute('y1', f.y); ln.setAttribute('x2', t.x - ux * SW); ln.setAttribute('y2', t.y - uy * SW);
-  ln.setAttribute('stroke', col); ln.setAttribute('stroke-width', String(SW)); ln.setAttribute('stroke-linecap', 'round');
-  ln.setAttribute('marker-end', 'url(#phintarr)');
-  svg.appendChild(ln);
-  bw.appendChild(svg);
-}
-
-/* Indiciu în trepte: 1) pătratul piesei (verde) → 2) + săgeata spre destinație → 3) mutarea scrisă */
-function pracHint() {
-  if (!practiceMode || !pracUserTurn) return;
-  const ch = chapters[curChapterIdx];
-  const expected = ch.san[pGame.history().length];
-  const tmp = new Chess(pGame.fen());
-  const mv = tmp.move(expected);
-  if (!mv) return;
-  pracErrThisMove = true;
-  updatePracStats();
-  pracHintStage++;
-  const markFrom = function () {
-    const el = document.querySelector('.square-' + mv.from);
-    if (el) el.classList.add('hint-square');
-  };
-  if (pracHintStage === 1) {
-    markFrom();
-    setPStatus('💡 Piesa de mutat e pe pătratul <strong>verde</strong>. (Apasă din nou pentru săgeată.)');
-  } else if (pracHintStage === 2) {
-    markFrom();
-    drawPracHintArrow(mv.from, mv.to);
-    setPStatus('💡 Mută piesa în direcția <strong>săgeții verzi</strong>.');
-  } else {
-    markFrom();
-    drawPracHintArrow(mv.from, mv.to);
-    setPStatus('💡 Mutarea este <strong>' + toRo(mv.san) + '</strong>. Joac-o pe tablă!');
-  }
-}
-
-function pracRestart() {
-  if (pracRecapTimer) { clearTimeout(pracRecapTimer); pracRecapTimer = null; }
-  startPractice(curChapterIdx);
-}
-
-function pracExit() {
-  if (pracRecapTimer) { clearTimeout(pracRecapTimer); pracRecapTimer = null; }
-  practiceMode = false; pracUserTurn = false; pGame = null;
-  pracHintStage = 0; clearPracHint(); clearCheckHL();
-  document.getElementById('practicePanel').style.display = 'none';
-  document.getElementById('evalBar').style.display = 'none';
-  document.querySelector('.board-stage').classList.remove('practicing');
-  document.getElementById('navControls').style.display = 'flex';
-  setTimeout(function () { board.resize(); }, 30);
-  loadChapter(curChapterIdx);
-}
-
-/* ─── Construiește acordeonul ─── */
-function addLabel(list, text) {
-  const lbl = document.createElement('div');
-  lbl.className = 'section-label';
-  lbl.innerHTML = text;
-  list.appendChild(lbl);
-}
-
-function buildAccordion() {
-  const list = document.getElementById('accList');
-  let openLbl = false, trapLbl = false, defLbl = false;
-  accData.forEach(function (d) {
-    if (d.label) addLabel(list, d.label);
-    if (d.kind === 't2' && !trapLbl) { addLabel(list, '<span class="treapta-cap">🐦 Mă pricep <span class="t-mic">alegi tu răspunsul, pe tablă</span></span>'); trapLbl = true; }
-    if (d.kind === 't3' && !defLbl)  { addLabel(list, '<span class="treapta-cap">🦅 Sunt maestru <span class="t-mic">mai multe lucruri deodată, într-o singură poziție</span></span>'); defLbl = true; }
-    const item = document.createElement('div');
-    item.className = 'acc-item';
-    item.dataset.ch = (d.chIdx == null) ? '' : d.chIdx;
-    const hdr = document.createElement('div');
-    hdr.className = 'acc-header';
-    let hdrHtml = '<span class="acc-num">' + d.num + '</span>' +
-                  '<span class="acc-title">' + d.title + '</span>';
-    if (d.badge) hdrHtml += '<span class="badge ' + d.badge.cls + '">' + d.badge.text + '</span>';
-    hdrHtml += '<span class="acc-chevron">&#9658;</span>';
-    hdr.innerHTML = hdrHtml;
-    const body  = document.createElement('div');
-    body.className = 'acc-body';
-    const inner = document.createElement('div');
-    inner.className = 'acc-inner';
-    let innerHtml = '<p class="acc-desc">' + d.desc + '</p>';
-    if (d.practice) {
-      const exLbl = '🤖 Joacă tu mutările';
-      innerHtml += '<button class="ex-start" onclick="startPractice(' + d.chIdx + ')">' + exLbl + '</button>';
-    }
-    inner.innerHTML = innerHtml;
-    body.appendChild(inner);
-    item.appendChild(hdr);
-    item.appendChild(body);
-    list.appendChild(item);
-    hdr.addEventListener('click', function () {
-      item.classList.contains('open') ? closeAcc(item) : openAcc(item);
-    });
-  });
-}
-
-function openAcc(item) {
-  if (item.classList.contains('open')) return;
-  if (practiceMode) pracExit();
-  document.querySelectorAll('#accList .acc-item.open').forEach(function (o) {
-    if (o !== item) o.classList.remove('open');
-  });
-  item.classList.add('open');
-  const controls = document.getElementById('navControls');
-  item.parentNode.insertBefore(controls, item.nextElementSibling);
-  controls.style.display = 'flex';
-  if (item.dataset.ch === '') { controls.style.display = 'none'; return; }   /* răspuns fără exemplu pe tablă */
-  loadChapter(parseInt(item.dataset.ch));
-}
-
-function closeAcc(item) {
-  item.classList.remove('open');
-  document.getElementById('navControls').style.display = 'none';
-}
-
-buildAccordion();
-/* toate acordeoanele închise la intrare; tabla inițială e liberă pentru mutări legale */
-sGame = new Chess(START);
 </script>
 
 <script src="board-utils.js"></script>
