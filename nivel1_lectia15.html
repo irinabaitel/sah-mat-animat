@@ -11,7 +11,7 @@
   gtag('config', 'G-CMTZ9GGPMP');
 </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Piese atârnate</title>
+  <title>Numărătoarea</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css">
@@ -170,7 +170,7 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">Piese atârnate</span>
+    <span class="header-title">Numărătoarea</span>
     <div class="header-progress">
     </div>
   </header>
@@ -189,17 +189,18 @@
         <div class="info-content">
 
           <div class="def-box">
-            <p class="def-title">Piesa atârnată</p>
-            <p><strong>Piesa atârnată</strong> este o piesă atacată, care poate fi capturată gratis pentru că nimeni nu o apără.</p>
-            <p>Uneori le găsim pe tablă datorită neatenției adversarului (asta se întâmplă la începători, jucătorii avansați nu fac astfel de greșeli), dar, pe măsură ce devenim mai buni la șah, învățăm să folosim diverse tactici pentru a-l face pe adversar să rămână cu o piesă atârnată.</p>
-            <p><strong>Ce sunt tacticile?</strong> Mutări și idei pe termen scurt prin care se obține un avantaj imediat.</p>
+            <p class="def-title">Numărătoarea</p>
+            <p>Ca să știi dacă o piesă e în siguranță, numeri: <strong>câți o atacă</strong> și <strong>câți o apără</strong>. Fiecare atacator face o captură, fiecare apărător face o recaptură.</p>
+            <p>Dacă atacatorii sunt mai mulți, piesa e în pericol. Dacă sunt la fel de mulți, cel mult e un schimb. Și mereu mai contează ceva: <strong>cât valorează piesele</strong>.</p>
           </div>
 
           <div class="acc-list" id="accList"></div>
 
           <div class="def-box" style="margin-top:14px;">
             <p class="def-title">Reține asta din lecție</p>
-            <p><strong>Când muți, ai grijă ca piesa ta să fie în siguranță.</strong> Întreabă-te întotdeauna dacă pătrățelul pe care muți piesa este sigur.</p>
+            <p><strong>Numără atacatorii și apărătorii.</strong></p>
+            <p>🔢 <strong>Mai mulți atacatori</strong> decât apărători: poți câștiga piesa. <strong>La fel de mulți:</strong> cel mult un schimb, oprește-te la timp.</p>
+            <p>⚖️ <strong>Capturezi întâi cu piesa care valorează cel mai puțin.</strong> Și înainte de fiecare captură te întrebi: <strong>ce capturez și ce pot pierde?</strong> Un apărător care valorează puțin poate opri atacatori care valorează mult.</p>
           </div>
 
           <div id="navControls">
@@ -231,14 +232,14 @@
   </main>
 
   <footer class="page-footer" role="navigation" aria-label="Navigare lecție">
-    <a href="nivel1_lectia5.html" class="nav-btn nav-btn--back">
-      <span class="icon">&#8592;</span><span class="label">Atacul, captura, apărarea</span>
+    <a href="nivel1_lectia13.html" class="nav-btn nav-btn--back">
+      <span class="icon">&#8592;</span><span class="label">Piese atârnate</span>
     </a>
     <a href="hub.html" class="nav-btn nav-btn--contents">
       <span class="icon">&#8862;</span><span class="label">Cuprins</span>
     </a>
-    <a href="nivel1_lectia15.html" class="nav-btn nav-btn--forward">
-      <span class="label">Numărătoarea</span><span class="icon">&#8594;</span>
+    <a href="nivel1_lectia6.html" class="nav-btn nav-btn--forward">
+      <span class="label">Atacul asupra regelui</span><span class="icon">&#8594;</span>
     </a>
   </footer>
 
@@ -257,242 +258,83 @@ const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 const chapters = [
 
-  /* ══ ÎNȚELEG — răspunsurile, apoi numărătoarea ══ */
+  /* ══ NUMĂRĂTOAREA, MAI DEPARTE (după metoda Step by Step, Pasul 1) ══ */
 
-  /* 0 — fug */
+  /* 0 — doi contra unu */
   {
-    fen: '6k1/8/8/1b1R4/8/8/2n5/6K1 b - - 0 1', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: 0,
-    finishMsg: 'Ai scos nebunul din bătaie!',
-    san: ['Ba4'],
-    accept: { 0: ['Ba4','Ba6','Bc6','Bc4','Be8','Be2'] },
-    altMsg: 'Bun — nebunul a plecat pe un câmp unde nu-l ajunge nimeni.',
+    fen: 'k5r1/8/8/6b1/8/5N2/8/K5R1 w - - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: 3,
+    finishMsg: 'Ai câștigat nebunul și ți-au rămas turnul și calul!',
+    san: ['Nxg5'],
+    wrong: { 0: { 'Rxg5': '❌ Câștigi nebunul, dar după …Txg5 Cxg5 îți rămâne doar calul. Cu un cal singur nu poți da mat, deci partida e <strong>remiză</strong>. Încearcă să iei cu altă piesă.' } },
     ann: {
-      0: '🏃 <strong>Fugi.</strong> Uită-te la <strong>nebunul negru din b5</strong>. Turnul alb din d5 se uită drept la el, pe rândul 5 și între ei nu e nimeni. <br><br>Nebunul e atacat. Și mai e ceva: nu-l apără nimeni. <strong>E o piesă atârnată</strong> — dacă Negrul nu face nimic, turnul o ia pe gratis. <br><br>Cel mai simplu răspuns: pleacă de acolo. Mută nebunul.',
-      1: '<strong>…Na4</strong> — nebunul a ieșit de pe rândul 5 și turnul nu mai are ce lua. <br><br>Mergeau și <strong>…Na6, …Nc6, …Nc4, …Ne8, …Ne2</strong>. <br><br>⚠️ Dar atenție unde fugi: pe <strong>d7</strong> și pe <strong>d3</strong> nebunul rămâne tot în bătaia turnului, doar că pe coloană în loc de rând. Iar pe <strong>f1</strong> îl ia regele alb. <strong>Nu e destul să fugi — trebuie să fugi undeva în siguranță.</strong>'
+      0: '🔢 <strong>Doi contra unu.</strong> În lecția despre piesele atârnate ai văzut <strong>unu contra zero</strong> (piesa atârnată, o capturezi pe gratis) și <strong>unu contra unu</strong> (un schimb). Acum numărăm mai departe. <br><br>Joci cu <strong>Albul</strong>. Uită-te la <strong>nebunul negru din g5</strong> și numără. <br><br>Îl atacă: <strong>calul din f3</strong> și <strong>turnul din g1</strong> — adică <strong>doi</strong>. <br>Îl apără: <strong>turnul din g8</strong> — adică <strong>unu</strong>. <br><br>Doi atacatori, un singur apărător: nebunul poate fi câștigat. Dar cu care piesă îl capturezi?',
+      1: '<strong>Cxg5!</strong> — calul capturează nebunul. <br><br>Dacă Negrul recapturează, …Txg5, turnul alb capturează și turnul lui: Txg5. Negrul ar pierde și turnul, deci nu recapturează. Albul a câștigat un nebun și i-au rămas <strong>turnul și calul</strong>. <br><br>❌ Dacă luai întâi cu turnul: <strong>Txg5? Txg5 Cxg5</strong> — ai câștigat tot nebunul, dar pe tablă îți rămâne <strong>doar calul</strong>. Cu un cal singur nu poți da mat, deci partida e <strong>remiză</strong>. <br><br>Așa merge numărătoarea: fiecare atacator face o captură, fiecare apărător face o recaptură. <strong>Cine are mai mulți capturează ultimul.</strong> Dar gândește-te și ce rămâne pe tablă după schimburi.'
     },
-    arrows: { 0: [{from:'d5', to:'b5', color:'R'}] }
+    arrows: { 0: [{from:'f3', to:'g5', color:'G'}, {from:'g1', to:'g5', color:'G'}, {from:'g8', to:'g5', color:'B'}] }
   },
 
-  /* 1 — o apăr */
+  /* 1 — doi contra doi */
   {
-    fen: '6k1/8/8/1b1R4/8/8/2n5/6K1 b - - 0 1', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: 0,
-    finishMsg: 'Nebunul e acum apărat.',
-    san: ['Na3'],
-    ann: {
-      0: '🛡️ <strong>O aperi.</strong> Aceeași poziție. De data asta nu mai fugim — îi aducem nebunului un apărător. <br><br>Cine poate? <strong>Calul din c2.</strong> Găsește câmpul de unde calul ajunge la b5.',
-      1: '<strong>…Ca3!</strong> — de pe a3, calul păzește b5. <br><br>Turnul tot poate lua nebunul, dar acum plătește: Txb5 Cxb5, turn contra nebun. Albul nu va face asta. <strong>Apărarea nu împiedică captura — creează o consecință.</strong> <br><br>⚠️ Și acum partea la care greșesc toți începătorii: mai există un câmp de unde calul apără nebunul — <strong>d4</strong>. Și e greșit! Pe d4, calul intră chiar în bătaia turnului. Albul joacă Txd4 și ia calul degeaba. <br><br><strong>Când aduci un apărător, uită-te dacă apărătorul e el însuși în siguranță.</strong> Altfel ai doar impresia că ești apărat.'
-    },
-    arrows: { 0: [{from:'d5', to:'b5', color:'R'}, {from:'c2', to:'a3', color:'G'}] }
-  },
-
-  /* 2 — îl capturez pe atacator */
-  {
-    fen: 'k7/1p6/8/2n5/8/1N6/P7/6K1 b - - 0 1', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: 0,
-    finishMsg: 'Nu mai e cine să atace.',
-    san: ['Nxb3','axb3'],
-    accept: { 0: ['Nxb3','b6','Nd7','Ne6','Ne4','Nd3','Na6','Na4'] },
-    altMsg: 'Merge și așa — dar citește mai jos de ce captura e cea mai simplă aici.',
-    ann: {
-      0: '⚔️ <strong>Capturezi atacatorul.</strong> Poziție nouă. Cei doi cai se atacă unul pe altul — se cheamă <strong>atac reciproc</strong>. <br><br>Numără: calul alb din <strong>b3</strong> e apărat de pionul din a2. Calul negru din <strong>c5</strong> nu e apărat de nimeni — <strong>e atârnat</strong>. <br><br>E rândul Negrului și ăsta e norocul lui. Ce face?',
-      1: '<strong>…Cxb3</strong> — îl ia chiar pe atacator. Nu mai are cine să-l amenințe.',
-      2: '<strong>axb3</strong> — pionul recapturează, cum era de așteptat. Cal contra cal: schimb egal, nimeni n-a pierdut nimic. <br><br>Negrul mai avea două căi: să <strong>fugă</strong> cu calul, sau să-l <strong>apere</strong> jucând …b7-b6. Toate trei sunt bune. <br><br>Ține minte însă cine era în pericol: <strong>calul atârnat era al Negrului.</strong> Dacă ar fi fost rândul Albului, el ar fi jucat Cxc5 și ar fi câștigat un cal pe degeaba, pentru că n-avea cine să recaptureze.'
-    },
-    arrows: { 0: [{from:'c5', to:'b3', color:'R'}, {from:'b3', to:'c5', color:'R'}, {from:'a2', to:'b3', color:'G'}] }
-  },
-
-  /* 3 — pun ceva în cale */
-  {
-    fen: 'k7/8/2p5/3b4/8/4P3/6Q1/6K1 w - - 0 1', orient: 'white',
+    fen: 'k5r1/8/7p/6b1/8/5N2/8/K5R1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: 0,
-    finishMsg: 'Ai tăiat diagonala!',
-    san: ['e4'],
-    accept: { 0: ['e4','Qf2','Qf1','Qh2','Qh3','Qf3'] },
-    altMsg: 'Merge — dama e în siguranță. Citește mai jos și varianta cu pionul.',
+    san: ['Nxg5','hxg5','Rxg5','Rxg5'],
     ann: {
-      0: '🧱 <strong>Faci un scut.</strong> Poziție nouă, joci cu <strong>Albul</strong>. <br><br>Nebunul negru din <strong>d5</strong> privește pe diagonală în jos: e4, f3, g2 — unde stă <strong>dama albă</strong>. Dama e atacată de un nebun, adică de o piesă care valorează mult mai puțin. Trebuie neapărat să faci ceva. <br><br>Poți să fugi cu dama, sigur. Dar mai există o cale: <strong>bagă ceva în calea nebunului.</strong>',
-      1: '<strong>e4!</strong> — pionul se așează chiar pe diagonală, între nebun și damă. Nebunul nu mai vede până la g2. <br><br>Și pionul? E atacat de nebun, dar dacă Nxe4, dama de pe g2 recapturează — Dxe4, nebun pentru pion. Deci pionul stă bine acolo. <br><br>Mergea și să fugi cu dama (Df2, Df1, Dh2…). <br><br>❌ Ce <em>nu</em> faci: <strong>Dxd5??</strong> — dama capturează nebunul, dar pionul din c6 recapturează, cxd5 și ai dat o damă, care valorează cât 9 pioni, pe un nebun de 3. <br><br>⚠️ Ține minte: <strong>ceva în cale poți pune numai împotriva pieselor care merg în linie</strong> — dama, turnul, nebunul. Împotriva unui cal nu ai ce pune în cale: el sare peste.'
+      0: '🔢 <strong>Doi contra doi.</strong> Aceeași poziție, cu un singur pion în plus: <strong>pionul negru din h6</strong>. <br><br>Numără din nou pentru nebunul din g5. Atacatori: calul și turnul — <strong>doi</strong>. Apărători: turnul din g8 și pionul din h6 — tot <strong>doi</strong>. <br><br>Acum cine ia ultimul? Urmărește mutările cu ►.',
+      1: '<strong>Cxg5</strong> — calul ia nebunul (+3).',
+      2: '<strong>…hxg5</strong> — pionul îl ia pe cal (−3). <br><br>Până aici e un <strong>schimb egal</strong>: cal pe nebun. Dacă Albul se oprește acum, n-a pierdut nimic. Dar dacă merge mai departe…',
+      3: '<strong>Txg5?</strong> — turnul ia pionul (+1)…',
+      4: '<strong>…Txg5</strong> — și turnul negru ia turnul (−5). <br><br>Socoteala: ai luat nebun și pion (3 + 1 = 4), ai dat cal și turn (3 + 5 = 8). <strong>Ai pierdut 4.</strong> <br><br>Când atacatorii și apărătorii sunt <strong>la fel de mulți</strong>, ultimul cuvânt e al celui care apără. Poți face un schimb, dar trebuie să <strong>te oprești la timp</strong>.'
     },
-    arrows: { 0: [{from:'d5', to:'g2', color:'R'}] }
+    arrows: { 0: [{from:'f3', to:'g5', color:'G'}, {from:'g1', to:'g5', color:'G'}, {from:'g8', to:'g5', color:'B'}, {from:'h6', to:'g5', color:'B'}] }
   },
 
-  /* ══ MĂ PRICEP ══ */
-
-  /* 4 */
+  /* 2 — cu cine iei întâi */
   {
-    fen: 'k7/8/8/4q2N/8/6P1/8/1K6 w - - 0 1', orient: 'white',
-    winner: 'w', practiceFrom: 0, winEval: 0,
-    finishMsg: 'Calul e în siguranță!',
-    san: ['g4'],
-    accept: { 0: ['g4','Nf4'] },
-    altMsg: 'Corect — și asta e una dintre cele două soluții.',
+    fen: '7k/1p4pp/b7/8/2r5/1Q6/5PPP/2R3K1 w - - 0 1', orient: 'white',
+    winner: 'w', practiceFrom: 0, winEval: 3,
+    finishMsg: 'Ai capturat întâi cu piesa care valorează mai puțin!',
+    san: ['Rxc4','Bxc4','Qxc4'],
+    wrong: { 0: { 'Qxc4': '❌ Numărătoarea e bună, doi contra unu, dar ai capturat cu piesa care valorează cel mai mult. După …Nxc4 Txc4 ai dat dama (9) pe turn și nebun (8): <strong>ai pierdut un punct</strong>. Încearcă altă ordine.' } },
     ann: {
-      0: 'Joci cu <strong>Albul</strong>. Dama neagră din e5 atacă <strong>calul alb din h5</strong>, iar calul nu e apărat de nimeni: e <strong>atârnat</strong>. <br><br>Sunt <strong>două</strong> mutări bune. Găsește una — și pe urmă vezi dacă o ghicești și pe a doua.',
-      1: '<strong>g4!</strong> — pionul urcă un pas și de acolo păzește calul. Dama poate să-l ia, dar atunci pionul o recapturează: damă pentru cal, un târg pe care Negrul nu-l face. <br><br>A doua soluție era <strong>Cf4</strong>. Pare ciudată — calul se mută pe un câmp <em>tot</em> atacat de damă. Dar f4 e păzit de pionul din g3, deci și acolo dama ar plăti prea scump. <br><br>❌ Iar celelalte două mutări de cal pierd piesa: pe <strong>g7</strong> și pe <strong>f6</strong> calul e atacat de damă și nu-l apără nimeni. <br><br>Morala: <strong>„atacat" nu înseamnă „pierdut".</strong> Contează dacă cel care te-ar lua plătește sau nu.'
+      0: '⚖️ <strong>Cu cine iei întâi?</strong> Joci cu <strong>Albul</strong>. Turnul negru din <strong>c4</strong> e atacat de <strong>dama din b3</strong> și de <strong>turnul din c1</strong> — doi. Îl apără doar <strong>nebunul din a6</strong> — unu. <br><br>Doi contra unu, deci îl poți câștiga. Dar acum contează și cu cine iei primul. Gândește-te la cine rămâne în bătaia nebunului după captură.',
+      1: '<strong>Txc4</strong> — capturezi cu turnul, care valorează mai puțin decât dama.',
+      2: '<strong>…Nxc4</strong> — nebunul recapturează.',
+      3: '<strong>Dxc4</strong> — dama ia ultimul. <br><br>Socoteala: ai luat turn și nebun (5 + 3 = 8), ai dat turn (5). <strong>Ai câștigat 3.</strong> <br><br>❌ Dacă luai întâi cu dama: <strong>Dxc4? Nxc4 Txc4</strong> — ai luat tot turn și nebun (8), dar ai dat dama (9). <strong>Ai pierdut un punct</strong>, deși numărătoarea era aceeași. <br><br>Regula: <strong>capturezi întâi cu piesa care valorează cel mai puțin.</strong> Piesa care valorează cel mai mult vine ultima, când nu mai are cine s-o captureze.'
     },
-    arrows: { 0: [{from:'e5', to:'h5', color:'R'}] }
+    arrows: { 0: [{from:'b3', to:'c4', color:'G'}, {from:'c1', to:'c4', color:'G'}, {from:'a6', to:'c4', color:'B'}] }
   },
 
-  /* 5 */
+  /* 3 — trei contra trei: contează cine sunt */
   {
-    fen: '6k1/8/8/1b1R4/8/8/2n5/6K1 b - - 0 1', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: 0,
-    finishMsg: 'Ai ocolit capcana!',
-    san: ['Na3'],
-    accept: { 0: ['Na3','Ba4','Ba6','Bc6','Bc4','Be8','Be2','Nb4'] },
-    altMsg: 'Bun — nebunul e în siguranță și n-ai dat nimic pe degeaba.',
-    ann: {
-      0: 'Ultima dată pe poziția asta și acum ai voie să alegi singur. Joci cu <strong>Negrul</strong>: nebunul din b5 e atacat de turn. <br><br>Aici nu merge să pui ceva în cale. Îți rămân <strong>trei</strong> feluri de a-l salva. <br><br>Găsește o mutare bună — și ferește-te de cele două care par bune și pierd.',
-      1: '<strong>…Ca3</strong> — apărătorul vine pe un câmp unde el însuși e în siguranță. Curat. <br><br>Mergeau și mutările <strong>…Na4, …Na6, …Nc6, …Nc4, …Ne8, …Ne2</strong> și chiar <strong>…Cb4</strong>, care nu apără nebunul, dar <strong>atacă turnul</strong> — și atunci Albul are el de rezolvat o problemă. <br><br>❌ Cele două care par bune și pierd: <strong>…Cd4??</strong>, unde apărătorul intră singur în bătaia turnului și <strong>…Nd7??</strong> sau <strong>…Nd3??</strong>, unde nebunul fuge de pe rând drept pe coloana turnului.'
-    },
-    arrows: { 0: [{from:'d5', to:'b5', color:'R'}] }
-  },
-
-  /* ══ PIESE ATÂRNATE ÎN PARTIDE ══ */
-
-  /* 6 — turnul din a8 */
-  {
-    fen: 'r3nrk1/p3qp1p/1p4p1/2p1P3/2P1QP2/1P1B4/P5PP/4RRK1 w - - 0 1', orient: 'white',
-    winner: 'w', practiceFrom: 0, winEval: 5,
-    finishMsg: 'Ai capturat turnul atârnat!',
-    san: ['Qxa8'],
-    ann: {
-      0: '🎯 Joci cu <strong>Albul</strong>. Una dintre piesele Negrului e atârnată: e atacată și nimeni nu o apără. Găsește-o și captureaz-o.',
-      1: '<strong>Dxa8</strong> — turnul din a8 era atacat de dama din e4, pe diagonala a8–h1 și nu îl apăra nimeni. Albul l-a capturat gratis.'
-    },
-    arrows: { 1: [{from:'e4', to:'a8', color:'R'}] }
-  },
-
-  /* 7 — pătrățelul era sigur? */
-  {
-    fen: '2rq1rk1/bp3pp1/p2pp2p/7Q/2P5/NP6/P2R1PPP/1B3RK1 b - - 0 1', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: null,
-    san: ['Qa5','Qxa5'],
-    ann: {
-      0: '🎯 Negrul observă că Albul are două piese neapărate, <strong>calul din a3</strong> și <strong>turnul din d2</strong> și se gândește să le atace pe amândouă cu Da5. Urmărește cu ►.',
-      1: '<strong>…Da5??</strong> — atacă deodată calul din a3 și turnul din d2. <br><br>Putem evita să avem piese atârnate punându-ne întotdeauna întrebarea <strong>dacă pătrățelul pe care mutăm o piesă este sigur</strong>. Negrul nu și-a pus această întrebare și nu și-a dat seama că a5 era deja controlat de regina albă, astfel că acolo, pe a5, regina neagră atârnă.',
-      2: '<strong>Dxa5</strong> — regina albă o capturează gratis.'
-    },
-    arrows: { 1: [{from:'h5', to:'a5', color:'R'}] }
-  },
-
-  /* 8 — regina din b8 */
-  {
-    fen: '6k1/1P3ppp/8/8/p7/5PbP/4r1P1/5RK1 w - - 0 1', orient: 'white',
+    fen: '4r1k1/2q2pp1/2p1pn1p/3p4/8/1Q2P3/3R1PPP/3R2K1 w - - 0 1', orient: 'white',
     winner: 'w', practiceFrom: 0, winEval: null,
-    san: ['b8=Q+','Bxb8'],
+    san: ['Rxd5','cxd5','Rxd5','exd5','Qxd5','Nxd5'],
     ann: {
-      0: '🎯 Albul e gata să promoveze și visează la un mat pe ultima linie. Urmărește cu ►.',
-      1: '<strong>b8=D+</strong> — Albul se așteaptă la …Te8 și apoi Dxe8#.',
-      2: '<strong>…Nxb8</strong> — însă Negrul capturează regina care atârnă în b8.'
+      0: '⚖️ <strong>Trei contra trei: contează cine sunt.</strong> Uită-te la <strong>pionul negru din d5</strong>. <br><br>Îl atacă: <strong>turnul din d2</strong>, <strong>turnul din d1</strong> (din spatele lui) și <strong>dama din b3</strong> — trei. <br>Îl apără: <strong>pionul din c6</strong>, <strong>pionul din e6</strong> și <strong>calul din f6</strong> — tot trei. <br><br>Trei contra trei. Dar uită-te <em>cine</em> sunt: de o parte două turnuri și o damă, de cealaltă doi pioni și un cal. Urmărește ce se întâmplă dacă Albul capturează totuși, cu ►.',
+      1: '<strong>Txd5??</strong> — turnul capturează un pion (+1).',
+      2: '<strong>…cxd5</strong> — pionul recapturează turnul (−5). <br><br>Deja după prima captură Albul a pierdut 4. De aici încolo nu mai are ce repara.',
+      3: '<strong>Txd5??</strong> — al doilea turn capturează încă un pion (+1).',
+      4: '<strong>…exd5</strong> — alt pion recapturează turnul (−5).',
+      5: '<strong>Dxd5??</strong> — dama capturează și ultimul pion (+1).',
+      6: '<strong>…Cxd5</strong> — calul recapturează dama (−9). <br><br>Socoteala: Albul a capturat trei pioni (3), a dat două turnuri și dama (5 + 5 + 9 = 19). <br><br>Numărătoarea arăta „la egalitate", dar schimbul a fost un dezastru, pentru că de fiecare dată Albul a dat o piesă care valorează mult pe un pion. Chiar dacă Albul ar fi avut un atacator în plus, tot n-ar fi meritat: <strong>un apărător care valorează puțin poate opri atacatori care valorează mult.</strong> <br><br>De aceea, înainte de fiecare captură, te întrebi: <strong>ce capturez și ce pot pierde?</strong>'
     },
-    arrows: { 1: [{from:'g3', to:'b8', color:'R'}] }
-  },
-
-  /* ══ CAPTUREAZĂ PIESA ATÂRNATĂ ══ */
-
-  /* 9 — capturează piesa atârnată (1) */
-  {
-    fen: '7r/pk5p/1pp3p1/2b2p2/P1PB4/2P4P/5PP1/R5K1 w - - 0 1', orient: 'white',
-    winner: 'w', practiceFrom: 0, winEval: null,
-    finishMsg: 'Ai capturat piesa atârnată!',
-    san: ['Bxh8'],
-    ann: {
-      0: '🎯 Joci cu <strong>Albul</strong>. Una dintre piesele Negrului e atârnată. Găsește-o și captureaz-o.',
-      1: '<strong>Nxh8</strong> — turnul din h8 era atacat de nebunul din d4, pe diagonala a1–h8 și nu îl apăra nimeni.'
-    },
-    arrows: { 1: [{from:'d4', to:'h8', color:'R'}] }
-  },
-  /* 10 — capturează piesa atârnată (2) */
-  {
-    fen: '2k5/ppp4p/8/1BP3p1/PQ5n/2P4P/6P1/5q1K w - - 0 1', orient: 'white',
-    winner: 'w', practiceFrom: 0, winEval: null,
-    finishMsg: 'Ai capturat piesa atârnată!',
-    san: ['Bxf1'],
-    ann: {
-      0: '🎯 Joci cu <strong>Albul</strong>. Regina neagră ți-a dat șah din f1. Ce faci?',
-      1: '<strong>Nxf1</strong> — regina a dat șah, dar pe f1 nu o apăra nimeni. Nebunul din b5 o capturează pe diagonala a6–f1.'
-    },
-    arrows: { 1: [{from:'b5', to:'f1', color:'R'}] }
-  },
-  /* 11 — capturează piesa atârnată (3) */
-  {
-    fen: 'r1bqk1nr/pppp1ppp/2n5/2b1p1N1/2B1P3/8/PPPP1PPP/RNBQK2R b KQkq - 5 4', orient: 'black',
-    winner: 'b', practiceFrom: 0, winEval: null,
-    finishMsg: 'Ai capturat piesa atârnată!',
-    san: ['Qxg5'],
-    ann: {
-      0: '🎯 Joci cu <strong>Negrul</strong>. Calul alb a sărit pe g5 ca să atace f7. Ce observi?',
-      1: '<strong>…Dxg5</strong> — calul din g5 era atacat de dama din d8, pe diagonala d8–h4 și nu îl apăra nimeni.'
-    },
-    arrows: { 1: [{from:'d8', to:'g5', color:'R'}] }
-  },
-  /* 12 — capturează piesa atârnată (4) */
-  {
-    fen: 'r4rk1/2pn1ppp/1p2n3/8/2N5/6BP/PPP3P1/1K1RR3 w - - 0 1', orient: 'white',
-    winner: 'w', practiceFrom: 0, winEval: null,
-    finishMsg: 'Ai capturat piesa atârnată!',
-    san: ['Rxd7'],
-    ann: {
-      0: '🎯 Joci cu <strong>Albul</strong>. Una dintre piesele Negrului e atârnată. Găsește-o și captureaz-o.',
-      1: '<strong>Txd7</strong> — calul din d7 era atacat de turnul din d1, pe coloana d și nu îl apăra nimeni.'
-    },
-    arrows: { 1: [{from:'d1', to:'d7', color:'R'}] }
-  },
-  /* 13 — capturează piesa atârnată (5) */
-  {
-    fen: 'r2qk2r/ppp2ppp/2n1p3/2bn4/Q5b1/2NP1NP1/PP2PPBP/R1B1K2R w KQkq - 0 1', orient: 'white',
-    winner: 'w', practiceFrom: 0, winEval: null,
-    finishMsg: 'Ai capturat piesa atârnată!',
-    san: ['Qxg4'],
-    ann: {
-      0: '🎯 Joci cu <strong>Albul</strong>. Una dintre piesele Negrului e atârnată. Găsește-o și captureaz-o.',
-      1: '<strong>Dxg4</strong> — nebunul din g4 era atacat de regina din a4, pe rândul 4 și nu îl apăra nimeni.'
-    },
-    arrows: { 1: [{from:'a4', to:'g4', color:'R'}] }
+    arrows: { 0: [{from:'d2', to:'d5', color:'G'}, {from:'b3', to:'d5', color:'G'}, {from:'c6', to:'d5', color:'B'}, {from:'e6', to:'d5', color:'B'}, {from:'f6', to:'d5', color:'B'}] }
   }
+
 ];
 
 /* ─── Acordeon: fiecare item încarcă un capitol ─── */
 const accData = [
-  { chIdx: 0, kind: 't1', num: '1', title: 'Fugi cu piesa pe un câmp sigur, unde nu este în pericol.', practice: true,
-    label: '<span class="treapta-cap">Ce faci când e rândul tău la mutare și ai o piesă atârnată?</span>',
-    desc: 'Nebunul negru e atacat de turn și nu-l apără nimeni. Unde îl muți ca să fie în siguranță?' },
-  { chIdx: 1, kind: 't1', num: '2', title: 'O aperi cu o altă piesă.', practice: true,
-    desc: '<strong>ATENȚIE!</strong> Dacă aperi o piesă, nu înseamnă neapărat că adversarul nu o va captura! Dacă aperi o regină cu un pion, fii sigur că regina va fi capturată imediat; chiar dacă o aperi cu un turn, atunci când o atacă un nebun, să zicem, tot va fi capturată.' },
-  { chIdx: 2, kind: 't1', num: '3', title: 'Dacă poți și merită, capturezi atacatorul.', practice: true,
-    desc: 'Doi cai care se atacă unul pe altul. Unul e apărat, celălalt e atârnat. E rândul celui atârnat.' },
-  { chIdx: 3, kind: 't1', num: '4', title: 'Faci un scut: pui în calea atacatorului o piesă mai puțin valoroasă, dar care este apărată de o altă piesă de-a ta.', practice: true,
-    desc: 'Un nebun se uită drept la regină. Nu fugi neapărat — pune un scut.' },
-  { chIdx: null, kind: 't1', num: '5', title: 'Poți neglija atacul asupra piesei tale și să declanșezi un atac mai puternic, asupra unei piese mai valoroase a adversarului sau chiar asupra regelui.', practice: false,
-    desc: 'Exemplul pe tablă pentru acest răspuns urmează.' },
-
-  { chIdx: 6, kind: 't1', num: '🎯', title: 'Caută piesa atârnată', practice: true,
-    label: '<span class="treapta-cap">🎯 Piese atârnate <span class="t-mic">în partide</span></span>',
-    desc: 'Joci cu <strong>Albul</strong>. Negrul are o piesă atacată pe care nu o apără nimeni.' },
-  { chIdx: 7, kind: 't1', num: '🎯', title: 'Pătrățelul pe care muți e sigur?', practice: false,
-    desc: 'Negrul vrea să atace două piese deodată. Dar pe ce câmp își pune regina?' },
-  { chIdx: 8, kind: 't1', num: '🎯', title: 'Regina care atârnă în b8', practice: false,
-    desc: 'Albul promovează și visează la un mat pe ultima linie.' },
-
-  { chIdx: 9, kind: 't1', num: '1', title: 'Capturează piesa atârnată!', practice: true,
-    label: '<span class="treapta-cap">🎯 Capturează piesa atârnată! <span class="t-mic">cinci poziții</span></span>',
-    desc: 'Joci cu <strong>Albul</strong>. Găsește piesa pe care nu o apără nimeni.' },
-  { chIdx: 10, kind: 't1', num: '2', title: 'Capturează piesa atârnată!', practice: true,
-    desc: 'Joci cu <strong>Albul</strong>. Găsește piesa pe care nu o apără nimeni.' },
-  { chIdx: 11, kind: 't1', num: '3', title: 'Capturează piesa atârnată!', practice: true,
-    desc: 'Joci cu <strong>Negrul</strong>. Găsește piesa pe care nu o apără nimeni.' },
-  { chIdx: 12, kind: 't1', num: '4', title: 'Capturează piesa atârnată!', practice: true,
-    desc: 'Joci cu <strong>Albul</strong>. Găsește piesa pe care nu o apără nimeni.' },
-  { chIdx: 13, kind: 't1', num: '5', title: 'Capturează piesa atârnată!', practice: true,
-    desc: 'Joci cu <strong>Albul</strong>. Găsește piesa pe care nu o apără nimeni.' },
-
-  { chIdx: 4, kind: 't2', num: '1', title: 'Două soluții, nu una', practice: true,
-    desc: 'Joci cu <strong>Albul</strong>. Calul e atârnat, dar sunt <strong>două</strong> mutări care îl salvează. Găsește-le.' },
-  { chIdx: 5, kind: 't2', num: '2', title: 'Alege singur cum îl salvezi', practice: true,
-    desc: 'Joci cu <strong>Negrul</strong>. Trei feluri de a-l salva funcționează — și trei mutări care par bune pierd piesa.' }
+  { chIdx: 0, kind: 't1', num: '2:1', title: 'Doi contra unu', practice: true,
+    label: '<span class="treapta-cap">🔢 Câți atacă, câți apără <span class="t-mic">și cât valorează</span></span>',
+    desc: 'Doi atacatori, un apărător. Cine are mai mulți capturează ultimul. Dar cu care piesă începi?' },
+  { chIdx: 1, kind: 't1', num: '2:2', title: 'Doi contra doi', practice: false,
+    desc: 'Un apărător în plus schimbă tot. Poți face un schimb, dar trebuie să te oprești la timp.' },
+  { chIdx: 2, kind: 't1', num: '⚖️', title: 'Cu cine iei întâi?', practice: true,
+    desc: 'Doi contra unu, dar o ordine a capturilor câștigă și cealaltă pierde. Contează cât valorează piesele.' },
+  { chIdx: 3, kind: 't1', num: '⚖️', title: 'Trei contra trei: contează cine sunt', practice: false,
+    desc: 'Trei contra trei: două turnuri și o damă contra doi pioni și un cal. Merită să capturezi?' }
 ];
 
 let curChapterIdx = 0;
