@@ -352,6 +352,14 @@ body.no-hints .highlight-capture::before { display: none; }
   .page-main     { container-type: size; grid-template-columns: auto minmax(0, 1fr); }
   .board-wrapper { width:  min(55cqw, 100cqh); }
   .panel-col     { height: min(55cqw, 100cqh); }
+
+  /* Arene cu rândul „Timp” deasupra tablei: rând subțire (26px + 4px spațiu),
+     iar tabla scade exact cu atât — rămâne pătrată și încape întreagă. */
+  .board-col:has(> .arena-settings)                  { gap: 4px; }
+  .board-col > .arena-settings                       { height: 26px; box-sizing: border-box; padding-block: 0; }
+  .board-col > .arena-settings .s-btn                { padding-block: 0; line-height: 1.3; }
+  .board-col:has(> .arena-settings) > .board-wrapper { width: min(55cqw, 100cqh - 30px); }
+  .board-col:has(> .arena-settings) ~ .panel-col     { height: min(55cqw, 100cqh - 30px); }
 }
 
 /* Zona de text — scroll intern, NU scroll pe pagină */
