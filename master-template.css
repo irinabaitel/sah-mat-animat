@@ -895,3 +895,21 @@ body.no-hints .highlight-capture::before { display: none; }
 }
 .mlog-token:hover  { background: rgba(26,58,107,0.1); }
 .mlog-token.active { background: var(--c-navy); color: white; border-radius: var(--radius-sm); }
+
+/* =====================================================
+   MINIJOCURI — caseta „📖 Cum se joacă" (<details class="howto">)
+   Titlurile h4 sunt mai mari decât textul casetei.
+   ===================================================== */
+.howto { margin-bottom: 10px; }
+.howto > summary {
+  cursor: pointer; list-style: none; font-family: var(--font-display); font-weight: 900;
+  color: var(--c-navy); font-size: 0.95em; padding: 6px 10px; border-radius: 10px;
+  background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8);
+}
+.howto > summary::-webkit-details-marker { display: none; }
+.howto > summary::after { content: ' ▾'; }
+.howto:not([open]) > summary::after { content: ' ▸'; }
+.howto .hl-box { margin-top: 8px; font-size: 0.86em; line-height: 1.65; }
+.howto .hl-box p { margin: 0 0 6px; }
+.howto .hl-box p:last-child { margin-bottom: 0; }
+.howto h4 { font-family: var(--font-display); color: var(--c-navy); font-size: 1.1em; margin: 0 0 4px; }

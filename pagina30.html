@@ -373,8 +373,6 @@ function spawnPageConfetti(duration) {
   batch();
 }
 
-}
-
 function findBlackKingSq(fen) {
   const rows = fen.split(' ')[0].split('/');
   for (let r = 0; r < 8; r++) {
@@ -590,9 +588,6 @@ function goToStep(s) {
   updateUI();
   showCage(s);
   showMoveArrow(s);
-  if (s >= 30) {
-    const bkSq = findBlackKingSq(positions[s]);
-    if (bkSq)  }
   if (s === positions.length - 1) {
     setTimeout(redKingOverlay, 200);
     setTimeout(spawnPageConfetti.bind(null, 5000), 300);

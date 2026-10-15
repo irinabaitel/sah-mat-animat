@@ -14,35 +14,21 @@
 <title>Întoarcerea Acasă — Joc</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-<link rel="stylesheet" href="master-template.css?v=20260930">
+<link rel="stylesheet" href="master-template.css?v=20261016">
 <style>
   .game-badge {
     background: #7d3c98; color: white;
     font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-bold);
     padding: 3px 14px; border-radius: var(--radius-sm); white-space: nowrap;
   }
-
   /* HIGHLIGHTS */
   /* strat verde transparent peste pătrat: se vede culoarea pătratului (alb/negru) dedesubt */
   .sq-home { box-shadow: inset 0 0 0 100px rgba(20,110,40,.45); }  /* același verde și aceeași transparență ca .highlight-selected din master */
   .sq-wrong { box-shadow: inset 0 0 0 100vmax rgba(220,40,40,0.55) !important; }
   .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
-
   /* CUM SE JOACĂ */
   .howto { margin:10px 0; }
-  .howto > summary {
-    cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900;
-    color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px;
-    background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8);
-  }
-  .howto > summary::-webkit-details-marker { display:none; }
-  .howto > summary::after { content:' ▾'; }
-  .howto:not([open]) > summary::after { content:' ▸'; }
-  .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
-  .howto .hl-box p { margin:0 0 6px; }
-  .howto .hl-box p:last-child { margin-bottom:0; }
-  .howto .hl-box ul { margin:0 0 6px; padding-left:18px; }  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
-
+  .howto .hl-box ul { margin:0 0 6px; padding-left:18px; }  
   /* TOGGLES */
   .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
   .tgl-btn {
@@ -53,7 +39,6 @@
   }
   .tgl-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
   .pp-strikes { font-size:0.82em; letter-spacing:1px; }
-
   /* PLAYER PANELS */
   .player-panel {
     background: rgba(255,255,255,0.5); border: 2px solid rgba(255,255,255,0.8);
@@ -79,7 +64,6 @@
   .pp-check { font-size: 0.76em; color: #1a6b3a; font-weight: 700; margin-top: 3px; display: none; }
   .pp-check.show { display: block; }
   .pp-tag { font-size: 0.70em; color: rgba(26,26,46,0.45); margin-bottom: 3px; }
-
   /* TARGET */
   .target-mini {
     background: rgba(26,58,107,0.07); border: 1.5px solid rgba(26,58,107,0.15);
@@ -87,7 +71,6 @@
     line-height: 1.8; font-family: var(--font-display); text-align: center; margin-bottom: 8px;
   }
   .target-mini small { opacity: 0.5; font-size: 0.82em; font-family: var(--font-body); }
-
   /* STATUS */
   #status-box {
     background: rgba(26,58,107,0.09); border: 2px solid rgba(26,58,107,0.2);
@@ -99,7 +82,6 @@
   #status-box.draw { border-color: rgba(200,150,10,0.5); background: rgba(200,150,10,0.12); }
   #status-box.ai   { border-color: rgba(160,60,200,0.4); background: rgba(160,60,200,0.08); }
   #status-box.warn { border-color: rgba(192,57,43,0.45); background: rgba(255,210,200,0.6); }
-
   /* VARIANT BUTTONS */
   .vbtn {
     padding: 4px 12px; border-radius: 50px;
@@ -110,7 +92,6 @@
   }
   .vbtn.active { background: #7d3c98; color: white; border-color: #7d3c98; }
   .vbtn:hover:not(.active) { background: rgba(255,255,255,0.8); }
-
   /* BUTTONS */
   .btn-game {
     display: block; width: 100%; padding: 8px; border-radius: 10px;
@@ -126,14 +107,12 @@
     box-shadow: 0 2px 8px rgba(26,58,107,0.3); transition: background 0.2s;
   }
   #btn-next:hover { background: #2a5aab; }
-
   .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; }
   .animal-btn { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:12px; padding:7px 4px; cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.74em; font-weight:700; color:#1a3a6b; text-align:center; transition:all 0.18s; line-height:1.4; }
   .animal-btn:hover { background:rgba(255,255,255,0.82); transform:translateY(-2px); }
   .animal-btn.active { background:#1a3a6b; color:white; border-color:#1a3a6b; box-shadow:0 3px 10px rgba(26,58,107,0.4); }
   .animal-btn .emoji { font-size:1.4em; display:block; }
   .animal-btn .name  { display:block; margin-top:2px; }
-
   .time-opts { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
   .time-opt { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:10px; padding:6px 11px; cursor:pointer; font-family:'Baloo 2',cursive; font-size:0.8em; font-weight:700; color:#1a3a6b; transition:all 0.18s; }
   .time-opt:hover { background:rgba(255,255,255,0.82); }

@@ -14,23 +14,19 @@
   <title>Jocul Pionilor — Șah Mat Animat</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-  <link rel="stylesheet" href="master-template.css?v=20260930">
+  <link rel="stylesheet" href="master-template.css?v=20261016">
   <style>
     .board-wrapper #myBoard { width:100%!important; height:100%!important; }
-
     .status-box { background:rgba(255,255,255,0.5); border-radius:12px; padding:12px 14px; font-size:0.93em; line-height:1.6; color:#333; min-height:56px; border-left:4px solid #1a3a6b; }
     .status-box.success { border-left-color:#27ae60; background:rgba(220,255,230,0.8); }
     .status-box.danger  { border-left-color:#c0392b; background:rgba(255,220,220,0.8); }
     .status-box.thinking{ border-left-color:#e67e22; background:rgba(255,240,210,0.8); }
-
     .move-counter { font-family:var(--font-display); font-size:0.82em; color:rgba(26,58,107,0.65); text-align:center; margin:4px 0; }
-
     .move-list { background:rgba(255,255,255,0.45); border-radius:10px; padding:10px 12px; font-size:0.83em; line-height:1.9; max-height:200px; overflow-y:auto; color:#222; margin-top:6px; }
     .move-list em { color:rgba(0,0,0,0.35); font-style:italic; }
     .ml-w { color:#1a3a6b; font-weight:700; margin-right:6px; }
     .ml-b { color:#333; margin-right:10px; }
     .ml-n { color:rgba(26,58,107,0.45); font-weight:700; margin-right:2px; }
-
     .difficulty-panel { margin-bottom:10px; }
     .difficulty-label { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:8px; }
     .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; }
@@ -39,15 +35,11 @@
     .animal-btn.active { background:#1a3a6b; color:white; border-color:#1a3a6b; box-shadow:0 3px 10px rgba(26,58,107,0.4); }
     .animal-btn .emoji { font-size:1.4em; display:block; }
     .animal-btn .name  { display:block; margin-top:2px; }
-
-
     @keyframes dots { 0%{content:'.';} 33%{content:'..';} 66%{content:'...';} 100%{content:'';} }
     .dots::after { content:''; animation: dots 1.2s steps(3,end) infinite; }
-
     .panel-heading { font-family:var(--font-display); font-size:clamp(1.15rem,2.5vw,1.4rem); font-weight:900; color:var(--c-navy); line-height:1.25; margin-bottom:8px; }
     .btn-arena { display:flex; align-items:center; justify-content:center; padding:11px 20px; border-radius:50px; background:var(--c-navy); color:white; text-decoration:none; font-family:var(--font-display); font-size:0.97rem; font-weight:700; border:none; cursor:pointer; width:100%; transition:opacity .18s; }
     .btn-arena:hover { opacity:0.86; }
-
     .time-opts { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
     .time-opt { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:10px; padding:6px 11px; cursor:pointer; font-family:'Baloo 2',cursive; font-size:0.8em; font-weight:700; color:#1a3a6b; transition:all 0.18s; }
     .time-opt:hover { background:rgba(255,255,255,0.82); }
@@ -58,24 +50,10 @@
     .clock-box.low { border-color:rgba(192,57,43,0.5); background:rgba(255,200,200,0.6); }
     .clock-lbl { font-family:var(--font-display); font-size:0.7em; color:rgba(26,58,107,0.6); margin-bottom:2px; }
     .clock-time { font-family:var(--font-display); font-size:1.2em; font-weight:900; color:var(--c-navy); }
-
     /* ÎNCERCĂRI NEPERMISE */
     .sq-wrong { box-shadow: inset 0 0 0 100vmax rgba(220,40,40,0.55) !important; }
     /* CUM SE JOACĂ */
     .howto { margin:10px 0; }
-    .howto > summary {
-      cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900;
-      color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px;
-      background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8);
-    }
-    .howto > summary::-webkit-details-marker { display:none; }
-    .howto > summary::after { content:' ▾'; }
-    .howto:not([open]) > summary::after { content:' ▸'; }
-    .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
-    .howto .hl-box p { margin:0 0 6px; }
-    .howto .hl-box p:last-child { margin-bottom:0; }
-    .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
-
     /* TOGGLES */
     .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
     .tgl-btn {
@@ -85,7 +63,6 @@
       cursor:pointer; transition:all 0.2s; white-space:nowrap;
     }
     .tgl-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
-
     /* JUCĂTORI */
     .player-panel { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:12px; padding:6px 12px; margin-bottom:6px; }
     .player-panel.active { border-color:var(--c-navy); background:rgba(26,58,107,0.1); }

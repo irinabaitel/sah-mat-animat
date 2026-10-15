@@ -14,35 +14,19 @@
 <title>Dama contra pionilor — Joc</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-<link rel="stylesheet" href="master-template.css?v=20260930">
+<link rel="stylesheet" href="master-template.css?v=20261016">
 <style>
   .game-badge {
     background: var(--c-navy); color: white;
     font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-bold);
     padding: 3px 14px; border-radius: var(--radius-sm); white-space: nowrap;
   }
-
   /* HIGHLIGHTS (selectat / posibil / captură = clasele din master) */
   .sq-wrong    { box-shadow: inset 0 0 0 100vmax rgba(220,40,40,0.55) !important; }
   .sq-promo    { box-shadow: inset 0 0 0 100vmax rgba(230,160,20,0.55) !important; }
   .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
-
   /* CUM SE JOACĂ */
-  .howto { margin-bottom:10px; }
-  .howto > summary {
-    cursor:pointer; list-style:none; font-family:var(--font-display); font-weight:900;
-    color:var(--c-navy); font-size:0.95em; padding:6px 10px; border-radius:10px;
-    background:rgba(255,255,255,0.55); border:2px solid rgba(255,255,255,0.8);
-  }
-  .howto > summary::-webkit-details-marker { display:none; }
-  .howto > summary::after { content:' ▾'; }
-  .howto:not([open]) > summary::after { content:' ▸'; }
-  .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
-  .howto .hl-box p { margin:0 0 6px; }
-  .howto .hl-box p:last-child { margin-bottom:0; }
   .howto .hl-box ul { margin:0 0 6px; padding-left:20px; }
-  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
-
   /* TOGGLES */
   .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
   .tgl-btn {
@@ -52,14 +36,12 @@
     cursor:pointer; transition:all 0.2s; white-space:nowrap;
   }
   .tgl-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
-
   .animal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; }
   .animal-btn { background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8); border-radius:12px; padding:7px 4px; cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.74em; font-weight:700; color:#1a3a6b; text-align:center; transition:all 0.18s; line-height:1.4; }
   .animal-btn:hover { background:rgba(255,255,255,0.82); transform:translateY(-2px); }
   .animal-btn.active { background:#1a3a6b; color:white; border-color:#1a3a6b; box-shadow:0 3px 10px rgba(26,58,107,0.4); }
   .animal-btn .emoji { font-size:1.4em; display:block; }
   .animal-btn .name  { display:block; margin-top:2px; }
-
   /* COUNTER */
   .counter-row { display:flex; gap:8px; margin-bottom:8px; }
   .counter-box {
@@ -68,7 +50,6 @@
   }
   .counter-lbl { font-family:var(--font-display); font-size:0.72em; color:rgba(26,58,107,0.65); }
   .counter-val { font-family:var(--font-display); font-size:1.35em; font-weight:900; color:var(--c-navy); line-height:1.3; }
-
   /* PLAYER PANELS */
   .player-panel {
     background:rgba(255,255,255,0.5); border:2px solid rgba(255,255,255,0.8);
@@ -81,7 +62,6 @@
   .pp-role { font-size:0.8em; color:rgba(26,26,46,0.65); }
   .pp-strikes { font-size:0.82em; letter-spacing:1px; }
   .pp-result { font-size:0.8em; color:#1a1a2e; margin-top:3px; min-height:1.2em; }
-
   /* STATUS */
   #status-box {
     background:rgba(26,58,107,0.09); border:2px solid rgba(26,58,107,0.2);
@@ -92,7 +72,6 @@
   #status-box.ok   { border-color:rgba(40,180,80,0.5);  background:rgba(40,180,80,0.15); }
   #status-box.warn { border-color:rgba(192,57,43,0.45); background:rgba(255,210,200,0.6); }
   #status-box.draw { border-color:rgba(200,150,10,0.5); background:rgba(200,150,10,0.12); }
-
   /* BUTTONS */
   .btn-game {
     display:block; width:100%; padding:8px;

@@ -14,7 +14,7 @@
 <title>Klotz — șah în tandem pe două table</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-<link rel="stylesheet" href="master-template.css?v=20260930">
+<link rel="stylesheet" href="master-template.css?v=20261016">
 <style>
   .game-badge {
     background: var(--c-navy); color: white;
@@ -22,7 +22,6 @@
     padding: 3px 14px; border-radius: var(--radius-sm); white-space: nowrap;
   }
   :root { --team-a: #1a3a6b; --team-b: #b03a2e; --pbar-h: 50px; }
-
   /* ---------- așezare: două table + panou ---------- */
   .page-main.klotz { grid-template-columns: 1fr minmax(290px, 360px); padding-right: var(--gap); }
   .kl-main { position: relative; min-height: 0; min-width: 0; overflow: auto; }
@@ -36,7 +35,6 @@
   .bunit .pbar, .bunit .bmsg, .bunit .btitle { flex-shrink: 0; }
   #board2 { width: 100% !important; height: 100% !important; }
   .btitle { font-family: var(--font-display); font-size: 0.8em; color: var(--c-navy); text-align: center; line-height: 1.2; }
-
   /* ---------- bara unui jucător ---------- */
   .pbar {
     height: var(--pbar-h); display: flex; align-items: center; gap: 6px;
@@ -77,7 +75,6 @@
   .bmsg.warn { color: #8b1a00; }
   .sq-wrong { box-shadow: inset 0 0 0 100vmax rgba(220,40,40,0.55) !important; }
   .drop-ghost { position: fixed; width: 56px; height: 56px; pointer-events: none; z-index: 2000; transform: translate(-50%,-50%); }
-
   /* ---------- finalul meciului ---------- */
   #endBox {
     position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 300;
@@ -91,7 +88,6 @@
   #endFaces { display: flex; justify-content: center; gap: 10px; margin: 8px 0; }
   #endFaces svg { width: 64px; height: 64px; }
   #endReason { font-size: 0.95em; margin-bottom: 12px; }
-
   /* ---------- ecranul de alegere ---------- */
   #setupView { padding: 4px 6px 16px; }
   .setup-card { background: var(--c-surface); border: 2px solid var(--c-border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 10px; }
@@ -133,7 +129,6 @@
     font-family: var(--font-display); font-size: 1.15em; font-weight: 900; cursor: pointer; box-shadow: 0 3px 12px rgba(26,107,74,0.35);
   }
   .btn-start:hover { background: #27ae60; }
-
   /* ---------- panou ---------- */
   #status-box {
     background: rgba(26,58,107,0.09); border: 2px solid rgba(26,58,107,0.2); border-radius: 12px; padding: 9px 12px;
@@ -148,20 +143,7 @@
     cursor: pointer; transition: background 0.2s; margin-bottom: 6px;
   }
   .btn-game:hover { background: rgba(255,255,255,0.85); }
-  .howto { margin-bottom: 10px; }
-  .howto > summary {
-    cursor: pointer; list-style: none; font-family: var(--font-display); font-weight: 900;
-    color: var(--c-navy); font-size: 0.95em; padding: 6px 10px; border-radius: 10px;
-    background: rgba(255,255,255,0.55); border: 2px solid rgba(255,255,255,0.8);
-  }
-  .howto > summary::-webkit-details-marker { display: none; }
-  .howto > summary::after { content: ' ▾'; }
-  .howto:not([open]) > summary::after { content: ' ▸'; }
-  .howto .hl-box { margin-top: 8px; font-size: 0.86em; line-height: 1.65; }
-  .howto .hl-box p { margin: 0 0 6px; }
-  .howto .hl-box p:last-child { margin-bottom: 0; }
   .howto .hl-box ul { margin: 0 0 6px 18px; }
-  .howto h4 { font-family: var(--font-display); color: var(--c-navy); font-size: 1.1em; margin: 0 0 4px; }
   .teams-pic { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 0; }
   .teams-pic .tb { border: 2px solid rgba(26,58,107,0.25); border-radius: 10px; padding: 5px; text-align: center; background: rgba(255,255,255,0.6); font-size: 0.92em; }
   .teams-pic .tb b { font-family: var(--font-display); }
@@ -171,7 +153,6 @@
   .robot-list .ri { display: flex; align-items: center; gap: 8px; }
   .robot-list svg { width: 36px; height: 36px; flex-shrink: 0; }
   .btn-vol { position: fixed; top: 10px; right: 12px; z-index: 1000; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.88); border: 1.5px solid rgba(26,58,107,0.18); font-size: 1.05rem; cursor: pointer; line-height: 1; display: flex; align-items: center; justify-content: center; padding: 0; }
-
   @media (max-width: 1100px) {
     .rgrid { grid-template-columns: repeat(3, 1fr); }
   }
