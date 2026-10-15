@@ -147,7 +147,7 @@
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
-<script src="minijocuri-nav.js"></script>
+<script src="minijocuri-nav.js?v=20261016"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -667,8 +667,8 @@ function triggerAI() {
             doMove(mv.from, mv.to, 'b');
             aiLocked = false;
             afterMove('b');
-        }, 350);
-    }, 600);
+        }, quickMs('b'));
+    }, Math.max(50, minigameThinkMs(null, msLeftOf('b'), 10) - quickMs('b')));   // „se gândește” cât un om
 }
 
 function updatePanelActive() {
@@ -767,7 +767,10 @@ function getRandomBlackMove() {
 
 var clockMax = 0;
 var clock = {w: 0, b: 0};
-var clockTick = null;
+var clockTick = null, clockAcc = null;
+/* timpul rămas pe ceasul jucătorului c, în milisecunde (null = fără ceas) */
+function quickMs(c){ var l=msLeftOf(c); return l!=null&&l<10000 ? 100 : 350; }   // pauza după ce Robotul arată piesa aleasă
+function msLeftOf(c){ return clockMax>0&&clockTick ? clock[c]*1000-clockAcc.msUsed(c) : null; }
 
 function selectTime(btn){
     document.querySelectorAll('.time-opt').forEach(function(b){b.classList.remove('active');});
@@ -792,10 +795,12 @@ function updateClocks(){
 function startClock(){
     if(clockMax===0)return;
     stopClock();
+    clockAcc=minigameTickAcc();
     clockTick=setInterval(function(){
         if(gameOver){stopClock();return;}
-        var c=turn==='w'?'w':'b';
-        clock[c]--;
+        var c=turn==='w'?'w':'b', d=clockAcc(c);
+        if(!d) return;
+        clock[c]-=d;
         updateClocks();
         if(clock[c]<=0){
             stopClock();
@@ -809,7 +814,7 @@ function startClock(){
             document.getElementById('status-box').className=(loser==='w'&&mode!=='duo'?'draw':'ok');
             showNextBtn();
         }
-    },1000);
+    },100);
 }
 function stopClock(){if(clockTick){clearInterval(clockTick);clockTick=null;}}
 

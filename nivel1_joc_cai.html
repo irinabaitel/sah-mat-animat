@@ -122,7 +122,7 @@
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
-<script src="minijocuri-nav.js"></script>
+<script src="minijocuri-nav.js?v=20261016"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -579,8 +579,8 @@ function aiBlackTurn(note) {
             const what = applyMove('b', mv.from, mv.dest);
             board.position(buildPos(), false);
             finishTurn('b', what);
-        }, 400));
-    }, 650));
+        }, quickMs('b')));
+    }, Math.max(50, minigameThinkMs(null, msLeftOf('b'), 10) - quickMs('b'))));   // „se gândește” cât un om
 }
 
 function humanMove(from, dest) {
@@ -621,7 +621,10 @@ function showSelection(sq) {
 /* ---------- ceas ---------- */
 var clockMax = 0;
 var clock = {w: 0, b: 0};
-var clockTick = null;
+var clockTick = null, clockAcc = null;
+/* timpul rămas pe ceasul jucătorului c, în milisecunde (null = fără ceas) */
+function quickMs(c){ var l=msLeftOf(c); return l!=null&&l<10000 ? 100 : 400; }   // pauza după ce Robotul arată piesa aleasă
+function msLeftOf(c){ return clockMax>0&&clockTick ? clock[c]*1000-clockAcc.msUsed(c) : null; }
 
 function selectTime(btn) {
     document.querySelectorAll('.time-opt').forEach(function(b){b.classList.remove('active');});
@@ -646,13 +649,15 @@ function updateClocks(){
 function startClock(){
     if(clockMax===0)return;
     stopClock();
+    clockAcc=minigameTickAcc();
     clockTick=setInterval(function(){
         if(gameOver){stopClock();return;}
-        var c=turn==='w'?'w':'b';
-        clock[c]--;
+        var c=turn==='w'?'w':'b', d=clockAcc(c);
+        if(!d) return;
+        clock[c]-=d;
         updateClocks();
         if(clock[c]<=0){stopClock();endGame('time', c);}
-    },1000);
+    },100);
 }
 function stopClock(){if(clockTick){clearInterval(clockTick);clockTick=null;}}
 

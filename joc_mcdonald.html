@@ -106,11 +106,6 @@
     @keyframes dots { 0%{content:'.'} 33%{content:'..'} 66%{content:'...'} 100%{content:''} }
     .dots::after { content:''; animation:dots 1.2s steps(3,end) infinite; }
 
-    /* confetti */
-    @keyframes confetti-fall { 0%{opacity:1;transform:translate(0,0) rotate(0deg);} 80%{opacity:1;}
-        100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot));} }
-    .confetti-p { position:fixed; pointer-events:none; z-index:9999; border-radius:3px;
-        animation:confetti-fall var(--dur,2s) ease-in forwards; }
 
     /* încercare nepermisă */
     .sq-wrong { box-shadow: inset 0 0 0 100vmax rgba(220,40,40,0.55) !important; }
@@ -149,7 +144,7 @@
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
-<script src="minijocuri-nav.js"></script>
+<script src="minijocuri-nav.js?v=20261016"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -664,13 +659,18 @@ function updateClocks(){
 function startClock(){
     if(G.clockMax===0) return;
     if(G.clockTick) clearInterval(G.clockTick);
+    G.clockAcc=minigameTickAcc();
     G.clockTick=setInterval(function(){
         if(G.over){ clearInterval(G.clockTick); G.clockTick=null; return; }
-        G.clock[G.turn]--;
+        var d=G.clockAcc(G.turn);
+        if(!d) return;
+        G.clock[G.turn]-=d;
         updateClocks();
         if(G.clock[G.turn]<=0){ clearInterval(G.clockTick); G.clockTick=null; forfeit('timeout'); }
-    },1000);
+    },100);
 }
+/* timpul rămas pe ceasul celui la mutare, în milisecunde (null = fără ceas) */
+function robotMsLeft(){ return G.clockMax>0&&G.clockTick ? G.clock[G.turn]*1000-G.clockAcc.msUsed(G.turn) : null; }
 function stopClock(){ if(G.clockTick){clearInterval(G.clockTick);G.clockTick=null;} }
 
 /* ═══════════════════════════════════════════════════
@@ -704,10 +704,11 @@ function initBoard(orientation){
     window.board=cbBoard;   // board-utils.js citește orientarea din `board` (adnotări pe tabla întoarsă)
 }
 
-/* contor de joc: un timer al Robotului pornit într-un joc vechi nu mai mută */
-function scheduleAI(ms){
+/* contor de joc: un timer al Robotului pornit într-un joc vechi nu mai mută.
+   Robotul își alege mutarea, apoi o joacă după ce „s-a gândit” cât un om. */
+function scheduleAI(){
     var g=G.gen;
-    setTimeout(function(){ if(g===G.gen) aiMove(); },ms);
+    setTimeout(function(){ if(g===G.gen) aiMove(g); },40);
 }
 
 function startRound(){
@@ -725,7 +726,7 @@ function startRound(){
     // Round 2: robot plays piglets (white) and goes first
     else if(G.humanColor==='b'){
         setStatus('Robotul pornește cu purceii<span class="dots"></span>','thinking');
-        G.thinking=true; scheduleAI(600);
+        G.thinking=true; scheduleAI();
     } else {
         setStatus('&#9654; Mutarea ta! Mișcă un pion.','');
     }
@@ -838,7 +839,7 @@ function afterMove(){
     if(G.turn!==G.humanColor){
         var msg=G.turn==='w'?'Robotul mută purceii':'Robotul mută McDonald';
         setStatus(msg+'<span class="dots"></span>','thinking');
-        G.thinking=true; scheduleAI(400);
+        G.thinking=true; scheduleAI();
     } else {
         if(inChk&&G.turn==='b')
             setStatus('&#9888; Regele e în șah! Trebuie să îl muți!','check');
@@ -847,14 +848,18 @@ function afterMove(){
     }
 }
 
-function aiMove(){
+function aiMove(g){
     if(G.over||G.mode==='duo') return;
     var aiColor=(G.humanColor==='w'?'b':'w');
-    var dragon=G.depth>=7;
-    var m=getBest(G.board,aiColor,dragon?DRAGON_MAX_DEPTH:G.depth,G.barned,dragon?DRAGON_MS:0);
+    var dragon=G.depth>=7, t0=Date.now(), left=robotMsLeft();
+    var m=getBest(G.board,aiColor,dragon?DRAGON_MAX_DEPTH:G.depth,G.barned,dragon?(left==null?DRAGON_MS:Math.max(30,Math.min(DRAGON_MS,left/40))):0);
     if(!m){endRound('normal');return;}
-    execMove(m); G.thinking=false; clearHL();
-    afterMove();
+    var lvl=G.depth===0?'pui':dragon?'dragon':'manz';
+    setTimeout(function(){
+        if(g!==G.gen||G.over) return;
+        execMove(m); G.thinking=false; clearHL();
+        afterMove();
+    },Math.max(0,minigameThinkMs(lvl,left,10)-(Date.now()-t0)));
 }
 
 function playerMove(m){ execMove(m); clearSel(); afterMove(); }
@@ -1061,31 +1066,6 @@ function restartAll(){
     document.getElementById('game-section').style.display='none';
     document.getElementById('result-section').style.display='none';
     document.getElementById('setup-section').style.display='block';
-}
-
-/* ═══════════════════════════════════════════════════
-   CONFETTI
-═══════════════════════════════════════════════════ */
-function spawnConfetti(dur){
-    var cols=['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#fff'];
-    var end=Date.now()+dur;
-    function batch(){
-        if(Date.now()>=end) return;
-        for(var i=0;i<12;i++){
-            var p=document.createElement('div'); p.className='confetti-p';
-            var w=7+Math.random()*7,h=w*(0.35+Math.random()*0.7);
-            p.style.cssText='width:'+w+'px;height:'+h+'px;background:'+cols[Math.floor(Math.random()*cols.length)]+
-                ';left:'+(Math.random()*100)+'vw;top:-14px;';
-            var fd=window.innerHeight*(0.65+Math.random()*0.45);
-            p.style.setProperty('--dx',((Math.random()-0.5)*180)+'px');
-            p.style.setProperty('--dy',fd+'px');
-            p.style.setProperty('--rot',(Math.random()*900-450)+'deg');
-            var d=1.8+Math.random()*2.4; p.style.setProperty('--dur',d+'s');
-            document.body.appendChild(p); setTimeout(function(){p.remove();},d*1000+200);
-        }
-        setTimeout(batch,110);
-    }
-    batch();
 }
 
 /* ═══════════════════════════════════════════════════

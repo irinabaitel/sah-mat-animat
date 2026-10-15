@@ -143,7 +143,7 @@
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
-<script src="minijocuri-nav.js"></script>
+<script src="minijocuri-nav.js?v=20261016"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -380,7 +380,10 @@ var stockfish = null;
 var pendingPromoMove = null;
 var clockMax = 0;
 var clock = {w: 0, b: 0};
-var clockTick = null;
+var clockTick = null, clockAcc = null;
+/* timpul rămas pe ceasul celui la mutare, în milisecunde (null = fără ceas) */
+function robotMsLeft() { var c = chess.turn(); return clockMax > 0 && clockTick ? clock[c] * 1000 - clockAcc.msUsed(c) : null; }
+var robotGen = 0, robotT0 = 0;   // robotGen crește la fiecare partidă nouă: o mutare întârziată dintr-o partidă veche nu se mai joacă
 var mode = 'robot';          // 'robot' = contra Robotului, 'duo' = în doi
 var MAX_STRIKES = 3;
 var strikes = {w: 0, b: 0};  // încercări nepermise (doar în doi)
@@ -480,10 +483,12 @@ function updateClocks() {
 function startClock() {
     if (clockMax===0) return;
     stopClock();
+    clockAcc = minigameTickAcc();
     clockTick=setInterval(function(){
         if (gameOver){stopClock();return;}
-        var c=chess.turn();
-        clock[c]--;
+        var c=chess.turn(), d=clockAcc(c);
+        if (!d) return;
+        clock[c]-=d;
         updateClocks();
         if (clock[c]<=0){
             stopClock();
@@ -496,7 +501,7 @@ function startClock() {
             var lost=(c===playerColor);
             setStatus(lost?'Timp expirat! Robotul c&#226;&#351;tig&#259;! &#129302;':'Timp expirat! Ai c&#226;&#351;tigat! &#127942;', lost?'danger':'success');
         }
-    },1000);
+    },100);
 }
 function stopClock(){if(clockTick){clearInterval(clockTick);clockTick=null;}}
 
@@ -555,7 +560,8 @@ function askStockfish() {
     if (!stockfish || gameOver) return;
     setStatus('&#129302; Robotul se gândește...', 'thinking');
     stockfish.postMessage('position fen ' + chess.fen());
-    var thinkMs = 300 + selectedSkill * 40;
+    var thinkMs = 300 + selectedSkill * 40, left = robotMsLeft();
+    if (left != null) thinkMs = Math.max(30, Math.min(thinkMs, Math.floor(left / 40)));
     stockfish.postMessage('go movetime ' + thinkMs);
 }
 
@@ -569,7 +575,7 @@ function handleStockfishMsg(msg) {
         var from = move.substring(0,2);
         var to   = move.substring(2,4);
         var promo = move.length > 4 ? move[4] : undefined;
-        applyComputerMove(from, to, promo);
+        delayedComputerMove(from, to, promo);
     }
 }
 
@@ -585,8 +591,17 @@ function applyComputerMove(from, to, promo) {
     if (!gameOver) setStatus(turnStatus(), '');
 }
 
+/* Robotul joacă mutarea abia după ce „s-a gândit” cât un om (socotit de când i-a venit rândul) */
+function delayedComputerMove(from, to, promo) {
+    var g = robotGen, wait = Math.max(0, minigameThinkMs(v1Level(), robotMsLeft(), chess.history().length) - (Date.now() - robotT0));
+    setTimeout(function() {
+        if (g !== robotGen || gameOver || mode !== 'robot' || chess.turn() === playerColor) return;
+        applyComputerMove(from, to, promo);
+    }, wait);
+}
 /* Robotul la mutare: Stockfish în varianta 2, căutarea proprie în varianta 1 */
 function askComputer() {
+    robotT0 = Date.now();
     if (variant === 2) { askStockfish(); return; }
     if (gameOver || mode !== 'robot' || chess.turn() === playerColor) return;
     setStatus((v1Note ? v1Note + '<br>' : '') + '&#129302; Robotul se gândește...', 'thinking');
@@ -601,9 +616,10 @@ function positionHistory() {
 function v1Level() { return selectedSkill >= 20 ? 'dragon' : selectedSkill >= 11 ? 'manz' : 'pui'; }
 function runV1Ai() {
     if (variant !== 1 || gameOver || mode !== 'robot' || chess.turn() === playerColor || pendingPromoMove) return;
-    var m = V1AI.best(chess.fen(), v1Level(), 900, positionHistory());
+    var left = robotMsLeft();
+    var m = V1AI.best(chess.fen(), v1Level(), left == null ? 900 : Math.max(30, Math.min(900, left / 40)), positionHistory());
     if (!m) return;
-    applyComputerMove(m.from, m.to, 'q');
+    delayedComputerMove(m.from, m.to, 'q');
 }
 
 /* ====== VARIANTA 1: căutarea Robotului ======
@@ -931,6 +947,7 @@ $(function() {
 });
 
 function startGame() {
+    robotGen++;
     chess.load(START_FEN);
     v1Pending = null; v1Prev = null; v1Note = ''; lastMv = null;
     gameOver = false;
@@ -978,6 +995,7 @@ function setMode(m) {
 }
 
 function backToSetup() {
+    robotGen++;
     stopClock();
     if (stockfish) { stockfish.terminate(); stockfish = null; }
     gameOver = false; clearHL(); selSq = null;

@@ -15,7 +15,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
   <link rel="stylesheet" href="master-template.css?v=20260930">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     .board-wrapper #myBoard { width:100%!important; height:100%!important; }
 
@@ -41,8 +40,6 @@
     .animal-btn .emoji { font-size:1.4em; display:block; }
     .animal-btn .name  { display:block; margin-top:2px; }
 
-    @keyframes confetti-fall { 0%{opacity:1;transform:translate(0,0) rotate(0deg);} 80%{opacity:1;} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot));} }
-    .confetti-page { position:fixed; pointer-events:none; z-index:9999; border-radius:3px; animation:confetti-fall var(--dur,2s) ease-in forwards; }
 
     @keyframes dots { 0%{content:'.';} 33%{content:'..';} 66%{content:'...';} 100%{content:'';} }
     .dots::after { content:''; animation: dots 1.2s steps(3,end) infinite; }
@@ -100,7 +97,7 @@
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
-<script src="minijocuri-nav.js"></script>
+<script src="minijocuri-nav.js?v=20261016"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -482,7 +479,9 @@ function illegal(sq, reason) {
     setStatus('❌ ' + reason + '<br>Încercări nepermise pentru ' + pname(c) + ': ' + strikes[c] + ' din ' + MAX_STRIKES + '. ' + pfull(c) + ' mută în continuare.', 'danger');
 }
 var clock = {w: 0, b: 0};
-var clockTick = null;
+var clockTick = null, clockAcc = null;
+/* timpul rămas pe ceasul celui la mutare, în milisecunde (null = fără ceas) */
+function robotMsLeft() { var c = state.turn === W ? 'w' : 'b'; return clockMax > 0 && clockTick ? clock[c] * 1000 - clockAcc.msUsed(c) : null; }
 
 function selectTime(btn) {
     document.querySelectorAll('.time-opt').forEach(function(b) { b.classList.remove('active'); });
@@ -506,13 +505,15 @@ function updateClocks() {
 function startClock() {
     if (clockMax === 0) return;
     stopClock();
+    clockAcc = minigameTickAcc();
     clockTick = setInterval(function() {
         if (state.over) { stopClock(); return; }
-        var c = state.turn === W ? 'w' : 'b';
-        clock[c]--;
+        var c = state.turn === W ? 'w' : 'b', d = clockAcc(c);
+        if (!d) return;
+        clock[c] -= d;
         updateClocks();
         if (clock[c] <= 0) { stopClock(); endGame(state.turn === W ? B : W, 'time'); }
-    }, 1000);
+    }, 100);
 }
 function stopClock() { if (clockTick) { clearInterval(clockTick); clockTick = null; } }
 
@@ -619,15 +620,24 @@ function makePlayerMove(move) {
     if (mode === 'duo') { promptTurn(); return; }
     state.thinking = true;
     setStatus('Robotul se g&#226;nde&#351;te<span class="dots"></span>', 'thinking');
-    aiTimer = setTimeout(makeAiMove, 350);
+    aiTimer = setTimeout(makeAiMove, 40);
 }
 
+/* Robotul își alege mutarea, apoi o joacă după ce „s-a gândit” cât un om */
 function makeAiMove() {
     aiTimer = null;
     if (state.over || mode !== 'robot' || state.turn !== B) return;
-    var move = getBestMove(state.board);
+    var t0 = Date.now(), left = robotMsLeft();
+    var move = getBestMove(state.board, B, undefined, left == null ? undefined : Math.max(30, Math.min(SEARCH_MS, left / 40)));
     if (!move) { endGame(W, 'blocked'); return; }
-
+    var lvl = selectedDepth === 0 ? 'pui' : selectedDepth <= 4 ? 'manz' : 'dragon';
+    aiTimer = setTimeout(function() {
+        aiTimer = null;
+        if (state.over || mode !== 'robot' || state.turn !== B) return;
+        playAiMove(move);
+    }, Math.max(0, minigameThinkMs(lvl, left, state.moveCount) - (Date.now() - t0) - 40));
+}
+function playAiMove(move) {
     var notation = moveToNotation(move, state.board);
     state.board = applyMove(state.board, move);
     state.moveCount++;
@@ -741,30 +751,6 @@ function onDrop(source, target) {
 }
 
 function onSnapEnd() { renderBoard(); }
-
-/* ===== CONFETTI ===== */
-function spawnConfetti(duration) {
-    var colors = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#ffffff'];
-    var endTime = Date.now() + duration;
-    function batch() {
-        if (Date.now() >= endTime) return;
-        for (var i = 0; i < 12; i++) {
-            var p = document.createElement('div'); p.className = 'confetti-page';
-            var w = 7 + Math.random()*7; var h = w*(0.35 + Math.random()*0.7);
-            p.style.width = w+'px'; p.style.height = h+'px';
-            p.style.background = colors[Math.floor(Math.random()*colors.length)];
-            p.style.left = (Math.random()*100)+'vw'; p.style.top = '-14px';
-            var fd = window.innerHeight*(0.65+Math.random()*0.45);
-            p.style.setProperty('--dx',((Math.random()-0.5)*180)+'px');
-            p.style.setProperty('--dy',fd+'px');
-            p.style.setProperty('--rot',(Math.random()*900-450)+'deg');
-            var dur = 1.8+Math.random()*2.4; p.style.setProperty('--dur',dur+'s');
-            document.body.appendChild(p); setTimeout(function(){p.remove();}, dur*1000+200);
-        }
-        setTimeout(batch, 110);
-    }
-    batch();
-}
 
 /* ===== INIT ===== */
 $(function() {

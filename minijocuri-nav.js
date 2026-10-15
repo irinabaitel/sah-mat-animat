@@ -72,6 +72,70 @@
         return b.offsetParent !== null;
     };
 
+    /* Cât „se gândește” Robotul, în milisecunde. Cu cât e mai puternic, cu atât se hotărăște mai repede:
+       Pui de găină 3–7 s, Mânz 2–5 s, Dragon 1–3 s; la primele mutări de două ori mai repede.
+       level: 'pui' | 'manz' | 'dragon' (sau 1 | 2 | 3); msLeft: timpul rămas pe ceasul lui (null = fără ceas);
+       plies: câte mutări s-au jucat. Cu ceas, împarte timpul rămas ca pentru încă 30 de mutări
+       (sub 10 secunde, pentru 60), ca să nu piardă la timp. */
+    window.minigameThinkMs = function (level, msLeft, plies) {
+        var L = { 1: 'pui', 2: 'manz', 3: 'dragon' }[level] || level || window.minigameLevel();
+        var rnd = function (a, b) { return a + Math.random() * (b - a); };
+        var ms = L === 'pui' ? rnd(3000, 7000) : L === 'manz' ? rnd(2000, 5000) : rnd(1000, 3000);
+        if (plies < 4) ms /= 2;
+        if (msLeft != null) ms = Math.min(ms, msLeft / (msLeft < 10000 ? 60 : 30));
+        return ms;
+    };
+
+    /* nivelul ales, după butonul de adversar activ: 'pui' | 'manz' | 'dragon' */
+    window.minigameLevel = function () {
+        var b = document.querySelector('.animal-btn.active'), t = b ? b.textContent : '';
+        return /Pui/.test(t) ? 'pui' : /Mânz/.test(t) ? 'manz' : 'dragon';
+    };
+
+    /* Ceas exact pentru ceasurile care țin secunde întregi: se apelează des (la ~100 ms) cu jucătorul la mutare
+       și întoarce câte secunde întregi trebuie scăzute acum din ceasul lui. Fracțiunile rămân ale fiecăruia,
+       deci o mutare de o jumătate de secundă costă o jumătate de secundă. Se face unul nou la fiecare pornire a ceasului. */
+    window.minigameTickAcc = function () {
+        var last = Date.now(), acc = {};
+        var f = function (c) {
+            var now = Date.now();
+            acc[c] = (acc[c] || 0) + now - last; last = now;
+            var s = Math.floor(acc[c] / 1000); acc[c] -= s * 1000;
+            return s;
+        };
+        f.msUsed = function (c) { return (acc[c] || 0) + Date.now() - last; };   // fracțiunea de secundă deja consumată
+        return f;
+    };
+
+    /* confetti peste toată pagina, timp de dur milisecunde */
+    window.spawnConfetti = function (dur) {
+        if (!document.getElementById('mjConfettiCss')) {
+            var st = document.createElement('style'); st.id = 'mjConfettiCss';
+            st.textContent = '@keyframes mj-confetti-fall{0%{opacity:1;transform:translate(0,0) rotate(0deg)}80%{opacity:1}' +
+                '100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot))}}' +
+                '.mj-confetti{position:fixed;pointer-events:none;z-index:9999;border-radius:3px;animation:mj-confetti-fall var(--dur,2s) ease-in forwards}';
+            document.head.appendChild(st);
+        }
+        var cols = ['#ff3333', '#ff8800', '#ffee00', '#33cc55', '#4499ff', '#cc44ff', '#fff'];
+        var end = Date.now() + (dur || 3000);
+        (function batch() {
+            if (Date.now() >= end) return;
+            for (var i = 0; i < 12; i++) {
+                var p = document.createElement('div'); p.className = 'mj-confetti';
+                var w = 7 + Math.random() * 7, h = w * (0.35 + Math.random() * 0.7);
+                p.style.cssText = 'width:' + w + 'px;height:' + h + 'px;background:' + cols[Math.floor(Math.random() * cols.length)] +
+                    ';left:' + (Math.random() * 100) + 'vw;top:-14px;';
+                p.style.setProperty('--dx', ((Math.random() - 0.5) * 180) + 'px');
+                p.style.setProperty('--dy', (window.innerHeight * (0.65 + Math.random() * 0.45)) + 'px');
+                p.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
+                var d = 1.8 + Math.random() * 2.4; p.style.setProperty('--dur', d + 's');
+                document.body.appendChild(p);
+                (function (el, t) { setTimeout(function () { el.remove(); }, t); })(p, d * 1000 + 200);
+            }
+            setTimeout(batch, 110);
+        })();
+    };
+
     /* body.no-hints pornit/oprit după nivel și mod (CSS-ul e în master-template.css) */
     function syncHints() {
         if (document.body) document.body.classList.toggle('no-hints', window.minigameHideHints());

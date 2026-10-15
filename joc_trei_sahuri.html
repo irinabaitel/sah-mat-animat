@@ -120,15 +120,10 @@
     }
     .board-shake { animation: board-shake 0.7s ease-out; }
 
-    /* confetti */
-    @keyframes confetti-fall { 0%{opacity:1;transform:translate(0,0) rotate(0deg);} 80%{opacity:1;}
-        100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot));} }
-    .confetti-p { position:fixed; pointer-events:none; z-index:9999; border-radius:3px;
-        animation:confetti-fall var(--dur,2s) ease-in forwards; }
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
-<script src="minijocuri-nav.js"></script>
+<script src="minijocuri-nav.js?v=20261016"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -1006,16 +1001,8 @@ function onDrop(source, target) {
 }
 
 /* ====== ROBOTUL ====== */
-/* Robotul „se gândește” cât un om: cu cât e mai puternic, cu atât se hotărăște mai repede;
-   la începutul partidei de două ori mai repede; cu ceas, cel mult o zecime din timpul rămas */
-function thinkTime(r) {
-    var rnd = function(a, b) { return a + Math.random() * (b - a); };
-    var ms = level === 'pui' ? rnd(3000, 7000) : level === 'manz' ? rnd(2000, 5000) : rnd(1000, 3000);
-    if (moveRecs.length < 4) ms /= 2;
-    // cu ceas: împarte timpul rămas ca pentru încă 30 de mutări (sub 10 secunde, pentru 60), deci se grăbește spre sfârșit
-    if (clockMax > 0) { var left = clock[turnC()]; ms = Math.min(ms, left / (left < 10000 ? 60 : 30)); }
-    return ms;
-}
+/* Robotul „se gândește” cât un om (regula comună din minijocuri-nav.js) */
+function thinkTime() { return minigameThinkMs(level, clockMax > 0 ? clock[turnC()] : null, moveRecs.length); }
 function askComputer() {
     if (gameOver || mode !== 'robot' || turnC() === playerColor) return;
     setStatus('&#129302; Robotul se gândește...', 'thinking');
@@ -1136,29 +1123,6 @@ function resignGame() {
     setStatus('Ai abandonat. &#9873; Robotul câștigă cu 1-0.', 'danger');
 }
 
-/* ====== CONFETTI ====== */
-function spawnConfetti(dur) {
-    var cols = ['#ff3333','#ff8800','#ffee00','#33cc55','#4499ff','#cc44ff','#fff'];
-    var end = Date.now() + dur;
-    function batch() {
-        if (Date.now() >= end) return;
-        for (var i = 0; i < 12; i++) {
-            var p = document.createElement('div'); p.className = 'confetti-p';
-            var w = 7 + Math.random() * 7, h = w * (0.35 + Math.random() * 0.7);
-            p.style.cssText = 'width:' + w + 'px;height:' + h + 'px;background:' + cols[Math.floor(Math.random() * cols.length)] +
-                ';left:' + (Math.random() * 100) + 'vw;top:-14px;';
-            var fd = window.innerHeight * (0.65 + Math.random() * 0.45);
-            p.style.setProperty('--dx', ((Math.random() - 0.5) * 180) + 'px');
-            p.style.setProperty('--dy', fd + 'px');
-            p.style.setProperty('--rot', (Math.random() * 900 - 450) + 'deg');
-            var d = 1.8 + Math.random() * 2.4; p.style.setProperty('--dur', d + 's');
-            document.body.appendChild(p);
-            (function(el) { setTimeout(function() { el.remove(); }, d * 1000 + 200); })(p);
-        }
-        setTimeout(batch, 110);
-    }
-    batch();
-}
 </script>
 </body>
 </html>

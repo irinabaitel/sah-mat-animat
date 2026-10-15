@@ -109,7 +109,7 @@
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
-<script src="minijocuri-nav.js"></script>
+<script src="minijocuri-nav.js?v=20261016"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -555,7 +555,7 @@ var keys = [AC.key(pos)];
 var board = null, playerColor = 'w', level = 'pui', gameOver = false, started = false;
 var mode = 'robot', MAX_STRIKES = 3, strikes = { w: 0, b: 0 };
 var pendingPromo = null, aiTimer = null, mustTimer = null, selSq = null;
-var clockMax = 0, clock = { w: 0, b: 0 }, clockTick = null;
+var clockMax = 0, clock = { w: 0, b: 0 }, clockTick = null, clockAcc = null;
 
 var PIECE_CDN = 'https://lichess1.org/assets/piece/caliente/';
 var PIECE_RO = [null, 'Pionul', 'Calul', 'Nebunul', 'Turnul', 'Dama', 'Regele'];
@@ -621,16 +621,18 @@ function stopClock() { if (clockTick) { clearInterval(clockTick); clockTick = nu
 function startClock() {
     if (clockMax === 0) return;
     stopClock();
+    clockAcc = minigameTickAcc();
     clockTick = setInterval(function() {
         if (gameOver) { stopClock(); return; }
-        var c = turnC();
-        clock[c]--;
+        var c = turnC(), d = clockAcc(c);
+        if (!d) return;
+        clock[c] -= d;
         updateClocks();
         if (clock[c] <= 0) {
             var o = c === 'w' ? 'b' : 'w';
             finish(o, mode === 'duo' ? 'Timpul lui ' + pname(c) + ' a expirat.' : (c === playerColor ? 'Timpul tău a expirat.' : 'Timpul Robotului a expirat.'));
         }
-    }, 1000);
+    }, 100);
 }
 
 /* ====== EVIDENȚIERI ====== */
@@ -839,8 +841,9 @@ function askComputer() {
     setStatus('&#129302; Robotul se gândește...', 'thinking');
     aiTimer = setTimeout(function() {
         var t0 = Date.now();
-        var r = AC.best(pos, level, 900, keys);
-        var wait = Math.max(0, (level === 'dragon' ? 150 : 450) - (Date.now() - t0));
+        var left = clockMax > 0 && clockTick ? clock[turnC()] * 1000 - clockAcc.msUsed(turnC()) : null;
+        var r = AC.best(pos, level, left == null ? 900 : Math.max(30, Math.min(900, left / 40)), keys);
+        var wait = Math.max(0, minigameThinkMs(level, left, moveRecs.length) - (Date.now() - t0));
         aiTimer = setTimeout(function() {
             aiTimer = null;
             if (gameOver || !r || mode !== 'robot' || turnC() === playerColor) return;

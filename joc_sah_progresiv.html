@@ -110,7 +110,7 @@
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
-<script src="minijocuri-nav.js"></script>
+<script src="minijocuri-nav.js?v=20261016"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -333,7 +333,9 @@ var playerColor = 'w';
 var selectedLevel = 'pui';
 var gameOver = false;
 var pendingPromoMove = null;
-var clockMax = 0, clock = {w: 0, b: 0}, clockTick = null;
+var clockMax = 0, clock = {w: 0, b: 0}, clockTick = null, clockAcc = null;
+/* timpul rămas pe ceasul Robotului, în milisecunde (null = fără ceas) */
+function robotMsLeft() { var c = chess.turn(); return clockMax > 0 && clockTick ? clock[c] * 1000 - clockAcc.msUsed(c) : null; }
 var strikes = {w: 0, b: 0};
 var seriesNo = 1;        // seria curentă (are seriesNo mutări)
 var moveIdx = 0;         // câte mutări s-au făcut deja în seria curentă
@@ -389,17 +391,19 @@ function updateClocks() {
 function startClock() {
     if (clockMax === 0) return;
     stopClock();
+    clockAcc = minigameTickAcc();
     clockTick = setInterval(function() {
         if (gameOver) { stopClock(); return; }
-        var c = chess.turn();
-        clock[c]--;
+        var c = chess.turn(), d = clockAcc(c);
+        if (!d) return;
+        clock[c] -= d;
         updateClocks();
         if (clock[c] <= 0) {
             var o = c === 'w' ? 'b' : 'w';
             if (mode === 'duo') finishGame(o, 'Timpul lui ' + pname(c) + ' a expirat.');
             else finishGame(o, 'Timpul ' + (c === playerColor ? 'tău' : 'Robotului') + ' a expirat.');
         }
-    }, 1000);
+    }, 100);
 }
 function stopClock() { if (clockTick) { clearInterval(clockTick); clockTick = null; } }
 
@@ -979,7 +983,9 @@ function stopRobot() {
 function scheduleRobot() {
     robotBusy = true;
     if (robotTimer) clearTimeout(robotTimer);
-    robotTimer = setTimeout(robotStep, moveIdx === 0 ? 500 : 450);
+    // în mijlocul seriei mută repede, ca un om care și-a făcut deja planul; cu ceasul pe terminate, și mai repede
+    var left = robotMsLeft();
+    robotTimer = setTimeout(robotStep, moveIdx === 0 ? 300 : (left == null ? 450 : Math.min(450, left / 150)));
 }
 function robotStep() {
     robotTimer = null;
@@ -989,8 +995,14 @@ function robotStep() {
         robotTimer = setTimeout(function() {
             robotTimer = null;
             if (gameOver || mode !== 'robot' || chess.turn() === playerColor) { robotBusy = false; return; }
-            robotPlan = PCAI.plan(chess.fen(), seriesNo - moveIdx, selectedLevel, 1500);
-            robotPlay();
+            var t0 = Date.now(), left = robotMsLeft();
+            robotPlan = PCAI.plan(chess.fen(), seriesNo - moveIdx, selectedLevel, left == null ? 1500 : Math.max(30, Math.min(1500, left / 40)));
+            // înainte de prima mutare a seriei „se gândește” cât un om
+            robotTimer = setTimeout(function() {
+                robotTimer = null;
+                if (gameOver || mode !== 'robot' || chess.turn() === playerColor) { robotBusy = false; return; }
+                robotPlay();
+            }, Math.max(0, minigameThinkMs(selectedLevel, left, seriesNo - 1) - (Date.now() - t0)));
         }, 40);
         return;
     }
