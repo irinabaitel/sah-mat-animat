@@ -11,7 +11,7 @@
   gtag('config', 'G-CMTZ9GGPMP');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Regii și nasturii — Joc</title>
+<title>Regii și diamantele — Joc</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
 <link rel="stylesheet" href="master-template.css?v=20260930">
@@ -24,19 +24,14 @@
 
   /* HIGHLIGHTS */
   .sq-wrong    { box-shadow: inset 0 0 0 100vmax rgba(220,40,40,0.55) !important; }
-  /* NASTURI — clasă pe pătratul existent */
+  /* DIAMANTE — clasă pe pătratul existent */
   .sq-coin { position: relative; }
   .sq-coin::after {
-    content: ''; position: absolute; left: 50%; top: 50%;
-    width: 42%; height: 42%; transform: translate(-50%,-50%);
-    border-radius: 50%; pointer-events: none;
-    background:
-      radial-gradient(circle at 43% 43%, rgba(90,55,0,0.85) 5%, transparent 6.5%),
-      radial-gradient(circle at 57% 43%, rgba(90,55,0,0.85) 5%, transparent 6.5%),
-      radial-gradient(circle at 43% 57%, rgba(90,55,0,0.85) 5%, transparent 6.5%),
-      radial-gradient(circle at 57% 57%, rgba(90,55,0,0.85) 5%, transparent 6.5%),
-      radial-gradient(circle at 35% 30%, #f7d774 0%, #d9a520 55%, #9c6d0a 100%);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.35), inset 0 0 0 2px rgba(120,80,0,0.35);
+    content: ''; position: absolute; left: 50%; top: 52%;
+    width: 56%; height: 50%; transform: translate(-50%,-50%);
+    pointer-events: none;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'><polygon points='22,6 78,6 98,32 50,88 2,32' fill='%231f6fd1'/><polygon points='22,6 50,6 36,32 2,32' fill='%2385c8ff'/><polygon points='50,6 78,6 64,32 36,32' fill='%23cdeeff'/><polygon points='78,6 98,32 64,32' fill='%235aa9f0'/><polygon points='2,32 36,32 50,88' fill='%233d8fe6'/><polygon points='36,32 64,32 50,88' fill='%2378bdf7'/><polygon points='64,32 98,32 50,88' fill='%231a5fb8'/><polygon points='22,6 78,6 98,32 50,88 2,32' fill='none' stroke='%230d3d80' stroke-width='3' stroke-linejoin='round'/><polygon points='30,12 40,12 33,24' fill='white' opacity='0.85'/></svg>") center / contain no-repeat;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.35));
   }
 
   .sec-title { font-family:var(--font-display); font-size:0.85em; font-weight:900; color:var(--c-navy); margin-bottom:6px; }
@@ -136,7 +131,7 @@
 <div class="page-wrapper">
 
   <header class="page-header" role="banner">
-    <span class="header-title">👑 Regii și nasturii</span>
+    <span class="header-title">💎 Regii și diamantele</span>
     <div class="header-progress">
       <span class="game-badge">Joc</span>
     </div>
@@ -169,7 +164,7 @@
 
         <div class="counter-row">
           <div class="counter-box"><div class="counter-lbl">Repriza</div><div class="counter-val" id="roundVal">1 / 2</div></div>
-          <div class="counter-box"><div class="counter-lbl">Nasturi rămași</div><div class="counter-val" id="coinsVal">16</div></div>
+          <div class="counter-box"><div class="counter-lbl">Diamante rămase</div><div class="counter-val" id="coinsVal">16</div></div>
           <div class="counter-box" id="movesBox"><div class="counter-lbl">Mutarea</div><div class="counter-val" id="movesVal">1 / 40</div></div>
         </div>
 
@@ -203,7 +198,7 @@
           <div class="hl-box">
             <h4>Poziția de început</h4>
             <p>Pe tablă sunt doar doi regi. <strong>Regele alb</strong> stă pe e1, iar <strong>regele negru</strong> stă pe e8.</p>
-            <p>În mijlocul tablei sunt <strong>16 nasturi</strong> aurii. Ei acoperă tot pătratul de la c3 până la f6: pe liniile 3, 4, 5 și 6, câte un nasture pe coloanele c, d, e și f. Nasturii nu sunt piese și nu se mută. Ei doar așteaptă să fie adunați.</p>
+            <p>În mijlocul tablei sunt <strong>16 diamante</strong> strălucitoare. Ele acoperă tot pătratul de la c3 până la f6: pe liniile 3, 4, 5 și 6, câte un diamant pe coloanele c, d, e și f. Diamantele nu sunt piese și nu se mută. Ele doar așteaptă să fie adunate.</p>
           </div>
 
           <div class="hl-box">
@@ -220,9 +215,9 @@
           </div>
 
           <div class="hl-box">
-            <h4>Cum aduni nasturi</h4>
-            <p>Ca să aduni un nasture, muți regele pe pătratul lui. Nasturele dispare de pe tablă și primești un punct. Punctele tale le vezi în dreptul numelui.</p>
-            <p>Un nasture de lângă regele adversarului nu îl poți lua: ar însemna să pui regii alături.</p>
+            <h4>Cum aduni diamante</h4>
+            <p>Ca să aduni un diamant, muți regele pe pătratul lui. Diamantul dispare de pe tablă și primești un punct. Punctele tale le vezi în dreptul numelui.</p>
+            <p>Un diamant de lângă regele adversarului nu îl poți lua: ar însemna să pui regii alături.</p>
           </div>
 
           <div class="hl-box">
@@ -232,20 +227,20 @@
 
           <div class="hl-box warn">
             <h4>Când se termină o repriză</h4>
-            <p>1) Când <strong>toți nasturii</strong> au fost adunați.<br>2) Când fiecare jucător a făcut <strong>40 de mutări</strong>. Nasturii rămași atunci pe tablă nu mai sunt ai nimănui. Limita există ca jocul să nu țină la nesfârșit.<br>3) Dacă niciunul dintre regi nu mai poate muta.</p>
-            <p>Câștigă repriza cine a adunat <strong>mai mulți nasturi</strong>. Dacă au amândoi la fel, repriza e egală.</p>
+            <p>1) Când <strong>toate diamantele</strong> au fost adunate.<br>2) Când fiecare jucător a făcut <strong>40 de mutări</strong>. Diamantele rămase atunci pe tablă nu mai sunt ale nimănui. Limita există ca jocul să nu țină la nesfârșit.<br>3) Dacă niciunul dintre regi nu mai poate muta.</p>
+            <p>Câștigă repriza cine a adunat <strong>mai multe diamante</strong>. Dacă au amândoi la fel, repriza e egală.</p>
           </div>
 
           <div class="hl-box">
             <h4>Reprizele și cine câștigă</h4>
             <p>Jocul are două reprize. După prima repriză <strong>se schimbă culorile</strong>: cine a jucat cu albul joacă acum cu negrul.</p>
-            <p>Nasturii din cele două reprize se adună. <strong>Câștigă cine are mai mulți nasturi în total.</strong> Dacă au amândoi la fel, e egalitate.</p>
+            <p>Diamantele din cele două reprize se adună. <strong>Câștigă cine are mai multe diamante în total.</strong> Dacă au amândoi la fel, e egalitate.</p>
             <p><strong>Contra Robotului</strong> joci cu albul în prima repriză și cu negrul în a doua.</p>
           </div>
 
           <div class="hl-box ok">
             <h4>Un sfat</h4>
-            <p>Nu te grăbi doar după cel mai apropiat nasture. Gândește-te și unde este regele adversarului. <strong>Ține regele advers departe de nasturi</strong>: dacă regele tău ocupă <strong>pătratele dintre cei doi regi</strong>, regele advers nu poate trece și nasturii din spatele tău rămân pentru tine.</p>
+            <p>Nu te grăbi doar după cel mai apropiat diamant. Gândește-te și unde este regele adversarului. <strong>Ține regele advers departe de diamante</strong>: dacă regele tău ocupă <strong>pătratele dintre cei doi regi</strong>, regele advers nu poate trece și diamantele din spatele tău rămân pentru tine.</p>
             <p>Așa înveți un lucru folositor și în partidele adevărate, mai ales în finaluri: regii se țin la distanță unul de altul, iar cel care îl împinge înapoi pe celălalt are de obicei avantajul. În acest joc, cu joc bun, câștigă albul, pentru că mută primul.</p>
           </div>
         </details>
@@ -265,8 +260,8 @@
 <script src="board-utils.js"></script>
 <script>
 /* =====================================================
-   REGII ȘI NASTURII („King versus king", Step 1, lecția 6)
-   Regele alb e1, regele negru e8, nasturi pe toate pătratele c3–f6.
+   REGII ȘI DIAMANTELE („King versus king", Step 1, lecția 6)
+   Regele alb e1, regele negru e8, diamante pe toate pătratele c3–f6.
    Regii nu pot sta alături. Limită: 40 de mutări pentru fiecare.
    ===================================================== */
 
@@ -314,8 +309,8 @@ var sndMate    = new Audio('Sounds/Mate.mp3');
 function play(s){ try { s.currentTime = 0; s.play().catch(function(){}); } catch(e) {} }
 
 /* ---------- robotul: alfa-beta cu adâncire iterativă + tabelă de transpoziție ----------
-   Valoarea unei poziții = nasturii pe care îi mai adună jucătorul la mutare
-   minus cei pe care îi mai adună adversarul (în sutimi de nasture). */
+   Valoarea unei poziții = diamantele pe care le mai adună jucătorul la mutare
+   minus cele pe care le mai adună adversarul (în sutimi de diamant). */
 let TT = new Map(), nodes = 0, deadline = 0;
 const TT_MAX = 3000000;
 
@@ -327,9 +322,9 @@ function heur(me, opp, mask) {
         const q = COIN_SQ[i], a = CHEB[me * 64 + q], b = CHEB[opp * 64 + q];
         if (a < dm) dm = a;
         if (b < dop) dop = b;
-        s += a <= b ? 30 : -30;             // nasturii la care ajung primul (la egalitate, eu mut primul)
+        s += a <= b ? 30 : -30;             // diamantele la care ajung primul (la egalitate, eu mut primul)
     }
-    s += (dop - dm) * 12;                   // cine e mai aproape de cel mai apropiat nasture
+    s += (dop - dm) * 12;                   // cine e mai aproape de cel mai apropiat diamant
     s += (CENTER[opp] - CENTER[me]) * 8;    // cine e mai aproape de centru
     return s;
 }
@@ -455,7 +450,7 @@ function updateUI() {
         document.getElementById('pp' + p + '-score').textContent = total[p] + (roundOver ? 0 : score[col]);
         document.getElementById('pp' + p).className = 'player-panel' + (!roundOver && !matchOver && playerOnMove() === p ? ' active' : '');
         const parts = [];
-        [1, 2].forEach(r => { if (roundRes[r]) parts.push('repriza ' + r + ': ' + roundRes[r][p] + ' nasturi'); });
+        [1, 2].forEach(r => { if (roundRes[r]) parts.push('repriza ' + r + ': ' + roundRes[r][p] + ' diamante'); });
         document.getElementById('pp' + p + '-result').textContent = parts.join(' · ');
     });
 }
@@ -515,8 +510,8 @@ function doMove(fromSq, toSq) {
 function endRound(why) {
     roundOver = true;
     const left = popcount(coins);
-    let note = why === 'coins' ? 'Toți nasturii au fost adunați.'
-             : why === 'limit' ? 'S-au terminat cele ' + MAX_MOVES + ' de mutări ale fiecăruia.' + (left ? ' Nasturii rămași (' + left + ') nu mai sunt ai nimănui.' : '')
+    let note = why === 'coins' ? 'Toate diamantele au fost adunate.'
+             : why === 'limit' ? 'S-au terminat cele ' + MAX_MOVES + ' de mutări ale fiecăruia.' + (left ? ' Diamantele rămase (' + left + ') nu mai sunt ale nimănui.' : '')
              : 'Niciun rege nu mai poate muta.';
     if (coins) { coins = 0; drawCoins(); }
     const pw = whitePlayer(round), pb = pw === 1 ? 2 : 1;
@@ -633,7 +628,7 @@ board = Chessboard('board', {
     onSnapEnd: function() { board.position(posObj(), false); drawCoins(); }
 });
 
-/* click pe un pătrat fără rege (gol sau cu nasture), după selectare */
+/* click pe un pătrat fără rege (gol sau cu diamant), după selectare */
 $(document).on('click', '#board [class*="square-"]', function() {
     if (!canAct() || !selSq) return;
     const m = (this.className || '').match(/square-([a-h][1-8])/);

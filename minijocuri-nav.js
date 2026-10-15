@@ -21,7 +21,7 @@
         ['nivel1_joc_piesa_contra_pionilor.html', 'Piesa contra pionilor'],
         ['nivel1_joc_dama_contra_pionilor.html', 'Dama contra pionilor'],
         ['nivel1_joc_vanatoarea_regelui.html', 'Vânătoarea regelui'],
-        ['nivel1_joc_regi_nasturi.html', 'Regii și nasturii'],
+        ['nivel1_joc_regi_nasturi.html', 'Regii și diamantele'],
         ['nivel1_joc_cine_pastreaza.html', 'Cine păstrează ceva?'],
         ['joc_sah_progresiv.html', 'Șahul progresiv'],
         ['joc_sah_pierzator.html', 'Șahul pierzătorului'],
