@@ -211,7 +211,7 @@
             <h4>🏁 Cine câștigă</h4>
             <p><strong>Cine dă primul trei șahuri câștigă cu 1-0.</strong> Nu contează câte piese a pierdut până atunci.</p>
             <p><strong>Cine capturează regele adversarului câștigă cu 2-0.</strong> Asta se poate întâmpla când adversarul este în șah și nu observă: mută altă piesă, iar regele lui rămâne atacat. La mutarea următoare îl poți captura.</p>
-            <p>Matul se termină tot cu 2-0, pentru că regele nu mai are scăpare.</p>
+            <p><strong>Cine dă mat câștigă cu 3-0.</strong> Este cea mai mare victorie: regele adversarului nu mai are nicio scăpare.</p>
             <p>Câștigi și dacă adversarul abandonează, dacă îi expiră timpul pe ceas sau, în doi, dacă adversarul încearcă de trei ori o mutare nepermisă.</p>
           </div>
 
@@ -288,9 +288,9 @@
    Pătrate: 0 = a1 … 63 = h8 (rând*8 + coloană). Piese: 1 pion, 2 cal, 3 nebun, 4 turn, 5 damă, 6 rege; albe > 0, negre < 0.
    Mutare = from | to<<6 | promo<<12 | flags<<15 ; flags: 1 pas dublu, 2 en passant, 4 captură, 8 rocadă.
    Regulile șahului, plus: cel aflat în șah poate muta altă piesă (nu regele pe pătrat atacat, nu rocadă);
-   atunci regele lui poate fi capturat (2-0). Trei șahuri date = victorie (1-0). Matul = 2-0. */
+   atunci regele lui poate fi capturat (2-0). Trei șahuri date = victorie (1-0). Matul = 3-0. */
 var T3 = (function() {
-    var KC = 1000000, W3 = 900000, STOP = {};
+    var MT = 1100000, KC = 1000000, W3 = 900000, STOP = {};
     var KN = [], KG = [], RB = [], RR = [], CR = [];
     (function() {
         var kn = [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]];
@@ -545,10 +545,10 @@ var T3 = (function() {
         var buf = bufs[ply] || (bufs[ply] = new Int32Array(256));
         var quiet = depth <= 0;
         var n = allowed(p, buf, ply, false);
-        if (buf.inCheck && !buf.escapes) return -(KC - ply);           // mat
+        if (buf.inCheck && !buf.escapes) return -(MT - ply);           // mat
         if (n === 0) return 0;                                        // pat
         if (p.half >= 100) return 0;
-        var best = -KC - 1;
+        var best = -MT - 1;
         if (quiet) {
             if (!buf.inCheck) {
                 var stand = evaluate(p);
@@ -603,12 +603,12 @@ var T3 = (function() {
         if (level === 'dragon' && seenKeys) { seen = {}; seenKeys.forEach(function(x) { seen[x] = true; }); }
         var bestM = list[0], bestScore = 0, depthDone = 0;
         for (var depth = 1; depth <= maxDepth; depth++) {
-            var alpha = -KC - 1, iterBest = bestM, iterScore = -KC - 1;
+            var alpha = -MT - 1, iterBest = bestM, iterScore = -MT - 1;
             var idx = list.indexOf(bestM); if (idx > 0) { list.splice(idx, 1); list.unshift(bestM); }
             try {
                 for (k = 0; k < n; k++) {
                     make(p, list[k], 0);
-                    var v = -search(p, depth - 1, -KC - 1, -alpha, 1, maxQ);
+                    var v = -search(p, depth - 1, -MT - 1, -alpha, 1, maxQ);
                     if (seen && v > -W3 + 1000 && v < W3 - 1000 && seen[key(p)]) v -= 30;
                     if (level === 'manz') v += Math.floor(Math.random() * 30);   // mânzul e puțin jucăuș
                     unmake(p, list[k], 0);
@@ -1070,7 +1070,7 @@ function whoText(c) {
 function checkGameOver() {
     var l = legalList(), c = turnC(), o = other(c);
     if (l.inCheck && !l.escapes) {
-        finish(o, mode === 'robot' && c === playerColor ? 'Mat! Regele tău nu mai are scăpare.' : 'Mat! ' + (mode === 'robot' ? 'Regele calculatorului' : 'Regele lui ' + pname(c)) + ' nu mai are scăpare.', '2-0');
+        finish(o, mode === 'robot' && c === playerColor ? 'Mat! Regele tău nu mai are scăpare.' : 'Mat! ' + (mode === 'robot' ? 'Regele calculatorului' : 'Regele lui ' + pname(c)) + ' nu mai are scăpare.', '3-0');
         return true;
     }
     if (!l.length) { drawGame('pat, ' + (mode === 'robot' && c === playerColor ? 'nu ai' : whoText(c) + ' nu are') + ' nicio mutare.'); return true; }
