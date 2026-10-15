@@ -41,7 +41,7 @@
   .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
   .howto .hl-box p { margin:0 0 6px; }
   .howto .hl-box p:last-child { margin-bottom:0; }
-  .howto .hl-box ul { margin:0 0 6px; padding-left:18px; }  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+  .howto .hl-box ul { margin:0 0 6px; padding-left:18px; }  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
   /* TOGGLES */
   .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
@@ -171,7 +171,7 @@
       <div class="panel-scroll">
 
         <div class="toggle-row">
-          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
           <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
@@ -198,7 +198,7 @@
         </div>
 
         <div class="player-panel" id="pp-b">
-          <div class="pp-tag" id="tag-b">🤖 Calculator</div>
+          <div class="pp-tag" id="tag-b">🤖 Robot</div>
           <div class="pp-row">
             <span class="pp-name">♚ Negru</span>
             <span class="pp-strikes" id="strikes-b"></span>
@@ -280,7 +280,6 @@
           <div class="hl-box">
             <h4>Cum se mută</h4>
             <p>Albul mută primul. Apoi mută negrul. Apoi iar albul și tot așa, pe rând. La fiecare mutare muți o singură piesă.</p>
-            <p>Apasă pe o piesă: pătratul ei se colorează, iar punctele verzi arată unde poate merge. Apoi apasă pe pătratul unde vrei să ajungă. Poți și să tragi piesa cu mouse-ul sau cu degetul. Dacă te răzgândești, apasă pe altă piesă de-a ta.</p>
           </div>
 
           <div class="hl-box warn">
@@ -307,25 +306,8 @@
             <h4>Variantele</h4>
             <p>Jocul are 4 variante, adică 4 așezări diferite de la care pornești. Le alegi cu butoanele 1, 2, 3 și 4. În variantele 1, 2 și 3 piesele stau deja pe linia lor, dar amestecate. În varianta 4 piesele sunt împrăștiate: cele albe pe liniile 2–4, cele negre pe liniile 5–7.</p>
             <p>La sfârșitul jocului apare butonul pentru varianta următoare. După varianta 4 butonul te duce la jocul următor. Butonul „↺ Restart” începe din nou varianta curentă.</p>
-            <p>Timpul se alege înainte de joc: alege 1, 2 sau 5 minute, apoi apasă „↺ Restart”. „∞ Liber” înseamnă fără ceas.</p>
           </div>
 
-          <div class="hl-box">
-            <h4>Contra calculatorului</h4>
-            <p>Tu muți albul, calculatorul mută negrul. Poți alege cât de tare joacă:</p>
-            <ul>
-              <li><strong>Pui de găină</strong>: la început mută aproape mereu la întâmplare (9 mutări din 10). Cu cât jocul durează mai mult, cu atât mută mai rar la întâmplare, iar după 40 de mutări își caută doar drumul spre casă.</li>
-              <li><strong>Mânz</strong>: la început face o mutare din 5 la întâmplare, iar în rest își caută drumul spre casă. Și el mută tot mai rar la întâmplare, până la 40 de mutări.</li>
-              <li><strong>Dragon</strong>: urmează mereu drumul cel mai scurt posibil. Are nevoie de 18 mutări în varianta 1, 14 în varianta 2, 16 în varianta 3 și 12 în varianta 4 — nimeni nu poate face mai puțin. La Dragon punctele verzi care arată unde poate merge piesa nu mai apar.</li>
-            </ul>
-          </div>
-
-          <div class="hl-box">
-            <h4>În doi</h4>
-            <p>Doi jucători mută pe rând pe aceeași tablă. <strong>Jucătorul 1</strong> mută albul, <strong>Jucătorul 2</strong> mută negrul. Calculatorul nu joacă, iar alegerea adversarului dispare.</p>
-            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar se numără pentru jucătorul care este la mutare. Nepermis înseamnă: o piesă dusă pe un pătrat unde nu poate merge, o piesă dusă dincolo de jumătatea tablei sau încercarea de a muta o piesă a celuilalt jucător.</p>
-            <p>Încercările se văd lângă numele fiecăruia: ❌ este o încercare folosită, ▫️ este o încercare rămasă. Dacă pui piesa înapoi pe pătratul ei, nu se numără. La <strong>3 încercări nepermise</strong> jocul se oprește și câștigă celălalt jucător.</p>
-          </div>
         </details>
 
       </div><!-- /.panel-scroll -->
@@ -483,20 +465,20 @@ function updateUI() {
     updateNames();
 }
 
-/* ---------- mod de joc: contra calculatorului / în doi ---------- */
+/* ---------- mod de joc: contra Robotului / în doi ---------- */
 var mode = 'robot';
 const MAX_STRIKES = 3;
 let strikes = {w:0, b:0};
-let gameToken = 0;              // oprește mutările calculatorului rămase dintr-un joc vechi
+let gameToken = 0;              // oprește mutările Robotului rămase dintr-un joc vechi
 const other = c => c==='w' ? 'b' : 'w';
-const pname = c => mode==='duo' ? (c==='w' ? 'Jucătorul 1' : 'Jucătorul 2') : (c==='w' ? 'Tu' : 'Calculatorul');
+const pname = c => mode==='duo' ? (c==='w' ? 'Jucătorul 1' : 'Jucătorul 2') : (c==='w' ? 'Tu' : 'Robotul');
 const PIECE_NAME = { K:'Regele', Q:'Dama', R:'Turnul', B:'Nebunul', N:'Calul' };
 const isColorDone = c => c==='w' ? wDone : bDone;
 
 function updateNames() {
     const duo = mode === 'duo';
     document.getElementById('tag-w').textContent = duo ? '👤 Jucătorul 1' : '👤 Tu joci';
-    document.getElementById('tag-b').textContent = duo ? '👤 Jucătorul 2' : '🤖 Calculator';
+    document.getElementById('tag-b').textContent = duo ? '👤 Jucătorul 2' : '🤖 Robot';
     document.getElementById('clockLblW').textContent = duo ? '♔ Jucătorul 1 (Alb)' : '♔ Tu (Alb)';
     document.getElementById('clockLblB').textContent = duo ? '♚ Jucătorul 2 (Negru)' : '🤖 Robot (Negru)';
     ['w','b'].forEach(c => {
@@ -673,7 +655,7 @@ function triggerAI() {
     if (gameOver || bDone || mode !== 'robot') return;
     const token = gameToken;
     aiLocked = true;
-    setStatus(wDone ? '🤖 Calculatorul mai joacă…' : '🤖 Calculatorul gândește…', 'ai');
+    setStatus(wDone ? '🤖 Robotul mai joacă…' : '🤖 Robotul gândește…', 'ai');
     document.getElementById('pp-b').className = 'player-panel ai-thinking';
     setTimeout(() => {
         if (token !== gameToken || gameOver) return;
@@ -719,7 +701,7 @@ function endGame() {
         document.getElementById('pp-b').className = 'player-panel done-ok';
     } else if (bMoves < wMoves) {
         msg = duo ? `🏆 Jucătorul 2 (negrul) câștigă: ${bMoves} mutări, față de ${wMoves}.`
-                  : `🤖 Calculatorul câștigă! ${bMoves} vs ${wMoves}. Încearcă din nou!`;
+                  : `🤖 Robotul câștigă! ${bMoves} vs ${wMoves}. Încearcă din nou!`;
         cls = 'ok';
         document.getElementById('trophy-b').classList.add('show');
         document.getElementById('pp-b').className = 'player-panel winner';
@@ -822,7 +804,7 @@ function startClock(){
             clearHL();
             var msg;
             if(mode==='duo') msg='⏱ Timpul lui '+pname(loser)+' s-a terminat. 🏆 '+pname(other(loser))+' câștigă.';
-            else msg=(loser==='w'?'⏱ Timp epuizat! Calculatorul câștigă!':'⏱ Timp epuizat! Ai câștigat!');
+            else msg=(loser==='w'?'⏱ Timp epuizat! Robotul câștigă!':'⏱ Timp epuizat! Ai câștigat!');
             document.getElementById('status-box').textContent=msg;
             document.getElementById('status-box').className=(loser==='w'&&mode!=='duo'?'draw':'ok');
             showNextBtn();

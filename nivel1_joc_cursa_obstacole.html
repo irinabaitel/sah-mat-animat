@@ -58,7 +58,7 @@
   .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
   .howto .hl-box p { margin:0 0 6px; }
   .howto .hl-box p:last-child { margin-bottom:0; }
-  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
   /* TOGGLES */
   .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
@@ -155,7 +155,7 @@
       <div class="panel-scroll">
 
         <div class="toggle-row">
-          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
           <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
@@ -196,7 +196,7 @@
         </div>
         <div class="player-panel" id="pp2">
           <div class="pp-row">
-            <span class="pp-name" id="pp2-name">🤖 Calculatorul</span>
+            <span class="pp-name" id="pp2-name">🤖 Robotul</span>
             <span class="pp-role" id="pp2-role"></span>
             <span class="pp-strikes" id="pp2-strikes"></span>
           </div>
@@ -254,7 +254,7 @@
 
           <div class="hl-box warn">
             <h4>Reprizele și cine câștigă</h4>
-            <p>Jocul are două reprize. În prima repriză tu ești iepurașii, iar calculatorul este căluții. În a doua repriză <strong>vă schimbați rolurile</strong>. Contra calculatorului, tabla se întoarce, ca să ai căluții jos. În doi, tabla rămâne la fel, cu iepurașii jos.</p>
+            <p>Jocul are două reprize. În prima repriză tu ești iepurașii, iar Robotul este căluții. În a doua repriză <strong>vă schimbați rolurile</strong>. Contra Robotului, tabla se întoarce, ca să ai căluții jos. În doi, tabla rămâne la fel, cu iepurașii jos.</p>
             <p><strong>Câștigă cine a dus mai mulți iepurași în grădină</strong> atunci când a jucat cu iepurașii. Dacă amândoi au dus tot atâția, este egalitate.</p>
             <p>Cine prinde toți căluții duce în grădină <strong>toți iepurașii rămași</strong>, deci ia punctele lor.</p>
           </div>
@@ -265,18 +265,6 @@
             <p>Cu <strong>un singur căluț</strong>, pe b8, este mai ușor pentru iepurași. Aceasta este varianta bună la început.</p>
             <p>Regulile rămân aceleași în ambele variante. Cine rămâne fără căluț pierde repriza pe loc, iar iepurașii rămași intră toți în grădină. Cu un singur căluț, asta cântărește și mai mult: dacă iepurașii îl prind, iau toate punctele.</p>
             <p>Varianta cu un singur căluț se numește „Promotion game" și vine din cartea <em>Manual for Chess Trainers, Pasul 1</em>, lecția 4.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>Adversarii</h4>
-            <p><strong>Puiul de găină</strong> mută aproape mereu la întâmplare. <strong>Mânzul</strong> mută de cele mai multe ori cu grijă. <strong>Dragonul</strong> se gândește bine la fiecare mutare.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>În doi</h4>
-            <p>Jucătorul 1 începe cu iepurașii, iar Jucătorul 2 cu căluții. În repriza a doua schimbați rolurile.</p>
-            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar se numără. Se numără și dacă încerci să muți o piesă a celuilalt jucător. Dacă pui piesa înapoi pe pătratul ei, nu se numără.</p>
-            <p>La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
           </div>
 
           <div class="hl-box ok">
@@ -578,7 +566,7 @@ let results = {}, strikes = {1:0, 2:0};
 const pawnPlayer   = r => r === 1 ? 1 : 2;
 const knightPlayer = r => r === 1 ? 2 : 1;
 const playerOnMove = () => turn === 'w' ? pawnPlayer(round) : knightPlayer(round);
-const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Calculatorul');
+const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Robotul');
 
 /* ---------- afișare ---------- */
 function buildPos() {
@@ -668,7 +656,7 @@ function promptTurn(note) {
     const what = turn === 'w' ? 'un iepuraș (un pion)' : 'un căluț (un cal)';
     const pre = note ? note + '<br>' : '';
     if (mode === 'robot' && p === 2) {
-        setStatus(pre + '🤖 Calculatorul mută ' + (turn === 'w' ? 'un iepuraș' : 'un căluț') + '…');
+        setStatus(pre + '🤖 Robotul mută ' + (turn === 'w' ? 'un iepuraș' : 'un căluț') + '…');
         aiTimer = setTimeout(aiMove, 600);
     } else {
         setStatus(pre + (mode === 'duo' ? pname(p) + ' mută ' : 'Muți ') + what + '.');
@@ -743,7 +731,7 @@ function matchSummary() {
     if (!w) return '🤝 <strong>Egalitate' + score + '.</strong> Amândoi ați dus tot atâția iepurași în grădină.';
     setTimeout(() => { document.getElementById('pp' + w).className = 'player-panel winner'; }, 0);
     if (mode === 'duo' || w === 1) spawnConfetti(3500);
-    if (mode === 'robot') return w === 1 ? '🏆 <strong>Ai câștigat meciul' + score + '.</strong>' : '<strong>Calculatorul a câștigat meciul' + score + '.</strong> Mai încearcă.';
+    if (mode === 'robot') return w === 1 ? '🏆 <strong>Ai câștigat meciul' + score + '.</strong>' : '<strong>Robotul a câștigat meciul' + score + '.</strong> Mai încearcă.';
     return '🏆 <strong>' + pname(w) + ' câștigă meciul' + score + '.</strong>';
 }
 

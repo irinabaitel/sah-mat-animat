@@ -39,7 +39,7 @@
   .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
   .howto .hl-box p { margin:0 0 6px; }
   .howto .hl-box p:last-child { margin-bottom:0; }
-  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
   /* TOGGLES */
   .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
@@ -146,7 +146,7 @@
       <div class="panel-scroll">
 
         <div class="toggle-row">
-          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
           <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
@@ -220,7 +220,6 @@
             <p>Calul nu merge în linie dreaptă ca celelalte piese. El <strong>sare în formă de L</strong>: două pătrate într-o direcție (înainte, înapoi, la stânga sau la dreapta), apoi un pătrat într-o parte.</p>
             <p>De exemplu, calul de pe g1 poate sări pe <strong>e2</strong>, pe <strong>f3</strong> sau pe <strong>h3</strong>. Din mijlocul tablei un cal are până la 8 sărituri posibile, iar din colț are doar 2.</p>
             <p>Calul <strong>sare peste piese</strong>, așa că nimic nu îl poate bloca pe drum. Contează doar pătratul pe care aterizează: acolo nu are voie să stea o piesă de aceeași culoare cu el.</p>
-            <p>Când apeși pe un cal, tabla îți arată pătratele pe care poate sări. La nivelul Dragon aceste semne nu se mai arată.</p>
           </div>
 
           <div class="hl-box">
@@ -264,24 +263,6 @@
             <p>Ai grijă să nu îți lași calul pe un pătrat unde îl poate captura un cal al adversarului. Câți cai mai are fiecare jucător se vede sub bara lui.</p>
           </div>
 
-          <div class="hl-box">
-            <h4>Adversarul: Pui de găină, Mânz, Dragon</h4>
-            <p><strong>Pui de găină.</strong> Calculatorul mută aproape mereu la întâmplare (cam 9 mutări din 10).</p>
-            <p><strong>Mânz.</strong> Calculatorul caută de obicei drumul cel mai scurt spre pionii tăi, dar cam o mutare din 5 o face la întâmplare.</p>
-            <p><strong>Dragon.</strong> Calculatorul caută la fiecare mutare drumul cel mai scurt spre pionii tăi. În varianta în care caii se pot captura, se ferește să își lase caii acolo unde îi poate captura un cal de-al tău și îți capturează un cal atunci când o poate face fără să piardă calul lui. La Dragon nu se mai arată pătratele pe care poate sări calul.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>Ceasul</h4>
-            <p>Poți alege un timp pentru fiecare jucător: 1, 2 sau 5 minute. Timpul ales pornește după ce apeși <strong>↺ Restart</strong>. Ceasul merge numai pentru jucătorul care este la mutare.</p>
-          </div>
-
-          <div class="hl-box ok">
-            <h4>Modul „În doi"</h4>
-            <p>Alege <strong>👫 În doi</strong> ca să jucați doi copii pe aceeași tablă, fără calculator. <strong>Jucătorul 1</strong> mută caii albi, <strong>Jucătorul 2</strong> mută caii negri, pe rând. Albul începe.</p>
-            <p>Dacă un jucător încearcă o mutare care nu este permisă, mutarea nu se face, dar <strong>se numără ca încercare nepermisă</strong>. Se numără și încercarea de a muta o piesă a adversarului sau un pion. Dacă ridici calul și îl pui înapoi pe pătratul lui, nu se numără.</p>
-            <p>Încercările se văd lângă numele fiecărui jucător: ❌ pentru fiecare încercare nepermisă și ▫️ pentru cele rămase. <strong>La 3 încercări nepermise jocul se oprește și câștigă celălalt jucător.</strong></p>
-          </div>
         </details>
 
       </div><!-- /.panel-scroll -->
@@ -300,7 +281,7 @@
 <script>
 /* =====================================================
    JOCUL CAILOR (Step 1, lecția 3)
-   Contra calculatorului: Alb = Tu, Negru = robot. În doi: Jucătorul 1 = alb, Jucătorul 2 = negru.
+   Contra Robotului: Alb = Tu, Negru = robot. În doi: Jucătorul 1 = alb, Jucătorul 2 = negru.
    Nivel 1: un cal fiecare. Nivel 2: doi cai, caii nu se capturează.
    Nivel 3: doi cai, caii se pot captura (calul capturat nu aduce puncte).
    Cine nu are mutări pasează. Final: toți pionii unei culori capturați
@@ -481,7 +462,7 @@ function setStatus(msg, cls) {
     el.innerHTML = msg; el.className = cls || '';
 }
 
-const pname = c => mode === 'duo' ? (c === 'w' ? 'Jucătorul 1' : 'Jucătorul 2') : (c === 'w' ? 'Tu' : 'Calculatorul');
+const pname = c => mode === 'duo' ? (c === 'w' ? 'Jucătorul 1' : 'Jucătorul 2') : (c === 'w' ? 'Tu' : 'Robotul');
 const colorName = c => c === 'w' ? 'albul' : 'negrul';
 
 function updateUI() {
@@ -531,7 +512,7 @@ function endGame(reason, loser) {
     const score = 'Pioni capturați: albul ' + cap.w + ', negrul ' + cap.b + '.';
     let res;
     if (!winner) res = '🤝 <strong>Egalitate.</strong>';
-    else if (mode === 'robot') res = winner === 'w' ? '🏆 <strong>Ai câștigat!</strong>' : '🏆 <strong>Calculatorul câștigă.</strong>';
+    else if (mode === 'robot') res = winner === 'w' ? '🏆 <strong>Ai câștigat!</strong>' : '🏆 <strong>Robotul câștigă.</strong>';
     else res = '🏆 <strong>' + pname(winner) + ' câștigă.</strong>';
 
     ['w', 'b'].forEach(c => {
@@ -567,15 +548,15 @@ function finishTurn(c, what) {
     let note = '';
     if (what === 'knight') {
         note = mode === 'robot'
-            ? (c === 'w' ? 'Ai capturat un cal negru. ' : 'Calculatorul ți-a capturat un cal. ')
+            ? (c === 'w' ? 'Ai capturat un cal negru. ' : 'Robotul ți-a capturat un cal. ')
             : pname(c) + ' a capturat un cal al adversarului. ';
     }
     let next = o;
     if (!hasMoves(o)) {
         if (!hasMoves(c)) return endGame('nomoves');
         next = c;
-        if (mode === 'robot') note += o === 'b' ? 'Calculatorul nu are nicio mutare posibilă, așa că muți din nou. '
-                                                : 'Nu ai nicio mutare posibilă, așa că mută din nou calculatorul. ';
+        if (mode === 'robot') note += o === 'b' ? 'Robotul nu are nicio mutare posibilă, așa că muți din nou. '
+                                                : 'Nu ai nicio mutare posibilă, așa că mută din nou Robotul. ';
         else note += pname(o) + ' nu are nicio mutare posibilă, așa că mută din nou ' + pname(c) + '. ';
     }
     turn = next;
@@ -587,7 +568,7 @@ function finishTurn(c, what) {
 
 function aiBlackTurn(note) {
     aiBusy = true;
-    setStatus((note || '') + '🤖 Calculatorul gândește…', '');
+    setStatus((note || '') + '🤖 Robotul gândește…', '');
     aiTimers.push(setTimeout(() => {
         const mv = (Math.random() < aiRandomChance) ? getRandomMove() : aiPickMove();
         if (!mv) { aiBusy = false; return; }

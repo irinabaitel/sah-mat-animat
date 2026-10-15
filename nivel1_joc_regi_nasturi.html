@@ -71,7 +71,7 @@
   .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
   .howto .hl-box p { margin:0 0 6px; }
   .howto .hl-box p:last-child { margin-bottom:0; }
-  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
   /* COUNTER */
   .counter-row { display:flex; gap:8px; margin-bottom:8px; }
@@ -154,7 +154,7 @@
       <div class="panel-scroll">
 
         <div class="toggle-row">
-          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
           <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
@@ -184,7 +184,7 @@
         </div>
         <div class="player-panel" id="pp2">
           <div class="pp-row">
-            <span class="pp-name" id="pp2-name">🤖 Calculator</span>
+            <span class="pp-name" id="pp2-name">🤖 Robot</span>
             <span class="pp-role" id="pp2-role"></span>
             <span class="pp-strikes" id="pp2-strikes"></span>
             <span class="pp-score" id="pp2-score">0</span>
@@ -240,9 +240,7 @@
             <h4>Reprizele și cine câștigă</h4>
             <p>Jocul are două reprize. După prima repriză <strong>se schimbă culorile</strong>: cine a jucat cu albul joacă acum cu negrul.</p>
             <p>Nasturii din cele două reprize se adună. <strong>Câștigă cine are mai mulți nasturi în total.</strong> Dacă au amândoi la fel, e egalitate.</p>
-            <p><strong>Contra calculatorului</strong> joci cu albul în prima repriză și cu negrul în a doua. Poți alege adversarul: puiul de găină mută aproape mereu la întâmplare, mânzul greșește din când în când, iar dragonul se gândește la fiecare mutare.</p>
-            <p><strong>În doi</strong> jucați amândoi la același calculator și mutați pe rând.</p>
-            <p id="ruleDuo" style="display:none">Dacă încerci o mutare care nu este permisă, ea nu se face, dar se numără. Dacă doar ridici regele și îl pui înapoi pe pătratul lui, nu se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
+            <p><strong>Contra Robotului</strong> joci cu albul în prima repriză și cu negrul în a doua.</p>
           </div>
 
           <div class="hl-box ok">
@@ -408,7 +406,7 @@ let total = {1:0, 2:0}, strikes = {1:0, 2:0}, roundRes = {};
 const whitePlayer  = r => r === 1 ? 1 : 2;
 const playerOf     = (c, r) => c === 'w' ? whitePlayer(r) : (whitePlayer(r) === 1 ? 2 : 1);
 const playerOnMove = () => playerOf(turn, round);
-const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Calculatorul');
+const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Robotul');
 const colorName = c => c === 'w' ? 'Albul' : 'Negrul';
 const myKing  = () => turn === 'w' ? wk : bk;
 const oppKing = () => turn === 'w' ? bk : wk;
@@ -491,7 +489,7 @@ function promptTurn() {
     }
     const p = playerOnMove();
     if (mode === 'robot' && p === 2) {
-        setStatus('🤖 Calculatorul mută (' + colorName(turn).toLowerCase() + ')…');
+        setStatus('🤖 Robotul mută (' + colorName(turn).toLowerCase() + ')…');
         aiTimer = setTimeout(aiMove, 450);
     } else {
         setStatus((mode === 'duo' ? pname(p) + ' mută' : 'Muți') + ' cu regele ' + (turn === 'w' ? 'alb' : 'negru') + '.');
@@ -598,7 +596,6 @@ function setMode(m) {
     document.getElementById('modeRobot').className = 'tgl-btn' + (m === 'robot' ? ' active' : '');
     document.getElementById('modeDuo').className   = 'tgl-btn' + (m === 'duo' ? ' active' : '');
     document.getElementById('levelBox').style.display = m === 'robot' ? '' : 'none';
-    document.getElementById('ruleDuo').style.display  = m === 'duo' ? '' : 'none';
     newMatch();
 }
 

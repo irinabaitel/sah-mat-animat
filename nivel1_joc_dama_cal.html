@@ -56,7 +56,7 @@
   .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
   .howto .hl-box p { margin:0 0 6px; }
   .howto .hl-box p:last-child { margin-bottom:0; }
-  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
   /* COUNTER */
   .counter-row { display:flex; gap:8px; margin-bottom:8px; }
@@ -135,7 +135,7 @@
       <div class="panel-scroll">
 
         <div class="toggle-row">
-          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
           <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
@@ -163,7 +163,7 @@
         </div>
         <div class="player-panel" id="pp2">
           <div class="pp-row">
-            <span class="pp-name" id="pp2-name">🤖 Calculator</span>
+            <span class="pp-name" id="pp2-name">🤖 Robot</span>
             <span class="pp-role" id="pp2-role"></span>
             <span class="pp-strikes" id="pp2-strikes"></span>
           </div>
@@ -217,13 +217,13 @@
           <div class="hl-box">
             <h4>Reprizele</h4>
             <p>Jocul are două reprize. După prima repriză <strong>se schimbă rolurile</strong>: cine a jucat cu dama joacă acum cu calul.</p>
-            <p><strong>Contra calculatorului</strong> joci cu dama în prima repriză și cu calul în a doua. Poți alege adversarul: puiul de găină mută aproape mereu la întâmplare, mânzul greșește din când în când, iar dragonul nu greșește niciodată.</p>
-            <p id="ruleDuo" style="display:none"><strong>În doi</strong> câștigă meciul cine a prins calul mai repede când a jucat cu dama. Dacă amândoi l-au prins în același număr de mutări sau niciunul nu l-a prins, e egalitate. Dacă încerci o mutare care nu este permisă, ea nu se face, dar se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
+            <p><strong>Contra Robotului</strong> joci cu dama în prima repriză și cu calul în a doua.</p>
+            <p id="ruleDuo" style="display:none"><strong>În doi</strong> câștigă meciul cine a prins calul mai repede când a jucat cu dama. Dacă amândoi l-au prins în același număr de mutări sau niciunul nu l-a prins, e egalitate.</p>
           </div>
 
           <div class="hl-box">
             <h4>Stelele</h4>
-            <p>Contra calculatorului primești stele în fiecare repriză, cel mult 3. Cu joc perfect, dama prinde calul din poziția de start în <strong>4 mutări</strong>.</p>
+            <p>Contra Robotului primești stele în fiecare repriză, cel mult 3. Cu joc perfect, dama prinde calul din poziția de start în <strong>4 mutări</strong>.</p>
             <p><strong>Cu dama:</strong> 3 stele dacă prinzi calul în cel mult 4 mutări, 2 stele dacă îl prinzi în 5–8 mutări, 1 stea dacă îl prinzi mai târziu. Dacă nu îl prinzi, nu primești nicio stea.</p>
             <p><strong>Cu calul:</strong> 3 stele dacă reziști 15 mutări, dacă capturezi dama sau dacă ești prins abia la mutarea 4 sau mai târziu. 2 stele dacă ești prins la mutarea 3 și 1 stea dacă ești prins mai devreme.</p>
             <p>La sfârșit se adună stelele din ambele reprize: cel mult 6.</p>
@@ -327,7 +327,7 @@ const queenPlayer  = r => r === 1 ? 1 : 2;
 const knightPlayer = r => r === 1 ? 2 : 1;
 const playerOnMove = () => turn === 'q' ? queenPlayer(round) : knightPlayer(round);
 const isHumanTurn  = () => mode === 'duo' || playerOnMove() === 1;
-const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Calculatorul');
+const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Robotul');
 
 /* ---------- mutări legale ---------- */
 function legalTargets(from) {        // pătrate (string) pentru piesa de pe 'from'
@@ -396,7 +396,7 @@ function resultLine(p) {
     return parts.join(' · ');
 }
 
-/* stele (doar contra calculatorului) */
+/* stele (doar contra Robotului) */
 function starsQueen(res) {
     if (res.by !== 'queen') return 0;
     return res.moves <= PERFECT ? 3 : res.moves <= 8 ? 2 : 1;
@@ -428,7 +428,7 @@ function promptTurn() {
     const p = playerOnMove();
     const piece = turn === 'q' ? '♕ dama' : '♞ calul';
     if (mode === 'robot' && p === 2) {
-        setStatus('🤖 Calculatorul mută ' + piece + '…');
+        setStatus('🤖 Robotul mută ' + piece + '…');
         aiTimer = setTimeout(aiMove, 650);
     } else {
         const who = mode === 'duo' ? pname(p) + ' mută' : 'Muți';

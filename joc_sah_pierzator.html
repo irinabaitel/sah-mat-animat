@@ -101,7 +101,7 @@
     .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
     .howto .hl-box p { margin:0 0 6px; }
     .howto .hl-box p:last-child { margin-bottom:0; }
-    .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+    .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
     .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
     .tgl-btn { flex:1; padding:6px 10px; border-radius:50px; border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.5); font-family:var(--font-display); font-size:0.82em; color:var(--c-navy); cursor:pointer; transition:all 0.2s; white-space:nowrap; }
@@ -124,13 +124,13 @@
       <div class="panel-scroll">
         <p class="panel-heading">&#9818; Șahul pierzătorului (Loser's Chess)</p>
         <div class="hl-box" style="margin-bottom:10px">
-          Piesele sunt cele obișnuite și merg ca în șah, dar scopul este invers: <strong>câștigă cine rămâne primul fără piese</strong>. Iar dacă poți captura, <strong>trebuie</strong> să capturezi. Joci contra calculatorului sau în doi, pe aceeași tablă.
+          Piesele sunt cele obișnuite și merg ca în șah, dar scopul este invers: <strong>câștigă cine rămâne primul fără piese</strong>. Iar dacă poți captura, <strong>trebuie</strong> să capturezi. Joci contra Robotului sau în doi, pe aceeași tablă.
         </div>
 
         <!-- SETUP -->
         <div id="setupPanel">
           <div class="toggle-row">
-            <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+            <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
             <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
           </div>
           <div id="levelBox">
@@ -244,30 +244,6 @@
             <p><strong>Spre final, numără.</strong> Când au rămas puține piese, fiecare mutare contează. Uneori câștigă cel care se blochează singur, pentru că nu mai are nicio mutare.</p>
           </div>
 
-          <div class="hl-box">
-            <h4>Cum muți pe tablă</h4>
-            <p>Poți <strong>trage piesa</strong> cu mouse-ul sau cu degetul. Poți și să <strong>dai click</strong> pe piesă, apoi pe pătratul unde vrei să ajungă. După ce alegi o piesă, pe tablă apar pătratele unde are voie să meargă.</p>
-            <p>Când pionul ajunge pe ultima linie, apare o fereastră în care alegi piesa.</p>
-            <p>Butoane: <strong>Retrage</strong> anulează ultima mutare (contra calculatorului, ultimele două: a ta și a calculatorului). <strong>Nou</strong> începe o partidă nouă cu aceleași setări. <strong>Abandonez</strong> încheie partida, pe care o pierde cel care abandonează. <strong>Configurare</strong> te întoarce la alegerea setărilor.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>Contra calculatorului</h4>
-            <p>Alegi cât de puternic joacă adversarul: <strong>Pui de găină</strong> (mută la întâmplare, dar respectă regulile), <strong>Mânz</strong> (se uită puțin înainte) sau <strong>Dragon</strong> (cel mai puternic).</p>
-            <p>Alegi culoarea: <strong>Albe</strong>, <strong>Negre</strong> sau <strong>Aleator</strong>. Piesele tale stau mereu jos. Dacă joci cu negrele, calculatorul face prima mutare.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>Ceasul</h4>
-            <p>Poți juca <strong>fără timp</strong> sau cu <strong>1, 2 ori 5 minute</strong> pentru fiecare jucător. Ceasul scade doar pentru cel care este la mutare. Când mai sunt 15 secunde, caseta ceasului se face roșie. Cui i se termină timpul pierde partida.</p>
-          </div>
-
-          <div class="hl-box ok">
-            <h4>În doi</h4>
-            <p>Doi jucători mută pe rând pe aceeași tablă. <strong>Jucătorul 1</strong> are albele (jos) și mută primul, <strong>Jucătorul 2</strong> are negrele (sus). Calculatorul nu joacă, iar alegerea nivelului și a culorii nu mai apare.</p>
-            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar <strong>se numără</strong>. Se numără și o mutare fără captură făcută când aveai o captură, precum și încercarea de a muta o piesă a adversarului. Dacă pui piesa înapoi pe pătratul ei, nu se numără.</p>
-            <p>Încercările se văd sub ceasul fiecărui jucător: ❌ pentru o încercare folosită, ▫️ pentru una rămasă. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător. Contra calculatorului, încercările nepermise nu se numără: primești doar mesajul.</p>
-          </div>
         </details>
       </div>
       <div class="feedback-bar" id="feedbackBar"></div>
@@ -289,7 +265,7 @@
 <script src="board-utils.js"></script>
 <script>
 /* ENGINE-START
-   Șahul pierzătorului (antichess): generator de mutări propriu și căutarea calculatorului.
+   Șahul pierzătorului (antichess): generator de mutări propriu și căutarea Robotului.
    Pătrate: 0 = a1 … 63 = h8 (rând*8 + coloană). Piese: 1 pion, 2 cal, 3 nebun, 4 turn, 5 damă, 6 rege; albe > 0, negre < 0.
    Mutare = from | to<<6 | promo<<12 | flags<<15 ; flags: 1 pas dublu, 2 en passant, 4 captură.
    Fără șah, fără rocadă; captura e obligatorie; cine rămâne fără piese sau fără mutări câștigă. */
@@ -652,7 +628,7 @@ function startClock() {
         updateClocks();
         if (clock[c] <= 0) {
             var o = c === 'w' ? 'b' : 'w';
-            finish(o, mode === 'duo' ? 'Timpul lui ' + pname(c) + ' a expirat.' : (c === playerColor ? 'Timpul tău a expirat.' : 'Timpul calculatorului a expirat.'));
+            finish(o, mode === 'duo' ? 'Timpul lui ' + pname(c) + ' a expirat.' : (c === playerColor ? 'Timpul tău a expirat.' : 'Timpul Robotului a expirat.'));
         }
     }, 1000);
 }
@@ -857,10 +833,10 @@ function onDrop(source, target) {
     if (!tryMove(source, target)) return 'snapback';
 }
 
-/* ====== CALCULATORUL ====== */
+/* ====== ROBOTUL ====== */
 function askComputer() {
     if (gameOver || mode !== 'robot' || turnC() === playerColor) return;
-    setStatus('&#129302; Calculatorul se gândește...', 'thinking');
+    setStatus('&#129302; Robotul se gândește...', 'thinking');
     aiTimer = setTimeout(function() {
         var t0 = Date.now();
         var r = AC.best(pos, level, 900, keys);
@@ -879,7 +855,7 @@ function finish(winnerC, reason) {
     playSound(sndMate);
     if (mode === 'duo') { setStatus(reason + '<br>&#127942; <strong>' + pname(winnerC) + ' (' + sideName(winnerC) + ') câștigă.</strong>', 'success'); return; }
     var you = winnerC === playerColor;
-    setStatus(reason + '<br>' + (you ? 'Ai câștigat! &#127942;' : 'Calculatorul a câștigat. &#129302;'), you ? 'success' : 'danger');
+    setStatus(reason + '<br>' + (you ? 'Ai câștigat! &#127942;' : 'Robotul a câștigat. &#129302;'), you ? 'success' : 'danger');
 }
 function drawGame(reason) {
     gameOver = true; stopClock(); updateClocks(); clearHL();
@@ -888,7 +864,7 @@ function drawGame(reason) {
 }
 function whoText(c) {
     if (mode === 'duo') return pname(c) + ' (' + sideName(c) + ')';
-    return c === playerColor ? 'Tu' : 'Calculatorul';
+    return c === playerColor ? 'Tu' : 'Robotul';
 }
 function checkGameOver() {
     var o = AC.outcome(pos), c = turnC();
@@ -941,7 +917,7 @@ function undoMove() {
         if (gameOver) return;
         undoOne();
     } else {
-        if (aiTimer) return;                                   // calculatorul se gândește
+        if (aiTimer) return;                                   // Robotul se gândește
         var wasOver = gameOver;
         if (!gameOver && turnC() !== playerColor) return;
         gameOver = false;
@@ -962,7 +938,7 @@ function resignGame() {
         setStatus(pname(c) + ' a abandonat. &#9873;<br>&#127942; ' + pname(o) + ' câștigă.', 'success');
         return;
     }
-    setStatus('Ai abandonat. &#9873; Calculatorul câștigă.', 'danger');
+    setStatus('Ai abandonat. &#9873; Robotul câștigă.', 'danger');
 }
 </script>
 </body>

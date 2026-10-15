@@ -39,7 +39,7 @@
   .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
   .howto .hl-box p { margin:0 0 6px; }
   .howto .hl-box p:last-child { margin-bottom:0; }
-  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
   /* TOGGLES */
   .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
@@ -136,7 +136,7 @@
 
 
         <div class="toggle-row">
-          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
           <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
@@ -169,7 +169,7 @@
         </div>
         <div class="player-panel" id="pp2">
           <div class="pp-row">
-            <span class="pp-name" id="pp2-name">🤖 Calculatorul</span>
+            <span class="pp-name" id="pp2-name">🤖 Robotul</span>
             <span class="pp-role" id="pp2-role"></span>
             <span class="pp-strikes" id="pp2-strikes"></span>
           </div>
@@ -219,7 +219,6 @@
           <div class="hl-box">
             <h4>Reprizele</h4>
             <p>Jocul are două reprize. După prima repriză <strong>se schimbă rolurile</strong>: cine a jucat cu dama și turnul joacă acum cu nebunul.</p>
-            <p id="ruleDuo" style="display:none">În doi: dacă încerci o mutare care nu este permisă, ea nu se face, dar se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
           </div>
 
           <div class="hl-box ok">
@@ -337,7 +336,7 @@ let PERFECT = 6;
 const whitePlayer  = r => r === 1 ? 1 : 2;
 const blackPlayer  = r => r === 1 ? 2 : 1;
 const playerOnMove = () => turn === 'w' ? whitePlayer(round) : blackPlayer(round);
-const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Calculatorul');
+const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Robotul');
 const pieceName = t => t === 'Q' ? 'Dama' : t === 'R' ? 'Turnul' : 'Nebunul';
 
 /* ---------- valori din tabele ---------- */
@@ -437,7 +436,7 @@ function resultLine(p) {
     return parts.join(' · ');
 }
 
-/* stele (doar contra calculatorului) */
+/* stele (doar contra Robotului) */
 function starsWhite(res) {
     if (!res.white) return 0;
     return res.moves <= PERFECT ? 3 : res.moves <= PERFECT + 4 ? 2 : 1;
@@ -494,7 +493,7 @@ function promptTurn() {
     let what = turn === 'w' ? 'cu albul (dama sau turnul)' : 'cu nebunul';
     if (turn === 'w' && lastChance) what = 'ultima mutare a albului: poate ' + pieceName(W[0].t).toLowerCase() + ' să captureze nebunul?';
     if (mode === 'robot' && p === 2) {
-        setStatus('🤖 Calculatorul mută ' + (turn === 'w' ? 'cu albul' : 'cu nebunul') + '…');
+        setStatus('🤖 Robotul mută ' + (turn === 'w' ? 'cu albul' : 'cu nebunul') + '…');
         aiTimer = setTimeout(aiMove, 600);
     } else {
         setStatus((mode === 'duo' ? pname(p) + ' mută ' : 'Muți ') + what + '.', lastChance ? 'warn' : '');
@@ -659,7 +658,6 @@ function setMode(m) {
     document.getElementById('modeRobot').className = 'tgl-btn' + (m === 'robot' ? ' active' : '');
     document.getElementById('modeDuo').className   = 'tgl-btn' + (m === 'duo' ? ' active' : '');
     document.getElementById('levelBox').style.display = m === 'robot' ? '' : 'none';
-    document.getElementById('ruleDuo').style.display  = m === 'duo' ? '' : 'none';
     newMatch();
 }
 function setVariant(extra) {

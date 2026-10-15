@@ -145,7 +145,7 @@
     .howto .hl-box p { margin:0 0 6px; }
     .howto .hl-box p:last-child { margin-bottom:0; }
     .howto .hl-box ul { margin:0 0 6px; padding-left:18px; }
-    .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+    .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
@@ -170,7 +170,7 @@
         <!-- ══════════ SETUP ══════════ -->
         <div id="setup-section">
           <div class="toggle-row">
-            <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+            <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
             <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
           </div>
 
@@ -271,12 +271,6 @@
           </div>
 
           <div class="hl-box">
-            <h4>Cum muți piesele</h4>
-            <p>Poți trage piesa cu mouse-ul (sau cu degetul) pe pătratul dorit. Poți și să dai click pe piesă și apoi click pe pătratul unde vrei să meargă.</p>
-            <p>Când alegi o piesă, pătratele unde poate merge se colorează.</p>
-          </div>
-
-          <div class="hl-box">
             <h4>Cum merg purceii</h4>
             <p>Un purcel merge <strong>numai înainte</strong>, spre hambar, câte un pătrat. Nu merge înapoi și nici în lateral.</p>
             <p>Din poziția de start, de pe linia a doua, un purcel poate merge și <strong>două pătrate deodată</strong>, dacă amândouă sunt libere.</p>
@@ -337,8 +331,8 @@
 
           <div class="hl-box">
             <h4>Reprizele</h4>
-            <p>Jocul are <strong>două reprize</strong>. În Repriza 1 muți purceii, iar calculatorul mută echipa lui McDonald.</p>
-            <p>În Repriza 2 <strong>se schimbă rolurile</strong>: muți echipa lui McDonald, iar calculatorul mută purceii și începe el. Tabla se întoarce, ca piesele tale să fie în partea de jos.</p>
+            <p>Jocul are <strong>două reprize</strong>. În Repriza 1 muți purceii, iar Robotul mută echipa lui McDonald.</p>
+            <p>În Repriza 2 <strong>se schimbă rolurile</strong>: muți echipa lui McDonald, iar Robotul mută purceii și începe el. Tabla se întoarce, ca piesele tale să fie în partea de jos.</p>
             <p>Ajutoarele și timpul rămân aceleași în ambele reprize.</p>
           </div>
 
@@ -346,25 +340,9 @@
             <h4>Cine câștigă?</h4>
             <p>Fiecare jucător primește punctele din repriza în care a jucat cu purceii: câți purcei a dus la hambar.</p>
             <p><strong>Câștigă cine are mai multe puncte.</strong> Dacă punctele sunt egale, jocul se termină la egalitate.</p>
-            <p>Excepție: <strong>cine apasă „Renunț" sau rămâne fără timp pierde jocul</strong>, oricâte puncte ar avea. Contra calculatorului, dacă îi expiră timpul calculatorului, câștigi tu.</p>
+            <p>Excepție: <strong>cine apasă „Renunț" sau rămâne fără timp pierde jocul</strong>, oricâte puncte ar avea. Contra Robotului, dacă îi expiră timpul Robotului, câștigi tu.</p>
           </div>
 
-          <div class="hl-box">
-            <h4>Nivelurile (contra calculatorului)</h4>
-            <p><strong>Pui de găină</strong>: calculatorul mută la întâmplare, fără să se gândească.</p>
-            <p><strong>Mânz</strong>: calculatorul se gândește 4 mutări înainte, numărând și mutările tale.</p>
-            <p><strong>Dragon</strong>: calculatorul se gândește cam o secundă la fiecare mutare și în acest timp privește cât mai multe mutări înainte, de obicei mult mai departe decât Mânzul. Este cel mai greu de învins.</p>
-            <p>Cu purceii, calculatorul încearcă să îi ducă la hambar. Cu McDonald, încearcă să îi prindă.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>În doi</h4>
-            <p>Doi copii joacă pe aceeași tablă, pe rând, fără calculator. Nivelurile nu se mai aleg.</p>
-            <p>În Repriza 1, <strong>Jucătorul 1</strong> mută purceii și <strong>Jucătorul 2</strong> mută echipa lui McDonald. În Repriza 2 rolurile se schimbă. Câștigă cine a dus mai mulți purcei la hambar.</p>
-            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar <strong>se numără</strong> pentru jucătorul care este la mutare. Se numără și dacă încerci să muți o piesă a adversarului. Dacă pui piesa înapoi pe pătratul ei, nu se numără.</p>
-            <p>Încercările se adună pe tot jocul, în ambele reprize. La <strong>3 încercări nepermise</strong>, jocul se oprește și câștigă celălalt jucător.</p>
-            <p>În doi, „Renunț" se socotește pentru jucătorul care este la mutare în acel moment.</p>
-          </div>
         </details>
 
       </div>
@@ -726,7 +704,7 @@ function initBoard(orientation){
     window.board=cbBoard;   // board-utils.js citește orientarea din `board` (adnotări pe tabla întoarsă)
 }
 
-/* contor de joc: un timer al calculatorului pornit într-un joc vechi nu mai mută */
+/* contor de joc: un timer al Robotului pornit într-un joc vechi nu mai mută */
 function scheduleAI(ms){
     var g=G.gen;
     setTimeout(function(){ if(g===G.gen) aiMove(); },ms);
@@ -842,7 +820,7 @@ function afterMove(){
     }
 
     if(!allMoves(G.board,G.turn).length){
-        // partea la mutare nu mai are nicio mutare: repriza se termină (în doi și contra calculatorului)
+        // partea la mutare nu mai are nicio mutare: repriza se termină (în doi și contra Robotului)
         endRound('nomoves'); return;
     }
 
@@ -1049,12 +1027,12 @@ function showFinal(reason){
 }
 
 /* „Renunț" sau timp expirat: cine renunță / rămâne fără timp pierde jocul imediat.
-   Contra calculatorului „Renunț" e al omului; în doi e al jucătorului la mutare. */
+   Contra Robotului „Renunț" e al omului; în doi e al jucătorului la mutare. */
 function forfeit(kind){
     if(G.over) return;
     var loserColor=(kind==='timeout'||G.mode==='duo')?G.turn:G.humanColor;
     G.over=true; G.thinking=false; stopClock(); clearSel();
-    G.gen=(G.gen||0)+1;                          // o mutare programată a calculatorului nu mai rulează
+    G.gen=(G.gen||0)+1;                          // o mutare programată a Robotului nu mai rulează
     var why,win,won;
     if(G.mode==='duo'){
         var lp=playerOf(loserColor), wp=(lp===1?2:1);
@@ -1062,8 +1040,8 @@ function forfeit(kind){
         win='&#127942; Jucătorul '+wp+' câștigă jocul.'; won=true;
     } else {
         var humanLost=(loserColor===G.humanColor);
-        why=kind==='timeout'?(humanLost?'Ți-a expirat timpul':'Calculatorului i-a expirat timpul'):'Ai renunțat';
-        win=humanLost?'&#129302; Calculatorul câștigă jocul.':'&#127942; Ai câștigat jocul.'; won=!humanLost;
+        why=kind==='timeout'?(humanLost?'Ți-a expirat timpul':'Robotului i-a expirat timpul'):'Ai renunțat';
+        win=humanLost?'&#129302; Robotul câștigă jocul.':'&#127942; Ai câștigat jocul.'; won=!humanLost;
     }
     document.getElementById('game-section').style.display='none';
     document.getElementById('result-section').style.display='block';

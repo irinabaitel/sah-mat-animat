@@ -41,7 +41,7 @@
   .howto .hl-box p:last-child { margin-bottom:0; }
   .howto .hl-box ul, .howto .hl-box ol { margin:0 0 6px; padding-left:20px; }
   .howto .hl-box li { margin-bottom:3px; }
-  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
   /* TOGGLES */
   .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
@@ -138,7 +138,7 @@
       <div class="panel-scroll">
 
         <div class="toggle-row">
-          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
           <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
@@ -172,7 +172,7 @@
         </div>
         <div class="player-panel" id="pp2">
           <div class="pp-row">
-            <span class="pp-name" id="pp2-name">🤖 Calculatorul</span>
+            <span class="pp-name" id="pp2-name">🤖 Robotul</span>
             <span class="pp-role" id="pp2-role"></span>
             <span class="pp-strikes" id="pp2-strikes"></span>
           </div>
@@ -258,17 +258,6 @@
             <p>Meciul are două reprize. În a doua repriză <strong>se schimbă culorile</strong>: cine a jucat cu albul joacă acum cu negrul.</p>
             <p>La „Material inegal” schimbul de culori este foarte important: fiecare jucător încearcă ambele părți, o dată cu dama, o dată cu turnul, calul și nebunul.</p>
             <p>Câștigă meciul cine a câștigat mai multe reprize. Dacă fiecare a câștigat câte o repriză, se adună materialul rămas al fiecăruia din ambele reprize și câștigă cine are mai mult. Altfel meciul se termină la egalitate.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>Nivelurile</h4>
-            <p><strong>Pui de găină</strong> mută de cele mai multe ori la întâmplare. <strong>Mânz</strong> se gândește la majoritatea mutărilor. <strong>Dragon</strong> se gândește la fiecare mutare: nu lasă piese neapărate și profită de greșelile tale.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>Jocul în doi</h4>
-            <p>Doi jucători joacă pe același ecran, pe rând. Nivelurile nu se mai văd.</p>
-            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar se numără. Se numără și încercarea de a muta o piesă a adversarului. Dacă pui piesa înapoi pe locul ei, nu se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
           </div>
 
           <div class="hl-box ok">
@@ -604,7 +593,7 @@ let results = {}, strikes = {1:0, 2:0};
 const whitePlayer  = r => r === 1 ? 1 : 2;
 const sidePlayer   = (side, r) => side === 1 ? whitePlayer(r) : 3 - whitePlayer(r);
 const playerOnMove = () => sidePlayer(G.turn, round);
-const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Calculatorul');
+const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Robotul');
 const colorName = side => side === 1 ? 'albul' : 'negrul';
 const PIECE_NAMES = ['', 'Pionul', 'Calul', 'Nebunul', 'Turnul', 'Dama'];
 
@@ -684,7 +673,7 @@ function promptTurn(note) {
     const p = playerOnMove();
     const pre = note ? note + '<br>' : '';
     if (mode === 'robot' && p === 2) {
-        setStatus(pre + '🤖 Calculatorul mută cu ' + colorName(G.turn) + '…');
+        setStatus(pre + '🤖 Robotul mută cu ' + colorName(G.turn) + '…');
         aiTimer = setTimeout(aiMove, 350);
     } else {
         setStatus(pre + (mode === 'duo' ? pname(p) + ' mută cu ' : 'Muți cu ') + colorName(G.turn) + '.');
@@ -721,7 +710,7 @@ function endRound(note) {
         msg += G.how === 'limit' ? '⏱️ S-au jucat câte 40 de mutări.' : '⛔ Niciun jucător nu mai poate muta.';
         msg += ' Material: albul ' + matW + ', negrul ' + matB + '.';
     }
-    if (G.winner) msg += ' <strong>Repriza ' + round + ' este câștigată de ' + (you ? 'tine' : mode === 'robot' ? 'calculator' : pname(wp)) + '.</strong>';
+    if (G.winner) msg += ' <strong>Repriza ' + round + ' este câștigată de ' + (you ? 'tine' : mode === 'robot' ? 'Robot' : pname(wp)) + '.</strong>';
     else msg += ' <strong>Repriza ' + round + ' se termină la egalitate.</strong>';
 
     if (round === 1) {

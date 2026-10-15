@@ -103,7 +103,7 @@
     .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
     .howto .hl-box p { margin:0 0 6px; }
     .howto .hl-box p:last-child { margin-bottom:0; }
-    .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+    .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
     .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
     .tgl-btn { flex:1; padding:6px 10px; border-radius:50px; border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.5); font-family:var(--font-display); font-size:0.82em; color:var(--c-navy); cursor:pointer; transition:all 0.2s; white-space:nowrap; }
@@ -149,7 +149,7 @@
         <!-- SETUP -->
         <div id="setupPanel">
           <div class="toggle-row">
-            <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+            <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
             <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
           </div>
           <div id="levelBox">
@@ -240,29 +240,6 @@
             <p><strong>Uită-te mereu la regele tău.</strong> Înainte de fiecare mutare întreabă-te: sunt în șah? Altfel poți pierde dintr-o dată cu 2-0.</p>
           </div>
 
-          <div class="hl-box">
-            <h4>Cum muți pe tablă</h4>
-            <p>Poți <strong>trage piesa</strong> cu mouse-ul sau cu degetul. Poți și să <strong>dai click</strong> pe piesă, apoi pe pătratul unde vrei să ajungă. După ce alegi o piesă, pe tablă apar pătratele unde are voie să meargă.</p>
-            <p>Butoane: <strong>Retrage</strong> anulează ultima mutare (contra calculatorului, ultimele două: a ta și a calculatorului). <strong>Nou</strong> începe o partidă nouă cu aceleași setări. <strong>Abandonez</strong> încheie partida, pe care o pierde cel care abandonează. <strong>Configurare</strong> te întoarce la alegerea setărilor.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>Contra calculatorului</h4>
-            <p>Alegi cât de puternic joacă adversarul: <strong>Pui de găină</strong> (mută la întâmplare și nu observă mereu șahurile), <strong>Mânz</strong> (se uită puțin înainte) sau <strong>Dragon</strong> (cel mai puternic).</p>
-            <p>Alegi culoarea: <strong>Albe</strong>, <strong>Negre</strong> sau <strong>Aleator</strong>. Piesele tale stau mereu jos. Dacă joci cu negrele, calculatorul face prima mutare.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>Ceasul</h4>
-            <p>Poți juca <strong>fără timp</strong> sau cu <strong>1, 2 ori 5 minute</strong> pentru fiecare jucător. Ceasul scade doar pentru cel care este la mutare. Când mai sunt 15 secunde, caseta ceasului se face roșie. Cui i se termină timpul pierde partida.</p>
-          </div>
-
-          <div class="hl-box ok">
-            <h4>În doi</h4>
-            <p>Doi jucători mută pe rând pe aceeași tablă. <strong>Jucătorul 1</strong> are albele (jos) și mută primul, <strong>Jucătorul 2</strong> are negrele (sus). Calculatorul nu joacă, iar alegerea nivelului și a culorii nu mai apare.</p>
-            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar <strong>se numără</strong>. Se numără și încercarea de a muta o piesă a adversarului. Dacă pui piesa înapoi pe pătratul ei, nu se numără. A muta altceva când ești în șah <strong>nu</strong> este o mutare nepermisă în acest joc.</p>
-            <p>Încercările se văd sub ceasul fiecărui jucător: ❌ pentru o încercare folosită, ▫️ pentru una rămasă. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător. Contra calculatorului, încercările nepermise nu se numără: primești doar mesajul.</p>
-          </div>
         </details>
       </div>
       <div class="feedback-bar" id="feedbackBar"></div>
@@ -284,7 +261,7 @@
 <script src="board-utils.js"></script>
 <script>
 /* ENGINE-START
-   Trei șahuri: generator de mutări propriu și căutarea calculatorului.
+   Trei șahuri: generator de mutări propriu și căutarea Robotului.
    Pătrate: 0 = a1 … 63 = h8 (rând*8 + coloană). Piese: 1 pion, 2 cal, 3 nebun, 4 turn, 5 damă, 6 rege; albe > 0, negre < 0.
    Mutare = from | to<<6 | promo<<12 | flags<<15 ; flags: 1 pas dublu, 2 en passant, 4 captură, 8 rocadă.
    Regulile șahului, plus: cel aflat în șah poate muta altă piesă (nu regele pe pătrat atacat, nu rocadă);
@@ -799,7 +776,7 @@ function startClock() {
         clock[c]--;
         updateClocks();
         if (clock[c] <= 0) {
-            finish(other(c), mode === 'duo' ? 'Timpul lui ' + pname(c) + ' a expirat.' : (c === playerColor ? 'Timpul tău a expirat.' : 'Timpul calculatorului a expirat.'), '1-0');
+            finish(other(c), mode === 'duo' ? 'Timpul lui ' + pname(c) + ' a expirat.' : (c === playerColor ? 'Timpul tău a expirat.' : 'Timpul Robotului a expirat.'), '1-0');
         }
     }, 1000);
 }
@@ -1019,10 +996,10 @@ function onDrop(source, target) {
     if (!tryMove(source, target)) return 'snapback';
 }
 
-/* ====== CALCULATORUL ====== */
+/* ====== ROBOTUL ====== */
 function askComputer() {
     if (gameOver || mode !== 'robot' || turnC() === playerColor) return;
-    setStatus('&#129302; Calculatorul se gândește...', 'thinking');
+    setStatus('&#129302; Robotul se gândește...', 'thinking');
     aiTimer = setTimeout(function() {
         var t0 = Date.now();
         var r = T3.best(pos, level, 1000, keys);
@@ -1047,14 +1024,14 @@ function finish(winnerC, reason, score, noSound) {
     }
     var you = winnerC === playerColor;
     if (you) spawnConfetti(3500);
-    setStatus(reason + '<br>' + (you ? '<strong>Ai câștigat' + sc + '!</strong> &#127942;' : 'Calculatorul a câștigat' + sc + '. &#129302;'), you ? 'success' : 'danger');
+    setStatus(reason + '<br>' + (you ? '<strong>Ai câștigat' + sc + '!</strong> &#127942;' : 'Robotul a câștigat' + sc + '. &#129302;'), you ? 'success' : 'danger');
 }
 function kingCaptured(winnerC, sq) {
     playKingCaptured();
     var w = document.getElementById('boardWrapper');
     w.classList.remove('board-shake'); void w.offsetWidth; w.classList.add('board-shake');
     var loser = other(winnerC), txt;
-    if (mode === 'robot') txt = winnerC === playerColor ? '&#128165; Ai capturat regele calculatorului pe ' + sq + '!' : '&#128165; Calculatorul ți-a capturat regele pe ' + sq + '. Erai în șah și n-ai observat.';
+    if (mode === 'robot') txt = winnerC === playerColor ? '&#128165; Ai capturat regele Robotului pe ' + sq + '!' : '&#128165; Robotul ți-a capturat regele pe ' + sq + '. Erai în șah și n-ai observat.';
     else txt = '&#128165; ' + pname(loser) + ' n-a observat șahul: regele de pe ' + sq + ' a fost capturat!';
     finish(winnerC, txt, '2-0', true);
 }
@@ -1065,12 +1042,12 @@ function drawGame(reason) {
 }
 function whoText(c) {
     if (mode === 'duo') return pname(c) + ' (' + sideName(c) + ')';
-    return c === playerColor ? 'Tu' : 'Calculatorul';
+    return c === playerColor ? 'Tu' : 'Robotul';
 }
 function checkGameOver() {
     var l = legalList(), c = turnC(), o = other(c);
     if (l.inCheck && !l.escapes) {
-        finish(o, mode === 'robot' && c === playerColor ? 'Mat! Regele tău nu mai are scăpare.' : 'Mat! ' + (mode === 'robot' ? 'Regele calculatorului' : 'Regele lui ' + pname(c)) + ' nu mai are scăpare.', '3-0');
+        finish(o, mode === 'robot' && c === playerColor ? 'Mat! Regele tău nu mai are scăpare.' : 'Mat! ' + (mode === 'robot' ? 'Regele Robotului' : 'Regele lui ' + pname(c)) + ' nu mai are scăpare.', '3-0');
         return true;
     }
     if (!l.length) { drawGame('pat, ' + (mode === 'robot' && c === playerColor ? 'nu ai' : whoText(c) + ' nu are') + ' nicio mutare.'); return true; }
@@ -1115,7 +1092,7 @@ function undoMove() {
         if (gameOver) return;
         undoOne();
     } else {
-        if (aiTimer) return;                                   // calculatorul se gândește
+        if (aiTimer) return;                                   // Robotul se gândește
         var wasOver = gameOver;
         if (!gameOver && turnC() !== playerColor) return;
         gameOver = false;
@@ -1137,7 +1114,7 @@ function resignGame() {
         setStatus(pname(c) + ' a abandonat. &#9873;<br>&#127942; ' + pname(o) + ' câștigă cu 1-0.', 'success');
         return;
     }
-    setStatus('Ai abandonat. &#9873; Calculatorul câștigă cu 1-0.', 'danger');
+    setStatus('Ai abandonat. &#9873; Robotul câștigă cu 1-0.', 'danger');
 }
 
 /* ====== CONFETTI ====== */

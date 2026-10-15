@@ -41,7 +41,7 @@
   .howto .hl-box p { margin:0 0 6px; }
   .howto .hl-box p:last-child { margin-bottom:0; }
   .howto .hl-box ul { margin:0 0 6px; padding-left:20px; }
-  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
   /* TOGGLES */
   .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
@@ -137,7 +137,7 @@
       <div class="panel-scroll">
 
         <div class="toggle-row">
-          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
           <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
@@ -172,7 +172,7 @@
         </div>
         <div class="player-panel" id="pp2">
           <div class="pp-row">
-            <span class="pp-name" id="pp2-name">🤖 Calculatorul</span>
+            <span class="pp-name" id="pp2-name">🤖 Robotul</span>
             <span class="pp-role" id="pp2-role"></span>
             <span class="pp-strikes" id="pp2-strikes"></span>
           </div>
@@ -253,8 +253,6 @@
           <div class="hl-box">
             <h4>Reprizele</h4>
             <p>Jocul are două reprize. În prima repriză tu (sau Jucătorul 1) joci cu pionii, în a doua <strong>se schimbă rolurile</strong> și joci cu piesa. Câștigă meciul cine a câștigat mai multe reprize. La 1–1 este egalitate.</p>
-            <p><strong>Adversarii:</strong> puiul de găină mută de cele mai multe ori la întâmplare. Mânzul joacă de obicei bine, dar mai greșește. Dragonul se gândește la fiecare mutare cât de bine poate.</p>
-            <p id="ruleDuo" style="display:none">În doi: dacă încerci o mutare care nu este permisă, ea nu se face, dar se numără. Se numără și încercarea de a muta o piesă a adversarului. Dacă pui piesa înapoi pe locul ei, nu se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
           </div>
 
           <div class="hl-box">
@@ -580,7 +578,7 @@ const pawnsPlayer  = r => r === 1 ? 1 : 2;
 const piecePlayer  = r => r === 1 ? 2 : 1;
 const playerOnMove = () => turnSide === 0 ? pawnsPlayer(round) : piecePlayer(round);
 const turnColor    = () => turnSide === 0 ? V.pawnColor : V.pieceColor;
-const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Calculatorul');
+const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Robotul');
 
 function legalMovesAll() {
     loadState(P, X, turnSide);
@@ -681,7 +679,7 @@ function promptTurn() {
     } else msg = '';
     if (passNote) { msg = passNote + (msg ? '<br>' + msg : ''); passNote = ''; }
     if (mode === 'robot' && p === 2) {
-        setStatus((msg ? msg + '<br>' : '') + '🤖 Calculatorul mută ' + what + '…', cls);
+        setStatus((msg ? msg + '<br>' : '') + '🤖 Robotul mută ' + what + '…', cls);
         aiTimer = setTimeout(aiMove, 500);
     } else {
         setStatus((msg ? msg + '<br>' : '') + (mode === 'duo' ? pname(p) + ' mută ' : 'Muți ') + what + '.', cls);
@@ -737,7 +735,7 @@ function endRound(winnerSide, how) {
     else if (how === 'captureAll') msg = PIECE_ICON[V.type] + ' ' + pc + ' a capturat toți pionii. Câștigă piesa.';
     else msg = PIECE_ICON[V.type] + ' Pionii sunt la mutare, dar nu mai au nicio mutare. Câștigă piesa.';
     const you = mode === 'robot' && winner === 1;
-    msg += '<br>' + (mode === 'robot' ? (you ? '🎉 Ai câștigat repriza ' + round + '.' : 'Calculatorul a câștigat repriza ' + round + '.') : '🏅 ' + pname(winner) + ' câștigă repriza ' + round + '.');
+    msg += '<br>' + (mode === 'robot' ? (you ? '🎉 Ai câștigat repriza ' + round + '.' : 'Robotul a câștigat repriza ' + round + '.') : '🏅 ' + pname(winner) + ' câștigă repriza ' + round + '.');
     if (round === 1) {
         setStatus(msg, winner === 1 || mode === 'duo' ? 'ok' : 'draw');
         document.getElementById('btn-round2').style.display = 'block';
@@ -754,7 +752,7 @@ function matchSummary() {
     const win = w[1] > w[2] ? 1 : 2;
     document.getElementById('pp' + win).className = 'player-panel winner';
     const score = Math.max(w[1], w[2]) + '–' + Math.min(w[1], w[2]);
-    if (mode === 'robot') return win === 1 ? '🏆 <strong>Ai câștigat meciul, ' + score + '.</strong>' : '<strong>Calculatorul câștigă meciul, ' + score + '.</strong> Mai încearcă.';
+    if (mode === 'robot') return win === 1 ? '🏆 <strong>Ai câștigat meciul, ' + score + '.</strong>' : '<strong>Robotul câștigă meciul, ' + score + '.</strong> Mai încearcă.';
     return '🏆 <strong>' + pname(win) + ' câștigă meciul, ' + score + '.</strong>';
 }
 
@@ -818,7 +816,6 @@ function setMode(m) {
     document.getElementById('modeRobot').className = 'tgl-btn' + (m === 'robot' ? ' active' : '');
     document.getElementById('modeDuo').className   = 'tgl-btn' + (m === 'duo' ? ' active' : '');
     document.getElementById('levelBox').style.display = m === 'robot' ? '' : 'none';
-    document.getElementById('ruleDuo').style.display  = m === 'duo' ? '' : 'none';
     newMatch();
 }
 function setVariant(v) {

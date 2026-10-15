@@ -39,7 +39,7 @@
   .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
   .howto .hl-box p { margin:0 0 6px; }
   .howto .hl-box p:last-child { margin-bottom:0; }
-  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
   /* TOGGLES */
   .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
@@ -155,7 +155,7 @@
       <div class="panel-scroll">
 
         <div class="toggle-row">
-          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
           <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
@@ -184,7 +184,7 @@
         </div>
         <div class="player-panel" id="pp2">
           <div class="pp-row">
-            <span class="pp-name" id="pp2-name">🤖 Calculatorul</span>
+            <span class="pp-name" id="pp2-name">🤖 Robotul</span>
             <span class="pp-role" id="pp2-role"></span>
             <span class="pp-strikes" id="pp2-strikes"></span>
           </div>
@@ -247,16 +247,15 @@
 
           <div class="hl-box" id="ruleStars">
             <h4>Stelele</h4>
-            <p>Contra calculatorului joci mereu cu albul. La mat primești stele după câte mutări ai folosit:</p>
+            <p>Contra Robotului joci mereu cu albul. La mat primești stele după câte mutări ai folosit:</p>
             <p>⭐⭐⭐ mat în cel mult <strong id="st3">20</strong> de mutări · ⭐⭐ în cel mult <strong id="st2">35</strong> · ⭐ în cel mult 50.</p>
-            <p>Pat sau 50 de mutări fără mat înseamnă 0 stele. Calculatorul poate fugi cu regele în trei feluri: Puiul de găină mută mai mult la întâmplare, Mânzul fuge bine, Dragonul fuge cât se poate de bine și caută patul.</p>
+            <p>Pat sau 50 de mutări fără mat înseamnă 0 stele.</p>
           </div>
 
           <div class="hl-box">
             <h4>Reprizele, în doi</h4>
             <p>În doi, jocul are două reprize. În repriza 1, Jucătorul 1 este vânătorul cu albul și Jucătorul 2 mută regele negru. În repriza 2 <strong>se schimbă rolurile</strong>.</p>
             <p>Câștigă meciul cine a dat mat <strong>mai repede</strong> (în mai puține mutări). Dacă doar unul a dat mat, el câștigă. Altfel este egalitate.</p>
-            <p>Dacă încerci o mutare care nu este permisă (sau muți o piesă a celuilalt), ea nu se face, dar se numără. Dacă pui piesa înapoi pe locul ei, nu se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
           </div>
 
           <div class="hl-box ok">
@@ -504,11 +503,11 @@ var round = 1, wMoves = 0, roundOver = false, matchOver = false;
 var selSq = null, aiTimer = null, pendingPromo = null, lastFrom = null, lastTo = null, lastInfo = null;
 var results = {}, strikes = {1:0, 2:0};
 
-/* repriza 1: jucătorul 1 = albul (vânătorul); repriza 2: jucătorul 1 = regele negru. Contra calculatorului: doar repriza 1. */
+/* repriza 1: jucătorul 1 = albul (vânătorul); repriza 2: jucătorul 1 = regele negru. Contra Robotului: doar repriza 1. */
 const whitePlayer  = r => r === 1 ? 1 : 2;
 const blackPlayer  = r => r === 1 ? 2 : 1;
 const playerOnMove = () => chess.turn() === 'w' ? whitePlayer(round) : blackPlayer(round);
-const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Calculatorul');
+const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Robotul');
 
 /* ---------- afișare ---------- */
 function showPos() { if (board) board.position(chess.fen(), false); }
@@ -608,7 +607,7 @@ function promptTurn() {
     const p = playerOnMove(), white = chess.turn() === 'w';
     const checkMsg = !white && chess.in_check() ? '<strong>Șah.</strong> Regele negru este atacat și trebuie să scape. ' : '';
     if (mode === 'robot' && p === 2) {
-        setStatus(checkMsg + '🤖 Calculatorul mută regele negru…', checkMsg ? 'warn' : '');
+        setStatus(checkMsg + '🤖 Robotul mută regele negru…', checkMsg ? 'warn' : '');
         aiTimer = setTimeout(aiMove, 450);
     } else if (mode === 'duo') {
         setStatus(checkMsg + pname(p) + ' mută ' + (white ? 'cu albul (vânătorul).' : 'regele negru.'), checkMsg ? 'warn' : '');
@@ -741,7 +740,7 @@ function doPromotion(piece) {
     if (mv) afterMove(mv); else showPos();
 }
 
-/* ---------- calculatorul mută regele negru ---------- */
+/* ---------- Robotul mută regele negru ---------- */
 function aiMove() {
     aiTimer = null;
     if (roundOver || matchOver || chess.turn() !== 'b') return;

@@ -39,7 +39,7 @@
   .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
   .howto .hl-box p { margin:0 0 6px; }
   .howto .hl-box p:last-child { margin-bottom:0; }
-  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
   /* TOGGLES */
   .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
@@ -134,7 +134,7 @@
       <div class="panel-scroll">
 
         <div class="toggle-row">
-          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
           <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
@@ -166,7 +166,7 @@
         </div>
         <div class="player-panel" id="pp2">
           <div class="pp-row">
-            <span class="pp-name" id="pp2-name">🤖 Calculatorul</span>
+            <span class="pp-name" id="pp2-name">🤖 Robotul</span>
             <span class="pp-role" id="pp2-role"></span>
             <span class="pp-strikes" id="pp2-strikes"></span>
           </div>
@@ -223,19 +223,8 @@
 
           <div class="hl-box">
             <h4>Reprizele</h4>
-            <p>Jocul are două reprize. În prima repriză, Jucătorul 1 (sau tu, contra calculatorului) are calul alb. În a doua repriză <strong>se schimbă culorile</strong>.</p>
+            <p>Jocul are două reprize. În prima repriză, Jucătorul 1 (sau tu, contra Robotului) are calul alb. În a doua repriză <strong>se schimbă culorile</strong>.</p>
             <p>Câștigă meciul cine a câștigat mai multe reprize. Dacă fiecare a câștigat câte una, câștigă cel care și-a terminat cursa <strong>din mai puține mutări</strong>. Dacă și numărul de mutări este același, meciul se termină la egalitate.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>Nivelurile calculatorului</h4>
-            <p><strong>Puiul de găină</strong> sare de cele mai multe ori la întâmplare. <strong>Mânzul</strong> alege de obicei o săritură bună, dar mai greșește. <strong>Dragonul</strong> își calculează drumul cel mai scurt prin toate piesele pe care le are de capturat.</p>
-          </div>
-
-          <div class="hl-box" id="ruleDuo" style="display:none">
-            <h4>În doi</h4>
-            <p>Doi copii mută pe rând, fiecare cu calul lui. O mutare care nu este permisă nu se face, dar se numără pentru cel care o încearcă. Tot încercare nepermisă este și când apuci altă piesă decât calul tău.</p>
-            <p>Dacă ai ridicat calul și îl pui înapoi pe pătratul lui, nu se numără. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
           </div>
 
           <div class="hl-box ok">
@@ -322,7 +311,7 @@ const whitePlayer  = r => r === 1 ? 1 : 2;
 const blackPlayer  = r => r === 1 ? 2 : 1;
 const playerOf     = (c, r) => c === 'w' ? whitePlayer(r) : blackPlayer(r);
 const playerOnMove = () => playerOf(turn, round);
-const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Calculatorul');
+const pname = p => mode === 'duo' ? 'Jucătorul ' + p : (p === 1 ? 'Tu' : 'Robotul');
 const knightName = c => c === 'w' ? 'calul alb' : 'calul negru';
 const other = c => c === 'w' ? 'b' : 'w';
 const knightSq = c => c === 'w' ? KW : KB;
@@ -482,7 +471,7 @@ function promptTurn(note) {
     const p = playerOnMove();
     const sq = name(knightSq(turn));
     if (mode === 'robot' && p === 2) {
-        setStatus(note + '🤖 Calculatorul mută ' + knightName(turn) + '…');
+        setStatus(note + '🤖 Robotul mută ' + knightName(turn) + '…');
         aiTimer = setTimeout(aiMove, 600);
     } else {
         setStatus(note + (mode === 'duo' ? pname(p) + ' mută ' : 'Muți ') + knightName(turn) + ' (acum pe ' + sq + ').');
@@ -621,7 +610,6 @@ function setMode(m) {
     document.getElementById('modeRobot').className = 'tgl-btn' + (m === 'robot' ? ' active' : '');
     document.getElementById('modeDuo').className   = 'tgl-btn' + (m === 'duo' ? ' active' : '');
     document.getElementById('levelBox').style.display = m === 'robot' ? '' : 'none';
-    document.getElementById('ruleDuo').style.display  = m === 'duo' ? '' : 'none';
     newMatch();
 }
 

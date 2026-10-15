@@ -39,7 +39,7 @@
   .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
   .howto .hl-box p { margin:0 0 6px; }
   .howto .hl-box p:last-child { margin-bottom:0; }
-  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+  .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
   /* TOGGLES */
   .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
@@ -159,7 +159,7 @@
       <div class="panel-scroll">
 
         <div class="toggle-row">
-          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
           <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
         </div>
 
@@ -202,7 +202,7 @@
           </div>
         </div>
 
-        <div id="status-box" class="white-turn">🤖 Calculatorul gândește…</div>
+        <div id="status-box" class="white-turn">🤖 Robotul gândește…</div>
         <div id="move-list"></div>
 
         <div class="sec-title">&#9203; Timp per juc&#259;tor:</div>
@@ -227,7 +227,7 @@
             <h4>Piesele și locul lor</h4>
             <p>Fiecare jucător are două piese: un <strong>turn</strong> și un <strong>nebun</strong>.</p>
             <p><strong>Albul</strong> are turnul pe a1 și nebunul pe b1, în colțul din stânga jos. <strong>Negrul</strong> are turnul pe h8 și nebunul pe g8, în colțul din dreapta sus. Aceste pătrate sunt <strong>pătratele de start</strong>, „acasă" pentru fiecare piesă.</p>
-            <p><strong>Contra calculatorului</strong>: tu joci cu negrul, calculatorul joacă cu albul. <strong>În doi</strong>: Jucătorul 1 joacă cu albul, Jucătorul 2 joacă cu negrul. Regulile sunt aceleași pentru toți.</p>
+            <p><strong>Contra Robotului</strong>: tu joci cu negrul, Robotul joacă cu albul. <strong>În doi</strong>: Jucătorul 1 joacă cu albul, Jucătorul 2 joacă cu negrul. Regulile sunt aceleași pentru toți.</p>
           </div>
 
           <div class="hl-box">
@@ -245,7 +245,7 @@
 
           <div class="hl-box warn">
             <h4>Toți merg în sensul acelor de ceasornic</h4>
-            <p>Acele unui ceas se rotesc de la 12 la 3, apoi la 6, la 9 și iar la 12. Pe tablă, cu albul jos, asta înseamnă: <strong>în sus pe partea stângă, spre dreapta pe partea de sus, în jos pe partea dreaptă, spre stânga pe partea de jos</strong>. Toate piesele, albe și negre, merg în acest sens atât contra calculatorului, cât și în doi.</p>
+            <p>Acele unui ceas se rotesc de la 12 la 3, apoi la 6, la 9 și iar la 12. Pe tablă, cu albul jos, asta înseamnă: <strong>în sus pe partea stângă, spre dreapta pe partea de sus, în jos pe partea dreaptă, spre stânga pe partea de jos</strong>. Toate piesele, albe și negre, merg în acest sens atât contra Robotului, cât și în doi.</p>
             <p>Jocul privește fiecare mutare din centrul tablei, ca și cum piesa ar fi vârful acului unui ceas. Dacă mutarea duce piesa înainte, în sensul acelor, ea este permisă. Dacă o duce înapoi, <strong>nu este permisă</strong>. Pătratele colorate când alegi o piesă sunt doar mutările permise.</p>
             <p><strong>Excepție: pasul mic spre centru.</strong> O mutare care merge doar foarte puțin înapoi, dar duce piesa mai aproape de centru, este permisă, pentru că piesa tot înaintează pe drumul ei. De exemplu, nebunul negru poate începe cu g8→f7, iar nebunul alb cu b1→c2. Un astfel de pas scade puțin din ocol (procentul poate scădea cu 1%).</p>
             <p><strong>Turnul alb</strong>: a1→a8 este permis (urcă pe partea stângă), dar a8→a1 nu este. Apoi a8→f8 (spre dreapta sus), f8→f1 (coboară pe partea dreaptă) și f1→a1 (spre stânga jos). Ultima mutare se poate face doar dacă b1 este liber, adică dacă nebunul alb nu este acasă.</p>
@@ -257,7 +257,6 @@
           <div class="hl-box">
             <h4>Ordinea mutărilor</h4>
             <p><strong>Albul mută primul.</strong> Apoi mută negrul, apoi iar albul, pe rând. La fiecare mutare muți o singură piesă: fie turnul, fie nebunul. Nu poți să sari peste rândul tău.</p>
-            <p>Ca să muți, dai click pe piesa ta, apoi pe pătratul unde vrei să ajungă. Pătratul piesei se colorează și se văd pătratele unde poate merge (la nivelul Dragon acestea nu se arată). Dacă dai din nou click pe piesa aleasă, alegerea se anulează. Poți și să tragi piesa cu mouse-ul sau cu degetul.</p>
             <p>Dacă piesa aleasă nu are nicio mutare permisă, jocul îți spune să muți cealaltă piesă. Dacă niciuna dintre piesele tale nu poate muta, sari rândul și mută adversarul.</p>
             <p>În lista de mutări, <strong>T</strong> înseamnă turn, <strong>N</strong> înseamnă nebun, iar <strong>—</strong> înseamnă rând sărit.</p>
           </div>
@@ -278,23 +277,6 @@
             <p>Dacă ai ales un timp, cine rămâne fără timp pierde. Timpul ales se aplică după ce apeși „Restart".</p>
           </div>
 
-          <div class="hl-box">
-            <h4>Nivelurile (contra calculatorului)</h4>
-            <p>Calculatorul respectă aceleași reguli ca tine și merge tot în sensul acelor de ceasornic.</p>
-            <p><strong>Pui de găină</strong>: la aproape fiecare mutare (cam 9 din 10) alege la întâmplare una dintre mutările permise, așa că se încurcă des.</p>
-            <p><strong>Mânz</strong>: alege la întâmplare doar cam 2 mutări din 10. În rest caută drumul cel mai scurt.</p>
-            <p><strong>Dragon</strong>: nu mută niciodată la întâmplare. La fiecare mutare socotește, din poziția de acum, cel mai scurt drum pentru ambele piese și alege mutarea care îl apropie cel mai mult de final.</p>
-            <p>Nivelul ales se aplică de la următoarea mutare a calculatorului.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>În doi</h4>
-            <p>Doi copii joacă pe aceeași tablă, fără calculator. <strong>Jucătorul 1</strong> are piesele albe și mută primul. <strong>Jucătorul 2</strong> are piesele negre. Mutați pe rând.</p>
-            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar <strong>se numără</strong>. Se numără dacă încerci să muți o piesă înapoi, în sens invers acelor de ceasornic (în afară de pasul mic spre centru), să muți o piesă a adversarului, să pui piesa pe un pătrat ocupat sau pe barieră, să sari peste o piesă, să muți turnul pe diagonală sau nebunul în linie dreaptă.</p>
-            <p>Nu se numără dacă pui piesa înapoi pe pătratul ei sau dacă alegi o piesă care nu are mutări.</p>
-            <p>La fiecare jucător vezi încercările: ❌ pentru fiecare încercare nepermisă, ▫️ pentru cele rămase. <strong>La 3 încercări nepermise câștigă celălalt jucător.</strong></p>
-            <p>Contra calculatorului încercările nu se numără. Dacă încerci o mutare înapoi, jocul doar te atenționează.</p>
-          </div>
         </details>
 
       </div><!-- /.panel-scroll -->
@@ -313,7 +295,7 @@
 <script>
 /* =====================================================
    CURSA — Turn + Nebun, în sensul acelor de ceasornic
-   Contra calculatorului: Alb = AI, Negru = Tu
+   Contra Robotului: Alb = AI, Negru = Tu
    În doi: Alb = Jucătorul 1, Negru = Jucătorul 2
    Sensul se măsoară cu unghiul față de centrul tablei (3.5, 3.5).
    ===================================================== */
@@ -412,7 +394,7 @@ function doMove(key, to) {
     recordMove(key[0], key[1], to);
 }
 
-/* ---------- calculator: drumul cel mai scurt în sensul acelor ---------- */
+/* ---------- Robot: drumul cel mai scurt în sensul acelor ---------- */
 function distToFinish(key) {
     const p = pcs[key], home = HOME[key], dirs = dirsOf(key), occ = occWithout(key);
     if (p.sq === home && p.wind >= LAP) return 0;
@@ -519,13 +501,13 @@ function endGame(result, why, reason) {
     const rounds = moveHistory.filter(m => m.b).length;
     const winner = result==='white' ? 'w' : result==='black' ? 'b' : null;
     const loser  = winner ? other(winner) : null;
-    const who = c => mode==='duo' ? PLAYER[c] : (c==='w' ? 'Calculatorul' : 'Tu');
+    const who = c => mode==='duo' ? PLAYER[c] : (c==='w' ? 'Robotul' : 'Tu');
     if (why === 'strikes') {
         setStatus(`❌ ${reason}\n${PLAYER[loser]} a încercat 3 mutări nepermise.\n🏆 ${PLAYER[winner]} câștigă.`,'win');
     } else if (why === 'time') {
         if (mode === 'duo')        setStatus(`⏰ ${PLAYER[loser]} a rămas fără timp.\n🏆 ${PLAYER[winner]} câștigă.`,'win');
-        else if (winner === 'b')   setStatus('⏰ Calculatorului i-a expirat timpul.\n🏆 Ai câștigat!','win');
-        else                       setStatus('⏰ Ți-a expirat timpul.\n🏆 Calculatorul câștigă.','win');
+        else if (winner === 'b')   setStatus('⏰ Robotului i-a expirat timpul.\n🏆 Ai câștigat!','win');
+        else                       setStatus('⏰ Ți-a expirat timpul.\n🏆 Robotul câștigă.','win');
     } else if (why === 'stall') {
         setStatus(`🤝 Egalitate: în ultimele ${MAX_IDLE} de mutări nicio piesă nu a mai înaintat.`,'draw');
     } else if (why === 'blocked') {
@@ -540,7 +522,7 @@ function endGame(result, why, reason) {
     } else if (winner === 'b') {
         setStatus(`🏆 Ai câștigat în ${rounds} mutări! Bravo!`,'win');
     } else {
-        setStatus(`🏆 Calculatorul câștigă în ${rounds} mutări!`,'win');
+        setStatus(`🏆 Robotul câștigă în ${rounds} mutări!`,'win');
     }
     if (winner) document.getElementById(winner==='w'?'trophy-white':'trophy-black').classList.add('show');
     else if (!why) { document.getElementById('trophy-white').classList.add('show'); document.getElementById('trophy-black').classList.add('show'); }
@@ -571,7 +553,7 @@ function startTurn(note) {
     if (!allPermitted(c).length) {
         if (!allPermitted(other(c)).length) { endGame('draw', 'blocked'); return; }
         recordMove(c, null, null); idleMoves++;
-        const who = mode === 'duo' ? PLAYER[c] : (c === 'w' ? 'Calculatorul' : 'Tu');
+        const who = mode === 'duo' ? PLAYER[c] : (c === 'w' ? 'Robotul' : 'Tu');
         const msg = c === 'b' && mode === 'robot'
             ? '♜♝ Nicio piesă neagră nu are o mutare permisă, așa că sari rândul.'
             : `${who} nu are nicio mutare permisă și sare rândul.`;
@@ -582,7 +564,7 @@ function startTurn(note) {
     const pre = note ? note + '\n' : '';
     if (mode === 'robot' && c === 'w') { aiWhiteTurn(note); return; }
     if (mode === 'robot') {
-        setStatus(pre + (wDone ? '✅ Calculatorul a terminat! Ultima ta mutare…' : '♜ sau ♝ — mută o piesă neagră!'), 'black-turn');
+        setStatus(pre + (wDone ? '✅ Robotul a terminat! Ultima ta mutare…' : '♜ sau ♝ — mută o piesă neagră!'), 'black-turn');
     } else if (c === 'b' && wDone) {
         setStatus(pre + `✅ ${PLAYER.w} a terminat cursa.\n${PLAYER.b} are o ultimă mutare pentru egalitate.`, 'black-turn');
     } else {
@@ -592,7 +574,7 @@ function startTurn(note) {
 
 function aiWhiteTurn(note) {
     const g = gameGen;
-    setStatus((note ? note + '\n' : '') + '🤖 Calculatorul gândește…','white-turn');
+    setStatus((note ? note + '\n' : '') + '🤖 Robotul gândește…','white-turn');
     document.getElementById('panel-white').className='player-panel active';
     setTimeout(() => {
         if (g !== gameGen || gameOver || mode !== 'robot') return;
@@ -678,7 +660,7 @@ function illegalReason(key, from, to) {
                    : 'Nebunul merge doar pe diagonală.';
 }
 
-/* încercare nepermisă: în doi se numără; contra calculatorului doar atenționare la sens invers */
+/* încercare nepermisă: în doi se numără; contra Robotului doar atenționare la sens invers */
 function illegal(reason) {
     deselect();
     if (mode !== 'duo') { if (reason === CCW_MSG) setStatus('⚠️ ' + reason, 'warn'); return; }
@@ -749,7 +731,7 @@ function restartGame() {
         setStatus(`${PLAYER.w} mută primul: ♖ sau ♗.`,'white-turn');
     } else {
         const g = gameGen;
-        setStatus('🤖 Calculatorul gândește…','white-turn');
+        setStatus('🤖 Robotul gândește…','white-turn');
         setTimeout(() => { if (g === gameGen && mode === 'robot') startTurn(); }, 900);
     }
     var tb = document.querySelector('.time-opt.active');

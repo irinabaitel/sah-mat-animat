@@ -101,7 +101,7 @@
     .howto .hl-box { margin-top:8px; font-size:0.86em; line-height:1.65; }
     .howto .hl-box p { margin:0 0 6px; }
     .howto .hl-box p:last-child { margin-bottom:0; }
-    .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:0.95em; margin:0 0 4px; }
+    .howto h4 { font-family:var(--font-display); color:var(--c-navy); font-size:1.1em; margin:0 0 4px; }
 
     /* TOGGLES */
     .toggle-row { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
@@ -125,13 +125,13 @@
       <div class="panel-scroll">
         <p class="panel-heading">&#9818; Șahul progresiv</p>
         <div class="hl-box" style="margin-bottom:10px">
-          O partidă de șah în care mutările vin în serii tot mai lungi: albul face o mutare, negrul două, albul trei, negrul patru și tot așa. Câștigă cine dă mat. Joci contra calculatorului sau în doi, pe aceeași tablă.
+          O partidă de șah în care mutările vin în serii tot mai lungi: albul face o mutare, negrul două, albul trei, negrul patru și tot așa. Câștigă cine dă mat. Joci contra Robotului sau în doi, pe aceeași tablă.
         </div>
 
         <!-- CONFIGURARE -->
         <div id="setupPanel">
           <div class="toggle-row">
-            <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra calculatorului</button>
+            <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
             <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
           </div>
           <div id="levelBox">
@@ -271,31 +271,6 @@
             <p>Mai câștigi dacă adversarul abandonează, dacă îi expiră timpul pe ceas sau, în doi, dacă adversarul încearcă de trei ori o mutare nepermisă.</p>
           </div>
 
-          <div class="hl-box">
-            <h4>Cum muți pe tablă</h4>
-            <p>Poți <strong>trage piesa</strong> cu mouse-ul sau cu degetul. Poți și să <strong>dai click</strong> pe piesă, apoi pe pătratul unde vrei să ajungă. După ce alegi o piesă, pe tablă apar pătratele unde are voie să meargă.</p>
-            <p>Butoane: <strong>Retrage</strong> anulează în doi ultima mutare. Contra calculatorului te întoarce la începutul seriei tale (sau, dacă nu ai mutat încă în ea, la începutul seriei tale de dinainte). <strong>Nou</strong> începe o partidă nouă cu aceleași setări. <strong>Abandonez</strong> încheie partida, pe care o pierde cel care abandonează. <strong>Configurare</strong> te întoarce la alegerea setărilor.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>Contra calculatorului</h4>
-            <p><strong>Pui de găină</strong> mută la întâmplare, dar respectă regulile.</p>
-            <p><strong>Mânz</strong> este lacom: la fiecare mutare din serie ia piesa cea mai valoroasă pe care o poate captura fără să fie capturat imediat. Dă șah doar când este mat.</p>
-            <p><strong>Dragon</strong> își plănuiește toată seria. Caută întâi un mat. Dacă nu găsește, încearcă să câștige cât mai mult material și să nu își lase regele sau piesele în pericol înaintea seriei tale, care va fi mai lungă.</p>
-            <p>Alegi culoarea: <strong>Albe</strong>, <strong>Negre</strong> sau <strong>Aleator</strong>. Piesele tale stau mereu jos. Dacă joci cu negrele, calculatorul face prima serie.</p>
-          </div>
-
-          <div class="hl-box">
-            <h4>Ceasul</h4>
-            <p>Poți juca <strong>fără timp</strong> sau cu <strong>2, 5 ori 10 minute</strong> pentru fiecare jucător. Ceasul scade pentru cel care își joacă seria. Când mai sunt 15 secunde, caseta ceasului se face roșie. Cui i se termină timpul pierde partida.</p>
-          </div>
-
-          <div class="hl-box ok">
-            <h4>În doi</h4>
-            <p>Doi jucători își joacă seriile pe aceeași tablă. <strong>Jucătorul 1</strong> are albele (jos) și începe, <strong>Jucătorul 2</strong> are negrele (sus). Calculatorul nu joacă, iar alegerea nivelului și a culorii nu mai apare.</p>
-            <p>Dacă încerci o mutare care nu este permisă, ea nu se face, dar <strong>se numără</strong>. Se numără și încercarea de a muta o piesă a adversarului. Dacă pui piesa înapoi pe pătratul ei, nu se numără. O mutare care dă șah înainte de ultima mutare din serie <strong>nu este nepermisă</strong>: ea doar încheie seria.</p>
-            <p>Încercările se văd sub ceasul fiecărui jucător: ❌ pentru o încercare folosită, ▫️ pentru una rămasă. La <strong>3 încercări nepermise</strong> câștigă celălalt jucător.</p>
-          </div>
         </details>
       </div>
       <div class="feedback-bar" id="feedbackBar"></div>
@@ -422,7 +397,7 @@ function startClock() {
         if (clock[c] <= 0) {
             var o = c === 'w' ? 'b' : 'w';
             if (mode === 'duo') finishGame(o, 'Timpul lui ' + pname(c) + ' a expirat.');
-            else finishGame(o, 'Timpul ' + (c === playerColor ? 'tău' : 'calculatorului') + ' a expirat.');
+            else finishGame(o, 'Timpul ' + (c === playerColor ? 'tău' : 'Robotului') + ' a expirat.');
         }
     }, 1000);
 }
@@ -879,7 +854,7 @@ function turnStatus() {
     var line = 'Seria ' + sideGen(side) + ': mutarea ' + (moveIdx + 1) + ' din ' + seriesNo + '.';
     var who;
     if (mode === 'duo') who = 'Mută ' + pname(side) + ' (' + sideName(side) + ').';
-    else who = side === playerColor ? 'Rândul tău.' : '&#129302; Calculatorul își joacă seria…';
+    else who = side === playerColor ? 'Rândul tău.' : '&#129302; Robotul își joacă seria…';
     var chk = chess.in_check() && moveIdx === 0 ? '<br>&#9888; Regele ' + (side === 'w' ? 'alb' : 'negru') + ' este în șah: prima mutare trebuie să îl scoată din șah.' : '';
     return (seriesNote ? seriesNote + '<br>' : '') + '&#9654; ' + line + ' ' + who + chk;
 }
@@ -987,7 +962,7 @@ function finishGame(winner, reason) {
         setStatus(reason + '<br>&#127942; <strong>' + pname(winner) + ' (' + sideName(winner) + ') câștigă.</strong>', 'success');
     } else {
         var you = winner === playerColor;
-        setStatus(reason + '<br>' + (you ? 'Ai câștigat! &#127942;' : 'Calculatorul a câștigat. &#129302;'), you ? 'success' : 'danger');
+        setStatus(reason + '<br>' + (you ? 'Ai câștigat! &#127942;' : 'Robotul a câștigat. &#129302;'), you ? 'success' : 'danger');
     }
 }
 function drawGame(reason) {
