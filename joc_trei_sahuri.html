@@ -997,13 +997,26 @@ function onDrop(source, target) {
 }
 
 /* ====== ROBOTUL ====== */
+/* Robotul „se gândește” cât un om: câteva secunde, mai puțin la începutul partidei
+   sau când vede un câștig imediat; cu ceas, cel mult o zecime din timpul rămas */
+function thinkTime(r) {
+    var rnd = function(a, b) { return a + Math.random() * (b - a); };
+    var ms;
+    if (moveRecs.length < 4)   ms = rnd(1200, 2500);
+    else if (level === 'pui')  ms = rnd(1500, 4500);
+    else if (level === 'manz') ms = rnd(2000, 5000);
+    else                       ms = rnd(2000, 6000);
+    if (r && Math.abs(r.score) > 800000) ms = Math.min(ms, rnd(1200, 2200));
+    if (clockMax > 0) ms = Math.min(ms, clock[turnC()] * 100);
+    return ms;
+}
 function askComputer() {
     if (gameOver || mode !== 'robot' || turnC() === playerColor) return;
     setStatus('&#129302; Robotul se gândește...', 'thinking');
     aiTimer = setTimeout(function() {
         var t0 = Date.now();
         var r = T3.best(pos, level, 1000, keys);
-        var wait = Math.max(0, (level === 'dragon' ? 150 : 450) - (Date.now() - t0));
+        var wait = Math.max(0, thinkTime(r) - (Date.now() - t0));
         aiTimer = setTimeout(function() {
             aiTimer = null;
             if (gameOver || !r || mode !== 'robot' || turnC() === playerColor) return;
