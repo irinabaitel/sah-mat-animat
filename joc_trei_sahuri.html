@@ -997,16 +997,12 @@ function onDrop(source, target) {
 }
 
 /* ====== ROBOTUL ====== */
-/* Robotul „se gândește” cât un om: câteva secunde, mai puțin la începutul partidei
-   sau când vede un câștig imediat; cu ceas, cel mult o zecime din timpul rămas */
+/* Robotul „se gândește” cât un om: cu cât e mai puternic, cu atât se hotărăște mai repede;
+   la începutul partidei de două ori mai repede; cu ceas, cel mult o zecime din timpul rămas */
 function thinkTime(r) {
     var rnd = function(a, b) { return a + Math.random() * (b - a); };
-    var ms;
-    if (moveRecs.length < 4)   ms = rnd(1200, 2500);
-    else if (level === 'pui')  ms = rnd(1500, 4500);
-    else if (level === 'manz') ms = rnd(2000, 5000);
-    else                       ms = rnd(2000, 6000);
-    if (r && Math.abs(r.score) > 800000) ms = Math.min(ms, rnd(1200, 2200));
+    var ms = level === 'pui' ? rnd(3000, 7000) : level === 'manz' ? rnd(2000, 5000) : rnd(1000, 3000);
+    if (moveRecs.length < 4) ms /= 2;
     if (clockMax > 0) ms = Math.min(ms, clock[turnC()] * 100);
     return ms;
 }
