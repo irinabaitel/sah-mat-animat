@@ -703,7 +703,7 @@ var keys = [T3.key(pos)];
 var board = null, playerColor = 'w', level = 'pui', gameOver = false, started = false;
 var mode = 'robot', MAX_STRIKES = 3, strikes = { w: 0, b: 0 };
 var pendingPromo = null, aiTimer = null, selSq = null;
-var clockMax = 0, clock = { w: 0, b: 0 }, clockTick = null;
+var clockMax = 0, clock = { w: 0, b: 0 }, clockTick = null, lastTick = 0;   // clock în milisecunde
 
 var PIECE_CDN = 'https://lichess1.org/assets/piece/caliente/';
 var PIECE_RO = [null, 'Pionul', 'Calul', 'Nebunul', 'Turnul', 'Dama', 'Regele'];
@@ -752,7 +752,7 @@ function setMode(m) {
 }
 
 /* ====== CEAS ====== */
-function fmtClock(s) { var m = Math.floor(s / 60), ss = s % 60; return m + ':' + (ss < 10 ? '0' : '') + ss; }
+function fmtClock(msLeft) { var s = Math.max(0, Math.ceil(msLeft / 1000)), m = Math.floor(s / 60), ss = s % 60; return m + ':' + (ss < 10 ? '0' : '') + ss; }
 function updateClocks() {
     var cw = document.getElementById('cwTime'), cb = document.getElementById('cbTime');
     var wB = document.getElementById('clockW'), bB = document.getElementById('clockB');
@@ -763,22 +763,30 @@ function updateClocks() {
         return;
     }
     cw.textContent = fmtClock(clock.w); cb.textContent = fmtClock(clock.b);
-    wB.className = 'clock-box' + (t === 'w' ? (clock.w <= 15 ? ' low' : ' active') : '');
-    bB.className = 'clock-box' + (t === 'b' ? (clock.b <= 15 ? ' low' : ' active') : '');
+    wB.className = 'clock-box' + (t === 'w' ? (clock.w <= 15000 ? ' low' : ' active') : '');
+    bB.className = 'clock-box' + (t === 'b' ? (clock.b <= 15000 ? ' low' : ' active') : '');
 }
 function stopClock() { if (clockTick) { clearInterval(clockTick); clockTick = null; } }
+/* scade din ceasul celui la mutare timpul trecut de la ultima socoteală */
+function settleClock() {
+    if (!clockTick) return;
+    var now = Date.now();
+    clock[turnC()] -= now - lastTick;
+    lastTick = now;
+}
 function startClock() {
     if (clockMax === 0) return;
     stopClock();
+    lastTick = Date.now();
     clockTick = setInterval(function() {
         if (gameOver) { stopClock(); return; }
         var c = turnC();
-        clock[c]--;
+        settleClock();
         updateClocks();
         if (clock[c] <= 0) {
             finish(other(c), mode === 'duo' ? 'Timpul lui ' + pname(c) + ' a expirat.' : (c === playerColor ? 'Timpul tău a expirat.' : 'Timpul Robotului a expirat.'), '1-0');
         }
-    }, 1000);
+    }, 100);
 }
 
 /* ====== EVIDENȚIERI ====== */
@@ -872,7 +880,7 @@ function startGame() {
         : 'Adversar: ' + (a ? a.querySelector('.name').textContent : '');
     var tb = document.querySelector('.time-opt.active');
     clockMax = tb ? parseInt(tb.dataset.secs, 10) : 0;
-    clock = { w: clockMax, b: clockMax };
+    clock = { w: clockMax * 1000, b: clockMax * 1000 };
     stopClock(); updateClocks();
     if (clockMax > 0) startClock();
     setStatus(turnStatus(), '');
@@ -935,6 +943,7 @@ function applyMove(m) {
     var target = pos.b[(m >> 6) & 63], kingCap = Math.abs(target) === 6 && target * pos.side < 0;
     var rec = { san: T3.san(pos, m), color: color, from: mFrom(m), to: mTo(m), cap: ((m >> 15) & 4) !== 0 };
     var chkBefore = pos.chk[me];
+    settleClock();
     snaps.push(T3.clone(pos));
     T3.make(pos, m, 0);
     moveRecs.push(rec);
@@ -1003,7 +1012,8 @@ function thinkTime(r) {
     var rnd = function(a, b) { return a + Math.random() * (b - a); };
     var ms = level === 'pui' ? rnd(3000, 7000) : level === 'manz' ? rnd(2000, 5000) : rnd(1000, 3000);
     if (moveRecs.length < 4) ms /= 2;
-    if (clockMax > 0) ms = Math.min(ms, clock[turnC()] * 100);
+    // cu ceas: împarte timpul rămas ca pentru încă 30 de mutări (sub 10 secunde, pentru 60), deci se grăbește spre sfârșit
+    if (clockMax > 0) { var left = clock[turnC()]; ms = Math.min(ms, left / (left < 10000 ? 60 : 30)); }
     return ms;
 }
 function askComputer() {
@@ -1011,14 +1021,14 @@ function askComputer() {
     setStatus('&#129302; Robotul se gândește...', 'thinking');
     aiTimer = setTimeout(function() {
         var t0 = Date.now();
-        var r = T3.best(pos, level, 1000, keys);
+        var r = T3.best(pos, level, clockMax > 0 ? Math.max(30, Math.min(1000, clock[turnC()] / 40)) : 1000, keys);
         var wait = Math.max(0, thinkTime(r) - (Date.now() - t0));
         aiTimer = setTimeout(function() {
             aiTimer = null;
             if (gameOver || !r || mode !== 'robot' || turnC() === playerColor) return;
             applyMove(r.move);
         }, wait);
-    }, 60);
+    }, clockMax > 0 && clock[turnC()] < 10000 ? 15 : 60);
 }
 
 /* ====== SFÂRȘITUL PARTIDEI ====== */
