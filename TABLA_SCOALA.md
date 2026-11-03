@@ -36,4 +36,7 @@ Roagă-l pe informaticianul școlii (sau pe cel care are parola de administrator
 
 - Pe tablă e deschisă aplicația **Connect**? (pasul 4)
 - Pe tablă scrie din nou „Add the Wireless Display optional feature”? Atunci s-a resetat: reia de la pasul 2.
-- Wi-Fi-ul laptopului e pornit?
+- Wi-Fi-ul e pornit **pe ambele** (laptop și tablă)?
+- Încearcă să le pui pe **aceeași rețea Wi-Fi**, setată **Private** pe amândouă (Settings → Network & internet → Wi-Fi → rețeaua → *Network profile type: Private*). Nu e obligatoriu, dar ajută când tabla nu apare.
+
+**De ținut minte:** tabla devine „descoperibilă” din *Projecting to this PC* (primul meniu: **Available everywhere**), iar meniul ăsta apare **doar după** ce e instalat Wireless Display.
