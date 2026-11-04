@@ -40,3 +40,12 @@ Roagă-l pe informaticianul școlii (sau pe cel care are parola de administrator
 - Încearcă să le pui pe **aceeași rețea Wi-Fi**, setată **Private** pe amândouă (Settings → Network & internet → Wi-Fi → rețeaua → *Network profile type: Private*). Nu e obligatoriu, dar ajută când tabla nu apare.
 
 **De ținut minte:** tabla devine „descoperibilă” din *Projecting to this PC* (primul meniu: **Available everywhere**), iar meniul ăsta apare **doar după** ce e instalat Wireless Display.
+
+## Cu cablu (din 4 nov. 2026)
+
+Fără fir n-a mers, nici la tablă, nici la televizorul de acasă (laptopul găsea televizorul, dar nu se conecta). Acum folosesc **cablu HDMI**.
+
+1. Cablul HDMI: laptop → intrarea HDMI a tablei.
+2. Pe tablă: alege sursa **HDMI** (din meniul tablei, de obicei de pe butonul de sursă / *Input* / *Source*).
+3. Pe laptop: **Win + P** → **Duplicate** (aceeași imagine pe ambele) sau **Second screen only**.
+4. **Ca să meargă cu degetul pe tablă:** pe lângă HDMI mai trebuie un **cablu USB** de la portul **Touch** al tablei (scrie „Touch” sau „USB Touch” lângă HDMI) la laptop. Fără el, vezi imaginea, dar atingerea nu ajunge la laptop.
