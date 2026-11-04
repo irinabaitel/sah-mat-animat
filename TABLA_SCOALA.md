@@ -16,7 +16,7 @@ Roagă-l pe informaticianul școlii (sau pe cel care are parola de administrator
 
 ## Până atunci: pașii, în fiecare zi (cam 5 minute)
 
-**Pe tablă:**
+**Pe tablă** (nu are tastatură: pentru căutări folosește tastatura de pe ecran):
 1. Start → Settings → caută **Projecting** → *Projecting to this PC*.
 2. Apasă **Optional features** → **View features** (sau *Add a feature*) → caută **Wireless Display** → bifează → **Next** / **Install**. Durează câteva minute și are nevoie de internet.
 3. Întoarce-te la *Projecting to this PC*. Acum apar opțiunile:
@@ -37,7 +37,7 @@ Roagă-l pe informaticianul școlii (sau pe cel care are parola de administrator
 - Pe tablă e deschisă aplicația **Connect**? (pasul 4)
 - Pe tablă scrie din nou „Add the Wireless Display optional feature”? Atunci s-a resetat: reia de la pasul 2.
 - Wi-Fi-ul e pornit **pe ambele** (laptop și tablă)?
-- Încearcă să le pui pe **aceeași rețea Wi-Fi**, setată **Private** pe amândouă (Settings → Network & internet → Wi-Fi → rețeaua → *Network profile type: Private*). Nu e obligatoriu, dar ajută când tabla nu apare.
+- Pune-le pe **aceeași rețea Wi-Fi, Elevi_Dante**, setată **Private** pe amândouă (Settings → Network & internet → Wi-Fi → rețeaua → *Network profile type: Private*). Asta e configurația care **a mers**.
 
 **De ținut minte:** tabla devine „descoperibilă” din *Projecting to this PC* (primul meniu: **Available everywhere**), iar meniul ăsta apare **doar după** ce e instalat Wireless Display.
 
