@@ -43,9 +43,11 @@ Roagă-l pe informaticianul școlii (sau pe cel care are parola de administrator
 
 ## Cu cablu (din 4 nov. 2026)
 
-Fără fir n-a mers, nici la tablă, nici la televizorul de acasă (laptopul găsea televizorul, dar nu se conecta). Acum folosesc **cablu HDMI**.
+Fără fir n-a mers cu **laptopul Dell de la școală** (mai vechi), nici la tablă, nici la televizorul de acasă: găsea televizorul, dar nu se conecta. Laptopul de acasă (Lenovo) știe să proiecteze fără fir. Acum folosesc **cablu HDMI**.
 
 1. Cablul HDMI: laptop → intrarea HDMI a tablei.
 2. Pe tablă: alege sursa **HDMI** (din meniul tablei, de obicei de pe butonul de sursă / *Input* / *Source*).
 3. Pe laptop: **Win + P** → **Duplicate** (aceeași imagine pe ambele) sau **Second screen only**.
 4. **Ca să meargă cu degetul pe tablă:** pe lângă HDMI mai trebuie un **cablu USB** de la portul **Touch** al tablei (scrie „Touch” sau „USB Touch” lângă HDMI) la laptop. Fără el, vezi imaginea, dar atingerea nu ajunge la laptop.
+
+**Dacă vrei să afli dacă Dell-ul poate proiecta fără fir:** în PowerShell scrie `netsh wlan show drivers` și caută rândul **Wireless Display Supported**. Dacă scrie **No**, Dell-ul nu poate, și cablul rămâne singura variantă.
