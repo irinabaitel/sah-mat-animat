@@ -28,6 +28,7 @@ Documentul de continuitate pentru runda de perfecționare a lecțiilor din Nivel
 | 4 minijocuri noi pentru lecția 5 | `nivel1_joc_cal_neaparate`, `_scapa_de_dame`, `_schimba_nebunii`, `_cal_trei_piese` | 92675e5 | Chess Tutor 5b, 5c, 3d, 5d |
 | Atacul asupra regelui (șahul) | `nivel1_lectia6.html` | b2fbd1a | Manual Step 1, lecția 6; 130 de exerciții (ChessKid L3 + caietul Steps + Chess Tutor L6) |
 | Jocuri pentru lecția 6 | `nivel1_joc_rege_pioni.html` (nou), `nivel1_joc_scapa_de_dame.html?p=2`, `nivel1_joc_cine_pastreaza.html?v=turn` | b2fbd1a | Chess Tutor 6e, 6c, 6d |
+| Matul | `nivel1_lectia7.html` (nouă; înlocuiește pagina „în construcție”) | vezi git log | Manual Step 1, lecțiile 7 și 8 (32 de exemple în 8 sertare); 264 de exerciții: ChessKid L3 „Is this checkmate?”, 12 foi de mat din caiet, Chess Tutor L7+L8 (exercises + extra) |
 
 Lecția 6 are și jocurile care existau deja: Regii și diamantele (Chess Tutor 6a) și Regi și Pioni (6b, `joc_stockfish.html`).
 
@@ -40,9 +41,14 @@ Lecția 6 are și jocurile care existau deja: Regii și diamantele (Chess Tutor 
 5. **Turn contra cal:** în Chess Tutor pierde cine nu mai poate muta. Am păstrat regulile paginii noastre (se trece rândul, apoi se numără materialul).
 6. **Regele contra pionilor:** regula „dacă regele nu are mutare, mută iar albul” e pusă de mine. Pionul ajuns pe linia 8 iese de pe tablă și aduce un punct.
 
+Despre **Matul**: în hub, „Matul” duce acum la `nivel1_lectia7.html`. `pagina5.html` a rămas „Arena de mat” (mat în 1–4, Lichess) și e legată din Exersează. Tipuri noi de sarcini în pagină: `move` cu `check: 'mate'` (orice mat e primit; la greșeală spune scăparea: fuge, capturează, se pune în cale), promovare la alegere în `move`, `addmate` (pune una sau mai multe piese, cu `cross` = pătrate marcate) și `mateq` (Este mat? Da/Nu).
+
+7. **Matul:** din Chess Tutor am lăsat deoparte seturile extra „Name squares” și „Defending: mix” (7c, 7d, 8c, 8d), pentru că nu țin de mat.
+8. **Matul:** jocurile din Chess Tutor L7–L8 nu sunt făcute încă: 7a Rege și pion contra 2 pioni, 7c Route planner, 7d Turn contra nebun, 8a Mat cu regina și turnul, 8b Mat cu două turnuri (jocul „paznicul și vânătorul” din Manual), 8c 8 pioni contra 2 cai, 8d 3 piese ușoare contra turnului.
+
 ### Urmează
 
-- **Lecția 7: Matul** (Manual Step 1, lecțiile 7–8; Chess Tutor lecțiile 7 și 8; ChessKid L3, foile „Is this checkmate?”). Pagina din site e `pagina5.html` (Matul), cu jocul Vânătoarea regelui.
+- Jocurile pentru Matul (punctul 8 de mai sus), dacă Irina le vrea.
 - Apoi, în ordine: rocada, schimbul avantajos, atacul dublu, remiza/patul, matul cu dama, en passant, notația.
 
 ## 3. Cum se lucrează (pașii pentru o lecție)
@@ -66,6 +72,8 @@ Programul trebuie să fie deschis, ca „Guest”. Nu folosi profilul Irina, pen
   - Formatul fiecărui argument e `nume,lecție,y`. Al doilea număr e lecția din Chess Tutor, iar `y` e poziția setului în lista din dreapta (în pixeli logici).
   - În `batch.py`, `LES` dă poziția lecției în lista din stânga: 3→193, 5→231, 6→250, iar fiecare lecție următoare e cu 19 mai jos.
   - Seturile salvate sunt în `sets/*.json`. Imaginile nu au fost păstrate.
+- **Scalarea ecranului:** `ct.py` citește scalarea din `CT_SCALE` (implicit 1.25). Pe monitoarele la 100% rulează cu `CT_SCALE=1`. `run7.py` găsește butoanele singur (numerele, Answer, Start, Overview), deci merge la orice mărime a ferestrei: `python run7.py open <y_lecție> <y_set> <nume>`. Lecția 7 e la y=259, lecția 8 la y=278. Seturile: Exercises 202/221/240/259, Extra 430/449/468/487. Dacă răspunsul nu apare, mărește așteptarea cu `CT_WAIT=3 CT_WAIT2=6`.
+- **Șabloanele pieselor** (`tpl.json`) sunt acum în repo. O piesă necunoscută apare ca „?”. O înveți cu `python run7.py learnimg sets/img/<set>_<i>a.png e4=q`, apoi `python run7.py reread <set>`.
 - Pe tablă nu se pot face mutări prin program (clicurile simulate nu sunt primite). De aceea răspunsul se ia din poziția „după Answer” și din textul explicației.
 - `derive6.py` află mutarea-răspuns comparând pozițiile. Apoi Stockfish (`sfmulti.py`, cu `node_modules/stockfish` în folderul uneltelor) găsește mutările la fel de bune: diferență de cel mult 30 de centipioni, acceptate și ele.
 

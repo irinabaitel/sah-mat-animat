@@ -6,7 +6,7 @@ import numpy as np
 u = ctypes.windll.user32; g = ctypes.windll.gdi32
 u.SetProcessDPIAware()
 HERE = os.path.dirname(os.path.abspath(__file__))
-SCALE = 1.25  # app is DPI-unaware on a 125% monitor
+SCALE = float(os.environ.get('CT_SCALE', '1.25'))  # app is DPI-unaware; 1.25 on a 125% monitor, CT_SCALE=1 la 100%
 
 def find_main():
     res = []
