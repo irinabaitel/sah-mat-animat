@@ -27,6 +27,7 @@
         ['nivel1_joc_scapa_de_dame.html', 'Scapă de dame'],
         ['nivel1_joc_schimba_nebunii.html', 'Schimbă nebunii'],
         ['nivel1_joc_cal_trei_piese.html', 'Calul contra trei piese'],
+        ['nivel1_joc_rege_pioni.html', 'Regele contra pionilor'],
         ['joc_sah_progresiv.html', 'Șahul progresiv'],
         ['joc_sah_pierzator.html', 'Șahul pierzătorului'],
         ['joc_trei_sahuri.html', 'Trei șahuri'],

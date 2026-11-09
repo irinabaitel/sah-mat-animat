@@ -93,7 +93,7 @@
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
-<script src="minijocuri-nav.js?v=20261109"></script>
+<script src="minijocuri-nav.js?v=20261109b"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -134,6 +134,7 @@
           <button class="tgl-btn active" id="var-egal"   onclick="setVariant('egal')">Material egal</button>
           <button class="tgl-btn"        id="var-aripi"  onclick="setVariant('aripi')">Material egal, pe aripi diferite</button>
           <button class="tgl-btn"        id="var-inegal" onclick="setVariant('inegal')">Material inegal</button>
+          <button class="tgl-btn"        id="var-turn"   onclick="setVariant('turn')">Turn contra cal</button>
         </div>
 
         <div class="counter-row">
@@ -230,6 +231,7 @@
             <p><strong>Material egal.</strong> Albul: calul pe b1, pionii pe a2, b2 și c2. Negrul: calul pe b8, pionii pe a7, b7 și c7. Pionii stau față în față, așa că se pot bloca unii pe alții.</p>
             <p><strong>Material egal, pe aripi diferite.</strong> Albul are aceleași piese. Negrul: calul pe g8, pionii pe f7, g7 și h7. Pionii nu au pioni adverși în față, deci pot înainta până devin dame. Trebuie să ataci pionii adversarului și în același timp să-i aperi pe ai tăi.</p>
             <p><strong>Material inegal.</strong> Albul: turnul pe a1, calul pe b1, nebunul pe c1, pionii pe a2, b2, c2 și d2 (material 5 + 3 + 3 + 4 = 15). Negrul: dama pe d8, pionii pe a7, b7, c7 și d7 (material 9 + 4 = 13). Dama singură este foarte puternică, dar nu poate apăra totul. Cele trei piese albe trebuie să lucreze împreună.</p>
+            <p><strong>Turn contra cal.</strong> Albul: turnul pe a1 și opt pioni pe linia 2. Negrul: calul pe g8 și opt pioni pe linia 7 (material 5 + 8 = 13 contra 3 + 8 = 11). Turnul valorează mai mult, dar are nevoie de linii deschise ca să intre în joc. Varianta vine din programul Chess Tutor Step 1, lecția 6.</p>
           </div>
 
           <div class="hl-box">
@@ -307,7 +309,8 @@ for (let s = 0; s < 64; s++) {
 const VARIANTS = {
     egal:   { w: { b1: N_, a2: P_, b2: P_, c2: P_ },                   b: { b8: N_, a7: P_, b7: P_, c7: P_ } },
     aripi:  { w: { b1: N_, a2: P_, b2: P_, c2: P_ },                   b: { g8: N_, f7: P_, g7: P_, h7: P_ } },
-    inegal: { w: { a1: R_, b1: N_, c1: B_, a2: P_, b2: P_, c2: P_, d2: P_ }, b: { d8: Q_, a7: P_, b7: P_, c7: P_, d7: P_ } }
+    inegal: { w: { a1: R_, b1: N_, c1: B_, a2: P_, b2: P_, c2: P_, d2: P_ }, b: { d8: Q_, a7: P_, b7: P_, c7: P_, d7: P_ } },
+    turn:   { w: { a1: R_, a2: P_, b2: P_, c2: P_, d2: P_, e2: P_, f2: P_, g2: P_, h2: P_ }, b: { g8: N_, a7: P_, b7: P_, c7: P_, d7: P_, e7: P_, f7: P_, g7: P_, h7: P_ } }
 };
 function setupBoard(v) {
     const bd = new Int8Array(64);
@@ -772,7 +775,7 @@ function setMode(m) {
 }
 function setVariant(v) {
     variant = v;
-    ['egal', 'aripi', 'inegal'].forEach(x => document.getElementById('var-' + x).className = 'tgl-btn' + (x === v ? ' active' : ''));
+    ['egal', 'aripi', 'inegal', 'turn'].forEach(x => document.getElementById('var-' + x).className = 'tgl-btn' + (x === v ? ' active' : ''));
     newMatch();
 }
 
@@ -823,7 +826,8 @@ $(document).on('click', '#board [class*="square-"]', function() {
 
 $(window).resize(() => board.resize());
 
-newMatch();
+const _v = new URLSearchParams(location.search).get('v');
+if (_v && VARIANTS[_v]) setVariant(_v); else newMatch();
 </script>
 </body>
 </html>

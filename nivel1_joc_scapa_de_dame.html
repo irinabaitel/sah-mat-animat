@@ -89,7 +89,7 @@
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
-<script src="minijocuri-nav.js?v=20261109"></script>
+<script src="minijocuri-nav.js?v=20261109b"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -106,6 +106,10 @@
         <div class="toggle-row">
           <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
           <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
+        </div>
+        <div class="toggle-row">
+          <button class="tgl-btn active" id="pos1" onclick="setPos(1)">Poziția 1</button>
+          <button class="tgl-btn"        id="pos2" onclick="setPos(2)">Poziția 2</button>
         </div>
         <div class="animal-grid" id="levelGrid">
           <button class="animal-btn active" data-random="0.9" onclick="setLevel(this)">🐣<span>Pui de găină</span></button>
@@ -132,7 +136,7 @@
           <summary>📖 Cum se joacă</summary>
           <div class="hl-box">
             <h4>Piesele</h4>
-            <p>Albul are un <strong>cal</strong>, pe f6. Negrul are două <strong>regine</strong>, pe c4 și pe g6. Mută întâi calul, apoi reginele, pe rând: o mutare calul, o mutare una dintre regine.</p>
+            <p id="posTxt">Albul are un <strong>cal</strong>, pe f6. Negrul are două <strong>regine</strong>, pe c4 și pe g6.</p><p>Mută întâi calul, apoi reginele, pe rând: o mutare calul, o mutare una dintre regine.</p>
           </div>
           <div class="hl-box">
             <h4>Ce vrea calul</h4>
@@ -151,7 +155,7 @@
             <h4>Reprizele</h4>
             <p>În repriza 1 tu ești calul, iar în repriza 2 ești reginele. <strong>În doi</strong>, Jucătorul 1 e calul în repriza 1 și reginele în repriza 2.</p>
           </div>
-          <p class="pp-role" style="margin-top:8px">Jocul vine din programul Chess Tutor Step 1 (metoda Steps), lecția 5.</p>
+          <p class="pp-role" style="margin-top:8px">Jocul vine din programul Chess Tutor Step 1 (metoda Steps): poziția 1 din lecția 5, poziția 2 din lecția 6.</p>
         </details>
       </div>
       <div class="feedback-bar" id="feedbackBar"></div>
@@ -256,6 +260,8 @@ function buildTable() {
 }
 
 /* ---------- stare ---------- */
+const POS = { 1: ['f6', 'c4', 'g6'], 2: ['e4', 'c2', 'd8'] };
+let posN = new URLSearchParams(location.search).get('p') === '2' ? 2 : 1;
 let board, mode = 'robot', randomness = 0.9, round, N, QA, QB, nMoves, turn, roundOver, matchOver, selSq = null, busy = false;
 let results = {}, strikes = { 1: 0, 2: 0 };
 const pname = p => 'Jucătorul ' + p;
@@ -304,7 +310,7 @@ function turnMsg() {
 /* ---------- desfășurarea ---------- */
 function newMatch() { results = {}; strikes = { 1: 0, 2: 0 }; matchOver = false; startRound(1); }
 function startRound(r) {
-    round = r; N = idx('f6'); QA = idx('c4'); QB = idx('g6'); nMoves = 0; turn = 'n'; roundOver = false; selSq = null; busy = false;
+    round = r; N = idx(POS[posN][0]); QA = idx(POS[posN][1]); QB = idx(POS[posN][2]); nMoves = 0; turn = 'n'; roundOver = false; selSq = null; busy = false;
     board.position(buildPos(), false); clearHL();
     document.getElementById('btn-round2').style.display = 'none';
     setStatus(turnMsg()); updateUI();
@@ -428,6 +434,13 @@ function setMode(m) {
     document.getElementById('duoPanels').style.display = m === 'duo' ? '' : 'none';
     newMatch();
 }
+function setPos(n) {
+    posN = n;
+    [1, 2].forEach(k => document.getElementById('pos' + k).className = 'tgl-btn' + (k === n ? ' active' : ''));
+    const p = POS[n];
+    document.getElementById('posTxt').innerHTML = 'Albul are un <strong>cal</strong>, pe ' + p[0] + '. Negrul are două <strong>regine</strong>, pe ' + p[1] + ' și pe ' + p[2] + '.';
+    newMatch();
+}
 function setLevel(btn) {
     document.querySelectorAll('.animal-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active'); randomness = parseFloat(btn.dataset.random);
@@ -465,7 +478,7 @@ $(document).on('click', '#board [class*="square-"]', function () {
 });
 $(window).resize(() => board.resize());
 setStatus('Se pregătește Robotul…');
-setTimeout(() => { buildTable(); newMatch(); }, 30);
+setTimeout(() => { buildTable(); setPos(posN); }, 30);
 </script>
 </body>
 </html>
