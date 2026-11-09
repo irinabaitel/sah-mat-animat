@@ -19,6 +19,10 @@ def overview_btn():
     bs = [b for b in ct.buttons(W) if b['w'] == 124 and b['y'] < 300]
     return bs[0] if bs else None
 
+BM = os.environ.get('CT_BM') == '1'  # Chess Tutor Step 2: butoanele răspund doar la BM_CLICK
+def click(b):
+    ct.bm_click(b['h']) if BM else ct.post_click(b['h'], 15, 10)
+
 def snap(tag):
     img = ct.shot(W, f'sets/img/{tag}.png')
     rows, unk = ct.read_board(img)
@@ -30,10 +34,10 @@ def run(setname):
     out = dict(set=setname, intro=ct.close_popups(W), tasks=[])
     nb = num_buttons()
     for i, b in enumerate(nb, 1):
-        ct.post_click(b['h'], 15, 10); time.sleep(float(os.environ.get('CT_WAIT', '1.5')))
+        click(b); time.sleep(float(os.environ.get('CT_WAIT', '1.5')))
         pops = ct.close_popups(W); time.sleep(0.3)
         before = snap(f'{setname}_{i}a')
-        ab = answer_btn(); ct.post_click(ab['h'], 15, 10); time.sleep(float(os.environ.get('CT_WAIT2', '3.5')))
+        ab = answer_btn(); click(ab); time.sleep(float(os.environ.get('CT_WAIT2', '3.5')))
         pops2 = ct.close_popups(W)
         after = snap(f'{setname}_{i}b')
         out['tasks'].append(dict(i=i, pops=pops, before=before, after=after, pops2=pops2))

@@ -14,7 +14,7 @@ def find_main():
     def cb(h, l):
         n = u.GetWindowTextLengthW(h)
         b = ctypes.create_unicode_buffer(n + 1); u.GetWindowTextW(h, b, n + 1)
-        if b.value.startswith('Chess Tutor Step 1') and u.IsWindowVisible(h): res.append(h)
+        if b.value.startswith(os.environ.get('CT_TITLE', 'Chess Tutor Step 1')) and u.IsWindowVisible(h): res.append(h)
         return True
     u.EnumWindows(cb, 0)
     return res[0]

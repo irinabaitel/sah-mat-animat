@@ -29,6 +29,7 @@ Documentul de continuitate pentru runda de perfecționare a lecțiilor din Nivel
 | Atacul asupra regelui (șahul) | `nivel1_lectia6.html` | b2fbd1a | Manual Step 1, lecția 6; 130 de exerciții (ChessKid L3 + caietul Steps + Chess Tutor L6) |
 | Jocuri pentru lecția 6 | `nivel1_joc_rege_pioni.html` (nou), `nivel1_joc_scapa_de_dame.html?p=2`, `nivel1_joc_cine_pastreaza.html?v=turn` | b2fbd1a | Chess Tutor 6e, 6c, 6d |
 | Matul | `nivel1_lectia7.html` (nouă; înlocuiește pagina „în construcție”) | vezi git log | Manual Step 1, lecțiile 7 și 8 (32 de exemple în 8 sertare); 264 de exerciții: ChessKid L3 „Is this checkmate?”, 12 foi de mat din caiet, Chess Tutor L7+L8 (exercises + extra) |
+| Apărarea împotriva matului | `nivel1_lectia16.html` (nouă) | vezi git log | Manual **Step 2**, lecția 12 + caietul Step 2 p. 49 (24 de exemple în 9 sertare, cu șahul dublu din ChessKid L11); 81 de exerciții: caietul Step 2 foile A și B, Chess Tutor **Step 2** L12 (12a–d + extra 12a–b) |
 
 Lecția 6 are și jocurile care existau deja: Regii și diamantele (Chess Tutor 6a) și Regi și Pioni (6b, `joc_stockfish.html`).
 
@@ -44,12 +45,14 @@ Lecția 6 are și jocurile care existau deja: Regii și diamantele (Chess Tutor 
 Despre **Matul**: în hub, „Matul” duce acum la `nivel1_lectia7.html`. `pagina5.html` a rămas „Arena de mat” (mat în 1–4, Lichess) și e legată din Exersează. Tipuri noi de sarcini în pagină: `move` cu `check: 'mate'` (orice mat e primit; la greșeală spune scăparea: fuge, capturează, se pune în cale), promovare la alegere în `move`, `addmate` (pune una sau mai multe piese, cu `cross` = pătrate marcate) și `mateq` (Este mat? Da/Nu).
 
 7. **Matul:** din Chess Tutor am lăsat deoparte seturile extra „Name squares” și „Defending: mix” (7c, 7d, 8c, 8d), pentru că nu țin de mat.
+9. **Apărarea împotriva matului:** în Step 1 nu există lecția, așa că am luat-o din Step 2, lecția 12. `aparare_mat.html` (pagina veche) a rămas „Arena de apărare” (25 de poziții), legată din Exersează. Am lăsat deoparte: extra 12c–12d (atac dublu, atac descoperit), 12b#6 (răspunsul e rocada, pe care pagina nu o știe), 12c#3 (captura nu s-a putut reconstitui), foaia A nr. 12 (e un desen). La 12c#2 și #8 Chess Tutor cere o serie (șah, răspuns, captură); exercițiul cere prima mutare, iar explicația arată restul. Caietul p. 49 dreapta-sus spune „Black” la o captură făcută de alb (greșeală de tipar): am scris „Albul”.
+10. **Apărarea împotriva matului:** jocurile din Chess Tutor Step 2 L12 nu sunt făcute: 12a Doi nebuni contra reginei (apărare), 12b Regina, turnul și calul prind un nebun, 12c Poziția inițială cu obstacole, 12d Poziție de jucat până la capăt.
 8. **Matul:** jocurile din Chess Tutor L7–L8 nu sunt făcute încă: 7a Rege și pion contra 2 pioni, 7c Route planner, 7d Turn contra nebun, 8a Mat cu regina și turnul, 8b Mat cu două turnuri (jocul „paznicul și vânătorul” din Manual), 8c 8 pioni contra 2 cai, 8d 3 piese ușoare contra turnului.
 
 ### Urmează
 
 - Jocurile pentru Matul (punctul 8 de mai sus), dacă Irina le vrea.
-- **Șahul dublu** (`pagina4.html`) s-a mutat în Nivelul IV, după Atacul dublu prin descoperire (95a → 4 → 96). În Nivelul I rămâne doar regula, ca sertar în lecția de apărare (`aparare_mat.html`): la șah dublu doar regele se poate muta. Formularea: regele **pleacă**, nu „fuge” (fără panică).
+- **Șahul dublu** (`pagina4.html`) s-a mutat în Nivelul IV, după Atacul dublu prin descoperire (95a → 4 → 96). În Nivelul I rămâne doar regula, ca sertar în lecția de apărare (`nivel1_lectia16.html`, sertarul „Șahul dublu”, făcut): la șah dublu doar regele se poate muta. Formularea: regele **pleacă**, nu „fuge” (fără panică).
 - Apoi, în ordine: rocada, schimbul avantajos, atacul dublu, remiza/patul, matul cu dama, en passant, notația.
 
 ## 3. Cum se lucrează (pașii pentru o lecție)
@@ -74,6 +77,7 @@ Programul trebuie să fie deschis, ca „Guest”. Nu folosi profilul Irina, pen
   - În `batch.py`, `LES` dă poziția lecției în lista din stânga: 3→193, 5→231, 6→250, iar fiecare lecție următoare e cu 19 mai jos.
   - Seturile salvate sunt în `sets/*.json`. Imaginile nu au fost păstrate.
 - **Scalarea ecranului:** `ct.py` citește scalarea din `CT_SCALE` (implicit 1.25). Pe monitoarele la 100% rulează cu `CT_SCALE=1`. `run7.py` găsește butoanele singur (numerele, Answer, Start, Overview), deci merge la orice mărime a ferestrei: `python run7.py open <y_lecție> <y_set> <nume>`. Lecția 7 e la y=259, lecția 8 la y=278. Seturile: Exercises 202/221/240/259, Extra 430/449/468/487. Dacă răspunsul nu apare, mărește așteptarea cu `CT_WAIT=3 CT_WAIT2=6`.
+- **Chess Tutor Step 2** (`C:\Program Files (x86)\Chess Tutor\Chess Tutor Step 2 CD\ChessTutor2.exe`): nu pornește cât e deschis Step 1, deci închide Step 1 întâi. Rulează cu `CT_TITLE="Chess Tutor Step 2" CT_SCALE=1 CT_BM=1` (butoanele lui răspund doar la BM_CLICK). Lecția 12 e la y=354. Stockfish pentru „mutări la fel de bune”: `npm install stockfish` în `tools/perfectionare/` (`node_modules` e ignorat).
 - **Șabloanele pieselor** (`tpl.json`) sunt acum în repo. O piesă necunoscută apare ca „?”. O înveți cu `python run7.py learnimg sets/img/<set>_<i>a.png e4=q`, apoi `python run7.py reread <set>`.
 - Pe tablă nu se pot face mutări prin program (clicurile simulate nu sunt primite). De aceea răspunsul se ia din poziția „după Answer” și din textul explicației.
 - `derive6.py` află mutarea-răspuns comparând pozițiile. Apoi Stockfish (`sfmulti.py`, cu `node_modules/stockfish` în folderul uneltelor) găsește mutările la fel de bune: diferență de cel mult 30 de centipioni, acceptate și ele.

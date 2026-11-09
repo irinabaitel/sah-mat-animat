@@ -48,7 +48,7 @@ resub(r'<p>Alege un joc: îl poți juca împotriva Robotului sau în doi, cu un 
 sub('<a href="nivel1_lectia5.html" class="nav-btn nav-btn--back"><span class="icon" aria-hidden="true">&#8592;</span><span class="label">Atacul, captura, apărarea</span></a>',
     '<a href="nivel1_lectia15.html" class="nav-btn nav-btn--back"><span class="icon" aria-hidden="true">&#8592;</span><span class="label">Numărarea atacatorilor</span></a>')
 sub('<a href="pagina4.html" class="nav-btn nav-btn--forward"><span class="label">Șahul dublu</span>',
-    '<a href="aparare_mat.html" class="nav-btn nav-btn--forward"><span class="label">Apărarea împotriva matului</span>')
+    '<a href="nivel1_lectia16.html" class="nav-btn nav-btn--forward"><span class="label">Apărarea împotriva matului</span>')
 sub('<script src="data/nivel1_lectia6_demo.js?v=1"></script>\n<script src="data/nivel1_lectia6_ex.js?v=1"></script>',
     '<script src="data/nivel1_lectia7_demo.js?v=1"></script>\n<script src="data/nivel1_lectia7_ex.js?v=1"></script>')
 s = s.replace('L6DEMO', 'L7DEMO').replace('L6EX', 'L7EX')
