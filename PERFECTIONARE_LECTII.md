@@ -49,6 +49,7 @@ Despre **Matul**: în hub, „Matul” duce acum la `nivel1_lectia7.html`. `pagi
 ### Urmează
 
 - Jocurile pentru Matul (punctul 8 de mai sus), dacă Irina le vrea.
+- **Șahul dublu** (`pagina4.html`) s-a mutat în Nivelul IV, după Atacul dublu prin descoperire (95a → 4 → 96). În Nivelul I rămâne doar regula, ca sertar în lecția de apărare (`aparare_mat.html`): la șah dublu doar regele se poate muta. Formularea: regele **pleacă**, nu „fuge” (fără panică).
 - Apoi, în ordine: rocada, schimbul avantajos, atacul dublu, remiza/patul, matul cu dama, en passant, notația.
 
 ## 3. Cum se lucrează (pașii pentru o lecție)
