@@ -119,7 +119,7 @@
   </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
-<script src="minijocuri-nav.js?v=20261109b"></script>
+<script src="minijocuri-nav.js?v=20261109c"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -212,7 +212,13 @@
             <p>Pionul ajuns pe ultimul rând se transformă în altă piesă, iar partida o câștigă cine dă mat. Jocul nu se oprește când un pion ajunge pe ultimul rând și nici când o parte rămâne fără pioni.</p>
           </div>
 
-          <div class="hl-box">
+          <div class="hl-box" id="howStart3" style="display:none">
+            <h4>Poziția de start</h4>
+            <p><strong>Albul</strong> are regele pe <strong>h1</strong> și cinci pioni: a3, b2, c3, g2 și h3.</p>
+            <p><strong>Negrul</strong> are regele pe <strong>e7</strong> și patru pioni: b6, b5, c4 și g3.</p>
+            <p><strong>Albul mută primul</strong>, apoi negrul, apoi iar albul și tot așa, pe rând. La fiecare mutare muți o singură piesă.</p>
+          </div>
+          <div class="hl-box" id="howStartStd">
             <h4>Poziția de start</h4>
             <p><strong>Albul</strong> are regele pe <strong>e1</strong> și pionii pe al doilea rând, de la a2 la h2.</p>
             <p><strong>Negrul</strong> are regele pe <strong>e8</strong> și pionii pe al șaptelea rând, de la a7 la h7.</p>
@@ -368,6 +374,9 @@ var strikes = {w: 0, b: 0};  // încercări nepermise (doar în doi)
    joc_stockfish.html?v=2  = Regi și Pioni 2 (partida completă contra Stockfish, cu promovare și mat) */
 var variant = 1;
 try { if (/[?&]v=2(&|$)/.test(window.location.search)) variant = 2; } catch (e) {}
+/* joc_stockfish.html?v=3 = Cine promovează primul? (regulile variantei 1, din poziția jocului 12d din Chess Tutor Step 2) */
+var pos3 = false;
+try { if (/[?&]v=3(&|$)/.test(window.location.search)) pos3 = true; } catch (e) {}
 
 /* varianta 1: pionul ajuns pe ultima linie rămâne pion și așteaptă răspunsul adversarului */
 var v1Pending = null;   // { sq, color } — pionul de pe ultima linie, încă necapturat
@@ -421,14 +430,19 @@ function v1SyncPending() {
 
 function applyVariantUI() {
     var v2 = variant === 2;
-    var title = v2 ? 'Regi și Pioni 2 — partida completă' : 'Regi și Pioni';
+    var title = v2 ? 'Regi și Pioni 2 — partida completă' : pos3 ? 'Cine promovează primul?' : 'Regi și Pioni';
     document.title = title;
     var ht = document.getElementById('headerTitle'); if (ht) ht.innerHTML = '&#9812; ' + title;
     var ph = document.getElementById('panelHeading'); if (ph) ph.innerHTML = '&#9823; ' + title;
     [['introV1', !v2], ['introV2', v2], ['howIntroV1', !v2], ['howIntroV2', v2],
-     ['howtoV1', !v2], ['howtoV2', v2], ['howMoveV1', !v2], ['howMoveV2', v2]].forEach(function(x) {
+     ['howtoV1', !v2], ['howtoV2', v2], ['howMoveV1', !v2], ['howMoveV2', v2],
+     ['howStartStd', !pos3], ['howStart3', pos3]].forEach(function(x) {
         var el = document.getElementById(x[0]); if (el) el.style.display = x[1] ? '' : 'none';
     });
+    if (pos3) {
+        document.getElementById('introV1').innerHTML = 'O poziție cu regi și pioni. Câștigă cine duce primul un pion pe ultima linie fără să îl piardă. Joacă cu albele: albul poate câștiga, dacă găsește drumul bun.';
+        document.getElementById('howIntroV1').querySelector('p').innerHTML = 'Este un joc pe tabla de șah cu puține piese: fiecare parte are <strong>regele</strong> și câțiva <strong>pioni</strong>. Piesele merg ca în șah, dar scopul este altul.';
+    }
 }
 applyVariantUI();
 
@@ -853,7 +867,7 @@ var V1AI = (function() {
 })();
 
 /* ====== BOARD SETUP ====== */
-var START_FEN = '4k3/pppppppp/8/8/8/8/PPPPPPPP/4K3 w - - 0 1';
+var START_FEN = pos3 ? '8/4k3/1p6/1p6/2p5/P1P3pP/1P4P1/7K w - - 0 1' : '4k3/pppppppp/8/8/8/8/PPPPPPPP/4K3 w - - 0 1';
 
 function showPos() { board.position(chess.fen()); }
 

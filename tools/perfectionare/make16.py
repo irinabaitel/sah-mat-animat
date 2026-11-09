@@ -36,7 +36,11 @@ sub('''<p>La mat, piesele lucrează împreună. Una dă șah, iar celelalte o ap
 sub('<p class="src-note">Exercițiile vin din programul Chess Tutor Step 1, din caietul metodei Steps și din lecțiile ChessKid.</p>',
     '<p class="src-note">Exercițiile vin din programul Chess Tutor Step 2 și din caietul metodei Steps, pasul 2.</p>')
 
-resub(r'<p>Alege un joc sau intră în arenă\.</p>.*?</div></div>\n          </div>\n        </div><!-- /acc-wrapper -->', '''<p>Intră în arenă.</p>
+resub(r'<p>Alege un joc sau intră în arenă\.</p>.*?</div></div>\n          </div>\n        </div><!-- /acc-wrapper -->', '''<p>Alege un joc sau intră în arenă.</p>
+              <a href="nivel1_joc_doi_nebuni.html" class="practice-btn pb-blue">♗ Doi nebuni contra damei<small>Nebunii rezistă fără să piardă niciunul</small></a>
+              <a href="nivel1_joc_vanatoarea_nebunului.html" class="practice-btn pb-purple">♝ Vânătoarea nebunului<small>Dama, turnul și calul prind nebunul fără să piardă nimic</small></a>
+              <a href="nivel1_joc_pozitia_initiala.html" class="practice-btn pb-brown">🏠 Înapoi la poziția inițială<small>Piesele albe ajung acasă pe pătrate sigure</small></a>
+              <a href="joc_stockfish.html?v=3" class="practice-btn pb-blue">♙ Cine promovează primul?<small>Cursa pionilor: câștigă cu albele</small></a>
               <a href="aparare_mat.html" class="practice-btn pb-green">🛡️ Arena de apărare<small>25 de poziții: oprește matul adversarului</small></a>
             </div></div>
           </div>
