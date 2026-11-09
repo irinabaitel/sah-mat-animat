@@ -103,7 +103,7 @@ def add_task(fen, side, pieces, solution, cross=None, src='', prompt=None, expl=
                 sup = list(b.attackers(not b.turn, sq0))
                 if sup: expl += f' {CAP(NAME[b.piece_at(sup[0]).piece_type])} de pe {sqn(sup[0])} {PRON.get(pt, "îl")} apără.'
         else:
-            expl = f'{CAP(nm)} de pe {s0} păzește pătratele pe unde ar fi putut fugi regele.'
+            expl = f'{CAP(nm)} de pe {s0} păzește pătratele pe unde ar fi putut pleca regele.'
         others = [q for q in good if q != s0]
         if others: expl += ' Merge și pe ' + ', '.join(others) + '.'
     if expl is None:
@@ -183,7 +183,7 @@ def ct_cross_set(sid, id, title, src, intro):
 
 CT7 = 'Chess Tutor Step 1 · lecția 7'; CT8 = 'Chess Tutor Step 1 · lecția 8'
 CT7X = 'Chess Tutor Step 1 · lecția 7 (extra)'; CT8X = 'Chess Tutor Step 1 · lecția 8 (extra)'
-I_MATE = 'Dă mat într-o singură mutare. Înainte să muți, uită-te pe unde ar mai putea fugi regele.'
+I_MATE = 'Dă mat într-o singură mutare. Înainte să muți, uită-te pe unde ar mai putea pleca regele.'
 I_ADD = 'Pune piesa pe tablă, pe pătratul potrivit, așa încât să fie mat.'
 baza, mediu, av = [], [], []
 
@@ -192,7 +192,7 @@ mediu.append(ct_add_set('L7e_a', '7a', 'Adaugă piesa (1)', CT7, I_ADD + ' Piesa
 mediu.append(ct_mate_set('L7e_b', '7b', 'Mat într-o mutare (1)', CT7, I_MATE))
 mediu.append(ct_mate_set('L7e_c', '7c', 'Mat într-o mutare (2)', CT7, I_MATE + ' Aici și piesele adversarului se pot apăra.'))
 mediu.append(ct_add_set('L7e_d', '7d', 'Adaugă piesa (2)', CT7, I_ADD))
-mediu.append(ct_mate_set('L8e_a', '8a', 'Paznicul și vânătorul', CT8, 'Piesele lucrează împreună: una păzește pătratele pe unde ar fugi regele, alta îi dă șah. Dă mat într-o mutare.'))
+mediu.append(ct_mate_set('L8e_a', '8a', 'Paznicul și vânătorul', CT8, 'Piesele lucrează împreună: una păzește pătratele pe unde ar pleca regele, alta îi dă șah. Dă mat într-o mutare.'))
 mediu.append(ct_add_set('L8e_b', '8b', 'Adaugă piesa (3)', CT8, I_ADD + ' Aici piesa adăugată poate fi paznic sau vânător.'))
 mediu.append(ct_mate_set('L8e_c', '8c', 'Mat într-o mutare (3)', CT8, I_MATE))
 mediu.append(ct_cross_set('L8e_d', '8d', 'Pune piesele pe cruci', CT8, 'Ai câteva piese, iar pe tablă sunt marcate pătratele lor. Pune piesele pe pătratele marcate, așa încât negrul să primească mat. Fiecare piesă merge pe un singur pătrat.'))
@@ -209,7 +209,7 @@ CKQ = [  # (fen, mat?, explicație)
   ('5k2/4PP2/5K2/8/8/8/1p6/8', True, 'Da, este mat. Pionul de pe e7 dă șah. Regele nu poate captura pionii, pentru că îi apără regele alb, iar pe g8 și e8 îl atacă pionul de pe f7.'),
   ('1r3r1k/2bbN1p1/2p2p2/pp1p3Q/q2P1PP1/2P3K1/PP1B4/8', True, 'Da, este mat. Regina dă șah pe coloana h, iar calul de pe e7 ține pătratul g8. Nicio piesă nu se poate pune în cale.'),
   ('r1bqk2r/pppp1Qpp/2n4n/2b1p3/2B1P3/5N2/PPPP1PPP/RNB1K2R', False, 'Nu este mat: calul de pe h6 capturează regina de pe f7.'),
-  ('R4k2/8/4K3/8/8/8/8/8', False, 'Nu este mat: regele fuge pe g7.'),
+  ('R4k2/8/4K3/8/8/8/8/8', False, 'Nu este mat: regele pleacă pe g7.'),
   ('rq1b2rk/2p2Npp/3p1n2/4p3/pp1PP3/2P4P/PP3PP1/2BRR1K1', True, 'Da, este mat. Calul dă șah, iar regele e închis de propriile piese. Acesta se numește „mat sufocat”.'),
   ('3q1r1k/r6Q/bpnbpp2/p1pp4/3P1P2/2P1PR2/PPBB2PP/R5K1', False, 'Nu este mat: turnul de pe a7 capturează regina de pe h7.'),
   ('r1bqk1nr/pppp1ppp/2n5/b7/2B5/B1p2N2/P4PPP/RN1QR1K1', False, 'Nu este mat: negrul poate pune o piesă în cale, pe e7.'),
@@ -219,7 +219,7 @@ tasks = []
 for f, ans, e in CKQ:
     b = board(f, 'b'); assert mated(b) == ans, f
     tasks.append(dict(type='mateq', fen=f + ' b - - 0 1', answer=ans, expl=e, prompt='Regele negru este mat?'))
-baza.append(mk_set('ck_mateq', 'Este mat?', CK, 'Uită-te bine: regele negru poate fugi, poate captura piesa care dă șah sau se poate pune o piesă în cale? Dacă nu poate nimic din acestea, este mat.', tasks))
+baza.append(mk_set('ck_mateq', 'Este mat?', CK, 'Uită-te bine: regele negru poate pleca, poate captura piesa care dă șah sau se poate pune o piesă în cale? Dacă nu poate nimic din acestea, este mat.', tasks))
 
 WB = os.path.join(HERE, 'wb', 'mate_sheets.json')
 w = json.load(open(WB, encoding='utf-8'))
@@ -227,11 +227,11 @@ WBSRC = 'Steps · caietul pasului 1'
 SHEETS = [  # cheie, id, titlu, intro
   ('w26', 'wb_m1A', 'Mat într-o mutare A', 'Dă mat într-o mutare. Piesa care dă mat trebuie să fie apărată.'),
   ('w27', 'wb_addA', 'Adaugă piesa A', 'Pune piesa pe tablă, așa încât să fie mat.'),
-  ('w28', 'wb_addB', 'Adaugă piesa B', 'Pune piesa pe tablă, așa încât să fie mat. Piesa poate da șah și, în același timp, păzi pătratele pe unde ar fugi regele.'),
+  ('w28', 'wb_addB', 'Adaugă piesa B', 'Pune piesa pe tablă, așa încât să fie mat. Piesa poate da șah și, în același timp, păzi pătratele pe unde ar pleca regele.'),
   ('w29', 'wb_m1B', 'Mat într-o mutare B', 'Dă mat într-o mutare. Paznicul și vânătorul lucrează împreună.'),
   ('w30', 'wb_m1C', 'Mat într-o mutare C', 'Dă mat într-o mutare. Uneori propriile piese îi închid regelui drumul.'),
   ('w31', 'wb_addC', 'Adaugă piesa C', 'Pune piesa pe tablă, așa încât să fie mat.'),
-  ('w32', 'wb_addD', 'Adaugă paznicul D', 'Regele este deja în șah. Pune piesa pe un pătrat de unde păzește pătratele pe unde ar fugi regele.'),
+  ('w32', 'wb_addD', 'Adaugă paznicul D', 'Regele este deja în șah. Pune piesa pe un pătrat de unde păzește pătratele pe unde ar pleca regele.'),
   ('w33', 'wb_m1D', 'Mat într-o mutare D', 'Dă mat într-o mutare.'),
   ('w34', 'wb_m1E', 'Mat într-o mutare E', 'Dă mat într-o mutare. Pe tablă sunt mai multe piese.'),
   ('w35', 'wb_m1F', 'Mat într-o mutare F', 'Dă mat într-o mutare.'),

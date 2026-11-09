@@ -16,12 +16,12 @@ G = {}
 # ── ACC 0: ce este matul ──
 G['mat'] = [
   S('k7/Q7/8/8/8/8/8/8', 'b',
-    '<p>Regina albă dă șah regelui negru. Regele nu poate fugi și nicio piesă nu se poate pune în cale.</p>'
+    '<p>Regina albă dă șah regelui negru. Regele nu poate pleca și nicio piesă nu se poate pune în cale.</p>'
     '<p>Dar regele poate <strong>captura</strong> regina: ea nu este apărată.</p>',
     [('a7', 'a8', 'r')],
     [A('Rxa7', 'a8a7', 'Regele capturează regina. Negrul a scăpat de șah.')]),
   S('k7/Q7/1K6/8/8/8/8/8', 'b',
-    '<p>Acum regele alb stă pe b6 și o apără pe regină. Regele negru nu mai poate captura regina, nu poate fugi și nicio piesă nu se poate pune în cale.</p>'
+    '<p>Acum regele alb stă pe b6 și o apără pe regină. Regele negru nu mai poate captura regina, nu poate pleca și nicio piesă nu se poate pune în cale.</p>'
     '<p>Regele este în șah și nu poate scăpa de șah. Aceasta este <strong>șah mat</strong> sau, pe scurt, <strong>mat</strong>. Partida s-a terminat: albul a câștigat.</p>',
     [('a7', 'a8', 'r'), ('b6', 'a7', 'g')]),
   S('k7/Q7/1K6/8/8/8/8/8', 'b',
@@ -40,12 +40,12 @@ G['sprijin'] = [
     '<p>Acum negrul dă mat cu regina.</p>',
     (), [A('Dg3#', 'e1g3', 'Mat! Regina stă lângă rege, iar nebunul de pe e5 o apără.', [('e5', 'g3', 'g')], mate=True)]),
   S('8/1QN5/8/k7/8/8/8/8', 'w',
-    '<p>Regina trebuie să dea șah și, în același timp, să ia regelui pătratul a4, pe unde ar putea fugi.</p>',
-    (), [A('Da6+?', 'b7a6', 'Nu este mat: regina a plecat de pe coloana b, iar regele fuge pe b4.', [('a5', 'b4', 'r')], mate=False),
+    '<p>Regina trebuie să dea șah și, în același timp, să ia regelui pătratul a4, pe unde ar putea pleca.</p>',
+    (), [A('Da6+?', 'b7a6', 'Nu este mat: regina a plecat de pe coloana b, iar regele pleacă pe b4.', [('a5', 'b4', 'r')], mate=False),
          A('Db5#', 'b7b5', 'Mat! Regina de pe b5 ține pătratele a4, a6 și b4, iar calul de pe c7 o apără.', [('c7', 'b5', 'g')], mate=True)]),
   S('6r1/8/7p/8/5q2/7K/8/8', 'b',
     '<p>Regele alb nu poate merge nicăieri. Totuși negrul trebuie să aleagă cu grijă șahul.</p>',
-    (), [A('Tg3+?', 'g8g3', 'Nu este mat: regele fuge pe h2, pentru că turnul de pe g3 nu ține pătratul acela.', [('h3', 'h2', 'r')], mate=False),
+    (), [A('Tg3+?', 'g8g3', 'Nu este mat: regele pleacă pe h2, pentru că turnul de pe g3 nu ține pătratul acela.', [('h3', 'h2', 'r')], mate=False),
          A('Dg3#', 'f4g3', 'Mat! Regina ține și pătratul h2, iar turnul de pe g8 o apără.', [('g8', 'g3', 'g')], mate=True)]),
 ]
 G['capt'] = [
@@ -60,7 +60,7 @@ G['capt'] = [
 G['proprii'] = [
   S('k7/pp6/8/8/8/8/2Q5/8', 'w',
     '<p>Pionii negri stau atât de prost încât regina nici nu are nevoie de ajutor.</p>',
-    (), [A('Dc8#', 'c2c8', 'Mat! Regele nu poate fugi, pentru că pătratele a7 și b7 sunt ocupate de pionii lui. Acesta este <strong>matul pe ultima linie</strong>.', mate=True)]),
+    (), [A('Dc8#', 'c2c8', 'Mat! Regele nu poate pleca, pentru că pătratele a7 și b7 sunt ocupate de pionii lui. Acesta este <strong>matul pe ultima linie</strong>.', mate=True)]),
   S('8/5q2/8/6p1/8/6KP/6P1/8', 'b',
     '<p>Aici regina neagră are nevoie de ajutorul pionului ei.</p>',
     (), [A('Df4#', 'f7f4', 'Mat! Pionul de pe g5 apără regina, iar pionii albi de pe g2 și h3 îi încurcă pe propriul rege.', [('g5', 'f4', 'g')], mate=True)]),
@@ -94,12 +94,12 @@ G['adauga'] = [
     '<p>Regina albă de pe c8 dă șah, dar regele o poate captura. Unde pui un <strong>pion alb</strong> ca să fie mat?</p>',
     [('c8', 'b7', 'r')], [A('Arată pătratul', None, 'Pe d7. Pionul apără regina, iar regele nu o mai poate captura.', hl=dict(safe=['d7'], unsafe=[]))]),
   S('8/8/8/8/8/4b3/8/6rK', 'w',
-    '<p>Regele alb este în șah. Pe unde mai poate fugi? Pune acolo un <strong>pion alb</strong> și albul primește mat: propria piesă îi închide drumul.</p>',
+    '<p>Regele alb este în șah. Pe unde mai poate pleca? Pune acolo un <strong>pion alb</strong> și albul primește mat: propria piesă îi închide drumul.</p>',
     [('g1', 'h1', 'r')], [A('Arată pătratul', None, 'Pe h2. Turnul nu poate fi capturat, pentru că îl apără nebunul de pe e3.', hl=dict(safe=['h2'], unsafe=[]))]),
 ]
 G['paza'] = [
   S('4k3/1R6/8/8/8/8/8/8', 'b',
-    '<p>La mat, piesele <strong>lucrează împreună</strong>. Unele <strong>păzesc</strong> pătratele pe unde ar fugi regele, iar alta îl <strong>vânează</strong>: îi dă șah.</p>'
+    '<p>La mat, piesele <strong>lucrează împreună</strong>. Unele <strong>păzesc</strong> pătratele pe unde ar pleca regele, iar alta îl <strong>vânează</strong>: îi dă șah.</p>'
     '<p>Turnul de pe b7 păzește linia 7: regele negru nu poate merge pe d7, e7 și f7. Pe d8 și f8 însă poate.</p>',
     (), [A('Arată pătratele', None, 'Roșu: pătratele păzite de turn. Verde: unde regele mai poate merge.', hl=dict(safe=['d8', 'f8'], unsafe=['d7', 'e7', 'f7']))]),
   S('8/8/8/8/8/8/3q4/5K2', 'w',
@@ -107,17 +107,17 @@ G['paza'] = [
     (), [A('Arată pătratele', None, 'Roșu: pătratele păzite de regină. Verde: singurul pătrat liber.', hl=dict(safe=['g1'], unsafe=['e1', 'e2', 'f2', 'g2']))]),
   S('7k/1R6/R7/8/8/8/8/8', 'w',
     '<p>Turnul de pe b7 este <strong>paznicul</strong>. Regele mai poate merge doar pe g8. Turnul de pe a6 este <strong>vânătorul</strong>: el trebuie să dea șah și să ia și pătratul g8.</p>',
-    (), [A('Th6+?', 'a6h6', 'Nu este mat: regele fuge pe g8.', [('h8', 'g8', 'r')], mate=False),
+    (), [A('Th6+?', 'a6h6', 'Nu este mat: regele pleacă pe g8.', [('h8', 'g8', 'r')], mate=False),
          A('Ta8#', 'a6a8', 'Mat! Turnul de pe a8 dă șah și ține și pătratul g8. Turnurile se completează unul pe celălalt.', mate=True)]),
   S('8/8/8/5r2/6r1/8/7K/8', 'b',
     '<p>Un exemplu asemănător, pentru negru.</p>',
-    (), [A('Th5#', 'f5h5', 'Mat! Turnul de pe g4 păzește coloana g, iar turnul de pe h5 dă șah pe coloana h. Nici pe h1 regele nu poate fugi: tot pe coloana h ar fi.', mate=True)]),
+    (), [A('Th5#', 'f5h5', 'Mat! Turnul de pe g4 păzește coloana g, iar turnul de pe h5 dă șah pe coloana h. Nici pe h1 regele nu poate pleca: tot pe coloana h ar fi.', mate=True)]),
   S('k7/8/1Q6/8/B7/8/8/8', 'w',
     '<p>Regina păzește, nebunul vânează.</p>',
     (), [A('Nc6#', 'a4c6', 'Mat! Nebunul dă șah pe diagonala c6–a8, iar regina ține pătratele a7, b7 și b8.', mate=True)]),
   S('8/8/8/7q/8/4b3/7P/7K', 'b',
     '<p>Vânătorul trebuie să dea șah și, în același timp, să ia regelui pătratul g2. Nebunul de pe e3 păzește g1.</p>',
-    (), [A('Dd1+?', 'h5d1', 'Nu este mat: regele fuge pe g2.', [('h1', 'g2', 'r')], mate=False),
+    (), [A('Dd1+?', 'h5d1', 'Nu este mat: regele pleacă pe g2.', [('h1', 'g2', 'r')], mate=False),
          A('Df3#', 'h5f3', 'Mat! Regina dă șah pe diagonală și ține pătratul g2.', mate=True),
          A('Dd5#', 'h5d5', 'Și așa este mat: regina dă șah de departe, pe diagonala d5–h1.', mate=True)]),
   S('k7/3n4/8/1Q6/8/6B1/8/8', 'w',
@@ -135,12 +135,12 @@ G['atentie'] = [
     (), [A('Ta1+?', 'a2a1', 'Nu este mat: nebunul se pune în cale, pe d1.', [('g4', 'd1', 'r')], mate=False),
          A('Th1#', 'h2h1', 'Mat! Pe f1 și g1 nicio piesă albă nu se poate pune în cale.', mate=True)]),
   S('6R1/3N3k/7n/8/8/8/8/8', 'w',
-    '<p>Pe g8, unde ar putea fugi regele, stă un turn. Regele poate fugi capturându-l.</p>',
+    '<p>Pe g8, unde ar putea pleca regele, stă un turn. Regele poate pleca capturându-l.</p>',
     (), [A('Cf8+?', 'd7f8', 'Nu este mat: regele capturează turnul de pe g8.', [('h7', 'g8', 'r')], mate=False),
          A('Cf6#', 'd7f6', 'Mat! Calul face două lucruri: dă șah și apără turnul de pe g8.', [('f6', 'g8', 'g')], mate=True)]),
   S('7k/4R3/8/3BN3/8/8/8/8', 'w',
     '<p>Regele negru nu poate merge nicăieri. Ajunge deci un simplu șah? Nu întotdeauna: vânătorul poate deschide drumul regelui.</p>',
-    (), [A('Cf7+?', 'e5f7', 'Nu este mat: calul a închis drumul turnului și al nebunului. Regele poate fugi pe g7, h7 sau g8.', mate=False),
+    (), [A('Cf7+?', 'e5f7', 'Nu este mat: calul a închis drumul turnului și al nebunului. Regele poate pleca pe g7, h7 sau g8.', mate=False),
          A('Cg6#', 'e5g6', 'Mat! Calul doar dă șah, iar paznicii, turnul și nebunul, își fac treaba mai departe.', mate=True)]),
 ]
 

@@ -20,19 +20,19 @@ resub(r'<!-- ── ACC 0: ȘAHUL ── -->.*?<!-- ── ACC 1: IEȘIREA DIN �
           <div class="acc-item">
             <div class="acc-head" id="mAcc0" onclick="toggleAcc(0)"><span>👑 Ce este matul?</span><span class="acc-icon">▶</span></div>
             <div class="acc-body" id="body0"><div class="acc-inner">
-              <p>Atunci când regele este în șah și nu poate scăpa de șah, adică nu are unde să fugă, nicio piesă nu se poate pune în cale și piesa care dă șah nu poate fi capturată, se spune că este <strong>șah mat</strong>. Acesta este scopul jocului: să-i dai mat regelui advers.</p>
+              <p>Atunci când regele este în șah și nu poate scăpa de șah, adică nu are unde să plece, nicio piesă nu se poate pune în cale și piesa care dă șah nu poate fi capturată, se spune că este <strong>șah mat</strong>. Acesta este scopul jocului: să-i dai mat regelui advers.</p>
               <div id="g-mat-text"></div>
               <div id="g-mat-act"></div>
               <div class="ex-step-nav" id="g-mat-nav"></div>
-              <div class="hl-box warn"><strong>Mat = șah + regele nu are scăpare.</strong> Înainte să spui „mat”, verifică cele trei ieșiri din șah: poate regele fugi? Poate fi capturată piesa care dă șah? Se poate pune o piesă în cale?</div>
+              <div class="hl-box warn"><strong>Mat = șah + regele nu are scăpare.</strong> Înainte să spui „mat”, verifică cele trei ieșiri din șah: poate regele pleca? Poate fi capturată piesa care dă șah? Se poate pune o piesă în cale?</div>
             </div></div>
           </div>
 
           <!-- ── ACC 1: CUM DAI MAT ── -->''')
 sub('''<div class="acc-head" id="mAcc1" onclick="toggleAcc(1)"><span>🛡️ Ieșirea din șah</span><span class="acc-icon">▶</span></div>''',
     '''<div class="acc-head" id="mAcc1" onclick="toggleAcc(1)"><span>♛ Cum dai mat</span><span class="acc-icon">▶</span></div>''')
-sub('''<p>Din șah ieși în trei feluri: <strong>fugi</strong> cu regele, <strong>capturezi</strong> piesa care dă șah sau <strong>pui o piesă în cale</strong>. Dacă poți alege, alege mutarea cu care nu pierzi nimic.</p>''',
-    '''<p>La mat, piesele lucrează împreună. Una dă șah, iar celelalte o apără sau păzesc pătratele pe unde ar putea fugi regele. Uneori chiar piesele regelui îi închid drumul.</p>''')
+sub('''<p>Din șah ieși în trei feluri: <strong>pleca</strong> cu regele, <strong>capturezi</strong> piesa care dă șah sau <strong>pui o piesă în cale</strong>. Dacă poți alege, alege mutarea cu care nu pierzi nimic.</p>''',
+    '''<p>La mat, piesele lucrează împreună. Una dă șah, iar celelalte o apără sau păzesc pătratele pe unde ar putea pleca regele. Uneori chiar piesele regelui îi închid drumul.</p>''')
 sub('<p class="src-note">Exercițiile vin din programul Chess Tutor Step 1, din caietul metodei Steps și din lecțiile ChessKid.</p>',
     '<p class="src-note">Exercițiile vin din programul Chess Tutor Step 1, din caietul metodei Steps și din lecțiile ChessKid.</p>')
 
@@ -40,7 +40,7 @@ sub('<p class="src-note">Exercițiile vin din programul Chess Tutor Step 1, din 
 resub(r'<p>Alege un joc: îl poți juca împotriva Robotului sau în doi, cu un coleg\.</p>.*?</div></div>\n          </div>\n        </div><!-- /acc-wrapper -->', '''<p>Alege un joc sau intră în arenă.</p>
               <a href="nivel1_joc_vanatoarea_regelui.html" class="practice-btn pb-blue">👑 Vânătoarea regelui<small>Ai toată armata albă, iar regele negru e singur. Îi dai mat înainte să scape?</small></a>
               <a href="pagina5.html" class="practice-btn pb-green">♟ Arena de mat<small>Probleme de mat în 1, 2, 3 și 4 mutări</small></a>
-              <a href="nivel1_joc_scapa_de_dame.html" class="practice-btn pb-purple">♛ Scapă de dame<small>Calul fuge de două regine</small></a>
+              <a href="nivel1_joc_scapa_de_dame.html" class="practice-btn pb-purple">♛ Scapă de dame<small>Calul pleacă de două regine</small></a>
             </div></div>
           </div>
         </div><!-- /acc-wrapper -->''')
@@ -84,7 +84,7 @@ function whyNotMate(p, c) {
   if (!inCheck(p, c)) return 'Regele nu este în șah, deci nu este mat.';
   const k = kingSq(p, c), mv = movesOf(p, c), ch = attackers(p, k, opp(c));
   const run = mv.find(m => m[0] === k && !p[m[1]]);
-  if (run) return 'Nu este mat: regele fuge pe ' + run[1] + '.';
+  if (run) return 'Nu este mat: regele pleacă pe ' + run[1] + '.';
   const capt = mv.find(m => ch.includes(m[1]));
   if (capt) return 'Nu este mat: ' + (capt[0] === k ? 'regele' : NAME[p[capt[0]][1]] + ' de pe ' + capt[0]) + ' capturează ' + NAME[p[capt[1]][1]] + (p[capt[1]][1] === 'Q' ? 'a' : '') + ' de pe ' + capt[1] + '.';
   const kc = mv.find(m => m[0] === k);
