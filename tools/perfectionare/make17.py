@@ -39,8 +39,9 @@ sub('''<p>Fiecare sertar arată o apărare. La sfârșit găsești și <strong>�
 sub('<p class="src-note">Exercițiile vin din programul Chess Tutor Step 2 și din caietul metodei Steps, pasul 2.</p>',
     '<p class="src-note">Exercițiile vin din caietul metodei Steps (pasul 1), din lecțiile ChessKid și din programul Chess Tutor Step 1.</p>')
 
-resub(r'<p>Alege un joc sau intră în arenă\.</p>.*?</div></div>\n          </div>\n        </div><!-- /acc-wrapper -->', '''<p>Alege un joc.</p>
+resub(r'<p>Alege un joc sau intră în arenă\.</p>.*?</div></div>\n          </div>\n        </div><!-- /acc-wrapper -->', '''<p>Alege un joc sau intră în arenă.</p>
               <a href="nivel1_joc_vanatoarea_regelui.html" class="practice-btn pb-blue">👑 Vânătoarea regelui<small>Toată armata albă contra regelui negru: dă mat, nu pat</small></a>
+              <a href="nivel1_arena_pat.html" class="practice-btn pb-green">⚖️ Arena patului<small>43 de poziții: salvează-te prin pat sau ferește-te să dai pat</small></a>
             </div></div>
           </div>
         </div><!-- /acc-wrapper -->''')
