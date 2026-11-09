@@ -49,7 +49,7 @@ resub(r'<p>Alege un joc sau intră în arenă\.</p>.*?</div></div>\n          </
 sub('<a href="nivel1_lectia15.html" class="nav-btn nav-btn--back"><span class="icon" aria-hidden="true">&#8592;</span><span class="label">Numărarea atacatorilor</span></a>',
     '<a href="nivel1_lectia7.html" class="nav-btn nav-btn--back"><span class="icon" aria-hidden="true">&#8592;</span><span class="label">Matul</span></a>')
 sub('<a href="nivel1_lectia16.html" class="nav-btn nav-btn--forward"><span class="label">Apărarea împotriva matului</span>',
-    '<a href="pagina7.html" class="nav-btn nav-btn--forward"><span class="label">Patul</span>')
+    '<a href="nivel1_lectia17.html" class="nav-btn nav-btn--forward"><span class="label">Patul</span>')
 sub('<script src="data/nivel1_lectia7_demo.js?v=1"></script>\n<script src="data/nivel1_lectia7_ex.js?v=1"></script>',
     '<script src="data/nivel1_lectia16_demo.js?v=1"></script>\n<script src="data/nivel1_lectia16_ex.js?v=1"></script>')
 s = s.replace('L7DEMO', 'L16DEMO').replace('L7EX', 'L16EX')
