@@ -104,46 +104,49 @@
     <div class="panel-col">
       <div class="panel-scroll">
         <div class="toggle-row">
-          <button class="tgl-btn active" id="modeSolo" onclick="setMode('solo')">👤 Singur</button>
-          <button class="tgl-btn"        id="modeDuo"  onclick="setMode('duo')">👫 În doi</button>
+          <button class="tgl-btn active" id="modeRobot" onclick="setMode('robot')">🤖 Contra Robotului</button>
+          <button class="tgl-btn"        id="modeDuo"   onclick="setMode('duo')">👫 În doi</button>
+        </div>
+        <div class="animal-grid" id="levelGrid">
+          <button class="animal-btn active" data-random="0.9" onclick="setLevel(this)">🐣<span>Pui de găină</span></button>
+          <button class="animal-btn" data-random="0.2" onclick="setLevel(this)">🐴<span>Mânz</span></button>
+          <button class="animal-btn" data-random="0" onclick="setLevel(this)">🐉<span>Dragon</span></button>
         </div>
 
         <div class="counter-row">
-          <div class="counter-box"><div class="counter-lbl">Mutări</div><div class="counter-val" id="movesVal">0</div></div>
-          <div class="counter-box"><div class="counter-lbl">La mutare</div><div class="counter-val" id="turnVal">Albul</div></div>
+          <div class="counter-box"><div class="counter-lbl">Repriza</div><div class="counter-val" id="roundVal">1 / 2</div></div>
+          <div class="counter-box"><div class="counter-lbl">Mutarea</div><div class="counter-val" id="movesVal">1 / 20</div></div>
         </div>
 
         <div id="duoPanels" style="display:none">
-          <div class="player-panel" id="pp1"><div class="pp-row"><span class="pp-name">👤 Jucătorul 1</span><span class="pp-strikes" id="pp1-strikes"></span></div><div class="pp-role">♗ nebunii albi</div></div>
-          <div class="player-panel" id="pp2"><div class="pp-row"><span class="pp-name">👤 Jucătorul 2</span><span class="pp-strikes" id="pp2-strikes"></span></div><div class="pp-role">♝ nebunii negri</div></div>
+          <div class="player-panel" id="pp1"><div class="pp-row"><span class="pp-name">👤 Jucătorul 1</span><span class="pp-strikes" id="pp1-strikes"></span></div><div class="pp-role" id="pp1-role"></div><div class="pp-result" id="pp1-result"></div></div>
+          <div class="player-panel" id="pp2"><div class="pp-row"><span class="pp-name">👤 Jucătorul 2</span><span class="pp-strikes" id="pp2-strikes"></span></div><div class="pp-role" id="pp2-role"></div><div class="pp-result" id="pp2-result"></div></div>
         </div>
 
         <div id="status-box"></div>
 
-        <button class="btn-game" id="btn-undo" onclick="undo()">⟲ Ia înapoi ultima mutare</button>
-        <button class="btn-game" onclick="newGame()">↺ Joacă din nou</button>
-        <button class="btn-game" id="btn-show" onclick="showSolution()" style="background:rgba(255,255,255,0.4)">👁 Arată o soluție</button>
+        <button id="btn-round2" onclick="startRound(2)">▶ Repriza 2 — schimbați culorile</button>
+        <button class="btn-game" onclick="newMatch()">↺ Joacă din nou</button>
 
         <details class="howto" open>
           <summary>📖 Cum se joacă</summary>
           <div class="hl-box">
             <h4>Piesele</h4>
-            <p>Albul are doi <strong>nebuni</strong>, pe c1 și pe f1. Negrul are doi nebuni, pe c8 și pe f8.</p>
+            <p>Albul are doi <strong>nebuni</strong>, pe c1 și pe f1. Negrul are doi nebuni, pe c8 și pe f8. Mută întâi albul, apoi negrul, pe rând.</p>
           </div>
           <div class="hl-box">
-            <h4>Ce trebuie să faci</h4>
-            <p><strong>Schimbă locurile nebunilor</strong>: nebunii albi ajung pe c8 și pe f8, iar nebunii negri pe c1 și pe f1.</p>
-            <p>Muți pe rând cu albul și cu negrul: o mutare albul, o mutare negrul. Începe albul.</p>
+            <h4>Cine câștigă</h4>
+            <p>Câștigă cine ajunge primul cu <strong>amândoi nebunii pe pătratele de start ale adversarului</strong>: albul pe c8 și pe f8, negrul pe c1 și pe f1.</p>
+            <p>Câștigă și cine <strong>capturează un nebun</strong> al adversarului: cine pierde un nebun a pierdut jocul.</p>
           </div>
           <div class="hl-box warn">
-            <h4>Regula importantă</h4>
-            <p>Pe drum, nebunii albi și nebunii negri <strong>nu au voie să se atace</strong> niciodată. Nicio mutare nu are voie să pună un nebun pe aceeași diagonală liberă cu un nebun al adversarului.</p>
-            <p>Nebunul de pe pătrate albe nu-l poate ataca niciodată pe cel de pe pătrate negre. Fii atent la nebunii care merg pe aceeași culoare.</p>
+            <h4>Atenție</h4>
+            <p>Ai voie să muți un nebun pe un pătrat atacat, dar adversarul îl poate captura. Nebunii de pe pătratele albe se pot ataca între ei, la fel și cei de pe pătratele negre.</p>
           </div>
           <div class="hl-box">
-            <h4>Câte mutări</h4>
-            <p>Se poate în <strong>12 mutări</strong> (6 ale albului și 6 ale negrului). Dacă te-ai încurcat, poți lua înapoi ultima mutare.</p>
-            <p id="ruleDuo" style="display:none"><strong>În doi</strong>, jucați împreună: Jucătorul 1 mută nebunii albi, Jucătorul 2 pe cei negri. Câștigați amândoi dacă schimbați locurile.</p>
+            <h4>Egalitate și reprize</h4>
+            <p>Dacă după <strong>20 de mutări</strong> ale fiecăruia nimeni nu a câștigat, repriza se termină la egalitate.</p>
+            <p>Jocul are două reprize. În repriza a doua <strong>se schimbă culorile</strong>.</p>
           </div>
           <p class="pp-role" style="margin-top:8px">Jocul vine din programul Chess Tutor Step 1 (metoda Steps), lecția 3.</p>
         </details>
@@ -160,9 +163,10 @@
 <script src="board-utils.js"></script>
 <script>
 /* =====================================================
-   SCHIMBĂ NEBUNII (Chess Tutor Step 1, lecția 3, joc 3d)
-   Nebunii albi c1,f1 și negri c8,f8 își schimbă locurile, mutând pe rând,
-   fără să se atace vreodată. Minimum 12 mutări.
+   SCHIMBĂ NEBUNII (după Chess Tutor Step 1, lecția 3, joc 3d), ca joc de concurs
+   Albul (c1, f1) și negrul (c8, f8) aleargă să ajungă pe pătratele de start ale adversarului.
+   Capturile sunt permise: cine pierde un nebun pierde. 20 de mutări ale fiecăruia, apoi egalitate.
+   Dragonul joacă din analiza retrogradă completă (solveCursa), calculată în pagină (~2 s).
    ===================================================== */
 /* ---------- comun (sunete, geometrie, afișare) ---------- */
 const COLS = 'abcdefgh';
@@ -198,155 +202,287 @@ function flashWrong(sq) { const el = $('.square-' + sq); el.addClass('sq-wrong')
 function setStatus(msg, cls) { const el = document.getElementById('status-box'); el.innerHTML = msg; el.className = cls || ''; }
 function markLast(from, to) { $('.square-' + from).addClass('highlight-last'); $('.square-' + to).addClass('highlight-last'); }
 
-const SOLUTION = ['c1-b2', 'c8-g4', 'f1-g2', 'g4-e2', 'g2-h3', 'f8-b4', 'b2-g7', 'b4-d2', 'h3-c8', 'd2-c1', 'g7-f8', 'e2-f1'];
-let board, mode = 'solo', W, B, turn, hist, over, selSq = null, demo = null, strikes = { 1: 0, 2: 0 };
-const occ = s => W.includes(s) || B.includes(s);
-const pname = p => 'Jucătorul ' + p;
-const curPlayer = () => turn === 'w' ? 1 : 2;
-function attackPair(Wx, Bx) {                     // [alb, negru] care se atacă, sau null
-    const o = s => Wx.includes(s) || Bx.includes(s);
-    for (const w of Wx) for (const t of slide(w, DIA, o)) if (Bx.includes(t)) return [w, t];
-    return null;
-}
-function buildPos() { const p = {}; W.forEach(s => p[name(s)] = 'wB'); B.forEach(s => p[name(s)] = 'bB'); return p; }
-function own(s) { return (turn === 'w' ? W : B).includes(s); }
-function targetsOf(s) { return own(s) ? slide(s, DIA, occ).filter(t => !occ(t)) : []; }
-function problem(f, t) {
-    if (!targetsOf(f).includes(t)) return occ(t) ? 'Aici nu se capturează: nebunii doar își schimbă locurile.' : 'Nebunul merge numai pe diagonală și nu sare peste piese.';
-    const W2 = W.map(s => s === f ? t : s), B2 = B.map(s => s === f ? t : s);
-    const a = attackPair(W2, B2);
-    if (a) return 'Nu se poate: nebunul alb de pe ' + name(a[0]) + ' și nebunul negru de pe ' + name(a[1]) + ' s-ar ataca.';
-    return null;
-}
-function anyLegal() {
-    for (const f of (turn === 'w' ? W : B)) for (const t of targetsOf(f)) if (!problem(f, t)) return true;
-    return false;
-}
-const done = () => W.includes(idx('c8')) && W.includes(idx('f8')) && B.includes(idx('c1')) && B.includes(idx('f1'));
+function schimbaNebunii() {
+    const LIMIT = 20;                                // mutări ale fiecăruia
+    let S = null;                                    // tabela Dragonului
+    const solver = () => S || (S = solveCursa());
+    let board, mode = 'robot', randomness = 0.9, round, P, turn, ply, roundOver, matchOver, selSq = null, busy = false, robotTimer = null;
+    let results = {}, strikes = { 1: 0, 2: 0 };
+    /* P = [alb pe pătrate albe, alb pe pătrate negre, negru pe pătrate albe, negru pe pătrate negre] (-1 = capturat) */
+    const T = [idx('c8'), idx('f8'), idx('f1'), idx('c1')];
+    const sideOf = k => k < 2 ? 'w' : 'b';
+    const mineK = c => c === 'w' ? [0, 1] : [2, 3];
+    const pname = p => 'Jucătorul ' + p;
+    const whitePlayer = () => round === 1 ? 1 : 2;
+    const humanSide = () => round === 1 ? 'w' : 'b';
+    const isHumanTurn = () => mode === 'duo' || turn === humanSide();
+    const curPlayer = () => turn === 'w' ? whitePlayer() : 3 - whitePlayer();
+    const sideName = c => c === 'w' ? 'albul' : 'negrul';
+    const at = s => P.indexOf(s);
+    function raysOf(k) {
+        const out = [], s0 = P[k];
+        for (const [a, b] of DIA) {
+            let c = (s0 >> 3) + a, r = (s0 & 7) + b;
+            while (c >= 0 && c < 8 && r >= 0 && r < 8) { const t = c * 8 + r; out.push(t); if (P.includes(t)) break; c += a; r += b; }
+        }
+        return out;
+    }
+    function targetsOf(s) {                          // pătratele unde poate merge nebunul de pe s
+        const k = at(s); if (k < 0 || sideOf(k) !== turn) return [];
+        return raysOf(k).filter(t => { const j = at(t); return j < 0 || j === (k ^ 2); });
+    }
+    const home = c => mineK(c).every(k => P[k] === T[k]);
+    function buildPos() { const p = {}; P.forEach((s, k) => { if (s >= 0) p[name(s)] = k < 2 ? 'wB' : 'bB'; }); return p; }
+    function showSelection(sq) {
+        clearHL(true); $('.square-' + sq).addClass('highlight-selected');
+        targetsOf(idx(sq)).forEach(t => $('.square-' + name(t)).addClass(at(t) >= 0 ? 'highlight-capture' : 'highlight-legal'));
+    }
+    function updateUI() {
+        document.getElementById('roundVal').textContent = round + ' / 2';
+        document.getElementById('movesVal').textContent = Math.min(LIMIT, Math.floor(ply / 2) + 1) + ' / ' + LIMIT;
+        [1, 2].forEach(p => {
+            document.getElementById('pp' + p + '-strikes').textContent = '❌'.repeat(strikes[p]) + '▫️'.repeat(MAX_STRIKES - strikes[p]);
+            document.getElementById('pp' + p + '-role').textContent = p === whitePlayer() ? '♗ nebunii albi' : '♝ nebunii negri';
+            document.getElementById('pp' + p).className = 'player-panel' + (!roundOver && !matchOver && curPlayer() === p ? ' active' : '');
+            const rs = [1, 2].filter(r => results[r]).map(r => {
+                const pw = r === 1 ? 1 : 2, res = results[r];
+                return 'repriza ' + r + ': ' + (res === 'd' ? 'egal' : (res === 'w') === (pw === p) ? 'a câștigat' : 'a pierdut');
+            });
+            document.getElementById('pp' + p + '-result').textContent = rs.join(', ');
+        });
+    }
+    function turnMsg() {
+        if (mode === 'duo') return pname(curPlayer()) + ' mută un nebun ' + (turn === 'w' ? 'alb.' : 'negru.');
+        return 'Mută un nebun ' + (turn === 'w' ? 'alb.' : 'negru.') + ' Țintele tale: ' + (turn === 'w' ? 'c8 și f8.' : 'c1 și f1.');
+    }
 
-function showSelection(sq) {
-    clearHL(true); $('.square-' + sq).addClass('highlight-selected');
-    targetsOf(idx(sq)).forEach(t => $('.square-' + name(t)).addClass('highlight-legal'));
-}
-function updateUI() {
-    document.getElementById('movesVal').textContent = hist.length;
-    document.getElementById('turnVal').textContent = turn === 'w' ? 'Albul' : 'Negrul';
-    [1, 2].forEach(p => {
-        document.getElementById('pp' + p + '-strikes').textContent = '❌'.repeat(strikes[p]) + '▫️'.repeat(MAX_STRIKES - strikes[p]);
-        document.getElementById('pp' + p).className = 'player-panel' + (!over && curPlayer() === p ? ' active' : '');
+    function newMatch() { results = {}; strikes = { 1: 0, 2: 0 }; matchOver = false; startRound(1); }
+    function startRound(r) {
+        clearTimeout(robotTimer); busy = false;
+        round = r; P = [idx('f1'), idx('c1'), idx('c8'), idx('f8')];
+        turn = 'w'; ply = 0; roundOver = false; selSq = null;
+        board.orientation(mode === 'robot' && humanSide() === 'b' ? 'black' : 'white');
+        board.position(buildPos(), false); clearHL();
+        document.getElementById('btn-round2').style.display = 'none';
+        setStatus(turnMsg()); updateUI();
+        if (!isHumanTurn()) robotMove();
+    }
+    function apply(f, t) {
+        const k = at(f), j = at(t);
+        if (j >= 0) P[j] = -1;
+        P[k] = t; ply++;
+        selSq = null; clearHL();
+        board.position(buildPos(), false); markLast(name(f), name(t));
+        play(j >= 0 ? sndCapture : sndMove);
+        if (j >= 0) return endRound(turn, 'Nebunul ' + (turn === 'w' ? 'alb' : 'negru') + ' a capturat nebunul ' + (turn === 'w' ? 'negru' : 'alb') + ' de pe ' + name(t) + '.');
+        if (home(turn)) return endRound(turn, 'Nebunii ' + (turn === 'w' ? 'albi au ajuns pe c8 și pe f8.' : 'negri au ajuns pe c1 și pe f1.'));
+        if (ply >= 2 * LIMIT) return endRound('d', 'Au trecut 20 de mutări ale fiecăruia și nimeni nu a câștigat.');
+        turn = turn === 'w' ? 'b' : 'w';
+        setStatus(turnMsg()); updateUI();
+        if (!isHumanTurn()) robotMove();
+    }
+    function endRound(winner, why) {
+        roundOver = true; setTimeout(() => play(sndMate), 250);
+        results[round] = winner;
+        let msg;
+        if (mode === 'robot') {
+            msg = (winner === 'd' ? '🤝 Egalitate. ' : winner === humanSide() ? '🏆 Ai câștigat! ' : '🤖 Robotul a câștigat. ') + why;
+        } else {
+            msg = '🏁 ' + why + ' ' + (winner === 'd' ? 'Egalitate.' : 'Câștigă ' + sideName(winner) + ' (' + pname(winner === 'w' ? whitePlayer() : 3 - whitePlayer()) + ').');
+        }
+        if (round === 1) document.getElementById('btn-round2').style.display = 'block';
+        else { matchOver = true; msg += '<br><br>' + matchSummary(); }
+        setStatus(msg, winner === 'd' || mode === 'duo' || winner === humanSide() ? 'ok' : 'warn');
+        updateUI();
+    }
+    function matchSummary() {
+        const pts = { 1: 0, 2: 0 };
+        [1, 2].forEach(r => {
+            const res = results[r], wp = r === 1 ? 1 : 2;
+            if (res === 'd') { pts[1] += 0.5; pts[2] += 0.5; } else pts[res === 'w' ? wp : 3 - wp] += 1;
+        });
+        const f = x => x === 0.5 ? '½' : String(x).replace('.5', '½');
+        const score = f(pts[1]) + '–' + f(pts[2]);
+        if (pts[1] === pts[2]) return '🤝 <strong>Meciul se termină la egalitate</strong> (' + score + ').';
+        const w = pts[1] > pts[2] ? 1 : 2;
+        if (mode === 'duo') { document.getElementById('pp' + w).className = 'player-panel winner'; return '🏆 <strong>' + pname(w) + ' câștigă meciul</strong> (' + score + ').'; }
+        return w === 1 ? '🏆 <strong>Ai câștigat meciul</strong> (' + score + ').' : '🤖 <strong>Robotul a câștigat meciul</strong> (' + score + ').';
+    }
+
+    /* ---------- Robotul ---------- */
+    const DIST = (k, s) => s === T[k] ? 0 : Math.abs((s >> 3) - (T[k] >> 3)) === Math.abs((s & 7) - (T[k] & 7)) ? 1 : 2;
+    function robotPick() {
+        const side = turn === 'w' ? 0 : 1, ms = solver().moves(side, P.slice());
+        const wins = ms.filter(m => m[2]);
+        if (randomness > 0) {
+            if (wins.length && Math.random() >= randomness * 0.5) return pickRandom(wins);
+            if (Math.random() < randomness) return pickRandom(ms);
+        }
+        if (wins.length) return wins.find(m => at(m[1]) < 0) || wins[0];
+        const R1 = 2 * LIMIT - ply - 1;               // semimutări rămase după mutarea Robotului
+        let best = [], bk = null;
+        for (const m of ms) {
+            const q = P.slice(); q[m[0]] = m[1];
+            const v = S.V[S.enc(1 - side, q)];       // valoarea pentru adversar, care mută după
+            let key;
+            if (v < 0 && -v <= R1) key = [3, v];                      // câștig sigur în timp: cât mai repede
+            else if (v > 0 && v <= R1) key = [0, v];                  // pierdere sigură: cât mai târziu
+            else key = [v < 0 ? 2 : 1, -mineK(turn).reduce((a, k) => a + DIST(k, q[k]), 0)];   // fără rezultat sigur: spre ținte
+            const c = bk === null ? 1 : key[0] - bk[0] || key[1] - bk[1];
+            if (c > 0) { bk = key; best = [m]; } else if (c === 0) best.push(m);
+        }
+        return pickRandom(best);
+    }
+    function robotMove() {
+        busy = true;
+        robotTimer = setTimeout(() => {
+            busy = false; if (roundOver) return;
+            const m = robotPick();
+            apply(P[m[0]], m[1]);
+        }, 700);
+    }
+
+    /* ---------- om ---------- */
+    function illegal(sq, reason) {
+        if (sq) flashWrong(sq);
+        selSq = null; clearHL(true);
+        if (mode !== 'duo') { setStatus('⚠️ ' + reason, 'warn'); return; }
+        const p = curPlayer(); strikes[p]++; updateUI();
+        if (strikes[p] >= MAX_STRIKES) {
+            roundOver = true; matchOver = true;
+            const o = 3 - p;
+            document.getElementById('btn-round2').style.display = 'none';
+            document.getElementById('pp' + o).className = 'player-panel winner';
+            setStatus('❌ ' + reason + '<br>' + pname(p) + ' a încercat 3 mutări nepermise.<br>🏆 <strong>' + pname(o) + ' câștigă meciul.</strong>', 'warn');
+            return;
+        }
+        setStatus('❌ ' + reason + ' Încercări nepermise pentru ' + pname(p) + ': ' + strikes[p] + ' din ' + MAX_STRIKES + '.', 'warn');
+    }
+    function checkMove(f, t) {
+        if (targetsOf(f).includes(t)) return null;
+        const j = at(t);
+        if (j >= 0 && sideOf(j) === turn) return 'Nu poți captura nebunul tău.';
+        return 'Nebunul merge numai pe diagonală și nu sare peste piese.';
+    }
+    function tryMove(from, to) { const why = checkMove(idx(from), idx(to)); if (why) return illegal(to, why); apply(idx(from), idx(to)); }
+    const ownPiece = s => { const k = at(s); return k >= 0 && sideOf(k) === turn; };
+
+    function setMode(m) {
+        mode = m;
+        document.getElementById('modeRobot').className = 'tgl-btn' + (m === 'robot' ? ' active' : '');
+        document.getElementById('modeDuo').className   = 'tgl-btn' + (m === 'duo' ? ' active' : '');
+        document.getElementById('levelGrid').style.display = m === 'robot' ? '' : 'none';
+        document.getElementById('duoPanels').style.display = m === 'duo' ? '' : 'none';
+        newMatch();
+    }
+    function setLevel(btn) {
+        document.querySelectorAll('.animal-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active'); randomness = parseFloat(btn.dataset.random);
+        if (typeof minigameHideHints === 'function') minigameHideHints(randomness === 0);
+        newMatch();
+    }
+    Object.assign(window, { setMode, setLevel, newMatch, startRound });
+    window._cursa = { get P() { return P; }, get turn() { return turn; }, get ply() { return ply; }, get results() { return results; },
+                      get roundOver() { return roundOver; }, get matchOver() { return matchOver; }, get strikes() { return strikes; },
+                      get mode() { return mode; }, solver, robotPick, apply, tryMove, setRandom: r => { randomness = r; } };
+
+    function canAct() { return !roundOver && !matchOver && !busy && isHumanTurn(); }
+    board = Chessboard('board', {
+        position: 'empty', pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
+        draggable: true, showNotation: true,
+        onDragStart: function (source) {
+            if (!canAct()) return false;
+            const s = idx(source);
+            if (selSq && source !== selSq && !ownPiece(s)) { const from = selSq; setTimeout(() => tryMove(from, source), 0); return false; }
+            if (!ownPiece(s)) { illegal(source, turn === 'w' ? 'Acum mută albul.' : 'Acum mută negrul.'); return false; }
+            selSq = source; showSelection(source);
+        },
+        onDrop: function (source, target) {
+            if (target === 'offboard' || target === source) return 'snapback';
+            selSq = null;
+            const why = checkMove(idx(source), idx(target));
+            if (why) { illegal(target, why); return 'snapback'; }
+            apply(idx(source), idx(target));
+        },
+        onSnapEnd: function () { board.position(buildPos(), false); }
     });
-    document.getElementById('btn-undo').disabled = !hist.length || over || !!demo;
-}
-function turnMsg() {
-    const who = turn === 'w' ? 'un nebun alb' : 'un nebun negru';
-    return mode === 'duo' ? pname(curPlayer()) + ' mută ' + who + '.' : 'Mută ' + who + '.';
-}
-
-function newGame() {
-    stopDemo();
-    W = [idx('c1'), idx('f1')]; B = [idx('c8'), idx('f8')]; turn = 'w'; hist = []; over = false; selSq = null; strikes = { 1: 0, 2: 0 };
-    board.position(buildPos(), false); clearHL();
-    setStatus(turnMsg()); updateUI();
-}
-function apply(f, t, quiet) {
-    hist.push([f, t]);
-    const L = turn === 'w' ? W : B; L[L.indexOf(f)] = t;
-    turn = turn === 'w' ? 'b' : 'w'; selSq = null;
-    board.position(buildPos(), false); clearHL(); markLast(name(f), name(t)); play(sndMove);
-    if (done()) return finish();
-    if (quiet) { updateUI(); return; }
-    if (!anyLegal()) setStatus('🚧 ' + (turn === 'w' ? 'Albul' : 'Negrul') + ' nu mai are nicio mutare permisă. Ia înapoi o mutare sau două și încearcă alt drum.', 'warn');
-    else setStatus(turnMsg());
-    updateUI();
-}
-function finish() {
-    over = true; setTimeout(() => play(sndMate), 250);
-    let msg = '🏆 Nebunii și-au schimbat locurile în <strong>' + hist.length + (hist.length >= 20 ? ' de' : '') + ' mutări</strong>. ';
-    if (demo) msg = '👁 Gata: o soluție în 12 mutări. Apasă „Joacă din nou” ca să încerci tu.';
-    else {
-        msg += hist.length <= 12 ? 'Cel mai scurt drum!' : 'Se poate și în 12 mutări.';
-        msg += '<br>' + (hist.length <= 12 ? '⭐⭐⭐' : hist.length <= 16 ? '⭐⭐☆' : '⭐☆☆');
-        if (mode === 'duo') msg += '<br>Ați reușit împreună.';
-        if (typeof spawnConfetti === 'function') spawnConfetti(2);
-    }
-    setStatus(msg, 'ok'); updateUI();
-}
-function undo() {
-    if (!hist.length || over || demo) return;
-    const [f, t] = hist.pop();
-    turn = turn === 'w' ? 'b' : 'w';
-    const L = turn === 'w' ? W : B; L[L.indexOf(t)] = f;
-    selSq = null; board.position(buildPos(), false); clearHL();
-    setStatus('⟲ Am luat înapoi ' + name(f) + '–' + name(t) + '. ' + turnMsg()); updateUI();
-}
-function illegal(sq, reason) {
-    if (sq) flashWrong(sq);
-    selSq = null; clearHL(true);
-    if (mode !== 'duo') { setStatus('⚠️ ' + reason, 'warn'); return; }
-    const p = curPlayer(); strikes[p]++; updateUI();
-    if (strikes[p] >= MAX_STRIKES) {
-        over = true; updateUI();
-        setStatus('❌ ' + reason + '<br>' + pname(p) + ' a încercat 3 mutări nepermise. Jocul se termină. Apăsați „Joacă din nou”.', 'warn');
-        return;
-    }
-    setStatus('❌ ' + reason + ' Încercări nepermise pentru ' + pname(p) + ': ' + strikes[p] + ' din ' + MAX_STRIKES + '.', 'warn');
-}
-function tryMove(from, to) {
-    const why = problem(idx(from), idx(to));
-    if (why) return illegal(to, why);
-    apply(idx(from), idx(to));
-}
-function stopDemo() { if (demo) { clearTimeout(demo); demo = null; } }
-function showSolution() {
-    newGame(); let i = 0;
-    setStatus('👁 Urmărește o soluție în 12 mutări.');
-    const stepf = () => {
-        if (i >= SOLUTION.length) { demo = null; return; }
-        const [a, b] = SOLUTION[i++].split('-');
-        apply(idx(a), idx(b), true);
-        if (over) { demo = null; updateUI(); return; }
-        demo = setTimeout(stepf, 1000);
-    };
-    demo = setTimeout(stepf, 600); updateUI();
-}
-function setMode(m) {
-    mode = m;
-    document.getElementById('modeSolo').className = 'tgl-btn' + (m === 'solo' ? ' active' : '');
-    document.getElementById('modeDuo').className  = 'tgl-btn' + (m === 'duo' ? ' active' : '');
-    ['duoPanels', 'ruleDuo'].forEach(id => document.getElementById(id).style.display = m === 'duo' ? '' : 'none');
-    newGame();
+    $(document).on('click', '#board [class*="square-"]', function () {
+        if (!canAct() || !selSq) return;
+        const m = (this.className || '').match(/square-([a-h][1-8])/); if (!m) return;
+        const sq = m[1];
+        if (sq === selSq || ownPiece(idx(sq))) return;
+        tryMove(selSq, sq);
+    });
+    $(window).resize(() => board.resize());
+    newMatch();
+    setTimeout(solver, 50);                          // tabela Dragonului, pregătită din timp
 }
 
-/* ---------- input: click și drag ---------- */
-function canAct() { return !over && !demo; }
-board = Chessboard('board', {
-    position: 'empty', pieceTheme: 'https://lichess1.org/assets/piece/caliente/{piece}.svg',
-    draggable: true, showNotation: true,
-    onDragStart: function (source) {
-        if (!canAct()) return false;
-        const s = idx(source);
-        if (selSq && source !== selSq && !own(s)) { const from = selSq; setTimeout(() => tryMove(from, source), 0); return false; }
-        if (!own(s)) { illegal(source, turn === 'w' ? 'Acum mută albul.' : 'Acum mută negrul.'); return false; }
-        selSq = source; showSelection(source);
-    },
-    onDrop: function (source, target) {
-        if (target === 'offboard' || target === source) return 'snapback';
-        selSq = null;
-        const why = problem(idx(source), idx(target));
-        if (why) { illegal(target, why); return 'snapback'; }
-        apply(idx(source), idx(target));
-    },
-    onSnapEnd: function () { board.position(buildPos(), false); }
-});
-$(document).on('click', '#board [class*="square-"]', function () {
-    if (!canAct() || !selSq) return;
-    const m = (this.className || '').match(/square-([a-h][1-8])/); if (!m) return;
-    const sq = m[1];
-    if (sq === selSq || occ(idx(sq))) return;
-    tryMove(selSq, sq);
-});
-$(window).resize(() => board.resize());
-newGame();
+/* CURSA NEBUNILOR — analiză retrogradă completă (se rulează și în pagină).
+   Stare: latura la mutare + nebunii [alb-alb, alb-negru, negru-alb, negru-negru]
+   (alb = pe pătrate albe, negru = pe pătrate negre), fiecare 0..31 în lista pătratelor de culoarea lui.
+   V[stare] > 0: cel la mutare câștigă cu ultima mutare la semimutarea V (1 = acum);
+   V < 0: pierde, adversarul câștigă la semimutarea -V; 0: remiză; 127 = poziție imposibilă. */
+function solveCursa() {
+    const LS = [], DS = [];
+    for (let s = 0; s < 64; s++) (((s >> 3) + (s & 7)) % 2 ? LS : DS).push(s);
+    const SQ = [LS, DS, LS, DS];                    // piesa 0 = alb pe alb, 1 = alb pe negru, 2 = negru pe alb, 3 = negru pe negru
+    const POS = [new Int8Array(64).fill(-1), new Int8Array(64).fill(-1)];
+    LS.forEach((s, i) => POS[0][s] = i); DS.forEach((s, i) => POS[1][s] = i);
+    const sqI = (p, s) => POS[p & 1][s];
+    const T = [sq('c8'), sq('f8'), sq('f1'), sq('c1')];   // ținta fiecărei piese
+    function sq(n) { return 'abcdefgh'.indexOf(n[0]) * 8 + (+n[1] - 1); }
+    const DIRS = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
+    const N = 2 * 32 * 32 * 32 * 32;
+    const V = new Int8Array(N), C = new Uint8Array(N);
+    const enc = (side, p) => (((((side * 32 + sqI(0, p[0])) * 32 + sqI(1, p[1])) * 32 + sqI(2, p[2])) * 32) + sqI(3, p[3]));
+    function dec(i) { const p = new Array(4); for (let k = 3; k >= 0; k--) { p[k] = SQ[k][i & 31]; i >>= 5; } return [i, p]; }
+    function rays(p, k) {                            // pătratele atinse de piesa k (se oprește la prima piesă, inclusiv)
+        const out = [], s0 = p[k];
+        for (const [a, b] of DIRS) {
+            let c = (s0 >> 3) + a, r = (s0 & 7) + b;
+            while (c >= 0 && c < 8 && r >= 0 && r < 8) { const t = c * 8 + r; out.push(t); if (p.includes(t)) break; c += a; r += b; }
+        }
+        return out;
+    }
+    const mine = side => side === 0 ? [0, 1] : [2, 3];
+    const enemyOf = k => k ^ 2;                       // același fel de pătrate, cealaltă culoare
+    const home = (side, p) => mine(side).every(k => p[k] === T[k]);
+    /* mutările laturii la mutare: [k, t, câștig?] */
+    function moves(side, p) {
+        const out = [];
+        for (const k of mine(side)) for (const t of rays(p, k)) {
+            const j = p.indexOf(t);
+            if (j >= 0) { if (j === enemyOf(k)) out.push([k, t, true]); continue; }
+            const q = p.slice(); q[k] = t;
+            out.push([k, t, home(side, q)]);
+        }
+        return out;
+    }
+    const valid = (side, p) => p[0] !== p[2] && p[1] !== p[3] && !home(0, p) && !home(1, p);
+    const queue = new Int32Array(N); let qh = 0, qt = 0;
+    for (let i = 0; i < N; i++) {
+        const [side, p] = dec(i);
+        if (!valid(side, p)) { V[i] = 127; continue; }
+        const ms = moves(side, p);
+        if (ms.some(m => m[2])) { V[i] = 1; queue[qt++] = i; } else C[i] = ms.length;
+    }
+    while (qh < qt) {
+        const i = queue[qh++], v = V[i];
+        const [side, p] = dec(i), prev = 1 - side;
+        for (const k of mine(prev)) for (const y of rays(p, k)) {   // de unde putea veni piesa k (mutările nebunului sunt reversibile)
+            if (p.includes(y)) continue;
+            const q = p.slice(); q[k] = y;
+            const j = enc(prev, q);
+            if (V[j] !== 0) continue;
+            if (v > 0) { if (--C[j] === 0) { V[j] = -(v + 1); queue[qt++] = j; } }
+            else { V[j] = -v + 1; queue[qt++] = j; }
+        }
+    }
+    return { V, enc, dec, moves, T, sq };
+}
+
+schimbaNebunii();
 </script>
 </body>
 </html>
