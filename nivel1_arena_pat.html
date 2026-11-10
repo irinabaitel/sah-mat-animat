@@ -243,6 +243,7 @@ const SAVE_KEY = 'stalemate_arena_ct2_progress';
 const KIND_LABELS = { defend: 'SALVEAZĂ PRIN PAT', avoid: 'NU DA PAT' };
 let hintStage = 0;
 var sndMove = new Audio('Sounds/Move.mp3'), sndCapture = new Audio('Sounds/Capture.mp3'), sndMate = new Audio('Sounds/Mate.mp3');
+var sndCheck = new Audio('Sounds/Check.mp3');
 function playSnd(a) { try { a.currentTime = 0; a.play().catch(function () {}); } catch (e) {} }
 
 let PUZZLES = [];
@@ -411,6 +412,7 @@ function markState() {
 }
 function afterMoveFx(move) {
   if (chess.in_checkmate()) playSnd(sndMate);
+  else if (chess.in_check()) playSnd(sndCheck);
   else playSnd(move.captured ? sndCapture : sndMove);
   markState();
 }

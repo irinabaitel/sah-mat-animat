@@ -616,6 +616,7 @@ var T3 = (function() {
 var sndMove    = new Audio('Sounds/Move.mp3');
 var sndCapture = new Audio('Sounds/Capture.mp3');
 var sndMate    = new Audio('Sounds/Mate.mp3');
+var sndCheck   = new Audio('Sounds/CheckTrei.mp3');   /* sunetul „futuristic” de pe Lichess, ales pentru jocul acesta */
 var soundMuted = false;
 function playSound(snd) { if (soundMuted) return; try { snd.currentTime = 0; snd.play().catch(function(){}); } catch (e) {} }
 function toggleMute() { soundMuted = !soundMuted; document.getElementById('muteBtn').textContent = soundMuted ? '🔇' : '🔊'; }
@@ -930,8 +931,8 @@ function applyMove(m) {
     if (kingCap) { kingCaptured(color, rec.to); return; }
     if (pos.chk[me] >= 3) { finish(color, whoText(color) + (mode === 'robot' && color === playerColor ? ' ai dat al treilea șah!' : ' a dat al treilea șah!'), '1-0'); return; }
     if (checkGameOver()) return;
-    playSound(rec.cap ? sndCapture : sndMove);
     var gave = pos.chk[me] > chkBefore;
+    playSound(gave ? sndCheck : rec.cap ? sndCapture : sndMove);
     setStatus((gave ? '&#9889; Șah! (' + pos.chk[me] + ' din 3)<br>' : '') + turnStatus(), '');
     if (mode === 'robot' && turnC() !== playerColor) askComputer();
 }

@@ -347,7 +347,13 @@ function drawArrows(list, id) {
 
 /* sunete */
 var sndMove = new Audio('Sounds/Move.mp3'), sndCapture = new Audio('Sounds/Capture.mp3');
-function playSnd(s) { try { s.currentTime = 0; s.play().catch(function () {}); } catch (e) {} }
+var sndCheck = new Audio('Sounds/Check.mp3');
+/* la șah (fără mat) se aude sunetul de șah; poziția = cea dată sau cea curentă de pe tablă */
+function playSnd(s, p) {
+  p = p || (typeof pos !== 'undefined' ? pos : null);
+  if ((s === sndMove || s === sndCapture) && p && typeof inCheck === 'function' && ['w', 'b'].some(c => inCheck(p, c))) s = sndCheck;
+  try { s.currentTime = 0; s.play().catch(function () {}); } catch (e) {}
+}
 
 function showFeedback(html, type) { const b = document.getElementById('feedbackBar'); b.className = 'feedback-bar ' + (type || ''); b.innerHTML = '<span>' + html + '</span>'; }
 function clearFeedback() { const b = document.getElementById('feedbackBar'); b.className = 'feedback-bar'; b.innerHTML = ''; }

@@ -456,7 +456,13 @@ function drawArrows(list, id) {
 
 /* sunete */
 var sndMove = new Audio('Sounds/Move.mp3'), sndCapture = new Audio('Sounds/Capture.mp3'), sndMate = new Audio('Sounds/Mate.mp3');
-function playSnd(s) { try { s.currentTime = 0; s.play().catch(function () {}); } catch (e) {} }
+var sndCheck = new Audio('Sounds/Check.mp3');
+/* la șah (fără mat) se aude sunetul de șah; poziția = cea dată sau cea curentă de pe tablă */
+function playSnd(s, p) {
+  p = p || (typeof pos !== 'undefined' ? pos : null);
+  if ((s === sndMove || s === sndCapture) && p && typeof inCheck === 'function' && ['w', 'b'].some(c => inCheck(p, c))) s = sndCheck;
+  try { s.currentTime = 0; s.play().catch(function () {}); } catch (e) {}
+}
 
 function showFeedback(html, type) { const b = document.getElementById('feedbackBar'); b.className = 'feedback-bar ' + (type || ''); b.innerHTML = '<span>' + html + '</span>'; }
 function clearFeedback() { const b = document.getElementById('feedbackBar'); b.className = 'feedback-bar'; b.innerHTML = ''; }
@@ -526,7 +532,7 @@ function demoSound(a, b) {
   const ka = Object.keys(a), kb = Object.keys(b);
   if (ka.length === kb.length && ka.every(k => a[k] === b[k])) return;
   if (['w', 'b'].some(c => isMated(b, c))) playSnd(sndMate);
-  else playSnd(kb.length < ka.length ? sndCapture : sndMove);
+  else playSnd(kb.length < ka.length ? sndCapture : sndMove, b);
 }
 function demoRender(key, prev) {
   mode = 'lesson'; makeBoard(true, 'white');
