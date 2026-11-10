@@ -99,6 +99,8 @@ h1 {
     min-height: 280px;
     transition: transform 0.2s, box-shadow 0.2s;
 }
+.level-card.card-focus { box-shadow: 0 0 0 4px #1a3a6b, 0 10px 36px rgba(0,0,0,0.18); transition: box-shadow 0.6s; }
+.topic-link.topic-current { font-weight: 900; color: #1a3a6b; background: rgba(26,58,107,0.12); border-radius: 6px; padding: 1px 6px; }
 .level-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 36px rgba(0,0,0,0.14);
@@ -733,6 +735,33 @@ body {
     /* dacă pleacă spre o lecție, salvăm pe loc, fără să mai așteptăm */
     ul.addEventListener('pointerdown', salveaza);
   });
+})();
+
+/* Întors dintr-un minijoc (hub.html#joc=...): cardul Minijocuri în prim-plan, derulat la jocul din care ai ieșit. */
+(function(){
+  var m = /[#&]joc=([^&]+)/.exec(location.hash);
+  if (!m) return;
+  var href = decodeURIComponent(m[1]), link = null;
+  document.querySelectorAll('.level-card a.topic-link').forEach(function(a){
+    if (!link && a.getAttribute('href') === href) link = a;
+  });
+  if (!link) {
+    document.querySelectorAll('.level-card a.topic-link').forEach(function(a){
+      if (!link && a.getAttribute('href').split('?')[0] === href.split('?')[0]) link = a;
+    });
+  }
+  if (!link) return;
+  var card = link.closest('.level-card'), ul = link.closest('ul.topics');
+  card.classList.add('card-focus'); link.classList.add('topic-current');
+  function arata(){
+    card.scrollIntoView({ block: 'center' });
+    if (ul) {
+      var a = link.getBoundingClientRect(), l = ul.getBoundingClientRect();
+      ul.scrollTop += (a.top - l.top) - (l.height - a.height) / 2;
+    }
+  }
+  if (document.readyState === 'complete') arata(); else window.addEventListener('load', arata);
+  setTimeout(function(){ card.classList.remove('card-focus'); }, 4000);
 })();
 </script>
 </body>

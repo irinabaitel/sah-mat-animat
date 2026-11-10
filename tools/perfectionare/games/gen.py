@@ -13,7 +13,7 @@ for f in sys.argv[1:]:
         '<link rel="stylesheet" href="master-template.css?v=20261111">\n<style>' + css + sec.get('CSS', '') + '</style>\n'
         '<link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">\n'
         '<link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">\n'
-        '<script src="minijocuri-nav.js?v=20261111b"></script>\n</head>\n<body>\n<div class="page-wrapper">\n\n'
+        '<script src="minijocuri-nav.js?v=20261111c"></script>\n</head>\n<body>\n<div class="page-wrapper">\n\n'
         '  <header class="page-header" role="banner">\n    <span class="header-title">' + sec['HEADER'].strip() + '</span>\n'
         '    <div class="header-progress"><span class="game-badge">Joc</span></div>\n  </header>\n\n'
         '  <main class="page-main" role="main">\n    <div class="board-col"><div class="board-wrapper"><div id="board"></div></div></div>\n'

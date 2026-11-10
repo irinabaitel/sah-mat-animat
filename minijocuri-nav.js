@@ -70,36 +70,13 @@
         }
     } catch (e) {}
 
-    window.minigameNextUrl = i >= 0 && i < GAMES.length - 1 ? GAMES[i + 1][0] : null;
-    var nextLabel = window.minigameNextUrl ? GAMES[i + 1][1] : '';
-
-    /* Intrat dintr-o lecție: „înainte” merge la următorul joc din lista lecției (Exersează), nu din hub.
-       Lista se ia din pagina lecției (linkurile spre jocuri, în ordine) și se ține cât treci de la un joc la altul. */
-    var lessonGames = null, lessonGamesKey = 'minijoc-lesson-games';
-    function sameGame(href) {
-        var parts = href.split('?'), q = parts[1] || '';
-        if (parts[0] !== here) return false;
-        if (q) return location.search.indexOf(q) >= 0;
-        return !/[?&](v|p)=/.test(location.search);
-    }
-    function applyLessonNext() {
-        if (!lessonGames) return;
-        var k = -1;
-        for (var j = 0; j < lessonGames.length; j++) if (sameGame(lessonGames[j][0])) { k = j; break; }
-        if (k < 0) return;
-        if (k < lessonGames.length - 1) { window.minigameNextUrl = lessonGames[k + 1][0]; nextLabel = lessonGames[k + 1][1]; }
-        else { window.minigameNextUrl = null; nextLabel = ''; }
-    }
-    function gameName(href) {
-        for (var g = 0; g < GAMES.length; g++) if (GAMES[g][0] === href) return GAMES[g][1];
-        for (g = 0; g < GAMES.length; g++) if (GAMES[g][0].split('?')[0] === href.split('?')[0]) return GAMES[g][1];
-        return '';
-    }
-    try { lessonGames = lessonUrl ? JSON.parse(sessionStorage.getItem(lessonGamesKey) || 'null') : null; } catch (e) {}
-    if (lessonGames && lessonGames.url !== lessonUrl) lessonGames = null;
-    if (lessonGames) lessonGames = lessonGames.list;
-    if (!lessonUrl) { try { sessionStorage.removeItem(lessonGamesKey); } catch (e) {} }
-    applyLessonNext();
+    /* Subsolul (cerința Irinei, 11.11.2026):
+       - intrat dintr-o lecție: „Înapoi la lecție” + „Cuprins”;
+       - altfel (din hub): „Cuprins”, care deschide hub-ul la cardul Minijocuri, derulat la jocul din care ieși. */
+    var gameHref = i >= 0 ? GAMES[i][0] : here + location.search;
+    var hubUrl = 'hub.html#joc=' + encodeURIComponent(gameHref);
+    window.minigameNextUrl = null;               // nu mai sărim de la un joc la altul
+    window.minigameHubUrl = lessonUrl ? 'hub.html' : hubUrl;
 
     window.minigameHideHints = function () {
         var b = document.querySelector('.animal-btn.active');
@@ -181,26 +158,6 @@
     }
     document.addEventListener('click', function () { setTimeout(syncHints, 0); }, true);
 
-    function loadLessonGames() {
-        if (!lessonUrl || lessonGames || !window.fetch) return;
-        fetch(lessonUrl).then(function (r) { return r.ok ? r.text() : ''; }).then(function (txt) {
-            var list = [], seen = {};
-            var doc = new DOMParser().parseFromString(txt, 'text/html');
-            [].forEach.call(doc.querySelectorAll('a[href]'), function (a) {
-                var h = a.getAttribute('href').replace(/^\.\//, '').split('#')[0];
-                if (!h || seen[h] || /^https?:/.test(h)) return;
-                if (!GAMES.some(function (g) { return g[0].split('?')[0] === h.split('?')[0]; })) return;
-                var c = a.cloneNode(true); [].forEach.call(c.querySelectorAll('small'), function (x) { x.remove(); });
-                var t = c.textContent.replace(/^[^A-Za-zĂÂÎȘȚăâîșț]+/, '').replace(/\s+/g, ' ').trim();
-                seen[h] = 1; list.push([h, t || gameName(h)]);
-            });
-            if (!list.length) return;
-            lessonGames = list;
-            try { sessionStorage.setItem(lessonGamesKey, JSON.stringify({ url: lessonUrl, list: list })); } catch (e) {}
-            applyLessonNext(); build();
-        }).catch(function () {});
-    }
-
     function build() {
         var foot = document.querySelector('.page-footer');
         if (!foot) { syncHints(); return; }
@@ -209,16 +166,11 @@
             html += '<a href="' + lessonUrl + '" class="nav-btn nav-btn--back">' +
                     '<span class="icon">&#8592;</span><span class="label">Înapoi la lecție</span></a>';
         }
-        html += '<a href="hub.html" class="nav-btn nav-btn--contents">' +
+        html += '<a href="' + window.minigameHubUrl + '" class="nav-btn nav-btn--contents">' +
                 '<span class="icon">&#8862;</span><span class="label">Cuprins</span></a>';
-        if (window.minigameNextUrl) {
-            html += '<a href="' + window.minigameNextUrl + '" class="nav-btn nav-btn--forward">' +
-                    '<span class="icon">&#8594;</span><span class="label">' + nextLabel + '</span></a>';
-        }
         foot.innerHTML = html;
         syncHints();
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
     else build();
-    loadLessonGames();
 })();

@@ -126,7 +126,7 @@
 </style>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon-64.png?v=6">
 <link rel="apple-touch-icon" href="/img/favicon-64.png?v=6">
-<script src="minijocuri-nav.js?v=20261111b"></script>
+<script src="minijocuri-nav.js?v=20261111c"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -660,8 +660,9 @@ function updatePanelActive() {
 function showNextBtn() {
     const btn = document.getElementById('btn-next');
     const isLast = activeVariant >= VARIANTS.length - 1;
-    btn.textContent = isLast ? 'Jocul următor ▶' : `Varianta ${activeVariant + 2} ▶`;
-    btn.onclick = isLast ? () => location.href=(window.minigameNextUrl || 'hub.html') : goNextVariant;
+    if (isLast) { btn.style.display = 'none'; return; }   // la ultima variantă ieși din subsol (lecție / Cuprins)
+    btn.textContent = `Varianta ${activeVariant + 2} ▶`;
+    btn.onclick = goNextVariant;
     btn.style.display = 'block';
 }
 
