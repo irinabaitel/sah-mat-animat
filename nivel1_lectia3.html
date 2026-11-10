@@ -55,6 +55,28 @@
     .panel-scroll p, .panel-scroll li { font-size:1.05rem; line-height:1.75; color:#2a2a3e; }
     #boardWrapper { touch-action:none; -webkit-touch-callout:none; }
 
+    /* ── DEMONSTRAȚII (rocada, promovarea, en passant) ── */
+    .sq-h2 { background-image: linear-gradient(rgba(255,185,15,0.50), rgba(255,185,15,0.50)) !important; }
+    .sq-h3 { background-image: linear-gradient(rgba(40,200,80,0.45), rgba(40,200,80,0.45)) !important; }
+    .sq-h4 { background-image: linear-gradient(rgba(220,60,60,0.45), rgba(220,60,60,0.45)) !important; }
+    .demo-hint { font-size:0.9rem !important; color:rgba(26,26,46,.65) !important; }
+    .demo-badge { display:inline-block; align-self:flex-start; background:rgba(26,58,107,0.12); color:var(--c-navy); font-family:var(--font-display); font-size:0.82rem; font-weight:700; padding:2px 10px; border-radius:20px; }
+    .demo-title { font-family:var(--font-display); font-size:1rem; color:var(--c-navy); line-height:1.3; }
+    .demo-text  { background:rgba(26,58,107,0.09); border:2px solid rgba(26,58,107,0.18); border-radius:12px; padding:10px 12px; font-size:0.97rem; line-height:1.7; color:#1a1a2e; }
+    .mode-toggle { display:flex; gap:8px; }
+    .mode-btn { flex:1; padding:8px 4px; border-radius:10px; border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.5); font-family:var(--font-display); font-size:0.92rem; color:var(--c-navy); cursor:pointer; text-align:center; }
+    .mode-btn.active { background:var(--c-navy); color:white; border-color:var(--c-navy); }
+    .step-btns { display:flex; gap:8px; }
+    .step-btn { flex:1; padding:8px 4px; border-radius:10px; border:2px solid rgba(26,58,107,0.3); background:rgba(255,255,255,0.6); font-family:var(--font-display); font-size:0.9rem; color:var(--c-navy); cursor:pointer; }
+    .step-btn:hover:not(:disabled) { background:rgba(26,58,107,0.15); }
+    .step-btn:disabled { opacity:.35; cursor:default; }
+    .cond-list { list-style:none; display:flex; flex-direction:column; gap:6px; margin:6px 0 0; padding:0; }
+    .cond-list li { display:flex; align-items:flex-start; gap:8px; font-size:0.95rem !important; line-height:1.65; }
+    .cond-list li::before { content:'✓'; color:#1a7a45; font-weight:900; flex-shrink:0; }
+    .cond-list li.warn::before { content:'⚠️'; font-size:0.9em; }
+    .cond-title { font-family:var(--font-display); font-size:0.95rem; color:var(--c-navy); font-weight:700; margin-top:8px; }
+    .sec-divider { border:none; border-top:1px solid rgba(26,58,107,0.15); margin:4px 0; }
+
     /* ── EXERCIȚII: taburi și seturi ── */
     .tabs { display:flex; gap:6px; }
     .tab-btn { flex:1; padding:9px 6px; border-radius:12px 12px 0 0; border:1.5px solid rgba(26,58,107,0.2); border-bottom:none; background:rgba(255,255,255,0.45); font-family:var(--font-display); font-size:0.95rem; font-weight:700; color:var(--c-navy); cursor:pointer; }
@@ -141,67 +163,96 @@
       <div class="panel-scroll" id="panel-scroll">
 
         <div id="acc-wrapper">
+          <p>Mutările speciale par că încalcă regulile pe care le-am învățat până acum. Cu toate acestea, ele sunt permise de regulament — toți jucătorii de șah trebuie să le cunoască!</p>
 
-          <!-- ── ACC 0: MUTĂRI SPECIALE ── -->
+          <!-- ── ACC 0: ROCADA ── -->
           <div class="acc-item">
-            <div class="acc-head" id="mAcc0" onclick="toggleAcc(0)"><span>✨ Mutări speciale</span><span class="acc-icon">▶</span></div>
+            <div class="acc-head" id="mAcc0" onclick="toggleAcc(0)"><span>♚♜ Rocada</span><span class="acc-icon">▶</span></div>
             <div class="acc-body" id="body0"><div class="acc-inner">
-              <p>Mutările speciale par că încalcă regulile pe care le-am învățat până acum. Cu toate acestea, ele sunt permise de regulament — toți jucătorii de șah trebuie să le cunoască!</p>
-              <div id="g-intro-text"></div>
-              <div id="g-intro-act"></div>
-              <div class="ex-step-nav" id="g-intro-nav"></div>
-              <h4 class="sm-title">♚♜ Rocada</h4>
-              <p>Rocada este o mutare de rege — singura mutare în care ai voie să miști două piese. Regele se deplasează două pătrate, iar turnul se așază de partea cealaltă.</p>
-              <p><strong>6 condiții pentru rocadă:</strong></p>
-              <ul class="sm-list">
+              <p>Rocada este o <strong>mutare de rege</strong> — singura mutare în care ai voie să miști două piese. Regele se deplasează două pătrate, iar turnul se așază de partea cealaltă.</p>
+              <p class="demo-hint">Apasă pe buton de 3 ori pentru a vedea rocada pas cu pas:</p>
+              <div class="mode-toggle">
+                <button class="mode-btn active" id="r-btn-small" onclick="rSetMode('small')">Mică (0-0)</button>
+                <button class="mode-btn" id="r-btn-big" onclick="rSetMode('big')">Mare (0-0-0)</button>
+              </div>
+              <span class="demo-badge" id="r-badge"></span>
+              <div class="demo-title" id="r-title"></div>
+              <div class="demo-text" id="r-text"></div>
+              <div class="step-btns">
+                <button class="step-btn" id="r-prev" onclick="rPrev()">◀ Înapoi</button>
+                <button class="step-btn" id="r-next" onclick="rNext()">Înainte ▶</button>
+              </div>
+              <hr class="sec-divider">
+              <div class="cond-title">6 Condiții pentru Rocadă:</div>
+              <ul class="cond-list">
                 <li>Regele nu s-a mișcat niciodată în această partidă</li>
                 <li>Turnul ales nu s-a mișcat niciodată în această partidă</li>
-                <li>Nicio piesă nu se află între rege și turn</li>
-                <li>Regele nu este în șah în momentul în care se face rocada</li>
-                <li>Regele nu trece printr-un câmp atacat de adversar</li>
-                <li>Regele nu ajunge pe un câmp atacat (nu intră în șah)</li>
+                <li>Nicio piesă nu se află între Rege și Turn</li>
+                <li class="warn">Regele nu este în șah în momentul în care se face rocada</li>
+                <li class="warn">Regele nu trece printr-un câmp atacat de adversar</li>
+                <li class="warn">Regele nu ajunge pe un câmp atacat (nu intră în șah)</li>
               </ul>
-              <div class="hl-box"><strong>🏆 Regulă de turneu:</strong> Trebuie să miști mai întâi regele, apoi, cu aceeași mână, turnul. Dacă atingi turnul primul, ești obligat să-l muți — și nu mai poți face rocada! Dacă faci rocada cu două mâini, se consideră mutare ilegală.</div>
-              <h4 class="sm-title">♟→♛ Promovarea</h4>
-              <p>Când un pion ajunge la ultima linie a adversarului (linia 8 pentru alb, linia 1 pentru negru), se transformă imediat în altă piesă. Aproape mereu: Regina!</p>
-              <div class="hl-box warn"><strong>🤔 De ce nu mereu Regina?</strong> Uneori promovând în Regină faci pat (egalitate)! În acele situații rare se alege Turn sau Cal. Dar 99% din timp: Regina!</div>
+              <div class="hl-box"><strong>🏆 Regulă de turneu:</strong> Trebuie să miști mai întâi <strong>regele</strong>, apoi, cu <strong>aceeași mână</strong>, turnul. Dacă atingi turnul primul, ești obligat să-l muți — și nu mai poți face rocada! Dacă faci rocada cu <strong>două mâini</strong>, se consideră <strong>mutare ilegală</strong>.</div>
+              <button class="step-btn" onclick="goExercises()">🧩 Exerciții →</button>
+            </div></div>
+          </div>
+
+          <!-- ── ACC 1: PROMOVAREA ── -->
+          <div class="acc-item">
+            <div class="acc-head" id="mAcc1" onclick="toggleAcc(1)"><span>♟→♛ Promovarea</span><span class="acc-icon">▶</span></div>
+            <div class="acc-body" id="body1"><div class="acc-inner">
+              <p>Când un pion ajunge la <strong>ultima linie a adversarului</strong> (linia 8 pentru alb, linia 1 pentru negru), se <strong>transformă imediat</strong> în altă piesă. Aproape mereu: Regina!</p>
+              <span class="demo-badge" id="p-badge"></span>
+              <div class="demo-title" id="p-title"></div>
+              <div class="demo-text" id="p-text"></div>
+              <div class="step-btns">
+                <button class="step-btn" id="p-prev" onclick="pPrev()">◀ Înapoi</button>
+                <button class="step-btn" id="p-next" onclick="pNext()">Înainte ▶</button>
+              </div>
+              <div class="hl-box ok"><strong>🤔 De ce nu mereu Regina?</strong><br>Uneori promovând în Regină faci <em>pat</em> (egalitate)! În acele situații rare se alege Turn sau Cal. Dar 99% din timp: Regina!</div>
               <div class="hl-box"><strong>🏆 Reguli de turneu:</strong>
-                <ul class="sm-list">
-                  <li>Dacă pionul ajunge pe ultima linie și jucătorul apasă pe ceas fără să-l schimbe cu o altă piesă → mutare ilegală; adversarul primește 1 minut extra, iar pionul trebuie înlocuit.</li>
+                <ul class="cond-list" style="margin-top:6px;">
+                  <li>Dacă pionul ajunge pe ultima linie și jucătorul apasă pe ceas fără să îl schimbe cu o piesă, se consideră mutare ilegală și adversarul primește timp suplimentar, iar pionul trebuie înlocuit.</li>
                   <li>Dacă nu are o regină la dispoziție, jucătorul care promovează trebuie să oprească ceasul și să îi solicite arbitrului o regină.</li>
-                  <li>Un turn așezat invers pe tablă va fi considerat turn și jucătorul îl va folosi ca atare.</li>
+                  <li>Un turn așezat <strong>invers pe tablă</strong> va fi considerat turn și jucătorul îl va folosi ca atare.</li>
                 </ul>
               </div>
-              <h4 class="sm-title">↗ En passant</h4>
-              <p>Cea mai surprinzătoare mutare! Dacă un pion adversar avansează 2 pătrate de pe linia de start și ajunge lângă pionul tău, poți să-l capturezi ca și cum ar fi avansat doar 1 pătrat.</p>
-              <div class="hl-box warn"><strong>⚠️ ACUM ORI NICIODATĂ!</strong> Dacă nu capturezi imediat, la mutarea aceea, pierzi dreptul pentru totdeauna. Fii atent!</div>
+              <button class="step-btn" onclick="goExercises()">🧩 Exerciții →</button>
             </div></div>
           </div>
 
-          <!-- ── ACC 1: CUM SE FAC ── -->
+          <!-- ── ACC 2: EN PASSANT ── -->
           <div class="acc-item">
-            <div class="acc-head" id="mAcc1" onclick="toggleAcc(1)"><span>🧩 Mutările speciale pe tablă</span><span class="acc-icon">▶</span></div>
-            <div class="acc-body" id="body1"><div class="acc-inner">
-              <p>Fiecare sertar arată o mutare specială. Apasă butoanele ca să vezi mutarea pe tablă.</p>
-              <div id="def-list"></div>
-            </div></div>
-          </div>
-
-          <!-- ── ACC 2: EXERCIȚII ── -->
-          <div class="acc-item">
-            <div class="acc-head" id="mAcc2" onclick="toggleAcc(2)"><span>🏋️ Exerciții</span><span class="acc-icon">▶</span></div>
+            <div class="acc-head" id="mAcc2" onclick="toggleAcc(2)"><span>↗ En passant</span><span class="acc-icon">▶</span></div>
             <div class="acc-body" id="body2"><div class="acc-inner">
+              <p>Cea mai surprinzătoare mutare! Dacă un pion adversar avansează <strong>2 pătrate de pe linia de start</strong> și ajunge lângă pionul tău, poți să-l capturezi <em>ca și cum ar fi avansat doar 1 pătrat</em>.</p>
+              <span class="demo-badge" id="ep-badge"></span>
+              <div class="demo-title" id="ep-title"></div>
+              <div class="demo-text" id="ep-text"></div>
+              <div class="step-btns">
+                <button class="step-btn" id="ep-prev" onclick="epPrev()">◀ Înapoi</button>
+                <button class="step-btn" id="ep-next" onclick="epNext()">Înainte ▶</button>
+              </div>
+              <div class="hl-box warn"><strong>⚠️ ACUM ORI NICIODATĂ!</strong><br>Dacă nu capturezi <strong>imediat</strong>, la mutarea aceea, pierzi dreptul pentru totdeauna. Fii atent!</div>
+              <button class="step-btn" onclick="goExercises()">🧩 Exerciții →</button>
+            </div></div>
+          </div>
+
+          <!-- ── ACC 3: EXERCIȚII ── -->
+          <div class="acc-item">
+            <div class="acc-head" id="mAcc3" onclick="toggleAcc(3)"><span>🧩 Exerciții</span><span class="acc-icon">▶</span></div>
+            <div class="acc-body" id="body3"><div class="acc-inner">
               <div class="tabs" id="tabs"></div>
               <div class="tab-desc" id="tab-desc"></div>
               <div id="set-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-              <p class="src-note">Exercițiile vin din caietul metodei Steps (pasul 1), din lecțiile ChessKid 5 și 14 și din programul Chess Tutor Step 1 (lecțiile 9 și 14).</p>
+              <p class="src-note">Exercițiile sunt preluate din Caietul metodei Steps, din lecțiile ChessKid și din programul Chess Tutor.</p>
             </div></div>
           </div>
 
-          <!-- ── ACC 3: EXERSEAZĂ ── -->
+          <!-- ── ACC 4: EXERSEAZĂ ── -->
           <div class="acc-item">
-            <div class="acc-head" id="mAcc3" onclick="toggleAcc(3)"><span>🎮 Exersează!</span><span class="acc-icon">▶</span></div>
-            <div class="acc-body" id="body3"><div class="acc-inner">
+            <div class="acc-head" id="mAcc4" onclick="toggleAcc(4)"><span>🎮 Exersează!</span><span class="acc-icon">▶</span></div>
+            <div class="acc-body" id="body4"><div class="acc-inner">
               <p>Promovarea și en passant se văd cel mai bine într-o partidă adevărată. Joacă o partidă cu regi și pioni, contra Robotului sau în doi.</p>
               <a href="joc_stockfish.html?v=2" class="practice-btn pb-blue">♚ Regi și Pioni 2 — partida completă<small>Promovare, en passant și mat</small></a>
               <a href="joc_pioni.html" class="practice-btn pb-green">♙ Jocul Pionilor<small>Câștigă cine promovează primul</small></a>
@@ -227,7 +278,7 @@
             <button class="pill" id="ex-next" onclick="taskStep(1)">►</button>
           </div>
           <div class="nav-row" style="margin-top:6px;">
-            <button class="pill light" onclick="backToSets()">← Înapoi la exerciții</button>
+            <button class="pill light" onclick="backToSets()">← Înapoi la lecție</button>
             <span class="grow"></span>
             <button class="pill red" id="ex-reset" onclick="resetSet()" style="display:none">↺ Ia setul de la capăt</button>
           </div>
@@ -247,8 +298,7 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-<script src="data/nivel1_lectia3_demo.js?v=1"></script>
-<script src="data/nivel1_lectia3_ex.js?v=1"></script>
+<script src="data/nivel1_lectia3_ex.js?v=2"></script>
 <script>
 /* ═════════ Constante și utilitare de șah (merg și fără regi pe tablă) ═════════ */
 const PIECE_THEME = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
@@ -409,103 +459,131 @@ function playSnd(s) { try { s.currentTime = 0; s.play().catch(function () {}); }
 function showFeedback(html, type) { const b = document.getElementById('feedbackBar'); b.className = 'feedback-bar ' + (type || ''); b.innerHTML = '<span>' + html + '</span>'; }
 function clearFeedback() { const b = document.getElementById('feedbackBar'); b.className = 'feedback-bar'; b.innerHTML = ''; }
 
-/* ═════════ Sertarele cu exemple ═════════ */
-const DEF_GROUPS = [
-  ['rocada',   '🏰 Rocada mică și rocada mare'],
-  ['rocnu1',   '🚫 Fără rocadă: au mutat sau e ceva în cale'],
-  ['rocnu2',   '⚠️ Fără rocadă: șahul'],
-  ['promo',    '♛ Promovarea'],
-  ['subpromo', '🤔 De ce nu mereu regina?'],
-  ['ep',       '↗ En passant'],
-  ['epacum',   '⏱️ Acum ori niciodată']
+/* ═════════ Demonstrațiile din sertare (rocada, promovarea, en passant) ═════════ */
+var R_INIT  = {e1:'wK',a1:'wR',h1:'wR',a2:'wP',b2:'wP',c2:'wP',f2:'wP',g2:'wP',h2:'wP',e8:'bK'};
+var R_SMALL = {g1:'wK',f1:'wR',a1:'wR',a2:'wP',b2:'wP',c2:'wP',f2:'wP',g2:'wP',h2:'wP',e8:'bK'};
+var R_BIG   = {c1:'wK',d1:'wR',h1:'wR',a2:'wP',b2:'wP',c2:'wP',f2:'wP',g2:'wP',h2:'wP',e8:'bK'};
+var R_STEPS = {
+  small: [
+    { pos: R_INIT,  hl: [['e1','sq-h2'],['h1','sq-h2'],['g1','sq-h3']],
+      badge:'Click 1/3 — Regele', title:'Regele merge la g1!',
+      text:'Regele (e1) se mută 2 pătrate spre dreapta. Câmpul g1 (evidențiat verde) e destinația lui. Turnul h1 rămâne deocamdată pe loc.' },
+    { pos: R_INIT,  hl: [['e1','sq-h2'],['h1','sq-h2'],['g1','sq-h3'],['f1','sq-h3']],
+      badge:'Click 2/3 — Turnul', title:'Turnul sare peste Rege la f1!',
+      text:'Turnul (h1) trece peste rege și se așază la f1 (evidențiat verde). Regele și Turnul schimbă practic locurile — dar Turnul merge pe cealaltă parte.' },
+    { pos: R_SMALL, hl: [['g1','sq-h3'],['f1','sq-h3']],
+      badge:'Click 3/3 — ✅ Rocadă mică (0-0)', title:'Rocadă mică finalizată!',
+      text:'Regele la g1 — la adăpost în spatele pionilor. Turnul la f1 — activ pe coloana f. Mutarea se notează 0-0.' }
+  ],
+  big: [
+    { pos: R_INIT,  hl: [['e1','sq-h2'],['a1','sq-h2'],['c1','sq-h3']],
+      badge:'Click 1/3 — Regele', title:'Regele merge la c1!',
+      text:'Regele (e1) se mută 2 pătrate spre stânga. Câmpul c1 (evidențiat verde) e destinația lui. Turnul a1 rămâne deocamdată pe loc.' },
+    { pos: R_INIT,  hl: [['e1','sq-h2'],['a1','sq-h2'],['c1','sq-h3'],['d1','sq-h3']],
+      badge:'Click 2/3 — Turnul', title:'Turnul sare la d1!',
+      text:'Turnul (a1) trece pe cealaltă parte a regelui și se așază la d1 (evidențiat verde). Atenție: la rocada mare, Turnul sare mai mult decât Regele.' },
+    { pos: R_BIG,   hl: [['c1','sq-h3'],['d1','sq-h3']],
+      badge:'Click 3/3 — ✅ Rocadă mare (0-0-0)', title:'Rocadă mare finalizată!',
+      text:'Regele la c1 — pe flancul damei. Turnul la d1 — controlează centrul. Mutarea se notează 0-0-0.' }
+  ]
+};
+var P_STEPS = [
+  { pos:{e7:'wP',f3:'wK',g8:'bK'}, hl:[['e7','sq-h2'],['e8','sq-h3']],
+    badge:'Pas 1 din 3', title:'Pionul gata de promovare!',
+    text:'Pionul alb pe e7 — mai un pas și ajunge pe ultima linie! Poate deveni orice piesă.' },
+  { pos:{e8:'wP',f3:'wK',g8:'bK'}, hl:[['e8','sq-h2']],
+    badge:'Pas 2 din 3', title:'Pionul ajunge la e8!',
+    text:'Pionul avansează pe linia 8. Acum albul alege: Regină ♛, Turn ♜, Nebun ♝ sau Cal ♞. De obicei: Regina!' },
+  { pos:{e8:'wQ',f3:'wK',g8:'bK'}, hl:[['e8','sq-h3']],
+    badge:'Pas 3 din 3', title:'✅ Pionul a devenit Regină!',
+    text:'Pionul s-a transformat în Regină! Un jucător poate avea oricâte regine. Mutarea se notează: e8=D' }
 ];
-var gStep = {}, accOpen = -1, defOpen = -1;
+var EP_STEPS = [
+  { pos:{e5:'wP',d7:'bP',e2:'wK',e8:'bK'}, hl:[['e5','sq-h2'],['d7','sq-h4']],
+    badge:'Pas 1 din 4', title:'Situația de start',
+    text:'Albul are un pion pe e5. Negrul are un pion pe d7 — coloana alăturată. Negrul urmează să avanseze 2 pătrate dintr-o singură mutare.' },
+  { pos:{e5:'wP',d5:'bP',e2:'wK',e8:'bK'}, hl:[['d7','sq-h4'],['d6','sq-h3'],['d5','sq-h4']],
+    badge:'Pas 2 din 4', title:'Negrul avansează 2 pătrate!',
+    text:'Pionul negru a mers d7→d5, trecând peste d6. Acum albul are o șansă unică: poate captura în trecere!' },
+  { pos:{e5:'wP',d5:'bP',e2:'wK',e8:'bK'}, hl:[['e5','sq-h2'],['d5','sq-h4'],['d6','sq-h3']],
+    badge:'Pas 3 din 4', title:'Captura în trecere!',
+    text:'Pionul alb de pe e5 merge la d6, capturând pionul negru de pe d5 — ca și cum acesta ar fi avansat doar 1 pătrat!' },
+  { pos:{d6:'wP',e2:'wK',e8:'bK'}, hl:[['d6','sq-h3']],
+    badge:'Pas 4 din 4', title:'✅ En passant reușit!',
+    text:'Pionul alb pe d6, pionul negru de pe d5 a dispărut! Dacă albul muta altceva, pierdea dreptul de captură pentru totdeauna.' }
+];
+var DEMO = {
+  r:  { steps: function () { return R_STEPS[rMode]; }, i: 0 },
+  p:  { steps: function () { return P_STEPS; }, i: 0 },
+  ep: { steps: function () { return EP_STEPS; }, i: 0 }
+};
+var rMode = 'small', accOpen = -1;
 
-function buildDefList() {
-  document.getElementById('def-list').innerHTML = DEF_GROUPS.map((g, i) =>
-    '<div class="def-acc-item"><div class="def-acc-head" id="dAcc' + i + '" onclick="toggleDef(' + i + ')"><span>' + g[1] + '</span><span class="def-acc-icon">▶</span></div>'
-    + '<div class="def-acc-body" id="defBody' + i + '"><div class="def-acc-inner">'
-    + '<div id="g-' + g[0] + '-text"></div><div id="g-' + g[0] + '-act"></div><div class="ex-step-nav" id="g-' + g[0] + '-nav"></div>'
-    + '</div></div></div>').join('')
-    + '<p class="src-note">Exemplele din sertare: metoda Steps (Brunia &amp; van Wijgerden), Manualul pasului 1, lecțiile 4, 9 și 14; ChessKid, lecțiile 5 și 14.</p>';
+/* sunet doar când avansezi cu un pas și poziția se schimbă */
+function demoSound(a, b) {
+  const ka = Object.keys(a), kb = Object.keys(b);
+  if (ka.length === kb.length && ka.every(k => a[k] === b[k])) return;
+  if (['w', 'b'].some(c => isMated(b, c))) playSnd(sndMate);
+  else playSnd(kb.length < ka.length ? sndCapture : sndMove);
 }
-
-function renderGroup(key) {
+function demoRender(key, prev) {
   mode = 'lesson'; makeBoard(true, 'white');
-  const steps = L3DEMO[key], i = gStep[key] || 0, s = steps[i];
+  const d = DEMO[key], steps = d.steps(), s = steps[d.i];
+  if (prev !== undefined && d.i === prev + 1) demoSound(steps[prev].pos, s.pos);
   clearMarks(); clearArrows(); clearFeedback();
-  board.position(s.fen, false);
-  setTimeout(() => { drawArrows(s.arrows); markChecks(fenToPos(s.fen)); markStale(fenToPos(s.fen), s.side); }, 60);
-  const turn = '<span class="turn-badge ' + s.side + '">' + (s.side === 'w' ? '♔ Albul mută' : '♚ Negrul mută') + '</span>';
-  document.getElementById('g-' + key + '-text').innerHTML = (s.acts.length ? turn : '') + s.text;
-  document.getElementById('g-' + key + '-act').innerHTML = '<div class="act-row">'
-    + s.acts.map((a, j) => '<button class="act-btn" id="act-' + key + '-' + j + '" onclick="doAct(\'' + key + '\',' + j + ')">' + a.label + '</button>').join('')
-    + '</div><div id="g-' + key + '-res" style="margin-top:8px"></div>';
-  const nav = document.getElementById('g-' + key + '-nav');
-  nav.innerHTML = steps.length < 2 ? '' :
-    '<button class="ex-step-btn" ' + (i === 0 ? 'disabled' : '') + ' onclick="groupStep(\'' + key + '\',-1)">&#9664;</button>'
-    + '<span class="ex-step-lbl">Exemplul ' + (i + 1) + ' din ' + steps.length + '</span>'
-    + '<button class="ex-step-btn" ' + (i === steps.length - 1 ? 'disabled' : '') + ' onclick="groupStep(\'' + key + '\',1)">&#9654;</button>';
-}
-function groupStep(key, d) { gStep[key] = Math.max(0, Math.min(L3DEMO[key].length - 1, (gStep[key] || 0) + d)); renderGroup(key); }
-function doAct(key, j) {
-  const s = L3DEMO[key][gStep[key] || 0], a = s.acts[j];
-  document.querySelectorAll('[id^="act-' + key + '-"]').forEach(b => b.classList.remove('on'));
-  document.getElementById('act-' + key + '-' + j).classList.add('on');
-  clearMarks(); clearArrows();
-  let pos = fenToPos(s.fen), arr = a.arrows.slice();
-  board.position(pos, false);
-  if (a.line) {
-    let k = 0;
-    const step = () => {
-      const u = a.line[k], f = u.slice(0, 2), t = u.slice(2, 4), capt = !!pos[t], mover = pos[f][0];
-      pos = applyMove(pos, f, t); if (u[4]) pos[t] = mover + u[4].toUpperCase(); board.position(pos, true);
-      clearMarks(); markChecks(pos); markStale(pos, opp(mover)); clearArrows(); drawArrows([[f, t, 'g']]);
-      playSnd(['w', 'b'].some(c => isMated(pos, c)) ? sndMate : capt ? sndCapture : sndMove);
-      if (++k < a.line.length) setTimeout(step, 950);
-    };
-    setTimeout(step, 150);
+  board.position(s.pos, prev !== undefined);
+  setTimeout(() => { clearMarks(); s.hl.forEach(h => mark(h[0], h[1])); markChecks(s.pos); }, 220);
+  document.getElementById(key + '-badge').textContent = s.badge;
+  document.getElementById(key + '-title').textContent = s.title;
+  document.getElementById(key + '-text').textContent = s.text;
+  document.getElementById(key + '-prev').disabled = d.i === 0;
+  document.getElementById(key + '-next').disabled = d.i === steps.length - 1;
+  if (key === 'r') {
+    document.getElementById('r-btn-small').classList.toggle('active', rMode === 'small');
+    document.getElementById('r-btn-big').classList.toggle('active', rMode === 'big');
   }
-  if (a.move) {
-    const f = a.move.slice(0, 2), t = a.move.slice(2, 4), capt = !!pos[t], mover = pos[f][0];
-    pos = applyMove(pos, f, t); if (a.move[4]) pos[t] = mover + a.move[4].toUpperCase();
-    setTimeout(() => { board.position(pos, true); playSnd(['w', 'b'].some(c => isMated(pos, c)) ? sndMate : capt ? sndCapture : sndMove); clearMarks(); markChecks(pos); markStale(pos, opp(mover)); if (a.hl) { a.hl.unsafe.forEach(q => mark(q, 'sq-unsafe')); } }, 120);
-    arr.unshift([f, t, 'g']);
-  }
-  if (!a.move) markChecks(pos);
-  if (a.hl) { a.hl.safe.forEach(q => mark(q, 'sq-safe')); a.hl.unsafe.forEach(q => mark(q, 'sq-unsafe')); }
-  setTimeout(() => drawArrows(arr), 420);
-  const bad = /\?$/.test(a.label);
-  document.getElementById('g-' + key + '-res').innerHTML = a.text ? '<div class="hl-box ' + (bad ? 'warn' : 'ok') + '">' + a.text + '</div>' : '';
 }
+function demoStep(key, delta) {
+  const d = DEMO[key], n = d.steps().length, prev = d.i;
+  d.i = Math.max(0, Math.min(n - 1, d.i + delta));
+  if (d.i !== prev) demoRender(key, prev);
+}
+function rSetMode(m) {
+  if (rMode === m) { demoStep('r', 1); return; }   /* al doilea/al treilea click pe același buton = pasul următor */
+  rMode = m; DEMO.r.i = 0; demoRender('r');
+}
+function rPrev() { demoStep('r', -1); }  function rNext() { demoStep('r', 1); }
+function pPrev() { demoStep('p', -1); }  function pNext() { demoStep('p', 1); }
+function epPrev() { demoStep('ep', -1); } function epNext() { demoStep('ep', 1); }
 
 function toggleAcc(idx) {
   const was = accOpen === idx;
-  [0, 1, 2, 3].forEach(i => { document.getElementById('body' + i).classList.remove('open'); document.getElementById('mAcc' + i).classList.remove('open'); });
+  [0, 1, 2, 3, 4].forEach(i => { document.getElementById('body' + i).classList.remove('open'); document.getElementById('mAcc' + i).classList.remove('open'); });
   accOpen = was ? -1 : idx;
   if (!was) { document.getElementById('body' + idx).classList.add('open'); document.getElementById('mAcc' + idx).classList.add('open'); }
   setTimeout(() => {
-    if (accOpen === 0) renderGroup('intro');
-    else if (accOpen === 1 && defOpen >= 0) renderGroup(DEF_GROUPS[defOpen][0]);
+    if (mode === 'task') return;
+    const key = ['r', 'p', 'ep'][accOpen];
+    if (key) { DEMO[key].i = 0; demoRender(key); }
     else { mode = 'lesson'; makeBoard(true, 'white'); clearMarks(); clearArrows(); clearFeedback(); board.position('start', false); }
   }, 30);
 }
-function toggleDef(idx) {
-  const was = defOpen === idx;
-  DEF_GROUPS.forEach((g, i) => { document.getElementById('defBody' + i).classList.remove('open'); document.getElementById('dAcc' + i).classList.remove('open'); });
-  defOpen = was ? -1 : idx;
-  if (!was) {
-    document.getElementById('defBody' + idx).classList.add('open'); document.getElementById('dAcc' + idx).classList.add('open');
-    setTimeout(() => renderGroup(DEF_GROUPS[idx][0]), 30);
-  } else { clearMarks(); clearArrows(); board.position('start', false); }
+/* derulează doar panoul, ca titlul sertarului să fie sus */
+function scrollPanelTo(el) {
+  const ps = document.getElementById('panel-scroll');
+  setTimeout(() => { ps.scrollTop += el.getBoundingClientRect().top - ps.getBoundingClientRect().top - 6; }, 420);
+}
+function goExercises() {
+  if (accOpen !== 3) toggleAcc(3);
+  scrollPanelTo(document.getElementById('mAcc3'));
 }
 
 /* ═════════ Exerciții: taburi, seturi, progres ═════════ */
 const SAVE_KEY = 'n1l3_ex_v2';
 const TAB_DESC = {
-  baza: 'Rocada și en passant: da sau nu? Din caietul metodei Steps și din lecțiile ChessKid.',
-  mediu: 'Exercițiile din Chess Tutor: care rocade sunt permise?',
-  avansat: 'De ce nu e permisă rocada, mat cu en passant și promovarea în piesa potrivită.'
+  baza: 'Rocada și en passant: se poate sau nu?',
+  mediu: 'Toate rocadele dintr-o poziție și promovarea în piesa potrivită.',
+  avansat: 'De ce nu e permisă rocada, subpromovarea și matul cu en passant.'
 };
 var PROG = {}; try { PROG = JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch (e) { PROG = {}; }
 function saveProg() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(PROG)); } catch (e) {} }
@@ -519,7 +597,7 @@ function renderTabs() {
   document.getElementById('tab-desc').textContent = TAB_DESC[tab.id] || '';
   document.getElementById('set-list').innerHTML = tab.sets.map((s, i) => {
     const d = doneCount(s), n = s.tasks.length;
-    return '<div class="set-card' + (d === n ? ' done' : '') + '" onclick="openSet(' + i + ')"><div><div class="st-title">' + s.title + '</div><div class="st-src">' + s.src + '</div></div>'
+    return '<div class="set-card' + (d === n ? ' done' : '') + '" onclick="openSet(' + i + ')"><div><div class="st-title">' + s.title + '</div></div>'
       + '<div class="st-prog">' + (d === n ? '✅ ' : '') + d + '/' + n + '</div></div>';
   }).join('');
 }
@@ -541,6 +619,8 @@ function backToSets() {
   clearFeedback(); clearMarks(); clearArrows();
   makeBoard(true, 'white'); board.position('start', false);
   renderTabs();
+  if (accOpen !== 3) toggleAcc(3);
+  scrollPanelTo(document.getElementById('mAcc3'));
 }
 function resetSet() {
   delete PROG[curSet.id]; saveProg(); curIdx = 0; loadTask();
@@ -557,10 +637,27 @@ function updateProgress() {
 }
 
 /* ═════════ O sarcină ═════════ */
-var T = null, pos = {}, solved = false, sel = null, hintStage = 0, st = {};
+var T = null, pos = {}, solved = false, sel = null, hintStage = 0, st = {}, lineTok = 0;
+function basePos() { return Object.assign({}, st.base || fenToPos(T.fen)); }
+function isEpMove(p, f, t) { return !!p[f] && p[f][1] === 'P' && f[0] !== t[0] && !p[t]; }
+/* joacă automat o serie de mutări (cu săgeată verde și sunet) */
+function playLine(list, done) {
+  const tok = ++lineTok; let k = 0;
+  const step = () => {
+    if (tok !== lineTok) return;
+    if (k >= list.length) { if (done) done(); return; }
+    const u = list[k++], f = u.slice(0, 2), t = u.slice(2, 4), capt = !!pos[t] || isEpMove(pos, f, t);
+    pos = applyMove(pos, f, t); if (u[4]) pos[t] = pos[t][0] + u[4].toUpperCase();
+    board.position(pos, true); clearMarks(); clearArrows('ls5-arrows');
+    setTimeout(() => { if (tok === lineTok) { markChecks(pos); drawArrows([[f, t, 'g']]); } }, 260);
+    playSnd(['w', 'b'].some(c => isMated(pos, c)) ? sndMate : capt ? sndCapture : sndMove);
+    setTimeout(step, 1100);
+  };
+  setTimeout(step, 600);
+}
 
 function loadTask() {
-  T = curSet.tasks[curIdx]; solved = false; sel = null; hintStage = 0; st = {};
+  T = curSet.tasks[curIdx]; solved = false; sel = null; hintStage = 0; st = {}; lineTok++;
   mode = 'task';
   const noNot = ['nocircle', 'clicksq', 'namesq'].includes(T.type);
   makeBoard(!noNot, T.type === 'namesq' ? 'black' : 'white');
@@ -584,7 +681,11 @@ function loadTask() {
   if (['route', 'marks', 'place', 'squares', 'checksq', 'addmate', 'kplace'].includes(T.type)) tools.push('<button class="tool-btn" onclick="loadTask()">↺ Din nou</button>');
   document.getElementById('ex-tools').innerHTML = tools.join('');
   updateProgress();
-  setTimeout(() => setupType(), 40);
+  setTimeout(() => {
+    setupType();
+    if (T.last) drawArrows([[T.last.slice(0, 2), T.last.slice(2, 4), 'b']]);
+    if (T.pre) { st.busy = true; playLine(T.pre, () => { st.busy = false; st.base = Object.assign({}, pos); }); }
+  }, 40);
 }
 
 function setupType() {
@@ -694,7 +795,7 @@ function handleClick(s) {
   const now = Date.now();
   if (lastClick.s === s && now - lastClick.t < 350) return;
   lastClick = { s: s, t: now };
-  if (solved || !T) return;
+  if (solved || !T || st.busy) return;
   if (T.type === 'move' || T.type === 'route') {
     const movable = q => pos[q] && (T.type === 'route' ? q === st.cur : pos[q][0] === T.side);
     if (sel === null) { if (movable(s)) { sel = s; mark(s, 'highlight-selected'); } return; }
@@ -714,7 +815,7 @@ function handleClick(s) {
 }
 function onDragStart(source, piece) {
   if (mode === 'lesson') return true;
-  if (solved || !T) return false;
+  if (solved || !T || st.busy) return false;
   if (T.type === 'move') return piece[0] === T.side;
   if (T.type === 'route') return source === st.cur;
   return false;
@@ -729,7 +830,8 @@ function onDrop(source, target) {
 
 /* returnează true dacă mutarea rămâne pe tablă */
 function attempt(f, t) {
-  if (!targets(pos, f).includes(t)) { warn('Piesa nu se poate muta pe ' + t + '.'); return false; }
+  const ep = T.ep && t === T.ep && isEpMove(pos, f, t) && Math.abs(f.charCodeAt(0) - t.charCodeAt(0)) === 1 && Math.abs(+f[1] - +t[1]) === 1;
+  if (!ep && !targets(pos, f).includes(t)) { warn('Piesa nu se poate muta pe ' + t + '.'); return false; }
   if (T.type === 'move' && pos[f][1] === 'P' && /[18]/.test(t[1])) {
     if (inCheck(applyMove(pos, f, t), T.side)) { fail('❌ Mutarea nu este permisă: regele tău ar rămâne în șah.'); return false; }
     st.pend = [f, t];
@@ -743,7 +845,7 @@ function attempt(f, t) {
 
 /* ── tipul „move” (cu regi: șah, ieșirea din șah) ── */
 function moveTask(f, t, pr) {
-  const uci = f + t + (pr ? pr.toLowerCase() : ''), side = T.side, np = applyMove(pos, f, t), capt = !!pos[t];
+  const uci = f + t + (pr ? pr.toLowerCase() : ''), side = T.side, capt = !!pos[t] || isEpMove(pos, f, t), np = applyMove(pos, f, t);
   if (pr) np[t] = side + pr;
   if (T.check === 'mate') {
     if (inCheck(np, side)) { fail(inCheck(pos, side) ? '❌ După mutarea aceasta regele tău este tot în șah.' : '❌ Mutarea nu este permisă: regele tău ar ajunge în șah.'); return false; }
@@ -774,16 +876,21 @@ function moveTask(f, t, pr) {
   }
   if (T.badpromo && T.badpromo[uci]) {
     if (isStale(np, opp(side))) { pos = np; board.position(pos, false); setTimeout(() => markStale(pos, opp(side)), 30);
-      setTimeout(() => { pos = fenToPos(T.fen); board.position(pos, false); clearMarks(); markChecks(pos); }, 1600); }
+      setTimeout(() => { pos = basePos(); board.position(pos, false); clearMarks(); markChecks(pos); }, 1600); }
     fail('❌ ' + T.badpromo[uci]); return false;
   }
   if (T.check === 'nostale' && uci !== T.answer && !(T.ok || []).includes(uci)) {
     if (isStale(np, opp(side))) {
       pos = np; board.position(pos, false); setTimeout(() => markStale(pos, opp(side)), 30);
       fail('❌ Pat! Adversarul nu e în șah și nu mai are nicio mutare: partida s-ar termina remiză. Mai încearcă!');
-      setTimeout(() => { pos = fenToPos(T.fen); board.position(pos, false); clearMarks(); markChecks(pos); }, 1600);
+      setTimeout(() => { pos = basePos(); board.position(pos, false); clearMarks(); markChecks(pos); }, 1600);
     } else fail('❌ Nu e pat, dar nu este cea mai bună mutare. Mai caută.');
     return false;
+  }
+  if (T.bad && T.bad[uci]) {
+    const b = T.bad[uci]; clearArrows('ls5-arrows');
+    if (b[1]) drawArrows([[b[1].slice(0, 2), b[1].slice(2, 4), 'r']]);
+    fail('❌ ' + b[0]); return false;
   }
   let ok = uci === T.answer || (T.ok || []).includes(uci), msg = null;
   if (!ok && T.check === 'give') {
@@ -793,15 +900,18 @@ function moveTask(f, t, pr) {
     ok = true; msg = 'Corect! Ai dat șah din siguranță.';
   }
   if (ok) {
-    clearHint(); clearMarks(); pos = np; playSnd(capt ? sndCapture : sndMove);
-    setTimeout(() => markChecks(pos), 60);
+    clearHint(); clearMarks(); clearArrows('ls5-arrows'); pos = np;
+    playSnd(isMated(np, opp(side)) ? sndMate : capt ? sndCapture : sndMove);
+    setTimeout(() => { markChecks(pos); drawArrows([[f, t, 'g']]); }, 60);
     success(uci === T.answer ? (T.expl || 'Corect!') : (msg || T.okmsg || 'Corect! Și aceasta este o mutare bună.'));
+    if (T.post) playLine(T.post);
     return true;
   }
   if (T.check === 'give') {
     if (!inCheck(np, opp(side))) fail('❌ Mutarea aceasta nu dă șah. Mai încearcă!');
     else fail('❌ Nu este șahul căutat. Mai încearcă!');
-  } else if (inCheck(pos, side)) fail('❌ Ai ieșit din șah, dar nu este cea mai bună mutare. Uită-te ce poate captura adversarul după mutarea ta.');
+  } else if (T.failmsg) fail('❌ ' + T.failmsg);
+  else if (inCheck(pos, side)) fail('❌ Ai ieșit din șah, dar nu este cea mai bună mutare. Uită-te ce poate captura adversarul după mutarea ta.');
   else fail('❌ Nu este cea mai bună mutare. Uită-te ce poate captura adversarul după mutarea ta.');
   return false;
 }
@@ -934,6 +1044,7 @@ function pickOpt(btn, v) {
     btn.classList.add(ok ? 'ok' : 'bad');
     if (!ok) { fail('❌ ' + ((T.why || {})[val] || 'Mai uită-te.')); return; }
     if (T.epmove) { clearArrows(); drawArrows([[T.epmove.slice(0, 2), T.epmove.slice(2, 4), 'g']]); }
+    showReason();
     success(T.expl); return;
   }
   let ok, okMsg, badMsg;
@@ -1019,6 +1130,12 @@ function clickNamed(s) {
   else { mark(s, 'sq-unsafe'); setTimeout(() => unmark(s, 'sq-unsafe'), 900); fail('❌ Acesta este pătratul ' + s + '. Caută ' + T.answer + '.'); }
 }
 
+function showReason() {
+  if (!T.show) return;
+  (T.show.red || []).forEach(q => mark(q, 'sq-unsafe'));
+  if ((T.show.arrows || []).length) { clearArrows(); drawArrows(T.show.arrows); }
+}
+
 /* ═════════ Indiciu în trepte și răspuns ═════════ */
 function clearHint() { document.querySelectorAll('.hint-square').forEach(el => el.classList.remove('hint-square')); clearArrows('prac-hint-svg'); }
 function giveHint() {
@@ -1073,7 +1190,7 @@ function showAnswer() {
     if (!T.move) { clearHint(); solved = true; if (T.answer === 'Pat') markStale(pos, T.side); warn('👁 ' + T.answer + '. ' + T.expl); return; }
     T = Object.assign({}, T, { type: 'move', check: 'best', answer: T.move }); document.getElementById('ex-opts').innerHTML = '';
   }
-  if (T.type === 'choice') { clearHint(); solved = true; if (T.epmove) drawArrows([[T.epmove.slice(0, 2), T.epmove.slice(2, 4), 'g']]); warn('👁 ' + T.answer.join(' / ') + '. ' + T.expl); return; }
+  if (T.type === 'choice') { clearHint(); solved = true; if (T.epmove) drawArrows([[T.epmove.slice(0, 2), T.epmove.slice(2, 4), 'g']]); showReason(); warn('👁 ' + T.answer.join(' / ') + '. ' + T.expl); return; }
   if (T.type === 'castles') {
     clearHint(); solved = true;
     CASTLES.forEach((v, i) => { const b = document.getElementById('cs-' + i); b.classList.remove('sel'); b.classList.add(T.answer.includes(v) ? 'ok' : 'bad'); });
@@ -1086,11 +1203,13 @@ function showAnswer() {
   clearHint(); solved = true;
   const msg = '👁 ';
   if (T.type === 'move') {
-    const f = T.answer.slice(0, 2), t = T.answer.slice(2, 4), capt = !!pos[t];
+    if (st.busy) { solved = false; return; }
+    const f = T.answer.slice(0, 2), t = T.answer.slice(2, 4), capt = !!pos[t] || isEpMove(pos, f, t);
     pos = applyMove(pos, f, t); if (T.answer[4]) pos[t] = T.side + T.answer[4].toUpperCase();
-    board.position(pos, true); playSnd(capt ? sndCapture : sndMove);
-    setTimeout(() => { drawArrows([[f, t, 'g']]); clearMarks(); markChecks(pos); }, 300);
+    board.position(pos, true); playSnd(['w', 'b'].some(c => isMated(pos, c)) ? sndMate : capt ? sndCapture : sndMove);
+    setTimeout(() => { clearArrows('ls5-arrows'); drawArrows([[f, t, 'g']]); clearMarks(); markChecks(pos); }, 300);
     warn(msg + '<strong>' + T.san + '</strong>. ' + (T.expl || ''));
+    if (T.post) playLine(T.post);
   } else if (T.type === 'route') {
     pos = T.fen ? fenToPos(T.fen) : {}; clearMarks(); if (T.target) mark(T.target, 'sq-target');
     const p = pos[T.from]; delete pos[T.from]; pos[T.route[T.route.length - 1]] = T.promo ? p[0] + T.promo : p;
@@ -1123,7 +1242,6 @@ function showAnswer() {
 function debounce(fn, d) { let t; return function () { clearTimeout(t); t = setTimeout(fn, d); }; }
 window.addEventListener('resize', debounce(function () { if (board) { board.resize(); setSqPx(); } }, 150));
 $(document).ready(function () {
-  buildDefList();
   renderTabs();
   makeBoard(true, 'white');
   board.position('start', false);
