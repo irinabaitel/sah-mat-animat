@@ -20,7 +20,7 @@ resub(r'<!-- ── ACC 0: MATUL ── -->.*?<!-- ── ACC 1: CUM DAI MAT ─
             <div class="acc-head" id="mAcc0" onclick="toggleAcc(0)"><span>🛡️ Ne place să dăm mat, dar...</span><span class="acc-icon">▶</span></div>
             <div class="acc-body" id="body0"><div class="acc-inner">
               <p>...nu ne place să îl luăm! De aceea trebuie să știm să ne apărăm împotriva atacurilor de mat. În primul rând, trebuie să îl <strong>vedem</strong>: la fiecare mutare ne uităm la regele nostru, cine l-ar putea amenința și pe unde ar putea pleca.</p>
-              <p>Te aperi de mat la fel ca de orice atac, în patru feluri: <strong>protejezi</strong> pătratul amenințat, <strong>capturezi</strong> o piesă care atacă, <strong>te pui în cale</strong> sau <strong>pleci cu regele</strong>. Alege apărarea cu care nu pierzi material.</p>
+              <p>Te aperi de mat la fel ca de orice atac, în patru feluri: <strong>protejezi</strong> pătratul amenințat, <strong>capturezi</strong> o piesă care atacă, <strong>interpui o piesă</strong> sau <strong>pleci cu regele</strong>. Alege apărarea cu care nu pierzi material.</p>
               <div id="g-amenint-text"></div>
               <div id="g-amenint-act"></div>
               <div class="ex-step-nav" id="g-amenint-nav"></div>
@@ -56,7 +56,7 @@ s = s.replace('L7DEMO', 'L16DEMO').replace('L7EX', 'L16EX')
 sub("const SAVE_KEY = 'n1l7_ex_v1';", "const SAVE_KEY = 'n1l16_ex_v1';")
 resub(r"const TAB_DESC = \{.*?\};", """const TAB_DESC = {
   baza: 'Apără-te de mat și „Există apărare?”, din caietul metodei Steps.',
-  mediu: 'Exercițiile din Chess Tutor: protejezi, pleci cu regele, capturezi, te pui în cale.',
+  mediu: 'Exercițiile din Chess Tutor: protejezi, pleci cu regele, capturezi, interpui o piesă.',
   avansat: 'Exercițiile suplimentare din Chess Tutor: toate apărările amestecate și ieșirea din șah fără să primești mat.'
 };""")
 resub(r"const DEF_GROUPS = \[.*?\];", """const DEF_GROUPS = [
@@ -65,7 +65,7 @@ resub(r"const DEF_GROUPS = \[.*?\];", """const DEF_GROUPS = [
   ['tempo',     '⏱️ Câștigi timp cu un șah'],
   ['capturezi', '⚔️ Capturezi un atacator'],
   ['pleci',     '👣 Regele pleacă sau îi faci loc'],
-  ['incale',    '🧱 Te pui în cale'],
+  ['incale',    '🧱 Interpui o piesă'],
   ['cauta',     '🔎 Cum cauți apărarea'],
   ['dublu',     '⚡ Șahul dublu: regele pleacă']
 ];""")

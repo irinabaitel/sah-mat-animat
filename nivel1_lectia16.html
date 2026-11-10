@@ -144,7 +144,7 @@
             <div class="acc-head" id="mAcc0" onclick="toggleAcc(0)"><span>🛡️ Ne place să dăm mat, dar...</span><span class="acc-icon">▶</span></div>
             <div class="acc-body" id="body0"><div class="acc-inner">
               <p>...nu ne place să îl luăm! De aceea trebuie să știm să ne apărăm împotriva atacurilor de mat. În primul rând, trebuie să îl <strong>vedem</strong>: la fiecare mutare ne uităm la regele nostru, cine l-ar putea amenința și pe unde ar putea pleca.</p>
-              <p>Te aperi de mat la fel ca de orice atac, în patru feluri: <strong>protejezi</strong> pătratul amenințat, <strong>capturezi</strong> o piesă care atacă, <strong>te pui în cale</strong> sau <strong>pleci cu regele</strong>. Alege apărarea cu care nu pierzi material.</p>
+              <p>Te aperi de mat la fel ca de orice atac, în patru feluri: <strong>protejezi</strong> pătratul amenințat, <strong>capturezi</strong> o piesă care atacă, <strong>interpui o piesă</strong> sau <strong>pleci cu regele</strong>. Alege apărarea cu care nu pierzi material.</p>
               <div id="g-amenint-text"></div>
               <div id="g-amenint-act"></div>
               <div class="ex-step-nav" id="g-amenint-nav"></div>
@@ -168,7 +168,7 @@
               <div class="tabs" id="tabs"></div>
               <div class="tab-desc" id="tab-desc"></div>
               <div id="set-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-              <p class="src-note">Exercițiile vin din programul Chess Tutor Step 2 și din caietul metodei Steps, pasul 2.</p>
+              <p class="src-note">Exercițiile sunt preluate din caietul metodei Steps, din lecțiile ChessKid și din programul Chess Tutor.</p>
             </div></div>
           </div>
 
@@ -224,8 +224,8 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-<script src="data/nivel1_lectia16_demo.js?v=1"></script>
-<script src="data/nivel1_lectia16_ex.js?v=1"></script>
+<script src="data/nivel1_lectia16_demo.js?v=2"></script>
+<script src="data/nivel1_lectia16_ex.js?v=2"></script>
 <script>
 /* ═════════ Constante și utilitare de șah (merg și fără regi pe tablă) ═════════ */
 const PIECE_THEME = 'https://lichess1.org/assets/piece/caliente/{piece}.svg';
@@ -303,7 +303,7 @@ function whyNotMate(p, c) {
   const kc = mv.find(m => m[0] === k);
   if (kc) return 'Nu este mat: regele capturează ' + NAME[p[kc[1]][1]] + ' de pe ' + kc[1] + '.';
   const bl = mv[0];
-  return 'Nu este mat: ' + NAME[p[bl[0]][1]] + ' de pe ' + bl[0] + ' se pune în cale, pe ' + bl[1] + '.';
+  return 'Nu este mat: ' + NAME[p[bl[0]][1]] + ' de pe ' + bl[0] + ' se interpune, pe ' + bl[1] + '.';
 }
 function capturers(p, s) { const c = p[s][0]; return attackers(p, s, opp(c)).filter(a => legalMove(p, a, s)); }
 function markChecks(p) { ['w', 'b'].forEach(c => { if (inCheck(p, c)) mark(kingSq(p, c), 'highlight-check'); }); }
@@ -391,7 +391,7 @@ const DEF_GROUPS = [
   ['tempo',     '⏱️ Câștigi timp cu un șah'],
   ['capturezi', '⚔️ Capturezi un atacator'],
   ['pleci',     '👣 Regele pleacă sau îi faci loc'],
-  ['incale',    '🧱 Te pui în cale'],
+  ['incale',    '🧱 Interpui o piesă'],
   ['cauta',     '🔎 Cum cauți apărarea'],
   ['dublu',     '⚡ Șahul dublu: regele pleacă']
 ];
@@ -402,8 +402,7 @@ function buildDefList() {
     '<div class="def-acc-item"><div class="def-acc-head" id="dAcc' + i + '" onclick="toggleDef(' + i + ')"><span>' + g[1] + '</span><span class="def-acc-icon">▶</span></div>'
     + '<div class="def-acc-body" id="defBody' + i + '"><div class="def-acc-inner">'
     + '<div id="g-' + g[0] + '-text"></div><div id="g-' + g[0] + '-act"></div><div class="ex-step-nav" id="g-' + g[0] + '-nav"></div>'
-    + '</div></div></div>').join('')
-    + '<p class="src-note">Exemplele din sertare: metoda Steps (Brunia &amp; van Wijgerden), Manualul și caietul pasului 2, lecția 12. Șahul dublu: ChessKid, lecția 11.</p>';
+    + '</div></div></div>').join('');
 }
 
 function renderGroup(key) {
@@ -479,9 +478,9 @@ function toggleDef(idx) {
 /* ═════════ Exerciții: taburi, seturi, progres ═════════ */
 const SAVE_KEY = 'n1l16_ex_v1';
 const TAB_DESC = {
-  baza: 'Apără-te de mat și „Există apărare?”, din caietul metodei Steps.',
-  mediu: 'Exercițiile din Chess Tutor: protejezi, pleci cu regele, capturezi, te pui în cale.',
-  avansat: 'Exercițiile suplimentare din Chess Tutor: toate apărările amestecate și ieșirea din șah fără să primești mat.'
+  baza: 'Apără-te de mat și „Există apărare?”.',
+  mediu: 'Câte un fel de apărare: protejezi, pleci cu regele, capturezi, interpui o piesă.',
+  avansat: 'Toate apărările amestecate și ieșirea din șah fără să primești mat.'
 };
 var PROG = {}; try { PROG = JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch (e) { PROG = {}; }
 function saveProg() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(PROG)); } catch (e) {} }
@@ -495,7 +494,7 @@ function renderTabs() {
   document.getElementById('tab-desc').textContent = TAB_DESC[tab.id] || '';
   document.getElementById('set-list').innerHTML = tab.sets.map((s, i) => {
     const d = doneCount(s), n = s.tasks.length;
-    return '<div class="set-card' + (d === n ? ' done' : '') + '" onclick="openSet(' + i + ')"><div><div class="st-title">' + s.title + '</div><div class="st-src">' + s.src + '</div></div>'
+    return '<div class="set-card' + (d === n ? ' done' : '') + '" onclick="openSet(' + i + ')"><div><div class="st-title">' + s.title + '</div></div>'
       + '<div class="st-prog">' + (d === n ? '✅ ' : '') + d + '/' + n + '</div></div>';
   }).join('');
 }

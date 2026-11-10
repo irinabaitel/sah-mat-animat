@@ -62,7 +62,7 @@ def ct_line(t):  # textele de după răspuns din Chess Tutor, traduse
     tx = ' '.join(t['after']['texts'])
     out = []
     m = re.search(r'The (king|queen|rook|bishop|knight|pawn) can interpose on ([a-h][1-8])', tx)
-    if m: out.append(f'Dacă adversarul dă șah, {NAME_EN[m.group(1)]} se poate pune în cale pe {m.group(2)}.')
+    if m: out.append(f'Dacă adversarul dă șah, {NAME_EN[m.group(1)]} se poate interpune pe {m.group(2)}.')
     if 'exchanges queens' in tx: out.append('Reginele se schimbă.')
     if 'takes over the attack' in tx: out.append('Acum atacă negrul.')
     if 'can no longer deliver mate' in tx: out.append('Regina nu mai poate da mat.')
@@ -85,7 +85,7 @@ def why_not(b):  # b.turn = apărătorul, în șah: de ce nu e mat
     if mv:
         m = mv[0]; p = b.piece_at(m.from_square)
         if p.piece_type == chess.KING: return f'regele ar pleca pe {sqn(m.to_square)}'
-        return f'{NAME[p.piece_type]} s-ar pune în cale pe {sqn(m.to_square)}'
+        return f'{NAME[p.piece_type]} s-ar interpune pe {sqn(m.to_square)}'
     return None
 def expl_def(fen, side, uci, thr):
     b = board(fen, side); m = chess.Move.from_uci(uci); p = b.piece_at(m.from_square); to = m.to_square
@@ -105,7 +105,7 @@ def expl_def(fen, side, uci, thr):
         q = next(q for q in tsq if q in bb.attacks(to))
         s = f'{who} apără acum pătratul {sqn(q)}.'
     elif any(to in chess.SquareSet(chess.between(t.from_square, t.to_square)) for t in thr):
-        s = f'{who} se pune în cale pe {sqn(to)}.'
+        s = f'{who} se interpune pe {sqn(to)}.'
     elif p.piece_type == chess.PAWN:
         s = f'Pionul înaintează pe {sqn(to)}.'
     else:
@@ -155,7 +155,7 @@ def def_task(fen, side, answer, src, extra='', prompt=None, badmsg=None, need_th
     e = EXPL_FIX.get(src) or expl_def(fen, side, answer, thr)
     if extra:
         mm = re.search(r'în cale pe ([a-h][1-8])', extra)
-        if not (mm and f's-ar pune în cale pe {mm.group(1)}' in e): e += ' ' + extra
+        if not (mm and f's-ar interpune pe {mm.group(1)}' in e): e += ' ' + extra
     t = dict(type='move', check='defmate', fen=full, side=side, answer=answer, san=ro_san(b.san(m)), ok=ok, expl=e)
     if prompt: t['prompt'] = prompt
     if badmsg: t['badmsg'] = badmsg
@@ -206,10 +206,10 @@ baza, mediu, av = [], [], []
 mediu.append(ct_set('S2_12a', '12a', 'Protejezi pătratul', CT, 'Adversarul amenință mat. Caută pătratul unde ar veni matul. Îl poți apăra fără să pierzi material?', I_DEF))
 mediu.append(ct_set('S2_12b', '12b', 'Regele pleacă', CT, 'Adversarul amenință mat. Poate regele să plece din timp? Sau îi poți face loc, ca să aibă unde pleca?', I_DEF))
 mediu.append(ct_set('S2_12c', '12c', 'Capturezi un atacator', CT, 'Adversarul amenință mat. Poți captura una dintre piesele care lucrează la mat: pe cea care ar da șah, pe cea care o apără sau pe cea care păzește pătratele regelui.', I_DEF))
-mediu.append(ct_set('S2_12d', '12d', 'Te pui în cale', CT, 'Adversarul amenință mat. Aici te salvează o piesă pusă în cale.', I_DEF))
+mediu.append(ct_set('S2_12d', '12d', 'Interpui o piesă', CT, 'Adversarul amenință mat. Aici te salvează o piesă interpusă.', I_DEF))
 
 # ═════════ AVANSAT: Chess Tutor extra ═════════
-av.append(ct_set('S2_12xa', '12xa', 'Toate apărările', CT, 'Adversarul amenință mat. Te poți apăra protejând, capturând, punând o piesă în cale sau plecând cu regele.', I_DEF))
+av.append(ct_set('S2_12xa', '12xa', 'Toate apărările', CT, 'Adversarul amenință mat. Te poți apăra protejând, capturând, interpunând o piesă sau plecând cu regele.', I_DEF))
 av.append(ct_set('S2_12xb', '12xb', 'Ieși din șah fără să primești mat', CT, 'Regele tău e în șah. Cum iese din șah? Ai grijă: după mutarea ta, adversarul nu trebuie să poată da mat. Gândește-te la toate variantele și abia apoi mută.', 'Ieși din șah așa încât adversarul să nu-ți poată da mat.'))
 
 # ═════════ DE BAZĂ: caietul Steps pasul 2 ═════════
