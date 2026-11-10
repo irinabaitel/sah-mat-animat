@@ -144,6 +144,12 @@ html, body {
 .header-back .hb-ico { font-size: 0.85em; line-height: 1; }
 .header-back .hb-txt { display: inline; }
 @media (max-width: 640px) { .header-back .hb-txt { display: none; } }
+/* bara cu buline (board-utils.js) și butonul „Harta nivelului” stau amândouă în stânga:
+   le ținem pe același rând, altfel butonul coboară pe un rând nou și împinge titlul în jos */
+.page-header > * { grid-row: 1; }
+.page-header:has(.ann-bar) .header-back { justify-self: end; margin-right: 10px; }
+@media (max-width: 1100px) { .page-header:has(.ann-bar) .header-back .hb-txt { display: none; } }
+@media (max-width: 700px)  { .page-header:has(.ann-bar) .header-back { display: none; } }   /* pe telefon nu încape; harta rămâne în Cuprins */
 
 .header-progress {
   grid-column:  3;
